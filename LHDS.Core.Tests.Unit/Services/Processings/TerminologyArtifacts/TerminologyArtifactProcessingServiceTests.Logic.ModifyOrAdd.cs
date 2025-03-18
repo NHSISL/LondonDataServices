@@ -25,6 +25,62 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.TerminologyArtifacts
             TerminologyArtifact modifiedTerminologyArtifact = storageTerminologyArtifacts.DeepClone();
             modifiedTerminologyArtifact.UpdatedDate = randomDateTimeOffset;
             modifiedTerminologyArtifact.Name = modifiedTerminologyArtifact.Name + "Modified";
+            modifiedTerminologyArtifact.Name = modifiedTerminologyArtifact.Version + "Modified";
+            modifiedTerminologyArtifact.IsDownloaded = false;
+            storageTerminologyArtifacts.Name = storageTerminologyArtifacts.Name + "Modified";
+            TerminologyArtifact updatedTerminologyArtifacts = modifiedTerminologyArtifact.DeepClone();
+
+            this.dateTimeBrokerMock.Setup(broker =>
+                broker.GetCurrentDateTimeOffsetAsync())
+                    .ReturnsAsync(randomDateTimeOffset);
+
+            List<TerminologyArtifact> terminologyArtifacts =
+                new List<TerminologyArtifact> { storageTerminologyArtifacts };
+
+            this.terminologyArtifactServiceMock.Setup(service =>
+                service.RetrieveAllTerminologyArtifactsAsync())
+                    .ReturnsAsync(value: terminologyArtifacts.AsQueryable());
+
+            this.terminologyArtifactServiceMock.Setup(service =>
+                service.ModifyTerminologyArtifactAsync(modifiedTerminologyArtifact))
+                    .ReturnsAsync(value: updatedTerminologyArtifacts);
+
+            // when
+            await this.terminologyArtifactProcessingService.
+                ModifyOrAddTerminologyArtifactAsync(modifiedTerminologyArtifact);
+
+            // then
+            this.dateTimeBrokerMock.Verify(broker =>
+                broker.GetCurrentDateTimeOffsetAsync(),
+                    Times.Exactly(2));
+
+            this.terminologyArtifactServiceMock.Verify(service =>
+                service.RetrieveAllTerminologyArtifactsAsync(),
+                    Times.Once);
+
+            this.terminologyArtifactServiceMock.Verify(service =>
+                service.ModifyTerminologyArtifactAsync(It.Is(SameTerminologyArtifactAs(
+                     modifiedTerminologyArtifact))),
+                         Times.Once);
+
+            this.terminologyArtifactServiceMock.Verify(service =>
+                service.AddTerminologyArtifactAsync(modifiedTerminologyArtifact),
+                    Times.Never);
+
+            this.terminologyArtifactServiceMock.VerifyNoOtherCalls();
+            this.loggingBrokerMock.VerifyNoOtherCalls();
+        }
+
+        [Fact]
+        public async System.Threading.Tasks.Task ShouldNotModifyTerminologyArtifactIfOneExistsAndVersionIsSameAndNotAddAsync()
+        {
+            // given
+            DateTimeOffset randomDateTimeOffset = GetRandomDateTimeOffset();
+            TerminologyArtifact randomTerminologyArtifacts = CreateRandomTerminologyArtifact();
+            TerminologyArtifact storageTerminologyArtifacts = randomTerminologyArtifacts;
+            TerminologyArtifact modifiedTerminologyArtifact = storageTerminologyArtifacts.DeepClone();
+            modifiedTerminologyArtifact.UpdatedDate = randomDateTimeOffset;
+            modifiedTerminologyArtifact.Name = modifiedTerminologyArtifact.Name + "Modified";
             modifiedTerminologyArtifact.IsDownloaded = false;
             storageTerminologyArtifacts.Name = storageTerminologyArtifacts.Name + "Modified";
             TerminologyArtifact updatedTerminologyArtifacts = modifiedTerminologyArtifact.DeepClone();

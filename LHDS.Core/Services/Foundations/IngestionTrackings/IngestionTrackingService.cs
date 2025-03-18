@@ -161,6 +161,7 @@ namespace LHDS.Core.Services.Foundations.IngestionTrackings
             var auditUser = await this.securityBroker.GetCurrentUserAsync();
             ingestionTracking.UpdatedBy = auditUser?.EntraUserId.ToString() ?? string.Empty;
             ingestionTracking.UpdatedDate = auditDateTimeOffset;
+            
             return ingestionTracking;
         }
     }

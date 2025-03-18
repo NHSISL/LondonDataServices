@@ -53,15 +53,24 @@ namespace LHDS.Core.Services.Processings.TerminologyArtifacts
 
                 if (maybeTerminologyArtifact != null)
                 {
-                    maybeTerminologyArtifact.UpdatedDate = await this.dateTimeBroker.GetCurrentDateTimeOffsetAsync();
+                    if(terminologyArtifact.Version == maybeTerminologyArtifact.Version)
+                        return maybeTerminologyArtifact;
 
-                    return await this.terminologyArtifactService.ModifyTerminologyArtifactAsync(maybeTerminologyArtifact);
+                    terminologyArtifact.Id = maybeTerminologyArtifact.Id;
+                    terminologyArtifact.CreatedDate = maybeTerminologyArtifact.CreatedDate;
+
+                    terminologyArtifact.UpdatedDate = 
+                        await this.dateTimeBroker.GetCurrentDateTimeOffsetAsync();
+
+                    return await this.terminologyArtifactService
+                        .ModifyTerminologyArtifactAsync(terminologyArtifact);
                 }
                 else
                 {
                     terminologyArtifact.IsDownloaded = false;
 
-                    return await this.terminologyArtifactService.AddTerminologyArtifactAsync(terminologyArtifact);
+                    return await this.terminologyArtifactService
+                        .AddTerminologyArtifactAsync(terminologyArtifact);
                 }
             });
 

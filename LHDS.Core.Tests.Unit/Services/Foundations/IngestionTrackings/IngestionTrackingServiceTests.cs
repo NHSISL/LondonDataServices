@@ -3,12 +3,15 @@
 // ---------------------------------------------------------
 
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Runtime.CompilerServices;
 using LHDS.Core.Brokers.DateTimes;
 using LHDS.Core.Brokers.Loggings;
+using LHDS.Core.Brokers.Securities;
 using LHDS.Core.Brokers.Storages.Sql;
+using LHDS.Core.Models.Brokers.Securities;
 using LHDS.Core.Models.Foundations.IngestionTrackings;
 using LHDS.Core.Services.Foundations.IngestionTrackings;
 using Microsoft.Data.SqlClient;
@@ -23,6 +26,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.IngestionTrackings
     {
         private readonly Mock<IStorageBroker> storageBrokerMock;
         private readonly Mock<IDateTimeBroker> dateTimeBrokerMock;
+        private readonly Mock<ISecurityBroker> securityBrokerMock;
         private readonly Mock<ILoggingBroker> loggingBrokerMock;
         private readonly IIngestionTrackingService ingestionTrackingService;
 
@@ -30,13 +34,25 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.IngestionTrackings
         {
             this.storageBrokerMock = new Mock<IStorageBroker>();
             this.dateTimeBrokerMock = new Mock<IDateTimeBroker>();
+            this.securityBrokerMock = new Mock<ISecurityBroker>();
             this.loggingBrokerMock = new Mock<ILoggingBroker>();
 
             this.ingestionTrackingService = new IngestionTrackingService(
                 storageBroker: this.storageBrokerMock.Object,
                 dateTimeBroker: this.dateTimeBrokerMock.Object,
+                securityBroker: this.securityBrokerMock.Object,
                 loggingBroker: this.loggingBrokerMock.Object);
         }
+
+        private static string GetRandomStringWithLengthOf(int length)
+        {
+            string result = new MnemonicString(wordCount: 1, wordMinLength: length, wordMaxLength: length).GetValue();
+
+            return result.Length > length ? result.Substring(0, length) : result;
+        }
+
+        private static string GetRandomString() =>
+            new MnemonicString().GetValue();
 
         private static Expression<Func<Xeption, bool>> SameExceptionAs(Xeption expectedException) =>
             actualException => actualException.SameExceptionAs(expectedException);
@@ -79,6 +95,19 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.IngestionTrackings
             return randomIngestionTracking;
         }
 
+        private static IngestionTracking CreateRandomModifyIngestionTracking(
+            DateTimeOffset dateTimeOffset,
+            string userId)
+        {
+            int randomDaysInPast = GetRandomNegativeNumber();
+            IngestionTracking randomIngestionTracking = CreateRandomIngestionTracking(dateTimeOffset, userId);
+
+            randomIngestionTracking.CreatedDate =
+                randomIngestionTracking.CreatedDate.AddDays(randomDaysInPast);
+
+            return randomIngestionTracking;
+        }
+
         private static IQueryable<IngestionTracking> CreateRandomIngestionTrackings()
         {
             return CreateIngestionTrackingFiller(dateTimeOffset: GetRandomDateTimeOffset())
@@ -106,6 +135,47 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.IngestionTrackings
                 .OnProperty(ingestionTracking => ingestionTracking.Supplier).IgnoreIt();
 
             return filler;
+        }
+
+        private static IngestionTracking CreateRandomIngestionTracking(
+            DateTimeOffset dateTimeOffset,
+            string userId) =>
+                CreateIngestionTrackingFiller(dateTimeOffset, userId).Create();
+
+        private static Filler<IngestionTracking> CreateIngestionTrackingFiller(
+            DateTimeOffset dateTimeOffset,
+            string userId)
+        {
+            var filler = new Filler<IngestionTracking>();
+
+            filler.Setup()
+                .OnType<DateTimeOffset>().Use(dateTimeOffset)
+                .OnType<DateTimeOffset?>().Use(dateTimeOffset)
+                .OnProperty(ingestionTracking => ingestionTracking.CreatedBy).Use(userId)
+                .OnProperty(ingestionTracking => ingestionTracking.UpdatedBy).Use(userId)
+                .OnProperty(ingestionTracking => ingestionTracking.IngestionTrackingAudits).IgnoreIt()
+                .OnProperty(ingestionTracking => ingestionTracking.Supplier).IgnoreIt();
+
+            return filler;
+        }
+
+        private EntraUser CreateRandomEntraUser(string entraUserId = "")
+        {
+            var userId = string.IsNullOrWhiteSpace(entraUserId) ? GetRandomStringWithLengthOf(255) : entraUserId;
+
+            return new EntraUser(
+                entraUserId: userId,
+                givenName: GetRandomString(),
+                surname: GetRandomString(),
+                displayName: GetRandomString(),
+                email: GetRandomString(),
+                jobTitle: GetRandomString(),
+                roles: new List<string> { GetRandomString() },
+
+                claims: new List<System.Security.Claims.Claim>
+                {
+                    new System.Security.Claims.Claim(type: GetRandomString(), value: GetRandomString())
+                });
         }
     }
 }

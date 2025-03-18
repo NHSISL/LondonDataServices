@@ -26,7 +26,11 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.DataTypes
             DataType actualDataType = await this.apiBroker.PostDataTypeAsync(inputDataType);
 
             // Then
-            actualDataType.Should().BeEquivalentTo(expectedDataType);
+            actualDataType.Should().BeEquivalentTo(expectedDataType, options => options
+                .Excluding(property => property.CreatedBy)
+                .Excluding(property => property.CreatedDate)
+                .Excluding(property => property.UpdatedBy)
+                .Excluding(property => property.UpdatedDate));
 
             // Cleanup
             await this.apiBroker.DeleteDataTypeByIdAsync(inputDataType.Id);
@@ -52,7 +56,13 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.DataTypes
             foreach (DataType expectedDataType in expectedDataTypes)
             {
                 DataType actualDataType = actualDataTypes.Single(approval => approval.Id == expectedDataType.Id);
-                actualDataType.Should().BeEquivalentTo(expectedDataType);
+                
+                actualDataType.Should().BeEquivalentTo(expectedDataType, options => options
+                    .Excluding(property => property.CreatedBy)
+                    .Excluding(property => property.CreatedDate)
+                    .Excluding(property => property.UpdatedBy)
+                    .Excluding(property => property.UpdatedDate));
+
                 await this.apiBroker.DeleteDataTypeByIdAsync(actualDataType.Id);
             }
         }
@@ -71,7 +81,11 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.DataTypes
                 await this.apiBroker.GetDataTypeByIdAsync(inputDataType.Id);
 
             // Then
-            actualDataType.Should().BeEquivalentTo(expectedDataType);
+            actualDataType.Should().BeEquivalentTo(expectedDataType, options => options
+                .Excluding(property => property.CreatedBy)
+                .Excluding(property => property.CreatedDate)
+                .Excluding(property => property.UpdatedBy)
+                .Excluding(property => property.UpdatedDate));
 
             // Cleanup
             await this.apiBroker.DeleteDataTypeByIdAsync(inputDataType.Id);
@@ -83,15 +97,19 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.DataTypes
             // Given
             DataType randomDataType = CreateRandomDataType();
             DataType inputDataType = randomDataType;
-            await this.apiBroker.PostDataTypeAsync(inputDataType);
-            DataType modifiedDataType = UpdateDataTypeWithRandomValues(inputDataType);
+            DataType storageDataType = await this.apiBroker.PostDataTypeAsync(inputDataType);
+            DataType modifiedDataType = UpdateDataTypeWithRandomValues(storageDataType);
 
             // When
             await this.apiBroker.PutDataTypeAsync(modifiedDataType);
             DataType actualDataType = await this.apiBroker.GetDataTypeByIdAsync(inputDataType.Id);
 
             // Then
-            actualDataType.Should().BeEquivalentTo(modifiedDataType);
+            actualDataType.Should().BeEquivalentTo(modifiedDataType, options => options
+                .Excluding(property => property.CreatedBy)
+                .Excluding(property => property.CreatedDate)
+                .Excluding(property => property.UpdatedBy)
+                .Excluding(property => property.UpdatedDate));
 
             // Cleanup
             await this.apiBroker.DeleteDataTypeByIdAsync(inputDataType.Id);
@@ -114,7 +132,11 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.DataTypes
                 this.apiBroker.GetDataTypeByIdAsync(inputDataType.Id);
 
             // then
-            deletedDataType.Should().BeEquivalentTo(expectedDataType);
+            deletedDataType.Should().BeEquivalentTo(expectedDataType, options => options
+                .Excluding(property => property.CreatedBy)
+                .Excluding(property => property.CreatedDate)
+                .Excluding(property => property.UpdatedBy)
+                .Excluding(property => property.UpdatedDate));
 
             await Assert.ThrowsAsync<HttpResponseNotFoundException>(getDataTypebyIdTask.AsTask);
         }

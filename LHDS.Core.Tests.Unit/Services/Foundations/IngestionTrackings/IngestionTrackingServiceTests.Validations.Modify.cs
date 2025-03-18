@@ -144,7 +144,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.IngestionTrackings
                 key: nameof(IngestionTracking.UpdatedBy),
                  values:
                     [
-                        "Text is invalid",
+                        "Text is required",
                         $"Expected value to be '{randomEntraUser.EntraUserId}' but found " +
                             $"'{invalidIngestionTracking.UpdatedBy}'."
                     ]);

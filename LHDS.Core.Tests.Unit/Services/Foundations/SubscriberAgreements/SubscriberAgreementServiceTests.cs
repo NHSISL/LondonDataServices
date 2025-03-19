@@ -123,16 +123,17 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.SubscriberAgreements
             string userId) =>
             CreateSubscriberAgreementFiller(dateTimeOffset, userId).Create();
 
-        private static Filler<SubscriberAgreement> CreateSubscriberAgreementFiller(DateTimeOffset dateTimeOffset)
+        private static Filler<SubscriberAgreement> CreateSubscriberAgreementFiller(
+            DateTimeOffset dateTimeOffset,
+            string userId)
         {
-            string user = Guid.NewGuid().ToString();
             var filler = new Filler<SubscriberAgreement>();
 
             filler.Setup()
                 .OnType<DateTimeOffset>().Use(dateTimeOffset)
                 .OnType<DateTimeOffset?>().Use(dateTimeOffset)
-                .OnProperty(subscriberAgreement => subscriberAgreement.CreatedBy).Use(user)
-                .OnProperty(subscriberAgreement => subscriberAgreement.UpdatedBy).Use(user);
+                .OnProperty(subscriberAgreement => subscriberAgreement.CreatedBy).Use(userId)
+                .OnProperty(subscriberAgreement => subscriberAgreement.UpdatedBy).Use(userId);
 
             return filler;
         }

@@ -23,7 +23,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.SubscriberAgreements
             EntraUser randomEntraUser = CreateRandomEntraUser();
 
             SubscriberAgreement randomSubscriberAgreement = 
-                CreateRandomSubscriberAgreement(randomDateTimeOffset);
+                CreateRandomSubscriberAgreement(randomDateTimeOffset, randomEntraUser);
 
             SubscriberAgreement inputSubscriberAgreement = randomSubscriberAgreement;
             SubscriberAgreement storageSubscriberAgreement = inputSubscriberAgreement;

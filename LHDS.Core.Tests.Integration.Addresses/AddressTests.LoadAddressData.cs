@@ -23,7 +23,7 @@ namespace LHDS.Core.Tests.Integration.Addresses
             string inputFilePath = Path.Combine(
                 projectRoot,
 
-                @"Resource/Clients/Address/Ordinance_data_London.zip");
+                @"Resources/Clients/Address/Ordinance_data_London.zip");
 
             byte[] inputData = await File.ReadAllBytesAsync(inputFilePath);
             Stream inputStream = new MemoryStream(inputData);

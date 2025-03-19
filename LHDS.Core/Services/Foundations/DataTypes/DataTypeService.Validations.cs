@@ -4,6 +4,7 @@
 
 using System;
 using System.Threading.Tasks;
+using LHDS.Core.Models.Brokers.Securities;
 using LHDS.Core.Models.Foundations.DataTypes;
 using LHDS.Core.Models.Foundations.DataTypes.Exceptions;
 
@@ -14,6 +15,7 @@ namespace LHDS.Core.Services.Foundations.DataTypes
         private async ValueTask ValidateDataTypeOnAddAsync(DataType dataType)
         {
             ValidateDataTypeIsNotNull(dataType);
+            EntraUser currentUser = await this.securityBroker.GetCurrentUserAsync();
 
             Validate(
                 (Rule: IsInvalid(dataType.Id), Parameter: nameof(DataType.Id)),
@@ -25,6 +27,11 @@ namespace LHDS.Core.Services.Foundations.DataTypes
 
                 (Rule: IsEqualOrSmallerThan(
                     dataType.Name, 50), Parameter: nameof(DataType.Name)),
+
+                (Rule: IsNotSame(
+                    first: currentUser.EntraUserId,
+                    second: dataType.CreatedBy),
+                Parameter: nameof(DataType.CreatedBy)),
 
                 (Rule: IsNotSame(
                     firstDate: dataType.UpdatedDate,
@@ -44,6 +51,7 @@ namespace LHDS.Core.Services.Foundations.DataTypes
         private async ValueTask ValidateDataTypeOnModifyAsync(DataType dataType)
         {
             ValidateDataTypeIsNotNull(dataType);
+            EntraUser currentUser = await this.securityBroker.GetCurrentUserAsync();
 
             Validate(
                 (Rule: IsInvalid(dataType.Id), Parameter: nameof(DataType.Id)),
@@ -55,6 +63,11 @@ namespace LHDS.Core.Services.Foundations.DataTypes
 
                 (Rule: IsEqualOrSmallerThan(
                     dataType.Name, 50), Parameter: nameof(DataType.Name)),
+
+                (Rule: IsNotSame(
+                    first: currentUser.EntraUserId,
+                    second: dataType.UpdatedBy),
+                Parameter: nameof(DataType.UpdatedBy)),
 
                 (Rule: IsSame(
                     firstDate: dataType.UpdatedDate,
@@ -137,6 +150,14 @@ namespace LHDS.Core.Services.Foundations.DataTypes
             {
                 Condition = firstDate == secondDate,
                 Message = $"Date is the same as {secondDateName}"
+            };
+
+        private static dynamic IsNotSame(
+            string first,
+            string second) => new
+            {
+                Condition = first != second,
+                Message = $"Expected value to be '{first}' but found '{second}'."
             };
 
         private static dynamic IsNotSame(

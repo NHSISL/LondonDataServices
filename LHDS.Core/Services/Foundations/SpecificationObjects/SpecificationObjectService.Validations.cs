@@ -4,6 +4,7 @@
 
 using System;
 using System.Threading.Tasks;
+using LHDS.Core.Models.Brokers.Securities;
 using LHDS.Core.Models.Foundations.SpecificationObjects;
 using LHDS.Core.Models.Foundations.SpecificationObjects.Exceptions;
 
@@ -13,7 +14,7 @@ namespace LHDS.Core.Services.Foundations.SpecificationObjects
     {
         private async ValueTask ValidateSpecificationObjectOnAddAsync(SpecificationObject specificationObject)
         {
-            ValidateSpecificationObjectIsNotNull(specificationObject);
+            EntraUser currentUser = await this.securityBroker.GetCurrentUserAsync();
 
             Validate(
                 (Rule: IsInvalid(specificationObject.Id), Parameter: nameof(SpecificationObject.Id)),
@@ -45,6 +46,11 @@ namespace LHDS.Core.Services.Foundations.SpecificationObjects
 
                 (Rule: IsEqualOrSmallerThan(
                     specificationObject.UpdatedBy, 255), Parameter: nameof(specificationObject.UpdatedBy)),
+
+                (Rule: IsNotSame(
+                    first: currentUser.EntraUserId,
+                    second: specificationObject.CreatedBy),
+                Parameter: nameof(SpecificationObject.CreatedBy)),
 
                 (Rule: IsNotSame(
                     firstDate: specificationObject.UpdatedDate,
@@ -63,7 +69,7 @@ namespace LHDS.Core.Services.Foundations.SpecificationObjects
 
         private async ValueTask ValidateSpecificationObjectOnModifyAsync(SpecificationObject specificationObject)
         {
-            ValidateSpecificationObjectIsNotNull(specificationObject);
+            EntraUser currentUser = await this.securityBroker.GetCurrentUserAsync();
 
             Validate(
                 (Rule: IsInvalid(specificationObject.Id), Parameter: nameof(SpecificationObject.Id)),
@@ -95,6 +101,11 @@ namespace LHDS.Core.Services.Foundations.SpecificationObjects
 
                 (Rule: IsEqualOrSmallerThan(
                     specificationObject.UpdatedBy, 255), Parameter: nameof(specificationObject.UpdatedBy)),
+
+                (Rule: IsNotSame(
+                    first: currentUser.EntraUserId,
+                    second: specificationObject.UpdatedBy),
+                Parameter: nameof(SpecificationObject.UpdatedBy)),
 
                 (Rule: IsSame(
                     firstDate: specificationObject.UpdatedDate,
@@ -177,6 +188,14 @@ namespace LHDS.Core.Services.Foundations.SpecificationObjects
             {
                 Condition = firstDate == secondDate,
                 Message = $"Date is the same as {secondDateName}"
+            };
+
+        private static dynamic IsNotSame(
+            string first,
+            string second) => new
+            {
+                Condition = first != second,
+                Message = $"Expected value to be '{first}' but found '{second}'."
             };
 
         private static dynamic IsNotSame(

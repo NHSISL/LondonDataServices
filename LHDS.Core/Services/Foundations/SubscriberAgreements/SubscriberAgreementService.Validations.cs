@@ -4,6 +4,7 @@
 
 using System;
 using System.Threading.Tasks;
+using LHDS.Core.Models.Brokers.Securities;
 using LHDS.Core.Models.Foundations.SubscriberAgreements;
 using LHDS.Core.Models.Foundations.SubscriberAgreements.Exceptions;
 
@@ -13,7 +14,7 @@ namespace LHDS.Core.Services.Foundations.SubscriberAgreements
     {
         private async ValueTask ValidateSubscriberAgreementOnAddAsync(SubscriberAgreement subscriberAgreement)
         {
-            ValidateSubscriberAgreementIsNotNull(subscriberAgreement);
+            EntraUser currentUser = await this.securityBroker.GetCurrentUserAsync();
 
             Validate(
                 (Rule: IsInvalid(subscriberAgreement.Id), Parameter: nameof(SubscriberAgreement.Id)),

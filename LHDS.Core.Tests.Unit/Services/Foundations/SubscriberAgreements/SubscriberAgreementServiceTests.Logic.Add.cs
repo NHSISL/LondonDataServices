@@ -23,7 +23,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.SubscriberAgreements
             EntraUser randomEntraUser = CreateRandomEntraUser();
 
             SubscriberAgreement randomSubscriberAgreement = 
-                CreateRandomSubscriberAgreement(randomDateTimeOffset, randomEntraUser);
+                CreateRandomSubscriberAgreement(randomDateTimeOffset, randomEntraUser.EntraUserId);
 
             SubscriberAgreement inputSubscriberAgreement = randomSubscriberAgreement;
             SubscriberAgreement storageSubscriberAgreement = inputSubscriberAgreement;
@@ -32,6 +32,8 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.SubscriberAgreements
             this.dateTimeBrokerMock.Setup(broker =>
                 broker.GetCurrentDateTimeOffsetAsync())
                     .ReturnsAsync(randomDateTimeOffset);
+
+            this.securi
 
             this.storageBrokerMock.Setup(broker =>
                 broker.InsertSubscriberAgreementAsync(inputSubscriberAgreement))

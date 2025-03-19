@@ -199,6 +199,7 @@ namespace LHDS.Core.Clients.Extensions
             services.AddTransient<ILoggingBroker, LoggingBroker>();
             services.AddTransient<IDateTimeBroker, DateTimeBroker>();
             services.AddTransient<IIdentifierBroker, IdentifierBroker>();
+            services.AddTransient<ISecurityBroker, SecurityBroker>();
             services.AddTransient<IHashBroker, HashBroker>();
             services.AddTransient<IAuditBroker, AuditBroker>();
 

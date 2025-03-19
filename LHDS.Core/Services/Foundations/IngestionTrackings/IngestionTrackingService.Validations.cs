@@ -4,6 +4,7 @@
 
 using System;
 using System.Threading.Tasks;
+using LHDS.Core.Models.Brokers.Securities;
 using LHDS.Core.Models.Foundations.IngestionTrackings;
 using LHDS.Core.Models.Foundations.IngestionTrackings.Exceptions;
 
@@ -13,7 +14,7 @@ namespace LHDS.Core.Services.Foundations.IngestionTrackings
     {
         private async ValueTask ValidateIngestionTrackingOnAddAsync(IngestionTracking ingestionTracking)
         {
-            ValidateIngestionTrackingIsNotNull(ingestionTracking);
+            EntraUser currentUser = await this.securityBroker.GetCurrentUserAsync();
 
             Validate(
                 (Rule: IsInvalid(ingestionTracking.Id), Parameter: nameof(IngestionTracking.Id)),
@@ -27,6 +28,11 @@ namespace LHDS.Core.Services.Foundations.IngestionTrackings
                 (Rule: IsInvalid(ingestionTracking.CreatedBy), Parameter: nameof(IngestionTracking.CreatedBy)),
                 (Rule: IsInvalid(ingestionTracking.UpdatedDate), Parameter: nameof(IngestionTracking.UpdatedDate)),
                 (Rule: IsInvalid(ingestionTracking.UpdatedBy), Parameter: nameof(IngestionTracking.UpdatedBy)),
+
+                (Rule: IsNotSame(
+                    first: currentUser.EntraUserId,
+                    second: ingestionTracking.CreatedBy),
+                Parameter: nameof(IngestionTracking.CreatedBy)),
 
                 (Rule: IsNotSame(
                     firstDate: ingestionTracking.UpdatedDate,
@@ -45,7 +51,7 @@ namespace LHDS.Core.Services.Foundations.IngestionTrackings
 
         private async ValueTask ValidateIngestionTrackingOnModifyAsync(IngestionTracking ingestionTracking)
         {
-            ValidateIngestionTrackingIsNotNull(ingestionTracking);
+            EntraUser currentUser = await this.securityBroker.GetCurrentUserAsync();
 
             Validate(
                 (Rule: IsInvalid(ingestionTracking.Id), Parameter: nameof(IngestionTracking.Id)),
@@ -60,6 +66,11 @@ namespace LHDS.Core.Services.Foundations.IngestionTrackings
                 (Rule: IsInvalid(ingestionTracking.UpdatedDate), Parameter: nameof(IngestionTracking.UpdatedDate)),
                 (Rule: IsInvalid(ingestionTracking.UpdatedBy), Parameter: nameof(IngestionTracking.UpdatedBy)),
 
+                (Rule: IsNotSame(
+                    first: currentUser.EntraUserId,
+                    second: ingestionTracking.UpdatedBy),
+                Parameter: nameof(IngestionTracking.UpdatedBy)),
+
                 (Rule: IsSame(
                     firstDate: ingestionTracking.UpdatedDate,
                     secondDate: ingestionTracking.CreatedDate,
@@ -67,6 +78,39 @@ namespace LHDS.Core.Services.Foundations.IngestionTrackings
                 Parameter: nameof(IngestionTracking.UpdatedDate)),
 
                 (Rule: await IsNotRecentAsync(ingestionTracking.UpdatedDate), Parameter: nameof(ingestionTracking.UpdatedDate)));
+        }
+
+        private async ValueTask ValidateAgainstStorageIngestionTrackingOnDeleteAsync(
+            IngestionTracking ingestionTracking, 
+            IngestionTracking maybeIngestionTracking)
+        {
+            EntraUser auditUser = await this.securityBroker.GetCurrentUserAsync();
+
+            Validate(
+                (Rule: IsNotSame(
+                    ingestionTracking.CreatedDate,
+                    maybeIngestionTracking.CreatedDate,
+                    nameof(maybeIngestionTracking.CreatedDate)),
+                 Parameter: nameof(IngestionTracking.CreatedDate)),
+
+                (Rule: IsNotSame(
+                    ingestionTracking.CreatedBy,
+                    maybeIngestionTracking.CreatedBy,
+                    nameof(maybeIngestionTracking.CreatedBy)),
+                 Parameter: nameof(IngestionTracking.CreatedBy)),
+
+                (Rule: IsNotSame(
+                    maybeIngestionTracking.UpdatedDate,
+                    ingestionTracking.UpdatedDate,
+                    nameof(IngestionTracking.UpdatedDate)),
+                 Parameter: nameof(IngestionTracking.UpdatedDate)),
+
+                (Rule: IsNotSame(
+                    auditUser.EntraUserId.ToString(),
+                    ingestionTracking.UpdatedBy,
+                    nameof(IngestionTracking.UpdatedBy)),
+                 Parameter: nameof(IngestionTracking.UpdatedBy))
+            );
         }
 
         public void ValidateIngestionTrackingId(Guid ingestionTrackingId) =>
@@ -152,6 +196,14 @@ namespace LHDS.Core.Services.Foundations.IngestionTrackings
             {
                 Condition = firstDate == secondDate,
                 Message = $"Date is the same as {secondDateName}"
+            };
+
+        private static dynamic IsNotSame(
+            string first,
+            string second) => new
+            {
+                Condition = first != second,
+                Message = $"Expected value to be '{first}' but found '{second}'."
             };
 
         private static dynamic IsNotSame(

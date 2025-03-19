@@ -177,7 +177,9 @@ namespace LHDS.Core.Services.Foundations.ObjectColumns
             }
         }
 
-        private static void ValidateAgainstStorageObjectColumnOnModify(ObjectColumn inputObjectColumn, ObjectColumn storageObjectColumn)
+        private static void ValidateAgainstStorageObjectColumnOnModify(
+            ObjectColumn inputObjectColumn,
+            ObjectColumn storageObjectColumn)
         {
             Validate(
                 (Rule: IsNotSame(
@@ -197,6 +199,39 @@ namespace LHDS.Core.Services.Foundations.ObjectColumns
                     secondDate: storageObjectColumn.UpdatedDate,
                     secondDateName: nameof(ObjectColumn.UpdatedDate)),
                 Parameter: nameof(ObjectColumn.UpdatedDate)));
+        }
+
+        private async ValueTask ValidateAgainstStorageObjectColumnOnDeleteAsync(
+            ObjectColumn objectColumn,
+            ObjectColumn maybeObjectColumn)
+        {
+            EntraUser auditUser = await this.securityBroker.GetCurrentUserAsync();
+
+            Validate(
+                (Rule: IsNotSame(
+                    objectColumn.CreatedDate,
+                    maybeObjectColumn.CreatedDate,
+                    nameof(maybeObjectColumn.CreatedDate)),
+                 Parameter: nameof(ObjectColumn.CreatedDate)),
+
+                (Rule: IsNotSame(
+                    objectColumn.CreatedBy,
+                    maybeObjectColumn.CreatedBy,
+                    nameof(maybeObjectColumn.CreatedBy)),
+                 Parameter: nameof(ObjectColumn.CreatedBy)),
+
+                (Rule: IsNotSame(
+                    maybeObjectColumn.UpdatedDate,
+                    objectColumn.UpdatedDate,
+                    nameof(ObjectColumn.UpdatedDate)),
+                 Parameter: nameof(ObjectColumn.UpdatedDate)),
+
+                (Rule: IsNotSame(
+                    auditUser.EntraUserId.ToString(),
+                    objectColumn.UpdatedBy,
+                    nameof(ObjectColumn.UpdatedBy)),
+                 Parameter: nameof(ObjectColumn.UpdatedBy))
+            );
         }
 
         private static dynamic IsInvalid(Guid id) => new
@@ -239,7 +274,7 @@ namespace LHDS.Core.Services.Foundations.ObjectColumns
                 Condition = first != second,
                 Message = $"Expected value to be '{first}' but found '{second}'."
             };
-            
+
         private static dynamic IsNotSame(
             DateTimeOffset firstDate,
             DateTimeOffset secondDate,

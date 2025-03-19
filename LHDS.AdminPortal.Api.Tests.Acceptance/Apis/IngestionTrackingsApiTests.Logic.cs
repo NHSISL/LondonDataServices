@@ -34,7 +34,12 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.IngestionTrackings
                     await this.apiBroker.GetIngestionTrackingByIdAsync(inputIngestionTracking.Id);
 
                 // then
-                actualIngestionTracking.Should().BeEquivalentTo(expectedIngestionTracking);
+                actualIngestionTracking.Should().BeEquivalentTo(expectedIngestionTracking, options => options
+                    .Excluding(spec => spec.CreatedBy)
+                    .Excluding(spec => spec.CreatedDate)
+                    .Excluding(spec => spec.UpdatedBy)
+                    .Excluding(spec => spec.UpdatedDate));
+
                 await DeleteAuditRecordsAsync(actualIngestionTracking);
                 await this.apiBroker.DeleteIngestionTrackingByIdAsync(actualIngestionTracking.Id);
                 await this.apiBroker.DeleteSupplierByIdAsync(randomSupplier.Id);
@@ -67,7 +72,11 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.IngestionTrackings
                     actualIngestionTrackings.FirstOrDefault(ingestionTracking =>
                         ingestionTracking.Id == expectedIngestionTracking.Id);
 
-                actualIngestionTracking.Should().BeEquivalentTo(expectedIngestionTracking);
+                actualIngestionTracking.Should().BeEquivalentTo(expectedIngestionTracking, options => options
+                    .Excluding(spec => spec.CreatedBy)
+                    .Excluding(spec => spec.CreatedDate)
+                    .Excluding(spec => spec.UpdatedBy)
+                    .Excluding(spec => spec.UpdatedDate));
 
                 if (actualIngestionTracking != null)
                 {
@@ -92,7 +101,12 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.IngestionTrackings
                 await this.apiBroker.GetIngestionTrackingByIdAsync(randomIngestionTracking.Id);
 
             // then
-            actualIngestionTracking.Should().BeEquivalentTo(expectedIngestionTracking);
+            actualIngestionTracking.Should().BeEquivalentTo(expectedIngestionTracking, options => options
+                .Excluding(spec => spec.CreatedBy)
+                .Excluding(spec => spec.CreatedDate)
+                .Excluding(spec => spec.UpdatedBy)
+                .Excluding(spec => spec.UpdatedDate));
+
             await DeleteAuditRecordsAsync(actualIngestionTracking);
             await this.apiBroker.DeleteIngestionTrackingByIdAsync(actualIngestionTracking.Id);
             await this.apiBroker.DeleteSupplierByIdAsync(randomSupplier.Id);
@@ -115,7 +129,12 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.IngestionTrackings
                 await this.apiBroker.GetIngestionTrackingByIdAsync(randomIngestionTracking.Id);
 
             // then
-            actualIngestionTracking.Should().BeEquivalentTo(modifiedIngestionTracking);
+            actualIngestionTracking.Should().BeEquivalentTo(modifiedIngestionTracking, options => options
+                .Excluding(spec => spec.CreatedBy)
+                .Excluding(spec => spec.CreatedDate)
+                .Excluding(spec => spec.UpdatedBy)
+                .Excluding(spec => spec.UpdatedDate));
+
             await DeleteAuditRecordsAsync(actualIngestionTracking);
             await this.apiBroker.DeleteIngestionTrackingByIdAsync(actualIngestionTracking.Id);
             await this.apiBroker.DeleteSupplierByIdAsync(randomSupplier.Id);
@@ -140,7 +159,12 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.IngestionTrackings
                 this.apiBroker.GetIngestionTrackingByIdAsync(inputIngestionTracking.Id);
 
             // then
-            deletedIngestionTracking.Should().BeEquivalentTo(expectedIngestionTracking);
+            deletedIngestionTracking.Should().BeEquivalentTo(expectedIngestionTracking, options => options
+                .Excluding(spec => spec.CreatedBy)
+                .Excluding(spec => spec.CreatedDate)
+                .Excluding(spec => spec.UpdatedBy)
+                .Excluding(spec => spec.UpdatedDate));
+
             await Assert.ThrowsAsync<HttpResponseNotFoundException>(getIngestionTrackingbyIdTask.AsTask);
             await this.apiBroker.DeleteSupplierByIdAsync(randomSupplier.Id);
         }

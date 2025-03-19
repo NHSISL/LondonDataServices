@@ -52,9 +52,11 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.IngestionTrackings
         private async ValueTask<IngestionTracking> PostRandomIngestionTrackingAsync(Guid supplierId)
         {
             IngestionTracking randomIngestionTracking = CreateRandomIngestionTracking(supplierId);
-            await this.apiBroker.PostIngestionTrackingAsync(randomIngestionTracking);
 
-            return randomIngestionTracking;
+            IngestionTracking storageIngestionTracking = 
+                await this.apiBroker.PostIngestionTrackingAsync(randomIngestionTracking);
+
+            return storageIngestionTracking;
         }
 
         private async ValueTask<List<IngestionTracking>> PostRandomIngestionTrackingsAsync(Guid supplierId)

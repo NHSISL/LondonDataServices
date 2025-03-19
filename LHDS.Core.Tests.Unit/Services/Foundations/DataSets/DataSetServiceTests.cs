@@ -53,6 +53,13 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.DataSets
         private static string GetRandomString(int length) =>
             new MnemonicString(wordCount: 1, wordMinLength: length, wordMaxLength: length).GetValue();
 
+        private static string GetRandomStringWithLengthOf(int length)
+        {
+            string result = new MnemonicString(wordCount: 1, wordMinLength: length, wordMaxLength: length).GetValue();
+
+            return result.Length > length ? result.Substring(0, length) : result;
+        }
+
         public static TheoryData<int> MinutesBeforeOrAfter()
         {
             int randomNumber = GetRandomNumber();
@@ -76,12 +83,6 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.DataSets
 
         private static DateTimeOffset GetRandomDateTimeOffset() =>
             new DateTimeRange(earliestDate: new DateTime()).GetValue();
-
-        private static string GetRandomStringWithLengthOf(int length)
-        {
-            string result = new MnemonicString(wordCount: 1, wordMinLength: length, wordMaxLength: length).GetValue();
-            return result.Length > length ? result.Substring(0, length) : result;
-        }
 
         private static DataSet CreateRandomModifyDataSet(DateTimeOffset dateTimeOffset)
         {

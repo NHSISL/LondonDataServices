@@ -33,7 +33,9 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.SubscriberAgreements
                 broker.GetCurrentDateTimeOffsetAsync())
                     .ReturnsAsync(randomDateTimeOffset);
 
-            this.securi
+            this.securityBrokerMock.Setup(broker =>
+                broker.GetCurrentUserAsync())
+                    .ReturnsAsync(randomEntraUser);
 
             this.storageBrokerMock.Setup(broker =>
                 broker.InsertSubscriberAgreementAsync(inputSubscriberAgreement))
@@ -48,7 +50,11 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.SubscriberAgreements
 
             this.dateTimeBrokerMock.Verify(broker =>
                 broker.GetCurrentDateTimeOffsetAsync(),
-                    Times.Once());
+                    Times.Exactly(2));
+
+            this.securityBrokerMock.Verify(broker =>
+                broker.GetCurrentUserAsync(),
+                    Times.Exactly(2));
 
             this.storageBrokerMock.Verify(broker =>
                 broker.InsertSubscriberAgreementAsync(inputSubscriberAgreement),

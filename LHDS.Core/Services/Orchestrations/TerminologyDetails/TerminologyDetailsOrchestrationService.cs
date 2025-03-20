@@ -75,7 +75,6 @@ namespace LHDS.Core.Services.Orchestrations.TerminologyDetails
                             artifact.IsDownloaded = true;
                             artifact.UpdatedDate = await dateTimeBroker.GetCurrentDateTimeOffsetAsync();
 
-                            //  Can i use foundation Service to do simple update, does it need to be an Add Or Update
                             await this.terminologyArtifactProcessingService
                                 .ModifyOrAddTerminologyArtifactAsync(artifact);
                         });
@@ -90,7 +89,6 @@ namespace LHDS.Core.Services.Orchestrations.TerminologyDetails
                             ?? ex?.Message;
 
                         exceptions.Add(ex);
-                        //  Can i use foundation Service to do simple update, does it need to be an Add Or Update
                         await this.terminologyArtifactProcessingService.ModifyOrAddTerminologyArtifactAsync(artifact);
                     }
                 }

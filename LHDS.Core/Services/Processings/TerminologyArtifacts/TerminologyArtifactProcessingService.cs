@@ -53,22 +53,27 @@ namespace LHDS.Core.Services.Processings.TerminologyArtifacts
 
                 if (maybeTerminologyArtifact != null)
                 {
-                    //if(terminologyArtifact.Version == maybeTerminologyArtifact.Version)
-                    //    return maybeTerminologyArtifact;
+                    // NB: ONLY update the fields that are coming in from the terminology server.
+                    // We do not want to lose the existing statuses in the database i.e. IsCore
+                    maybeTerminologyArtifact.ResourceType = terminologyArtifact.ResourceType;
+                    maybeTerminologyArtifact.Version = terminologyArtifact.Version;
+                    maybeTerminologyArtifact.Name = terminologyArtifact.Name;
+                    maybeTerminologyArtifact.Title = terminologyArtifact.Title;
+                    maybeTerminologyArtifact.Status = terminologyArtifact.Status;
+                    maybeTerminologyArtifact.IsDownloaded = terminologyArtifact.IsDownloaded;
+                    maybeTerminologyArtifact.LastUpdated = terminologyArtifact.LastUpdated;
+                    maybeTerminologyArtifact.IsError = terminologyArtifact.IsError;
+                    maybeTerminologyArtifact.ErrorMessage = terminologyArtifact.ErrorMessage;
 
-                    terminologyArtifact.Id = maybeTerminologyArtifact.Id;
-                    terminologyArtifact.CreatedDate = maybeTerminologyArtifact.CreatedDate;
-
-                    terminologyArtifact.UpdatedDate = 
-                        await this.dateTimeBroker.GetCurrentDateTimeOffsetAsync();
+                    // TODO:  Remove below once security broker has been added to all the foundation services
+                    maybeTerminologyArtifact.UpdatedDate = await this.dateTimeBroker
+                        .GetCurrentDateTimeOffsetAsync();
 
                     return await this.terminologyArtifactService
-                        .ModifyTerminologyArtifactAsync(terminologyArtifact);
+                        .ModifyTerminologyArtifactAsync(maybeTerminologyArtifact);
                 }
                 else
                 {
-                    terminologyArtifact.IsDownloaded = false;
-
                     return await this.terminologyArtifactService
                         .AddTerminologyArtifactAsync(terminologyArtifact);
                 }

@@ -6,6 +6,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Net.Http;
+using System.Security.Claims;
 using System.Text;
 using Azure.Core.Pipeline;
 using Azure.Identity;
@@ -14,6 +15,7 @@ using LHDS.Core.Brokers.DateTimes;
 using LHDS.Core.Brokers.Identifiers;
 using LHDS.Core.Brokers.Loggings;
 using LHDS.Core.Brokers.Ontologies;
+using LHDS.Core.Brokers.Securities;
 using LHDS.Core.Brokers.Storages.Blobs;
 using LHDS.Core.Brokers.Storages.Sql;
 using LHDS.Core.Models.Brokers.Ontologies;
@@ -43,7 +45,25 @@ namespace LHDS.Core.Clients.Extensions
             services.AddSingleton<IConfiguration>(_ => configuration);
 
             AddProviders(services);
-            AddBrokers(services, configuration);
+            AddBrokers(services, claimsPrincipal: null, configuration);
+            AddServices(services);
+            AddProcessingServices(services);
+            AddOrchestrations(services);
+            AddCoordinations(services);
+            AddClients(services, configuration);
+
+            return services;
+        }
+
+        public static IServiceCollection AddTerminologyClient(
+            this IServiceCollection services,
+            IConfiguration configuration,
+            ClaimsPrincipal claimsPrincipal)
+        {
+            services.AddSingleton<IConfiguration>(_ => configuration);
+
+            AddProviders(services);
+            AddBrokers(services, claimsPrincipal, configuration);
             AddServices(services);
             AddProcessingServices(services);
             AddOrchestrations(services);
@@ -56,7 +76,10 @@ namespace LHDS.Core.Clients.Extensions
         private static void AddProviders(IServiceCollection services)
         { }
 
-        private static void AddBrokers(IServiceCollection services, IConfiguration configuration)
+        private static void AddBrokers(
+            IServiceCollection services,
+            ClaimsPrincipal claimsPrincipal,
+            IConfiguration configuration)
         {
             services.AddTransient<IBlobStorageBroker, BlobStorageBroker>();
             services.AddTransient<ILoggingBroker, LoggingBroker>();
@@ -73,6 +96,16 @@ namespace LHDS.Core.Clients.Extensions
             if (ontologyConfiguration != null)
             {
                 services.AddSingleton(ontologyConfiguration);
+            }
+
+            if (claimsPrincipal != null)
+            {
+                var securityBroker = new SecurityBroker(claimsPrincipal);
+                services.AddTransient<ISecurityBroker>(_ => securityBroker);
+            }
+            else
+            {
+                services.AddTransient<ISecurityBroker, SecurityBroker>();
             }
         }
 

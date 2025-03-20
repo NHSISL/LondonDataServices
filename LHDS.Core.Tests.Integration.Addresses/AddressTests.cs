@@ -39,7 +39,6 @@ namespace LHDS.Core.Tests.Integration.Addresses
                 .AddEnvironmentVariables();
 
             IConfiguration configuration = configurationBuilder.Build();
-
             var windowsIdentity = WindowsIdentity.GetCurrent();
             var claimsPrincipal = new ClaimsPrincipal(windowsIdentity);
 

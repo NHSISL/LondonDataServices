@@ -6,6 +6,7 @@ using System;
 using System.Threading.Tasks;
 using FluentAssertions;
 using Force.DeepCloner;
+using LHDS.Core.Models.Brokers.Securities;
 using LHDS.Core.Models.Foundations.ObjectColumns;
 using Moq;
 using Xunit;
@@ -19,7 +20,11 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.ObjectColumns
         {
             // given
             DateTimeOffset randomDateTimeOffset = GetRandomDateTimeOffset();
-            ObjectColumn randomObjectColumn = CreateRandomModifyObjectColumn(randomDateTimeOffset);
+            EntraUser randomEntraUser = CreateRandomEntraUser();
+
+            ObjectColumn randomObjectColumn = 
+                CreateRandomModifyObjectColumn(randomDateTimeOffset, randomEntraUser.EntraUserId);
+
             ObjectColumn inputObjectColumn = randomObjectColumn;
             ObjectColumn storageObjectColumn = inputObjectColumn.DeepClone();
             storageObjectColumn.UpdatedDate = randomObjectColumn.CreatedDate;
@@ -30,6 +35,10 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.ObjectColumns
             this.dateTimeBrokerMock.Setup(broker =>
                 broker.GetCurrentDateTimeOffsetAsync())
                     .ReturnsAsync(randomDateTimeOffset);
+
+            this.securityBrokerMock.Setup(broker =>
+                broker.GetCurrentUserAsync())
+                    .ReturnsAsync(randomEntraUser);
 
             this.storageBrokerMock.Setup(broker =>
                 broker.SelectObjectColumnByIdAsync(objectColumnId))
@@ -48,7 +57,11 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.ObjectColumns
 
             this.dateTimeBrokerMock.Verify(broker =>
                 broker.GetCurrentDateTimeOffsetAsync(),
-                    Times.Once);
+                    Times.Exactly(2));
+
+            this.securityBrokerMock.Verify(broker =>
+                broker.GetCurrentUserAsync(),
+                    Times.Exactly(2));
 
             this.storageBrokerMock.Verify(broker =>
                 broker.SelectObjectColumnByIdAsync(inputObjectColumn.Id),

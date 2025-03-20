@@ -19,7 +19,7 @@ namespace LHDS.Core.Tests.Integration.Addresses
 
             string inputFilePath = Path.Combine(
                 projectRoot,
-                @"Resource/Clients/Address/registrar-request-test.csv");
+                @"Resources/Clients/Address/registrar-request-test.csv");
 
             byte[] inputData = await File.ReadAllBytesAsync(inputFilePath);
             Stream inputStream = new MemoryStream(inputData);

@@ -123,7 +123,9 @@ namespace LHDS.Core.Services.Orchestrations.ResolvedAddresses
 
                         Address? foundOrdananceAddress = null;
 
-                        if (foundAssignAddress != null && !string.IsNullOrWhiteSpace(foundAssignAddress.BestMatch.UPRN))
+                        if (foundAssignAddress != null &&
+                            foundAssignAddress.BestMatch != null &&
+                            !string.IsNullOrWhiteSpace(foundAssignAddress.BestMatch.UPRN))
                         {
                             foundOrdananceAddress =
                                 await addressProcessingService

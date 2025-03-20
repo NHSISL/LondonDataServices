@@ -7,6 +7,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
+using System.Security.Claims;
 using System.Security.Cryptography;
 using System.Security.Cryptography.X509Certificates;
 using System.Text;
@@ -18,6 +19,7 @@ using LHDS.Core.Brokers.DateTimes;
 using LHDS.Core.Brokers.Identifiers;
 using LHDS.Core.Brokers.Loggings;
 using LHDS.Core.Brokers.Mesh;
+using LHDS.Core.Brokers.Securities;
 using LHDS.Core.Brokers.Storages.Blobs;
 using LHDS.Core.Brokers.Storages.Sql;
 using LHDS.Core.Models.Brokers.Mesh;
@@ -44,19 +46,36 @@ namespace LHDS.Core.Clients.Extensions
             this IServiceCollection services,
             IConfiguration configuration)
         {
-            return AddOptOutClient(services, configuration, acceptanceTest: false);
+            return AddOptOutClient(services, configuration, claimsPrincipal: null, acceptanceTest: false);
+        }
+
+        public static IServiceCollection AddOptOutClient(
+            this IServiceCollection services,
+            IConfiguration configuration,
+            ClaimsPrincipal claimsPrincipal)
+        {
+            return AddOptOutClient(services, configuration, claimsPrincipal, acceptanceTest: false);
         }
 
         internal static IServiceCollection AddOptOutClientForAcceptance(
             this IServiceCollection services,
             IConfiguration configuration)
         {
-            return AddOptOutClient(services, configuration, acceptanceTest: true);
+            return AddOptOutClient(services, configuration, claimsPrincipal: null, acceptanceTest: true);
+        }
+
+        internal static IServiceCollection AddOptOutClientForAcceptance(
+            this IServiceCollection services,
+            IConfiguration configuration,
+            ClaimsPrincipal claimsPrincipal)
+        {
+            return AddOptOutClient(services, configuration, claimsPrincipal, acceptanceTest: true);
         }
 
         private static IServiceCollection AddOptOutClient(
             this IServiceCollection services,
             IConfiguration configuration,
+            ClaimsPrincipal claimsPrincipal,
             bool acceptanceTest)
         {
             services.AddSingleton<IConfiguration>(_ => configuration);
@@ -95,7 +114,7 @@ namespace LHDS.Core.Clients.Extensions
                 services.AddSingleton(meshConfig);
             }
 
-            AddBrokers(services, acceptanceTest);
+            AddBrokers(services, claimsPrincipal, acceptanceTest);
             AddServices(services);
             AddProcessingServices(services);
             AddOrchestrations(services);
@@ -104,7 +123,7 @@ namespace LHDS.Core.Clients.Extensions
             return services;
         }
 
-        private static void AddBrokers(IServiceCollection services, bool acceptanceTest)
+        private static void AddBrokers(IServiceCollection services, ClaimsPrincipal claimsPrincipal, bool acceptanceTest)
         {
             services.AddTransient<ILoggingBroker, LoggingBroker>();
             services.AddTransient<ICsvHelperBroker, CsvHelperBroker>();
@@ -116,6 +135,16 @@ namespace LHDS.Core.Clients.Extensions
             {
                 services.AddTransient<IBlobStorageBroker, BlobStorageBroker>();
                 services.AddTransient<IMeshBroker, MeshBroker>();
+            }
+
+            if (claimsPrincipal != null)
+            {
+                var securityBroker = new SecurityBroker(claimsPrincipal);
+                services.AddTransient<ISecurityBroker>(_ => securityBroker);
+            }
+            else
+            {
+                services.AddTransient<ISecurityBroker, SecurityBroker>();
             }
         }
 

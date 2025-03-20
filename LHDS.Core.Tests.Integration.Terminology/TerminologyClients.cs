@@ -2,6 +2,8 @@
 // Copyright (c) North East London ICB. All rights reserved.
 // ---------------------------------------------------------
 
+using System.Security.Claims;
+using System.Security.Principal;
 using LHDS.Core.Clients;
 using LHDS.Core.Clients.Extensions;
 using Microsoft.Extensions.Configuration;
@@ -28,6 +30,8 @@ namespace LHDS.Core.Tests.Integration.Terminology
                 .AddEnvironmentVariables();
 
             IConfiguration configuration = configurationBuilder.Build();
+            var windowsIdentity = WindowsIdentity.GetCurrent();
+            var claimsPrincipal = new ClaimsPrincipal(windowsIdentity);
 
             var serviceProvider = new ServiceCollection()
                 .AddLogging(builder =>
@@ -35,7 +39,7 @@ namespace LHDS.Core.Tests.Integration.Terminology
                     builder.AddConsole();
                     builder.AddApplicationInsights();
                 })
-                .AddTerminologyClient(configuration)
+                .AddTerminologyClient(configuration, claimsPrincipal)
                 .BuildServiceProvider();
 
             this.terminologyClient = serviceProvider.GetService<ITerminologyClient>(); ;

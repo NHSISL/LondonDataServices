@@ -67,7 +67,10 @@ namespace LHDS.Core.Services.Foundations.ObjectColumns
                     await this.storageBroker.SelectObjectColumnByIdAsync(objectColumn.Id);
 
                 ValidateStorageObjectColumn(maybeObjectColumn, objectColumn.Id);
-                ValidateAgainstStorageObjectColumnOnModify(inputObjectColumn: objectColumn, storageObjectColumn: maybeObjectColumn);
+
+                ValidateAgainstStorageObjectColumnOnModify(
+                    inputObjectColumn: objectColumn,
+                    storageObjectColumn: maybeObjectColumn);
 
                 return await this.storageBroker.UpdateObjectColumnAsync(objectColumn);
             });
@@ -75,14 +78,24 @@ namespace LHDS.Core.Services.Foundations.ObjectColumns
         public ValueTask<ObjectColumn> RemoveObjectColumnByIdAsync(Guid objectColumnId) =>
             TryCatch(async () =>
             {
-                ValidateObjectColumnId(objectColumnId);
+                ValidateObjectColumnId(objectColumnId: objectColumnId);
 
                 ObjectColumn maybeObjectColumn = await this.storageBroker
                     .SelectObjectColumnByIdAsync(objectColumnId);
 
                 ValidateStorageObjectColumn(maybeObjectColumn, objectColumnId);
 
-                return await this.storageBroker.DeleteObjectColumnAsync(maybeObjectColumn);
+                ObjectColumn objectColumnWithDeleteAuditApplied =
+                    await ApplyDeleteAuditAsync(maybeObjectColumn);
+
+                ObjectColumn updatedObjectColumn =
+                    await this.storageBroker.UpdateObjectColumnAsync(objectColumnWithDeleteAuditApplied);
+
+                await ValidateAgainstStorageObjectColumnOnDeleteAsync(
+                    objectColumn: updatedObjectColumn,
+                    maybeObjectColumn: objectColumnWithDeleteAuditApplied);
+
+                return await this.storageBroker.DeleteObjectColumnAsync(updatedObjectColumn);
             });
 
         virtual internal async ValueTask<ObjectColumn> ApplyAddObjectColumnAsync(ObjectColumn objectColumn)
@@ -99,6 +112,17 @@ namespace LHDS.Core.Services.Foundations.ObjectColumns
         }
 
         virtual internal async ValueTask<ObjectColumn> ApplyModifyAuditAsync(ObjectColumn objectColumn)
+        {
+            ValidateObjectColumnIsNotNull(objectColumn);
+            var auditDateTimeOffset = await this.dateTimeBroker.GetCurrentDateTimeOffsetAsync();
+            var auditUser = await this.securityBroker.GetCurrentUserAsync();
+            objectColumn.UpdatedBy = auditUser?.EntraUserId.ToString() ?? string.Empty;
+            objectColumn.UpdatedDate = auditDateTimeOffset;
+
+            return objectColumn;
+        }
+
+        virtual internal async ValueTask<ObjectColumn> ApplyDeleteAuditAsync(ObjectColumn objectColumn)
         {
             ValidateObjectColumnIsNotNull(objectColumn);
             var auditDateTimeOffset = await this.dateTimeBroker.GetCurrentDateTimeOffsetAsync();

@@ -16,7 +16,15 @@ namespace LHDS.Core.Services.Orchestrations.Ingress
                 Parameter: nameof(ingestionTrackingId)));
         }
 
-        private static void ValidateStorageIngestionTracking(IngestionTracking ingestionTracking, Guid ingestionTrackingId)
+        private static void ValidateOnRollbackIngestionTrackingItem(string encryptedFilePath)
+        {
+            Validate((Rule: IsInvalid(encryptedFilePath),
+                Parameter: nameof(IngestionTracking.EncryptedFileName)));
+        }
+
+        private static void ValidateStorageIngestionTracking(
+            IngestionTracking ingestionTracking,
+            Guid ingestionTrackingId)
         {
             if (ingestionTracking is null)
             {
@@ -25,10 +33,28 @@ namespace LHDS.Core.Services.Orchestrations.Ingress
             }
         }
 
+        private static void ValidateStorageIngestionTracking(
+            IngestionTracking ingestionTracking,
+            string encryptedFileName)
+        {
+            if (ingestionTracking is null)
+            {
+                throw new NotFoundIngressOrchestrationException(
+                    $"Couldn't find ingestion tracking with {nameof(IngestionTracking.EncryptedFileName)}: " +
+                        $"{encryptedFileName}.");
+            }
+        }
+
         private static dynamic IsInvalid(Guid id) => new
         {
             Condition = id == Guid.Empty,
             Message = "Id is required"
+        };
+
+        private static dynamic IsInvalid(string input) => new
+        {
+            Condition = string.IsNullOrWhiteSpace(input),
+            Message = "Text is required"
         };
 
         private static void Validate(params (dynamic Rule, string Parameter)[] validations)

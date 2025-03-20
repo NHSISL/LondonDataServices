@@ -4,7 +4,9 @@
 
 using System;
 using System.Linq;
+using System.Security.Claims;
 using System.Security.Cryptography;
+using System.Security.Principal;
 using System.Text;
 using System.Threading.Tasks;
 using LHDS.Core.Brokers.Loggings;
@@ -58,6 +60,8 @@ namespace LHDS.Core.Tests.Integration.TppLandings
                 .AddEnvironmentVariables();
 
             IConfiguration configuration = configurationBuilder.Build();
+            var windowsIdentity = WindowsIdentity.GetCurrent();
+            var claimsPrincipal = new ClaimsPrincipal(windowsIdentity);
 
             //setup our DI
             var serviceProvider = new ServiceCollection()
@@ -66,7 +70,7 @@ namespace LHDS.Core.Tests.Integration.TppLandings
                     builder.AddConsole();
                     builder.AddApplicationInsights();
                 })
-                .AddTppLandingClient(configuration)
+                .AddTppLandingClient(configuration, claimsPrincipal)
                 .BuildServiceProvider();
 
             landingConfiguration = serviceProvider.GetService<LandingConfiguration>();

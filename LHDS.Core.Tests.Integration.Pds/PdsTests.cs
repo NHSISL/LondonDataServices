@@ -4,6 +4,8 @@
 
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Claims;
+using System.Security.Principal;
 using LHDS.Core.Brokers.Identifiers;
 using LHDS.Core.Brokers.Storages.Blobs;
 using LHDS.Core.Clients;
@@ -45,6 +47,8 @@ namespace LHDS.Core.Tests.Integration.Pds
                 .AddEnvironmentVariables();
 
             IConfiguration configuration = configurationBuilder.Build();
+            var windowsIdentity = WindowsIdentity.GetCurrent();
+            var claimsPrincipal = new ClaimsPrincipal(windowsIdentity);
 
             //setup our DI
             var serviceProvider = new ServiceCollection()
@@ -53,7 +57,7 @@ namespace LHDS.Core.Tests.Integration.Pds
                     builder.AddConsole();
                     builder.AddApplicationInsights();
                 })
-                .AddPdsClient(configuration)
+                .AddPdsClient(configuration, claimsPrincipal)
                 .BuildServiceProvider();
 
             this.pdsClient = serviceProvider.GetService<IPdsClient>();

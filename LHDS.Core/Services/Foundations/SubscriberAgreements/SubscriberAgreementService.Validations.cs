@@ -37,6 +37,11 @@ namespace LHDS.Core.Services.Foundations.SubscriberAgreements
                     Parameter: nameof(SubscriberAgreement.UpdatedBy)),
 
                 (Rule: IsNotSame(
+                    first: currentUser.EntraUserId,
+                    second: subscriberAgreement.CreatedBy),
+                Parameter: nameof(SubscriberAgreement.CreatedBy)),
+
+                (Rule: IsNotSame(
                     firstDate: subscriberAgreement.UpdatedDate,
                     secondDate: subscriberAgreement.CreatedDate,
                     secondDateName: nameof(SubscriberAgreement.CreatedDate)),
@@ -164,6 +169,14 @@ namespace LHDS.Core.Services.Foundations.SubscriberAgreements
             {
                 Condition = firstDate == secondDate,
                 Message = $"Date is the same as {secondDateName}"
+            };
+
+        private static dynamic IsNotSame(
+            string first,
+            string second) => new
+            {
+                Condition = first != second,
+                Message = $"Expected value to be '{first}' but found '{second}'."
             };
 
         private static dynamic IsNotSame(

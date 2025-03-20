@@ -87,7 +87,9 @@ namespace LHDS.Core.Brokers.Securities
         public async ValueTask<EntraUser> GetCurrentUserAsync()
         {
             var entraUserIdString = user.FindFirst("oid")?.Value
-                ?? user.FindFirst("http://schemas.microsoft.com/identity/claims/objectidentifier")?.Value;
+                ?? user.FindFirst("http://schemas.microsoft.com/identity/claims/objectidentifier")?.Value
+                ?? user.FindFirst("http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier")?.Value
+                ?? user.FindFirst("http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name")?.Value;
 
             var entraUserId = entraUserIdString;
             var givenName = user.FindFirst(ClaimTypes.GivenName)?.Value;

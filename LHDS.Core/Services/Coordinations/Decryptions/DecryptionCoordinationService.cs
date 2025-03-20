@@ -10,6 +10,7 @@ using LHDS.Core.Models.Processings.SubscriberCredentials;
 using LHDS.Core.Services.Orchestrations.Decryptions;
 using LHDS.Core.Services.Orchestrations.Ingress;
 using LHDS.Core.Services.Orchestrations.SubscriberCredentials;
+using Xeptions;
 
 namespace LHDS.Core.Services.Coordinations.Decryptions
 {
@@ -35,10 +36,24 @@ namespace LHDS.Core.Services.Coordinations.Decryptions
         public ValueTask<string> DecryptAsync(string encryptedFileName) =>
             TryCatch(async () =>
             {
-                (string decryptedFileName, Guid ingestionTrackingId) = await DecryptFileAsync(encryptedFileName);
-                await this.ingressOrchestrationService.CheckForBatchCompleteAsync(ingestionTrackingId);
+                try
+                {
+                    (string decryptedFileName, Guid ingestionTrackingId) = await DecryptFileAsync(encryptedFileName);
+                    await this.ingressOrchestrationService.CheckForBatchCompleteAsync(ingestionTrackingId);
 
-                return decryptedFileName;
+                    return decryptedFileName;
+                }
+                catch (Exception exception)
+                {
+                    var rollBackException =
+                        new RollbackDecryptionCoordinationException(
+                            message: $"Failed to decrypt file. Rollback encrypted file: {encryptedFileName}",
+                            innerException: exception as Xeption);
+
+                    await this.loggingBroker.LogErrorAsync(rollBackException);
+                    await this.ingressOrchestrationService.RollbackIngestionTrackingItemAsync(encryptedFileName);
+                    throw;
+                }
             });
 
         public ValueTask RetryDecryptOnAllAsync() =>

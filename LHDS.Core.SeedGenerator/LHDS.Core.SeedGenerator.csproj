@@ -1,4 +1,4 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
 
 	<PropertyGroup>
 		<OutputType>Exe</OutputType>
@@ -18,11 +18,11 @@
 			<IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
 		</PackageReference>
 		<PackageReference Include="Microsoft.Extensions.Azure" Version="1.10.0" />
-		<PackageReference Include="Microsoft.Extensions.Configuration" Version="9.0.2" />
+		<PackageReference Include="Microsoft.Extensions.Configuration" Version="9.0.3" />
 		<PackageReference Include="Microsoft.Extensions.Configuration.EnvironmentVariables" Version="9.0.2" />
 		<PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="9.0.2" />
 		<PackageReference Include="Microsoft.Extensions.Logging.ApplicationInsights" Version="2.23.0" />
-		<PackageReference Include="Microsoft.Extensions.Logging.Console" Version="9.0.2" />
+		<PackageReference Include="Microsoft.Extensions.Logging.Console" Version="9.0.3" />
 		<PackageReference Include="Tynamix.ObjectFiller" Version="1.5.9" />
 	</ItemGroup>
 

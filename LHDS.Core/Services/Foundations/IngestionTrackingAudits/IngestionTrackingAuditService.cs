@@ -35,9 +35,13 @@ namespace LHDS.Core.Services.Foundations.IngestionTrackingAudits
         public ValueTask<IngestionTrackingAudit> AddIngestionTrackingAuditAsync(IngestionTrackingAudit audit) =>
             TryCatch(async () =>
             {
-                await ValidateIngestionTrackingAuditOnAddAsync(audit);
+                IngestionTrackingAudit ingestionTrackingAuditWithAddAuditApplied = 
+                    await ApplyAddIngestionTrackingAuditAsync(audit);
 
-                return await this.storageBroker.InsertIngestionTrackingAuditAsync(audit);
+                await ValidateIngestionTrackingAuditOnAddAsync(ingestionTrackingAuditWithAddAuditApplied);
+
+                return await this.storageBroker.InsertIngestionTrackingAuditAsync(
+                    ingestionTrackingAuditWithAddAuditApplied);
             });
 
         public ValueTask<IQueryable<IngestionTrackingAudit>> RetrieveAllIngestionTrackingAuditsAsync() =>
@@ -93,5 +97,18 @@ namespace LHDS.Core.Services.Foundations.IngestionTrackingAudits
 
                 return deletedItem;
             });
+
+        virtual internal async ValueTask<IngestionTrackingAudit> ApplyAddIngestionTrackingAuditAsync(IngestionTrackingAudit ingestionTrackingAudit)
+        {
+            ValidateIngestionTrackingAuditIsNotNull(ingestionTrackingAudit);
+            var auditDateTimeOffset = await this.dateTimeBroker.GetCurrentDateTimeOffsetAsync();
+            var auditUser = await this.securityBroker.GetCurrentUserAsync();
+            ingestionTrackingAudit.CreatedBy = auditUser?.EntraUserId.ToString() ?? string.Empty;
+            ingestionTrackingAudit.CreatedDate = auditDateTimeOffset;
+            ingestionTrackingAudit.UpdatedBy = auditUser?.EntraUserId.ToString() ?? string.Empty;
+            ingestionTrackingAudit.UpdatedDate = auditDateTimeOffset;
+
+            return ingestionTrackingAudit;
+        }
     }
 }

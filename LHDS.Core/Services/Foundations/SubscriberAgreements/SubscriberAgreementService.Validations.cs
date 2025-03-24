@@ -58,7 +58,7 @@ namespace LHDS.Core.Services.Foundations.SubscriberAgreements
 
         private async ValueTask ValidateSubscriberAgreementOnModifyAsync(SubscriberAgreement subscriberAgreement)
         {
-            ValidateSubscriberAgreementIsNotNull(subscriberAgreement);
+            EntraUser currentUser = await this.securityBroker.GetCurrentUserAsync();
 
             Validate(
                 (Rule: IsInvalid(subscriberAgreement.Id), Parameter: nameof(SubscriberAgreement.Id)),

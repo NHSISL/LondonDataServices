@@ -62,7 +62,10 @@ namespace LHDS.Core.Services.Foundations.SubscriberAgreements
         public ValueTask<SubscriberAgreement> ModifySubscriberAgreementAsync(SubscriberAgreement subscriberAgreement) =>
             TryCatch(async () =>
             {
-                await ValidateSubscriberAgreementOnModifyAsync(subscriberAgreement);
+                SubscriberAgreement osubscriberAgreementWithModifyAuditApplied = 
+                    await ApplyModifyAuditAsync(subscriberAgreement);
+
+                await ValidateSubscriberAgreementOnModifyAsync(osubscriberAgreementWithModifyAuditApplied);
 
                 SubscriberAgreement maybeSubscriberAgreement =
                     await this.storageBroker.SelectSubscriberAgreementByIdAsync(subscriberAgreement.Id);
@@ -96,6 +99,17 @@ namespace LHDS.Core.Services.Foundations.SubscriberAgreements
             var auditUser = await this.securityBroker.GetCurrentUserAsync();
             subscriberAgreement.CreatedBy = auditUser?.EntraUserId.ToString() ?? string.Empty;
             subscriberAgreement.CreatedDate = auditDateTimeOffset;
+            subscriberAgreement.UpdatedBy = auditUser?.EntraUserId.ToString() ?? string.Empty;
+            subscriberAgreement.UpdatedDate = auditDateTimeOffset;
+
+            return subscriberAgreement;
+        }
+
+        virtual internal async ValueTask<SubscriberAgreement> ApplyModifyAuditAsync(SubscriberAgreement subscriberAgreement)
+        {
+            ValidateSubscriberAgreementIsNotNull(subscriberAgreement);
+            var auditDateTimeOffset = await this.dateTimeBroker.GetCurrentDateTimeOffsetAsync();
+            var auditUser = await this.securityBroker.GetCurrentUserAsync();
             subscriberAgreement.UpdatedBy = auditUser?.EntraUserId.ToString() ?? string.Empty;
             subscriberAgreement.UpdatedDate = auditDateTimeOffset;
 

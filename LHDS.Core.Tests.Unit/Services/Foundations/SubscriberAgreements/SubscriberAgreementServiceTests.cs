@@ -95,6 +95,19 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.SubscriberAgreements
             return randomSubscriberAgreement;
         }
 
+        private static SubscriberAgreement CreateRandomModifySubscriberAgreement(
+            DateTimeOffset dateTimeOffset,
+            string userId)
+        {
+            int randomDaysInPast = GetRandomNegativeNumber();
+            SubscriberAgreement randomSubscriberAgreement = CreateRandomSubscriberAgreement(dateTimeOffset, userId);
+
+            randomSubscriberAgreement.CreatedDate =
+                randomSubscriberAgreement.CreatedDate.AddDays(randomDaysInPast);
+
+            return randomSubscriberAgreement;
+        }
+
         private static IQueryable<SubscriberAgreement> CreateRandomSubscriberAgreements()
         {
             return CreateSubscriberAgreementFiller(dateTimeOffset: GetRandomDateTimeOffset())

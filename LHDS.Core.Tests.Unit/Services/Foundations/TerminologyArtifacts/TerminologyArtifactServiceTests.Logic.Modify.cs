@@ -6,6 +6,7 @@ using System;
 using System.Threading.Tasks;
 using FluentAssertions;
 using Force.DeepCloner;
+using LHDS.Core.Models.Brokers.Securities;
 using LHDS.Core.Models.Foundations.TerminologyArtifacts;
 using Moq;
 using Xunit;
@@ -19,20 +20,28 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.TerminologyArtifacts
         {
             // given
             DateTimeOffset randomDateTimeOffset = GetRandomDateTimeOffset();
-            TerminologyArtifact randomTerminologyArtifact = CreateRandomModifyTerminologyArtifact(randomDateTimeOffset);
+            EntraUser randomEntraUser = CreateRandomEntraUser();
+
+            TerminologyArtifact randomTerminologyArtifact =
+                CreateRandomModifyTerminologyArtifact(randomDateTimeOffset, randomEntraUser.EntraUserId);
+
             TerminologyArtifact inputTerminologyArtifact = randomTerminologyArtifact;
             TerminologyArtifact storageTerminologyArtifact = inputTerminologyArtifact.DeepClone();
             storageTerminologyArtifact.UpdatedDate = randomTerminologyArtifact.CreatedDate;
             TerminologyArtifact updatedTerminologyArtifact = inputTerminologyArtifact;
             TerminologyArtifact expectedTerminologyArtifact = updatedTerminologyArtifact.DeepClone();
-            Guid terminologyArtifactId = inputTerminologyArtifact.Id;
+            Guid objectColumnId = inputTerminologyArtifact.Id;
 
             this.dateTimeBrokerMock.Setup(broker =>
                 broker.GetCurrentDateTimeOffsetAsync())
                     .ReturnsAsync(randomDateTimeOffset);
 
+            this.securityBrokerMock.Setup(broker =>
+                broker.GetCurrentUserAsync())
+                    .ReturnsAsync(randomEntraUser);
+
             this.storageBrokerMock.Setup(broker =>
-                broker.SelectTerminologyArtifactByIdAsync(terminologyArtifactId))
+                broker.SelectTerminologyArtifactByIdAsync(objectColumnId))
                     .ReturnsAsync(storageTerminologyArtifact);
 
             this.storageBrokerMock.Setup(broker =>
@@ -48,7 +57,11 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.TerminologyArtifacts
 
             this.dateTimeBrokerMock.Verify(broker =>
                 broker.GetCurrentDateTimeOffsetAsync(),
-                    Times.Once);
+                    Times.Exactly(2));
+
+            this.securityBrokerMock.Verify(broker =>
+                broker.GetCurrentUserAsync(),
+                    Times.Exactly(2));
 
             this.storageBrokerMock.Verify(broker =>
                 broker.SelectTerminologyArtifactByIdAsync(inputTerminologyArtifact.Id),

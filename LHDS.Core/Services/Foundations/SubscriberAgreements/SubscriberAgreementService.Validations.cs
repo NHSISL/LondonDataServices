@@ -140,6 +140,39 @@ namespace LHDS.Core.Services.Foundations.SubscriberAgreements
                 Parameter: nameof(SubscriberAgreement.UpdatedDate)));
         }
 
+        private async ValueTask ValidateAgainstStorageSubscriberAgreementOnDeleteAsync(
+            SubscriberAgreement subscriberAgreement,
+            SubscriberAgreement maybeSubscriberAgreement)
+        {
+            EntraUser auditUser = await this.securityBroker.GetCurrentUserAsync();
+
+            Validate(
+                (Rule: IsNotSame(
+                    subscriberAgreement.CreatedDate,
+                    maybeSubscriberAgreement.CreatedDate,
+                    nameof(maybeSubscriberAgreement.CreatedDate)),
+                 Parameter: nameof(SubscriberAgreement.CreatedDate)),
+
+                (Rule: IsNotSame(
+                    subscriberAgreement.CreatedBy,
+                    maybeSubscriberAgreement.CreatedBy,
+                    nameof(maybeSubscriberAgreement.CreatedBy)),
+                 Parameter: nameof(SubscriberAgreement.CreatedBy)),
+
+                (Rule: IsNotSame(
+                    maybeSubscriberAgreement.UpdatedDate,
+                    subscriberAgreement.UpdatedDate,
+                    nameof(SubscriberAgreement.UpdatedDate)),
+                 Parameter: nameof(SubscriberAgreement.UpdatedDate)),
+
+                (Rule: IsNotSame(
+                    auditUser.EntraUserId.ToString(),
+                    subscriberAgreement.UpdatedBy,
+                    nameof(SubscriberAgreement.UpdatedBy)),
+                 Parameter: nameof(SubscriberAgreement.UpdatedBy))
+            );
+        }
+
         private static dynamic IsInvalid(Guid id) => new
         {
             Condition = id == Guid.Empty,

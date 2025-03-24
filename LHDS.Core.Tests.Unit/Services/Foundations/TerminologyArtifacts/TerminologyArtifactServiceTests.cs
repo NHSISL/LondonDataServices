@@ -92,6 +92,19 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.TerminologyArtifacts
             return randomTerminologyArtifact;
         }
 
+        private static TerminologyArtifact CreateRandomModifyTerminologyArtifact(
+            DateTimeOffset dateTimeOffset,
+            string userId)
+        {
+            int randomDaysInPast = GetRandomNegativeNumber();
+            TerminologyArtifact randomTerminologyArtifact = CreateRandomTerminologyArtifact(dateTimeOffset, userId);
+
+            randomTerminologyArtifact.CreatedDate =
+                randomTerminologyArtifact.CreatedDate.AddDays(randomDaysInPast);
+
+            return randomTerminologyArtifact;
+        }
+
         private static IQueryable<TerminologyArtifact> CreateRandomTerminologyArtifacts()
         {
             return CreateTerminologyArtifactFiller(dateTimeOffset: GetRandomDateTimeOffset())

@@ -65,7 +65,8 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.IngestionTrackings
         [InlineData(null)]
         [InlineData("")]
         [InlineData(" ")]
-        public async Task ShouldThrowValidationExceptionOnModifyIfIngestionTrackingIsInvalidAndLogItAsync(string invalidText)
+        public async Task ShouldThrowValidationExceptionOnModifyIfIngestionTrackingIsInvalidAndLogItAsync(
+            string invalidText)
         {
             // given 
             EntraUser randomEntraUser = CreateRandomEntraUser();

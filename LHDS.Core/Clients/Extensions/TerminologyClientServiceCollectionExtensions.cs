@@ -44,34 +44,10 @@ namespace LHDS.Core.Clients.Extensions
             this IServiceCollection services,
             IConfiguration configuration)
         {
-            return AddTerminologyClient(services, configuration, claimsPrincipal: null);
-        }
-
-        public static IServiceCollection AddTerminologyClient(
-            this IServiceCollection services,
-            IConfiguration configuration,
-            IHttpContextAccessor httpContextAccessor)
-        {
             services.AddSingleton<IConfiguration>(_ => configuration);
-            AddProviders(services);
-            AddBrokers(services, configuration, httpContextAccessor.HttpContext.User);
-            AddServices(services);
-            AddProcessingServices(services);
-            AddOrchestrations(services);
-            AddCoordinations(services);
-            AddClients(services, configuration);
 
-            return services;
-        }
-
-        public static IServiceCollection AddTerminologyClient(
-            this IServiceCollection services,
-            IConfiguration configuration,
-            string accessToken)
-        {
-            services.AddSingleton<IConfiguration>(_ => configuration);
             AddProviders(services);
-            AddBrokers(services, configuration, GetClaimsPrincipalFromToken(accessToken));
+            AddBrokers(services, claimsPrincipal: null, configuration);
             AddServices(services);
             AddProcessingServices(services);
             AddOrchestrations(services);
@@ -87,8 +63,9 @@ namespace LHDS.Core.Clients.Extensions
             ClaimsPrincipal claimsPrincipal)
         {
             services.AddSingleton<IConfiguration>(_ => configuration);
+
             AddProviders(services);
-            AddBrokers(services, configuration, claimsPrincipal);
+            AddBrokers(services, claimsPrincipal, configuration);
             AddServices(services);
             AddProcessingServices(services);
             AddOrchestrations(services);
@@ -103,8 +80,8 @@ namespace LHDS.Core.Clients.Extensions
 
         private static void AddBrokers(
             IServiceCollection services,
-            IConfiguration configuration,
-            ClaimsPrincipal claimsPrincipal)
+            ClaimsPrincipal claimsPrincipal,
+            IConfiguration configuration)
         {
             services.AddTransient<IBlobStorageBroker, BlobStorageBroker>();
             services.AddTransient<ILoggingBroker, LoggingBroker>();

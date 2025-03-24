@@ -84,12 +84,22 @@ namespace LHDS.Core.Services.Foundations.SpecificationObjects
             {
                 ValidateSpecificationObjectId(specificationObjectId);
 
-                SpecificationObject maybeSpecificationObject = await storageBroker
-                    .SelectSpecificationObjectByIdAsync(specificationObjectId);
+                SpecificationObject maybeSpecificationObject = 
+                    await this.storageBroker.SelectSpecificationObjectByIdAsync(specificationObjectId);
 
                 ValidateStorageSpecificationObject(maybeSpecificationObject, specificationObjectId);
 
-                return await storageBroker.DeleteSpecificationObjectAsync(maybeSpecificationObject);
+                SpecificationObject specificationObjectWithDeleteAuditApplied = 
+                    await ApplyDeleteAuditAsync(maybeSpecificationObject);
+
+                SpecificationObject updatedSpecificationObject =
+                    await this.storageBroker.UpdateSpecificationObjectAsync(specificationObjectWithDeleteAuditApplied);
+
+                await ValidateAgainstStorageSpecificationObjectOnDeleteAsync(
+                    updatedSpecificationObject,
+                    specificationObjectWithDeleteAuditApplied);
+
+                return await this.storageBroker.DeleteSpecificationObjectAsync(updatedSpecificationObject);
             });
 
         virtual internal async ValueTask<SpecificationObject> 
@@ -115,6 +125,17 @@ namespace LHDS.Core.Services.Foundations.SpecificationObjects
             specificationObject.UpdatedBy = auditUser?.EntraUserId.ToString() ?? string.Empty;
             specificationObject.UpdatedDate = auditDateTimeOffset;
 
+            return specificationObject;
+        }
+
+        virtual internal async ValueTask<SpecificationObject> 
+            ApplyDeleteAuditAsync(SpecificationObject specificationObject)
+        {
+            ValidateSpecificationObjectIsNotNull(specificationObject);
+            var auditDateTimeOffset = await this.dateTimeBroker.GetCurrentDateTimeOffsetAsync();
+            var auditUser = await this.securityBroker.GetCurrentUserAsync();
+            specificationObject.UpdatedBy = auditUser?.EntraUserId.ToString() ?? string.Empty;
+            specificationObject.UpdatedDate = auditDateTimeOffset;
             return specificationObject;
         }
     }

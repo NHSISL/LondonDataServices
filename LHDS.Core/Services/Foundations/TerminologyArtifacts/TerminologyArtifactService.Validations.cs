@@ -58,6 +58,11 @@ namespace LHDS.Core.Services.Foundations.TerminologyArtifacts
                 (Rule: IsInvalid(terminologyArtifact.UpdatedDate), Parameter: nameof(TerminologyArtifact.UpdatedDate)),
                 (Rule: IsInvalid(terminologyArtifact.UpdatedBy), Parameter: nameof(TerminologyArtifact.UpdatedBy)),
 
+                (Rule: IsNotSame(
+                    first: currentUser.EntraUserId,
+                    second: terminologyArtifact.UpdatedBy),
+                Parameter: nameof(TerminologyArtifact.UpdatedBy)),
+
                 (Rule: IsSame(
                     firstDate: terminologyArtifact.UpdatedDate,
                     secondDate: terminologyArtifact.CreatedDate,

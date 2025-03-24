@@ -80,17 +80,25 @@ namespace LHDS.Core.Services.Foundations.TerminologyArtifacts
             });
 
         public ValueTask<TerminologyArtifact> RemoveTerminologyArtifactByIdAsync(Guid terminologyArtifactId) =>
-            TryCatch(async () =>
-            {
-                ValidateTerminologyArtifactId(terminologyArtifactId);
+           TryCatch(async () =>
+           {
+               ValidateTerminologyArtifactId(terminologyArtifactId);
 
-                TerminologyArtifact maybeTerminologyArtifact = await this.storageBroker
-                    .SelectTerminologyArtifactByIdAsync(terminologyArtifactId);
+               TerminologyArtifact maybeTerminologyArtifact = await this.storageBroker.SelectTerminologyArtifactByIdAsync(terminologyArtifactId);
 
-                ValidateStorageTerminologyArtifact(maybeTerminologyArtifact, terminologyArtifactId);
+               ValidateStorageTerminologyArtifact(maybeTerminologyArtifact, terminologyArtifactId);
 
-                return await this.storageBroker.DeleteTerminologyArtifactAsync(maybeTerminologyArtifact);
-            });
+               TerminologyArtifact terminologyArtifactWithDeleteAuditApplied = await ApplyDeleteAuditAsync(maybeTerminologyArtifact);
+
+               TerminologyArtifact updatedTerminologyArtifact =
+                   await this.storageBroker.UpdateTerminologyArtifactAsync(terminologyArtifactWithDeleteAuditApplied);
+
+               await ValidateAgainstStorageTerminologyArtifactOnDeleteAsync(
+                   updatedTerminologyArtifact,
+                   terminologyArtifactWithDeleteAuditApplied);
+
+               return await this.storageBroker.DeleteTerminologyArtifactAsync(updatedTerminologyArtifact);
+           });
 
         virtual internal async ValueTask<TerminologyArtifact> 
             ApplyAddTerminologyArtifactAsync(TerminologyArtifact terminologyArtifact)
@@ -115,6 +123,17 @@ namespace LHDS.Core.Services.Foundations.TerminologyArtifacts
             terminologyArtifact.UpdatedBy = auditUser?.EntraUserId.ToString() ?? string.Empty;
             terminologyArtifact.UpdatedDate = auditDateTimeOffset;
 
+            return terminologyArtifact;
+        }
+
+        virtual internal async ValueTask<TerminologyArtifact> 
+            ApplyDeleteAuditAsync(TerminologyArtifact terminologyArtifact)
+        {
+            ValidateTerminologyArtifactIsNotNull(terminologyArtifact);
+            var auditDateTimeOffset = await this.dateTimeBroker.GetCurrentDateTimeOffsetAsync();
+            var auditUser = await this.securityBroker.GetCurrentUserAsync();
+            terminologyArtifact.UpdatedBy = auditUser?.EntraUserId.ToString() ?? string.Empty;
+            terminologyArtifact.UpdatedDate = auditDateTimeOffset;
             return terminologyArtifact;
         }
     }

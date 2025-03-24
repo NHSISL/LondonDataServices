@@ -26,6 +26,11 @@ namespace LHDS.Core.Services.Foundations.TerminologyArtifacts
                 (Rule: IsInvalid(terminologyArtifact.UpdatedBy), Parameter: nameof(TerminologyArtifact.UpdatedBy)),
 
                 (Rule: IsNotSame(
+                    first: currentUser.EntraUserId,
+                    second: terminologyArtifact.CreatedBy),
+                Parameter: nameof(TerminologyArtifact.CreatedBy)),
+
+                (Rule: IsNotSame(
                     firstDate: terminologyArtifact.UpdatedDate,
                     secondDate: terminologyArtifact.CreatedDate,
                     secondDateName: nameof(TerminologyArtifact.CreatedDate)),
@@ -132,6 +137,14 @@ namespace LHDS.Core.Services.Foundations.TerminologyArtifacts
             {
                 Condition = firstDate == secondDate,
                 Message = $"Date is the same as {secondDateName}"
+            };
+
+        private static dynamic IsNotSame(
+            string first,
+            string second) => new
+            {
+                Condition = first != second,
+                Message = $"Expected value to be '{first}' but found '{second}'."
             };
 
         private static dynamic IsNotSame(

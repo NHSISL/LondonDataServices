@@ -106,7 +106,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.SubscriberAgreements
 
             invalidSubscriberAgreementException.AddData(
                 key: nameof(SubscriberAgreement.SupplierSharingAgreementShortName),
-                values: "Id is required");
+                values: "Text is required");
 
             invalidSubscriberAgreementException.AddData(
                 key: nameof(SubscriberAgreement.CreatedDate),
@@ -185,7 +185,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.SubscriberAgreements
                 CreateRandomModifySubscriberAgreement(randomDateTimeOffset, randomEntraUser.EntraUserId);
 
             var inputCreatedByUpdatedByString = randomEntraUser.EntraUserId;
-            invalidSubscriberAgreement.SupplierSharingAgreementShortName = GetRandomString(256);
+            invalidSubscriberAgreement.SupplierSharingAgreementShortName = GetRandomString(129);
             invalidSubscriberAgreement.CreatedBy = inputCreatedByUpdatedByString;
             invalidSubscriberAgreement.UpdatedBy = inputCreatedByUpdatedByString;
 
@@ -216,15 +216,15 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.SubscriberAgreements
 
             invalidSubscriberAgreementException.AddData(
                 key: nameof(SubscriberAgreement.SupplierSharingAgreementShortName),
-                values: "Text is exceeding max length");
+                values: "Text exceeded length requirement");
 
             invalidSubscriberAgreementException.AddData(
                 key: nameof(SubscriberAgreement.CreatedBy),
-                values: "Text is exceeding max length");
+                values: "Text exceeded length requirement");
 
             invalidSubscriberAgreementException.AddData(
                 key: nameof(SubscriberAgreement.UpdatedBy),
-                values: "Text is exceeding max length");
+                values: "Text exceeded length requirement");
 
             var expectedSubscriberAgreementValidationException =
                 new SubscriberAgreementValidationException(

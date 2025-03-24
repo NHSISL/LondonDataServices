@@ -37,15 +37,15 @@ namespace LHDS.Core.Services.Foundations.SubscriberAgreements
                     Parameter: nameof(SubscriberAgreement.UpdatedBy)),
 
                 (Rule: IsNotSame(
-                    first: currentUser.EntraUserId,
-                    second: subscriberAgreement.CreatedBy),
-                Parameter: nameof(SubscriberAgreement.CreatedBy)),
-
-                (Rule: IsNotSame(
                     firstDate: subscriberAgreement.UpdatedDate,
                     secondDate: subscriberAgreement.CreatedDate,
                     secondDateName: nameof(SubscriberAgreement.CreatedDate)),
                 Parameter: nameof(SubscriberAgreement.UpdatedDate)),
+
+                 (Rule: IsNotSame(
+                    first: currentUser.EntraUserId,
+                    second: subscriberAgreement.CreatedBy),
+                Parameter: nameof(SubscriberAgreement.CreatedBy)),
 
                 (Rule: IsNotSame(
                     first: subscriberAgreement.UpdatedBy,
@@ -79,6 +79,11 @@ namespace LHDS.Core.Services.Foundations.SubscriberAgreements
 
                 (Rule: IsInvalidLength(subscriberAgreement.UpdatedBy, 255),
                     Parameter: nameof(SubscriberAgreement.UpdatedBy)),
+
+                (Rule: IsNotSame(
+                    first: currentUser.EntraUserId,
+                    second: subscriberAgreement.UpdatedBy),
+                Parameter: nameof(SubscriberAgreement.UpdatedBy)),
 
                 (Rule: IsSame(
                     firstDate: subscriberAgreement.UpdatedDate,

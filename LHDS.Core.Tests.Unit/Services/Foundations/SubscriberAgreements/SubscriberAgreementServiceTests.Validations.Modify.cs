@@ -64,7 +64,8 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.SubscriberAgreements
         [InlineData(null)]
         [InlineData("")]
         [InlineData(" ")]
-        public async Task ShouldThrowValidationExceptionOnModifyIfSubscriberAgreementIsInvalidAndLogItAsync(string invalidText)
+        public async Task ShouldThrowValidationExceptionOnModifyIfSubscriberAgreementIsInvalidAndLogItAsync(
+            string invalidText)
         {
             // given 
             EntraUser randomEntraUser = CreateRandomEntraUser();

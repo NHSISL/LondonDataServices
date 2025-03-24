@@ -117,6 +117,37 @@ namespace LHDS.Core.Services.Foundations.TerminologyArtifacts
                 Parameter: nameof(TerminologyArtifact.UpdatedDate)));
         }
 
+        private async ValueTask ValidateAgainstStorageTerminologyArtifactOnDeleteAsync(TerminologyArtifact terminologyArtifact, TerminologyArtifact maybeTerminologyArtifact)
+        {
+            EntraUser auditUser = await this.securityBroker.GetCurrentUserAsync();
+
+            Validate(
+                (Rule: IsNotSame(
+                    terminologyArtifact.CreatedDate,
+                    maybeTerminologyArtifact.CreatedDate,
+                    nameof(maybeTerminologyArtifact.CreatedDate)),
+                 Parameter: nameof(TerminologyArtifact.CreatedDate)),
+
+                (Rule: IsNotSame(
+                    terminologyArtifact.CreatedBy,
+                    maybeTerminologyArtifact.CreatedBy,
+                    nameof(maybeTerminologyArtifact.CreatedBy)),
+                 Parameter: nameof(TerminologyArtifact.CreatedBy)),
+
+                (Rule: IsNotSame(
+                    maybeTerminologyArtifact.UpdatedDate,
+                    terminologyArtifact.UpdatedDate,
+                    nameof(TerminologyArtifact.UpdatedDate)),
+                 Parameter: nameof(TerminologyArtifact.UpdatedDate)),
+
+                (Rule: IsNotSame(
+                    auditUser.EntraUserId.ToString(),
+                    terminologyArtifact.UpdatedBy,
+                    nameof(TerminologyArtifact.UpdatedBy)),
+                 Parameter: nameof(TerminologyArtifact.UpdatedBy))
+            );
+        }
+
         private static dynamic IsInvalid(Guid id) => new
         {
             Condition = id == Guid.Empty,

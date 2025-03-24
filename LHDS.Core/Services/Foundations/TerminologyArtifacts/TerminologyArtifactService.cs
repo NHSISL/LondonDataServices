@@ -62,6 +62,9 @@ namespace LHDS.Core.Services.Foundations.TerminologyArtifacts
         public ValueTask<TerminologyArtifact> ModifyTerminologyArtifactAsync(TerminologyArtifact terminologyArtifact) =>
             TryCatch(async () =>
             {
+                TerminologyArtifact terminologyArtifactWithModifyAuditApplied = 
+                    await ApplyModifyAuditAsync(terminologyArtifact);
+
                 await ValidateTerminologyArtifactOnModifyAsync(terminologyArtifact);
 
                 TerminologyArtifact maybeTerminologyArtifact =
@@ -97,6 +100,18 @@ namespace LHDS.Core.Services.Foundations.TerminologyArtifacts
             var auditUser = await this.securityBroker.GetCurrentUserAsync();
             terminologyArtifact.CreatedBy = auditUser?.EntraUserId.ToString() ?? string.Empty;
             terminologyArtifact.CreatedDate = auditDateTimeOffset;
+            terminologyArtifact.UpdatedBy = auditUser?.EntraUserId.ToString() ?? string.Empty;
+            terminologyArtifact.UpdatedDate = auditDateTimeOffset;
+
+            return terminologyArtifact;
+        }
+
+        virtual internal async ValueTask<TerminologyArtifact> 
+            ApplyModifyAuditAsync(TerminologyArtifact terminologyArtifact)
+        {
+            ValidateTerminologyArtifactIsNotNull(terminologyArtifact);
+            var auditDateTimeOffset = await this.dateTimeBroker.GetCurrentDateTimeOffsetAsync();
+            var auditUser = await this.securityBroker.GetCurrentUserAsync();
             terminologyArtifact.UpdatedBy = auditUser?.EntraUserId.ToString() ?? string.Empty;
             terminologyArtifact.UpdatedDate = auditDateTimeOffset;
 

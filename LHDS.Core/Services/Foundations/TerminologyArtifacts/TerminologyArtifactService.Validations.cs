@@ -47,7 +47,7 @@ namespace LHDS.Core.Services.Foundations.TerminologyArtifacts
 
         private async ValueTask ValidateTerminologyArtifactOnModifyAsync(TerminologyArtifact terminologyArtifact)
         {
-            ValidateTerminologyArtifactIsNotNull(terminologyArtifact);
+            EntraUser currentUser = await this.securityBroker.GetCurrentUserAsync();
 
             Validate(
                 (Rule: IsInvalid(terminologyArtifact.Id), Parameter: nameof(TerminologyArtifact.Id)),

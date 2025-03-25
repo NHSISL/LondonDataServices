@@ -18,7 +18,7 @@ using Microsoft.AspNetCore.Authorization;
 
 namespace LHDS.AdminPortal.Api.Controllers
 {
-    [Authorize(Roles = "ISL.LDS.AdminSpa.Administrators, ISL.LDS.AdminSpa.Configurations")]
+    [Authorize(Roles = "ISL.LDS.AdminApi.Administrators, ISL.LDS.AdminApi.Configurations")]
     [ApiController]
     [Route("api/[controller]")]
     public class SpecificationObjectsController : RESTFulController
@@ -28,7 +28,7 @@ namespace LHDS.AdminPortal.Api.Controllers
         public SpecificationObjectsController(ISpecificationObjectService specificationObjectService) =>
             this.specificationObjectService = specificationObjectService;
 
-        [Authorize(Roles = "ISL.LDS.AdminSpa.Administrators, ISL.LDS.AdminSpa.SpecificationObjects")]
+        [Authorize(Roles = "ISL.LDS.AdminApi.Administrators, ISL.LDS.AdminApi.SpecificationObjects")]
         [HttpPost]
         public async ValueTask<ActionResult<SpecificationObject>> PostSpecificationObjectAsync(
             SpecificationObject specificationObject)
@@ -73,7 +73,7 @@ namespace LHDS.AdminPortal.Api.Controllers
 #if DEBUG
         [EnableQuery(PageSize = 5000)]
 #endif
-        [Authorize(Roles = "ISL.LDS.AdminSpa.Administrators, ISL.LDS.AdminSpa.SpecificationObjects, ISL.LDS.AdminSpa.ReadOnly")]
+        [Authorize(Roles = "ISL.LDS.AdminApi.Administrators, ISL.LDS.AdminApi.SpecificationObjects, ISL.LDS.AdminApi.ReadOnly")]
         public async ValueTask<ActionResult<IQueryable<SpecificationObject>>> Get()
         {
             try
@@ -93,7 +93,7 @@ namespace LHDS.AdminPortal.Api.Controllers
             }
         }
 
-        [Authorize(Roles = "ISL.LDS.AdminSpa.Administrators, ISL.LDS.AdminSpa.SpecificationObjects, ISL.LDS.AdminSpa.ReadOnly")]
+        [Authorize(Roles = "ISL.LDS.AdminApi.Administrators, ISL.LDS.AdminApi.SpecificationObjects, ISL.LDS.AdminApi.ReadOnly")]
         [HttpGet("{specificationObjectId}")]
         public async ValueTask<ActionResult<SpecificationObject>> GetSpecificationObjectByIdAsync(Guid specificationObjectId)
         {
@@ -122,7 +122,7 @@ namespace LHDS.AdminPortal.Api.Controllers
             }
         }
 
-        [Authorize(Roles = "ISL.LDS.AdminSpa.Administrators, ISL.LDS.AdminSpa.SpecificationObjects")]
+        [Authorize(Roles = "ISL.LDS.AdminApi.Administrators, ISL.LDS.AdminApi.SpecificationObjects")]
         [HttpPut]
         public async ValueTask<ActionResult<SpecificationObject>> PutSpecificationObjectAsync(SpecificationObject specificationObject)
         {
@@ -162,7 +162,7 @@ namespace LHDS.AdminPortal.Api.Controllers
             }
         }
 
-        [Authorize(Roles = "ISL.LDS.AdminSpa.Administrators, ISL.LDS.AdminSpa.SpecificationObjects")]
+        [Authorize(Roles = "ISL.LDS.AdminApi.Administrators, ISL.LDS.AdminApi.SpecificationObjects")]
         [HttpDelete("{specificationObjectId}")]
         public async ValueTask<ActionResult<SpecificationObject>> DeleteSpecificationObjectByIdAsync(Guid specificationObjectId)
         {

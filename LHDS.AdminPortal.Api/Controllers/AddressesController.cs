@@ -24,7 +24,7 @@ namespace LHDS.AdminPortal.Api.Controllers
         public AddressesController(IAddressService addressService) =>
             this.addressService = addressService;
 
-        [Authorize(Roles = "ISL.LDS.AdminSpa.Addresses,ISL.LDS.AdminSpa.Administrators")]
+        [Authorize(Roles = "ISL.LDS.AdminApi.Addresses,ISL.LDS.AdminApi.Administrators")]
         [HttpPost]
         public async ValueTask<ActionResult<Address>> PostAddressAsync(Address address)
         {
@@ -59,7 +59,7 @@ namespace LHDS.AdminPortal.Api.Controllers
             }
         }
 
-        [Authorize(Roles = "ISL.LDS.AdminSpa.Addresses,ISL.LDS.AdminSpa.Administrators,ISL.LDS.AdminSpa.ReadOnly")]
+        [Authorize(Roles = "ISL.LDS.AdminApi.Addresses,ISL.LDS.AdminApi.Administrators,ISL.LDS.AdminApi.ReadOnly")]
         [HttpGet]
         public async ValueTask<ActionResult<IQueryable<Address>>> GetAllAddressesAsync()
         {
@@ -80,7 +80,7 @@ namespace LHDS.AdminPortal.Api.Controllers
             }
         }
 
-        [Authorize(Roles = "ISL.LDS.AdminSpa.Addresses,ISL.LDS.AdminSpa.Administrators,ISL.LDS.AdminSpa.ReadOnly")]
+        [Authorize(Roles = "ISL.LDS.AdminApi.Addresses,ISL.LDS.AdminApi.Administrators,ISL.LDS.AdminApi.ReadOnly")]
         [HttpGet("{addressId}")]
         public async ValueTask<ActionResult<Address>> GetAddressByIdAsync(Guid addressId)
         {
@@ -109,7 +109,7 @@ namespace LHDS.AdminPortal.Api.Controllers
             }
         }
 
-        [Authorize(Roles = "ISL.LDS.AdminSpa.Addresses,ISL.LDS.AdminSpa.Administrators")]
+        [Authorize(Roles = "ISL.LDS.AdminApi.Addresses,ISL.LDS.AdminApi.Administrators")]
         [HttpPut]
         public async ValueTask<ActionResult<Address>> PutAddressAsync(Address address)
         {
@@ -149,7 +149,7 @@ namespace LHDS.AdminPortal.Api.Controllers
             }
         }
 
-        [Authorize(Roles = "ISL.LDS.AdminSpa.Addresses,ISL.LDS.AdminSpa.Administrators")]
+        [Authorize(Roles = "ISL.LDS.AdminApi.Addresses,ISL.LDS.AdminApi.Administrators")]
         [HttpDelete("{addressId}")]
         public async ValueTask<ActionResult<Address>> DeleteAddressByIdAsync(Guid addressId)
         {

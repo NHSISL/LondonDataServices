@@ -50,11 +50,11 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.StreetDescriptors
 
             this.dateTimeBrokerMock.Verify(broker =>
                 broker.GetCurrentDateTimeOffsetAsync(),
-                    Times.Exactly(2));
+                    Times.Exactly(1));
 
             this.securityBrokerMock.Verify(broker =>
                 broker.GetCurrentUserAsync(),
-                    Times.Exactly(2));
+                    Times.Exactly(1));
 
             this.storageBrokerMock.Verify(broker =>
                 broker.InsertStreetDescriptorAsync(inputStreetDescriptor),

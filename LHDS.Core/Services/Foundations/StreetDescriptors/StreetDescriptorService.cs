@@ -41,9 +41,11 @@ namespace LHDS.Core.Services.Foundations.StreetDescriptors
             this.auditBroker = auditBroker;
         }
 
-        public ValueTask<StreetDescriptor> AddStreetDescriptorAsync(StreetDescriptor streetDescriptor)
+        public async ValueTask<StreetDescriptor> AddStreetDescriptorAsync(StreetDescriptor streetDescriptor)
         {
-            return this.storageBroker.InsertStreetDescriptorAsync(streetDescriptor);
+            StreetDescriptor streetDescriptorWithAddAuditApplied = await ApplyAddAuditAsync(streetDescriptor);
+
+            return await this.storageBroker.InsertStreetDescriptorAsync(streetDescriptor);
         }
 
         public ValueTask BulkAddStreetDescriptorsAsync(List<StreetDescriptor> streetDescriptors, string fileName)
@@ -74,6 +76,20 @@ namespace LHDS.Core.Services.Foundations.StreetDescriptors
         public ValueTask<List<StreetDescriptor>> RetrieveStreetDescriptorsByUSRNAsync(string urrn)
         {
             throw new NotImplementedException();
+        }
+
+        virtual internal async ValueTask<StreetDescriptor> ApplyAddAuditAsync(
+            StreetDescriptor streetDescriptor)
+        {
+            
+            var auditDateTimeOffset = await this.dateTimeBroker.GetCurrentDateTimeOffsetAsync();
+            var auditUser = await this.securityBroker.GetCurrentUserAsync();
+            streetDescriptor.CreatedBy = auditUser?.EntraUserId.ToString() ?? string.Empty;
+            streetDescriptor.CreatedDate = auditDateTimeOffset;
+            streetDescriptor.UpdatedBy = auditUser?.EntraUserId.ToString() ?? string.Empty;
+            streetDescriptor.UpdatedDate = auditDateTimeOffset;
+
+            return streetDescriptor;
         }
     }
 }

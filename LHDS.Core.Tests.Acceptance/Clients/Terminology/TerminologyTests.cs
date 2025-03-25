@@ -8,6 +8,7 @@ using System.Linq;
 using System.Security.Claims;
 using KellermanSoftware.CompareNetObjects;
 using LHDS.Core.Brokers.DateTimes;
+using LHDS.Core.Brokers.Securities;
 using LHDS.Core.Clients;
 using LHDS.Core.Clients.Extensions;
 using LHDS.Core.Models.Brokers.Ontologies;
@@ -35,6 +36,7 @@ namespace LHDS.Core.Tests.Acceptance.Clients.Terminology
         private readonly OntologyConfiguration ontologyConfiguration;
         private readonly ICompareLogic compareLogic;
         private readonly IDateTimeBroker dateTimeBroker;
+        private readonly ISecurityBroker securityBroker;
         private readonly WireMockServer wireMockServer;
 
         public TerminologyTests(DependencyBroker dependencyBroker)
@@ -72,6 +74,7 @@ namespace LHDS.Core.Tests.Acceptance.Clients.Terminology
             ontologyConfiguration = serviceProvider.GetService<OntologyConfiguration>();
             terminologyPollService = serviceProvider.GetService<ITerminologyPollService>();
             documentService = serviceProvider.GetService<IDocumentService>();
+            this.securityBroker = serviceProvider.GetService<ISecurityBroker>();
             terminologyArtifactService = serviceProvider.GetService<ITerminologyArtifactService>();
         }
 

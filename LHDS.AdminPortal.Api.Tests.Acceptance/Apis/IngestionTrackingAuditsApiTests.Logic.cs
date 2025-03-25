@@ -37,7 +37,12 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.IngestionTrackingAudits
                     await this.apiBroker.GetIngestionTrackingAuditByIdAsync(inputAudit.Id);
 
                 // then
-                actualAudit.Should().BeEquivalentTo(expectedAudit);
+                actualAudit.Should().BeEquivalentTo(expectedAudit, options => options
+                    .Excluding(property => property.CreatedBy)
+                    .Excluding(property => property.CreatedDate)
+                    .Excluding(property => property.UpdatedBy)
+                    .Excluding(property => property.UpdatedDate));
+
                 await this.apiBroker.DeleteIngestionTrackingAuditByIdAsync(actualAudit.Id);
                 await this.apiBroker.DeleteIngestionTrackingByIdAsync(randomIngestionTracking.Id);
                 await this.apiBroker.DeleteSupplierByIdAsync(randomSupplier.Id);
@@ -67,7 +72,13 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.IngestionTrackingAudits
             foreach (IngestionTrackingAudit expectedAudit in expectedAudits)
             {
                 IngestionTrackingAudit actualAudit = actualAudits.Single(approval => approval.Id == expectedAudit.Id);
-                actualAudit.Should().BeEquivalentTo(expectedAudit);
+
+                actualAudit.Should().BeEquivalentTo(expectedAudit, options => options
+                    .Excluding(property => property.CreatedBy)
+                    .Excluding(property => property.CreatedDate)
+                    .Excluding(property => property.UpdatedBy)
+                    .Excluding(property => property.UpdatedDate));
+
                 await this.apiBroker.DeleteIngestionTrackingAuditByIdAsync(actualAudit.Id);
             }
 
@@ -89,7 +100,12 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.IngestionTrackingAudits
             IngestionTrackingAudit actualAudit = await this.apiBroker.GetIngestionTrackingAuditByIdAsync(randomAudit.Id);
 
             // then
-            actualAudit.Should().BeEquivalentTo(expectedAudit);
+            actualAudit.Should().BeEquivalentTo(expectedAudit, options => options
+                    .Excluding(property => property.CreatedBy)
+                    .Excluding(property => property.CreatedDate)
+                    .Excluding(property => property.UpdatedBy)
+                    .Excluding(property => property.UpdatedDate));
+
             await this.apiBroker.DeleteIngestionTrackingAuditByIdAsync(actualAudit.Id);
             await this.apiBroker.DeleteIngestionTrackingByIdAsync(randomIngestionTracking.Id);
             await this.apiBroker.DeleteSupplierByIdAsync(randomSupplier.Id);
@@ -110,7 +126,12 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.IngestionTrackingAudits
             IngestionTrackingAudit actualAudit = await this.apiBroker.GetIngestionTrackingAuditByIdAsync(randomAudit.Id);
 
             // then
-            actualAudit.Should().BeEquivalentTo(modifiedAudit);
+            actualAudit.Should().BeEquivalentTo(modifiedAudit, options => options
+                    .Excluding(property => property.CreatedBy)
+                    .Excluding(property => property.CreatedDate)
+                    .Excluding(property => property.UpdatedBy)
+                    .Excluding(property => property.UpdatedDate));
+
             await this.apiBroker.DeleteIngestionTrackingAuditByIdAsync(actualAudit.Id);
             await this.apiBroker.DeleteIngestionTrackingByIdAsync(randomIngestionTracking.Id);
             await this.apiBroker.DeleteSupplierByIdAsync(randomSupplier.Id);
@@ -135,7 +156,12 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.IngestionTrackingAudits
                 this.apiBroker.GetIngestionTrackingAuditByIdAsync(inputAudit.Id);
 
             // then
-            deletedAudit.Should().BeEquivalentTo(expectedAudit);
+            deletedAudit.Should().BeEquivalentTo(expectedAudit, options => options
+                    .Excluding(property => property.CreatedBy)
+                    .Excluding(property => property.CreatedDate)
+                    .Excluding(property => property.UpdatedBy)
+                    .Excluding(property => property.UpdatedDate));
+
             await Assert.ThrowsAsync<HttpResponseNotFoundException>(getAuditbyIdTask.AsTask);
             await this.apiBroker.DeleteIngestionTrackingByIdAsync(randomIngestionTracking.Id);
             await this.apiBroker.DeleteSupplierByIdAsync(randomSupplier.Id);

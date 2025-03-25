@@ -57,7 +57,7 @@ namespace LHDS.Core.Brokers.Storages.Sql
                  .IsRequired(false);
 
             modelBuilder.Entity<StreetDescriptor>()
-                .HasIndex(streetDescriptor => streetDescriptor.IsSynced)
+                .HasIndex(streetDescriptor => streetDescriptor.IsSynced);
 
             modelBuilder.Entity<StreetDescriptor>()
                 .HasIndex(streetDescriptor => streetDescriptor.IsProcessing);

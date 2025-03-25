@@ -31,8 +31,8 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance
             new Claim(ClaimTypes.Email, email),
             new Claim("jobTitle", jobTitle),
             new Claim(ClaimTypes.Name, "TestUser"),
-            new Claim(ClaimTypes.Role, "ISL.LDS.AdminSpa.Administrators"),
-            new Claim(ClaimTypes.Role, "ISL.LDS.AdminSpa.Configurations")
+            new Claim(ClaimTypes.Role, "ISL.LDS.AdminApi.Administrators"),
+            new Claim(ClaimTypes.Role, "ISL.LDS.AdminApi.Configurations")
         };
 
         public TestAuthHandler(

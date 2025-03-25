@@ -123,7 +123,9 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.IngestionTrackingAudits
 
             // when
             await this.apiBroker.PutIngestionTrackingAuditAsync(modifiedAudit);
-            IngestionTrackingAudit actualAudit = await this.apiBroker.GetIngestionTrackingAuditByIdAsync(randomAudit.Id);
+
+            IngestionTrackingAudit actualAudit = 
+                await this.apiBroker.GetIngestionTrackingAuditByIdAsync(randomAudit.Id);
 
             // then
             actualAudit.Should().BeEquivalentTo(modifiedAudit, options => options

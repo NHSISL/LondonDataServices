@@ -38,6 +38,11 @@ namespace LHDS.Core.Services.Foundations.IngestionTrackingAudits
                     Parameter: nameof(IngestionTrackingAudit.UpdatedBy)),
 
                 (Rule: IsNotSame(
+                    first: currentUser.EntraUserId,
+                    second: ingestionTrackingAudit.CreatedBy),
+                Parameter: nameof(IngestionTrackingAudit.CreatedBy)),
+
+                (Rule: IsNotSame(
                     firstDate: ingestionTrackingAudit.UpdatedDate,
                     secondDate: ingestionTrackingAudit.CreatedDate,
                     secondDateName: nameof(IngestionTrackingAudit.CreatedDate)),
@@ -186,6 +191,14 @@ namespace LHDS.Core.Services.Foundations.IngestionTrackingAudits
             {
                 Condition = firstDate == secondDate,
                 Message = $"Date is the same as {secondDateName}"
+            };
+
+        private static dynamic IsNotSame(
+            string first,
+            string second) => new
+            {
+                Condition = first != second,
+                Message = $"Expected value to be '{first}' but found '{second}'."
             };
 
         private static dynamic IsNotSame(

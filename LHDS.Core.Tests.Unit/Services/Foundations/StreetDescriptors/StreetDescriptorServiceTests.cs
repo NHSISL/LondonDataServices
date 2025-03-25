@@ -160,6 +160,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.StreetDescriptors
 
             filler.Setup()
                 .OnType<DateTimeOffset>().Use(dateTimeOffset)
+                .OnType<DateTimeOffset?>().Use(dateTimeOffset)
                 .OnProperty(streetDescriptor => streetDescriptor.CreatedBy).Use(userId)
                 .OnProperty(streetDescriptor => streetDescriptor.UpdatedBy).Use(userId);
 

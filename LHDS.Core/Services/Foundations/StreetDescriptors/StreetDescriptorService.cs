@@ -41,9 +41,9 @@ namespace LHDS.Core.Services.Foundations.StreetDescriptors
             this.auditBroker = auditBroker;
         }
 
-        public ValueTask<StreetDescriptor> AddStreetDescriptorAsync(StreetDescriptor address)
+        public ValueTask<StreetDescriptor> AddStreetDescriptorAsync(StreetDescriptor streetDescriptor)
         {
-            throw new NotImplementedException();
+            return this.storageBroker.InsertStreetDescriptorAsync(streetDescriptor);
         }
 
         public ValueTask BulkAddStreetDescriptorsAsync(List<StreetDescriptor> streetDescriptors, string fileName)

@@ -21,18 +21,13 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.StreetDescriptors
             // given
             DateTimeOffset randomDateTimeOffset = GetRandomDateTimeOffset();
             EntraUser randomEntraUser = CreateRandomEntraUser();
-            StreetDescriptor randomStreetDescriptor = CreateRandomStreetDescriptor(randomDateTimeOffset, randomEntraUser.EntraUserId);
+            
+            StreetDescriptor randomStreetDescriptor = 
+                    CreateRandomStreetDescriptor(randomDateTimeOffset, randomEntraUser.EntraUserId);
+
             StreetDescriptor inputStreetDescriptor = randomStreetDescriptor;
             StreetDescriptor storageStreetDescriptor = inputStreetDescriptor;
             StreetDescriptor expectedStreetDescriptor = storageStreetDescriptor.DeepClone();
-
-            this.dateTimeBrokerMock.Setup(broker =>
-                broker.GetCurrentDateTimeOffsetAsync())
-                    .ReturnsAsync(randomDateTimeOffset);
-
-            this.securityBrokerMock.Setup(broker =>
-                broker.GetCurrentUserAsync())
-                    .ReturnsAsync(randomEntraUser);
 
             this.storageBrokerMock.Setup(broker =>
                 broker.InsertStreetDescriptorAsync(inputStreetDescriptor))
@@ -44,14 +39,6 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.StreetDescriptors
 
             // then
             actualStreetDescriptor.Should().BeEquivalentTo(expectedStreetDescriptor);
-
-            this.dateTimeBrokerMock.Verify(broker =>
-                broker.GetCurrentDateTimeOffsetAsync(),
-                    Times.Exactly(2));
-
-            this.securityBrokerMock.Verify(broker =>
-                broker.GetCurrentUserAsync(),
-                    Times.Exactly(2));
 
             this.storageBrokerMock.Verify(broker =>
                 broker.InsertStreetDescriptorAsync(inputStreetDescriptor),

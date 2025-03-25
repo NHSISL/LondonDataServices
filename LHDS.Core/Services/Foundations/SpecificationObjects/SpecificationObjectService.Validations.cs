@@ -116,6 +116,37 @@ namespace LHDS.Core.Services.Foundations.SpecificationObjects
                 (Rule: await IsNotRecentAsync(specificationObject.UpdatedDate), Parameter: nameof(specificationObject.UpdatedDate)));
         }
 
+        private async ValueTask ValidateAgainstStorageSpecificationObjectOnDeleteAsync(SpecificationObject dataSet, SpecificationObject maybeSpecificationObject)
+        {
+            EntraUser auditUser = await this.securityBroker.GetCurrentUserAsync();
+
+            Validate(
+                (Rule: IsNotSame(
+                    dataSet.CreatedDate,
+                    maybeSpecificationObject.CreatedDate,
+                    nameof(maybeSpecificationObject.CreatedDate)),
+                 Parameter: nameof(SpecificationObject.CreatedDate)),
+
+                (Rule: IsNotSame(
+                    dataSet.CreatedBy,
+                    maybeSpecificationObject.CreatedBy,
+                    nameof(maybeSpecificationObject.CreatedBy)),
+                 Parameter: nameof(SpecificationObject.CreatedBy)),
+
+                (Rule: IsNotSame(
+                    maybeSpecificationObject.UpdatedDate,
+                    dataSet.UpdatedDate,
+                    nameof(SpecificationObject.UpdatedDate)),
+                 Parameter: nameof(SpecificationObject.UpdatedDate)),
+
+                (Rule: IsNotSame(
+                    auditUser.EntraUserId.ToString(),
+                    dataSet.UpdatedBy,
+                    nameof(SpecificationObject.UpdatedBy)),
+                 Parameter: nameof(SpecificationObject.UpdatedBy))
+            );
+        }
+
         public void ValidateSpecificationObjectId(Guid specificationObjectId) =>
             Validate((Rule: IsInvalid(specificationObjectId), Parameter: nameof(SpecificationObject.Id)));
 

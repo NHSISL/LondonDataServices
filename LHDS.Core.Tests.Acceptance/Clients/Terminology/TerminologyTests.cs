@@ -3,7 +3,9 @@
 // ---------------------------------------------------------
 
 using System;
+using System.Collections.Generic;
 using System.Linq;
+using System.Security.Claims;
 using KellermanSoftware.CompareNetObjects;
 using LHDS.Core.Brokers.DateTimes;
 using LHDS.Core.Clients;
@@ -41,6 +43,20 @@ namespace LHDS.Core.Tests.Acceptance.Clients.Terminology
             this.dependencyBroker = dependencyBroker;
             this.compareLogic = new CompareLogic();
             var serviceCollection = new ServiceCollection();
+            var claimsPrincipal = new ClaimsPrincipal();
+
+            claimsPrincipal.AddIdentity(new ClaimsIdentity(new List<Claim>
+            {
+                new Claim("oid", Guid.NewGuid().ToString()),
+                new Claim(ClaimTypes.GivenName, "GivenName"),
+                new Claim(ClaimTypes.Surname, "Surname"),
+                new Claim("displayName", "DisplayName"),
+                new Claim(ClaimTypes.Email, "some@email.com"),
+                new Claim("jobTitle", "job title"),
+                new Claim(ClaimTypes.Name, "TestUser"),
+                new Claim(ClaimTypes.Role, "ISL.LDS.AdminSpa.Administrators"),
+                new Claim(ClaimTypes.Role, "ISL.LDS.AdminSpa.Configurations")
+            }));
 
             serviceCollection.AddLogging(builder =>
             {
@@ -48,6 +64,7 @@ namespace LHDS.Core.Tests.Acceptance.Clients.Terminology
             });
 
             this.dependencyBroker.Configuration["ontologySettings:terminologyServerBaseUrl"] = this.wireMockServer.Url;
+            serviceCollection.AddAddressClient(this.dependencyBroker.Configuration, claimsPrincipal);
             serviceCollection.AddTerminologyClient(this.dependencyBroker.Configuration);
             var serviceProvider = serviceCollection.BuildServiceProvider();
             this.dateTimeBroker = serviceProvider.GetService<IDateTimeBroker>();

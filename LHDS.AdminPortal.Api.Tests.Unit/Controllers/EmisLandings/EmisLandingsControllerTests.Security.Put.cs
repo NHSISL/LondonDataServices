@@ -26,8 +26,8 @@ namespace LHDS.AdminPortal.Api.Tests.Unit.Controllers.EmisLandings
 
             List<string> expectedAttributeValues = new List<string>
             {
-                "ISL.LDS.AdminSpa.Administrators",
-                "ISL.LDS.AdminSpa.EmisLanding"
+                "ISL.LDS.AdminApi.Administrators",
+                "ISL.LDS.AdminApi.EmisLanding"
             };
 
             // when

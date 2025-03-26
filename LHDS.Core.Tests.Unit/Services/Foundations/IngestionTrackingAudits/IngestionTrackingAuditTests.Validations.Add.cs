@@ -116,7 +116,8 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.IngestionTrackingAudits
                 values:
                 [
                     "Text is required",
-                    $"Expected value to be '{randomEntraUser.EntraUserId}' but found '{invalidIngestionTrackingAudit.CreatedBy}'."
+                    $"Expected value to be '{randomEntraUser.EntraUserId}' " +
+                    $"but found '{invalidIngestionTrackingAudit.CreatedBy}'."
                 ]);
 
             invalidIngestionTrackingAuditException.AddData(
@@ -223,7 +224,8 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.IngestionTrackingAudits
                 ingestionTrackingAuditServiceMock.Object.AddIngestionTrackingAuditAsync(invalidIngestionTrackingAudit);
 
             IngestionTrackingAuditValidationException actualIngestionTrackingAuditValidationException =
-                await Assert.ThrowsAsync<IngestionTrackingAuditValidationException>(addIngestionTrackingAuditTask.AsTask);
+                await Assert.ThrowsAsync<IngestionTrackingAuditValidationException>(
+                    addIngestionTrackingAuditTask.AsTask);
 
             // then
             actualIngestionTrackingAuditValidationException.Should()
@@ -310,7 +312,8 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.IngestionTrackingAudits
                 ingestionTrackingAuditServiceMock.Object.AddIngestionTrackingAuditAsync(invalidIngestionTrackingAudit);
 
             IngestionTrackingAuditValidationException actualIngestionTrackingAuditValidationException =
-                await Assert.ThrowsAsync<IngestionTrackingAuditValidationException>(addIngestionTrackingAuditTask.AsTask);
+                await Assert.ThrowsAsync<IngestionTrackingAuditValidationException>(
+                    addIngestionTrackingAuditTask.AsTask);
 
             // then
             actualIngestionTrackingAuditValidationException.Should()
@@ -397,7 +400,8 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.IngestionTrackingAudits
                 ingestionTrackingAuditServiceMock.Object.AddIngestionTrackingAuditAsync(invalidIngestionTrackingAudit);
 
             IngestionTrackingAuditValidationException actualIngestionTrackingAuditValidationException =
-                await Assert.ThrowsAsync<IngestionTrackingAuditValidationException>(addIngestionTrackingAuditTask.AsTask);
+                await Assert.ThrowsAsync<IngestionTrackingAuditValidationException>(
+                    addIngestionTrackingAuditTask.AsTask);
 
             // then
             actualIngestionTrackingAuditValidationException.Should()
@@ -480,7 +484,8 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.IngestionTrackingAudits
                 ingestionTrackingAuditServiceMock.Object.AddIngestionTrackingAuditAsync(invalidIngestionTrackingAudit);
 
             IngestionTrackingAuditValidationException actualIngestionTrackingAuditValidationException =
-                await Assert.ThrowsAsync<IngestionTrackingAuditValidationException>(addIngestionTrackingAuditTask.AsTask);
+                await Assert.ThrowsAsync<IngestionTrackingAuditValidationException>(
+                    addIngestionTrackingAuditTask.AsTask);
 
             // then
             actualIngestionTrackingAuditValidationException.Should()

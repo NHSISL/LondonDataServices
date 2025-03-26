@@ -16,7 +16,7 @@ using RESTFulSense.Controllers;
 
 namespace LHDS.AdminPortal.Api.Controllers
 {
-    [Authorize(Roles = "ISL.LDS.AdminSpa.Administrators, ISL.LDS.AdminSpa.Configurations")]
+    [Authorize(Roles = "ISL.LDS.AdminApi.Administrators, ISL.LDS.AdminApi.Configurations")]
     [ApiController]
     [Route("api/[controller]")]
     public class SubscriberCredentialsController : RESTFulController
@@ -26,7 +26,7 @@ namespace LHDS.AdminPortal.Api.Controllers
         public SubscriberCredentialsController(ISubscriberCredentialOrchestration subscriberCredentialOrchestration) =>
             this.subscriberCredentialOrchestration = subscriberCredentialOrchestration;
 
-        [Authorize(Roles = "ISL.LDS.AdminSpa.Administrators, ISL.LDS.AdminSpa.SubscriberCredentials")]
+        [Authorize(Roles = "ISL.LDS.AdminApi.Administrators, ISL.LDS.AdminApi.SubscriberCredentials")]
         [HttpPost]
         public async ValueTask<ActionResult<SubscriberCredential>> PostSubscriberCredentialAsync(
             [FromBody] SubscriberCredential subscriberCredential)
@@ -61,7 +61,7 @@ namespace LHDS.AdminPortal.Api.Controllers
             }
         }
 
-        [Authorize(Roles = "ISL.LDS.AdminSpa.Administrators, ISL.LDS.AdminSpa.SubscriberCredentials")]
+        [Authorize(Roles = "ISL.LDS.AdminApi.Administrators, ISL.LDS.AdminApi.SubscriberCredentials")]
         [HttpPost("regeneratekeys")]
         public async ValueTask<ActionResult<SubscriberCredential>> PostSubscriberCredentialAndRegenerateKeysAsync(
             [FromBody] SubscriberCredential subscriberCredential)
@@ -103,7 +103,7 @@ namespace LHDS.AdminPortal.Api.Controllers
 #if DEBUG
         [EnableQuery(PageSize = 5000)]
 #endif
-        [Authorize(Roles = "ISL.LDS.AdminSpa.Administrators, ISL.LDS.AdminSpa.SubscriberCredentials, ISL.LDS.AdminSpa.ReadOnly")]
+        [Authorize(Roles = "ISL.LDS.AdminApi.Administrators, ISL.LDS.AdminApi.SubscriberCredentials, ISL.LDS.AdminApi.ReadOnly")]
         public async ValueTask<ActionResult<IQueryable<SubscriberCredential>>> Get()
         {
             try
@@ -125,7 +125,7 @@ namespace LHDS.AdminPortal.Api.Controllers
             }
         }
 
-        [Authorize(Roles = "ISL.LDS.AdminSpa.Administrators, ISL.LDS.AdminSpa.SubscriberCredentials, ISL.LDS.AdminSpa.ReadOnly")]
+        [Authorize(Roles = "ISL.LDS.AdminApi.Administrators, ISL.LDS.AdminApi.SubscriberCredentials, ISL.LDS.AdminApi.ReadOnly")]
         [HttpGet("{subscriberCredentialId}")]
         public async ValueTask<ActionResult<SubscriberCredential>> GetSubscriberCredentialByIdAsync(
             Guid subscriberCredentialId)
@@ -159,7 +159,7 @@ namespace LHDS.AdminPortal.Api.Controllers
             }
         }
 
-        [Authorize(Roles = "ISL.LDS.AdminSpa.Administrators, ISL.LDS.AdminSpa.SubscriberCredentials")]
+        [Authorize(Roles = "ISL.LDS.AdminApi.Administrators, ISL.LDS.AdminApi.SubscriberCredentials")]
         [HttpPut]
         public async ValueTask<ActionResult<SubscriberCredential>> PutSubscriberCredentialAsync(
             [FromBody] SubscriberCredential subscriberCredential)
@@ -199,7 +199,7 @@ namespace LHDS.AdminPortal.Api.Controllers
             }
         }
 
-        [Authorize(Roles = "ISL.LDS.AdminSpa.Administrators, ISL.LDS.AdminSpa.SubscriberCredentials")]
+        [Authorize(Roles = "ISL.LDS.AdminApi.Administrators, ISL.LDS.AdminApi.SubscriberCredentials")]
         [HttpPut("regeneratekeys")]
         public async ValueTask<ActionResult<SubscriberCredential>> PutSubscriberCredentialAndRegenerateKeysAsync(
             [FromBody] SubscriberCredential subscriberCredential)
@@ -239,7 +239,7 @@ namespace LHDS.AdminPortal.Api.Controllers
             }
         }
 
-        [Authorize(Roles = "ISL.LDS.AdminSpa.Administrators, ISL.LDS.AdminSpa.SubscriberCredentials")]
+        [Authorize(Roles = "ISL.LDS.AdminApi.Administrators, ISL.LDS.AdminApi.SubscriberCredentials")]
         [HttpDelete("{subscriberCredentialId}")]
         public async ValueTask<ActionResult<SubscriberCredential>> DeleteSubscriberCredentialByIdAsync(
             Guid subscriberCredentialId)

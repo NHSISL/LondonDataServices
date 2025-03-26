@@ -443,7 +443,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.IngestionTrackingAudits
 
             var invalidIngestionTrackingAuditException =
                 new InvalidIngestionTrackingAuditException(
-                    message: "Invalid ingestionTrackingAudit. Please correct the errors and try again.");
+                    message: "Invalid IngestionTrackingAudit. Please correct the errors and try again.");
 
             invalidIngestionTrackingAuditException.AddData(
                 key: nameof(IngestionTrackingAudit.CreatedDate),

@@ -18,7 +18,7 @@ using Microsoft.AspNetCore.Authorization;
 
 namespace LHDS.AdminPortal.Api.Controllers
 {
-    [Authorize(Roles = "ISL.LDS.AdminSpa.Configurations,ISL.LDS.AdminSpa.Administrators")]
+    [Authorize(Roles = "ISL.LDS.AdminApi.Configurations,ISL.LDS.AdminApi.Administrators")]
     [ApiController]
     [Route("api/[controller]")]
     public class DataSetsController : RESTFulController
@@ -28,7 +28,7 @@ namespace LHDS.AdminPortal.Api.Controllers
         public DataSetsController(IDataSetService dataSetService) =>
             this.dataSetService = dataSetService;
 
-        [Authorize(Roles = "ISL.LDS.AdminSpa.Configurations,ISL.LDS.AdminSpa.Administrators")]
+        [Authorize(Roles = "ISL.LDS.AdminApi.Configurations,ISL.LDS.AdminApi.Administrators")]
         [HttpPost]
         public async ValueTask<ActionResult<DataSet>> PostDataSetAsync(DataSet dataSet)
         {
@@ -70,7 +70,7 @@ namespace LHDS.AdminPortal.Api.Controllers
 #if DEBUG
         [EnableQuery(PageSize = 5000)]
 #endif
-        [Authorize(Roles = "ISL.LDS.AdminSpa.Configurations,ISL.LDS.AdminSpa.Administrators,ISL.LDS.AdminSpa.ReadOnly")]
+        [Authorize(Roles = "ISL.LDS.AdminApi.Configurations,ISL.LDS.AdminApi.Administrators,ISL.LDS.AdminApi.ReadOnly")]
         public async ValueTask<ActionResult<IQueryable<DataSet>>> Get()
         {
             try
@@ -90,7 +90,7 @@ namespace LHDS.AdminPortal.Api.Controllers
             }
         }
 
-        [Authorize(Roles = "ISL.LDS.AdminSpa.Configurations,ISL.LDS.AdminSpa.Administrators,ISL.LDS.AdminSpa.ReadOnly")]
+        [Authorize(Roles = "ISL.LDS.AdminApi.Configurations,ISL.LDS.AdminApi.Administrators,ISL.LDS.AdminApi.ReadOnly")]
         [HttpGet("{dataSetId}")]
         public async ValueTask<ActionResult<DataSet>> GetDataSetByIdAsync(Guid dataSetId)
         {
@@ -119,7 +119,7 @@ namespace LHDS.AdminPortal.Api.Controllers
             }
         }
 
-        [Authorize(Roles = "ISL.LDS.AdminSpa.Configurations,ISL.LDS.AdminSpa.Administrators")]
+        [Authorize(Roles = "ISL.LDS.AdminApi.Configurations,ISL.LDS.AdminApi.Administrators")]
         [HttpPut]
         public async ValueTask<ActionResult<DataSet>> PutDataSetAsync(DataSet dataSet)
         {
@@ -159,7 +159,7 @@ namespace LHDS.AdminPortal.Api.Controllers
             }
         }
 
-        [Authorize(Roles = "ISL.LDS.AdminSpa.Configurations,ISL.LDS.AdminSpa.Administrators")]
+        [Authorize(Roles = "ISL.LDS.AdminApi.Configurations,ISL.LDS.AdminApi.Administrators")]
         [HttpDelete("{dataSetId}")]
         public async ValueTask<ActionResult<DataSet>> DeleteDataSetByIdAsync(Guid dataSetId)
         {

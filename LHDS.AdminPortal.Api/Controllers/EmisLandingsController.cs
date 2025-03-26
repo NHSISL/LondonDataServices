@@ -21,7 +21,7 @@ using Microsoft.AspNetCore.Authorization;
 
 namespace LHDS.AdminPortal.Api.Controllers
 {
-    [Authorize(Roles = "ISL.LDS.AdminSpa.EmisLanding,ISL.LDS.AdminSpa.Administrators")]
+    [Authorize(Roles = "ISL.LDS.AdminApi.EmisLanding,ISL.LDS.AdminApi.Administrators")]
     [ApiController]
     [Route("api/[controller]")]
     public class EmisLandingsController : RESTFulController
@@ -75,7 +75,7 @@ namespace LHDS.AdminPortal.Api.Controllers
             }
         }
 
-        [Authorize(Roles = "ISL.LDS.AdminSpa.EmisLanding,ISL.LDS.AdminSpa.Administrators")]
+        [Authorize(Roles = "ISL.LDS.AdminApi.EmisLanding,ISL.LDS.AdminApi.Administrators")]
         [HttpPut("decrypt/{ingestionTrackingId}")]
         public async ValueTask<ActionResult> RedecryptDocumentByIngestionTrackingIdAsync(Guid ingestionTrackingId)
         {

@@ -18,7 +18,7 @@ using Microsoft.AspNetCore.Authorization;
 
 namespace LHDS.AdminPortal.Api.Controllers
 {
-    [Authorize(Roles = "ISL.LDS.AdminSpa.Administrators, ISL.LDS.AdminSpa.Configurations")]
+    [Authorize(Roles = "ISL.LDS.AdminApi.Administrators, ISL.LDS.AdminApi.Configurations")]
     [ApiController]
     [Route("api/[controller]")]
     public class TerminologyArtifactsController : RESTFulController
@@ -28,7 +28,7 @@ namespace LHDS.AdminPortal.Api.Controllers
         public TerminologyArtifactsController(ITerminologyArtifactService terminologyArtifactService) =>
             this.terminologyArtifactService = terminologyArtifactService;
 
-        [Authorize(Roles = "ISL.LDS.AdminSpa.Administrators, ISL.LDS.AdminSpa.Configurations")]
+        [Authorize(Roles = "ISL.LDS.AdminApi.Administrators, ISL.LDS.AdminApi.Configurations")]
         [HttpPost]
         public async ValueTask<ActionResult<TerminologyArtifact>> PostTerminologyArtifactAsync(
             TerminologyArtifact terminologyArtifact)
@@ -66,7 +66,7 @@ namespace LHDS.AdminPortal.Api.Controllers
             }
         }
 
-        [Authorize(Roles = "ISL.LDS.AdminSpa.TerminologyArtifact, ISL.LDS.AdminSpa.Administrators, ISL.LDS.AdminSpa.ReadOnly")]
+        [Authorize(Roles = "ISL.LDS.AdminApi.TerminologyArtifact, ISL.LDS.AdminApi.Administrators, ISL.LDS.AdminApi.ReadOnly")]
         [HttpGet]
 #if !DEBUG
         [EnableQuery(PageSize = 50)]
@@ -93,7 +93,7 @@ namespace LHDS.AdminPortal.Api.Controllers
             }
         }
 
-        [Authorize(Roles = "ISL.LDS.AdminSpa.Administrators, ISL.LDS.AdminSpa.Configurations, ISL.LDS.AdminSpa.ReadOnly")]
+        [Authorize(Roles = "ISL.LDS.AdminApi.Administrators, ISL.LDS.AdminApi.Configurations, ISL.LDS.AdminApi.ReadOnly")]
         [HttpGet("{terminologyArtifactId}")]
         public async ValueTask<ActionResult<TerminologyArtifact>> GetTerminologyArtifactByIdAsync(
             Guid terminologyArtifactId)
@@ -124,7 +124,7 @@ namespace LHDS.AdminPortal.Api.Controllers
             }
         }
 
-        [Authorize(Roles = "ISL.LDS.AdminSpa.Administrators, ISL.LDS.AdminSpa.Configurations")]
+        [Authorize(Roles = "ISL.LDS.AdminApi.Administrators, ISL.LDS.AdminApi.Configurations")]
         [HttpPut]
         public async ValueTask<ActionResult<TerminologyArtifact>> PutTerminologyArtifactAsync(
             TerminologyArtifact terminologyArtifact)
@@ -167,7 +167,7 @@ namespace LHDS.AdminPortal.Api.Controllers
             }
         }
 
-        [Authorize(Roles = "ISL.LDS.AdminSpa.Administrators, ISL.LDS.AdminSpa.Configurations")]
+        [Authorize(Roles = "ISL.LDS.AdminApi.Administrators, ISL.LDS.AdminApi.Configurations")]
         [HttpDelete("{terminologyArtifactId}")]
         public async ValueTask<ActionResult<TerminologyArtifact>> DeleteTerminologyArtifactByIdAsync(
             Guid terminologyArtifactId)

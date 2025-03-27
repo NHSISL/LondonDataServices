@@ -19,7 +19,7 @@ using Microsoft.AspNetCore.Authorization;
 
 namespace LHDS.AdminPortal.Api.Controllers
 {
-    [Authorize(Roles = "ISL.LDS.AdminSpa.Administrators,ISL.LDS.AdminSpa.IngestionTrackingAudit")]
+    [Authorize(Roles = "ISL.LDS.AdminApi.Administrators,ISL.LDS.AdminApi.IngestionTrackingAudit")]
     [ApiController]
     [Route("api/[controller]")]
     public class IngestionTrackingAuditsController : RESTFulController
@@ -74,7 +74,7 @@ namespace LHDS.AdminPortal.Api.Controllers
         [EnableQuery(PageSize = 5000)]
 #endif
         [Authorize(Roles =
-            "ISL.LDS.AdminSpa.Administrators,ISL.LDS.AdminSpa.IngestionTrackingAudit,ISL.LDS.AdminSpa.ReadOnly")]
+            "ISL.LDS.AdminApi.Administrators,ISL.LDS.AdminApi.IngestionTrackingAudit,ISL.LDS.AdminApi.ReadOnly")]
         public async ValueTask<ActionResult<IQueryable<IngestionTrackingAudit>>> Get()
         {
             try
@@ -95,7 +95,7 @@ namespace LHDS.AdminPortal.Api.Controllers
         }
 
         [Authorize(Roles =
-            "ISL.LDS.AdminSpa.Administrators,ISL.LDS.AdminSpa.IngestionTrackingAudit,ISL.LDS.AdminSpa.ReadOnly")]
+            "ISL.LDS.AdminApi.Administrators,ISL.LDS.AdminApi.IngestionTrackingAudit,ISL.LDS.AdminApi.ReadOnly")]
         [HttpGet("{ingestionTrackingAuditId}")]
         public async ValueTask<ActionResult<IngestionTrackingAudit>> GetAuditByIdAsync(Guid ingestionTrackingAuditId)
         {

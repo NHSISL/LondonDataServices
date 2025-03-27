@@ -32,7 +32,7 @@ namespace LHDS.Core.Tests.Integration.Addresses.Console
             claimsPrincipal.AddIdentity(new ClaimsIdentity(new[]
             {
                 new Claim(ClaimTypes.Name, "TestUser"),
-                new Claim(ClaimTypes.Role, "ISL.LDS.AdminSpa.Administrators")
+                new Claim(ClaimTypes.Role, "ISL.LDS.AdminApi.Administrators")
             }, "TestAuthType"));
 
             var serviceProvider = new ServiceCollection()

@@ -17,7 +17,7 @@ namespace LHDS.AdminPortal.Api.Tests.Unit.Controllers.Addresses
     {
         [Fact]
         public void DeleteShouldHaveRoleAttributeWithRoles()
-        {
+         {
             // given 
             var controllerType = typeof(AddressesController);
             var methodInfo = controllerType.GetMethod("DeleteAddressByIdAsync");
@@ -26,8 +26,8 @@ namespace LHDS.AdminPortal.Api.Tests.Unit.Controllers.Addresses
 
             List<string> expectedAttributeValues = new List<string>()
             {
-                "ISL.LDS.AdminSpa.Addresses",
-                "ISL.LDS.AdminSpa.Administrators"
+                "ISL.LDS.AdminApi.Addresses",
+                "ISL.LDS.AdminApi.Administrators"
             };
 
             // when

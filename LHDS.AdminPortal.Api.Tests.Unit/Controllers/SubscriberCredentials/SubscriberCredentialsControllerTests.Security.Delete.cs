@@ -28,8 +28,8 @@ namespace LHDS.AdminPortal.Api.Tests.Unit.Controllers.SubscriberCredentials
 
             List<string> expectedAttributeValues = new List<string>
             {
-                "ISL.LDS.AdminSpa.Administrators",
-                "ISL.LDS.AdminSpa.SubscriberCredentials"
+                "ISL.LDS.AdminApi.Administrators",
+                "ISL.LDS.AdminApi.SubscriberCredentials"
             };
 
             // when

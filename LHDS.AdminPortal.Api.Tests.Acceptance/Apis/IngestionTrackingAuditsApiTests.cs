@@ -51,9 +51,11 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.IngestionTrackingAudits
         private async ValueTask<IngestionTrackingAudit> PostRandomIngestionTrackingAuditAsync(Guid ingestionTrackingId)
         {
             IngestionTrackingAudit randomAudit = CreateRandomIngestionTrackingAudit(ingestionTrackingId);
-            await this.apiBroker.PostIngestionTrackingAuditAsync(randomAudit);
 
-            return randomAudit;
+            IngestionTrackingAudit storageAudit = 
+                await this.apiBroker.PostIngestionTrackingAuditAsync(randomAudit);
+
+            return storageAudit;
         }
 
         private async ValueTask<List<IngestionTrackingAudit>> PostRandomIngestionTrackingAuditsAsync(Guid ingestionTrackingId)
@@ -93,9 +95,11 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.IngestionTrackingAudits
         private async ValueTask<IngestionTracking> PostRandomIngestionTrackingAsync(Guid supplierId)
         {
             IngestionTracking randomIngestionTracking = CreateRandomIngestionTracking(supplierId);
-            await this.apiBroker.PostIngestionTrackingAsync(randomIngestionTracking);
 
-            return randomIngestionTracking;
+            IngestionTracking storageIngestionTracking = 
+                await this.apiBroker.PostIngestionTrackingAsync(randomIngestionTracking);
+
+            return storageIngestionTracking;
         }
 
         private static IngestionTracking CreateRandomIngestionTracking(Guid supplierId) =>

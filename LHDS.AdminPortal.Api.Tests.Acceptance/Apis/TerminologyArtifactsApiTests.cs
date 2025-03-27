@@ -45,9 +45,11 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.TerminologyArtifacts
         private async ValueTask<TerminologyArtifact> PostRandomTerminologyArtifactAsync()
         {
             TerminologyArtifact randomTerminologyArtifact = CreateRandomTerminologyArtifact();
-            await this.apiBroker.PostTerminologyArtifactAsync(randomTerminologyArtifact);
 
-            return randomTerminologyArtifact;
+            TerminologyArtifact storageTerminologyArtifact = 
+                await this.apiBroker.PostTerminologyArtifactAsync(randomTerminologyArtifact);
+
+            return storageTerminologyArtifact;
         }
 
         private async ValueTask<List<TerminologyArtifact>> PostRandomTerminologyArtifactsAsync()

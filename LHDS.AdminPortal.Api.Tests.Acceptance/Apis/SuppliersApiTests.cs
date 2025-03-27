@@ -45,9 +45,9 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.Suppliers
         private async ValueTask<Supplier> PostRandomSupplierAsync()
         {
             Supplier randomSupplier = CreateRandomSupplier();
-            await this.apiBroker.PostSupplierAsync(randomSupplier);
+            Supplier storageSupplier =  await this.apiBroker.PostSupplierAsync(randomSupplier);
 
-            return randomSupplier;
+            return storageSupplier;
         }
 
         private async ValueTask<List<Supplier>> PostRandomSuppliersAsync()

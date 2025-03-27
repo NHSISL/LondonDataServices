@@ -26,9 +26,9 @@ namespace LHDS.AdminPortal.Api.Tests.Unit.Controllers.IngestionTrackings
 
             List<string> expectedAttributeValues = new List<string>
             {
-                "ISL.LDS.AdminSpa.Administrators",
-                "ISL.LDS.AdminSpa.IngestionTracking",
-                "ISL.LDS.AdminSpa.ReadOnly"
+                "ISL.LDS.AdminApi.Administrators",
+                "ISL.LDS.AdminApi.IngestionTracking",
+                "ISL.LDS.AdminApi.ReadOnly"
             };
 
             // when

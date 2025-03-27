@@ -29,7 +29,12 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.SubscriberAgreements
                 await this.apiBroker.GetSubscriberAgreementByIdAsync(inputSubscriberAgreement.Id);
 
             // then
-            actualSubscriberAgreement.Should().BeEquivalentTo(expectedSubscriberAgreement);
+            actualSubscriberAgreement.Should().BeEquivalentTo(expectedSubscriberAgreement, options => options
+                .Excluding(property => property.CreatedBy)
+                .Excluding(property => property.CreatedDate)
+                .Excluding(property => property.UpdatedBy)
+                .Excluding(property => property.UpdatedDate));
+
             await this.apiBroker.DeleteSubscriberAgreementByIdAsync(actualSubscriberAgreement.Id);
         }
 
@@ -41,13 +46,21 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.SubscriberAgreements
             List<SubscriberAgreement> expectedSubscriberAgreements = randomSubscriberAgreements;
 
             // when
-            List<SubscriberAgreement> actualSubscriberAgreements = await this.apiBroker.GetAllSubscriberAgreementsAsync();
+            List<SubscriberAgreement> actualSubscriberAgreements = 
+                await this.apiBroker.GetAllSubscriberAgreementsAsync();
 
             // then
             foreach (SubscriberAgreement expectedSubscriberAgreement in expectedSubscriberAgreements)
             {
-                SubscriberAgreement actualSubscriberAgreement = actualSubscriberAgreements.Single(approval => approval.Id == expectedSubscriberAgreement.Id);
-                actualSubscriberAgreement.Should().BeEquivalentTo(expectedSubscriberAgreement);
+                SubscriberAgreement actualSubscriberAgreement = 
+                    actualSubscriberAgreements.Single(approval => approval.Id == expectedSubscriberAgreement.Id);
+
+                actualSubscriberAgreement.Should().BeEquivalentTo(expectedSubscriberAgreement, options => options
+                    .Excluding(property => property.CreatedBy)
+                    .Excluding(property => property.CreatedDate)
+                    .Excluding(property => property.UpdatedBy)
+                    .Excluding(property => property.UpdatedDate));
+                    
                 await this.apiBroker.DeleteSubscriberAgreementByIdAsync(actualSubscriberAgreement.Id);
             }
         }
@@ -60,10 +73,16 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.SubscriberAgreements
             SubscriberAgreement expectedSubscriberAgreement = randomSubscriberAgreement;
 
             // when
-            SubscriberAgreement actualSubscriberAgreement = await this.apiBroker.GetSubscriberAgreementByIdAsync(randomSubscriberAgreement.Id);
+            SubscriberAgreement actualSubscriberAgreement = 
+                await this.apiBroker.GetSubscriberAgreementByIdAsync(randomSubscriberAgreement.Id);
 
             // then
-            actualSubscriberAgreement.Should().BeEquivalentTo(expectedSubscriberAgreement);
+            actualSubscriberAgreement.Should().BeEquivalentTo(expectedSubscriberAgreement, options => options
+                .Excluding(property => property.CreatedBy)
+                .Excluding(property => property.CreatedDate)
+                .Excluding(property => property.UpdatedBy)
+                .Excluding(property => property.UpdatedDate));
+
             await this.apiBroker.DeleteSubscriberAgreementByIdAsync(actualSubscriberAgreement.Id);
         }
 
@@ -72,14 +91,22 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.SubscriberAgreements
         {
             // given
             SubscriberAgreement randomSubscriberAgreement = await PostRandomSubscriberAgreementAsync();
-            SubscriberAgreement modifiedSubscriberAgreement = UpdateSubscriberAgreementWithRandomValues(randomSubscriberAgreement);
+
+            SubscriberAgreement modifiedSubscriberAgreement = 
+                UpdateSubscriberAgreementWithRandomValues(randomSubscriberAgreement);
 
             // when
             await this.apiBroker.PutSubscriberAgreementAsync(modifiedSubscriberAgreement);
-            SubscriberAgreement actualSubscriberAgreement = await this.apiBroker.GetSubscriberAgreementByIdAsync(randomSubscriberAgreement.Id);
+
+            SubscriberAgreement actualSubscriberAgreement = 
+                await this.apiBroker.GetSubscriberAgreementByIdAsync(randomSubscriberAgreement.Id);
 
             // then
-            actualSubscriberAgreement.Should().BeEquivalentTo(modifiedSubscriberAgreement);
+            actualSubscriberAgreement.Should().BeEquivalentTo(modifiedSubscriberAgreement, options => options
+                .Excluding(property => property.CreatedBy)
+                .Excluding(property => property.CreatedDate)
+                .Excluding(property => property.UpdatedBy)
+                .Excluding(property => property.UpdatedDate));
             await this.apiBroker.DeleteSubscriberAgreementByIdAsync(actualSubscriberAgreement.Id);
         }
 
@@ -99,7 +126,12 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.SubscriberAgreements
                 this.apiBroker.GetSubscriberAgreementByIdAsync(inputSubscriberAgreement.Id);
 
             // then
-            deletedSubscriberAgreement.Should().BeEquivalentTo(expectedSubscriberAgreement);
+            deletedSubscriberAgreement.Should().BeEquivalentTo(expectedSubscriberAgreement, options => options
+                .Excluding(property => property.CreatedBy)
+                .Excluding(property => property.CreatedDate)
+                .Excluding(property => property.UpdatedBy)
+                .Excluding(property => property.UpdatedDate));
+
             await Assert.ThrowsAsync<HttpResponseNotFoundException>(getSubscriberAgreementbyIdTask.AsTask);
         }
     }

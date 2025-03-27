@@ -18,7 +18,7 @@ using Microsoft.AspNetCore.Authorization;
 
 namespace LHDS.AdminPortal.Api.Controllers
 {
-    [Authorize(Roles = "ISL.LDS.AdminSpa.Administrators, ISL.LDS.AdminSpa.Configurations")]
+    [Authorize(Roles = "ISL.LDS.AdminApi.Administrators, ISL.LDS.AdminApi.Configurations")]
     [ApiController]
     [Route("api/[controller]")]
     public class SuppliersController : RESTFulController
@@ -29,7 +29,7 @@ namespace LHDS.AdminPortal.Api.Controllers
             this.supplierService = supplierService;
 
         [HttpPost]
-        [Authorize(Roles = "ISL.LDS.AdminSpa.Administrators, ISL.LDS.AdminSpa.Suppliers")]
+        [Authorize(Roles = "ISL.LDS.AdminApi.Administrators, ISL.LDS.AdminApi.Suppliers")]
         public async ValueTask<ActionResult<Supplier>> PostSupplierAsync(Supplier supplier)
         {
             try
@@ -70,7 +70,7 @@ namespace LHDS.AdminPortal.Api.Controllers
 #if DEBUG
         [EnableQuery(PageSize = 5000)]
 #endif
-        [Authorize(Roles = "ISL.LDS.AdminSpa.Administrators, ISL.LDS.AdminSpa.Suppliers, ISL.LDS.AdminSpa.ReadOnly")]
+        [Authorize(Roles = "ISL.LDS.AdminApi.Administrators, ISL.LDS.AdminApi.Suppliers, ISL.LDS.AdminApi.ReadOnly")]
         public async ValueTask<ActionResult<IQueryable<Supplier>>> Get()
         {
             try
@@ -91,7 +91,7 @@ namespace LHDS.AdminPortal.Api.Controllers
         }
 
         [HttpGet("{supplierId}")]
-        [Authorize(Roles = "ISL.LDS.AdminSpa.Administrators, ISL.LDS.AdminSpa.Suppliers, ISL.LDS.AdminSpa.ReadOnly")]
+        [Authorize(Roles = "ISL.LDS.AdminApi.Administrators, ISL.LDS.AdminApi.Suppliers, ISL.LDS.AdminApi.ReadOnly")]
         public async ValueTask<ActionResult<Supplier>> GetSupplierByIdAsync(Guid supplierId)
         {
             try
@@ -120,7 +120,7 @@ namespace LHDS.AdminPortal.Api.Controllers
         }
 
         [HttpPut]
-        [Authorize(Roles = "ISL.LDS.AdminSpa.Administrators, ISL.LDS.AdminSpa.Suppliers")]
+        [Authorize(Roles = "ISL.LDS.AdminApi.Administrators, ISL.LDS.AdminApi.Suppliers")]
         public async ValueTask<ActionResult<Supplier>> PutSupplierAsync(Supplier supplier)
         {
             try
@@ -160,7 +160,7 @@ namespace LHDS.AdminPortal.Api.Controllers
         }
 
         [HttpDelete("{supplierId}")]
-        [Authorize(Roles = "ISL.LDS.AdminSpa.Administrators, ISL.LDS.AdminSpa.Suppliers")]
+        [Authorize(Roles = "ISL.LDS.AdminApi.Administrators, ISL.LDS.AdminApi.Suppliers")]
         public async ValueTask<ActionResult<Supplier>> DeleteSupplierByIdAsync(Guid supplierId)
         {
             try

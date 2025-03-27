@@ -29,7 +29,12 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.Suppliers
                 await this.apiBroker.GetSupplierByIdAsync(inputSupplier.Id);
 
             // then
-            actualSupplier.Should().BeEquivalentTo(expectedSupplier);
+            actualSupplier.Should().BeEquivalentTo(expectedSupplier, options => options
+                .Excluding(property => property.CreatedBy)
+                .Excluding(property => property.CreatedDate)
+                .Excluding(property => property.UpdatedBy)
+                .Excluding(property => property.UpdatedDate));
+
             await this.apiBroker.DeleteSupplierByIdAsync(actualSupplier.Id);
         }
 
@@ -47,7 +52,13 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.Suppliers
             foreach (Supplier expectedSupplier in expectedSuppliers)
             {
                 Supplier actualSupplier = actualSuppliers.Single(approval => approval.Id == expectedSupplier.Id);
-                actualSupplier.Should().BeEquivalentTo(expectedSupplier);
+
+                actualSupplier.Should().BeEquivalentTo(expectedSupplier, options => options
+                .Excluding(property => property.CreatedBy)
+                .Excluding(property => property.CreatedDate)
+                .Excluding(property => property.UpdatedBy)
+                .Excluding(property => property.UpdatedDate));
+
                 await this.apiBroker.DeleteSupplierByIdAsync(actualSupplier.Id);
             }
         }
@@ -63,7 +74,12 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.Suppliers
             Supplier actualSupplier = await this.apiBroker.GetSupplierByIdAsync(randomSupplier.Id);
 
             // then
-            actualSupplier.Should().BeEquivalentTo(expectedSupplier);
+            actualSupplier.Should().BeEquivalentTo(expectedSupplier, options => options
+                .Excluding(property => property.CreatedBy)
+                .Excluding(property => property.CreatedDate)
+                .Excluding(property => property.UpdatedBy)
+                .Excluding(property => property.UpdatedDate));
+
             await this.apiBroker.DeleteSupplierByIdAsync(actualSupplier.Id);
         }
 
@@ -79,7 +95,12 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.Suppliers
             Supplier actualSupplier = await this.apiBroker.GetSupplierByIdAsync(randomSupplier.Id);
 
             // then
-            actualSupplier.Should().BeEquivalentTo(modifiedSupplier);
+            actualSupplier.Should().BeEquivalentTo(modifiedSupplier, options => options
+                .Excluding(property => property.CreatedBy)
+                .Excluding(property => property.CreatedDate)
+                .Excluding(property => property.UpdatedBy)
+                .Excluding(property => property.UpdatedDate));
+
             await this.apiBroker.DeleteSupplierByIdAsync(actualSupplier.Id);
         }
 
@@ -99,7 +120,12 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.Suppliers
                 this.apiBroker.GetSupplierByIdAsync(inputSupplier.Id);
 
             // then
-            deletedSupplier.Should().BeEquivalentTo(expectedSupplier);
+            deletedSupplier.Should().BeEquivalentTo(expectedSupplier, options => options
+                .Excluding(property => property.CreatedBy)
+                .Excluding(property => property.CreatedDate)
+                .Excluding(property => property.UpdatedBy)
+                .Excluding(property => property.UpdatedDate));
+
             await Assert.ThrowsAsync<HttpResponseNotFoundException>(getSupplierbyIdTask.AsTask);
         }
     }

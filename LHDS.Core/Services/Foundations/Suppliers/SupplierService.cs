@@ -35,10 +35,11 @@ namespace LHDS.Core.Services.Foundations.Suppliers
         public ValueTask<Supplier> AddSupplierAsync(Supplier supplier) =>
             TryCatch(async () =>
             {
-                await ValidateSupplierOnAddAsync(supplier);
+                Supplier supplierWithAddAuditApplied = await ApplyAddSupplierAsync(supplier);
+                await ValidateSupplierOnAddAsync(supplierWithAddAuditApplied);
 
                 Supplier maybeSupplier =
-                   await this.storageBroker.SelectSupplierByIdAsync(supplier.Id);
+                   await this.storageBroker.SelectSupplierByIdAsync(supplierWithAddAuditApplied.Id);
 
                 if (maybeSupplier is null)
                 {
@@ -67,7 +68,8 @@ namespace LHDS.Core.Services.Foundations.Suppliers
         public ValueTask<Supplier> ModifySupplierAsync(Supplier supplier) =>
             TryCatch(async () =>
             {
-                await ValidateSupplierOnModifyAsync(supplier);
+                Supplier supplierWithModifyAuditApplied = await ApplyModifyAuditAsync(supplier);
+                await ValidateSupplierOnModifyAsync(supplierWithModifyAuditApplied);
 
                 Supplier maybeSupplier =
                     await this.storageBroker.SelectSupplierByIdAsync(supplier.Id);
@@ -81,14 +83,59 @@ namespace LHDS.Core.Services.Foundations.Suppliers
         public ValueTask<Supplier> RemoveSupplierByIdAsync(Guid supplierId) =>
             TryCatch(async () =>
             {
-                ValidateSupplierId(supplierId);
+                ValidateSupplierId(supplierId: supplierId);
 
                 Supplier maybeSupplier = await this.storageBroker
                     .SelectSupplierByIdAsync(supplierId);
 
                 ValidateStorageSupplier(maybeSupplier, supplierId);
 
-                return await this.storageBroker.DeleteSupplierAsync(maybeSupplier);
+                Supplier supplierWithDeleteAuditApplied =
+                    await ApplyDeleteAuditAsync(maybeSupplier);
+
+                Supplier updatedSupplier =
+                    await this.storageBroker.UpdateSupplierAsync(supplierWithDeleteAuditApplied);
+
+                await ValidateAgainstStorageSupplierOnDeleteAsync(
+                    supplier: updatedSupplier,
+                    maybeSupplier: supplierWithDeleteAuditApplied);
+
+                return await this.storageBroker.DeleteSupplierAsync(updatedSupplier);
             });
+
+        virtual internal async ValueTask<Supplier> ApplyAddSupplierAsync(Supplier supplier)
+        {
+            ValidateSupplierIsNotNull(supplier);
+            var auditDateTimeOffset = await this.dateTimeBroker.GetCurrentDateTimeOffsetAsync();
+            var auditUser = await this.securityBroker.GetCurrentUserAsync();
+            supplier.CreatedBy = auditUser?.EntraUserId.ToString() ?? string.Empty;
+            supplier.CreatedDate = auditDateTimeOffset;
+            supplier.UpdatedBy = auditUser?.EntraUserId.ToString() ?? string.Empty;
+            supplier.UpdatedDate = auditDateTimeOffset;
+
+            return supplier;
+        }
+
+        virtual internal async ValueTask<Supplier> ApplyModifyAuditAsync(Supplier supplier)
+        {
+            ValidateSupplierIsNotNull(supplier);
+            var auditDateTimeOffset = await this.dateTimeBroker.GetCurrentDateTimeOffsetAsync();
+            var auditUser = await this.securityBroker.GetCurrentUserAsync();
+            supplier.UpdatedBy = auditUser?.EntraUserId.ToString() ?? string.Empty;
+            supplier.UpdatedDate = auditDateTimeOffset;
+
+            return supplier;
+        }
+
+        virtual internal async ValueTask<Supplier> ApplyDeleteAuditAsync(Supplier supplier)
+        {
+            ValidateSupplierIsNotNull(supplier);
+            var auditDateTimeOffset = await this.dateTimeBroker.GetCurrentDateTimeOffsetAsync();
+            var auditUser = await this.securityBroker.GetCurrentUserAsync();
+            supplier.UpdatedBy = auditUser?.EntraUserId.ToString() ?? string.Empty;
+            supplier.UpdatedDate = auditDateTimeOffset;
+
+            return supplier;
+        }
     }
 }

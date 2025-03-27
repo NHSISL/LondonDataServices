@@ -7,6 +7,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using LHDS.Core.Brokers.DateTimes;
 using LHDS.Core.Brokers.Loggings;
+using LHDS.Core.Brokers.Securities;
 using LHDS.Core.Brokers.Storages.Sql;
 using LHDS.Core.Models.Foundations.TerminologyArtifacts;
 
@@ -16,22 +17,28 @@ namespace LHDS.Core.Services.Foundations.TerminologyArtifacts
     {
         private readonly IStorageBroker storageBroker;
         private readonly IDateTimeBroker dateTimeBroker;
+        private readonly ISecurityBroker securityBroker;
         private readonly ILoggingBroker loggingBroker;
 
         public TerminologyArtifactService(
             IStorageBroker storageBroker,
             IDateTimeBroker dateTimeBroker,
+            ISecurityBroker securityBroker,
             ILoggingBroker loggingBroker)
         {
             this.storageBroker = storageBroker;
             this.dateTimeBroker = dateTimeBroker;
+            this.securityBroker = securityBroker;
             this.loggingBroker = loggingBroker;
         }
 
         public ValueTask<TerminologyArtifact> AddTerminologyArtifactAsync(TerminologyArtifact terminologyArtifact) =>
             TryCatch(async () =>
             {
-                await ValidateTerminologyArtifactOnAddAsync(terminologyArtifact);
+                TerminologyArtifact terminologyArtifactWithAddAuditApplied = 
+                    await ApplyAddTerminologyArtifactAsync(terminologyArtifact);
+
+                await ValidateTerminologyArtifactOnAddAsync(terminologyArtifactWithAddAuditApplied);
 
                 return await this.storageBroker.InsertTerminologyArtifactAsync(terminologyArtifact);
             });
@@ -55,6 +62,9 @@ namespace LHDS.Core.Services.Foundations.TerminologyArtifacts
         public ValueTask<TerminologyArtifact> ModifyTerminologyArtifactAsync(TerminologyArtifact terminologyArtifact) =>
             TryCatch(async () =>
             {
+                TerminologyArtifact terminologyArtifactWithModifyAuditApplied = 
+                    await ApplyModifyAuditAsync(terminologyArtifact);
+
                 await ValidateTerminologyArtifactOnModifyAsync(terminologyArtifact);
 
                 TerminologyArtifact maybeTerminologyArtifact =
@@ -70,16 +80,61 @@ namespace LHDS.Core.Services.Foundations.TerminologyArtifacts
             });
 
         public ValueTask<TerminologyArtifact> RemoveTerminologyArtifactByIdAsync(Guid terminologyArtifactId) =>
-            TryCatch(async () =>
-            {
-                ValidateTerminologyArtifactId(terminologyArtifactId);
+           TryCatch(async () =>
+           {
+               ValidateTerminologyArtifactId(terminologyArtifactId);
 
-                TerminologyArtifact maybeTerminologyArtifact = await this.storageBroker
-                    .SelectTerminologyArtifactByIdAsync(terminologyArtifactId);
+               TerminologyArtifact maybeTerminologyArtifact = await this.storageBroker.SelectTerminologyArtifactByIdAsync(terminologyArtifactId);
 
-                ValidateStorageTerminologyArtifact(maybeTerminologyArtifact, terminologyArtifactId);
+               ValidateStorageTerminologyArtifact(maybeTerminologyArtifact, terminologyArtifactId);
 
-                return await this.storageBroker.DeleteTerminologyArtifactAsync(maybeTerminologyArtifact);
-            });
+               TerminologyArtifact terminologyArtifactWithDeleteAuditApplied = await ApplyDeleteAuditAsync(maybeTerminologyArtifact);
+
+               TerminologyArtifact updatedTerminologyArtifact =
+                   await this.storageBroker.UpdateTerminologyArtifactAsync(terminologyArtifactWithDeleteAuditApplied);
+
+               await ValidateAgainstStorageTerminologyArtifactOnDeleteAsync(
+                   updatedTerminologyArtifact,
+                   terminologyArtifactWithDeleteAuditApplied);
+
+               return await this.storageBroker.DeleteTerminologyArtifactAsync(updatedTerminologyArtifact);
+           });
+
+        virtual internal async ValueTask<TerminologyArtifact> 
+            ApplyAddTerminologyArtifactAsync(TerminologyArtifact terminologyArtifact)
+        {
+            ValidateTerminologyArtifactIsNotNull(terminologyArtifact);
+            var auditDateTimeOffset = await this.dateTimeBroker.GetCurrentDateTimeOffsetAsync();
+            var auditUser = await this.securityBroker.GetCurrentUserAsync();
+            terminologyArtifact.CreatedBy = auditUser?.EntraUserId.ToString() ?? string.Empty;
+            terminologyArtifact.CreatedDate = auditDateTimeOffset;
+            terminologyArtifact.UpdatedBy = auditUser?.EntraUserId.ToString() ?? string.Empty;
+            terminologyArtifact.UpdatedDate = auditDateTimeOffset;
+
+            return terminologyArtifact;
+        }
+
+        virtual internal async ValueTask<TerminologyArtifact> 
+            ApplyModifyAuditAsync(TerminologyArtifact terminologyArtifact)
+        {
+            ValidateTerminologyArtifactIsNotNull(terminologyArtifact);
+            var auditDateTimeOffset = await this.dateTimeBroker.GetCurrentDateTimeOffsetAsync();
+            var auditUser = await this.securityBroker.GetCurrentUserAsync();
+            terminologyArtifact.UpdatedBy = auditUser?.EntraUserId.ToString() ?? string.Empty;
+            terminologyArtifact.UpdatedDate = auditDateTimeOffset;
+
+            return terminologyArtifact;
+        }
+
+        virtual internal async ValueTask<TerminologyArtifact> 
+            ApplyDeleteAuditAsync(TerminologyArtifact terminologyArtifact)
+        {
+            ValidateTerminologyArtifactIsNotNull(terminologyArtifact);
+            var auditDateTimeOffset = await this.dateTimeBroker.GetCurrentDateTimeOffsetAsync();
+            var auditUser = await this.securityBroker.GetCurrentUserAsync();
+            terminologyArtifact.UpdatedBy = auditUser?.EntraUserId.ToString() ?? string.Empty;
+            terminologyArtifact.UpdatedDate = auditDateTimeOffset;
+            return terminologyArtifact;
+        }
     }
 }

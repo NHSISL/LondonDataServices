@@ -26,8 +26,8 @@ namespace LHDS.AdminPortal.Api.Tests.Unit.Controllers.DataSetSpecifications
 
             List<string> expectedAttributeValues = new List<string>
             {
-                "ISL.LDS.AdminSpa.Administrators",
-                "ISL.LDS.AdminSpa.Configurations"
+                "ISL.LDS.AdminApi.Administrators",
+                "ISL.LDS.AdminApi.Configurations"
             };
 
             // when

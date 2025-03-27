@@ -28,9 +28,9 @@ namespace LHDS.AdminPortal.Api.Tests.Unit.Controllers.ResolvedAddresses
 
             List<string> expectedAttributeValues = new List<string>
             {
-                "ISL.LDS.AdminSpa.Administrators",
-                "ISL.LDS.AdminSpa.ResolvedAddress",
-                "ISL.LDS.AdminSpa.ReadOnly"
+                "ISL.LDS.AdminApi.Administrators",
+                "ISL.LDS.AdminApi.ResolvedAddress",
+                "ISL.LDS.AdminApi.ReadOnly"
             };
 
             // when

@@ -5,6 +5,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.IdentityModel.Tokens.Jwt;
 using System.Net.Http;
 using System.Security.Claims;
 using System.Text;
@@ -31,6 +32,7 @@ using LHDS.Core.Services.Processings.Documents;
 using LHDS.Core.Services.Processings.Ontologies;
 using LHDS.Core.Services.Processings.TerminologyArtifacts;
 using LHDS.Core.Services.Processings.TerminologyPolls;
+using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -246,6 +248,20 @@ namespace LHDS.Core.Clients.Extensions
                 data: errors);
 
             invalidConfigurationException.ThrowIfContainsErrors();
+        }
+
+        /// <summary>
+        /// Extracts a <see cref="ClaimsPrincipal"/> from a given JWT token.
+        /// </summary>
+        /// <param name="token">The JWT token.</param>
+        /// <returns>A <see cref="ClaimsPrincipal"/> containing claims from the token.</returns>
+        private static ClaimsPrincipal GetClaimsPrincipalFromToken(string token)
+        {
+            var handler = new JwtSecurityTokenHandler();
+            var jwtToken = handler.ReadJwtToken(token);
+            var identity = new ClaimsIdentity(jwtToken.Claims, "jwt");
+
+            return new ClaimsPrincipal(identity);
         }
     }
 }

@@ -28,8 +28,8 @@ namespace LHDS.AdminPortal.Api.Tests.Unit.Controllers.ResolvedAddresses
 
             List<string> expectedAttributeValues = new List<string>
             {
-                "ISL.LDS.AdminSpa.Administrators",
-                "ISL.LDS.AdminSpa.ResolvedAddress",
+                "ISL.LDS.AdminApi.Administrators",
+                "ISL.LDS.AdminApi.ResolvedAddress",
             };
 
             // when

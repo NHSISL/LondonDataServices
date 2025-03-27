@@ -38,7 +38,12 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.SubscriberCredentials
                 await this.apiBroker.GetSubscriberCredentialByIdAsync(subscriberAgreementId);
 
             // then
-            actualSubscriberCredential.Should().BeEquivalentTo(expectedSubscriberCredential);
+            actualSubscriberCredential.Should().BeEquivalentTo(expectedSubscriberCredential, options => options
+                .Excluding(property => property.CreatedBy)
+                .Excluding(property => property.CreatedDate)
+                .Excluding(property => property.UpdatedBy)
+                .Excluding(property => property.UpdatedDate));
+
             actualSubscriberCredential.FtpPassPhrase.Should().BeNull();
             actualSubscriberCredential.FtpPrivateKey.Should().BeNull();
             actualSubscriberCredential.FtpPassword.Should().BeNull();
@@ -75,7 +80,12 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.SubscriberCredentials
                 await this.apiBroker.GetSubscriberCredentialByIdAsync(subscriberAgreementId);
 
             // then
-            actualSubscriberCredential.Should().BeEquivalentTo(expectedSubscriberCredential);
+            actualSubscriberCredential.Should().BeEquivalentTo(expectedSubscriberCredential, options => options
+                .Excluding(property => property.CreatedBy)
+                .Excluding(property => property.CreatedDate)
+                .Excluding(property => property.UpdatedBy)
+                .Excluding(property => property.UpdatedDate));
+
             actualSubscriberCredential.FtpPublicKey.Should().BeEquivalentTo(expectedSubscriberCredential.FtpPublicKey);
             actualSubscriberCredential.GpgPublicKey.Should().BeEquivalentTo(expectedSubscriberCredential.GpgPublicKey);
             actualSubscriberCredential.FtpPassPhrase.Should().BeNull();
@@ -110,7 +120,10 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.SubscriberCredentials
             actualSubscriberCredential.Should().BeEquivalentTo(expectedSubscriberCredential, options =>
                 options.Excluding(e => e.FtpPublicKey)
                     .Excluding(e => e.GpgPublicKey)
-                    .Excluding(e => e.UpdatedDate));
+                    .Excluding(e => e.UpdatedDate)
+                    .Excluding(property => property.CreatedBy)
+                    .Excluding(property => property.CreatedDate)
+                    .Excluding(property => property.UpdatedBy));
 
             actualSubscriberCredential.FtpPublicKey.Should().NotBeNullOrWhiteSpace();
             actualSubscriberCredential.GpgPublicKey.Should().NotBeNullOrWhiteSpace();
@@ -153,7 +166,10 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.SubscriberCredentials
             actualSubscriberCredential.Should().BeEquivalentTo(expectedSubscriberCredential, options =>
                 options.Excluding(e => e.FtpPublicKey)
                     .Excluding(e => e.GpgPublicKey)
-                    .Excluding(e => e.UpdatedDate));
+                    .Excluding(e => e.UpdatedDate)
+                    .Excluding(property => property.CreatedBy)
+                    .Excluding(property => property.CreatedDate)
+                    .Excluding(property => property.UpdatedBy));
 
             actualSubscriberCredential.FtpPublicKey.Should().NotBeNullOrWhiteSpace();
             actualSubscriberCredential.GpgPublicKey.Should().NotBeNullOrWhiteSpace();
@@ -189,7 +205,12 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.SubscriberCredentials
                 await this.apiBroker.GetSubscriberCredentialByIdAsync(subscriberAgreementId);
 
             // then
-            actualSubscriberCredential.Should().BeEquivalentTo(expectedSubscriberCredential);
+            actualSubscriberCredential.Should().BeEquivalentTo(expectedSubscriberCredential, options => options
+                .Excluding(property => property.CreatedBy)
+                .Excluding(property => property.CreatedDate)
+                .Excluding(property => property.UpdatedBy)
+                .Excluding(property => property.UpdatedDate));
+
             actualSubscriberCredential.FtpPassPhrase.Should().BeNull();
             actualSubscriberCredential.FtpPrivateKey.Should().BeNull();
             actualSubscriberCredential.FtpPassword.Should().BeNull();
@@ -226,7 +247,12 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.SubscriberCredentials
                 await this.apiBroker.GetSubscriberCredentialByIdAsync(subscriberAgreementId);
 
             // then
-            actualSubscriberCredential.Should().BeEquivalentTo(expectedSubscriberCredential);
+            actualSubscriberCredential.Should().BeEquivalentTo(expectedSubscriberCredential, options => options
+                .Excluding(property => property.CreatedBy)
+                .Excluding(property => property.CreatedDate)
+                .Excluding(property => property.UpdatedBy)
+                .Excluding(property => property.UpdatedDate));
+
             actualSubscriberCredential.FtpPassPhrase.Should().BeNull();
             actualSubscriberCredential.FtpPrivateKey.Should().BeNull();
             actualSubscriberCredential.FtpPassword.Should().BeNull();
@@ -259,7 +285,10 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.SubscriberCredentials
             actualSubscriberCredential.Should().BeEquivalentTo(expectedSubscriberCredential, options =>
                 options.Excluding(e => e.FtpPublicKey)
                     .Excluding(e => e.GpgPublicKey)
-                    .Excluding(e => e.UpdatedDate));
+                    .Excluding(e => e.UpdatedDate)
+                    .Excluding(property => property.CreatedBy)
+                    .Excluding(property => property.CreatedDate)
+                    .Excluding(property => property.UpdatedBy));
 
             actualSubscriberCredential.FtpPublicKey.Should().NotBeNullOrWhiteSpace();
             actualSubscriberCredential.GpgPublicKey.Should().NotBeNullOrWhiteSpace();
@@ -302,7 +331,10 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.SubscriberCredentials
             actualSubscriberCredential.Should().BeEquivalentTo(expectedSubscriberCredential, options =>
                 options.Excluding(e => e.FtpPublicKey)
                     .Excluding(e => e.GpgPublicKey)
-                    .Excluding(e => e.UpdatedDate));
+                    .Excluding(e => e.UpdatedDate)
+                    .Excluding(property => property.CreatedBy)
+                    .Excluding(property => property.CreatedDate)
+                    .Excluding(property => property.UpdatedBy));
 
             actualSubscriberCredential.FtpPublicKey.Should().NotBeNullOrWhiteSpace();
             actualSubscriberCredential.GpgPublicKey.Should().NotBeNullOrWhiteSpace();
@@ -341,7 +373,12 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.SubscriberCredentials
                 SubscriberCredential actualSubscriberCredential = actualSubscriberCredentials
                     .Single(actual => actual.Id == expectedSubscriberCredential.Id);
 
-                actualSubscriberCredential.Should().BeEquivalentTo(expectedSubscriberCredential);
+                actualSubscriberCredential.Should().BeEquivalentTo(expectedSubscriberCredential, options => options
+                .Excluding(property => property.CreatedBy)
+                .Excluding(property => property.CreatedDate)
+                .Excluding(property => property.UpdatedBy)
+                .Excluding(property => property.UpdatedDate));
+
                 actualSubscriberCredential.FtpPassPhrase.Should().BeNull();
                 actualSubscriberCredential.FtpPrivateKey.Should().BeNull();
                 actualSubscriberCredential.FtpPassword.Should().BeNull();
@@ -367,7 +404,12 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.SubscriberCredentials
                 .GetSubscriberCredentialByIdAsync(subscriberAgreementId);
 
             // then
-            actualSubscriberCredential.Should().BeEquivalentTo(expectedSubscriberCredential);
+            actualSubscriberCredential.Should().BeEquivalentTo(expectedSubscriberCredential, options => options
+                .Excluding(property => property.CreatedBy)
+                .Excluding(property => property.CreatedDate)
+                .Excluding(property => property.UpdatedBy)
+                .Excluding(property => property.UpdatedDate));
+
             await this.apiBroker.DeleteSubscriberCredentialByIdAsync(subscriberAgreementId);
         }
 

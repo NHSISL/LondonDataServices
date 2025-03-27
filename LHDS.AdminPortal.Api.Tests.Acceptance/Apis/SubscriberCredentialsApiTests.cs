@@ -154,9 +154,11 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.SubscriberCredentials
         private async ValueTask<SubscriberAgreement> PostRandomSubscriberAgreementAsync(Guid id)
         {
             SubscriberAgreement randomSubscriberAgreement = CreateRandomSubscriberAgreement(id);
-            await this.apiBroker.PostSubscriberAgreementAsync(randomSubscriberAgreement);
 
-            return randomSubscriberAgreement;
+            SubscriberAgreement storageSubscriberAgreement = 
+                await this.apiBroker.PostSubscriberAgreementAsync(randomSubscriberAgreement);
+
+            return storageSubscriberAgreement;
         }
 
         private async ValueTask<List<SubscriberAgreement>> PostRandomSubscriberAgreementsAsync(

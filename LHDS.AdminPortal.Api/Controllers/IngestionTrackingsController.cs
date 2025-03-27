@@ -17,7 +17,7 @@ using RESTFulSense.Controllers;
 
 namespace LHDS.AdminPortal.Api.Controllers
 {
-    [Authorize(Roles = "ISL.LDS.AdminSpa.Administrators,ISL.LDS.AdminSpa.IngestionTracking")]
+    [Authorize(Roles = "ISL.LDS.AdminApi.Administrators,ISL.LDS.AdminApi.IngestionTracking")]
     [ApiController]
     [Route("api/[controller]")]
     public class IngestionTrackingsController : RESTFulController
@@ -72,7 +72,7 @@ namespace LHDS.AdminPortal.Api.Controllers
         [EnableQuery(PageSize = 25)]
 #endif
         [Authorize(Roles =
-            "ISL.LDS.AdminSpa.Administrators,ISL.LDS.AdminSpa.IngestionTracking,ISL.LDS.AdminSpa.ReadOnly")]
+            "ISL.LDS.AdminApi.Administrators,ISL.LDS.AdminApi.IngestionTracking,ISL.LDS.AdminApi.ReadOnly")]
         public async ValueTask<ActionResult<IQueryable<IngestionTracking>>> Get()
         {
             try
@@ -93,7 +93,7 @@ namespace LHDS.AdminPortal.Api.Controllers
         }
 
         [Authorize(Roles =
-            "ISL.LDS.AdminSpa.Administrators,ISL.LDS.AdminSpa.IngestionTracking,ISL.LDS.AdminSpa.ReadOnly")]
+            "ISL.LDS.AdminApi.Administrators,ISL.LDS.AdminApi.IngestionTracking,ISL.LDS.AdminApi.ReadOnly")]
         [HttpGet("{ingestionTrackingId}")]
         public async ValueTask<ActionResult<IngestionTracking>> GetIngestionTrackingByIdAsync(Guid ingestionTrackingId)
         {
@@ -124,7 +124,7 @@ namespace LHDS.AdminPortal.Api.Controllers
         }
 
         [Authorize(Roles =
-            "ISL.LDS.AdminSpa.Administrators,ISL.LDS.AdminSpa.IngestionTracking,ISL.LDS.AdminSpa.ReadOnly")]
+            "ISL.LDS.AdminApi.Administrators,ISL.LDS.AdminApi.IngestionTracking,ISL.LDS.AdminApi.ReadOnly")]
         [HttpGet("byfilename/{filename}")]
         public async ValueTask<ActionResult<IngestionTracking>> GetIngestionTrackingByFileNameAsync(string fileName)
         {
@@ -156,7 +156,7 @@ namespace LHDS.AdminPortal.Api.Controllers
             }
         }
 
-        [Authorize(Roles = "ISL.LDS.AdminSpa.Administrators,ISL.LDS.AdminSpa.IngestionTracking")]
+        [Authorize(Roles = "ISL.LDS.AdminApi.Administrators,ISL.LDS.AdminApi.IngestionTracking")]
         [HttpPut]
         public async ValueTask<ActionResult<IngestionTracking>> PutIngestionTrackingAsync(
             IngestionTracking ingestionTracking)

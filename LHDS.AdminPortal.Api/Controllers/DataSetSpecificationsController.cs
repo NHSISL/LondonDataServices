@@ -18,7 +18,7 @@ using Microsoft.AspNetCore.Authorization;
 
 namespace LHDS.AdminPortal.Api.Controllers
 {
-    [Authorize(Roles = "ISL.LDS.AdminSpa.Configurations,ISL.LDS.AdminSpa.Administrators")]
+    [Authorize(Roles = "ISL.LDS.AdminApi.Configurations,ISL.LDS.AdminApi.Administrators")]
     [ApiController]
     [Route("api/[controller]")]
     public class DataSetSpecificationsController : RESTFulController
@@ -28,7 +28,7 @@ namespace LHDS.AdminPortal.Api.Controllers
         public DataSetSpecificationsController(IDataSetSpecificationService dataSetSpecificationService) =>
             this.dataSetSpecificationService = dataSetSpecificationService;
 
-        [Authorize(Roles = "ISL.LDS.AdminSpa.Configurations,ISL.LDS.AdminSpa.Administrators")]
+        [Authorize(Roles = "ISL.LDS.AdminApi.Configurations,ISL.LDS.AdminApi.Administrators")]
         [HttpPost]
         public async ValueTask<ActionResult<DataSetSpecification>> PostDataSetSpecificationAsync(
             DataSetSpecification dataSetSpecification)
@@ -73,7 +73,7 @@ namespace LHDS.AdminPortal.Api.Controllers
 #if DEBUG
         [EnableQuery(PageSize = 5000)]
 #endif
-        [Authorize(Roles = "ISL.LDS.AdminSpa.Configurations,ISL.LDS.AdminSpa.Administrators,ISL.LDS.AdminSpa.ReadOnly")]
+        [Authorize(Roles = "ISL.LDS.AdminApi.Configurations,ISL.LDS.AdminApi.Administrators,ISL.LDS.AdminApi.ReadOnly")]
         public async ValueTask<ActionResult<IQueryable<DataSetSpecification>>> Get()
         {
             try
@@ -93,7 +93,7 @@ namespace LHDS.AdminPortal.Api.Controllers
             }
         }
 
-        [Authorize(Roles = "ISL.LDS.AdminSpa.Configurations,ISL.LDS.AdminSpa.Administrators,ISL.LDS.AdminSpa.ReadOnly")]
+        [Authorize(Roles = "ISL.LDS.AdminApi.Configurations,ISL.LDS.AdminApi.Administrators,ISL.LDS.AdminApi.ReadOnly")]
         [HttpGet("{dataSetSpecificationId}")]
         public async ValueTask<ActionResult<DataSetSpecification>> GetDataSetSpecificationByIdAsync(
             Guid dataSetSpecificationId)
@@ -124,7 +124,7 @@ namespace LHDS.AdminPortal.Api.Controllers
             }
         }
 
-        [Authorize(Roles = "ISL.LDS.AdminSpa.Configurations,ISL.LDS.AdminSpa.Administrators")]
+        [Authorize(Roles = "ISL.LDS.AdminApi.Configurations,ISL.LDS.AdminApi.Administrators")]
         [HttpPut]
         public async ValueTask<ActionResult<DataSetSpecification>> PutDataSetSpecificationAsync(
             DataSetSpecification dataSetSpecification)
@@ -168,7 +168,7 @@ namespace LHDS.AdminPortal.Api.Controllers
             }
         }
 
-        [Authorize(Roles = "ISL.LDS.AdminSpa.Configurations,ISL.LDS.AdminSpa.Administrators")]
+        [Authorize(Roles = "ISL.LDS.AdminApi.Configurations,ISL.LDS.AdminApi.Administrators")]
         [HttpDelete("{dataSetSpecificationId}")]
         public async ValueTask<ActionResult<DataSetSpecification>> DeleteDataSetSpecificationByIdAsync(
             Guid dataSetSpecificationId)

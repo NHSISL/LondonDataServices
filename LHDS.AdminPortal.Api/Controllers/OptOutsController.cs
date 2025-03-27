@@ -22,7 +22,7 @@ namespace LHDS.AdminPortal.Api.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
-    [Authorize(Roles = "ISL.LDS.AdminSpa.Administrators, ISL.LDS.AdminSpa.OptOut")]
+    [Authorize(Roles = "ISL.LDS.AdminApi.Administrators, ISL.LDS.AdminApi.OptOut")]
     public class OptOutsController : RESTFulController
     {
         private readonly IOptOutProcessingService optOutProcessingService;
@@ -30,7 +30,7 @@ namespace LHDS.AdminPortal.Api.Controllers
         public OptOutsController(IOptOutProcessingService optOutProcessingService) =>
             this.optOutProcessingService = optOutProcessingService;
 
-        [Authorize(Roles = "ISL.LDS.AdminSpa.OptOut,ISL.LDS.AdminSpa.Administrators,ISL.LDS.AdminSpa.ReadOnly")]
+        [Authorize(Roles = "ISL.LDS.AdminApi.OptOut,ISL.LDS.AdminApi.Administrators,ISL.LDS.AdminApi.ReadOnly")]
         [HttpGet]
 #if !DEBUG
         [EnableQuery(PageSize = 50)]
@@ -57,7 +57,7 @@ namespace LHDS.AdminPortal.Api.Controllers
             }
         }
 
-        [Authorize(Roles = "ISL.LDS.AdminSpa.Administrators, ISL.LDS.AdminSpa.OptOut")]
+        [Authorize(Roles = "ISL.LDS.AdminApi.Administrators, ISL.LDS.AdminApi.OptOut")]
         [HttpPost]
         public async ValueTask<ActionResult<OptOut>> PostOptOutAsync(
             OptOut optOut)
@@ -93,7 +93,7 @@ namespace LHDS.AdminPortal.Api.Controllers
             }
         }
 
-        [Authorize(Roles = "ISL.LDS.AdminSpa.OptOut,ISL.LDS.AdminSpa.Administrators,ISL.LDS.AdminSpa.ReadOnly")]
+        [Authorize(Roles = "ISL.LDS.AdminApi.OptOut,ISL.LDS.AdminApi.Administrators,ISL.LDS.AdminApi.ReadOnly")]
         [HttpGet("{nhsNumber}")]
         public async ValueTask<ActionResult<OptOut>> GetOptOutByNhsNumberAsync(string nhsNumber)
         {
@@ -123,7 +123,7 @@ namespace LHDS.AdminPortal.Api.Controllers
             }
         }
 
-        [Authorize(Roles = "ISL.LDS.AdminSpa.Administrators, ISL.LDS.AdminSpa.OptOut")]
+        [Authorize(Roles = "ISL.LDS.AdminApi.Administrators, ISL.LDS.AdminApi.OptOut")]
         [HttpPut]
         public async ValueTask<ActionResult<OptOut>> PutOptOutAsync(OptOut optOut)
         {
@@ -163,7 +163,7 @@ namespace LHDS.AdminPortal.Api.Controllers
             }
         }
 
-        [Authorize(Roles = "ISL.LDS.AdminSpa.Administrators, ISL.LDS.AdminSpa.OptOut")]
+        [Authorize(Roles = "ISL.LDS.AdminApi.Administrators, ISL.LDS.AdminApi.OptOut")]
         [HttpDelete("{optOutId}")]
         public async ValueTask<ActionResult<OptOut>> DeleteOptOutByIdAsync(Guid optOutId)
         {

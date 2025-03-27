@@ -26,9 +26,9 @@ namespace LHDS.AdminPortal.Api.Tests.Unit.Controllers.PdsAudits
 
             List<string> expectedAttributeValues = new List<string>
             {
-                "ISL.LDS.AdminSpa.Administrators",
-                "ISL.LDS.AdminSpa.Pds",
-                "ISL.LDS.AdminSpa.ReadOnly"
+                "ISL.LDS.AdminApi.Administrators",
+                "ISL.LDS.AdminApi.Pds",
+                "ISL.LDS.AdminApi.ReadOnly"
             };
 
             // when

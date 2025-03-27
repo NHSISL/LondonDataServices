@@ -28,8 +28,8 @@ namespace LHDS.AdminPortal.Api.Tests.Unit.Controllers.SpecificationObjects
 
             List<string> expectedAttributeValues = new List<string>
             {
-                "ISL.LDS.AdminSpa.Administrators",
-                "ISL.LDS.AdminSpa.SpecificationObjects"
+                "ISL.LDS.AdminApi.Administrators",
+                "ISL.LDS.AdminApi.SpecificationObjects"
             };
 
             // when

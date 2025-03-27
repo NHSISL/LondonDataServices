@@ -4,6 +4,7 @@
 
 using System;
 using System.Threading.Tasks;
+using LHDS.Core.Models.Brokers.Securities;
 using LHDS.Core.Models.Foundations.IngestionTrackingAudits;
 using LHDS.Core.Models.Foundations.IngestionTrackingAudits.Exceptions;
 
@@ -13,7 +14,7 @@ namespace LHDS.Core.Services.Foundations.IngestionTrackingAudits
     {
         private async ValueTask ValidateIngestionTrackingAuditOnAddAsync(IngestionTrackingAudit ingestionTrackingAudit)
         {
-            ValidateIngestionTrackingAuditIsNotNull(ingestionTrackingAudit);
+            EntraUser currentUser = await this.securityBroker.GetCurrentUserAsync();
 
             Validate(
                 (Rule: IsInvalid(ingestionTrackingAudit.Id), Parameter: nameof(IngestionTrackingAudit.Id)),
@@ -35,6 +36,11 @@ namespace LHDS.Core.Services.Foundations.IngestionTrackingAudits
 
                 (Rule: IsInvalid(ingestionTrackingAudit.UpdatedBy),
                     Parameter: nameof(IngestionTrackingAudit.UpdatedBy)),
+
+                (Rule: IsNotSame(
+                    first: currentUser.EntraUserId,
+                    second: ingestionTrackingAudit.CreatedBy),
+                Parameter: nameof(IngestionTrackingAudit.CreatedBy)),
 
                 (Rule: IsNotSame(
                     firstDate: ingestionTrackingAudit.UpdatedDate,
@@ -185,6 +191,14 @@ namespace LHDS.Core.Services.Foundations.IngestionTrackingAudits
             {
                 Condition = firstDate == secondDate,
                 Message = $"Date is the same as {secondDateName}"
+            };
+
+        private static dynamic IsNotSame(
+            string first,
+            string second) => new
+            {
+                Condition = first != second,
+                Message = $"Expected value to be '{first}' but found '{second}'."
             };
 
         private static dynamic IsNotSame(

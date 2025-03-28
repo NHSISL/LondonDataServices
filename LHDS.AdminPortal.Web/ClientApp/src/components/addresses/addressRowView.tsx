@@ -37,16 +37,16 @@ const AddressRowView: FunctionComponent<AddressRowProps> = (props) => {
     return (
         <TableBaseRow>
             <TableBaseData>
-                <span>{address.uprn}</span>
+                <span style={{ fontSize: '14px' }}>{address.uprn}</span>
             </TableBaseData>
             <TableBaseData>
-                <span>{address.upsn}</span>
+                <span style={{ fontSize: '14px' }}>{address.upsn}</span>
             </TableBaseData>
             <TableBaseData>
-                <span>{concateAddresses(address)}</span>
+                <span style={{ fontSize: '14px' }}>{concateAddresses(address)}</span>
             </TableBaseData>
             <TableBaseData>
-                <span>{address.postCode}</span>
+                <span style={{ fontSize: '14px' }}>{address.postCode}</span>
             </TableBaseData>
             <TableBaseData classes="text-center">
                 <span>

@@ -29,6 +29,7 @@ const ResolvedAddressDetailCard: FunctionComponent<ResolvedAddressDetailCardProp
 
     const [displayMode, setDisplayMode] = useState<string>(mode);
     const [apiError, setApiError] = useState<any>({});
+    const [currentResolvedAddress, setCurrentResolvedAddress] = useState<ResolvedAddressView>({ ...resolvedAddress });
 
     const handleModeChange = (value: string) => {
         setDisplayMode(value);
@@ -47,8 +48,9 @@ const ResolvedAddressDetailCard: FunctionComponent<ResolvedAddressDetailCardProp
     }
 
     const handlePick = (address: string) => {
-        resolvedAddress.alternateUnstructuredPostalAddress = address;
-        onRefresh(resolvedAddress);
+        const updatedResolvedAddress = { ...currentResolvedAddress, alternateUnstructuredPostalAddress: address };
+        setCurrentResolvedAddress(updatedResolvedAddress);
+        onRefresh(updatedResolvedAddress);
     };
 
     return (
@@ -62,7 +64,7 @@ const ResolvedAddressDetailCard: FunctionComponent<ResolvedAddressDetailCardProp
 
                         {(displayMode === "VIEW" || displayMode === "CONFIRMDELETE") && (
                             <ResolvedAddressDetailCardView
-                                resolvedAddress={resolvedAddress}
+                                resolvedAddress={currentResolvedAddress}
                                 onRefresh={handlRefresh}
                                 onUpdate={handleUpdate}
                                 mode={displayMode}
@@ -75,7 +77,7 @@ const ResolvedAddressDetailCard: FunctionComponent<ResolvedAddressDetailCardProp
                                     onModeChange={handleModeChange}
                                     onUpdate={handleUpdate}
                                     onCancel={handleCancel}
-                                    resolvedAddress={resolvedAddress}
+                                    resolvedAddress={currentResolvedAddress}
                                     mode={displayMode}
                                     apiError={apiError}
                                     onPickAlternateAddress={onPickAlternateAddress}

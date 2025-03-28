@@ -18,7 +18,8 @@ export const ResolvedAddressHomeViewService = {
     useGetAllResolvedAddresses: (searchTerm?: string): ResolvedAddressHomeViewServiceResponse => {
         try 
         {
-            let query = `?$orderby=createdDate desc`;
+            let query = ``;
+            //let query = `?$orderby=createdDate desc`;
 
             if (searchTerm) {
                 const fields = [

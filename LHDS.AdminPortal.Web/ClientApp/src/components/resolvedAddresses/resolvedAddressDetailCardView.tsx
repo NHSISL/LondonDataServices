@@ -42,138 +42,149 @@ const ResolvedAddressDetailCardView: FunctionComponent<ResolvedAddressDetailCard
                                 Details
                             </CardBaseTitle>
                             <CardBaseContent>
-                                <SummaryListBase>
-                                    <SummaryListBaseRow>
-                                        <SummaryListBaseKey>Unique Reference</SummaryListBaseKey>
-                                        <SummaryListBaseValue>{resolvedAddress.uniqueReference}</SummaryListBaseValue>
-                                    </SummaryListBaseRow>
-                                    <SummaryListBaseRow>
-                                        <SummaryListBaseKey>Batch References</SummaryListBaseKey>
-                                        <SummaryListBaseValue>{resolvedAddress.batchReference}</SummaryListBaseValue>
-                                    </SummaryListBaseRow>
-                                    <SummaryListBaseRow>
-                                        <SummaryListBaseKey>UPRN</SummaryListBaseKey>
-                                        <SummaryListBaseValue>{resolvedAddress.uprn}</SummaryListBaseValue>
-                                    </SummaryListBaseRow>
-                                    <SummaryListBaseRow>
-                                        <SummaryListBaseKey>UPSN</SummaryListBaseKey>
-                                        <SummaryListBaseValue>{resolvedAddress.upsn}</SummaryListBaseValue>
-                                    </SummaryListBaseRow>
-                                    <SummaryListBaseRow>
-                                        <SummaryListBaseKey>Unstructured Postal Address</SummaryListBaseKey>
-                                        <SummaryListBaseValue>{resolvedAddress.unstructuredPostalAddress}</SummaryListBaseValue>
-                                    </SummaryListBaseRow>
-                                    <SummaryListBaseRow>
-                                        <SummaryListBaseKey>Alternate Unstructured Postal Address</SummaryListBaseKey>
-                                        <SummaryListBaseValue>{resolvedAddress.alternateUnstructuredPostalAddress}</SummaryListBaseValue>
-                                    </SummaryListBaseRow>
-                                    <SummaryListBaseRow>
-                                        <SummaryListBaseKey>Address Format Quality</SummaryListBaseKey>
-                                        <SummaryListBaseValue>{resolvedAddress.addressFormatQuality}</SummaryListBaseValue>
-                                    </SummaryListBaseRow>
-                                    <SummaryListBaseRow>
-                                        <SummaryListBaseKey>Algorithm</SummaryListBaseKey>
-                                        <SummaryListBaseValue>{resolvedAddress.algorithm}</SummaryListBaseValue>
-                                    </SummaryListBaseRow>
-                                    <SummaryListBaseRow>
-                                        <SummaryListBaseKey>Building Name</SummaryListBaseKey>
-                                        <SummaryListBaseValue>{resolvedAddress.buildingName}</SummaryListBaseValue>
-                                    </SummaryListBaseRow>
-                                    <SummaryListBaseRow>
-                                        <SummaryListBaseKey>Building Number</SummaryListBaseKey>
-                                        <SummaryListBaseValue>{resolvedAddress.buildingName}</SummaryListBaseValue>
-                                    </SummaryListBaseRow>
-                                    <SummaryListBaseRow>
-                                        <SummaryListBaseKey>Classification</SummaryListBaseKey>
-                                        <SummaryListBaseValue>{resolvedAddress.classification}</SummaryListBaseValue>
-                                    </SummaryListBaseRow>
-                                    <SummaryListBaseRow>
-                                        <SummaryListBaseKey>Department Name</SummaryListBaseKey>
-                                        <SummaryListBaseValue>{resolvedAddress.departmentName}</SummaryListBaseValue>
-                                    </SummaryListBaseRow>
-                                    <SummaryListBaseRow>
-                                        <SummaryListBaseKey>Dependant Locality</SummaryListBaseKey>
-                                        <SummaryListBaseValue>{resolvedAddress.dependentLocality}</SummaryListBaseValue>
-                                    </SummaryListBaseRow>
-                                    <SummaryListBaseRow>
-                                        <SummaryListBaseKey>Dependent Thoroughfare</SummaryListBaseKey>
-                                        <SummaryListBaseValue>{resolvedAddress.dependentThoroughfare}</SummaryListBaseValue>
-                                    </SummaryListBaseRow>
-                                    <SummaryListBaseRow>
-                                        <SummaryListBaseKey>Double Dependendant Locality</SummaryListBaseKey>
-                                        <SummaryListBaseValue>{resolvedAddress.doubleDependentLocality}</SummaryListBaseValue>
-                                    </SummaryListBaseRow>
-                                    <SummaryListBaseRow>
-                                        <SummaryListBaseKey>Match Pattern</SummaryListBaseKey>
-                                        <SummaryListBaseValue>{resolvedAddress.matchPattern}</SummaryListBaseValue>
-                                    </SummaryListBaseRow>
-                                    <SummaryListBaseRow>
-                                        <SummaryListBaseKey>Match With Assign</SummaryListBaseKey>
-                                        <SummaryListBaseValue>{resolvedAddress.matchedWithAssign ?
-                                            <FontAwesomeIcon icon={faCheck} className="text-success" /> :
-                                            <FontAwesomeIcon icon={faTimes} className="text-danger" />}
-                                        </SummaryListBaseValue>
-                                    </SummaryListBaseRow>
-                                    <SummaryListBaseRow>
-                                        <SummaryListBaseKey>Organisation Name</SummaryListBaseKey>
-                                        <SummaryListBaseValue>{resolvedAddress.organisationName}</SummaryListBaseValue>
-                                    </SummaryListBaseRow>
-                                    <SummaryListBaseRow>
-                                        <SummaryListBaseKey>PostCode Quality</SummaryListBaseKey>
-                                        <SummaryListBaseValue>{resolvedAddress.postCodeQuality}</SummaryListBaseValue>
-                                    </SummaryListBaseRow>
-                                    <SummaryListBaseRow>
-                                        <SummaryListBaseKey>Post Town</SummaryListBaseKey>
-                                        <SummaryListBaseValue>{resolvedAddress.postTown}</SummaryListBaseValue>
-                                    </SummaryListBaseRow>
-                                    <SummaryListBaseRow>
-                                        <SummaryListBaseKey>Qualifier</SummaryListBaseKey>
-                                        <SummaryListBaseValue>{resolvedAddress.qualifier}</SummaryListBaseValue>
-                                    </SummaryListBaseRow>
-                                    <SummaryListBaseRow>
-                                        <SummaryListBaseKey>Sub-Building Name</SummaryListBaseKey>
-                                        <SummaryListBaseValue>{resolvedAddress.subBuildingName}</SummaryListBaseValue>
-                                    </SummaryListBaseRow>
-                                    <SummaryListBaseRow>
-                                        <SummaryListBaseKey>Thoroughfare</SummaryListBaseKey>
-                                        <SummaryListBaseValue>{resolvedAddress.thoroughfare}</SummaryListBaseValue>
-                                    </SummaryListBaseRow>
-                                    <SummaryListBaseRow>
-                                        <SummaryListBaseKey>Post Code</SummaryListBaseKey>
-                                        <SummaryListBaseValue>{resolvedAddress.postCode}</SummaryListBaseValue>
-                                    </SummaryListBaseRow>
-                                    <SummaryListBaseRow>
-                                        <SummaryListBaseKey>isExported</SummaryListBaseKey>
-                                        <SummaryListBaseValue>{resolvedAddress.isExported ?
-                                            <FontAwesomeIcon icon={faCheck} className="text-success" /> :
-                                            <FontAwesomeIcon icon={faTimes} className="text-danger" />}
-                                        </SummaryListBaseValue>
-                                    </SummaryListBaseRow>
-                                    <SummaryListBaseRow>
-                                        <SummaryListBaseKey>isProcessed</SummaryListBaseKey>
-                                        <SummaryListBaseValue>{resolvedAddress.isProcessed ?
-                                            <FontAwesomeIcon icon={faCheck} className="text-success" /> :
-                                            <FontAwesomeIcon icon={faTimes} className="text-danger" />}
-                                        </SummaryListBaseValue>
-                                    </SummaryListBaseRow>
-                                     <SummaryListBaseRow>
-                                        <SummaryListBaseKey>Created Date</SummaryListBaseKey>
-                                        <SummaryListBaseValue>
-                                            {moment(resolvedAddress.createdDate?.toString())
-                                                .format("Do-MMM-yyyy HH:mm")}
-                                        </SummaryListBaseValue>
-                                    </SummaryListBaseRow>
-                                    <SummaryListBaseRow>
-                                        <SummaryListBaseKey>Updated Date</SummaryListBaseKey>
-                                        <SummaryListBaseValue>
-                                            {moment(resolvedAddress.updatedDate?.toString())
-                                                .format("Do-MMM-yyyy HH:mm")}
-                                        </SummaryListBaseValue>
-                                    </SummaryListBaseRow>
-                                </SummaryListBase>
-                                <SecuredComponents allowedRoles={securityPoints.resolvedAddress.edit}>
-                                    <ButtonBase onClick={() => onModeChange('EDIT')} edit>Edit</ButtonBase>
-                                </SecuredComponents>
+                                <div className="row">
+                                    <div className="col-md-6">
+                                        <SummaryListBase>
+                                            <SummaryListBaseRow>
+                                                <SummaryListBaseKey>Unique Reference</SummaryListBaseKey>
+                                                <SummaryListBaseValue>{resolvedAddress.uniqueReference}</SummaryListBaseValue>
+                                            </SummaryListBaseRow>
+                                            <SummaryListBaseRow>
+                                                <SummaryListBaseKey>Batch References</SummaryListBaseKey>
+                                                <SummaryListBaseValue>{resolvedAddress.batchReference}</SummaryListBaseValue>
+                                            </SummaryListBaseRow>
+                                            <SummaryListBaseRow>
+                                                <SummaryListBaseKey>UPRN</SummaryListBaseKey>
+                                                <SummaryListBaseValue>{resolvedAddress.uprn}</SummaryListBaseValue>
+                                            </SummaryListBaseRow>
+                                            <SummaryListBaseRow>
+                                                <SummaryListBaseKey>UPSN</SummaryListBaseKey>
+                                                <SummaryListBaseValue>{resolvedAddress.upsn}</SummaryListBaseValue>
+                                            </SummaryListBaseRow>
+                                            <SummaryListBaseRow>
+                                                <SummaryListBaseKey>Unstructured Postal Address</SummaryListBaseKey>
+                                                <SummaryListBaseValue>{resolvedAddress.unstructuredPostalAddress}</SummaryListBaseValue>
+                                            </SummaryListBaseRow>
+                                            <SummaryListBaseRow>
+                                                <SummaryListBaseKey>Alternate Unstructured Postal Address</SummaryListBaseKey>
+                                                <SummaryListBaseValue>{resolvedAddress.alternateUnstructuredPostalAddress}</SummaryListBaseValue>
+                                            </SummaryListBaseRow>
+                                            <SummaryListBaseRow>
+                                                <SummaryListBaseKey>Address Format Quality</SummaryListBaseKey>
+                                                <SummaryListBaseValue>{resolvedAddress.addressFormatQuality}</SummaryListBaseValue>
+                                            </SummaryListBaseRow>
+                                            <SummaryListBaseRow>
+                                                <SummaryListBaseKey>Algorithm</SummaryListBaseKey>
+                                                <SummaryListBaseValue>{resolvedAddress.algorithm}</SummaryListBaseValue>
+                                            </SummaryListBaseRow>
+                                            <SummaryListBaseRow>
+                                                <SummaryListBaseKey>Building Name</SummaryListBaseKey>
+                                                <SummaryListBaseValue>{resolvedAddress.buildingName}</SummaryListBaseValue>
+                                            </SummaryListBaseRow>
+                                            <SummaryListBaseRow>
+                                                <SummaryListBaseKey>Building Number</SummaryListBaseKey>
+                                                <SummaryListBaseValue>{resolvedAddress.buildingName}</SummaryListBaseValue>
+                                            </SummaryListBaseRow>
+                                            <SummaryListBaseRow>
+                                                <SummaryListBaseKey>Classification</SummaryListBaseKey>
+                                                <SummaryListBaseValue>{resolvedAddress.classification}</SummaryListBaseValue>
+                                            </SummaryListBaseRow>
+                                            <SummaryListBaseRow>
+                                                <SummaryListBaseKey>Department Name</SummaryListBaseKey>
+                                                <SummaryListBaseValue>{resolvedAddress.departmentName}</SummaryListBaseValue>
+                                            </SummaryListBaseRow>
+                                            <SummaryListBaseRow>
+                                                <SummaryListBaseKey>Dependant Locality</SummaryListBaseKey>
+                                                <SummaryListBaseValue>{resolvedAddress.dependentLocality}</SummaryListBaseValue>
+                                            </SummaryListBaseRow>
+                                            <SummaryListBaseRow>
+                                                <SummaryListBaseKey>Dependent Thoroughfare</SummaryListBaseKey>
+                                                <SummaryListBaseValue>{resolvedAddress.dependentThoroughfare}</SummaryListBaseValue>
+                                            </SummaryListBaseRow>
+                                            <SummaryListBaseRow>
+                                                <SummaryListBaseKey>Double Dependendant Locality</SummaryListBaseKey>
+                                                <SummaryListBaseValue>{resolvedAddress.doubleDependentLocality}</SummaryListBaseValue>
+                                            </SummaryListBaseRow>
+                                            <SummaryListBaseRow>
+                                                <SummaryListBaseKey>Created Date</SummaryListBaseKey>
+                                                <SummaryListBaseValue>
+                                                    {moment(resolvedAddress.createdDate?.toString())
+                                                        .format("Do-MMM-yyyy HH:mm")}
+                                                </SummaryListBaseValue>
+                                            </SummaryListBaseRow>
+                                            <SummaryListBaseRow>
+                                                <SummaryListBaseKey>Updated Date</SummaryListBaseKey>
+                                                <SummaryListBaseValue>
+                                                    {moment(resolvedAddress.updatedDate?.toString())
+                                                        .format("Do-MMM-yyyy HH:mm")}
+                                                </SummaryListBaseValue>
+                                            </SummaryListBaseRow>
+                                        </SummaryListBase>
+                                    </div>
+
+
+                                    <div className="col-md-6">
+                                        <SummaryListBase>
+                                            <SummaryListBaseRow>
+                                                <SummaryListBaseKey>Match Pattern</SummaryListBaseKey>
+                                                <SummaryListBaseValue>{resolvedAddress.matchPattern}</SummaryListBaseValue>
+                                            </SummaryListBaseRow>
+                                            <SummaryListBaseRow>
+                                                <SummaryListBaseKey>Match With Assign</SummaryListBaseKey>
+                                                <SummaryListBaseValue>{resolvedAddress.matchedWithAssign ?
+                                                    <FontAwesomeIcon icon={faCheck} className="text-success" /> :
+                                                    <FontAwesomeIcon icon={faTimes} className="text-danger" />}
+                                                </SummaryListBaseValue>
+                                            </SummaryListBaseRow>
+                                            <SummaryListBaseRow>
+                                                <SummaryListBaseKey>Organisation Name</SummaryListBaseKey>
+                                                <SummaryListBaseValue>{resolvedAddress.organisationName}</SummaryListBaseValue>
+                                            </SummaryListBaseRow>
+                                            <SummaryListBaseRow>
+                                                <SummaryListBaseKey>PostCode Quality</SummaryListBaseKey>
+                                                <SummaryListBaseValue>{resolvedAddress.postCodeQuality}</SummaryListBaseValue>
+                                            </SummaryListBaseRow>
+                                            <SummaryListBaseRow>
+                                                <SummaryListBaseKey>Post Town</SummaryListBaseKey>
+                                                <SummaryListBaseValue>{resolvedAddress.postTown}</SummaryListBaseValue>
+                                            </SummaryListBaseRow>
+                                            <SummaryListBaseRow>
+                                                <SummaryListBaseKey>Qualifier</SummaryListBaseKey>
+                                                <SummaryListBaseValue>{resolvedAddress.qualifier}</SummaryListBaseValue>
+                                            </SummaryListBaseRow>
+                                            <SummaryListBaseRow>
+                                                <SummaryListBaseKey>Sub-Building Name</SummaryListBaseKey>
+                                                <SummaryListBaseValue>{resolvedAddress.subBuildingName}</SummaryListBaseValue>
+                                            </SummaryListBaseRow>
+                                            <SummaryListBaseRow>
+                                                <SummaryListBaseKey>Thoroughfare</SummaryListBaseKey>
+                                                <SummaryListBaseValue>{resolvedAddress.thoroughfare}</SummaryListBaseValue>
+                                            </SummaryListBaseRow>
+                                            <SummaryListBaseRow>
+                                                <SummaryListBaseKey>Post Code</SummaryListBaseKey>
+                                                <SummaryListBaseValue>{resolvedAddress.postCode}</SummaryListBaseValue>
+                                            </SummaryListBaseRow>
+                                            <SummaryListBaseRow>
+                                                <SummaryListBaseKey>isExported</SummaryListBaseKey>
+                                                <SummaryListBaseValue>{resolvedAddress.isExported ?
+                                                    <FontAwesomeIcon icon={faCheck} className="text-success" /> :
+                                                    <FontAwesomeIcon icon={faTimes} className="text-danger" />}
+                                                </SummaryListBaseValue>
+                                            </SummaryListBaseRow>
+                                            <SummaryListBaseRow>
+                                                <SummaryListBaseKey>isProcessed</SummaryListBaseKey>
+                                                <SummaryListBaseValue>{resolvedAddress.isProcessed ?
+                                                    <FontAwesomeIcon icon={faCheck} className="text-success" /> :
+                                                    <FontAwesomeIcon icon={faTimes} className="text-danger" />}
+                                                </SummaryListBaseValue>
+                                            </SummaryListBaseRow>
+                                        </SummaryListBase>
+
+                                        <SecuredComponents allowedRoles={securityPoints.resolvedAddress.edit}>
+                                            <ButtonBase onClick={() => onModeChange('EDIT')} edit>Edit Unstructured Address</ButtonBase>
+                                        </SecuredComponents>
+                                    </div>
+                                </div>
                             </CardBaseContent>
                         </CardBaseBody>
                     </CardBase>

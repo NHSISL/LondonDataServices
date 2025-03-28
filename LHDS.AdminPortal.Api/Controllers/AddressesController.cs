@@ -69,12 +69,12 @@ namespace LHDS.AdminPortal.Api.Controllers
         [EnableQuery(PageSize = 50)]
 #endif
 #if DEBUG
-        [EnableQuery(PageSize = 5000)]
+        [EnableQuery(PageSize = 25)]
 #endif
 #if RELEASE
         [Authorize(Roles = "ISL.LDS.AdminApi.Administrators, lhds.Api.Address, ISL.LDS.AdminApi.ReadOnly")]
 #endif
-        public ActionResult<IQueryable<Address>> Get()
+        public async ValueTask<ActionResult<IQueryable<Address>>> Get()
         {
             try
             {

@@ -39,10 +39,13 @@ const ResolvedAddressRowView: FunctionComponent<ResolvedAddressRowProps> = (prop
     return (
         <TableBaseRow>
             <TableBaseData>
-                <span style={{ fontSize: '12px' }} >
-                    <span>Batch Reference: <strong>{resolvedAddress.batchReference} </strong></span><br />
-                    <span>UPRN: <strong>{resolvedAddress.uprn}</strong></span><br />
-                    <span>UPSN: <strong>{resolvedAddress.upsn}</strong></span>
+                <span>
+                    <span style={{ fontSize: '14px' }}>{resolvedAddress.uprn}</span><br />
+                </span>
+            </TableBaseData>
+            <TableBaseData>
+                <span>
+                    <span style={{ fontSize: '14px' }}>{resolvedAddress.upsn}</span>
                 </span>
             </TableBaseData>
             <TableBaseData>
@@ -51,13 +54,7 @@ const ResolvedAddressRowView: FunctionComponent<ResolvedAddressRowProps> = (prop
             <TableBaseData>
                 <span style={{ fontSize: '14px' }}>{concateAddresses(resolvedAddress)}</span>
             </TableBaseData>
-            <TableBaseData classes="text-center">
-                <span>
-                    {resolvedAddress.isProcessing ?
-                        <FontAwesomeIcon icon={faCheck} className="text-success" title="processing" /> :
-                        <FontAwesomeIcon icon={faTimes} className="text-danger" title="not processing" />}
-                </span>
-            </TableBaseData>
+
             <TableBaseData classes="text-center">
                 <span>
                     {resolvedAddress.isExported ?

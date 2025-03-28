@@ -67,6 +67,10 @@ const ResolvedAddressDetailCardEdit: FunctionComponent<ResolvedAddressDetailCard
     }
 
     useEffect(() => {
+        setEditResolvedAddress({ ...resolvedAddress });
+    }, [resolvedAddress]);
+
+    useEffect(() => {
         processApiErrors(apiError)
     }, [apiError, processApiErrors])
 
@@ -84,11 +88,9 @@ const ResolvedAddressDetailCardEdit: FunctionComponent<ResolvedAddressDetailCard
                     <SummaryListBaseKey>Alternate Unstructured Address</SummaryListBaseKey>
                     <SummaryListBaseValue>
                         <SummaryListBaseValue>
-                            onPickAlternateAddress
                             {resolvedAddress.alternateUnstructuredPostalAddress ? resolvedAddress.alternateUnstructuredPostalAddress : "Not Specified"}</SummaryListBaseValue>
                     </SummaryListBaseValue>
                 </SummaryListBaseRow>
-
                 {/*<SummaryListBaseRow>*/}
                 {/*    <SummaryListBaseKey>Alternate Unstructured Address</SummaryListBaseKey>*/}
                 {/*    <SummaryListBaseValue>*/}

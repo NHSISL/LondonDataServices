@@ -51,7 +51,7 @@ const IngestionTrackingRow: FunctionComponent<IngestionTrackingRowProps> = (prop
             </TableBaseData>
 
             <TableBaseData>
-                <strong>Created Date: </strong><br />
+                <span style={{ fontSize: '12px' }}> <strong>Created Date: </strong><br /></span>
                 {moment(ingestionTracking.createdDate?.toString()).format("Do-MMM-yyyy HH:mm")}
             </TableBaseData>
 

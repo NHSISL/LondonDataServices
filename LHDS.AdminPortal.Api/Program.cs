@@ -22,6 +22,7 @@ using LHDS.Core.Clients;
 using LHDS.Core.Clients.Extensions;
 using LHDS.Core.Models.Brokers.Storages.Blobs;
 using LHDS.Core.Models.Configurations;
+using LHDS.Core.Models.Foundations.Addresses;
 using LHDS.Core.Models.Foundations.DataSets;
 using LHDS.Core.Models.Foundations.DataSetSpecifications;
 using LHDS.Core.Models.Foundations.DataTypes;
@@ -30,6 +31,7 @@ using LHDS.Core.Models.Foundations.IngestionTrackings;
 using LHDS.Core.Models.Foundations.ObjectColumns;
 using LHDS.Core.Models.Foundations.OptOuts;
 using LHDS.Core.Models.Foundations.PdsAudits;
+using LHDS.Core.Models.Foundations.ResolvedAddresses;
 using LHDS.Core.Models.Foundations.SpecificationObjects;
 using LHDS.Core.Models.Foundations.SubscriberAgreements;
 using LHDS.Core.Models.Foundations.Suppliers;
@@ -39,6 +41,7 @@ using LHDS.Core.Providers.Downloads;
 using LHDS.Core.Providers.Downloads.Extensions;
 using LHDS.Core.Providers.Downloads.MockDownloads;
 using LHDS.Core.Services.Coordinations.Decryptions;
+using LHDS.Core.Services.Foundations.Addresses;
 using LHDS.Core.Services.Foundations.Cryptographies;
 using LHDS.Core.Services.Foundations.DataSets;
 using LHDS.Core.Services.Foundations.DataSetSpecifications;
@@ -49,6 +52,7 @@ using LHDS.Core.Services.Foundations.IngestionTrackings;
 using LHDS.Core.Services.Foundations.ObjectColumns;
 using LHDS.Core.Services.Foundations.OptOuts;
 using LHDS.Core.Services.Foundations.PdsAudits;
+using LHDS.Core.Services.Foundations.ResolvedAddresses;
 using LHDS.Core.Services.Foundations.SecureDatas;
 using LHDS.Core.Services.Foundations.SpecificationObjects;
 using LHDS.Core.Services.Foundations.Suppliers;
@@ -222,6 +226,7 @@ namespace LHDS.AdminPortal.Api
 
         private static void AddFoundationServices(IServiceCollection services, IConfiguration configuration)
         {
+            services.AddTransient<IAddressService, AddressService>();
             services.AddTransient<ICryptographyService, CryptographyService>();
             services.AddTransient<IIngestionTrackingService, IngestionTrackingService>();
             services.AddTransient<ISupplierService, SupplierService>();
@@ -235,6 +240,7 @@ namespace LHDS.AdminPortal.Api
             services.AddTransient<IDataTypeService, DataTypeService>();
             services.AddTransient<IObjectColumnService, ObjectColumnService>();
             services.AddTransient<IDataSetService, DataSetService>();
+            services.AddTransient<IResolvedAddressService, ResolvedAddressService>();
             services.AddTransient<ITerminologyArtifactService, TerminologyArtifactService>();
             services.AddTransient<ITerminologyPollService, TerminologyPollService>();
             services.AddTransient<ISecureDataService, SecureDataService>();
@@ -347,6 +353,8 @@ namespace LHDS.AdminPortal.Api
             builder.EntitySet<ObjectColumn>("ObjectColumns");
             builder.EntitySet<OptOut>("OptOuts");
             builder.EntitySet<PdsAudit>("PdsAudits");
+            builder.EntitySet<ResolvedAddress>("ResolvedAddresses");
+            builder.EntitySet<Address>("Addresses");
             builder.EntitySet<Supplier>("Suppliers");
             builder.EntitySet<TerminologyArtifact>("TerminologyArtifacts");
             builder.EntitySet<SubscriberCredential>("SubscriberCredentials");

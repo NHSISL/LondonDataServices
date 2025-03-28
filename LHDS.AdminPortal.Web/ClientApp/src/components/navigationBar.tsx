@@ -44,7 +44,7 @@ const Submenu: FunctionComponent<SubmenuProps> = (props) => {
                         {showSubmenu && (
                             <ul className="">
                                 {items.links.map((link, index) => (
-                                    <FeatureSwitch feature={items.feature}>
+                                    <FeatureSwitch key={index} feature={items.feature}>
                                         <li key={index} className="nav-item">
                                             <SecuredLink icon="" to={link.to}>{link.label}</SecuredLink>
                                         </li>
@@ -68,8 +68,8 @@ export const NavigationBar: FunctionComponent = () => {
             feature: FeatureDefinitions.Configuration,
             links: [
                 { icon: 'ingestion', to: '/configuration/suppliers', label: 'Suppliers' },
-                { icon: 'ingestion', to: '/configuration/dataTypes', label: 'Data Types'},
-                { icon: 'ingestion', to: '/configuration/dataSets', label: 'Data Sets'},
+                { icon: 'ingestion', to: '/configuration/dataTypes', label: 'Data Types' },
+                { icon: 'ingestion', to: '/configuration/dataSets', label: 'Data Sets' },
                 {
                     icon: 'subscriberAgreement', to: '/subscriberAgreements', label: 'Subscriber Agreements',
                     feature: FeatureDefinitions.SubscriberAgreement
@@ -132,7 +132,7 @@ export const NavigationBar: FunctionComponent = () => {
                         </SecuredComponents>
                     </li>
                 </FeatureSwitch>
-                
+
                 <FeatureSwitch feature={FeatureDefinitions.ResolvedAddress}>
                     <li className="">
                         <SecuredComponents allowedRoles={securityPoints.resolvedAddress.view}>

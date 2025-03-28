@@ -21,11 +21,11 @@ const TerminologyArtifactRowView: FunctionComponent<TerminologyArtifactRowProps>
             <TableBaseData classes={terminologyArtifact.isError ? "bg-danger text-white" : ""}>
                 <span>{terminologyArtifact.resourceType}</span>
             </TableBaseData>
-            <TableBaseData classes={terminologyArtifact.isError ? "bg-danger text-white" : ""}>
-                <span>{terminologyArtifact.name}</span>
+            <TableBaseData classes={terminologyArtifact.isError ? "bg-danger text-white" : ""} >
+                <span style={{ maxWidth: '600px', display: 'inline-block' }}>{terminologyArtifact.name}</span>
             </TableBaseData>
             <TableBaseData classes={terminologyArtifact.isError ? "bg-danger text-white text-center" : "text-center"}>
-                <span>{terminologyArtifact.version}</span>
+                <span style={{ maxWidth: '100px', display: 'inline-block' }}>{terminologyArtifact.version}</span>
             </TableBaseData>
             <TableBaseData classes={terminologyArtifact.isError ? "bg-danger text-white text-center" : "text-center"}>
                 <span>{terminologyArtifact.status}</span>

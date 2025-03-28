@@ -105,11 +105,37 @@ export const Home = () => {
                                         </div>
 
                                         <div className="col-lg-4 col-md-6 col-sm-12">
-                                           
+                                            <SecuredComponents allowedRoles={securityPoints.address.view}>
+                                                <CardBase>
+                                                    <CardBaseBody>
+                                                        <CardBaseContent>
+                                                            <div className="me-3 mt-3">
+                                                                <h5><PublicLink icon="" to="/address">View Ordanance Addresses</PublicLink></h5>
+                                                                <div className="text-muted small">
+                                                                    To search through addresses we have stored from Ordanance.
+                                                                </div>
+                                                            </div>
+                                                        </CardBaseContent>
+                                                    </CardBaseBody>
+                                                </CardBase>
+                                            </SecuredComponents>
                                         </div>
 
                                         <div className="col-lg-4 col-md-6 col-sm-12">
-                                            
+                                            <SecuredComponents allowedRoles={securityPoints.resolvedAddress.view}>
+                                                <CardBase>
+                                                    <CardBaseBody>
+                                                        <CardBaseContent>
+                                                            <div className="me-3 mt-3">
+                                                                <h5><PublicLink icon="" to="/address">View Resolved Addresses</PublicLink></h5>
+                                                                <div className="text-muted small">
+                                                                    To search through addresses we have resolved.
+                                                                </div>
+                                                            </div>
+                                                        </CardBaseContent>
+                                                    </CardBaseBody>
+                                                </CardBase>
+                                            </SecuredComponents>
                                         </div>
                                     </div>
                                 </FeatureSwitch>

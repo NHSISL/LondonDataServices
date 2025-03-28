@@ -18,7 +18,8 @@ export const AddressHomeViewService = {
     useGetAllAddresses: (searchTerm?: string): AddressHomeViewServiceResponse => {
         try 
         {
-            let query = `?$orderby=createdDate desc`;
+            let query = ``;
+            //let query = `?$orderby=createdDate desc`;
 
             if (searchTerm) {
                 const fields = [

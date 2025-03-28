@@ -1,8 +1,9 @@
-// ---------------------------------------------------------------
+// ---------------------------------------------------------
 // Copyright (c) North East London ICB. All rights reserved.
-// ---------------------------------------------------------------
+// ---------------------------------------------------------
 
 using System;
+using System.Threading.Tasks;
 using LHDS.Core.Models.Foundations.Suppliers;
 using LHDS.Core.Models.Foundations.Suppliers.Exceptions;
 
@@ -10,7 +11,7 @@ namespace LHDS.Core.Services.Foundations.Suppliers
 {
     public partial class SupplierService
     {
-        private void ValidateSupplierOnAdd(Supplier supplier)
+        private async ValueTask ValidateSupplierOnAddAsync(Supplier supplier)
         {
             ValidateSupplierIsNotNull(supplier);
 
@@ -35,10 +36,10 @@ namespace LHDS.Core.Services.Foundations.Suppliers
                     secondName: nameof(Supplier.CreatedBy)),
                 Parameter: nameof(Supplier.UpdatedBy)),
 
-                (Rule: IsNotRecent(supplier.CreatedDate), Parameter: nameof(Supplier.CreatedDate)));
+                (Rule: await IsNotRecentAsync(supplier.CreatedDate), Parameter: nameof(Supplier.CreatedDate)));
         }
 
-        private void ValidateSupplierOnModify(Supplier supplier)
+        private async ValueTask ValidateSupplierOnModifyAsync(Supplier supplier)
         {
             ValidateSupplierIsNotNull(supplier);
 
@@ -57,7 +58,7 @@ namespace LHDS.Core.Services.Foundations.Suppliers
                     secondDateName: nameof(Supplier.CreatedDate)),
                 Parameter: nameof(Supplier.UpdatedDate)),
 
-                (Rule: IsNotRecent(supplier.UpdatedDate), Parameter: nameof(supplier.UpdatedDate)));
+                (Rule: await IsNotRecentAsync(supplier.UpdatedDate), Parameter: nameof(supplier.UpdatedDate)));
         }
 
         public void ValidateSupplierId(Guid supplierId) =>
@@ -163,16 +164,16 @@ namespace LHDS.Core.Services.Foundations.Suppliers
                Message = $"Text is not the same as {secondName}"
            };
 
-        private dynamic IsNotRecent(DateTimeOffset date) => new
+        private async ValueTask<dynamic> IsNotRecentAsync(DateTimeOffset date) => new
         {
-            Condition = IsDateNotRecent(date),
+            Condition = await IsDateNotRecentAsync(date),
             Message = "Date is not recent"
         };
 
-        private bool IsDateNotRecent(DateTimeOffset date)
+        private async ValueTask<bool> IsDateNotRecentAsync(DateTimeOffset date)
         {
             DateTimeOffset currentDateTime =
-                this.dateTimeBroker.GetCurrentDateTimeOffset();
+                await this.dateTimeBroker.GetCurrentDateTimeOffsetAsync();
 
             TimeSpan timeDifference = currentDateTime.Subtract(date);
             TimeSpan oneMinute = TimeSpan.FromMinutes(1);

@@ -25,7 +25,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Audits
             Guid randomIdentifier = Guid.NewGuid();
             string randomAuditType = invalidText;
             string randomAuditTitle = invalidText;
-            string randomMesssage = invalidText;
+            string randomMessage = invalidText;
             string randomFileName = invalidText;
             string randomLogLevel = invalidText;
             Guid? randomCorrelationId = null;
@@ -48,21 +48,21 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Audits
                     innerException: invalidAuditException);
 
             this.dateTimeBrokerMock.Setup(broker =>
-                broker.GetCurrentDateTimeOffset())
-                    .Returns(randomDateTimeOffset);
+                broker.GetCurrentDateTimeOffsetAsync())
+                    .ReturnsAsync(randomDateTimeOffset);
 
             this.identifierBrokerMock.Setup(broker =>
-                broker.GetIdentifier())
-                    .Returns(randomIdentifier);
+                broker.GetIdentifierAsync())
+                    .ReturnsAsync(randomIdentifier);
 
             // when
             ValueTask<Audit> addAuditTask =
                 this.auditService.AddAuditAsync(
                     auditType: randomAuditType,
                     title: randomAuditTitle,
-                    message: randomMesssage,
+                    message: randomMessage,
                     fileName: randomFileName,
-                    correlationId: randomCorrelationId,
+                    correlationId: randomCorrelationId.ToString(),
                     logLevel: randomLogLevel);
 
             AuditValidationException actualAuditValidationException =
@@ -73,15 +73,15 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Audits
                 .BeEquivalentTo(expectedAuditValidationException);
 
             this.dateTimeBrokerMock.Verify(broker =>
-                broker.GetCurrentDateTimeOffset(),
+                broker.GetCurrentDateTimeOffsetAsync(),
                     Times.Exactly(2));
 
             this.identifierBrokerMock.Verify(broker =>
-                broker.GetIdentifier(),
+                broker.GetIdentifierAsync(),
                     Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>
-                broker.LogError(It.Is(SameExceptionAs(
+                broker.LogErrorAsync(It.Is(SameExceptionAs(
                     expectedAuditValidationException))),
                         Times.Once);
 

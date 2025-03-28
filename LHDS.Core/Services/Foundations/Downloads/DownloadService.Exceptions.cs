@@ -23,23 +23,23 @@ namespace LHDS.Core.Services.Foundations.Downloads
             }
             catch (NullDownloadException nullDownloadException)
             {
-                throw CreateAndLogValidationException(nullDownloadException);
+                throw await CreateAndLogValidationExceptionAsync(nullDownloadException);
             }
             catch (NullSubscriberCredentialException nullSubscriberCredentialException)
             {
-                throw CreateAndLogValidationException(nullSubscriberCredentialException);
+                throw await CreateAndLogValidationExceptionAsync(nullSubscriberCredentialException);
             }
             catch (NullDocumentException nullDocumentException)
             {
-                throw CreateAndLogValidationException(nullDocumentException);
+                throw await CreateAndLogValidationExceptionAsync(nullDocumentException);
             }
             catch (InvalidDownloadException invalidDownloadException)
             {
-                throw CreateAndLogValidationException(invalidDownloadException);
+                throw await CreateAndLogValidationExceptionAsync(invalidDownloadException);
             }
             catch (NotFoundDownloadException notFoundDownloadException)
             {
-                throw CreateAndLogValidationException(notFoundDownloadException);
+                throw await CreateAndLogValidationExceptionAsync(notFoundDownloadException);
             }
             catch (Exception exception)
             {
@@ -48,7 +48,7 @@ namespace LHDS.Core.Services.Foundations.Downloads
                         message: "Failed download service error occurred, please contact support.",
                         innerException: exception);
 
-                throw CreateAndLogServiceException(failedDownloadServiceException);
+                throw await CreateAndLogServiceExceptionAsync(failedDownloadServiceException);
             }
         }
 
@@ -65,64 +65,29 @@ namespace LHDS.Core.Services.Foundations.Downloads
                         message: "Failed download service error occurred, please contact support.",
                         innerException: exception);
 
-                throw CreateAndLogServiceException(failedDownloadServiceException);
+                throw await CreateAndLogServiceExceptionAsync(failedDownloadServiceException);
             }
         }
 
-        private DownloadValidationException CreateAndLogValidationException(Xeption exception)
+        private async ValueTask<DownloadValidationException> CreateAndLogValidationExceptionAsync(Xeption exception)
         {
             var downloadValidationException = new DownloadValidationException(
                 message: "Download validation errors occurred, please try again.",
                 innerException: exception);
 
-            this.loggingBroker.LogError(downloadValidationException);
+            await this.loggingBroker.LogErrorAsync(downloadValidationException);
 
             return downloadValidationException;
         }
 
-        private DownloadDependencyException CreateAndLogCriticalDependencyException(Xeption exception)
-        {
-            var downloadDependencyException = new DownloadDependencyException(
-                message: "Download dependency error occurred, please contact support.",
-                innerException: exception);
-
-            this.loggingBroker.LogCritical(downloadDependencyException);
-
-            return downloadDependencyException;
-        }
-
-        private DownloadDependencyValidationException CreateAndLogDependencyValidationException(Xeption exception)
-        {
-            var downloadDependencyValidationException =
-                new DownloadDependencyValidationException(
-                    message: "Download dependency validation occurred, please try again.",
-                    innerException: exception);
-
-            this.loggingBroker.LogError(downloadDependencyValidationException);
-
-            return downloadDependencyValidationException;
-        }
-
-        private DownloadDependencyException CreateAndLogDependencyException(
-            Xeption exception)
-        {
-            var downloadDependencyException = new DownloadDependencyException(
-                message: "Download dependency error occurred, please contact support.",
-                innerException: exception);
-
-            this.loggingBroker.LogError(downloadDependencyException);
-
-            return downloadDependencyException;
-        }
-
-        private DownloadServiceException CreateAndLogServiceException(
+        private async ValueTask<DownloadServiceException> CreateAndLogServiceExceptionAsync(
             Xeption exception)
         {
             var downloadServiceException = new DownloadServiceException(
                 message: "Download service error occurred, please contact support.",
                 innerException: exception);
 
-            this.loggingBroker.LogError(downloadServiceException);
+            await this.loggingBroker.LogErrorAsync(downloadServiceException);
 
             return downloadServiceException;
         }

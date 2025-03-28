@@ -28,7 +28,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.TerminologyDetails
             this.terminologyArtifactProcessingServiceMock.SetupSequence(service =>
                 service.GetNonDownloadedArtifactAsync())
                     .ReturnsAsync(undownloadedTerminologyArtifact)
-                    .ReturnsAsync((TerminologyArtifact?)null);
+                    .ReturnsAsync((TerminologyArtifact)null);
 
             this.ontologyProcessingServiceMock.Setup(service =>
                 service.RetrieveArtifactDetailsAsync(undownloadedTerminologyArtifact.FullUrl))
@@ -51,8 +51,8 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.TerminologyDetails
                 .Returns(ValueTask.CompletedTask);
 
             this.dateTimeBrokerMock.Setup(broker =>
-                broker.GetCurrentDateTimeOffset())
-                    .Returns(randomDateTimeOffset);
+                broker.GetCurrentDateTimeOffsetAsync())
+                    .ReturnsAsync(randomDateTimeOffset);
 
             TerminologyArtifact downloadedTerminologyArtifact = undownloadedTerminologyArtifact.DeepClone();
             downloadedTerminologyArtifact.IsDownloaded = true;
@@ -80,7 +80,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.TerminologyDetails
                     Times.Once);
 
             this.dateTimeBrokerMock.Verify(broker =>
-                broker.GetCurrentDateTimeOffset(),
+                broker.GetCurrentDateTimeOffsetAsync(),
                     Times.Once);
 
             this.terminologyArtifactProcessingServiceMock.Verify(service =>

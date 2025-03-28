@@ -18,12 +18,12 @@ namespace LHDS.Core.Brokers.Storages.Sql
             IngestionTrackingAudit ingestionTrackingAudit) =>
                 await InsertAsync(ingestionTrackingAudit);
 
-        public IQueryable<IngestionTrackingAudit> SelectAllIngestionTrackingAudits() =>
-            ReadAll<IngestionTrackingAudit>();
+        public async ValueTask<IQueryable<IngestionTrackingAudit>> SelectAllIngestionTrackingAuditsAsync() =>
+            await SelectAllAsync<IngestionTrackingAudit>();
 
         public async ValueTask<IngestionTrackingAudit> SelectIngestionTrackingAuditByIdAsync(
             Guid ingestionTrackingAuditId) =>
-                await ReadAsync<IngestionTrackingAudit>(ingestionTrackingAuditId);
+                await SelectAsync<IngestionTrackingAudit>(ingestionTrackingAuditId);
 
         public async ValueTask<IngestionTrackingAudit> UpdateIngestionTrackingAuditAsync(
             IngestionTrackingAudit ingestionTrackingAudit) =>

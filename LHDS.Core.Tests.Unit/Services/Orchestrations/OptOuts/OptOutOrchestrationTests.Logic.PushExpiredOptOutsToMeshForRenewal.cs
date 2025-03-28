@@ -22,14 +22,13 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
             // Given
             DateTimeOffset randomDate = GetRandomDateTimeOffset();
             DateTimeOffset currentDateTime = randomDate;
-            bool withHeader = false;
             bool shouldAddTrailingComma = optOutConfiguration.OptOutFileRequireTrailingComma;
             List<OptOut> randomOptOuts = CreateRandomOptOutsList();
             List<OptOut> outputOptOuts = randomOptOuts;
 
             this.dateTimeBrokerMock.Setup(broker =>
-                broker.GetCurrentDateTimeOffset())
-                    .Returns(currentDateTime);
+                broker.GetCurrentDateTimeOffsetAsync())
+                    .ReturnsAsync(currentDateTime);
 
             this.optOutProcessingServiceMock.Setup(processing =>
                 processing.RetrieveAllExpiredOptOutsAsync(optOutConfiguration.ExpiredAfterDays))
@@ -126,7 +125,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
             }
 
             this.dateTimeBrokerMock.Verify(broker =>
-                broker.GetCurrentDateTimeOffset(),
+                broker.GetCurrentDateTimeOffsetAsync(),
                     Times.Exactly(outputOptOuts.Count + 1));
 
             this.optOutProcessingServiceMock.VerifyNoOtherCalls();
@@ -144,7 +143,6 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
             // Given
             DateTimeOffset randomDate = GetRandomDateTimeOffset();
             DateTimeOffset currentDateTime = randomDate;
-            bool withHeader = false;
             bool shouldAddTrailingComma = optOutConfiguration.OptOutFileRequireTrailingComma;
             List<OptOut> randomOptOuts = new List<OptOut>();
             List<OptOut> outputOptOuts = randomOptOuts;

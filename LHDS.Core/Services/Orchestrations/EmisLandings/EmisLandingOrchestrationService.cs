@@ -103,23 +103,26 @@ namespace LHDS.Core.Services.Orchestrations.Downloads
                     }
                     catch (Exception ex)
                     {
-                        this.loggingBroker.LogError(ex);
+                        await this.loggingBroker.LogErrorAsync(ex);
                         Console.WriteLine($"Unable to download document: {fileName}");
                         exceptions.Add(ex);
                     }
                 }
 
-                List<IngestionTracking> unavailableIngestionTrackings =
-                    this.ingestionTrackingProcessingService.RetrieveAllIngestionTrackings()
+                DateTimeOffset fifteenMinsAgo = await this.dateTimeBroker.GetCurrentDateTimeOffsetAsync();
+                fifteenMinsAgo.AddMinutes(-15);
+
+                IQueryable<IngestionTracking> allIngestionTrackings =
+                    await this.ingestionTrackingProcessingService.RetrieveAllIngestionTrackingsAsync();
+
+                List<IngestionTracking> unavailableIngestionTrackings = allIngestionTrackings
                         .Where(ingestionTracking =>
-                            ingestionTracking.LastSeen <=
-                                this.dateTimeBroker.GetCurrentDateTimeOffset().AddMinutes(-15)).ToList();
+                            ingestionTracking.LastSeen <= fifteenMinsAgo).ToList();
 
                 foreach (var item in unavailableIngestionTrackings)
                 {
                     item.FileDeleted = true;
-                    item.UpdatedDate = this.dateTimeBroker.GetCurrentDateTimeOffset();
-
+                    item.UpdatedDate = await this.dateTimeBroker.GetCurrentDateTimeOffsetAsync();
                     await this.ingestionTrackingProcessingService.ModifyIngestionTrackingAsync(item);
                 }
 
@@ -173,7 +176,7 @@ namespace LHDS.Core.Services.Orchestrations.Downloads
                         ingestionTrackingId);
 
                 retrievedIngestionTracking.Decrypted = false;
-                retrievedIngestionTracking.UpdatedDate = this.dateTimeBroker.GetCurrentDateTimeOffset();
+                retrievedIngestionTracking.UpdatedDate = await this.dateTimeBroker.GetCurrentDateTimeOffsetAsync();
 
                 IngestionTracking modifiedIngestionTracking =
                     await this.ingestionTrackingProcessingService.ModifyIngestionTrackingAsync(
@@ -185,36 +188,47 @@ namespace LHDS.Core.Services.Orchestrations.Downloads
             Guid supplierId,
             string fileName)
         {
-            IngestionTracking? maybeIngestionTracking =
-                this.ingestionTrackingProcessingService.RetrieveAllIngestionTrackings()
+            IQueryable<IngestionTracking> allIngestionTrackings =
+                await this.ingestionTrackingProcessingService.RetrieveAllIngestionTrackingsAsync();
+
+            IngestionTracking? maybeIngestionTracking = allIngestionTrackings
                     .FirstOrDefault(ingestionTracking =>
                         ingestionTracking.FileName == fileName);
 
             if (maybeIngestionTracking == null)
             {
-                var currentDateTime = this.dateTimeBroker.GetCurrentDateTimeOffset();
+                var currentDateTime = await this.dateTimeBroker.GetCurrentDateTimeOffsetAsync();
 
                 var filename = fileName.StartsWith('/')
                     ? fileName
                     : "/" + fileName;
 
+                string sourceFolderPath = Path.GetDirectoryName(filename) ?? string.Empty;
+                sourceFolderPath = sourceFolderPath.Replace("\\", "/").Replace("\\", "/");
+                string file = Path.GetFileName(filename);
+                string fileWithoutExtension = Path.GetFileNameWithoutExtension(file);
+                string[] segments = fileWithoutExtension.Split('_');
+                string batch = $"{segments[0]}_{segments[1]}";
+                string objectName = $"{segments[2]}_{segments[3]}";
+
                 DataSetSpecification? retrievedDataSetSpecification = await
                     this.dataSetSpecificationProcessingService.GetActiveDataSetSpecification(
                         supplierId);
 
-                (string encryptedFileName, string decryptedFileName) =
+                (string encryptedFileName, string decryptedFileName, string baseFolder) =
                         await GetFileNames(subscriberCredential, retrievedDataSetSpecification, filename, supplierId);
-
-                string sourceFolderPath = Path.GetDirectoryName(filename) ?? string.Empty;
-                sourceFolderPath = sourceFolderPath.Replace("\\", "/").Replace("\\", "/");
 
                 IngestionTracking newIngestionTracking =
                   new IngestionTracking
                   {
-                      Id = this.identifierBroker.GetIdentifier(),
+                      Id = await this.identifierBroker.GetIdentifierAsync(),
+                      SupplierId = supplierId,
+                      //Container = blobContainers.Ingress,
                       FileName = filename,
                       SourceFolderPath = sourceFolderPath,
-                      SupplierId = landingConfiguration.LandingSupplierId,
+                      BatchReadyFolderPath = baseFolder,
+                      Batch = batch,
+                      ObjectName = objectName,
                       DataSetSpecificationId = retrievedDataSetSpecification.Id,
                       EncryptedFileName = encryptedFileName,
                       DecryptedFileName = decryptedFileName,
@@ -243,7 +257,7 @@ namespace LHDS.Core.Services.Orchestrations.Downloads
 
             if (maybeIngestionTracking.IsDownloaded == false && maybeIngestionTracking.RetryCount <= 3)
             {
-                var currentDateTime = this.dateTimeBroker.GetCurrentDateTimeOffset();
+                var currentDateTime = await this.dateTimeBroker.GetCurrentDateTimeOffsetAsync();
                 maybeIngestionTracking.RetryCount += 1;
                 maybeIngestionTracking.IsDownloaded = false;
                 maybeIngestionTracking.FileDeleted = false;
@@ -272,7 +286,7 @@ namespace LHDS.Core.Services.Orchestrations.Downloads
                     using (FileStream readFtpFileStream =
                         new FileStream(tempEncryptedFilePath, FileMode.Open, FileAccess.ReadWrite))
                     {
-                        string encryptedFileSha256Hash = this.hashBroker.GenerateSha256Hash(readFtpFileStream);
+                        string encryptedFileSha256Hash = await this.hashBroker.GenerateSha256HashAsync(readFtpFileStream);
                         updatedIngestionTracking.EncryptedFileSize = readFtpFileStream.Length;
                         updatedIngestionTracking.EncryptedFileSha256Hash = encryptedFileSha256Hash;
 
@@ -294,8 +308,7 @@ namespace LHDS.Core.Services.Orchestrations.Downloads
                     await this.fileBroker.DeleteFileAsync(tempEncryptedFilePath);
                 }
 
-                var updatedDate = this.dateTimeBroker.GetCurrentDateTimeOffset();
-
+                var updatedDate = await this.dateTimeBroker.GetCurrentDateTimeOffsetAsync();
                 updatedIngestionTracking.IsDownloaded = true;
                 updatedIngestionTracking.Decrypted = false;
                 updatedIngestionTracking.IsProcessing = false;
@@ -320,7 +333,7 @@ namespace LHDS.Core.Services.Orchestrations.Downloads
             IngestionTracking ingestionTracking,
             string message)
         {
-            var currentDateTime = this.dateTimeBroker.GetCurrentDateTimeOffset();
+            var currentDateTime = await this.dateTimeBroker.GetCurrentDateTimeOffsetAsync();
 
             IngestionTrackingAudit newAudit =
                 new IngestionTrackingAudit
@@ -337,7 +350,7 @@ namespace LHDS.Core.Services.Orchestrations.Downloads
             await this.auditService.AddIngestionTrackingAuditAsync(newAudit);
         }
 
-        private async ValueTask<(string encryptedFileName, string decryptedFileName)> GetFileNames(
+        private async ValueTask<(string encryptedFileName, string decryptedFileName, string baseFolder)> GetFileNames(
             SubscriberCredential subscriberCredential,
             DataSetSpecification? retrievedDataSetSpecification,
             string fileName,
@@ -347,7 +360,7 @@ namespace LHDS.Core.Services.Orchestrations.Downloads
             {
                 throw new NotFoundDocumentProcessingException(
                     $"No active dataset specification found for supplier id: " +
-                    $"{landingConfiguration.LandingSupplierId}");
+                    $"{supplierId}");
             }
 
             string[] splitFileName = fileName.Split('/');
@@ -357,19 +370,32 @@ namespace LHDS.Core.Services.Orchestrations.Downloads
             {
                 throw new InvalidArgumentsDocumentProcessingException(fileName);
             }
-            else
-            {
-                newFileName = $"{subscriberCredential.Id}/{fileName.Split('/')[4]}/{splitFileName[6]}";
-            }
 
-            string encryptedFileName = $"/{landingConfiguration.EncryptedFolder}/{newFileName}";
+            string dataSetName = retrievedDataSetSpecification?.DataSet?.DataSetName ?? string.Empty;
+            string dataSetVersion = retrievedDataSetSpecification?.OurSpecificationVersion ?? string.Empty;
+            string extractGroup = subscriberCredential.Id.ToString();
+            string extractTime = splitFileName[5];
 
-            string decryptedFileName = $"/{landingConfiguration.DecryptedFolder}" +
-                $"/{retrievedDataSetSpecification?.DataSet?.DataSetName}" +
-                $"/{retrievedDataSetSpecification?.OurSpecificationVersion}" +
+            string baseFolder =
+                $"/{landingConfiguration.DecryptedFolder}" +
+                $"/{dataSetName}" +
+                $"/{dataSetVersion}" +
+                $"/{extractGroup}" +
+                $"/{extractTime}";
+
+            newFileName = $"{splitFileName[6]}";
+
+            string encryptedFileName =
+                $"/{landingConfiguration.EncryptedFolder}" +
+                $"/{extractGroup}" +
+                $"/{extractTime}" +
+                $"/{newFileName}";
+
+            string decryptedFileName =
+                $"{baseFolder}" +
                 $"/{newFileName.Replace(".gpg", "", StringComparison.InvariantCultureIgnoreCase)}";
 
-            return (encryptedFileName, decryptedFileName);
+            return (encryptedFileName, decryptedFileName, baseFolder);
         }
 
         private async ValueTask DownloadFile(

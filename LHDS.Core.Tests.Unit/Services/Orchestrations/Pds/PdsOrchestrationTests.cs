@@ -6,9 +6,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq.Expressions;
-using System.Runtime.CompilerServices;
 using System.Text;
-using FluentAssertions;
 using KellermanSoftware.CompareNetObjects;
 using LHDS.Core.Brokers.DateTimes;
 using LHDS.Core.Brokers.Identifiers;
@@ -56,6 +54,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Pds
                 { "pdsSettings:pdsFileRequireTrailingComma", "true" },
                 { "pdsSettings:to", GetRandomString() },
                 { "pdsSettings:workflowId", GetRandomString() },
+                { "pdsSettings:returnWorkflowId", GetRandomString() },
                 { "meshConfiguration:mailboxId", GetRandomString() },
                 { "meshConfiguration:password", GetRandomString() },
                 { "meshConfiguration:key", GetRandomString() },
@@ -84,7 +83,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Pds
 
                 To = inMemoryConfiguration["pdsSettings:inputFolder"],
                 WorkflowId = inMemoryConfiguration["pdsSettings:workflowId"],
-
+                ReturnWorkflowId = inMemoryConfiguration["pdsSettings:returnWorkflowId"],
             };
 
             this.blobContainers = new BlobContainers
@@ -124,7 +123,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Pds
             {
                 actualStream.ShouldCompare(expectedStream);
             }
-            catch (Exception ex)
+            catch (Exception)
             {
             }
 

@@ -18,7 +18,8 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.OptOuts
     {
         [Theory]
         [MemberData(nameof(DependencyValidationExceptions))]
-        public async Task ShouldThrowDependencyValidationExceptionOnRetrieveAllExpiredOptOutsIfDependencyValidationErrorOccursAndLogItAsync(
+        public async Task
+            ShouldThrowDependencyValidationExceptionOnRetrieveAllExpiredOptOutsIfDependencyValidationErrorOccursAndLogItAsync(
             Xeption dependencyValidationException)
         {
             // given
@@ -26,11 +27,12 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.OptOuts
 
             var expectedOptOutProcessingDependencyValidationException =
                 new OptOutProcessingDependencyValidationException(
-                    dependencyValidationException.InnerException as Xeption);
+                    message: "Opt out processing dependency validation error occurred, please contact support.",
+                    innerException: dependencyValidationException.InnerException as Xeption);
 
             this.dateTimeBrokerMock.Setup(broker =>
-                broker.GetCurrentDateTimeOffset())
-                    .Throws(dependencyValidationException);
+                broker.GetCurrentDateTimeOffsetAsync())
+                    .ThrowsAsync(dependencyValidationException);
 
             // when
             ValueTask<List<OptOut>> retrieveAllExpiredOptOutsTask =
@@ -44,15 +46,15 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.OptOuts
                 expectedOptOutProcessingDependencyValidationException);
 
             this.dateTimeBrokerMock.Verify(broker =>
-                broker.GetCurrentDateTimeOffset(),
+                broker.GetCurrentDateTimeOffsetAsync(),
                     Times.Once);
 
             this.optOutServiceMock.Verify(service =>
-                service.RetrieveAllOptOuts(),
+                service.RetrieveAllOptOutsAsync(),
                     Times.Never);
 
             this.loggingBrokerMock.Verify(broker =>
-                 broker.LogError(It.Is(SameExceptionAs(
+                 broker.LogErrorAsync(It.Is(SameExceptionAs(
                     expectedOptOutProcessingDependencyValidationException))),
                             Times.Once);
 
@@ -70,11 +72,12 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.OptOuts
 
             var expectedOptOutProcessingDependencyException =
                 new OptOutProcessingDependencyException(
+                    message: "Opt out processing dependency error occurred, please contact support.",
                     dependencyException.InnerException as Xeption);
 
             this.dateTimeBrokerMock.Setup(broker =>
-                broker.GetCurrentDateTimeOffset())
-                    .Throws(dependencyException);
+                broker.GetCurrentDateTimeOffsetAsync())
+                    .ThrowsAsync(dependencyException);
 
             // when
             ValueTask<List<OptOut>> optOutRetrieveExpiredTask =
@@ -87,15 +90,15 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.OptOuts
             actualException.Should().BeEquivalentTo(expectedOptOutProcessingDependencyException);
 
             this.dateTimeBrokerMock.Verify(broker =>
-                broker.GetCurrentDateTimeOffset(),
+                broker.GetCurrentDateTimeOffsetAsync(),
                     Times.Once);
 
             this.optOutServiceMock.Verify(service =>
-                service.RetrieveAllOptOuts(),
+                service.RetrieveAllOptOutsAsync(),
                     Times.Never);
 
             this.loggingBrokerMock.Verify(broker =>
-                 broker.LogError(It.Is(SameExceptionAs(
+                 broker.LogErrorAsync(It.Is(SameExceptionAs(
                      expectedOptOutProcessingDependencyException))),
                             Times.Once);
 
@@ -118,11 +121,12 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.OptOuts
 
             var expectedOptOutProcessingServiveException =
                 new OptOutProcessingServiceException(
-                    failedOptOutProcessingServiceException);
+                    message: "Opt out processing service error occurred, please contact support.",
+                    innerException: failedOptOutProcessingServiceException);
 
             this.dateTimeBrokerMock.Setup(broker =>
-                broker.GetCurrentDateTimeOffset())
-                    .Throws(serviceException);
+                broker.GetCurrentDateTimeOffsetAsync())
+                    .ThrowsAsync(serviceException);
 
             // when
             ValueTask<List<OptOut>> retrieveExpiretOptOuts =
@@ -135,15 +139,15 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.OptOuts
             actualException.Should().BeEquivalentTo(expectedOptOutProcessingServiveException);
 
             this.dateTimeBrokerMock.Verify(broker =>
-                broker.GetCurrentDateTimeOffset(),
+                broker.GetCurrentDateTimeOffsetAsync(),
                     Times.Once);
 
             this.optOutServiceMock.Verify(service =>
-                service.RetrieveAllOptOuts(),
+                service.RetrieveAllOptOutsAsync(),
                     Times.Never);
 
             this.loggingBrokerMock.Verify(broker =>
-                 broker.LogError(It.Is(SameExceptionAs(
+                 broker.LogErrorAsync(It.Is(SameExceptionAs(
                      expectedOptOutProcessingServiveException))),
                             Times.Once);
 

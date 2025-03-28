@@ -8,6 +8,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using FluentAssertions;
+using LHDS.Core.Models.Foundations.IngestionTrackingAudits;
 using LHDS.Core.Models.Foundations.IngestionTrackings;
 using LHDS.Core.Models.Foundations.Suppliers;
 using LHDS.Core.Models.Processings.SubscriberCredentials;
@@ -21,7 +22,7 @@ namespace LHDS.Core.Tests.Acceptance.Clients.Decryptions
         public async Task ShouldRedecryptDocumentsAsync()
         {
             //Given
-            DateTimeOffset dateTimeOffset = this.dateTimeBroker.GetCurrentDateTimeOffset();
+            DateTimeOffset dateTimeOffset = await this.dateTimeBroker.GetCurrentDateTimeOffsetAsync();
             Guid supplierId = Guid.NewGuid();
             byte[] documentData = Encoding.ASCII.GetBytes(GetRandomString());
             Stream randomStream = new MemoryStream(documentData);
@@ -33,19 +34,27 @@ namespace LHDS.Core.Tests.Acceptance.Clients.Decryptions
             SubscriberCredential generatedSubscriberCredential = await this.subscriberCredentialOrchestration
                 .ModifyOrAddSubscriberCredentialAsync(subscriberCredential, regenerateKeys: true);
 
-            string fileName = CreateRandomFileName(subscriberCredential.Id);
+            string encryptedFileName = CreateRandomFileName(subscriberCredential.Id);
+            string decryptedFileName = CreateRandomFileName(subscriberCredential.Id);
             Stream inputStream = new MemoryStream(documentData);
 
             await this.cryptographyProvider
                 .EncryptAsync(input: inputStream, encryptedStream, generatedSubscriberCredential);
 
-            await this.documentService.AddDocumentAsync(input: encryptedStream, fileName, blobContainers.EmisLanding);
+            await this.documentService.AddDocumentAsync(
+                input: encryptedStream,
+                fileName: encryptedFileName,
+                container: blobContainers.EmisLanding);
+
             await this.supplierService.AddSupplierAsync(randomSupplier);
 
             IngestionTracking ingestionTracking = CreateRandomIngestionTracking(
-                dateTimeOffset: this.dateTimeBroker.GetCurrentDateTimeOffset(),
-                fileName,
-                supplierId: supplierId);
+                dateTimeOffset: await this.dateTimeBroker.GetCurrentDateTimeOffsetAsync(),
+                encryptedFileName,
+                decryptedFileName,
+                supplierId: supplierId,
+                Guid.NewGuid(),
+                blobContainers.Ingress);
 
             ingestionTracking.IsDownloaded = true;
             ingestionTracking.Decrypted = false;
@@ -70,8 +79,11 @@ namespace LHDS.Core.Tests.Acceptance.Clients.Decryptions
 
             decryptedIngestionTracking.Decrypted.Should().BeTrue();
 
-            var audits = this.auditService.RetrieveAllIngestionTrackingAudits()
-                .Where(audit => audit.IngestionTrackingId == ingestionTracking.Id);
+            IQueryable<IngestionTrackingAudit> allAudits =
+                await this.auditService.RetrieveAllIngestionTrackingAuditsAsync();
+
+            var audits = allAudits
+                .Where(audit => audit.IngestionTrackingId == ingestionTracking.Id).ToList();
 
             foreach (var audit in audits)
             {
@@ -84,7 +96,7 @@ namespace LHDS.Core.Tests.Acceptance.Clients.Decryptions
                 .RemoveSubscriberCredentialByIdAsync(subscriberCredentialId: subscriberCredential.Id);
 
             await this.supplierService.RemoveSupplierByIdAsync(supplierId: supplierId);
-            await this.documentService.RemoveDocumentByFileNameAsync(fileName, blobContainers.EmisLanding);
+            await this.documentService.RemoveDocumentByFileNameAsync(encryptedFileName, blobContainers.EmisLanding);
 
             await this.documentService.RemoveDocumentByFileNameAsync(
                 ingestionTracking.DecryptedFileName, blobContainers.Ingress);

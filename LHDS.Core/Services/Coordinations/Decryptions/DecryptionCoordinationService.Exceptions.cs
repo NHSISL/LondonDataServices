@@ -25,68 +25,68 @@ namespace LHDS.Core.Services.Coordinations.Decryptions
             }
             catch (InvalidArgumentDecryptionCoordinationException invalidArgumentDecryptionCoordinationException)
             {
-                throw CreateAndLogValidationException(invalidArgumentDecryptionCoordinationException);
+                throw await CreateAndLogValidationExceptionAsync(invalidArgumentDecryptionCoordinationException);
             }
             catch (SubscriberCredentialValidationOrchestrationException
                 subscriberCredentialValidationOrchestrationException)
             {
-                throw CreateAndLogDependencyValidationException(subscriberCredentialValidationOrchestrationException);
+                throw await CreateAndLogDependencyValidationExceptionAsync(subscriberCredentialValidationOrchestrationException);
             }
             catch (SubscriberCredentialOrchestrationDependencyValidationException
                 subscriberCredentialOrchestrationDependencyValidationException)
             {
-                throw CreateAndLogDependencyValidationException(
+                throw await CreateAndLogDependencyValidationExceptionAsync(
                     subscriberCredentialOrchestrationDependencyValidationException);
             }
             catch (DecryptionOrchestrationValidationException
                 decryptionOrchestrationValidationException)
             {
-                throw CreateAndLogDependencyValidationException(decryptionOrchestrationValidationException);
+                throw await CreateAndLogDependencyValidationExceptionAsync(decryptionOrchestrationValidationException);
             }
             catch (DecryptionOrchestrationDependencyValidationException
                 decryptionOrchestrationDependencyValidationException)
             {
-                throw CreateAndLogDependencyValidationException(decryptionOrchestrationDependencyValidationException);
+                throw await CreateAndLogDependencyValidationExceptionAsync(decryptionOrchestrationDependencyValidationException);
             }
-            catch (IngresOrchestrationValidationException
+            catch (IngressOrchestrationValidationException
                 ingresOrchestrationValidationException)
             {
-                throw CreateAndLogDependencyValidationException(ingresOrchestrationValidationException);
+                throw await CreateAndLogDependencyValidationExceptionAsync(ingresOrchestrationValidationException);
             }
-            catch (IngresOrchestrationDependencyValidationException
+            catch (IngressOrchestrationDependencyValidationException
                 ingresOrchestrationDependencyValidationException)
             {
-                throw CreateAndLogDependencyValidationException(ingresOrchestrationDependencyValidationException);
+                throw await CreateAndLogDependencyValidationExceptionAsync(ingresOrchestrationDependencyValidationException);
             }
             catch (SubscriberCredentialDependencyOrchestrationException
                 subscriberCredentialDependencyOrchestrationException)
             {
-                throw CreateAndLogDependencyException(subscriberCredentialDependencyOrchestrationException);
+                throw await CreateAndLogDependencyExceptionAsync(subscriberCredentialDependencyOrchestrationException);
             }
             catch (SubscriberCredentialOrchestrationServiceException
                 subscriberCredentialOrchestrationServiceException)
             {
-                throw CreateAndLogDependencyException(subscriberCredentialOrchestrationServiceException);
+                throw await CreateAndLogDependencyExceptionAsync(subscriberCredentialOrchestrationServiceException);
             }
             catch (DecryptionOrchestrationDependencyException
                 decryptionOrchestrationDependencyException)
             {
-                throw CreateAndLogDependencyException(decryptionOrchestrationDependencyException);
+                throw await CreateAndLogDependencyExceptionAsync(decryptionOrchestrationDependencyException);
             }
             catch (DecryptionOrchestrationServiceException
                 decryptionOrchestrationServiceException)
             {
-                throw CreateAndLogDependencyException(decryptionOrchestrationServiceException);
+                throw await CreateAndLogDependencyExceptionAsync(decryptionOrchestrationServiceException);
             }
-            catch (IngresOrchestrationDependencyException
+            catch (IngressOrchestrationDependencyException
                 ingresOrchestrationDependencyException)
             {
-                throw CreateAndLogDependencyException(ingresOrchestrationDependencyException);
+                throw await CreateAndLogDependencyExceptionAsync(ingresOrchestrationDependencyException);
             }
-            catch (IngresOrchestrationServiceException
+            catch (IngressOrchestrationServiceException
                 ingresOrchestrationServiceException)
             {
-                throw CreateAndLogDependencyException(ingresOrchestrationServiceException);
+                throw await CreateAndLogDependencyExceptionAsync(ingresOrchestrationServiceException);
             }
             catch (Exception exception)
             {
@@ -95,7 +95,7 @@ namespace LHDS.Core.Services.Coordinations.Decryptions
                         message: "Failed decryption coordination service error occurred, please contact support.",
                         innerException: exception);
 
-                throw CreateAndLogServiceException(failedDecryptionCoordinationServiceException);
+                throw await CreateAndLogServiceExceptionAsync(failedDecryptionCoordinationServiceException);
             }
         }
 
@@ -107,68 +107,68 @@ namespace LHDS.Core.Services.Coordinations.Decryptions
             }
             catch (InvalidArgumentDecryptionCoordinationException invalidArgumentDecryptionCoordinationException)
             {
-                throw CreateAndLogValidationException(invalidArgumentDecryptionCoordinationException);
+                throw await CreateAndLogValidationExceptionAsync(invalidArgumentDecryptionCoordinationException);
             }
             catch (SubscriberCredentialValidationOrchestrationException
                 subscriberCredentialValidationOrchestrationException)
             {
-                throw CreateAndLogDependencyValidationException(subscriberCredentialValidationOrchestrationException);
+                throw await CreateAndLogDependencyValidationExceptionAsync(subscriberCredentialValidationOrchestrationException);
             }
             catch (SubscriberCredentialOrchestrationDependencyValidationException
                 subscriberCredentialOrchestrationDependencyValidationException)
             {
-                throw CreateAndLogDependencyValidationException(
+                throw await CreateAndLogDependencyValidationExceptionAsync(
                     subscriberCredentialOrchestrationDependencyValidationException);
             }
             catch (DecryptionOrchestrationValidationException
                 decryptionOrchestrationValidationException)
             {
-                throw CreateAndLogDependencyValidationException(decryptionOrchestrationValidationException);
+                throw await CreateAndLogDependencyValidationExceptionAsync(decryptionOrchestrationValidationException);
             }
             catch (DecryptionOrchestrationDependencyValidationException
                 decryptionOrchestrationDependencyValidationException)
             {
-                throw CreateAndLogDependencyValidationException(decryptionOrchestrationDependencyValidationException);
+                throw await CreateAndLogDependencyValidationExceptionAsync(decryptionOrchestrationDependencyValidationException);
             }
-            catch (IngresOrchestrationValidationException
+            catch (IngressOrchestrationValidationException
                 ingresOrchestrationValidationException)
             {
-                throw CreateAndLogDependencyValidationException(ingresOrchestrationValidationException);
+                throw await CreateAndLogDependencyValidationExceptionAsync(ingresOrchestrationValidationException);
             }
-            catch (IngresOrchestrationDependencyValidationException
+            catch (IngressOrchestrationDependencyValidationException
                 ingresOrchestrationDependencyValidationException)
             {
-                throw CreateAndLogDependencyValidationException(ingresOrchestrationDependencyValidationException);
+                throw await CreateAndLogDependencyValidationExceptionAsync(ingresOrchestrationDependencyValidationException);
             }
             catch (SubscriberCredentialDependencyOrchestrationException
                 subscriberCredentialDependencyOrchestrationException)
             {
-                throw CreateAndLogDependencyException(subscriberCredentialDependencyOrchestrationException);
+                throw await CreateAndLogDependencyExceptionAsync(subscriberCredentialDependencyOrchestrationException);
             }
             catch (SubscriberCredentialOrchestrationServiceException
                 subscriberCredentialOrchestrationServiceException)
             {
-                throw CreateAndLogDependencyException(subscriberCredentialOrchestrationServiceException);
+                throw await CreateAndLogDependencyExceptionAsync(subscriberCredentialOrchestrationServiceException);
             }
             catch (DecryptionOrchestrationDependencyException
                 decryptionOrchestrationDependencyException)
             {
-                throw CreateAndLogDependencyException(decryptionOrchestrationDependencyException);
+                throw await CreateAndLogDependencyExceptionAsync(decryptionOrchestrationDependencyException);
             }
             catch (DecryptionOrchestrationServiceException
                 decryptionOrchestrationServiceException)
             {
-                throw CreateAndLogDependencyException(decryptionOrchestrationServiceException);
+                throw await CreateAndLogDependencyExceptionAsync(decryptionOrchestrationServiceException);
             }
-            catch (IngresOrchestrationDependencyException
+            catch (IngressOrchestrationDependencyException
                 ingresOrchestrationDependencyException)
             {
-                throw CreateAndLogDependencyException(ingresOrchestrationDependencyException);
+                throw await CreateAndLogDependencyExceptionAsync(ingresOrchestrationDependencyException);
             }
-            catch (IngresOrchestrationServiceException
+            catch (IngressOrchestrationServiceException
                 ingresOrchestrationServiceException)
             {
-                throw CreateAndLogDependencyException(ingresOrchestrationServiceException);
+                throw await CreateAndLogDependencyExceptionAsync(ingresOrchestrationServiceException);
             }
             catch (Exception exception)
             {
@@ -177,55 +177,58 @@ namespace LHDS.Core.Services.Coordinations.Decryptions
                         message: "Failed decryption coordination service error occurred, please contact support.",
                         innerException: exception);
 
-                throw CreateAndLogServiceException(failedDecryptionCoordinationServiceException);
+                throw await CreateAndLogServiceExceptionAsync(failedDecryptionCoordinationServiceException);
             }
         }
 
-        private DecryptionCoordinationValidationException CreateAndLogValidationException(Xeption exception)
+        private async ValueTask<DecryptionCoordinationValidationException>
+            CreateAndLogValidationExceptionAsync(Xeption exception)
         {
             var decryptionCoordinationValidationException =
                 new DecryptionCoordinationValidationException(
                     message: "Decryption coordination validation error occurred, please try again.",
                     innerException: exception);
 
-            this.loggingBroker.LogError(decryptionCoordinationValidationException);
+            await this.loggingBroker.LogErrorAsync(decryptionCoordinationValidationException);
 
             return decryptionCoordinationValidationException;
         }
 
-        private DecryptionCoordinationDependencyValidationException CreateAndLogDependencyValidationException(
-            Xeption exception)
+        private async ValueTask<DecryptionCoordinationDependencyValidationException>
+            CreateAndLogDependencyValidationExceptionAsync(Xeption exception)
         {
             var decryptionCoordinationDependencyValidationException =
                 new DecryptionCoordinationDependencyValidationException(
                     message: "Decryption coordination dependency validation error occurred, please try again.",
                     exception.InnerException as Xeption);
 
-            this.loggingBroker.LogError(decryptionCoordinationDependencyValidationException);
+            await this.loggingBroker.LogErrorAsync(decryptionCoordinationDependencyValidationException);
 
             return decryptionCoordinationDependencyValidationException;
         }
 
-        private DecryptionCoordinationDependencyException CreateAndLogDependencyException(Xeption exception)
+        private async ValueTask<DecryptionCoordinationDependencyException>
+            CreateAndLogDependencyExceptionAsync(Xeption exception)
         {
             var decryptionCoordinationDependencyException =
                 new DecryptionCoordinationDependencyException(
                     message: "Decryption coordination dependency error occurred, fix the errors and try again.",
                     innerException: exception.InnerException as Xeption);
 
-            this.loggingBroker.LogError(decryptionCoordinationDependencyException);
+            await this.loggingBroker.LogErrorAsync(decryptionCoordinationDependencyException);
 
             return decryptionCoordinationDependencyException;
         }
 
-        private DecryptionCoordinationServiceException CreateAndLogServiceException(Xeption exception)
+        private async ValueTask<DecryptionCoordinationServiceException>
+            CreateAndLogServiceExceptionAsync(Xeption exception)
         {
             var decryptionCoordinationServiceException =
                 new DecryptionCoordinationServiceException(
                     message: "Decryption coordination service error occurred, please contact support.",
                     innerException: exception);
 
-            this.loggingBroker.LogError(decryptionCoordinationServiceException);
+            await this.loggingBroker.LogErrorAsync(decryptionCoordinationServiceException);
 
             return decryptionCoordinationServiceException;
         }

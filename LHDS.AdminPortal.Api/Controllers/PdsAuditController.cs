@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 using LHDS.Core.Models.Foundations.PdsAudits;
 using LHDS.Core.Models.Foundations.PdsAudits.Exceptions;
 using LHDS.Core.Services.Foundations.PdsAudits;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.OData.Query;
 using RESTFulSense.Controllers;
@@ -17,6 +18,7 @@ using Microsoft.AspNetCore.Authorization;
 
 namespace LHDS.AdminPortal.Api.Controllers
 {
+    [Authorize(Roles = "ISL.LDS.AdminApi.Administrators, ISL.LDS.AdminApi.Configurations")]
     [ApiController]
     [Route("api/[controller]")]
     public class PdsAuditsController : RESTFulController
@@ -27,9 +29,7 @@ namespace LHDS.AdminPortal.Api.Controllers
             this.pdsAuditService = pdsAuditService;
 
         [HttpPost]
-#if RELEASE
         [Authorize(Roles = "ISL.LDS.AdminApi.Administrators, ISL.LDS.AdminApi.Pds")]
-#endif
         public async ValueTask<ActionResult<PdsAudit>> PostPdsAuditAsync(PdsAudit pdsAudit)
         {
             try
@@ -70,15 +70,13 @@ namespace LHDS.AdminPortal.Api.Controllers
 #if DEBUG
         [EnableQuery(PageSize = 5000)]
 #endif
-#if RELEASE
         [Authorize(Roles = "ISL.LDS.AdminApi.Administrators, ISL.LDS.AdminApi.Pds, ISL.LDS.AdminApi.ReadOnly")]
-#endif
-        public ActionResult<IQueryable<PdsAudit>> Get()
+        public async ValueTask<ActionResult<IQueryable<PdsAudit>>> Get()
         {
             try
             {
                 IQueryable<PdsAudit> retrievedPdsAudits =
-                    this.pdsAuditService.RetrieveAllPdsAudits();
+                    await this.pdsAuditService.RetrieveAllPdsAuditsAsync();
 
                 return Ok(retrievedPdsAudits);
             }
@@ -93,9 +91,7 @@ namespace LHDS.AdminPortal.Api.Controllers
         }
 
         [HttpGet("{pdsAuditId}")]
-#if RELEASE
         [Authorize(Roles = "ISL.LDS.AdminApi.Administrators, ISL.LDS.AdminApi.Pds, ISL.LDS.AdminApi.ReadOnly")]
-#endif
         public async ValueTask<ActionResult<PdsAudit>> GetPdsAuditByIdAsync(Guid pdsAuditId)
         {
             try
@@ -125,9 +121,7 @@ namespace LHDS.AdminPortal.Api.Controllers
         }
 
         [HttpPut]
-#if RELEASE
         [Authorize(Roles = "ISL.LDS.AdminApi.Administrators, ISL.LDS.AdminApi.Pds")]
-#endif
         public async ValueTask<ActionResult<PdsAudit>> PutPdsAuditAsync(PdsAudit pdsAudit)
         {
             try
@@ -167,9 +161,7 @@ namespace LHDS.AdminPortal.Api.Controllers
         }
 
         [HttpDelete("{pdsAuditId}")]
-#if RELEASE
         [Authorize(Roles = "ISL.LDS.AdminApi.Administrators, ISL.LDS.AdminApi.Pds")]
-#endif
         public async ValueTask<ActionResult<PdsAudit>> DeletePdsAuditByIdAsync(Guid pdsAuditId)
         {
             try
@@ -195,7 +187,7 @@ namespace LHDS.AdminPortal.Api.Controllers
             }
             catch (PdsAuditDependencyValidationException pdsAuditDependencyValidationException)
             {
-                return BadRequest(pdsAuditDependencyValidationException);
+                return BadRequest(pdsAuditDependencyValidationException.InnerException);
             }
             catch (PdsAuditDependencyException pdsAuditDependencyException)
             {

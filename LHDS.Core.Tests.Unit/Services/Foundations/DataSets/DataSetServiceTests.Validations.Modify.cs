@@ -40,21 +40,22 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.DataSets
                 .BeEquivalentTo(expectedDataSetValidationException);
 
             this.loggingBrokerMock.Verify(broker =>
-                broker.LogError(It.Is(SameExceptionAs(
+                broker.LogErrorAsync(It.Is(SameExceptionAs(
                     expectedDataSetValidationException))),
                         Times.Once);
 
             this.dateTimeBrokerMock.Verify(broker =>
-                broker.GetCurrentDateTimeOffset(),
+                broker.GetCurrentDateTimeOffsetAsync(),
                     Times.Never);
 
             this.storageBrokerMock.Verify(broker =>
                 broker.UpdateDataSetAsync(It.IsAny<DataSet>()),
                     Times.Never);
 
+            this.storageBrokerMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
             this.dateTimeBrokerMock.VerifyNoOtherCalls();
-            this.storageBrokerMock.VerifyNoOtherCalls();
+            this.securityBrokerMock.VerifyNoOtherCalls();
         }
 
         [Theory]
@@ -148,11 +149,11 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.DataSets
                 .BeEquivalentTo(expectedDataSetValidationException);
 
             this.dateTimeBrokerMock.Verify(broker =>
-                broker.GetCurrentDateTimeOffset(),
+                broker.GetCurrentDateTimeOffsetAsync(),
                     Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>
-                broker.LogError(It.Is(SameExceptionAs(
+                broker.LogErrorAsync(It.Is(SameExceptionAs(
                     expectedDataSetValidationException))),
                         Times.Once());
 
@@ -160,9 +161,10 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.DataSets
                 broker.UpdateDataSetAsync(It.IsAny<DataSet>()),
                     Times.Never);
 
-            this.loggingBrokerMock.VerifyNoOtherCalls();
             this.storageBrokerMock.VerifyNoOtherCalls();
+            this.loggingBrokerMock.VerifyNoOtherCalls();
             this.dateTimeBrokerMock.VerifyNoOtherCalls();
+            this.securityBrokerMock.VerifyNoOtherCalls();
         }
 
         [Fact]
@@ -212,8 +214,8 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.DataSets
                     innerException: invalidDataSetException);
 
             this.dateTimeBrokerMock.Setup(broker =>
-                broker.GetCurrentDateTimeOffset())
-                    .Returns(randomDateTimeOffset);
+                broker.GetCurrentDateTimeOffsetAsync())
+                    .ReturnsAsync(randomDateTimeOffset);
 
             // when
             ValueTask<DataSet> modifyDataSetTask =
@@ -228,11 +230,11 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.DataSets
                 .BeEquivalentTo(expectedDataSetValidationException);
 
             this.dateTimeBrokerMock.Verify(broker =>
-                broker.GetCurrentDateTimeOffset(),
+                broker.GetCurrentDateTimeOffsetAsync(),
                     Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>
-                broker.LogError(It.Is(SameExceptionAs(
+                broker.LogErrorAsync(It.Is(SameExceptionAs(
                     expectedDataSetValidationException))),
                         Times.Once());
 
@@ -240,9 +242,10 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.DataSets
                 broker.UpdateDataSetAsync(It.IsAny<DataSet>()),
                     Times.Never);
 
-            this.loggingBrokerMock.VerifyNoOtherCalls();
             this.storageBrokerMock.VerifyNoOtherCalls();
+            this.loggingBrokerMock.VerifyNoOtherCalls();
             this.dateTimeBrokerMock.VerifyNoOtherCalls();
+            this.securityBrokerMock.VerifyNoOtherCalls();
         }
 
 
@@ -268,8 +271,8 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.DataSets
                     innerException: invalidDataSetException);
 
             this.dateTimeBrokerMock.Setup(broker =>
-                broker.GetCurrentDateTimeOffset())
-                    .Returns(randomDateTimeOffset);
+                broker.GetCurrentDateTimeOffsetAsync())
+                    .ReturnsAsync(randomDateTimeOffset);
 
             // when
             ValueTask<DataSet> modifyDataSetTask =
@@ -284,11 +287,11 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.DataSets
                 .BeEquivalentTo(expectedDataSetValidationException);
 
             this.dateTimeBrokerMock.Verify(broker =>
-                broker.GetCurrentDateTimeOffset(),
+                broker.GetCurrentDateTimeOffsetAsync(),
                     Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>
-                broker.LogError(It.Is(SameExceptionAs(
+                broker.LogErrorAsync(It.Is(SameExceptionAs(
                     expectedDataSetValidationException))),
                         Times.Once);
 
@@ -296,9 +299,10 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.DataSets
                 broker.SelectDataSetByIdAsync(invalidDataSet.Id),
                     Times.Never);
 
-            this.loggingBrokerMock.VerifyNoOtherCalls();
             this.storageBrokerMock.VerifyNoOtherCalls();
+            this.loggingBrokerMock.VerifyNoOtherCalls();
             this.dateTimeBrokerMock.VerifyNoOtherCalls();
+            this.securityBrokerMock.VerifyNoOtherCalls();
         }
 
         [Theory]
@@ -318,14 +322,14 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.DataSets
                 key: nameof(DataSet.UpdatedDate),
                 values: "Date is not recent");
 
-            var expectedDataSetValidatonException =
+            var expectedDataSetValidationException =
                 new DataSetValidationException(
                     message: "DataSet validation errors occurred, please try again.",
                     innerException: invalidDataSetException);
 
             this.dateTimeBrokerMock.Setup(broker =>
-                broker.GetCurrentDateTimeOffset())
-                .Returns(randomDateTimeOffset);
+                broker.GetCurrentDateTimeOffsetAsync())
+                .ReturnsAsync(randomDateTimeOffset);
 
             // when
             ValueTask<DataSet> modifyDataSetTask =
@@ -337,24 +341,25 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.DataSets
 
             // then
             actualDataSetValidationException.Should()
-                .BeEquivalentTo(expectedDataSetValidatonException);
+                .BeEquivalentTo(expectedDataSetValidationException);
 
             this.dateTimeBrokerMock.Verify(broker =>
-                broker.GetCurrentDateTimeOffset(),
+                broker.GetCurrentDateTimeOffsetAsync(),
                     Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>
-                broker.LogError(It.Is(SameExceptionAs(
-                    expectedDataSetValidatonException))),
+                broker.LogErrorAsync(It.Is(SameExceptionAs(
+                    expectedDataSetValidationException))),
                         Times.Once);
 
             this.storageBrokerMock.Verify(broker =>
                 broker.SelectDataSetByIdAsync(It.IsAny<Guid>()),
                     Times.Never);
 
-            this.dateTimeBrokerMock.VerifyNoOtherCalls();
-            this.loggingBrokerMock.VerifyNoOtherCalls();
             this.storageBrokerMock.VerifyNoOtherCalls();
+            this.loggingBrokerMock.VerifyNoOtherCalls();
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
+            this.securityBrokerMock.VerifyNoOtherCalls();
         }
 
         [Fact]
@@ -379,8 +384,8 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.DataSets
                 .ReturnsAsync(nullDataSet);
 
             this.dateTimeBrokerMock.Setup(broker =>
-                broker.GetCurrentDateTimeOffset())
-                .Returns(randomDateTimeOffset);
+                broker.GetCurrentDateTimeOffsetAsync())
+                .ReturnsAsync(randomDateTimeOffset);
 
             // when 
             ValueTask<DataSet> modifyDataSetTask =
@@ -399,17 +404,18 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.DataSets
                     Times.Once);
 
             this.dateTimeBrokerMock.Verify(broker =>
-                broker.GetCurrentDateTimeOffset(),
+                broker.GetCurrentDateTimeOffsetAsync(),
                     Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>
-                broker.LogError(It.Is(SameExceptionAs(
+                broker.LogErrorAsync(It.Is(SameExceptionAs(
                     expectedDataSetValidationException))),
                         Times.Once);
 
             this.storageBrokerMock.VerifyNoOtherCalls();
-            this.dateTimeBrokerMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
+            this.securityBrokerMock.VerifyNoOtherCalls();
         }
 
         [Fact]
@@ -443,8 +449,8 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.DataSets
                 .ReturnsAsync(storageDataSet);
 
             this.dateTimeBrokerMock.Setup(broker =>
-                broker.GetCurrentDateTimeOffset())
-                .Returns(randomDateTimeOffset);
+                broker.GetCurrentDateTimeOffsetAsync())
+                .ReturnsAsync(randomDateTimeOffset);
 
             // when
             ValueTask<DataSet> modifyDataSetTask =
@@ -463,17 +469,18 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.DataSets
                     Times.Once);
 
             this.dateTimeBrokerMock.Verify(broker =>
-                broker.GetCurrentDateTimeOffset(),
+                broker.GetCurrentDateTimeOffsetAsync(),
                     Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>
-               broker.LogError(It.Is(SameExceptionAs(
+               broker.LogErrorAsync(It.Is(SameExceptionAs(
                    expectedDataSetValidationException))),
                        Times.Once);
 
             this.storageBrokerMock.VerifyNoOtherCalls();
-            this.dateTimeBrokerMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
+            this.securityBrokerMock.VerifyNoOtherCalls();
         }
 
         [Fact]
@@ -505,8 +512,8 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.DataSets
                 .ReturnsAsync(storageDataSet);
 
             this.dateTimeBrokerMock.Setup(broker =>
-                broker.GetCurrentDateTimeOffset())
-                .Returns(randomDateTimeOffset);
+                broker.GetCurrentDateTimeOffsetAsync())
+                .ReturnsAsync(randomDateTimeOffset);
 
             // when
             ValueTask<DataSet> modifyDataSetTask =
@@ -524,17 +531,18 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.DataSets
                     Times.Once);
 
             this.dateTimeBrokerMock.Verify(broker =>
-                broker.GetCurrentDateTimeOffset(),
+                broker.GetCurrentDateTimeOffsetAsync(),
                     Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>
-               broker.LogError(It.Is(SameExceptionAs(
+               broker.LogErrorAsync(It.Is(SameExceptionAs(
                    expectedDataSetValidationException))),
                        Times.Once);
 
             this.storageBrokerMock.VerifyNoOtherCalls();
-            this.dateTimeBrokerMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
+            this.securityBrokerMock.VerifyNoOtherCalls();
         }
 
         [Fact]
@@ -564,8 +572,8 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.DataSets
                 .ReturnsAsync(storageDataSet);
 
             this.dateTimeBrokerMock.Setup(broker =>
-                broker.GetCurrentDateTimeOffset())
-                    .Returns(randomDateTimeOffset);
+                broker.GetCurrentDateTimeOffsetAsync())
+                    .ReturnsAsync(randomDateTimeOffset);
 
             // when
             ValueTask<DataSet> modifyDataSetTask =
@@ -576,11 +584,11 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.DataSets
                 modifyDataSetTask.AsTask);
 
             this.dateTimeBrokerMock.Verify(broker =>
-                broker.GetCurrentDateTimeOffset(),
+                broker.GetCurrentDateTimeOffsetAsync(),
                     Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>
-                broker.LogError(It.Is(SameExceptionAs(
+                broker.LogErrorAsync(It.Is(SameExceptionAs(
                     expectedDataSetValidationException))),
                         Times.Once);
 
@@ -589,8 +597,9 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.DataSets
                     Times.Once);
 
             this.storageBrokerMock.VerifyNoOtherCalls();
-            this.dateTimeBrokerMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
+            this.securityBrokerMock.VerifyNoOtherCalls();
         }
     }
 }

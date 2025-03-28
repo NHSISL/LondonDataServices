@@ -10,7 +10,10 @@ using System.Threading.Tasks;
 using FluentAssertions;
 using LHDS.Core.Models.Foundations.DataSets;
 using LHDS.Core.Models.Foundations.DataSetSpecifications;
+using LHDS.Core.Models.Foundations.IngestionTrackingAudits;
 using LHDS.Core.Models.Foundations.IngestionTrackings;
+using LHDS.Core.Models.Foundations.ObjectColumns;
+using LHDS.Core.Models.Foundations.SpecificationObjects;
 using LHDS.Core.Models.Foundations.Suppliers;
 using LHDS.Core.Models.Processings.SubscriberCredentials;
 using LHDS.Core.Tests.Acceptance.Clients.EmisLandings.Models;
@@ -25,7 +28,7 @@ namespace LHDS.Core.Tests.Acceptance.Clients.EmisLandings
         {
             //Given
             CleanupDownloadFolder();
-            DateTimeOffset randomDateTime = this.dateTimeBroker.GetCurrentDateTimeOffset();
+            DateTimeOffset randomDateTime = await this.dateTimeBroker.GetCurrentDateTimeOffsetAsync();
             Guid supplierId = Guid.NewGuid();
             SubscriberCredential randomSubscriberCredential = CreateRandomSubscriberCredential();
             DataSet randomDataSet = CreateRandomDataSet(supplierId);
@@ -60,7 +63,10 @@ namespace LHDS.Core.Tests.Acceptance.Clients.EmisLandings
 
             foreach (var actualFile in actualStringList)
             {
-                IngestionTracking ingestionTracking = this.ingestionTrackingService.RetrieveAllIngestionTrackings()
+                IQueryable<IngestionTracking> allIngestionTrackings = 
+                    await this.ingestionTrackingService.RetrieveAllIngestionTrackingsAsync();
+
+                IngestionTracking ingestionTracking = allIngestionTrackings
                     .FirstOrDefault(ingestionTracking => ingestionTracking.DecryptedFileName == actualFile);
 
                 ingestionTracking.Should().NotBeNull();
@@ -69,8 +75,11 @@ namespace LHDS.Core.Tests.Acceptance.Clients.EmisLandings
                     filename: ingestionTracking.EncryptedFileName,
                     container: blobContainers.EmisLanding);
 
-                var audits = this.ingestionTrackingAuditService.RetrieveAllIngestionTrackingAudits()
-                    .Where(audit => audit.IngestionTrackingId == ingestionTracking.Id);
+                IQueryable<IngestionTrackingAudit> allIngestionTrackingAudits = 
+                    await this.ingestionTrackingAuditService.RetrieveAllIngestionTrackingAuditsAsync();
+
+                var audits = allIngestionTrackingAudits
+                    .Where(audit => audit.IngestionTrackingId == ingestionTracking.Id).ToList();
 
                 foreach (var audit in audits)
                 {
@@ -78,7 +87,6 @@ namespace LHDS.Core.Tests.Acceptance.Clients.EmisLandings
                 }
 
                 await this.ingestionTrackingService.RemoveIngestionTrackingByIdAsync(ingestionTracking.Id);
-
             }
 
             await this.dataSetSpecificationProcessingService
@@ -99,16 +107,20 @@ namespace LHDS.Core.Tests.Acceptance.Clients.EmisLandings
         {
             //Given
             CleanupDownloadFolder();
-            DateTimeOffset randomDateTime = this.dateTimeBroker.GetCurrentDateTimeOffset();
+            DateTimeOffset randomDateTime = await this.dateTimeBroker.GetCurrentDateTimeOffsetAsync();
             Guid supplierId = Guid.NewGuid();
             byte[] documentData = Encoding.UTF8.GetBytes(GetRandomString());
             SubscriberCredential randomSubscriberCredential = CreateRandomSubscriberCredential();
             DataSet randomDataSet = CreateRandomDataSet(supplierId);
-            DataSetSpecification activeDataSetSpecifications = CreateRandomDataSetSpecification(randomDataSet);
+            DataSetSpecification activeDataSetSpecification = CreateRandomDataSetSpecification(randomDataSet);
             Supplier randomSupplier = CreateRandomSupplier(supplierId, randomDateTime);
+            SpecificationObject specificationObject = CreateRandomSpecificationObjects(activeDataSetSpecification);
+            ObjectColumn objectColumn = CreateRandomObjectColumns(specificationObject);
             await this.supplierService.AddSupplierAsync(randomSupplier);
             await this.dataSetService.AddDataSetAsync(randomDataSet);
-            await this.dataSetSpecificationProcessingService.AddDataSetSpecificationAsync(activeDataSetSpecifications);
+            await this.dataSetSpecificationProcessingService.AddDataSetSpecificationAsync(activeDataSetSpecification);
+            await this.specificationObjectService.AddSpecificationObjectAsync(specificationObject);
+            await this.objectColumnService.AddObjectColumnAsync(objectColumn);
 
             SubscriberCredential inputSubscriberCredential = await this.subscriberCredentialOrchestration
                 .ModifyOrAddSubscriberCredentialAsync(
@@ -137,8 +149,11 @@ namespace LHDS.Core.Tests.Acceptance.Clients.EmisLandings
 
             foreach (var tracking in ingestionTrackings)
             {
-                var audits = this.ingestionTrackingAuditService.RetrieveAllIngestionTrackingAudits()
-                    .Where(audit => audit.IngestionTrackingId == tracking.Id);
+                IQueryable<IngestionTrackingAudit> allIngestionTrackingAudits =
+                    await this.ingestionTrackingAuditService.RetrieveAllIngestionTrackingAuditsAsync();
+
+                var audits = allIngestionTrackingAudits
+                    .Where(audit => audit.IngestionTrackingId == tracking.Id).ToList();
 
                 foreach (var audit in audits)
                 {
@@ -148,8 +163,11 @@ namespace LHDS.Core.Tests.Acceptance.Clients.EmisLandings
                 await this.ingestionTrackingService.RemoveIngestionTrackingByIdAsync(tracking.Id);
             }
 
+            await this.objectColumnService.RemoveObjectColumnByIdAsync(objectColumn.Id);
+            await this.specificationObjectService.RemoveSpecificationObjectByIdAsync(specificationObject.Id);
+
             await this.dataSetSpecificationProcessingService
-                .RemoveDataSetSpecificationByIdAsync(activeDataSetSpecifications.Id);
+                .RemoveDataSetSpecificationByIdAsync(activeDataSetSpecification.Id);
 
             await this.dataSetService.RemoveDataSetByIdAsync(randomDataSet.Id);
 

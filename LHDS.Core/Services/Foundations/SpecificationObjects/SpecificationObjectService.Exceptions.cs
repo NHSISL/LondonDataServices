@@ -1,11 +1,15 @@
+// ---------------------------------------------------------
+// Copyright (c) North East London ICB. All rights reserved.
+// ---------------------------------------------------------
+
 using System;
 using System.Linq;
 using System.Threading.Tasks;
 using EFxceptions.Models.Exceptions;
-using Microsoft.Data.SqlClient;
-using Microsoft.EntityFrameworkCore;
 using LHDS.Core.Models.Foundations.SpecificationObjects;
 using LHDS.Core.Models.Foundations.SpecificationObjects.Exceptions;
+using Microsoft.Data.SqlClient;
+using Microsoft.EntityFrameworkCore;
 using Xeptions;
 
 namespace LHDS.Core.Services.Foundations.SpecificationObjects
@@ -13,7 +17,7 @@ namespace LHDS.Core.Services.Foundations.SpecificationObjects
     public partial class SpecificationObjectService
     {
         private delegate ValueTask<SpecificationObject> ReturningSpecificationObjectFunction();
-        private delegate IQueryable<SpecificationObject> ReturningSpecificationObjectsFunction();
+        private delegate ValueTask<IQueryable<SpecificationObject>> ReturningSpecificationObjectsFunction();
 
         private async ValueTask<SpecificationObject> TryCatch(ReturningSpecificationObjectFunction returningSpecificationObjectFunction)
         {
@@ -23,11 +27,11 @@ namespace LHDS.Core.Services.Foundations.SpecificationObjects
             }
             catch (NullSpecificationObjectException nullSpecificationObjectException)
             {
-                throw CreateAndLogValidationException(nullSpecificationObjectException);
+                throw await CreateAndLogValidationExceptionAsync(nullSpecificationObjectException);
             }
             catch (InvalidSpecificationObjectException invalidSpecificationObjectException)
             {
-                throw CreateAndLogValidationException(invalidSpecificationObjectException);
+                throw await CreateAndLogValidationExceptionAsync(invalidSpecificationObjectException);
             }
             catch (SqlException sqlException)
             {
@@ -36,11 +40,11 @@ namespace LHDS.Core.Services.Foundations.SpecificationObjects
                         message: "Failed specificationObject storage error occurred, please contact support.",
                         innerException: sqlException);
 
-                throw CreateAndLogCriticalDependencyException(failedSpecificationObjectStorageException);
+                throw await CreateAndLogCriticalDependencyExceptionAsync(failedSpecificationObjectStorageException);
             }
             catch (NotFoundSpecificationObjectException notFoundSpecificationObjectException)
             {
-                throw CreateAndLogValidationException(notFoundSpecificationObjectException);
+                throw await CreateAndLogValidationExceptionAsync(notFoundSpecificationObjectException);
             }
             catch (DuplicateKeyException duplicateKeyException)
             {
@@ -49,25 +53,25 @@ namespace LHDS.Core.Services.Foundations.SpecificationObjects
                         message: "SpecificationObject with the same Id already exists.",
                         innerException: duplicateKeyException);
 
-                throw CreateAndLogDependencyValidationException(alreadyExistsSpecificationObjectException);
+                throw await CreateAndLogDependencyValidationExceptionAsync(alreadyExistsSpecificationObjectException);
             }
             catch (ForeignKeyConstraintConflictException foreignKeyConstraintConflictException)
             {
                 var invalidSpecificationObjectReferenceException =
                     new InvalidSpecificationObjectReferenceException(
-                        message: "Invalid specificationObject reference error occurred.", 
+                        message: "Invalid specificationObject reference error occurred.",
                         innerException: foreignKeyConstraintConflictException);
 
-                throw CreateAndLogDependencyValidationException(invalidSpecificationObjectReferenceException);
+                throw await CreateAndLogDependencyValidationExceptionAsync(invalidSpecificationObjectReferenceException);
             }
             catch (DbUpdateConcurrencyException dbUpdateConcurrencyException)
             {
-                var lockedSpecificationObjectException = 
+                var lockedSpecificationObjectException =
                     new LockedSpecificationObjectException(
                         message: "Locked specificationObject record exception, please try again later",
                         innerException: dbUpdateConcurrencyException);
 
-                throw CreateAndLogDependencyValidationException(lockedSpecificationObjectException);
+                throw await CreateAndLogDependencyValidationExceptionAsync(lockedSpecificationObjectException);
             }
             catch (DbUpdateException databaseUpdateException)
             {
@@ -76,24 +80,25 @@ namespace LHDS.Core.Services.Foundations.SpecificationObjects
                         message: "Failed specificationObject storage error occurred, please contact support.",
                         innerException: databaseUpdateException);
 
-                throw CreateAndLogDependencyException(failedSpecificationObjectStorageException);
+                throw await CreateAndLogDependencyExceptionAsync(failedSpecificationObjectStorageException);
             }
             catch (Exception exception)
             {
                 var failedSpecificationObjectServiceException =
                     new FailedSpecificationObjectServiceException(
-                        message: "Failed specificationObject service error occurred, please contact support.", 
+                        message: "Failed specificationObject service error occurred, please contact support.",
                         innerException: exception);
 
-                throw CreateAndLogServiceException(failedSpecificationObjectServiceException);
+                throw await CreateAndLogServiceExceptionAsync(failedSpecificationObjectServiceException);
             }
         }
 
-        private IQueryable<SpecificationObject> TryCatch(ReturningSpecificationObjectsFunction returningSpecificationObjectsFunction)
+        private async ValueTask<IQueryable<SpecificationObject>>
+            TryCatch(ReturningSpecificationObjectsFunction returningSpecificationObjectsFunction)
         {
             try
             {
-                return returningSpecificationObjectsFunction();
+                return await returningSpecificationObjectsFunction();
             }
             catch (SqlException sqlException)
             {
@@ -102,77 +107,80 @@ namespace LHDS.Core.Services.Foundations.SpecificationObjects
                         message: "Failed specificationObject storage error occurred, please contact support.",
                         innerException: sqlException);
 
-                throw CreateAndLogCriticalDependencyException(failedSpecificationObjectStorageException);
+                throw await CreateAndLogCriticalDependencyExceptionAsync(failedSpecificationObjectStorageException);
             }
             catch (Exception exception)
             {
                 var failedSpecificationObjectServiceException =
                     new FailedSpecificationObjectServiceException(
-                        message: "Failed specificationObject service error occurred, please contact support.", 
+                        message: "Failed specificationObject service error occurred, please contact support.",
                         innerException: exception);
 
-                throw CreateAndLogServiceException(failedSpecificationObjectServiceException);
+                throw await CreateAndLogServiceExceptionAsync(failedSpecificationObjectServiceException);
             }
         }
 
-        private SpecificationObjectValidationException CreateAndLogValidationException(Xeption exception)
+        private async ValueTask<SpecificationObjectValidationException> 
+            CreateAndLogValidationExceptionAsync(Xeption exception)
         {
             var specificationObjectValidationException =
                 new SpecificationObjectValidationException(
                     message: "SpecificationObject validation errors occurred, please try again.",
                     innerException: exception);
 
-            this.loggingBroker.LogError(specificationObjectValidationException);
+            await this.loggingBroker.LogErrorAsync(specificationObjectValidationException);
 
             return specificationObjectValidationException;
         }
 
-        private SpecificationObjectDependencyException CreateAndLogCriticalDependencyException(Xeption exception)
+        private async ValueTask<SpecificationObjectDependencyException> 
+            CreateAndLogCriticalDependencyExceptionAsync(Xeption exception)
         {
-            var specificationObjectDependencyException = 
+            var specificationObjectDependencyException =
                 new SpecificationObjectDependencyException(
                     message: "SpecificationObject dependency error occurred, please contact support.",
-                    innerException: exception); 
+                    innerException: exception);
 
-            this.loggingBroker.LogCritical(specificationObjectDependencyException);
+            await this.loggingBroker.LogCriticalAsync(specificationObjectDependencyException);
 
             return specificationObjectDependencyException;
         }
 
-        private SpecificationObjectDependencyValidationException CreateAndLogDependencyValidationException(Xeption exception)
+        private async ValueTask<SpecificationObjectDependencyValidationException> 
+            CreateAndLogDependencyValidationExceptionAsync(Xeption exception)
         {
             var specificationObjectDependencyValidationException =
                 new SpecificationObjectDependencyValidationException(
                     message: "SpecificationObject dependency validation occurred, please try again.",
                     innerException: exception);
 
-            this.loggingBroker.LogError(specificationObjectDependencyValidationException);
+            await this.loggingBroker.LogErrorAsync(specificationObjectDependencyValidationException);
 
             return specificationObjectDependencyValidationException;
         }
 
-        private SpecificationObjectDependencyException CreateAndLogDependencyException(
+        private async ValueTask<SpecificationObjectDependencyException> CreateAndLogDependencyExceptionAsync(
             Xeption exception)
         {
-            var specificationObjectDependencyException = 
+            var specificationObjectDependencyException =
                 new SpecificationObjectDependencyException(
                     message: "SpecificationObject dependency error occurred, please contact support.",
-                    innerException: exception); 
+                    innerException: exception);
 
-            this.loggingBroker.LogError(specificationObjectDependencyException);
+            await this.loggingBroker.LogErrorAsync(specificationObjectDependencyException);
 
             return specificationObjectDependencyException;
         }
 
-        private SpecificationObjectServiceException CreateAndLogServiceException(
+        private async ValueTask<SpecificationObjectServiceException> CreateAndLogServiceExceptionAsync(
             Xeption exception)
         {
-            var specificationObjectServiceException = 
+            var specificationObjectServiceException =
                 new SpecificationObjectServiceException(
                     message: "SpecificationObject service error occurred, please contact support.",
                     innerException: exception);
 
-            this.loggingBroker.LogError(specificationObjectServiceException);
+            await this.loggingBroker.LogErrorAsync(specificationObjectServiceException);
 
             return specificationObjectServiceException;
         }

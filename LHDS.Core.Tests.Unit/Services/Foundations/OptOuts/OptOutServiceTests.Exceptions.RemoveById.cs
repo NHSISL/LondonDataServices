@@ -33,7 +33,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.OptOuts
 
             this.storageBrokerMock.Setup(broker =>
                 broker.SelectOptOutByIdAsync(randomOptOut.Id))
-                    .Throws(sqlException);
+                    .ThrowsAsync(sqlException);
 
             // when
             ValueTask<OptOut> addOptOutTask =
@@ -52,7 +52,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.OptOuts
                     Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>
-                broker.LogCritical(It.Is(SameExceptionAs(
+                broker.LogCriticalAsync(It.Is(SameExceptionAs(
                     expectedOptOutDependencyException))),
                         Times.Once);
 
@@ -61,7 +61,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.OptOuts
                     Times.Never);
 
             this.dateTimeBrokerMock.Verify(broker =>
-                broker.GetCurrentDateTimeOffset(),
+                broker.GetCurrentDateTimeOffsetAsync(),
                     Times.Never);
 
             this.storageBrokerMock.VerifyNoOtherCalls();
@@ -107,7 +107,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.OptOuts
                     Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>
-                broker.LogError(It.Is(SameExceptionAs(
+                broker.LogErrorAsync(It.Is(SameExceptionAs(
                     expectedOptOutDependencyValidationException))),
                         Times.Once);
 
@@ -156,7 +156,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.OptOuts
                     Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>
-                broker.LogCritical(It.Is(SameExceptionAs(
+                broker.LogCriticalAsync(It.Is(SameExceptionAs(
                     expectedOptOutDependencyException))),
                         Times.Once);
 
@@ -201,7 +201,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.OptOuts
                         Times.Once());
 
             this.loggingBrokerMock.Verify(broker =>
-                broker.LogError(It.Is(SameExceptionAs(
+                broker.LogErrorAsync(It.Is(SameExceptionAs(
                     expectedOptOutServiceException))),
                         Times.Once);
 

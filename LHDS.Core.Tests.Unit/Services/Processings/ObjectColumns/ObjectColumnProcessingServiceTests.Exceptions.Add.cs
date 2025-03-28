@@ -31,7 +31,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.ObjectColumns
 
             this.objectColumnServiceMock.Setup(service =>
                 service.AddObjectColumnAsync(inputObjectColumn))
-                    .Throws(dependencyValidationException);
+                    .ThrowsAsync(dependencyValidationException);
 
             // when
             ValueTask<ObjectColumn> objectColumnAddTask =
@@ -49,7 +49,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.ObjectColumns
                     Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>
-                 broker.LogError(It.Is(SameExceptionAs(
+                 broker.LogErrorAsync(It.Is(SameExceptionAs(
                      expectedObjectColumnProcessingDependencyValidationException))),
                          Times.Once);
 
@@ -73,7 +73,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.ObjectColumns
 
             this.objectColumnServiceMock.Setup(service =>
                 service.AddObjectColumnAsync(inputObjectColumn))
-                    .Throws(dependencyException);
+                    .ThrowsAsync(dependencyException);
 
             // when
             ValueTask<ObjectColumn> objectColumnAddTask =
@@ -90,7 +90,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.ObjectColumns
                     Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>
-                 broker.LogError(It.Is(SameExceptionAs(
+                 broker.LogErrorAsync(It.Is(SameExceptionAs(
                      expectedObjectColumnProcessingDependencyException))),
                          Times.Once);
 
@@ -119,7 +119,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.ObjectColumns
 
             this.objectColumnServiceMock.Setup(service =>
                 service.AddObjectColumnAsync(inputObjectColumn))
-                    .Throws(serviceException);
+                    .ThrowsAsync(serviceException);
 
             // when
             ValueTask<ObjectColumn> addObjectColumnTask =
@@ -136,7 +136,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.ObjectColumns
                     Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>
-                 broker.LogError(It.Is(SameExceptionAs(
+                 broker.LogErrorAsync(It.Is(SameExceptionAs(
                      expectedObjectColumnProcessingServiveException))),
                          Times.Once);
 

@@ -1,8 +1,10 @@
-// ---------------------------------------------------------------
+// ---------------------------------------------------------
 // Copyright (c) North East London ICB. All rights reserved.
-// ---------------------------------------------------------------
+// ---------------------------------------------------------
 
 using System;
+using System.Threading.Tasks;
+using LHDS.Core.Models.Brokers.Securities;
 using LHDS.Core.Models.Foundations.DataSets;
 using LHDS.Core.Models.Foundations.DataSets.Exceptions;
 
@@ -10,9 +12,10 @@ namespace LHDS.Core.Services.Foundations.DataSets
 {
     public partial class DataSetService
     {
-        private void ValidateDataSetOnAdd(DataSet dataSet)
+        private async ValueTask ValidateDataSetOnAddAsync(DataSet dataSet)
         {
             ValidateDataSetIsNotNull(dataSet);
+            EntraUser currentUser = await this.securityBroker.GetCurrentUserAsync();
 
             Validate(
                 (Rule: IsInvalid(dataSet.Id), Parameter: nameof(DataSet.Id)),
@@ -47,10 +50,9 @@ namespace LHDS.Core.Services.Foundations.DataSets
                     dataSet.UpdatedBy, 255), Parameter: nameof(dataSet.UpdatedBy)),
 
                 (Rule: IsNotSame(
-                    firstDate: dataSet.UpdatedDate,
-                    secondDate: dataSet.CreatedDate,
-                    secondDateName: nameof(DataSet.CreatedDate)),
-                Parameter: nameof(DataSet.UpdatedDate)),
+                    first: currentUser.EntraUserId,
+                    second: dataSet.CreatedBy),
+                Parameter: nameof(DataSet.CreatedBy)),
 
                 (Rule: IsNotSame(
                     first: dataSet.UpdatedBy,
@@ -58,10 +60,16 @@ namespace LHDS.Core.Services.Foundations.DataSets
                     secondName: nameof(DataSet.CreatedBy)),
                 Parameter: nameof(DataSet.UpdatedBy)),
 
-                (Rule: IsNotRecent(dataSet.CreatedDate), Parameter: nameof(DataSet.CreatedDate)));
+                (Rule: IsNotSame(
+                    firstDate: dataSet.UpdatedDate,
+                    secondDate: dataSet.CreatedDate,
+                    secondDateName: nameof(DataSet.CreatedDate)),
+                Parameter: nameof(DataSet.UpdatedDate)),
+
+                (Rule: await IsNotRecentAsync(dataSet.CreatedDate), Parameter: nameof(DataSet.CreatedDate)));
         }
 
-        private void ValidateDataSetOnModify(DataSet dataSet)
+        private async ValueTask ValidateDataSetOnModifyAsync(DataSet dataSet)
         {
             ValidateDataSetIsNotNull(dataSet);
 
@@ -103,7 +111,7 @@ namespace LHDS.Core.Services.Foundations.DataSets
                     secondDateName: nameof(DataSet.CreatedDate)),
                 Parameter: nameof(DataSet.UpdatedDate)),
 
-                (Rule: IsNotRecent(dataSet.UpdatedDate), Parameter: nameof(dataSet.UpdatedDate)));
+                (Rule: await IsNotRecentAsync(dataSet.UpdatedDate), Parameter: nameof(dataSet.UpdatedDate)));
         }
 
         public void ValidateDataSetId(Guid dataSetId) =>
@@ -145,6 +153,37 @@ namespace LHDS.Core.Services.Foundations.DataSets
                     secondDate: storageDataSet.UpdatedDate,
                     secondDateName: nameof(DataSet.UpdatedDate)),
                 Parameter: nameof(DataSet.UpdatedDate)));
+        }
+
+        private async ValueTask ValidateAgainstStorageDataSetOnDeleteAsync(DataSet dataSet,DataSet maybeDataSet)
+        {
+            EntraUser auditUser = await this.securityBroker.GetCurrentUserAsync();
+
+            Validate(
+                (Rule: IsNotSame(
+                    dataSet.CreatedDate,
+                    maybeDataSet.CreatedDate,
+                    nameof(maybeDataSet.CreatedDate)),
+                 Parameter: nameof(DataSet.CreatedDate)),
+
+                (Rule: IsNotSame(
+                    dataSet.CreatedBy,
+                    maybeDataSet.CreatedBy,
+                    nameof(maybeDataSet.CreatedBy)),
+                 Parameter: nameof(DataSet.CreatedBy)),
+
+                (Rule: IsNotSame(
+                    maybeDataSet.UpdatedDate,
+                    dataSet.UpdatedDate,
+                    nameof(DataSet.UpdatedDate)),
+                 Parameter: nameof(DataSet.UpdatedDate)),
+
+                (Rule: IsNotSame(
+                    auditUser.EntraUserId.ToString(),
+                    dataSet.UpdatedBy,
+                    nameof(DataSet.UpdatedBy)),
+                 Parameter: nameof(DataSet.UpdatedBy))
+            );
         }
 
         private static dynamic IsInvalid(Guid id) => new
@@ -190,6 +229,14 @@ namespace LHDS.Core.Services.Foundations.DataSets
             };
 
         private static dynamic IsNotSame(
+            string first,
+            string second) => new
+            {
+                Condition = first != second,
+                Message = $"Expected value to be '{first}' but found '{second}'."
+            };
+
+        private static dynamic IsNotSame(
             Guid firstId,
             Guid secondId,
             string secondIdName) => new
@@ -207,16 +254,16 @@ namespace LHDS.Core.Services.Foundations.DataSets
                Message = $"Text is not the same as {secondName}"
            };
 
-        private dynamic IsNotRecent(DateTimeOffset date) => new
+        private async ValueTask<dynamic> IsNotRecentAsync(DateTimeOffset date) => new
         {
-            Condition = IsDateNotRecent(date),
+            Condition = await IsDateNotRecentAsync(date),
             Message = "Date is not recent"
         };
 
-        private bool IsDateNotRecent(DateTimeOffset date)
+        private async ValueTask<bool> IsDateNotRecentAsync(DateTimeOffset date)
         {
             DateTimeOffset currentDateTime =
-                this.dateTimeBroker.GetCurrentDateTimeOffset();
+                await this.dateTimeBroker.GetCurrentDateTimeOffsetAsync();
 
             TimeSpan timeDifference = currentDateTime.Subtract(date);
             TimeSpan oneMinute = TimeSpan.FromMinutes(1);

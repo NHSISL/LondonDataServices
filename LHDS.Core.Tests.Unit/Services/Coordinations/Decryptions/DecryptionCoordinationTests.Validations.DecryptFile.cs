@@ -7,6 +7,7 @@ using FluentAssertions;
 using LHDS.Core.Models.Coordinations.Decryptions.Exceptions;
 using LHDS.Core.Models.Processings.SubscriberCredentials;
 using Moq;
+using Xeptions;
 using Xunit;
 
 namespace LHDS.Core.Tests.Unit.Services.Coordinations.Decryptions
@@ -27,6 +28,10 @@ namespace LHDS.Core.Tests.Unit.Services.Coordinations.Decryptions
                 new InvalidArgumentDecryptionCoordinationException(
                     message: "Invalid decryption coordination argument, please correct the errors and try again.");
 
+            var rollBackException = new RollbackDecryptionCoordinationException(
+                message: $"Failed to decrypt file. Rollback encrypted file: {invalidData}",
+                innerException: invalidArgumentDecryptionCoordinationException as Xeption);
+
             var expectedDecryptionCoordinationValidationException =
                 new DecryptionCoordinationValidationException(
                     message: "Decryption coordination validation error occurred, please try again.",
@@ -37,8 +42,8 @@ namespace LHDS.Core.Tests.Unit.Services.Coordinations.Decryptions
                 this.decryptionCoordinationService.DecryptAsync(invalidData);
 
             DecryptionCoordinationValidationException actualDecryptionCoordinationValidationException =
-                await Assert.ThrowsAsync<DecryptionCoordinationValidationException>(async () =>
-                    await processDataTask);
+                await Assert.ThrowsAsync<DecryptionCoordinationValidationException>(
+                    processDataTask.AsTask);
 
             // then
             actualDecryptionCoordinationValidationException.Should()
@@ -48,8 +53,17 @@ namespace LHDS.Core.Tests.Unit.Services.Coordinations.Decryptions
                 service.DecryptAsync(invalidData, inputSubscriberCredential),
                     Times.Never());
 
+            this.ingressOrchestrationServiceMock.Verify(service =>
+                service.RollbackIngestionTrackingItemAsync(It.IsAny<string>()),
+                    Times.Once);
+
             this.loggingBrokerMock.Verify(broker =>
-                broker.LogError(It.Is(SameExceptionAs(
+                 broker.LogErrorAsync(It.Is(IsSameExceptionAs(
+                     rollBackException))),
+                         Times.Once);
+
+            this.loggingBrokerMock.Verify(broker =>
+                broker.LogErrorAsync(It.Is(SameExceptionAs(
                     expectedDecryptionCoordinationValidationException))),
                         Times.Once);
 

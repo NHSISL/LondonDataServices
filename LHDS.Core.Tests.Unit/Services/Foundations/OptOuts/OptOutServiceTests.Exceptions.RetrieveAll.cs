@@ -3,7 +3,10 @@
 // ---------------------------------------------------------
 
 using System;
+using System.Linq;
+using System.Threading.Tasks;
 using FluentAssertions;
+using LHDS.Core.Models.Foundations.OptOuts;
 using LHDS.Core.Models.Foundations.OptOuts.Exceptions;
 using Microsoft.Data.SqlClient;
 using Moq;
@@ -14,7 +17,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.OptOuts
     public partial class OptOutServiceTests
     {
         [Fact]
-        public void ShouldThrowCriticalDependencyExceptionOnRetrieveAllWhenSqlExceptionOccursAndLogIt()
+        public async Task ShouldThrowCriticalDependencyExceptionOnRetrieveAllWhenSqlExceptionOccursAndLogItAsync()
         {
             // given
             SqlException sqlException = GetSqlException();
@@ -28,26 +31,27 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.OptOuts
                 innerException: failedOptOutStorageException);
 
             this.storageBrokerMock.Setup(broker =>
-                broker.SelectAllOptOuts())
-                    .Throws(sqlException);
+                broker.SelectAllOptOutsAsync())
+                    .ThrowsAsync(sqlException);
 
             // when
-            Action retrieveAllOptOutsAction = () =>
-                this.optOutService.RetrieveAllOptOuts();
+            ValueTask<IQueryable<OptOut>> retrieveAllOptOutsTask =
+                this.optOutService.RetrieveAllOptOutsAsync();
 
             OptOutDependencyException actualOptOutDependencyException =
-                Assert.Throws<OptOutDependencyException>(retrieveAllOptOutsAction);
+                await Assert.ThrowsAsync<OptOutDependencyException>(
+                    testCode: retrieveAllOptOutsTask.AsTask);
 
             // then
             actualOptOutDependencyException.Should()
                 .BeEquivalentTo(expectedOptOutDependencyException);
 
             this.storageBrokerMock.Verify(broker =>
-                broker.SelectAllOptOuts(),
+                broker.SelectAllOptOutsAsync(),
                     Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>
-                broker.LogCritical(It.Is(SameExceptionAs(
+                broker.LogCriticalAsync(It.Is(SameExceptionAs(
                     expectedOptOutDependencyException))),
                         Times.Once);
 
@@ -57,7 +61,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.OptOuts
         }
 
         [Fact]
-        public void ShouldThrowServiceExceptionOnRetrieveAllIfServiceErrorOccursAndLogItAsync()
+        public async Task ShouldThrowServiceExceptionOnRetrieveAllIfServiceErrorOccursAndLogItAsync()
         {
             // given
             string exceptionMessage = GetRandomString();
@@ -72,26 +76,27 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.OptOuts
                 innerException: failedOptOutServiceException);
 
             this.storageBrokerMock.Setup(broker =>
-                broker.SelectAllOptOuts())
-                    .Throws(serviceException);
+                broker.SelectAllOptOutsAsync())
+                    .ThrowsAsync(serviceException);
 
             // when
-            Action retrieveAllOptOutsAction = () =>
-                this.optOutService.RetrieveAllOptOuts();
+            ValueTask<IQueryable<OptOut>> retrieveAllOptOutsTask =
+                this.optOutService.RetrieveAllOptOutsAsync();
 
             OptOutServiceException actualOptOutServiceException =
-                Assert.Throws<OptOutServiceException>(retrieveAllOptOutsAction);
+                await Assert.ThrowsAsync<OptOutServiceException>(
+                    testCode: retrieveAllOptOutsTask.AsTask);
 
             // then
             actualOptOutServiceException.Should()
                 .BeEquivalentTo(expectedOptOutServiceException);
 
             this.storageBrokerMock.Verify(broker =>
-                broker.SelectAllOptOuts(),
+                broker.SelectAllOptOutsAsync(),
                     Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>
-                broker.LogError(It.Is(SameExceptionAs(
+                broker.LogErrorAsync(It.Is(SameExceptionAs(
                     expectedOptOutServiceException))),
                         Times.Once);
 

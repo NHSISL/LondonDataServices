@@ -6,6 +6,7 @@ using System;
 using System.Threading.Tasks;
 using FluentAssertions;
 using Force.DeepCloner;
+using LHDS.Core.Models.Brokers.Securities;
 using LHDS.Core.Models.Foundations.ObjectColumns;
 using Moq;
 using Xunit;
@@ -18,17 +19,20 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.ObjectColumns
         public async Task ShouldAddObjectColumnAsync()
         {
             // given
-            DateTimeOffset randomDateTimeOffset =
-                GetRandomDateTimeOffset();
-
-            ObjectColumn randomObjectColumn = CreateRandomObjectColumn(randomDateTimeOffset);
+            DateTimeOffset randomDateTimeOffset = GetRandomDateTimeOffset();
+            EntraUser randomEntraUser = CreateRandomEntraUser();
+            ObjectColumn randomObjectColumn = CreateRandomObjectColumn(randomDateTimeOffset, randomEntraUser.EntraUserId);
             ObjectColumn inputObjectColumn = randomObjectColumn;
             ObjectColumn storageObjectColumn = inputObjectColumn;
             ObjectColumn expectedObjectColumn = storageObjectColumn.DeepClone();
 
             this.dateTimeBrokerMock.Setup(broker =>
-                broker.GetCurrentDateTimeOffset())
-                    .Returns(randomDateTimeOffset);
+                broker.GetCurrentDateTimeOffsetAsync())
+                    .ReturnsAsync(randomDateTimeOffset);
+
+            this.securityBrokerMock.Setup(broker =>
+                broker.GetCurrentUserAsync())
+                    .ReturnsAsync(randomEntraUser);
 
             this.storageBrokerMock.Setup(broker =>
                 broker.InsertObjectColumnAsync(inputObjectColumn))
@@ -42,14 +46,19 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.ObjectColumns
             actualObjectColumn.Should().BeEquivalentTo(expectedObjectColumn);
 
             this.dateTimeBrokerMock.Verify(broker =>
-                broker.GetCurrentDateTimeOffset(),
-                    Times.Once());
+                broker.GetCurrentDateTimeOffsetAsync(),
+                    Times.Exactly(2));
+
+            this.securityBrokerMock.Verify(broker =>
+                broker.GetCurrentUserAsync(),
+                    Times.Exactly(2));
 
             this.storageBrokerMock.Verify(broker =>
                 broker.InsertObjectColumnAsync(inputObjectColumn),
                     Times.Once);
 
             this.dateTimeBrokerMock.VerifyNoOtherCalls();
+            this.securityBrokerMock.VerifyNoOtherCalls();
             this.storageBrokerMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
         }

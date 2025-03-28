@@ -35,7 +35,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.TerminologyPolls
 
             this.storageBrokerMock.Setup(broker =>
                 broker.SelectTerminologyPollByIdAsync(randomTerminologyPoll.Id))
-                    .Throws(sqlException);
+                    .ThrowsAsync(sqlException);
 
             // when
             ValueTask<TerminologyPoll> addTerminologyPollTask =
@@ -54,7 +54,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.TerminologyPolls
                     Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>
-                broker.LogCritical(It.Is(SameExceptionAs(
+                broker.LogCriticalAsync(It.Is(SameExceptionAs(
                     expectedTerminologyPollDependencyException))),
                         Times.Once);
 
@@ -63,7 +63,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.TerminologyPolls
                     Times.Never);
 
             this.dateTimeBrokerMock.Verify(broker =>
-                broker.GetCurrentDateTimeOffset(),
+                broker.GetCurrentDateTimeOffsetAsync(),
                     Times.Never);
 
             this.storageBrokerMock.VerifyNoOtherCalls();
@@ -111,7 +111,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.TerminologyPolls
                     Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>
-                broker.LogError(It.Is(SameExceptionAs(
+                broker.LogErrorAsync(It.Is(SameExceptionAs(
                     expectedTerminologyPollDependencyValidationException))),
                         Times.Once);
 
@@ -162,7 +162,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.TerminologyPolls
                     Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>
-                broker.LogCritical(It.Is(SameExceptionAs(
+                broker.LogCriticalAsync(It.Is(SameExceptionAs(
                     expectedTerminologyPollDependencyException))),
                         Times.Once);
 
@@ -209,7 +209,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.TerminologyPolls
                         Times.Once());
 
             this.loggingBrokerMock.Verify(broker =>
-                broker.LogError(It.Is(SameExceptionAs(
+                broker.LogErrorAsync(It.Is(SameExceptionAs(
                     expectedTerminologyPollServiceException))),
                         Times.Once);
 

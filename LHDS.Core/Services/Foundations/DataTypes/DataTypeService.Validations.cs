@@ -1,8 +1,10 @@
-// ---------------------------------------------------------------
+// ---------------------------------------------------------
 // Copyright (c) North East London ICB. All rights reserved.
-// ---------------------------------------------------------------
+// ---------------------------------------------------------
 
 using System;
+using System.Threading.Tasks;
+using LHDS.Core.Models.Brokers.Securities;
 using LHDS.Core.Models.Foundations.DataTypes;
 using LHDS.Core.Models.Foundations.DataTypes.Exceptions;
 
@@ -10,9 +12,10 @@ namespace LHDS.Core.Services.Foundations.DataTypes
 {
     public partial class DataTypeService
     {
-        private void ValidateDataTypeOnAdd(DataType dataType)
+        private async ValueTask ValidateDataTypeOnAddAsync(DataType dataType)
         {
             ValidateDataTypeIsNotNull(dataType);
+            EntraUser currentUser = await this.securityBroker.GetCurrentUserAsync();
 
             Validate(
                 (Rule: IsInvalid(dataType.Id), Parameter: nameof(DataType.Id)),
@@ -24,6 +27,11 @@ namespace LHDS.Core.Services.Foundations.DataTypes
 
                 (Rule: IsEqualOrSmallerThan(
                     dataType.Name, 50), Parameter: nameof(DataType.Name)),
+
+                (Rule: IsNotSame(
+                    first: currentUser.EntraUserId,
+                    second: dataType.CreatedBy),
+                Parameter: nameof(DataType.CreatedBy)),
 
                 (Rule: IsNotSame(
                     firstDate: dataType.UpdatedDate,
@@ -37,12 +45,13 @@ namespace LHDS.Core.Services.Foundations.DataTypes
                     secondName: nameof(DataType.CreatedBy)),
                 Parameter: nameof(DataType.UpdatedBy)),
 
-                (Rule: IsNotRecent(dataType.CreatedDate), Parameter: nameof(DataType.CreatedDate)));
+                (Rule: await IsNotRecentAsync(dataType.CreatedDate), Parameter: nameof(DataType.CreatedDate)));
         }
 
-        private void ValidateDataTypeOnModify(DataType dataType)
+        private async ValueTask ValidateDataTypeOnModifyAsync(DataType dataType)
         {
             ValidateDataTypeIsNotNull(dataType);
+            EntraUser currentUser = await this.securityBroker.GetCurrentUserAsync();
 
             Validate(
                 (Rule: IsInvalid(dataType.Id), Parameter: nameof(DataType.Id)),
@@ -55,13 +64,18 @@ namespace LHDS.Core.Services.Foundations.DataTypes
                 (Rule: IsEqualOrSmallerThan(
                     dataType.Name, 50), Parameter: nameof(DataType.Name)),
 
+                (Rule: IsNotSame(
+                    first: currentUser.EntraUserId,
+                    second: dataType.UpdatedBy),
+                Parameter: nameof(DataType.UpdatedBy)),
+
                 (Rule: IsSame(
                     firstDate: dataType.UpdatedDate,
                     secondDate: dataType.CreatedDate,
                     secondDateName: nameof(DataType.CreatedDate)),
                 Parameter: nameof(DataType.UpdatedDate)),
 
-                (Rule: IsNotRecent(dataType.UpdatedDate), Parameter: nameof(dataType.UpdatedDate)));
+                (Rule: await IsNotRecentAsync(dataType.UpdatedDate), Parameter: nameof(dataType.UpdatedDate)));
         }
 
         public void ValidateDataTypeId(Guid dataTypeId) =>
@@ -139,6 +153,14 @@ namespace LHDS.Core.Services.Foundations.DataTypes
             };
 
         private static dynamic IsNotSame(
+            string first,
+            string second) => new
+            {
+                Condition = first != second,
+                Message = $"Expected value to be '{first}' but found '{second}'."
+            };
+
+        private static dynamic IsNotSame(
             DateTimeOffset firstDate,
             DateTimeOffset secondDate,
             string secondDateName) => new
@@ -165,16 +187,16 @@ namespace LHDS.Core.Services.Foundations.DataTypes
                Message = $"Text is not the same as {secondName}"
            };
 
-        private dynamic IsNotRecent(DateTimeOffset date) => new
+        private async ValueTask<dynamic> IsNotRecentAsync(DateTimeOffset date) => new
         {
-            Condition = IsDateNotRecent(date),
+            Condition = await IsDateNotRecentAsync(date),
             Message = "Date is not recent"
         };
 
-        private bool IsDateNotRecent(DateTimeOffset date)
+        private async ValueTask<bool> IsDateNotRecentAsync(DateTimeOffset date)
         {
             DateTimeOffset currentDateTime =
-                this.dateTimeBroker.GetCurrentDateTimeOffset();
+                await this.dateTimeBroker.GetCurrentDateTimeOffsetAsync();
 
             TimeSpan timeDifference = currentDateTime.Subtract(date);
             TimeSpan oneMinute = TimeSpan.FromMinutes(1);

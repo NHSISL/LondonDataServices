@@ -90,19 +90,29 @@ namespace LHDS.Core.Services.Orchestrations.ResolvedAddresses
             var resolvedAddressAudits = new List<ResolvedAddress>();
             var exceptions = new List<Exception>();
 
-            while ((unMatchedResolvedAddress = resolvedAddressProcessingService.RetrieveAllResolvedAddresses()
-                .FirstOrDefault(address =>
-                address.IsProcessed == false &&
-                address.IsProcessing == false &&
-                address.RetryCount < 4)) != null)
+            while (true)
             {
+                var retrievedResolvedAddresses = await resolvedAddressProcessingService
+                    .RetrieveAllResolvedAddressesAsync();
+
+                unMatchedResolvedAddress = retrievedResolvedAddresses
+                    .FirstOrDefault(address =>
+                        address.IsProcessed == false &&
+                        address.IsProcessing == false &&
+                        address.RetryCount < 4);
+
+                if (unMatchedResolvedAddress is null)
+                {
+                    break;
+                }
+
                 try
                 {
                     await TryCatch(async () =>
                     {
                         unMatchedResolvedAddress.IsProcessing = true;
                         unMatchedResolvedAddress.RetryCount += 1;
-                        unMatchedResolvedAddress.UpdatedDate = dateTimeBroker.GetCurrentDateTimeOffset();
+                        unMatchedResolvedAddress.UpdatedDate = await dateTimeBroker.GetCurrentDateTimeOffsetAsync();
 
                         ResolvedAddress updatedAddress = await resolvedAddressProcessingService.
                             ModifyResolvedAddressAsync(unMatchedResolvedAddress);
@@ -113,11 +123,13 @@ namespace LHDS.Core.Services.Orchestrations.ResolvedAddresses
 
                         Address? foundOrdananceAddress = null;
 
-                        if (foundAssignAddress != null && !string.IsNullOrWhiteSpace(foundAssignAddress.UPRN))
+                        if (foundAssignAddress != null &&
+                            foundAssignAddress.BestMatch != null &&
+                            !string.IsNullOrWhiteSpace(foundAssignAddress.BestMatch.UPRN))
                         {
                             foundOrdananceAddress =
                                 await addressProcessingService
-                                    .RetrieveAddressByUPRNAsync(foundAssignAddress.UPRN);
+                                    .RetrieveAddressByUPRNAsync(foundAssignAddress.BestMatch.UPRN);
                         }
 
                         ResolvedAddress newResolvedAddress =
@@ -126,7 +138,8 @@ namespace LHDS.Core.Services.Orchestrations.ResolvedAddresses
                                 foundAssignAddress,
                                 foundOrdananceAddress);
 
-                        newResolvedAddress.UpdatedDate = dateTimeBroker.GetCurrentDateTimeOffset();
+                        ValidateNewResolvedAddress(newResolvedAddress);
+                        newResolvedAddress.UpdatedDate = await dateTimeBroker.GetCurrentDateTimeOffsetAsync();
                         newResolvedAddress.IsProcessed = true;
 
                         await resolvedAddressProcessingService
@@ -141,7 +154,7 @@ namespace LHDS.Core.Services.Orchestrations.ResolvedAddresses
                         .RetrieveResolvedAddressByIdAsync(failedToProcessClean.Id);
 
                     failedToProcess.IsProcessing = false;
-                    failedToProcess.UpdatedDate = dateTimeBroker.GetCurrentDateTimeOffset();
+                    failedToProcess.UpdatedDate = await dateTimeBroker.GetCurrentDateTimeOffsetAsync();
 
                     await resolvedAddressProcessingService
                         .ModifyResolvedAddressAsync(failedToProcess);
@@ -158,12 +171,13 @@ namespace LHDS.Core.Services.Orchestrations.ResolvedAddresses
             }
         });
 
-        public static ResolvedAddress MapOrdananceWithAssign(
+        virtual internal ResolvedAddress MapOrdananceWithAssign(
             ResolvedAddress unMatchedResolvedAddress,
             AssignAddress? foundAssignAddress,
             Address? foundOrdananceAddress)
         {
             ResolvedAddress updatedResolovedAddress = unMatchedResolvedAddress;
+            updatedResolovedAddress.UPRN = foundOrdananceAddress?.UPRN ?? null;
             updatedResolovedAddress.UPSN = foundOrdananceAddress?.UPSN ?? null;
             updatedResolovedAddress.OrganisationName = foundOrdananceAddress?.OrganisationName;
             updatedResolovedAddress.DepartmentName = foundOrdananceAddress?.DepartmentName;
@@ -179,9 +193,9 @@ namespace LHDS.Core.Services.Orchestrations.ResolvedAddresses
             updatedResolovedAddress.AddressFormatQuality = foundAssignAddress?.AddressFormat;
             updatedResolovedAddress.PostCodeQuality = foundAssignAddress?.PostcodeQuality;
             updatedResolovedAddress.MatchedWithAssign = foundAssignAddress?.Matched ?? false;
-            updatedResolovedAddress.Qualifier = foundAssignAddress?.Qualifier;
-            updatedResolovedAddress.Classification = foundAssignAddress?.Classification;
-            updatedResolovedAddress.Algorithm = foundAssignAddress?.Algorithm;
+            updatedResolovedAddress.Qualifier = foundAssignAddress?.BestMatch.Qualifier;
+            updatedResolovedAddress.Classification = foundAssignAddress?.BestMatch.Classification;
+            updatedResolovedAddress.Algorithm = foundAssignAddress?.BestMatch.Algorithm;
             updatedResolovedAddress.MatchPattern = foundAssignAddress?.Pattern;
             updatedResolovedAddress.IsProcessing = false;
             updatedResolovedAddress.IsExported = false;
@@ -198,16 +212,25 @@ namespace LHDS.Core.Services.Orchestrations.ResolvedAddresses
             List<Guid> batchReferenceIds = new List<Guid>();
             var exceptions = new List<Exception>();
 
-            while ((unMatchedResolvedAddresses = resolvedAddressProcessingService.RetrieveAllResolvedAddresses()
-                .Where(address =>
-                    address.IsProcessed == false &&
-                    address.IsProcessing == false &&
-                    address.RetryCount < 4)
-                .Take(batchCount)
-                .ToList()).Count > 0)
+            while (true)
             {
+                var retrievedResolvedAddresses = await resolvedAddressProcessingService
+                    .RetrieveAllResolvedAddressesAsync();
 
-                Guid batchReference = this.identifierBroker.GetIdentifier();
+                unMatchedResolvedAddresses = retrievedResolvedAddresses
+                    .Where(address =>
+                        address.IsExported == false &&
+                        address.IsProcessing == false &&
+                        address.RetryCount < 4)
+                    .Take(batchCount)
+                    .ToList();
+
+                if (unMatchedResolvedAddresses.Count == 0)
+                {
+                    break;
+                }
+
+                Guid batchReference = await this.identifierBroker.GetIdentifierAsync();
                 batchReferenceIds.Add(batchReference);
 
                 try
@@ -255,7 +278,7 @@ namespace LHDS.Core.Services.Orchestrations.ResolvedAddresses
                             @object: unMatchedResolvedAddresses,
                             addHeaderRecord: true,
                             fieldMappings: fieldMappings,
-                            shouldAddTrailingComma: true);
+                            shouldAddTrailingComma: false);
 
                         byte[] processedBytes = Encoding.UTF8.GetBytes(processedData);
                         batchReferenceIds.Add(batchReference);
@@ -287,8 +310,10 @@ namespace LHDS.Core.Services.Orchestrations.ResolvedAddresses
                 }
                 catch (Exception ex)
                 {
-                    List<ResolvedAddress> failedToExport = this.resolvedAddressProcessingService
-                        .RetrieveAllResolvedAddresses()
+                    IQueryable<ResolvedAddress> resolvedAddresses =
+                        await resolvedAddressProcessingService.RetrieveAllResolvedAddressesAsync();
+
+                    List<ResolvedAddress> failedToExport = resolvedAddresses
                         .Where(address => address.BatchReference == batchReference)
                         .ToList();
 

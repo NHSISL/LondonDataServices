@@ -51,7 +51,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.TerminologyMetadata
                 .BeEquivalentTo(expectedTerminologyMetadataOrchestrationValidationException);
 
             this.loggingBrokerMock.Verify(broker =>
-                broker.LogError(It.Is(SameExceptionAs(
+                broker.LogErrorAsync(It.Is(SameExceptionAs(
                     expectedTerminologyMetadataOrchestrationValidationException))),
                         Times.Once);
 
@@ -120,12 +120,12 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.TerminologyMetadata
                 .BeEquivalentTo(expectedTerminologyMetadataOrchestrationServiceException);
 
             this.loggingBrokerMock.Verify(broker =>
-                broker.LogError(It.Is(SameExceptionAs(
+                broker.LogErrorAsync(It.Is(SameExceptionAs(
                     terminologyMetadataOrchestrationValidationException))),
                         Times.Exactly(invalidResourceTypes.Length));
 
             this.loggingBrokerMock.Verify(broker =>
-                broker.LogError(It.Is(SameExceptionAs(
+                broker.LogErrorAsync(It.Is(SameExceptionAs(
                     expectedTerminologyMetadataOrchestrationServiceException))),
                         Times.Once);
 
@@ -142,14 +142,14 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.TerminologyMetadata
         [InlineData("")]
         [InlineData(" ")]
         public async Task ShouldThrowAggregateValidationExceptionOnRetrieveIfResourceURLIsInvalidAndLogItAsync(
-            string? invalidString)
+            string invalidString)
         {
             // given
             string resourceType = "CodeSystem";
             string[] resourceTypes = [resourceType];
             List<Exception> exceptions = new List<Exception>();
             DateTimeOffset dateTimeOffset = GetRandomDateTimeOffset();
-            string? invalidResourceURL = invalidString;
+            string invalidResourceURL = invalidString;
             TerminologyPoll termionologyPoll = CreateRandomTerminologyPoll(resourceType, dateTimeOffset);
             this.ontologyConfiguration.TerminologyServerResourceRelativeUrl = invalidResourceURL;
 
@@ -212,12 +212,12 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.TerminologyMetadata
 
 
             this.loggingBrokerMock.Verify(broker =>
-                broker.LogError(It.Is(SameExceptionAs(
+                broker.LogErrorAsync(It.Is(SameExceptionAs(
                     terminologyMetadataOrchestrationValidationException))),
                         Times.Exactly(resourceTypes.Length));
 
             this.loggingBrokerMock.Verify(broker =>
-                broker.LogError(It.Is(SameExceptionAs(
+                broker.LogErrorAsync(It.Is(SameExceptionAs(
                     expectedTerminologyMetadataOrchestrationServiceException))),
                         Times.Once);
 

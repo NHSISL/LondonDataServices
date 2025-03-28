@@ -51,8 +51,8 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Addresses
                     innerException: failedAddressServiceException);
 
             this.dateTimeBrokerMock.Setup(broker =>
-                broker.GetCurrentDateTimeOffset())
-                    .Throws(sqlException);
+                broker.GetCurrentDateTimeOffsetAsync())
+                    .ThrowsAsync(sqlException);
 
             // when
             ValueTask addAddressTask = this.addressService
@@ -67,16 +67,16 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Addresses
                 .BeEquivalentTo(expectedAddressServiceException);
 
             this.dateTimeBrokerMock.Verify(broker =>
-                broker.GetCurrentDateTimeOffset(),
+                broker.GetCurrentDateTimeOffsetAsync(),
                     Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>
-                broker.LogCritical(It.Is(SameExceptionAs(
+                broker.LogCriticalAsync(It.Is(SameExceptionAs(
                     addressDependencyException))),
                         Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>
-                broker.LogError(It.Is(SameExceptionAs(
+                broker.LogErrorAsync(It.Is(SameExceptionAs(
                     expectedAddressServiceException))),
                         Times.Once);
 
@@ -87,7 +87,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Addresses
         }
 
         [Fact]
-        public async void ShouldThrowValidationExceptionOnBulkAddIfReferenceErrorOccursAndLogItAsync()
+        public async Task ShouldThrowValidationExceptionOnBulkAddIfReferenceErrorOccursAndLogItAsync()
         {
             // given
             string someFileName = GetRandomString();
@@ -123,8 +123,8 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Addresses
                     innerException: failedAddressServiceException);
 
             this.dateTimeBrokerMock.Setup(broker =>
-                broker.GetCurrentDateTimeOffset())
-                    .Throws(foreignKeyConstraintConflictException);
+                broker.GetCurrentDateTimeOffsetAsync())
+                    .ThrowsAsync(foreignKeyConstraintConflictException);
 
             // when
             ValueTask addAddressTask = this.addressService
@@ -139,16 +139,16 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Addresses
                 .BeEquivalentTo(expectedAddressServiceException);
 
             this.dateTimeBrokerMock.Verify(broker =>
-                broker.GetCurrentDateTimeOffset(),
+                broker.GetCurrentDateTimeOffsetAsync(),
                     Times.Once());
 
             this.loggingBrokerMock.Verify(broker =>
-                broker.LogError(It.Is(SameExceptionAs(
+                broker.LogErrorAsync(It.Is(SameExceptionAs(
                     addressDependencyValidationException))),
                         Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>
-                broker.LogError(It.Is(SameExceptionAs(
+                broker.LogErrorAsync(It.Is(SameExceptionAs(
                     actualAddressServiceException))),
                         Times.Once);
 
@@ -193,8 +193,8 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Addresses
                     innerException: failedAddressServiceException);
 
             this.dateTimeBrokerMock.Setup(broker =>
-                broker.GetCurrentDateTimeOffset())
-                    .Throws(databaseUpdateException);
+                broker.GetCurrentDateTimeOffsetAsync())
+                    .ThrowsAsync(databaseUpdateException);
 
             // when
             ValueTask addAddressTask = this.addressService
@@ -209,16 +209,16 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Addresses
                 .BeEquivalentTo(expectedAddressServiceException);
 
             this.dateTimeBrokerMock.Verify(broker =>
-                broker.GetCurrentDateTimeOffset(),
+                broker.GetCurrentDateTimeOffsetAsync(),
                     Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>
-                broker.LogError(It.Is(SameExceptionAs(
+                broker.LogErrorAsync(It.Is(SameExceptionAs(
                     addressDependencyException))),
                         Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>
-                broker.LogError(It.Is(SameExceptionAs(
+                broker.LogErrorAsync(It.Is(SameExceptionAs(
                     expectedAddressServiceException))),
                         Times.Once);
 
@@ -233,9 +233,11 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Addresses
         {
             // given
             var serviceException = new Exception();
+
             var addressServiceMock = new Mock<AddressService>(
                 this.storageBrokerMock.Object,
                 this.dateTimeBrokerMock.Object,
+                this.securityBrokerMock.Object,
                 this.identifierBrokerMock.Object,
                 this.loggingBrokerMock.Object,
                 this.auditBrokerMock.Object)
@@ -246,7 +248,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Addresses
             addressServiceMock
                 .Setup(x =>
                     x.BulkInsertBatch(It.IsAny<List<Address>>(), It.IsAny<int>(), It.IsAny<string>()))
-                .Throws(serviceException);
+                .ThrowsAsync(serviceException);
 
             AddressService addressService = addressServiceMock.Object;
 
@@ -264,8 +266,8 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Addresses
                     innerException: failedAddressServiceException);
 
             this.dateTimeBrokerMock.Setup(broker =>
-                broker.GetCurrentDateTimeOffset())
-                    .Throws(serviceException);
+                broker.GetCurrentDateTimeOffsetAsync())
+                    .ThrowsAsync(serviceException);
 
             // when
             ValueTask addAddressTask = addressServiceMock.Object
@@ -280,7 +282,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Addresses
                 .BeEquivalentTo(expectedAddressServiceException);
 
             this.loggingBrokerMock.Verify(broker =>
-                broker.LogError(It.Is(SameExceptionAs(
+                broker.LogErrorAsync(It.Is(SameExceptionAs(
                     expectedAddressServiceException))),
                         Times.Once);
 

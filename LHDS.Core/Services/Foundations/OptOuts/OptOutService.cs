@@ -1,6 +1,6 @@
-// ---------------------------------------------------------------
+// ---------------------------------------------------------
 // Copyright (c) North East London ICB. All rights reserved.
-// ---------------------------------------------------------------
+// ---------------------------------------------------------
 
 using System;
 using System.Linq;
@@ -31,13 +31,13 @@ namespace LHDS.Core.Services.Foundations.OptOuts
         public ValueTask<OptOut> AddOptOutAsync(OptOut optOut) =>
             TryCatch(async () =>
             {
-                ValidateOptOutOnAdd(optOut);
+                await ValidateOptOutOnAddAsync(optOut);
 
                 return await this.storageBroker.InsertOptOutAsync(optOut);
             });
 
-        public IQueryable<OptOut> RetrieveAllOptOuts() =>
-            TryCatch(() => this.storageBroker.SelectAllOptOuts());
+        public ValueTask<IQueryable<OptOut>> RetrieveAllOptOutsAsync() =>
+            TryCatch(async () => await this.storageBroker.SelectAllOptOutsAsync());
 
         public ValueTask<OptOut> RetrieveOptOutByIdAsync(Guid optOutId) =>
             TryCatch(async () =>
@@ -55,7 +55,7 @@ namespace LHDS.Core.Services.Foundations.OptOuts
         public ValueTask<OptOut> ModifyOptOutAsync(OptOut optOut) =>
             TryCatch(async () =>
             {
-                ValidateOptOutOnModify(optOut);
+                await ValidateOptOutOnModifyAsync(optOut);
 
                 OptOut maybeOptOut =
                     await this.storageBroker.SelectOptOutByIdAsync(optOut.Id);

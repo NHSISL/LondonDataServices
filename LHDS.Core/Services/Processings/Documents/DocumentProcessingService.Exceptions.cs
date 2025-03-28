@@ -1,6 +1,6 @@
-﻿// ---------------------------------------------------------------
+﻿// ---------------------------------------------------------
 // Copyright (c) North East London ICB. All rights reserved.
-// ---------------------------------------------------------------
+// ---------------------------------------------------------
 
 using System;
 using System.Threading.Tasks;
@@ -25,27 +25,27 @@ namespace LHDS.Core.Services.Processings.Documents
             }
             catch (NullDocumentProcessingException nullDocumentException)
             {
-                throw CreateAndLogValidationException(nullDocumentException);
+                throw await CreateAndLogValidationExceptionAsync(nullDocumentException);
             }
             catch (InvalidArgumentsDocumentProcessingException exception)
             {
-                throw CreateAndLogValidationException(exception);
+                throw await CreateAndLogValidationExceptionAsync(exception);
             }
             catch (DocumentValidationException documentValidationException)
             {
-                throw CreateAndLogDependencyValidationException(documentValidationException);
+                throw await CreateAndLogDependencyValidationExceptionAsync(documentValidationException);
             }
             catch (DocumentDependencyValidationException documentDependencyValidationException)
             {
-                throw CreateAndLogDependencyValidationException(documentDependencyValidationException);
+                throw await CreateAndLogDependencyValidationExceptionAsync(documentDependencyValidationException);
             }
             catch (DocumentDependencyException documentDependencyException)
             {
-                throw CreateAndLogDependencyException(documentDependencyException);
+                throw await CreateAndLogDependencyExceptionAsync(documentDependencyException);
             }
             catch (DocumentServiceException documentServiceException)
             {
-                throw CreateAndLogDependencyException(documentServiceException);
+                throw await CreateAndLogDependencyExceptionAsync(documentServiceException);
             }
             catch (Exception exception)
             {
@@ -54,7 +54,7 @@ namespace LHDS.Core.Services.Processings.Documents
                         message: "Failed document processing service error occurred, please contact support.",
                         exception);
 
-                throw CreateAndLogServiceException(failedDocumentProcessingServiceException);
+                throw await CreateAndLogServiceExceptionAsync(failedDocumentProcessingServiceException);
             }
         }
 
@@ -66,23 +66,23 @@ namespace LHDS.Core.Services.Processings.Documents
             }
             catch (InvalidArgumentsDocumentProcessingException exception)
             {
-                throw CreateAndLogValidationException(exception);
+                throw await CreateAndLogValidationExceptionAsync(exception);
             }
             catch (DocumentValidationException documentValidationException)
             {
-                throw CreateAndLogDependencyValidationException(documentValidationException);
+                throw await CreateAndLogDependencyValidationExceptionAsync(documentValidationException);
             }
             catch (DocumentDependencyValidationException documentDependencyValidationException)
             {
-                throw CreateAndLogDependencyValidationException(documentDependencyValidationException);
+                throw await CreateAndLogDependencyValidationExceptionAsync(documentDependencyValidationException);
             }
             catch (DocumentDependencyException documentDependencyException)
             {
-                throw CreateAndLogDependencyException(documentDependencyException);
+                throw await CreateAndLogDependencyExceptionAsync(documentDependencyException);
             }
             catch (DocumentServiceException documentServiceException)
             {
-                throw CreateAndLogDependencyException(documentServiceException);
+                throw await CreateAndLogDependencyExceptionAsync(documentServiceException);
             }
             catch (Exception exception)
             {
@@ -91,7 +91,7 @@ namespace LHDS.Core.Services.Processings.Documents
                         message: "Failed document processing service error occurred, please contact support.",
                         innerException: exception);
 
-                throw CreateAndLogServiceException(failedDocumentProcessingServiceException);
+                throw await CreateAndLogServiceExceptionAsync(failedDocumentProcessingServiceException);
             }
         }
 
@@ -103,31 +103,31 @@ namespace LHDS.Core.Services.Processings.Documents
             }
             catch (InvalidArgumentsDocumentProcessingException exception)
             {
-                throw CreateAndLogValidationException(exception);
+                throw await CreateAndLogValidationExceptionAsync(exception);
             }
             catch (NullDocumentProcessingException nullDocumentException)
             {
-                throw CreateAndLogValidationException(nullDocumentException);
+                throw await CreateAndLogValidationExceptionAsync(nullDocumentException);
             }
             catch (DocumentValidationException documentValidationException)
             {
-                throw CreateAndLogDependencyValidationException(documentValidationException);
+                throw await CreateAndLogDependencyValidationExceptionAsync(documentValidationException);
             }
             catch (DocumentProcessingValidationException documentProcessingValidationException)
             {
-                throw CreateAndLogValidationException(documentProcessingValidationException);
+                throw await CreateAndLogValidationExceptionAsync(documentProcessingValidationException);
             }
             catch (DocumentDependencyValidationException documentDependencyValidationException)
             {
-                throw CreateAndLogDependencyValidationException(documentDependencyValidationException);
+                throw await CreateAndLogDependencyValidationExceptionAsync(documentDependencyValidationException);
             }
             catch (DocumentDependencyException documentDependencyException)
             {
-                throw CreateAndLogDependencyException(documentDependencyException);
+                throw await CreateAndLogDependencyExceptionAsync(documentDependencyException);
             }
             catch (DocumentServiceException documentServiceException)
             {
-                throw CreateAndLogDependencyException(documentServiceException);
+                throw await CreateAndLogDependencyExceptionAsync(documentServiceException);
             }
             catch (Exception exception)
             {
@@ -136,57 +136,57 @@ namespace LHDS.Core.Services.Processings.Documents
                         message: "Failed document processing service error occurred, please contact support.",
                         innerException: exception);
 
-                throw CreateAndLogServiceException(failedDocumentProcessingServiceException);
+                throw await CreateAndLogServiceExceptionAsync(failedDocumentProcessingServiceException);
             }
         }
 
-        private DocumentProcessingValidationException
-            CreateAndLogValidationException(Xeption exception)
+        private async ValueTask<DocumentProcessingValidationException>
+            CreateAndLogValidationExceptionAsync(Xeption exception)
         {
             var documentProcessingValidationExceptionn =
                 new DocumentProcessingValidationException(
                     message: "Document processing validation errors occured, please try again",
                     innerException: exception);
 
-            this.loggingBroker.LogError(documentProcessingValidationExceptionn);
+            await this.loggingBroker.LogErrorAsync(documentProcessingValidationExceptionn);
 
             return documentProcessingValidationExceptionn;
         }
 
-        private DocumentProcessingDependencyValidationException
-            CreateAndLogDependencyValidationException(Xeption exception)
+        private async ValueTask<DocumentProcessingDependencyValidationException>
+            CreateAndLogDependencyValidationExceptionAsync(Xeption exception)
         {
             var documentProcessingDependencyValidationException =
                 new DocumentProcessingDependencyValidationException(
                     message: "Document processing dependency validation occurred, please try again.",
                     innerException: exception.InnerException as Xeption);
 
-            this.loggingBroker.LogError(documentProcessingDependencyValidationException);
+            await this.loggingBroker.LogErrorAsync(documentProcessingDependencyValidationException);
 
             return documentProcessingDependencyValidationException;
         }
 
-        private DocumentProcessingDependencyException
-            CreateAndLogDependencyException(Xeption exception)
+        private async ValueTask<DocumentProcessingDependencyException>
+            CreateAndLogDependencyExceptionAsync(Xeption exception)
         {
             var documentProcessingDependencyException =
                 new DocumentProcessingDependencyException(
                     message: "Document processing dependency error occurred, please try again.",
                     innerException: exception.InnerException as Xeption);
 
-            this.loggingBroker.LogError(documentProcessingDependencyException);
+            await this.loggingBroker.LogErrorAsync(documentProcessingDependencyException);
 
-            throw documentProcessingDependencyException;
+            return documentProcessingDependencyException;
         }
 
-        private DocumentProcessingServiceException CreateAndLogServiceException(Xeption exception)
+        private async ValueTask<DocumentProcessingServiceException> CreateAndLogServiceExceptionAsync(Xeption exception)
         {
             var documentProcessingServiceException = new
                 DocumentProcessingServiceException(
                 message: "Document processing service error occurred, please contact support.",
                 innerException: exception);
 
-            this.loggingBroker.LogError(documentProcessingServiceException);
+            await this.loggingBroker.LogErrorAsync(documentProcessingServiceException);
 
             return documentProcessingServiceException;
         }

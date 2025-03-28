@@ -131,6 +131,39 @@ namespace LHDS.Core.Brokers.Storages.Sql
                 .IsRequired(false);
 
             modelBuilder.Entity<ObjectColumn>()
+                .Property(objectColumn => objectColumn.IsForeignKey)
+                .HasDefaultValue(false)
+                .IsRequired();
+
+            modelBuilder.Entity<ObjectColumn>()
+                .Property(objectColumn => objectColumn.ForeignKeyTableName)
+                .IsRequired(false);
+
+            modelBuilder.Entity<ObjectColumn>()
+                .Property(objectColumn => objectColumn.ForeignKeyColumnName)
+                .IsRequired(false);
+
+            modelBuilder.Entity<ObjectColumn>()
+                .Property(objectColumn => objectColumn.IsCaseSensitive)
+                .HasDefaultValue(false)
+                .IsRequired();
+
+            modelBuilder.Entity<ObjectColumn>()
+                .Property(objectColumn => objectColumn.DeleteCondition)
+                .HasMaxLength(255)
+                .IsRequired(false);
+
+            modelBuilder.Entity<ObjectColumn>()
+                .Property(objectColumn => objectColumn.IsNumeric)
+                .HasDefaultValue(false)
+                .IsRequired();
+
+            modelBuilder.Entity<ObjectColumn>()
+                .Property(objectColumn => objectColumn.IsPostcode)
+                .HasDefaultValue(false)
+                .IsRequired();
+
+            modelBuilder.Entity<ObjectColumn>()
                 .Property(objectColumn => objectColumn.CreatedBy)
                 .HasMaxLength(255)
                 .IsRequired();

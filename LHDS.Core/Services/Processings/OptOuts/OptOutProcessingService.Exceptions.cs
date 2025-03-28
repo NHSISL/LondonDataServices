@@ -15,11 +15,11 @@ namespace LHDS.Core.Services.Processings.OptOuts
 {
     public partial class OptOutProcessingService
     {
-        private delegate ValueTask<T> ReturningOptOutFunction<T>();
+        private delegate ValueTask<OptOut> ReturningOptOutFunction();
         private delegate ValueTask<List<OptOut>> ReturningOptOutListFunction();
-        private delegate IQueryable<OptOut> ReturningOptOutListsFunction();
+        private delegate ValueTask<IQueryable<OptOut>> ReturningOptOutListsFunction();
 
-        private async ValueTask<T> TryCatch<T>(ReturningOptOutFunction<T> returningOptOutFunction)
+        private async ValueTask<OptOut> TryCatch(ReturningOptOutFunction returningOptOutFunction)
         {
             try
             {
@@ -27,27 +27,27 @@ namespace LHDS.Core.Services.Processings.OptOuts
             }
             catch (NullOptOutProcessingException nullOptOutProcessingException)
             {
-                throw CreateAndLogValidationException(nullOptOutProcessingException);
+                throw await CreateAndLogValidationExceptionAsync(nullOptOutProcessingException);
             }
             catch (InvalidArgumentOptOutProcessingException invalidArgumentOptOutProcessingException)
             {
-                throw CreateAndLogValidationException(invalidArgumentOptOutProcessingException);
+                throw await CreateAndLogValidationExceptionAsync(invalidArgumentOptOutProcessingException);
             }
             catch (OptOutValidationException optOutValidationException)
             {
-                throw CreateAndLogDependencyValidationException(optOutValidationException);
+                throw await CreateAndLogDependencyValidationExceptionAsync(optOutValidationException);
             }
             catch (OptOutDependencyValidationException optOutDependencyValidationException)
             {
-                throw CreateAndLogDependencyValidationException(optOutDependencyValidationException);
+                throw await CreateAndLogDependencyValidationExceptionAsync(optOutDependencyValidationException);
             }
             catch (OptOutDependencyException optOutDependencyException)
             {
-                throw CreateAndLogDependencyException(optOutDependencyException);
+                throw await CreateAndLogDependencyExceptionAsync(optOutDependencyException);
             }
             catch (OptOutServiceException optOutServiceException)
             {
-                throw CreateAndLogDependencyException(optOutServiceException);
+                throw await CreateAndLogDependencyExceptionAsync(optOutServiceException);
             }
             catch (Exception exception)
             {
@@ -56,35 +56,39 @@ namespace LHDS.Core.Services.Processings.OptOuts
                         message: "Failed opt out processing service error occurred, please contact support.",
                         exception);
 
-                throw CreateAndLogServiceException(failedOptOutProcessingServiceException);
+                throw await CreateAndLogServiceExceptionAsync(failedOptOutProcessingServiceException);
             }
         }
 
-        private IQueryable<OptOut> TryCatch(ReturningOptOutListsFunction returningOptOutListsFunction)
+        private async ValueTask<List<OptOut>> TryCatch(ReturningOptOutListFunction returningOptOutListFunction)
         {
             try
             {
-                return returningOptOutListsFunction();
+                return await returningOptOutListFunction();
+            }
+            catch (NullOptOutProcessingException nullOptOutProcessingException)
+            {
+                throw await CreateAndLogValidationExceptionAsync(nullOptOutProcessingException);
             }
             catch (InvalidArgumentOptOutProcessingException invalidArgumentOptOutProcessingException)
             {
-                throw CreateAndLogValidationException(invalidArgumentOptOutProcessingException);
-            }
-            catch (OptOutDependencyValidationException optOutDependencyValidationException)
-            {
-                throw CreateAndLogDependencyValidationException(optOutDependencyValidationException);
+                throw await CreateAndLogValidationExceptionAsync(invalidArgumentOptOutProcessingException);
             }
             catch (OptOutValidationException optOutValidationException)
             {
-                throw CreateAndLogDependencyValidationException(optOutValidationException);
+                throw await CreateAndLogDependencyValidationExceptionAsync(optOutValidationException);
+            }
+            catch (OptOutDependencyValidationException optOutDependencyValidationException)
+            {
+                throw await CreateAndLogDependencyValidationExceptionAsync(optOutDependencyValidationException);
             }
             catch (OptOutDependencyException optOutDependencyException)
             {
-                throw CreateAndLogDependencyException(optOutDependencyException);
+                throw await CreateAndLogDependencyExceptionAsync(optOutDependencyException);
             }
             catch (OptOutServiceException optOutServiceException)
             {
-                throw CreateAndLogDependencyException(optOutServiceException);
+                throw await CreateAndLogDependencyExceptionAsync(optOutServiceException);
             }
             catch (Exception exception)
             {
@@ -93,49 +97,94 @@ namespace LHDS.Core.Services.Processings.OptOuts
                         message: "Failed opt out processing service error occurred, please contact support.",
                         exception);
 
-                throw CreateAndLogServiceException(failedOptOutProcessingServiceException);
+                throw await CreateAndLogServiceExceptionAsync(failedOptOutProcessingServiceException);
             }
         }
 
-        private OptOutProcessingValidationException CreateAndLogValidationException(Xeption exception)
+        private async ValueTask<IQueryable<OptOut>> TryCatch(ReturningOptOutListsFunction returningOptOutListsFunction)
+        {
+            try
+            {
+                return await returningOptOutListsFunction();
+            }
+            catch (InvalidArgumentOptOutProcessingException invalidArgumentOptOutProcessingException)
+            {
+                throw await CreateAndLogValidationExceptionAsync(invalidArgumentOptOutProcessingException);
+            }
+            catch (OptOutDependencyValidationException optOutDependencyValidationException)
+            {
+                throw await CreateAndLogDependencyValidationExceptionAsync(optOutDependencyValidationException);
+            }
+            catch (OptOutValidationException optOutValidationException)
+            {
+                throw await CreateAndLogDependencyValidationExceptionAsync(optOutValidationException);
+            }
+            catch (OptOutDependencyException optOutDependencyException)
+            {
+                throw await CreateAndLogDependencyExceptionAsync(optOutDependencyException);
+            }
+            catch (OptOutServiceException optOutServiceException)
+            {
+                throw await CreateAndLogDependencyExceptionAsync(optOutServiceException);
+            }
+            catch (Exception exception)
+            {
+                var failedOptOutProcessingServiceException =
+                    new FailedOptOutProcessingServiceException(
+                        message: "Failed opt out processing service error occurred, please contact support.",
+                        exception);
+
+                throw await CreateAndLogServiceExceptionAsync(failedOptOutProcessingServiceException);
+            }
+        }
+
+        private async ValueTask<OptOutProcessingValidationException> CreateAndLogValidationExceptionAsync(
+            Xeption exception)
         {
             var optOutProcessingValidationException =
-                new OptOutProcessingValidationException(exception);
+                new OptOutProcessingValidationException(
+                    message: "OptOut processing validation errors occured, please try again", 
+                    innerException: exception);
 
-            this.loggingBroker.LogError(optOutProcessingValidationException);
+            await this.loggingBroker.LogErrorAsync(optOutProcessingValidationException);
 
             return optOutProcessingValidationException;
         }
 
-        private OptOutProcessingDependencyValidationException
-            CreateAndLogDependencyValidationException(Xeption exception)
+        private async ValueTask<OptOutProcessingDependencyValidationException>
+            CreateAndLogDependencyValidationExceptionAsync(Xeption exception)
         {
             var optOutProcessingDependencyValidationException =
                 new OptOutProcessingDependencyValidationException(
-                    exception?.InnerException as Xeption);
+                    message: "Opt out processing dependency validation error occurred, please contact support.",
+                    innerException: exception?.InnerException as Xeption);
 
-            this.loggingBroker.LogError(optOutProcessingDependencyValidationException);
+            await this.loggingBroker.LogErrorAsync(optOutProcessingDependencyValidationException);
 
             return optOutProcessingDependencyValidationException;
         }
 
-        private OptOutProcessingDependencyException
-            CreateAndLogDependencyException(Xeption exception)
+        private async ValueTask<OptOutProcessingDependencyException>
+            CreateAndLogDependencyExceptionAsync(Xeption exception)
         {
             var optOutProcessingDependencyException =
-                new OptOutProcessingDependencyException(exception.InnerException as Xeption);
+                new OptOutProcessingDependencyException(
+                    message: "Opt out processing dependency error occurred, please contact support.",
+                    innerException: exception.InnerException as Xeption);
 
-            this.loggingBroker.LogError(optOutProcessingDependencyException);
+            await this.loggingBroker.LogErrorAsync(optOutProcessingDependencyException);
 
             throw optOutProcessingDependencyException;
         }
 
-        private OptOutProcessingServiceException CreateAndLogServiceException(Xeption exception)
+        private async ValueTask<OptOutProcessingServiceException> CreateAndLogServiceExceptionAsync(Xeption exception)
         {
             var optOutProcessingServiceException = new
-                OptOutProcessingServiceException(exception);
+                OptOutProcessingServiceException(
+                message: "Opt out processing service error occurred, please contact support.",
+                innerException: exception);
 
-            this.loggingBroker.LogError(optOutProcessingServiceException);
+            await this.loggingBroker.LogErrorAsync(optOutProcessingServiceException);
 
             return optOutProcessingServiceException;
         }

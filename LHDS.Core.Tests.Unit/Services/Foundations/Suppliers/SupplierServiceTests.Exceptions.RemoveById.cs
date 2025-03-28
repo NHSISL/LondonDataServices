@@ -35,7 +35,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Suppliers
 
             this.storageBrokerMock.Setup(broker =>
                 broker.SelectSupplierByIdAsync(randomSupplier.Id))
-                    .Throws(sqlException);
+                    .ThrowsAsync(sqlException);
 
             // when
             ValueTask<Supplier> addSupplierTask =
@@ -54,7 +54,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Suppliers
                     Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>
-                broker.LogCritical(It.Is(SameExceptionAs(
+                broker.LogCriticalAsync(It.Is(SameExceptionAs(
                     expectedSupplierDependencyException))),
                         Times.Once);
 
@@ -63,7 +63,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Suppliers
                     Times.Never);
 
             this.dateTimeBrokerMock.Verify(broker =>
-                broker.GetCurrentDateTimeOffset(),
+                broker.GetCurrentDateTimeOffsetAsync(),
                     Times.Never);
 
             this.storageBrokerMock.VerifyNoOtherCalls();
@@ -111,7 +111,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Suppliers
                     Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>
-                broker.LogError(It.Is(SameExceptionAs(
+                broker.LogErrorAsync(It.Is(SameExceptionAs(
                     expectedSupplierDependencyValidationException))),
                         Times.Once);
 
@@ -162,7 +162,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Suppliers
                     Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>
-                broker.LogCritical(It.Is(SameExceptionAs(
+                broker.LogCriticalAsync(It.Is(SameExceptionAs(
                     expectedSupplierDependencyException))),
                         Times.Once);
 
@@ -209,7 +209,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Suppliers
                         Times.Once());
 
             this.loggingBrokerMock.Verify(broker =>
-                broker.LogError(It.Is(SameExceptionAs(
+                broker.LogErrorAsync(It.Is(SameExceptionAs(
                     expectedSupplierServiceException))),
                         Times.Once);
 

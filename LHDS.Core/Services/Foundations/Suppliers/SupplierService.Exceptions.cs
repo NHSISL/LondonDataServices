@@ -1,6 +1,6 @@
-// ---------------------------------------------------------------
+// ---------------------------------------------------------
 // Copyright (c) North East London ICB. All rights reserved.
-// ---------------------------------------------------------------
+// ---------------------------------------------------------
 
 using System;
 using System.Linq;
@@ -17,7 +17,7 @@ namespace LHDS.Core.Services.Foundations.Suppliers
     public partial class SupplierService
     {
         private delegate ValueTask<Supplier> ReturningSupplierFunction();
-        private delegate IQueryable<Supplier> ReturningSuppliersFunction();
+        private delegate ValueTask<IQueryable<Supplier>> ReturningSuppliersFunction();
 
         private async ValueTask<Supplier> TryCatch(ReturningSupplierFunction returningSupplierFunction)
         {
@@ -27,151 +27,153 @@ namespace LHDS.Core.Services.Foundations.Suppliers
             }
             catch (NullSupplierException nullSupplierException)
             {
-                throw CreateAndLogValidationException(nullSupplierException);
+                throw await CreateAndLogValidationExceptionAsync(nullSupplierException);
             }
             catch (InvalidSupplierException invalidSupplierException)
             {
-                throw CreateAndLogValidationException(invalidSupplierException);
+                throw await CreateAndLogValidationExceptionAsync(invalidSupplierException);
             }
             catch (SqlException sqlException)
             {
                 var failedSupplierStorageException =
                     new FailedSupplierStorageException(
-                        message: "Failed supplier storage error occurred, please contact support.", 
+                        message: "Failed supplier storage error occurred, please contact support.",
                         innerException: sqlException);
 
-                throw CreateAndLogCriticalDependencyException(failedSupplierStorageException);
+                throw await CreateAndLogCriticalDependencyExceptionAsync(failedSupplierStorageException);
             }
             catch (NotFoundSupplierException notFoundSupplierException)
             {
-                throw CreateAndLogValidationException(notFoundSupplierException);
+                throw await CreateAndLogValidationExceptionAsync(notFoundSupplierException);
             }
             catch (DuplicateKeyException duplicateKeyException)
             {
                 var alreadyExistsSupplierException =
                     new AlreadyExistsSupplierException(
-                        message: "Supplier with the same Id already exists.", 
+                        message: "Supplier with the same Id already exists.",
                         innerException: duplicateKeyException);
 
-                throw CreateAndLogDependencyValidationException(alreadyExistsSupplierException);
+                throw await CreateAndLogDependencyValidationExceptionAsync(alreadyExistsSupplierException);
             }
             catch (ForeignKeyConstraintConflictException foreignKeyConstraintConflictException)
             {
                 var invalidSupplierReferenceException =
                     new InvalidSupplierReferenceException(
-                        message: "Invalid supplier reference error occurred.", 
+                        message: "Invalid supplier reference error occurred.",
                         innerException: foreignKeyConstraintConflictException);
 
-                throw CreateAndLogDependencyValidationException(invalidSupplierReferenceException);
+                throw await CreateAndLogDependencyValidationExceptionAsync(invalidSupplierReferenceException);
             }
             catch (DbUpdateConcurrencyException dbUpdateConcurrencyException)
             {
                 var lockedSupplierException = new LockedSupplierException(
-                    message: "Locked supplier record exception, please try again later", 
+                    message: "Locked supplier record exception, please try again later",
                     innerException: dbUpdateConcurrencyException);
 
-                throw CreateAndLogDependencyValidationException(lockedSupplierException);
+                throw await CreateAndLogDependencyValidationExceptionAsync(lockedSupplierException);
             }
             catch (DbUpdateException databaseUpdateException)
             {
                 var failedSupplierStorageException =
                     new FailedSupplierStorageException(
-                        message: "Failed supplier storage error occurred, please contact support.", 
+                        message: "Failed supplier storage error occurred, please contact support.",
                         innerException: databaseUpdateException);
 
-                throw CreateAndLogDependencyException(failedSupplierStorageException);
+                throw await CreateAndLogDependencyExceptionAsync(failedSupplierStorageException);
             }
             catch (Exception exception)
             {
                 var failedSupplierServiceException =
                     new FailedSupplierServiceException(
-                        message: "Failed supplier service error occurred, please contact support.", 
+                        message: "Failed supplier service error occurred, please contact support.",
                         innerException: exception);
 
-                throw CreateAndLogServiceException(failedSupplierServiceException);
+                throw await CreateAndLogServiceExceptionAsync(failedSupplierServiceException);
             }
         }
 
-        private IQueryable<Supplier> TryCatch(ReturningSuppliersFunction returningSuppliersFunction)
+        private async ValueTask<IQueryable<Supplier>> TryCatch(ReturningSuppliersFunction returningSuppliersFunction)
         {
             try
             {
-                return returningSuppliersFunction();
+                return await returningSuppliersFunction();
             }
             catch (SqlException sqlException)
             {
                 var failedSupplierStorageException =
                     new FailedSupplierStorageException(
-                        message: "Failed supplier storage error occurred, please contact support.", 
+                        message: "Failed supplier storage error occurred, please contact support.",
                         innerException: sqlException);
 
-                throw CreateAndLogCriticalDependencyException(failedSupplierStorageException);
+                throw await CreateAndLogCriticalDependencyExceptionAsync(failedSupplierStorageException);
             }
             catch (Exception exception)
             {
                 var failedSupplierServiceException =
                     new FailedSupplierServiceException(
-                        message: "Failed supplier service error occurred, please contact support.", 
+                        message: "Failed supplier service error occurred, please contact support.",
                         innerException: exception);
 
-                throw CreateAndLogServiceException(failedSupplierServiceException);
+                throw await CreateAndLogServiceExceptionAsync(failedSupplierServiceException);
             }
         }
 
-        private SupplierValidationException CreateAndLogValidationException(Xeption exception)
+        private async ValueTask<SupplierValidationException> CreateAndLogValidationExceptionAsync(Xeption exception)
         {
             var supplierValidationException = new SupplierValidationException(
                 message: "Supplier validation errors occurred, please try again.",
                 innerException: exception);
 
-            this.loggingBroker.LogError(supplierValidationException);
+            await this.loggingBroker.LogErrorAsync(supplierValidationException);
 
             return supplierValidationException;
         }
 
-        private SupplierDependencyException CreateAndLogCriticalDependencyException(Xeption exception)
+        private async ValueTask<SupplierDependencyException> 
+            CreateAndLogCriticalDependencyExceptionAsync(Xeption exception)
         {
             var supplierDependencyException = new SupplierDependencyException(
-                message: "Supplier dependency error occurred, please contact support.", 
+                message: "Supplier dependency error occurred, please contact support.",
                 innerException: exception);
 
-            this.loggingBroker.LogCritical(supplierDependencyException);
+            await this.loggingBroker.LogCriticalAsync(supplierDependencyException);
 
             return supplierDependencyException;
         }
 
-        private SupplierDependencyValidationException CreateAndLogDependencyValidationException(Xeption exception)
+        private async ValueTask<SupplierDependencyValidationException> 
+            CreateAndLogDependencyValidationExceptionAsync(Xeption exception)
         {
             var supplierDependencyValidationException =
                 new SupplierDependencyValidationException(
-                    message: "Supplier dependency error occurred, please contact support.", 
+                    message: "Supplier dependency error occurred, please contact support.",
                     innerException: exception);
 
-            this.loggingBroker.LogError(supplierDependencyValidationException);
+            await this.loggingBroker.LogErrorAsync(supplierDependencyValidationException);
 
             return supplierDependencyValidationException;
         }
 
-        private SupplierDependencyException CreateAndLogDependencyException(
+        private async ValueTask<SupplierDependencyException> CreateAndLogDependencyExceptionAsync(
             Xeption exception)
         {
             var supplierDependencyException = new SupplierDependencyException(
-                message: "Supplier dependency error occurred, please contact support.", 
+                message: "Supplier dependency error occurred, please contact support.",
                 innerException: exception);
 
-            this.loggingBroker.LogError(supplierDependencyException);
+            await this.loggingBroker.LogErrorAsync(supplierDependencyException);
 
             return supplierDependencyException;
         }
 
-        private SupplierServiceException CreateAndLogServiceException(
+        private async ValueTask<SupplierServiceException> CreateAndLogServiceExceptionAsync(
             Xeption exception)
         {
             var supplierServiceException = new SupplierServiceException(
-                message: "Supplier service error occurred, please contact support.", 
+                message: "Supplier service error occurred, please contact support.",
                 innerException: exception);
 
-            this.loggingBroker.LogError(supplierServiceException);
+            await this.loggingBroker.LogErrorAsync(supplierServiceException);
 
             return supplierServiceException;
         }

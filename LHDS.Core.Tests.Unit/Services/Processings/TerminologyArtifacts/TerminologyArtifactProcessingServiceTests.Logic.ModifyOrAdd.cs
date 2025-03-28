@@ -5,6 +5,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using FluentAssertions;
 using Force.DeepCloner;
 using LHDS.Core.Models.Foundations.TerminologyArtifacts;
 using Moq;
@@ -22,21 +23,22 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.TerminologyArtifacts
             TerminologyArtifact randomTerminologyArtifacts = CreateRandomTerminologyArtifact();
             TerminologyArtifact storageTerminologyArtifacts = randomTerminologyArtifacts;
             TerminologyArtifact modifiedTerminologyArtifact = storageTerminologyArtifacts.DeepClone();
-            modifiedTerminologyArtifact.Name = modifiedTerminologyArtifact.Name + "Modified";
             modifiedTerminologyArtifact.UpdatedDate = randomDateTimeOffset;
+            modifiedTerminologyArtifact.Name = modifiedTerminologyArtifact.Name + "Modified";
             modifiedTerminologyArtifact.IsDownloaded = false;
+            storageTerminologyArtifacts.Name = storageTerminologyArtifacts.Name + "Modified";
             TerminologyArtifact updatedTerminologyArtifacts = modifiedTerminologyArtifact.DeepClone();
 
             this.dateTimeBrokerMock.Setup(broker =>
-                broker.GetCurrentDateTimeOffset())
-                    .Returns(randomDateTimeOffset);
+                broker.GetCurrentDateTimeOffsetAsync())
+                    .ReturnsAsync(randomDateTimeOffset);
 
             List<TerminologyArtifact> terminologyArtifacts =
                 new List<TerminologyArtifact> { storageTerminologyArtifacts };
 
             this.terminologyArtifactServiceMock.Setup(service =>
-                service.RetrieveAllTerminologyArtifacts())
-                    .Returns(value: terminologyArtifacts.AsQueryable());
+                service.RetrieveAllTerminologyArtifactsAsync())
+                    .ReturnsAsync(value: terminologyArtifacts.AsQueryable());
 
             this.terminologyArtifactServiceMock.Setup(service =>
                 service.ModifyTerminologyArtifactAsync(modifiedTerminologyArtifact))
@@ -48,16 +50,17 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.TerminologyArtifacts
 
             // then
             this.dateTimeBrokerMock.Verify(broker =>
-                broker.GetCurrentDateTimeOffset(),
+                broker.GetCurrentDateTimeOffsetAsync(),
+                     Times.Once);
+
+            this.terminologyArtifactServiceMock.Verify(service =>
+                service.RetrieveAllTerminologyArtifactsAsync(),
                     Times.Once);
 
             this.terminologyArtifactServiceMock.Verify(service =>
-                service.RetrieveAllTerminologyArtifacts(),
-                    Times.Once);
-
-            this.terminologyArtifactServiceMock.Verify(service =>
-                service.ModifyTerminologyArtifactAsync(modifiedTerminologyArtifact),
-                    Times.Once);
+                service.ModifyTerminologyArtifactAsync(It.Is(SameTerminologyArtifactAs(
+                     modifiedTerminologyArtifact))),
+                         Times.Once);
 
             this.terminologyArtifactServiceMock.Verify(service =>
                 service.AddTerminologyArtifactAsync(modifiedTerminologyArtifact),
@@ -78,8 +81,8 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.TerminologyArtifacts
             List<TerminologyArtifact> terminologyArtifacts = new List<TerminologyArtifact>();
 
             this.terminologyArtifactServiceMock.Setup(service =>
-                service.RetrieveAllTerminologyArtifacts())
-                    .Returns(value: terminologyArtifacts.AsQueryable());
+                service.RetrieveAllTerminologyArtifactsAsync())
+                    .ReturnsAsync(value: terminologyArtifacts.AsQueryable());
 
             this.terminologyArtifactServiceMock.Setup(service =>
                 service.AddTerminologyArtifactAsync(inputTerminologyArtifact))
@@ -91,12 +94,12 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.TerminologyArtifacts
 
             // Then
             this.terminologyArtifactServiceMock.Verify(service =>
-                service.RetrieveAllTerminologyArtifacts(),
+                service.RetrieveAllTerminologyArtifactsAsync(),
                     Times.Once);
 
             this.terminologyArtifactServiceMock.Verify(service =>
-            service.AddTerminologyArtifactAsync(inputTerminologyArtifact),
-            Times.Once);
+                service.AddTerminologyArtifactAsync(inputTerminologyArtifact),
+                    Times.Once);
 
             this.terminologyArtifactServiceMock.Verify(service =>
                 service.ModifyTerminologyArtifactAsync(inputTerminologyArtifact),

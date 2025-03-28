@@ -21,7 +21,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.EmisLandings
         {
             // given
             Guid ingestionTrackingId = Guid.NewGuid();
-            var someFileName = GetRandomMessage();
+            var someFileName = GetRandomString();
 
             var expectedDependencyException =
                 new EmisLandingOrchestrationDependencyValidationException(
@@ -32,7 +32,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.EmisLandings
 
             this.ingestionTrackingProcessingServiceMock.Setup(service =>
                 service.RetrieveIngestionTrackingByIdAsync(It.IsAny<Guid>()))
-                    .Throws(dependencyValidationException);
+                    .ThrowsAsync(dependencyValidationException);
 
             // when
             ValueTask redecryptTask = this.emisLandingOrchestrationService
@@ -50,7 +50,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.EmisLandings
                     Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>
-               broker.LogError(It.Is(SameExceptionAs(
+               broker.LogErrorAsync(It.Is(SameExceptionAs(
                    expectedDependencyException))),
                        Times.Once);
 
@@ -71,7 +71,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.EmisLandings
         {
             // given
             Guid ingestionTrackingId = Guid.NewGuid();
-            var someFileName = GetRandomMessage();
+            var someFileName = GetRandomString();
 
             var expectedDependencyException =
                 new EmisLandingOrchestrationDependencyException(
@@ -82,7 +82,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.EmisLandings
 
             this.ingestionTrackingProcessingServiceMock.Setup(service =>
                 service.RetrieveIngestionTrackingByIdAsync(It.IsAny<Guid>()))
-                    .Throws(dependencyException);
+                    .ThrowsAsync(dependencyException);
 
             // when
             ValueTask redecryptTask = this.emisLandingOrchestrationService
@@ -100,7 +100,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.EmisLandings
                     Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>
-               broker.LogError(It.Is(SameExceptionAs(
+               broker.LogErrorAsync(It.Is(SameExceptionAs(
                    expectedDependencyException))),
                        Times.Once);
 
@@ -133,7 +133,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.EmisLandings
 
             this.ingestionTrackingProcessingServiceMock.Setup(service =>
                 service.RetrieveIngestionTrackingByIdAsync(It.IsAny<Guid>()))
-                    .Throws(serviceException);
+                    .ThrowsAsync(serviceException);
 
             // when
             ValueTask redecryptTask = this.emisLandingOrchestrationService
@@ -151,7 +151,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.EmisLandings
                     Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>
-                broker.LogError(It.Is(SameExceptionAs(
+                broker.LogErrorAsync(It.Is(SameExceptionAs(
                     expectedEmisLandingOrchestrationServiceException))),
                         Times.Once);
 

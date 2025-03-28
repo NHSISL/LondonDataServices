@@ -1,6 +1,6 @@
-﻿// ---------------------------------------------------------------
+﻿// ---------------------------------------------------------
 // Copyright (c) North East London ICB. All rights reserved.
-// ---------------------------------------------------------------
+// ---------------------------------------------------------
 
 using System;
 using System.Threading.Tasks;
@@ -24,59 +24,59 @@ namespace LHDS.Core.Services.Orchestrations.Tpp
             }
             catch (NullDocumentTppLandingException nullDocumentTppLandingException)
             {
-                throw CreateAndLogValidationException(nullDocumentTppLandingException);
+                throw await CreateAndLogValidationExceptionAsync(nullDocumentTppLandingException);
             }
             catch (InvalidArgumentTppLandingOrchestrationException invalidArgumentTppLandingOrchestrationException)
             {
-                throw CreateAndLogValidationException(invalidArgumentTppLandingOrchestrationException);
+                throw await CreateAndLogValidationExceptionAsync(invalidArgumentTppLandingOrchestrationException);
             }
             catch (DocumentValidationException documentValidationException)
             {
-                throw CreateAndLogDependencyValidationException(documentValidationException);
+                throw await CreateAndLogDependencyValidationExceptionAsync(documentValidationException);
             }
             catch (DocumentDependencyValidationException documentDependencyValidationException)
             {
-                throw CreateAndLogDependencyValidationException(documentDependencyValidationException);
+                throw await CreateAndLogDependencyValidationExceptionAsync(documentDependencyValidationException);
             }
             catch (IngestionTrackingValidationException ingestionTrackingValidationException)
             {
-                throw CreateAndLogDependencyValidationException(ingestionTrackingValidationException);
+                throw await CreateAndLogDependencyValidationExceptionAsync(ingestionTrackingValidationException);
             }
             catch (IngestionTrackingDependencyValidationException ingestionTrackingDependencyValidationException)
             {
-                throw CreateAndLogDependencyValidationException(ingestionTrackingDependencyValidationException);
+                throw await CreateAndLogDependencyValidationExceptionAsync(ingestionTrackingDependencyValidationException);
             }
             catch (IngestionTrackingAuditValidationException auditValidationException)
             {
-                throw CreateAndLogDependencyValidationException(auditValidationException);
+                throw await CreateAndLogDependencyValidationExceptionAsync(auditValidationException);
             }
             catch (IngestionTrackingAuditDependencyValidationException auditDependencyValidationException)
             {
-                throw CreateAndLogDependencyValidationException(auditDependencyValidationException);
+                throw await CreateAndLogDependencyValidationExceptionAsync(auditDependencyValidationException);
             }
             catch (DocumentDependencyException documentDependencyException)
             {
-                throw CreateAndLogDependencyException(documentDependencyException);
+                throw await CreateAndLogDependencyExceptionAsync(documentDependencyException);
             }
             catch (DocumentServiceException documentServiceException)
             {
-                throw CreateAndLogDependencyException(documentServiceException);
+                throw await CreateAndLogDependencyExceptionAsync(documentServiceException);
             }
             catch (IngestionTrackingDependencyException ingestionTrackingDependencyException)
             {
-                throw CreateAndLogDependencyException(ingestionTrackingDependencyException);
+                throw await CreateAndLogDependencyExceptionAsync(ingestionTrackingDependencyException);
             }
             catch (IngestionTrackingServiceException ingestionTrackingServiceException)
             {
-                throw CreateAndLogDependencyException(ingestionTrackingServiceException);
+                throw await CreateAndLogDependencyExceptionAsync(ingestionTrackingServiceException);
             }
             catch (IngestionTrackingAuditDependencyException auditDependencyException)
             {
-                throw CreateAndLogDependencyException(auditDependencyException);
+                throw await CreateAndLogDependencyExceptionAsync(auditDependencyException);
             }
             catch (IngestionTrackingAuditServiceException auditServiceException)
             {
-                throw CreateAndLogDependencyException(auditServiceException);
+                throw await CreateAndLogDependencyExceptionAsync(auditServiceException);
             }
             catch (Exception exception)
             {
@@ -85,50 +85,51 @@ namespace LHDS.Core.Services.Orchestrations.Tpp
                         message: "Failed TPP landing orchestration service error occurred, please contact support.",
                         exception);
 
-                throw CreateAndLogServiceException(failedTppLandingOrchestrationServiceException);
+                throw await CreateAndLogServiceExceptionAsync(failedTppLandingOrchestrationServiceException);
             }
         }
 
-        private TppLandingOrchestrationValidationException CreateAndLogValidationException(Xeption exception)
+        private async ValueTask<TppLandingOrchestrationValidationException> 
+            CreateAndLogValidationExceptionAsync(Xeption exception)
         {
             var tppLandingOrchestrationValidationException =
                 new TppLandingOrchestrationValidationException(
                     message: "TPP landing orchestration validation errors occured, please try again.",
                     innerException: exception);
 
-            this.loggingBroker.LogError(tppLandingOrchestrationValidationException);
+            await this.loggingBroker.LogErrorAsync(tppLandingOrchestrationValidationException);
 
             return tppLandingOrchestrationValidationException;
         }
 
-        private TppLandingOrchestrationDependencyValidationException
-            CreateAndLogDependencyValidationException(Xeption exception)
+        private async ValueTask<TppLandingOrchestrationDependencyValidationException>
+            CreateAndLogDependencyValidationExceptionAsync(Xeption exception)
         {
             var tppLandingOrchestrationDependencyValidationException =
                 new TppLandingOrchestrationDependencyValidationException(
                     message: "TPP landing orchestration dependency validation error occurred, fix the errors and try again.",
                     exception.InnerException as Xeption);
 
-            this.loggingBroker.LogError(tppLandingOrchestrationDependencyValidationException);
+            await this.loggingBroker.LogErrorAsync(tppLandingOrchestrationDependencyValidationException);
 
             return tppLandingOrchestrationDependencyValidationException;
         }
 
-        private TppLandingOrchestrationDependencyException
-            CreateAndLogDependencyException(Xeption exception)
+        private async ValueTask<TppLandingOrchestrationDependencyException>
+            CreateAndLogDependencyExceptionAsync(Xeption exception)
         {
             var tppLandingOrchestrationDependencyException =
                 new TppLandingOrchestrationDependencyException(
                     message: "TPP landing orchestration dependency error occurred, fix the errors and try again.",
                     innerException: exception.InnerException as Xeption);
 
-            this.loggingBroker.LogError(tppLandingOrchestrationDependencyException);
+            await this.loggingBroker.LogErrorAsync(tppLandingOrchestrationDependencyException);
 
             throw tppLandingOrchestrationDependencyException;
         }
 
-        private TppLandingOrchestrationServiceException
-           CreateAndLogServiceException(Xeption exception)
+        private async ValueTask<TppLandingOrchestrationServiceException>
+           CreateAndLogServiceExceptionAsync(Xeption exception)
         {
             var
                 tppLandingOrchestrationServiceException =
@@ -136,7 +137,7 @@ namespace LHDS.Core.Services.Orchestrations.Tpp
                     message: "TPP landing orchestration service error occurred, please contact support.",
                     exception);
 
-            this.loggingBroker.LogError(tppLandingOrchestrationServiceException);
+            await this.loggingBroker.LogErrorAsync(tppLandingOrchestrationServiceException);
 
             throw tppLandingOrchestrationServiceException;
         }

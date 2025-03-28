@@ -4,6 +4,8 @@
 
 using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
+using LHDS.Core.Models.Brokers.Securities;
 using LHDS.Core.Models.Foundations.Addresses;
 using LHDS.Core.Models.Foundations.Addresses.Exceptions;
 
@@ -11,9 +13,10 @@ namespace LHDS.Core.Services.Foundations.Addresses
 {
     public partial class AddressService
     {
-        private void ValidateAddressOnAdd(Address address)
+        private async ValueTask ValidateAddressOnAddAsync(Address address)
         {
             ValidateAddressIsNotNull(address);
+            EntraUser currentUser = await this.securityBroker.GetCurrentUserAsync();
 
             Validate(
                 (Rule: IsInvalid(address.Id), Parameter: nameof(Address.Id)),
@@ -21,6 +24,11 @@ namespace LHDS.Core.Services.Foundations.Addresses
                 (Rule: IsInvalid(address.CreatedBy), Parameter: nameof(Address.CreatedBy)),
                 (Rule: IsInvalid(address.UpdatedDate), Parameter: nameof(Address.UpdatedDate)),
                 (Rule: IsInvalid(address.UpdatedBy), Parameter: nameof(Address.UpdatedBy)),
+
+                (Rule: IsNotSame(
+                    first: currentUser.EntraUserId,
+                    second: address.CreatedBy),
+                Parameter: nameof(Address.CreatedBy)),
 
                 (Rule: IsNotSame(
                     firstDate: address.UpdatedDate,
@@ -34,7 +42,7 @@ namespace LHDS.Core.Services.Foundations.Addresses
                     secondName: nameof(Address.CreatedBy)),
                 Parameter: nameof(Address.UpdatedBy)),
 
-                (Rule: IsNotRecent(address.CreatedDate), Parameter: nameof(Address.CreatedDate)));
+                (Rule: await IsNotRecentAsync(address.CreatedDate), Parameter: nameof(Address.CreatedDate)));
         }
 
         private void ValidateOnBulkAddAddresses(List<Address> addresses, string fileName)
@@ -44,9 +52,10 @@ namespace LHDS.Core.Services.Foundations.Addresses
                 (Rule: IsInvalid(fileName), Parameter: nameof(fileName)));
         }
 
-        private void ValidateAddressOnModify(Address address)
+        private async ValueTask ValidateAddressOnModifyAsync(Address address)
         {
             ValidateAddressIsNotNull(address);
+            EntraUser currentUser = await this.securityBroker.GetCurrentUserAsync();
 
             Validate(
                 (Rule: IsInvalid(address.Id), Parameter: nameof(Address.Id)),
@@ -55,13 +64,18 @@ namespace LHDS.Core.Services.Foundations.Addresses
                 (Rule: IsInvalid(address.UpdatedDate), Parameter: nameof(Address.UpdatedDate)),
                 (Rule: IsInvalid(address.UpdatedBy), Parameter: nameof(Address.UpdatedBy)),
 
+                (Rule: IsNotSame(
+                    first: currentUser.EntraUserId,
+                    second: address.UpdatedBy),
+                Parameter: nameof(Address.UpdatedBy)),
+
                 (Rule: IsSame(
                     firstDate: address.UpdatedDate,
                     secondDate: address.CreatedDate,
                     secondDateName: nameof(Address.CreatedDate)),
                 Parameter: nameof(Address.UpdatedDate)),
 
-                (Rule: IsNotRecent(address.UpdatedDate), Parameter: nameof(address.UpdatedDate)));
+                (Rule: await IsNotRecentAsync(address.UpdatedDate), Parameter: nameof(address.UpdatedDate)));
         }
 
         public void ValidateAddressId(Guid addressId) =>
@@ -142,6 +156,14 @@ namespace LHDS.Core.Services.Foundations.Addresses
             };
 
         private static dynamic IsNotSame(
+           string first,
+           string second) => new
+           {
+               Condition = first != second,
+               Message = $"Expected value to be '{first}' but found '{second}'."
+           };
+
+        private static dynamic IsNotSame(
             DateTimeOffset firstDate,
             DateTimeOffset secondDate,
             string secondDateName) => new
@@ -168,16 +190,16 @@ namespace LHDS.Core.Services.Foundations.Addresses
                Message = $"Text is not the same as {secondName}"
            };
 
-        private dynamic IsNotRecent(DateTimeOffset date) => new
+        private async ValueTask<dynamic> IsNotRecentAsync(DateTimeOffset date) => new
         {
-            Condition = IsDateNotRecent(date),
+            Condition = await IsDateNotRecentAsync(date),
             Message = "Date is not recent"
         };
 
-        private bool IsDateNotRecent(DateTimeOffset date)
+        private async ValueTask<bool> IsDateNotRecentAsync(DateTimeOffset date)
         {
             DateTimeOffset currentDateTime =
-                this.dateTimeBroker.GetCurrentDateTimeOffset();
+                await this.dateTimeBroker.GetCurrentDateTimeOffsetAsync();
 
             TimeSpan timeDifference = currentDateTime.Subtract(date);
             TimeSpan oneMinute = TimeSpan.FromMinutes(1);

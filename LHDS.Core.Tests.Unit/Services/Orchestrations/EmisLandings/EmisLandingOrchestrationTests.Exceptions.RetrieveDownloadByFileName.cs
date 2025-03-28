@@ -25,7 +25,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.EmisLandings
             // given
             Stream someStream = new MemoryStream();
             SubscriberCredential someSubscriberCredential = CreateRandomSubscriberCredential();
-            var someFileName = GetRandomMessage();
+            var someFileName = GetRandomString();
 
             var expectedDependencyException =
                 new EmisLandingOrchestrationDependencyValidationException(
@@ -36,7 +36,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.EmisLandings
 
             this.downloadProcessingServiceMock.Setup(service =>
                 service.RetrieveDownloadByFileNameAsync(It.IsAny<Download>()))
-                    .Throws(dependancyValidationException);
+                    .ThrowsAsync(dependancyValidationException);
 
             // when
             ValueTask retrieveDownloadByFileNameTask = this.emisLandingOrchestrationService
@@ -57,7 +57,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.EmisLandings
                     Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>
-               broker.LogError(It.Is(SameExceptionAs(
+               broker.LogErrorAsync(It.Is(SameExceptionAs(
                    expectedDependencyException))),
                        Times.Once);
 
@@ -79,7 +79,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.EmisLandings
             // given
             Stream someStream = new MemoryStream();
             SubscriberCredential someSubscriberCredential = CreateRandomSubscriberCredential();
-            string someFileName = GetRandomMessage();
+            string someFileName = GetRandomString();
 
             var expectedDependencyException =
                 new EmisLandingOrchestrationDependencyException(
@@ -109,7 +109,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.EmisLandings
                     Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>
-               broker.LogError(It.Is(SameExceptionAs(
+               broker.LogErrorAsync(It.Is(SameExceptionAs(
                    expectedDependencyException))),
                        Times.Once);
 
@@ -129,7 +129,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.EmisLandings
             //Given
             Stream someStream = new MemoryStream();
             SubscriberCredential someSubscriberCredential = CreateRandomSubscriberCredential();
-            var someFileName = GetRandomMessage();
+            var someFileName = GetRandomString();
             var serviceException = new Exception();
 
             var failedEmisLandingOrchestrationServiceException =
@@ -144,7 +144,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.EmisLandings
 
             this.downloadProcessingServiceMock.Setup(service =>
                 service.RetrieveDownloadByFileNameAsync(It.IsAny<Download>()))
-                    .Throws(serviceException);
+                    .ThrowsAsync(serviceException);
 
             // when
             ValueTask retrieveDownloadByFileNameTask = this.emisLandingOrchestrationService
@@ -165,7 +165,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.EmisLandings
                     Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>
-                broker.LogError(It.Is(SameExceptionAs(
+                broker.LogErrorAsync(It.Is(SameExceptionAs(
                     expectedEmisLandingOrchestrationServiceException))),
                         Times.Once);
 

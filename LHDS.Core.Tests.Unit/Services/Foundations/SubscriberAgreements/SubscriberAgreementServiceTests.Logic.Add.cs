@@ -6,6 +6,7 @@ using System;
 using System.Threading.Tasks;
 using FluentAssertions;
 using Force.DeepCloner;
+using LHDS.Core.Models.Brokers.Securities;
 using LHDS.Core.Models.Foundations.SubscriberAgreements;
 using Moq;
 using Xunit;
@@ -18,17 +19,23 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.SubscriberAgreements
         public async Task ShouldAddSubscriberAgreementAsync()
         {
             // given
-            DateTimeOffset randomDateTimeOffset =
-                GetRandomDateTimeOffset();
+            DateTimeOffset randomDateTimeOffset = GetRandomDateTimeOffset();
+            EntraUser randomEntraUser = CreateRandomEntraUser();
 
-            SubscriberAgreement randomSubscriberAgreement = CreateRandomSubscriberAgreement(randomDateTimeOffset);
+            SubscriberAgreement randomSubscriberAgreement = 
+                CreateRandomSubscriberAgreement(randomDateTimeOffset, randomEntraUser.EntraUserId);
+
             SubscriberAgreement inputSubscriberAgreement = randomSubscriberAgreement;
             SubscriberAgreement storageSubscriberAgreement = inputSubscriberAgreement;
             SubscriberAgreement expectedSubscriberAgreement = storageSubscriberAgreement.DeepClone();
 
             this.dateTimeBrokerMock.Setup(broker =>
-                broker.GetCurrentDateTimeOffset())
-                    .Returns(randomDateTimeOffset);
+                broker.GetCurrentDateTimeOffsetAsync())
+                    .ReturnsAsync(randomDateTimeOffset);
+
+            this.securityBrokerMock.Setup(broker =>
+                broker.GetCurrentUserAsync())
+                    .ReturnsAsync(randomEntraUser);
 
             this.storageBrokerMock.Setup(broker =>
                 broker.InsertSubscriberAgreementAsync(inputSubscriberAgreement))
@@ -42,8 +49,12 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.SubscriberAgreements
             actualSubscriberAgreement.Should().BeEquivalentTo(expectedSubscriberAgreement);
 
             this.dateTimeBrokerMock.Verify(broker =>
-                broker.GetCurrentDateTimeOffset(),
-                    Times.Once());
+                broker.GetCurrentDateTimeOffsetAsync(),
+                    Times.Exactly(2));
+
+            this.securityBrokerMock.Verify(broker =>
+                broker.GetCurrentUserAsync(),
+                    Times.Exactly(2));
 
             this.storageBrokerMock.Verify(broker =>
                 broker.InsertSubscriberAgreementAsync(inputSubscriberAgreement),

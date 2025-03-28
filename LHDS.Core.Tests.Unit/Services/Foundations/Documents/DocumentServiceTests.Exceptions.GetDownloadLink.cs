@@ -32,8 +32,8 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Documents
                      innerException: failedDocumentRequestException);
 
             this.dateTimeBrokerMock.Setup(broker =>
-                 broker.GetCurrentDateTimeOffset())
-                    .Throws(requestFailedException);
+                 broker.GetCurrentDateTimeOffsetAsync())
+                    .ThrowsAsync(requestFailedException);
 
             // when
             ValueTask<string> downloadLinkTask = this.documentService
@@ -46,11 +46,11 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Documents
             actualDependencyException.Should().BeEquivalentTo(expectedDependencyException);
 
             this.dateTimeBrokerMock.Verify(broker =>
-                 broker.GetCurrentDateTimeOffset(),
+                 broker.GetCurrentDateTimeOffsetAsync(),
                      Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>
-                 broker.LogError(It.Is(SameExceptionAs(
+                 broker.LogErrorAsync(It.Is(SameExceptionAs(
                      expectedDependencyException))),
                          Times.Once);
 
@@ -76,8 +76,8 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Documents
                     innerException: failedDocumentServiceException);
 
             this.dateTimeBrokerMock.Setup(broker =>
-                 broker.GetCurrentDateTimeOffset())
-                    .Throws(serviceException);
+                 broker.GetCurrentDateTimeOffsetAsync())
+                    .ThrowsAsync(serviceException);
 
             // when
             ValueTask<string> downloadLinkTask = this.documentService
@@ -90,11 +90,11 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Documents
             actualServiceException.Should().BeEquivalentTo(expectedDocumentServiceException);
 
             this.dateTimeBrokerMock.Verify(broker =>
-                 broker.GetCurrentDateTimeOffset(),
+                 broker.GetCurrentDateTimeOffsetAsync(),
                      Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>
-                 broker.LogError(It.Is(SameExceptionAs(
+                 broker.LogErrorAsync(It.Is(SameExceptionAs(
                      expectedDocumentServiceException))),
                          Times.Once);
 

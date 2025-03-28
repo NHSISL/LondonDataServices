@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 using LHDS.Core.Models.Foundations.DataTypes;
 using LHDS.Core.Models.Foundations.DataTypes.Exceptions;
 using LHDS.Core.Services.Foundations.DataTypes;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.OData.Query;
 using RESTFulSense.Controllers;
@@ -17,6 +18,7 @@ using Microsoft.AspNetCore.Authorization;
 
 namespace LHDS.AdminPortal.Api.Controllers
 {
+    [Authorize(Roles = "ISL.LDS.AdminApi.Configurations,ISL.LDS.AdminApi.Administrators")]
     [ApiController]
     [Route("api/[controller]")]
     public class DataTypesController : RESTFulController
@@ -26,6 +28,7 @@ namespace LHDS.AdminPortal.Api.Controllers
         public DataTypesController(IDataTypeService dataTypeService) =>
             this.dataTypeService = dataTypeService;
 
+        [Authorize(Roles = "ISL.LDS.AdminApi.Configurations,ISL.LDS.AdminApi.Administrators")]
         [HttpPost]
         public async ValueTask<ActionResult<DataType>> PostDataTypeAsync(DataType dataType)
         {
@@ -67,15 +70,13 @@ namespace LHDS.AdminPortal.Api.Controllers
 #if DEBUG
         [EnableQuery(PageSize = 5000)]
 #endif
-#if RELEASE
-        [Authorize(Roles = "ISL.LDS.AdminApi.Administrators, lhds.Api.DataTypes, ISL.LDS.AdminApi.ReadOnly")]
-#endif
-        public ActionResult<IQueryable<DataType>> Get()
+        [Authorize(Roles = "ISL.LDS.AdminApi.Configurations,ISL.LDS.AdminApi.Administrators,ISL.LDS.AdminApi.ReadOnly")]
+        public async ValueTask<ActionResult<IQueryable<DataType>>> Get()
         {
             try
             {
                 IQueryable<DataType> retrievedDataTypes =
-                    this.dataTypeService.RetrieveAllDataTypes();
+                    await this.dataTypeService.RetrieveAllDataTypesAsync();
 
                 return Ok(retrievedDataTypes);
             }
@@ -89,6 +90,7 @@ namespace LHDS.AdminPortal.Api.Controllers
             }
         }
 
+        [Authorize(Roles = "ISL.LDS.AdminApi.Configurations,ISL.LDS.AdminApi.Administrators,ISL.LDS.AdminApi.ReadOnly")]
         [HttpGet("{dataTypeId}")]
         public async ValueTask<ActionResult<DataType>> GetDataTypeByIdAsync(Guid dataTypeId)
         {
@@ -117,6 +119,7 @@ namespace LHDS.AdminPortal.Api.Controllers
             }
         }
 
+        [Authorize(Roles = "ISL.LDS.AdminApi.Configurations,ISL.LDS.AdminApi.Administrators")]
         [HttpPut]
         public async ValueTask<ActionResult<DataType>> PutDataTypeAsync(DataType dataType)
         {
@@ -156,6 +159,7 @@ namespace LHDS.AdminPortal.Api.Controllers
             }
         }
 
+        [Authorize(Roles = "ISL.LDS.AdminApi.Configurations,ISL.LDS.AdminApi.Administrators")]
         [HttpDelete("{dataTypeId}")]
         public async ValueTask<ActionResult<DataType>> DeleteDataTypeByIdAsync(Guid dataTypeId)
         {

@@ -28,8 +28,8 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Suppliers
             Guid supplierId = inputSupplier.Id;
 
             this.dateTimeBrokerMock.Setup(broker =>
-                broker.GetCurrentDateTimeOffset())
-                    .Returns(randomDateTimeOffset);
+                broker.GetCurrentDateTimeOffsetAsync())
+                    .ReturnsAsync(randomDateTimeOffset);
 
             this.storageBrokerMock.Setup(broker =>
                 broker.SelectSupplierByIdAsync(supplierId))
@@ -47,7 +47,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Suppliers
             actualSupplier.Should().BeEquivalentTo(expectedSupplier);
 
             this.dateTimeBrokerMock.Verify(broker =>
-                broker.GetCurrentDateTimeOffset(),
+                broker.GetCurrentDateTimeOffsetAsync(),
                     Times.Once);
 
             this.storageBrokerMock.Verify(broker =>

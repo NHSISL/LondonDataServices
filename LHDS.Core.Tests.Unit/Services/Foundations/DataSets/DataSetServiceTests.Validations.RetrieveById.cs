@@ -46,7 +46,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.DataSets
                 .BeEquivalentTo(expectedDataSetValidationException);
 
             this.loggingBrokerMock.Verify(broker =>
-                broker.LogError(It.Is(SameExceptionAs(
+                broker.LogErrorAsync(It.Is(SameExceptionAs(
                     expectedDataSetValidationException))),
                         Times.Once);
 
@@ -54,9 +54,10 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.DataSets
                 broker.SelectDataSetByIdAsync(It.IsAny<Guid>()),
                     Times.Never);
 
-            this.loggingBrokerMock.VerifyNoOtherCalls();
             this.storageBrokerMock.VerifyNoOtherCalls();
+            this.loggingBrokerMock.VerifyNoOtherCalls();
             this.dateTimeBrokerMock.VerifyNoOtherCalls();
+            this.securityBrokerMock.VerifyNoOtherCalls();
         }
 
         [Fact]
@@ -94,13 +95,14 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.DataSets
                     Times.Once());
 
             this.loggingBrokerMock.Verify(broker =>
-                broker.LogError(It.Is(SameExceptionAs(
+                broker.LogErrorAsync(It.Is(SameExceptionAs(
                     expectedDataSetValidationException))),
                         Times.Once);
 
             this.storageBrokerMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
             this.dateTimeBrokerMock.VerifyNoOtherCalls();
+            this.securityBrokerMock.VerifyNoOtherCalls();
         }
     }
 }

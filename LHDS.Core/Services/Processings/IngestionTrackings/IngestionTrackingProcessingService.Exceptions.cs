@@ -1,8 +1,9 @@
-﻿// ---------------------------------------------------------------
+﻿// ---------------------------------------------------------
 // Copyright (c) North East London ICB. All rights reserved.
-// ---------------------------------------------------------------
+// ---------------------------------------------------------
 
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using LHDS.Core.Models.Foundations.IngestionTrackings;
@@ -15,7 +16,8 @@ namespace LHDS.Core.Services.Processings.IngestionTrackings
     public partial class IngestionTrackingProcessingService : IIngestionTrackingProcessingService
     {
         private delegate ValueTask<IngestionTracking> ReturningIngestionTrackingProcessingFunction();
-        private delegate IQueryable<IngestionTracking> ReturningIngestionTrackingsFunction();
+        private delegate ValueTask<List<string>> ReturningStringListProcessingFunction();
+        private delegate ValueTask<IQueryable<IngestionTracking>> ReturningIngestionTrackingsFunction();
 
         private async ValueTask<IngestionTracking> TryCatch(
             ReturningIngestionTrackingProcessingFunction returningIngestionTrackingProcessingFunction)
@@ -26,28 +28,28 @@ namespace LHDS.Core.Services.Processings.IngestionTrackings
             }
             catch (NullIngestionTrackingProcessingException nullIngestionTrackingException)
             {
-                throw CreateAndLogValidationException(nullIngestionTrackingException);
+                throw await CreateAndLogValidationExceptionAsync(nullIngestionTrackingException);
             }
             catch (InvalidArgumentIngestionTrackingProcessingException
                 invalidArgumentIngestionTrackingProcessingException)
             {
-                throw CreateAndLogValidationException(invalidArgumentIngestionTrackingProcessingException);
+                throw await CreateAndLogValidationExceptionAsync(invalidArgumentIngestionTrackingProcessingException);
             }
             catch (IngestionTrackingValidationException ingestionTrackingValidationException)
             {
-                throw CreateAndLogDependencyValidationException(ingestionTrackingValidationException);
+                throw await CreateAndLogDependencyValidationExceptionAsync(ingestionTrackingValidationException);
             }
             catch (IngestionTrackingDependencyValidationException ingestionTrackingDependencyValidationException)
             {
-                throw CreateAndLogDependencyValidationException(ingestionTrackingDependencyValidationException);
+                throw await CreateAndLogDependencyValidationExceptionAsync(ingestionTrackingDependencyValidationException);
             }
             catch (IngestionTrackingDependencyException ingestionTrackingDependencyException)
             {
-                throw CreateAndLogDependencyException(ingestionTrackingDependencyException);
+                throw await CreateAndLogDependencyExceptionAsync(ingestionTrackingDependencyException);
             }
             catch (IngestionTrackingServiceException ingestionTrackingServiceException)
             {
-                throw CreateAndLogDependencyException(ingestionTrackingServiceException);
+                throw await CreateAndLogDependencyExceptionAsync(ingestionTrackingServiceException);
             }
             catch (Exception exception)
             {
@@ -56,32 +58,75 @@ namespace LHDS.Core.Services.Processings.IngestionTrackings
                         message: "Failed IngestionTracking processing service error occurred, please contact support.",
                         innerException: exception);
 
-                throw CreateAndLogServiceException(failedIngestionTrackingProcessingServiceException);
+                throw await CreateAndLogServiceExceptionAsync(failedIngestionTrackingProcessingServiceException);
             }
         }
 
-        private IQueryable<IngestionTracking> TryCatch(ReturningIngestionTrackingsFunction
+        private async ValueTask<List<string>> TryCatch(
+            ReturningStringListProcessingFunction returningStringListProcessingFunction)
+        {
+            try
+            {
+                return await returningStringListProcessingFunction();
+            }
+            catch (NullIngestionTrackingProcessingException nullIngestionTrackingException)
+            {
+                throw await CreateAndLogValidationExceptionAsync(nullIngestionTrackingException);
+            }
+            catch (InvalidArgumentIngestionTrackingProcessingException
+                invalidArgumentIngestionTrackingProcessingException)
+            {
+                throw await CreateAndLogValidationExceptionAsync(invalidArgumentIngestionTrackingProcessingException);
+            }
+            catch (IngestionTrackingValidationException ingestionTrackingValidationException)
+            {
+                throw await CreateAndLogDependencyValidationExceptionAsync(ingestionTrackingValidationException);
+            }
+            catch (IngestionTrackingDependencyValidationException ingestionTrackingDependencyValidationException)
+            {
+                throw await CreateAndLogDependencyValidationExceptionAsync(ingestionTrackingDependencyValidationException);
+            }
+            catch (IngestionTrackingDependencyException ingestionTrackingDependencyException)
+            {
+                throw await CreateAndLogDependencyExceptionAsync(ingestionTrackingDependencyException);
+            }
+            catch (IngestionTrackingServiceException ingestionTrackingServiceException)
+            {
+                throw await CreateAndLogDependencyExceptionAsync(ingestionTrackingServiceException);
+            }
+            catch (Exception exception)
+            {
+                var failedIngestionTrackingProcessingServiceException =
+                    new FailedIngestionTrackingProcessingServiceException(
+                        message: "Failed IngestionTracking processing service error occurred, please contact support.",
+                        innerException: exception);
+
+                throw await CreateAndLogServiceExceptionAsync(failedIngestionTrackingProcessingServiceException);
+            }
+        }
+
+        private async ValueTask<IQueryable<IngestionTracking>> TryCatch(ReturningIngestionTrackingsFunction
             returningIngestionTrackingsFunction)
         {
             try
             {
-                return returningIngestionTrackingsFunction();
+                return await returningIngestionTrackingsFunction();
             }
             catch (IngestionTrackingValidationException ingestionTrackingValidationException)
             {
-                throw CreateAndLogDependencyValidationException(ingestionTrackingValidationException);
+                throw await CreateAndLogDependencyValidationExceptionAsync(ingestionTrackingValidationException);
             }
             catch (IngestionTrackingDependencyValidationException ingestionTrackingDependencyValidationException)
             {
-                throw CreateAndLogDependencyValidationException(ingestionTrackingDependencyValidationException);
+                throw await CreateAndLogDependencyValidationExceptionAsync(ingestionTrackingDependencyValidationException);
             }
             catch (IngestionTrackingDependencyException ingestionTrackingDependencyException)
             {
-                throw CreateAndLogDependencyException(ingestionTrackingDependencyException);
+                throw await CreateAndLogDependencyExceptionAsync(ingestionTrackingDependencyException);
             }
             catch (IngestionTrackingServiceException ingestionTrackingServiceException)
             {
-                throw CreateAndLogDependencyException(ingestionTrackingServiceException);
+                throw await CreateAndLogDependencyExceptionAsync(ingestionTrackingServiceException);
             }
             catch (Exception exception)
             {
@@ -90,56 +135,59 @@ namespace LHDS.Core.Services.Processings.IngestionTrackings
                         message: "Failed IngestionTracking processing service error occurred, please contact support.",
                         innerException: exception);
 
-                throw CreateAndLogServiceException(failedIngestionTrackingProcessingServiceException);
+                throw await CreateAndLogServiceExceptionAsync(failedIngestionTrackingProcessingServiceException);
             }
         }
 
 
-        private IngestionTrackingProcessingValidationException CreateAndLogValidationException(Xeption exception)
+        private async ValueTask<IngestionTrackingProcessingValidationException>
+            CreateAndLogValidationExceptionAsync(Xeption exception)
         {
             var ingestionTrackingProcessingValidationExceptionn =
                 new IngestionTrackingProcessingValidationException(
                     message: "IngestionTracking processing validation error occurred, please try again.",
                     innerException: exception);
 
-            this.loggingBroker.LogError(ingestionTrackingProcessingValidationExceptionn);
+            await this.loggingBroker.LogErrorAsync(ingestionTrackingProcessingValidationExceptionn);
 
             return ingestionTrackingProcessingValidationExceptionn;
         }
 
-        private IngestionTrackingProcessingDependencyValidationException CreateAndLogDependencyValidationException(
-            Xeption exception)
+        private async ValueTask<IngestionTrackingProcessingDependencyValidationException>
+            CreateAndLogDependencyValidationExceptionAsync(Xeption exception)
         {
             var ingestionTrackingProcessingDependencyValidationException =
                 new IngestionTrackingProcessingDependencyValidationException(
                     message: "IngestionTracking processing dependency validation error occurred, please try again.",
                     innerException: exception.InnerException as Xeption);
 
-            this.loggingBroker.LogError(ingestionTrackingProcessingDependencyValidationException);
+            await this.loggingBroker.LogErrorAsync(ingestionTrackingProcessingDependencyValidationException);
 
             return ingestionTrackingProcessingDependencyValidationException;
         }
 
-        private IngestionTrackingProcessingDependencyException CreateAndLogDependencyException(Xeption exception)
+        private async ValueTask<IngestionTrackingProcessingDependencyException>
+            CreateAndLogDependencyExceptionAsync(Xeption exception)
         {
             var ingestionTrackingProcessingDependencyException =
                 new IngestionTrackingProcessingDependencyException(
                     message: "IngestionTracking processing dependency error occurred, please try again.",
                     innerException: exception?.InnerException as Xeption);
 
-            this.loggingBroker.LogError(ingestionTrackingProcessingDependencyException);
+            await this.loggingBroker.LogErrorAsync(ingestionTrackingProcessingDependencyException);
 
-            throw ingestionTrackingProcessingDependencyException;
+            return ingestionTrackingProcessingDependencyException;
         }
 
-        private IngestionTrackingProcessingServiceException CreateAndLogServiceException(Xeption exception)
+        private async ValueTask<IngestionTrackingProcessingServiceException>
+            CreateAndLogServiceExceptionAsync(Xeption exception)
         {
             var ingestionTrackingProcessingServiceException = new
                 IngestionTrackingProcessingServiceException(
                     message: "IngestionTracking processing service error occurred, please contact support.",
                     innerException: exception);
 
-            this.loggingBroker.LogError(ingestionTrackingProcessingServiceException);
+            await this.loggingBroker.LogErrorAsync(ingestionTrackingProcessingServiceException);
 
             return ingestionTrackingProcessingServiceException;
         }

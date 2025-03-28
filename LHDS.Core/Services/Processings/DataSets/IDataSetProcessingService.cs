@@ -1,6 +1,6 @@
-﻿// ---------------------------------------------------------------
+﻿// ---------------------------------------------------------
 // Copyright (c) North East London ICB. All rights reserved.
-// ---------------------------------------------------------------
+// ---------------------------------------------------------
 
 using System;
 using System.Linq;
@@ -12,7 +12,7 @@ namespace LHDS.Core.Services.Processings.DataSets
     public interface IDataSetProcessingService
     {
         ValueTask<DataSet> AddDataSetAsync(DataSet dataSet);
-        IQueryable<DataSet> RetrieveAllDataSets();
+        ValueTask<IQueryable<DataSet>> RetrieveAllDataSetsAsync();
         ValueTask<DataSet> RetrieveDataSetByIdAsync(Guid dataSetId);
         ValueTask<DataSet> RetrieveOrAddDataSetAsync(DataSet dataSet);
         ValueTask<DataSet> ModifyOrAddDataSetAsync(DataSet dataSet);

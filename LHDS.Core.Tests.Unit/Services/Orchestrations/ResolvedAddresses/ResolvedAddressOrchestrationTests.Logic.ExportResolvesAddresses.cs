@@ -33,10 +33,10 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.ResolvedAddresses
             Guid batchReference = Guid.NewGuid();
 
             this.resolvedAddressProcessingServiceMock.SetupSequence(service =>
-                service.RetrieveAllResolvedAddresses())
-                    .Returns(storageResolvedAddresses.AsQueryable())
-                    .Returns(storageResolvedAddresses.AsQueryable())
-                    .Returns(new List<ResolvedAddress>().AsQueryable());
+                service.RetrieveAllResolvedAddressesAsync())
+                    .ReturnsAsync(storageResolvedAddresses.AsQueryable())
+                    .ReturnsAsync(storageResolvedAddresses.AsQueryable())
+                    .ReturnsAsync(new List<ResolvedAddress>().AsQueryable());
 
             processingResolvedAddresses.ForEach(pra =>
             {
@@ -46,8 +46,8 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.ResolvedAddresses
             });
 
             this.identifierBrokerMock.Setup(broker =>
-                broker.GetIdentifier())
-                    .Returns(batchReference);
+                broker.GetIdentifierAsync())
+                    .ReturnsAsync(batchReference);
 
             this.resolvedAddressProcessingServiceMock.Setup(processing =>
                 processing.BulkModifyResolvedAddressesAsync(processingResolvedAddresses))
@@ -84,7 +84,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.ResolvedAddresses
                     It.Is(SameResolvedAddressListAs(processingResolvedAddresses)),
                     true,
                     fieldMappings,
-                    true))
+                    false))
                         .ReturnsAsync(ouputCsv);
 
             string inputFileName = $"out/{batchReference}.csv";
@@ -120,11 +120,11 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.ResolvedAddresses
 
             // Then
             this.identifierBrokerMock.Verify(broker =>
-                broker.GetIdentifier(),
+                broker.GetIdentifierAsync(),
                     Times.Once());
 
             this.resolvedAddressProcessingServiceMock.Verify(service =>
-                service.RetrieveAllResolvedAddresses(),
+                service.RetrieveAllResolvedAddressesAsync(),
                     Times.Exactly(2));
 
             this.resolvedAddressProcessingServiceMock.Verify(processing =>
@@ -137,7 +137,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.ResolvedAddresses
                     It.Is(SameResolvedAddressListAs(processingResolvedAddresses)),
                     true,
                     fieldMappings,
-                    true),
+                    false),
                         Times.Once);
 
             this.documentProcessingServiceMock.Verify(processing =>

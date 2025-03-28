@@ -5,7 +5,9 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.IdentityModel.Tokens.Jwt;
 using System.Net.Http;
+using System.Security.Claims;
 using System.Text;
 using Azure.Core.Pipeline;
 using Azure.Identity;
@@ -18,6 +20,7 @@ using LHDS.Core.Brokers.Hashing;
 using LHDS.Core.Brokers.Identifiers;
 using LHDS.Core.Brokers.KeyVaults;
 using LHDS.Core.Brokers.Loggings;
+using LHDS.Core.Brokers.Securities;
 using LHDS.Core.Brokers.Storages.Blobs;
 using LHDS.Core.Brokers.Storages.Sql;
 using LHDS.Core.Models.Brokers.Storages.Blobs;
@@ -26,12 +29,15 @@ using LHDS.Core.Models.Orchestrations.EmisLandings;
 using LHDS.Core.Providers.Downloads;
 using LHDS.Core.Services.Coordinations.EmisLandings;
 using LHDS.Core.Services.Foundations.CryptographicKeys;
+using LHDS.Core.Services.Foundations.DataSets;
 using LHDS.Core.Services.Foundations.DataSetSpecifications;
 using LHDS.Core.Services.Foundations.Documents;
 using LHDS.Core.Services.Foundations.Downloads;
 using LHDS.Core.Services.Foundations.IngestionTrackingAudits;
 using LHDS.Core.Services.Foundations.IngestionTrackings;
+using LHDS.Core.Services.Foundations.ObjectColumns;
 using LHDS.Core.Services.Foundations.SecureDatas;
+using LHDS.Core.Services.Foundations.SpecificationObjects;
 using LHDS.Core.Services.Foundations.SubscriberAgreements;
 using LHDS.Core.Services.Foundations.Suppliers;
 using LHDS.Core.Services.Orchestrations.Downloads;
@@ -47,6 +53,7 @@ using LHDS.Core.Services.Processings.IngestionTrackings;
 using LHDS.Core.Services.Processings.OptOuts;
 using LHDS.Core.Services.Processings.SecureDatas;
 using LHDS.Core.Services.Processings.SubscriberAgreements;
+using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -58,10 +65,51 @@ namespace LHDS.Core.Clients.Extensions
             this IServiceCollection services,
             IConfiguration configuration)
         {
-            services.AddSingleton<IConfiguration>(_ => configuration);
+            return AddEmisLandingClient(services, configuration, claimsPrincipal: null);
+        }
 
+        public static IServiceCollection AddEmisLandingClient(
+            this IServiceCollection services,
+            IConfiguration configuration,
+            IHttpContextAccessor httpContextAccessor)
+        {
+            services.AddSingleton<IConfiguration>(_ => configuration);
             AddProviders(services);
-            AddBrokers(services, configuration);
+            AddBrokers(services, configuration, httpContextAccessor.HttpContext.User);
+            AddServices(services);
+            AddProcessingServices(services);
+            AddOrchestrations(services);
+            AddCoordinations(services);
+            AddClients(services);
+
+            return services;
+        }
+
+        public static IServiceCollection AddEmisLandingClient(
+            this IServiceCollection services,
+            IConfiguration configuration,
+            string accessToken)
+        {
+            services.AddSingleton<IConfiguration>(_ => configuration);
+            AddProviders(services);
+            AddBrokers(services, configuration, GetClaimsPrincipalFromToken(accessToken));
+            AddServices(services);
+            AddProcessingServices(services);
+            AddOrchestrations(services);
+            AddCoordinations(services);
+            AddClients(services);
+
+            return services;
+        }
+
+        public static IServiceCollection AddEmisLandingClient(
+            this IServiceCollection services,
+            IConfiguration configuration,
+            ClaimsPrincipal claimsPrincipal)
+        {
+            services.AddSingleton<IConfiguration>(_ => configuration);
+            AddProviders(services);
+            AddBrokers(services, configuration, claimsPrincipal);
             AddServices(services);
             AddProcessingServices(services);
             AddOrchestrations(services);
@@ -76,7 +124,10 @@ namespace LHDS.Core.Clients.Extensions
             services.AddTransient<IDownloadAbstractionProvider, DownloadAbstractionProvider>();
         }
 
-        private static void AddBrokers(IServiceCollection services, IConfiguration configuration)
+        private static void AddBrokers(
+            IServiceCollection services,
+            IConfiguration configuration,
+            ClaimsPrincipal claimsPrincipal)
         {
             services.AddTransient<ILoggingBroker, LoggingBroker>();
             services.AddTransient<IDateTimeBroker, DateTimeBroker>();
@@ -123,6 +174,16 @@ namespace LHDS.Core.Clients.Extensions
                     options: blobServiceClientOptions));
 
             services.AddTransient<IAzureBlobClient, AzureBlobClient>();
+
+            if (claimsPrincipal != null)
+            {
+                var securityBroker = new SecurityBroker(claimsPrincipal);
+                services.AddTransient<ISecurityBroker>(_ => securityBroker);
+            }
+            else
+            {
+                services.AddTransient<ISecurityBroker, SecurityBroker>();
+            }
         }
 
         private static void AddServices(IServiceCollection services)
@@ -131,11 +192,14 @@ namespace LHDS.Core.Clients.Extensions
             services.AddTransient<IDownloadService, DownloadService>();
             services.AddTransient<IIngestionTrackingService, IngestionTrackingService>();
             services.AddTransient<ISupplierService, SupplierService>();
+            services.AddTransient<IDataSetService, DataSetService>();
             services.AddTransient<IDataSetSpecificationService, DataSetSpecificationService>();
             services.AddTransient<IIngestionTrackingAuditService, IngestionTrackingAuditService>();
             services.AddTransient<ISubscriberAgreementService, SubscriberAgreementService>();
             services.AddTransient<ISecureDataService, SecureDataService>();
             services.AddTransient<ICryptographyKeyService, CryptographyKeyService>();
+            services.AddSingleton<ISpecificationObjectService, SpecificationObjectService>();
+            services.AddSingleton<IObjectColumnService, ObjectColumnService>();
         }
 
         private static void AddProcessingServices(IServiceCollection services)
@@ -244,6 +308,20 @@ namespace LHDS.Core.Clients.Extensions
                 data: errors);
 
             invalidConfigurationException.ThrowIfContainsErrors();
+        }
+
+        /// <summary>
+        /// Extracts a <see cref="ClaimsPrincipal"/> from a given JWT token.
+        /// </summary>
+        /// <param name="token">The JWT token.</param>
+        /// <returns>A <see cref="ClaimsPrincipal"/> containing claims from the token.</returns>
+        private static ClaimsPrincipal GetClaimsPrincipalFromToken(string token)
+        {
+            var handler = new JwtSecurityTokenHandler();
+            var jwtToken = handler.ReadJwtToken(token);
+            var identity = new ClaimsIdentity(jwtToken.Claims, "jwt");
+
+            return new ClaimsPrincipal(identity);
         }
     }
 }

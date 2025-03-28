@@ -20,10 +20,13 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.OptOuts
             OptOut nullOptOut = null;
 
             var nullOptOutProcessingException =
-                new NullOptOutProcessingException();
+                new NullOptOutProcessingException(
+                    message: "Opt out processing is Null");
 
             var expectedOptOutProcessingValidationException =
-                new OptOutProcessingValidationException(nullOptOutProcessingException);
+                new OptOutProcessingValidationException(
+                    message: "OptOut processing validation errors occured, please try again",
+                    innerException: nullOptOutProcessingException);
 
             // when
             ValueTask<OptOut> RetrieveOrAddOptOutTask =
@@ -37,7 +40,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.OptOuts
                 .BeEquivalentTo(expectedOptOutProcessingValidationException);
 
             this.loggingBrokerMock.Verify(broker =>
-                broker.LogError(It.Is(SameExceptionAs(
+                broker.LogErrorAsync(It.Is(SameExceptionAs(
                     expectedOptOutProcessingValidationException))),
                         Times.Once);
 

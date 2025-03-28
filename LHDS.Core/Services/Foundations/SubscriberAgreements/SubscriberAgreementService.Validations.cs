@@ -3,6 +3,8 @@
 // ---------------------------------------------------------
 
 using System;
+using System.Threading.Tasks;
+using LHDS.Core.Models.Brokers.Securities;
 using LHDS.Core.Models.Foundations.SubscriberAgreements;
 using LHDS.Core.Models.Foundations.SubscriberAgreements.Exceptions;
 
@@ -10,9 +12,9 @@ namespace LHDS.Core.Services.Foundations.SubscriberAgreements
 {
     public partial class SubscriberAgreementService
     {
-        private void ValidateSubscriberAgreementOnAdd(SubscriberAgreement subscriberAgreement)
+        private async ValueTask ValidateSubscriberAgreementOnAddAsync(SubscriberAgreement subscriberAgreement)
         {
-            ValidateSubscriberAgreementIsNotNull(subscriberAgreement);
+            EntraUser currentUser = await this.securityBroker.GetCurrentUserAsync();
 
             Validate(
                 (Rule: IsInvalid(subscriberAgreement.Id), Parameter: nameof(SubscriberAgreement.Id)),
@@ -39,6 +41,11 @@ namespace LHDS.Core.Services.Foundations.SubscriberAgreements
                     secondDate: subscriberAgreement.CreatedDate,
                     secondDateName: nameof(SubscriberAgreement.CreatedDate)),
                 Parameter: nameof(SubscriberAgreement.UpdatedDate)),
+
+                 (Rule: IsNotSame(
+                    first: currentUser.EntraUserId,
+                    second: subscriberAgreement.CreatedBy),
+                Parameter: nameof(SubscriberAgreement.CreatedBy)),
 
                 (Rule: IsNotSame(
                     first: subscriberAgreement.UpdatedBy,
@@ -46,12 +53,12 @@ namespace LHDS.Core.Services.Foundations.SubscriberAgreements
                     secondName: nameof(SubscriberAgreement.CreatedBy)),
                 Parameter: nameof(SubscriberAgreement.UpdatedBy)),
 
-                (Rule: IsNotRecent(subscriberAgreement.CreatedDate), Parameter: nameof(SubscriberAgreement.CreatedDate)));
+                (Rule: await IsNotRecentAsync(subscriberAgreement.CreatedDate), Parameter: nameof(SubscriberAgreement.CreatedDate)));
         }
 
-        private void ValidateSubscriberAgreementOnModify(SubscriberAgreement subscriberAgreement)
+        private async ValueTask ValidateSubscriberAgreementOnModifyAsync(SubscriberAgreement subscriberAgreement)
         {
-            ValidateSubscriberAgreementIsNotNull(subscriberAgreement);
+            EntraUser currentUser = await this.securityBroker.GetCurrentUserAsync();
 
             Validate(
                 (Rule: IsInvalid(subscriberAgreement.Id), Parameter: nameof(SubscriberAgreement.Id)),
@@ -73,13 +80,18 @@ namespace LHDS.Core.Services.Foundations.SubscriberAgreements
                 (Rule: IsInvalidLength(subscriberAgreement.UpdatedBy, 255),
                     Parameter: nameof(SubscriberAgreement.UpdatedBy)),
 
+                (Rule: IsNotSame(
+                    first: currentUser.EntraUserId,
+                    second: subscriberAgreement.UpdatedBy),
+                Parameter: nameof(SubscriberAgreement.UpdatedBy)),
+
                 (Rule: IsSame(
                     firstDate: subscriberAgreement.UpdatedDate,
                     secondDate: subscriberAgreement.CreatedDate,
                     secondDateName: nameof(SubscriberAgreement.CreatedDate)),
                 Parameter: nameof(SubscriberAgreement.UpdatedDate)),
 
-                (Rule: IsNotRecent(subscriberAgreement.UpdatedDate),
+                (Rule: await IsNotRecentAsync(subscriberAgreement.UpdatedDate),
                     Parameter: nameof(subscriberAgreement.UpdatedDate)));
         }
 
@@ -128,6 +140,39 @@ namespace LHDS.Core.Services.Foundations.SubscriberAgreements
                 Parameter: nameof(SubscriberAgreement.UpdatedDate)));
         }
 
+        private async ValueTask ValidateAgainstStorageSubscriberAgreementOnDeleteAsync(
+            SubscriberAgreement subscriberAgreement,
+            SubscriberAgreement maybeSubscriberAgreement)
+        {
+            EntraUser auditUser = await this.securityBroker.GetCurrentUserAsync();
+
+            Validate(
+                (Rule: IsNotSame(
+                    subscriberAgreement.CreatedDate,
+                    maybeSubscriberAgreement.CreatedDate,
+                    nameof(maybeSubscriberAgreement.CreatedDate)),
+                 Parameter: nameof(SubscriberAgreement.CreatedDate)),
+
+                (Rule: IsNotSame(
+                    subscriberAgreement.CreatedBy,
+                    maybeSubscriberAgreement.CreatedBy,
+                    nameof(maybeSubscriberAgreement.CreatedBy)),
+                 Parameter: nameof(SubscriberAgreement.CreatedBy)),
+
+                (Rule: IsNotSame(
+                    maybeSubscriberAgreement.UpdatedDate,
+                    subscriberAgreement.UpdatedDate,
+                    nameof(SubscriberAgreement.UpdatedDate)),
+                 Parameter: nameof(SubscriberAgreement.UpdatedDate)),
+
+                (Rule: IsNotSame(
+                    auditUser.EntraUserId.ToString(),
+                    subscriberAgreement.UpdatedBy,
+                    nameof(SubscriberAgreement.UpdatedBy)),
+                 Parameter: nameof(SubscriberAgreement.UpdatedBy))
+            );
+        }
+
         private static dynamic IsInvalid(Guid id) => new
         {
             Condition = id == Guid.Empty,
@@ -165,6 +210,14 @@ namespace LHDS.Core.Services.Foundations.SubscriberAgreements
             };
 
         private static dynamic IsNotSame(
+            string first,
+            string second) => new
+            {
+                Condition = first != second,
+                Message = $"Expected value to be '{first}' but found '{second}'."
+            };
+
+        private static dynamic IsNotSame(
             DateTimeOffset firstDate,
             DateTimeOffset secondDate,
             string secondDateName) => new
@@ -191,16 +244,16 @@ namespace LHDS.Core.Services.Foundations.SubscriberAgreements
                Message = $"Text is not the same as {secondName}"
            };
 
-        private dynamic IsNotRecent(DateTimeOffset date) => new
+        private async ValueTask<dynamic> IsNotRecentAsync(DateTimeOffset date) => new
         {
-            Condition = IsDateNotRecent(date),
+            Condition = await IsDateNotRecentAsync(date),
             Message = "Date is not recent"
         };
 
-        private bool IsDateNotRecent(DateTimeOffset date)
+        private async ValueTask<bool> IsDateNotRecentAsync(DateTimeOffset date)
         {
             DateTimeOffset currentDateTime =
-                this.dateTimeBroker.GetCurrentDateTimeOffset();
+                await this.dateTimeBroker.GetCurrentDateTimeOffsetAsync();
 
             TimeSpan timeDifference = currentDateTime.Subtract(date);
             TimeSpan oneMinute = TimeSpan.FromMinutes(1);

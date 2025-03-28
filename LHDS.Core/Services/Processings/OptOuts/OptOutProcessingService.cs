@@ -29,19 +29,17 @@ namespace LHDS.Core.Services.Processings.OptOuts
             this.dateTimeBroker = dateTimeBroker;
         }
 
-        public IQueryable<OptOut> RetrieveAllOptOutsAsync() =>
-            TryCatch(() =>
-            {
-                return this.optOutService.RetrieveAllOptOuts();
-            });
+        public ValueTask<IQueryable<OptOut>> RetrieveAllOptOutsAsync() =>
+            TryCatch(async () => await this.optOutService.RetrieveAllOptOutsAsync());
 
         public ValueTask<OptOut> RetrieveOrAddOptOutAsync(OptOut optOut) =>
             TryCatch(async () =>
             {
                 ValidateOptOutProcessingOnRetrieveOrAdd(optOut);
+                IQueryable<OptOut> allOptOuts = await this.optOutService.RetrieveAllOptOutsAsync();
 
-                OptOut? maybeOptOut = this.optOutService.RetrieveAllOptOuts()
-                    .FirstOrDefault(item => item.NhsNumber == optOut.NhsNumber);
+                OptOut? maybeOptOut = allOptOuts.FirstOrDefault(item =>
+                    item.NhsNumber == optOut.NhsNumber);
 
                 if (maybeOptOut == null)
                 {
@@ -55,8 +53,7 @@ namespace LHDS.Core.Services.Processings.OptOuts
             TryCatch(async () =>
             {
                 ValidateOptOutProcessingOnModify(optOut);
-
-                IQueryable<OptOut> allOptOuts = this.optOutService.RetrieveAllOptOuts();
+                IQueryable<OptOut> allOptOuts = await this.optOutService.RetrieveAllOptOutsAsync();
 
                 OptOut? maybeOptOut = allOptOuts.FirstOrDefault(item =>
                     item.NhsNumber == optOut.NhsNumber);
@@ -95,8 +92,7 @@ namespace LHDS.Core.Services.Processings.OptOuts
             TryCatch(async () =>
             {
                 ValidateOptOutNhsNumber(optOutNhsNumber);
-
-                IQueryable<OptOut> allOptOuts = this.optOutService.RetrieveAllOptOuts();
+                IQueryable<OptOut> allOptOuts = await this.optOutService.RetrieveAllOptOutsAsync();
 
                 OptOut? foundOptOut = allOptOuts.FirstOrDefault(optOut =>
                     optOut.NhsNumber == optOutNhsNumber);
@@ -108,14 +104,10 @@ namespace LHDS.Core.Services.Processings.OptOuts
             TryCatch(async () =>
             {
                 ValidateOlderThanDays(olderThanDays);
-
-                var expirationDate = this.dateTimeBroker.
-                    GetCurrentDateTimeOffset().AddDays(-olderThanDays);
-
-                var lastSentExpirationDate = this.dateTimeBroker.
-                    GetCurrentDateTimeOffset().AddDays(-2);
-
-                IQueryable<OptOut> allOptOuts = this.optOutService.RetrieveAllOptOuts();
+                var currentDateTimeOffset = await this.dateTimeBroker.GetCurrentDateTimeOffsetAsync();
+                var expirationDate = currentDateTimeOffset.AddDays(-olderThanDays);
+                var lastSentExpirationDate = currentDateTimeOffset.AddDays(-2);
+                IQueryable<OptOut> allOptOuts = await this.optOutService.RetrieveAllOptOutsAsync();
 
                 List<OptOut> expiredOptOuts = allOptOuts
                     .Where(optOut =>
@@ -131,8 +123,7 @@ namespace LHDS.Core.Services.Processings.OptOuts
             TryCatch(async () =>
             {
                 ValidateOptOutBatchReference(batchReference);
-
-                IQueryable<OptOut> allOptOuts = this.optOutService.RetrieveAllOptOuts();
+                IQueryable<OptOut> allOptOuts = await this.optOutService.RetrieveAllOptOutsAsync();
 
                 List<OptOut> foundOptOuts = allOptOuts.Where(optOut =>
                     optOut.BatchReference == batchReference)
@@ -169,7 +160,7 @@ namespace LHDS.Core.Services.Processings.OptOuts
                     delta.Add(item);
                 }
 
-                var dateTime = this.dateTimeBroker.GetCurrentDateTimeOffset();
+                var dateTime = await this.dateTimeBroker.GetCurrentDateTimeOffsetAsync();
                 item.UpdatedDate = dateTime;
                 item.CacheTime = dateTime;
                 item.LastSentToMesh = dateTime;
@@ -185,7 +176,7 @@ namespace LHDS.Core.Services.Processings.OptOuts
                     delta.Add(nonConsentedListItem);
                 }
 
-                var dateTime = this.dateTimeBroker.GetCurrentDateTimeOffset();
+                var dateTime = await this.dateTimeBroker.GetCurrentDateTimeOffsetAsync();
                 nonConsentedListItem.UpdatedDate = dateTime;
                 nonConsentedListItem.CacheTime = dateTime;
                 nonConsentedListItem.LastSentToMesh = dateTime;

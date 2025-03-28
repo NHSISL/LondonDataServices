@@ -5,6 +5,8 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Claims;
+using System.Security.Principal;
 using System.Text;
 using System.Threading.Tasks;
 using LHDS.Core.Clients;
@@ -46,6 +48,8 @@ namespace LHDS.Core.Tests.Integration.OptOuts
                 .AddEnvironmentVariables();
 
             IConfiguration configuration = configurationBuilder.Build();
+            var windowsIdentity = WindowsIdentity.GetCurrent();
+            var claimsPrincipal = new ClaimsPrincipal(windowsIdentity);
 
             //setup our DI
             var serviceProvider = new ServiceCollection()
@@ -54,7 +58,7 @@ namespace LHDS.Core.Tests.Integration.OptOuts
                     builder.AddConsole();
                     builder.AddApplicationInsights();
                 })
-                .AddOptOutClient(configuration)
+                .AddOptOutClient(configuration, claimsPrincipal)
                 .BuildServiceProvider();
 
             this.optOutClient = serviceProvider.GetService<IOptOutClient>();
@@ -150,7 +154,9 @@ namespace LHDS.Core.Tests.Integration.OptOuts
 
             foreach (var optOut in setupOptOut)
             {
-                var maybeOptOut = this.optOutService.RetrieveAllOptOuts()
+                var allOptOuts = await this.optOutService.RetrieveAllOptOutsAsync();
+
+                var maybeOptOut = allOptOuts
                     .Where(opt => opt.NhsNumber == optOut.NhsNumber)
                         .FirstOrDefault();
 
@@ -219,7 +225,9 @@ namespace LHDS.Core.Tests.Integration.OptOuts
 
             foreach (var optOut in setupOptOut)
             {
-                var maybeOptOut = this.optOutService.RetrieveAllOptOuts()
+                var allOptOuts = await this.optOutService.RetrieveAllOptOutsAsync();
+
+                var maybeOptOut = allOptOuts
                     .Where(opt => opt.NhsNumber == optOut.NhsNumber)
                         .FirstOrDefault();
 

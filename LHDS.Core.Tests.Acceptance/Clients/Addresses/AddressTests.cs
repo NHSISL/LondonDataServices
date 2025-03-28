@@ -6,9 +6,13 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Security.Claims;
+using System.Threading.Tasks;
 using KellermanSoftware.CompareNetObjects;
 using LHDS.Core.Brokers.CsvHelpers;
 using LHDS.Core.Brokers.DateTimes;
+using LHDS.Core.Brokers.Securities;
+using LHDS.Core.Brokers.Storages.Sql;
 using LHDS.Core.Clients;
 using LHDS.Core.Clients.Extensions;
 using LHDS.Core.Models.Brokers.Storages.Blobs;
@@ -45,6 +49,7 @@ namespace LHDS.Core.Tests.Acceptance.Clients.Addresses
         private readonly IAddressClient addressClient;
         private readonly ICompareLogic compareLogic;
         private readonly IDateTimeBroker dateTimeBroker;
+        private readonly ISecurityBroker securityBroker;
         private readonly AddressConfiguration addressConfiguration;
         private readonly BlobContainers blobContainers;
         private readonly WireMockServer wireMockServer;
@@ -55,6 +60,20 @@ namespace LHDS.Core.Tests.Acceptance.Clients.Addresses
             this.dependencyBroker = dependencyBroker;
             this.compareLogic = new CompareLogic();
             var serviceCollection = new ServiceCollection();
+            var claimsPrincipal = new ClaimsPrincipal();
+
+            claimsPrincipal.AddIdentity(new ClaimsIdentity(new List<Claim>
+            {
+                new Claim("oid", Guid.NewGuid().ToString()),
+                new Claim(ClaimTypes.GivenName, "GivenName"),
+                new Claim(ClaimTypes.Surname, "Surname"),
+                new Claim("displayName", "DisplayName"),
+                new Claim(ClaimTypes.Email, "some@email.com"),
+                new Claim("jobTitle", "job title"),
+                new Claim(ClaimTypes.Name, "TestUser"),
+                new Claim(ClaimTypes.Role, "ISL.LDS.AdminApi.Administrators"),
+                new Claim(ClaimTypes.Role, "ISL.LDS.AdminApi.Configurations")
+            }));
 
             serviceCollection
                 .AddTransient<IAddressOrchestrationService, AddressOrchestrationService>()
@@ -63,7 +82,8 @@ namespace LHDS.Core.Tests.Acceptance.Clients.Addresses
                 .AddTransient<IDocumentService, DocumentService>()
                 .AddTransient<ICsvHelperBroker, CsvHelperBroker>()
                 .AddTransient<IAddressService, AddressService>()
-                .AddTransient<IDocumentService, DocumentService>();
+                .AddTransient<IDocumentService, DocumentService>()
+                .AddSingleton<IStorageBroker, StorageBroker>();
 
             serviceCollection.AddLogging(builder =>
             {
@@ -71,7 +91,7 @@ namespace LHDS.Core.Tests.Acceptance.Clients.Addresses
             });
 
             this.dependencyBroker.Configuration["assignConfiguration:apiUrl"] = this.wireMockServer.Url;
-            serviceCollection.AddAddressClient(this.dependencyBroker.Configuration);
+            serviceCollection.AddAddressClient(this.dependencyBroker.Configuration, claimsPrincipal);
             var serviceProvider = serviceCollection.BuildServiceProvider();
 
             this.addressOrchestrationService =
@@ -95,6 +115,7 @@ namespace LHDS.Core.Tests.Acceptance.Clients.Addresses
             this.addressConfiguration = serviceProvider.GetService<AddressConfiguration>();
             this.blobContainers = serviceProvider.GetService<BlobContainers>();
             this.dateTimeBroker = serviceProvider.GetService<IDateTimeBroker>();
+            this.securityBroker = serviceProvider.GetService<ISecurityBroker>();
             addressClient = serviceProvider.GetService<IAddressClient>();
         }
 
@@ -270,13 +291,13 @@ namespace LHDS.Core.Tests.Acceptance.Clients.Addresses
             return filler;
         }
 
-        private static Address? CreateRandomAddress(DateTimeOffset dateTimeOffset, string UPRN) =>
+        private static Address CreateRandomAddress(DateTimeOffset dateTimeOffset, string UPRN) =>
              CreateAddressFiller(dateTimeOffset, UPRN).Create();
 
-        private static Filler<Address?> CreateAddressFiller(DateTimeOffset dateTimeOffset, string UPRN)
+        private static Filler<Address> CreateAddressFiller(DateTimeOffset dateTimeOffset, string UPRN)
         {
             string user = Guid.NewGuid().ToString();
-            var filler = new Filler<Address?>();
+            var filler = new Filler<Address>();
 
             filler.Setup()
                 .OnType<DateTimeOffset>().Use(dateTimeOffset)
@@ -316,6 +337,7 @@ namespace LHDS.Core.Tests.Acceptance.Clients.Addresses
             Address foundOrdananceAddress)
         {
             ResolvedAddress updatedResolovedAddress = unMatchedResolvedAddress;
+            updatedResolovedAddress.UPRN = foundOrdananceAddress.UPRN;
             updatedResolovedAddress.UPSN = foundOrdananceAddress.UPSN;
             updatedResolovedAddress.OrganisationName = foundOrdananceAddress.OrganisationName;
             updatedResolovedAddress.DepartmentName = foundOrdananceAddress.DepartmentName;
@@ -331,9 +353,9 @@ namespace LHDS.Core.Tests.Acceptance.Clients.Addresses
             updatedResolovedAddress.AddressFormatQuality = foundAssignAddress.AddressFormat;
             updatedResolovedAddress.PostCodeQuality = foundAssignAddress.PostcodeQuality;
             updatedResolovedAddress.MatchedWithAssign = foundAssignAddress.Matched;
-            updatedResolovedAddress.Qualifier = foundAssignAddress.Qualifier;
-            updatedResolovedAddress.Classification = foundAssignAddress.Classification;
-            updatedResolovedAddress.Algorithm = foundAssignAddress.Algorithm;
+            updatedResolovedAddress.Qualifier = foundAssignAddress.BestMatch.Qualifier;
+            updatedResolovedAddress.Classification = foundAssignAddress.BestMatch.Classification;
+            updatedResolovedAddress.Algorithm = foundAssignAddress.BestMatch.Algorithm;
             updatedResolovedAddress.MatchPattern = foundAssignAddress.Pattern;
             updatedResolovedAddress.IsProcessing = true;
             updatedResolovedAddress.IsExported = false;
@@ -367,6 +389,77 @@ namespace LHDS.Core.Tests.Acceptance.Clients.Addresses
                 .OnType<DateTimeOffset>().Use(dateTimeOffset);
 
             return filler;
+        }
+
+        private async ValueTask<string> MapObjectToCsv(List<ResolvedAddress> resolvedAddresses)
+        {
+            Dictionary<string, int> fieldMappings = new Dictionary<string, int>
+            {
+                { nameof(ResolvedAddress.UniqueReference), 0 },
+                { nameof(ResolvedAddress.UPRN), 1 },
+                { nameof(ResolvedAddress.UPSN), 2 },
+                { nameof(ResolvedAddress.OrganisationName), 3 },
+                { nameof(ResolvedAddress.DepartmentName), 4 },
+                { nameof(ResolvedAddress.SubBuildingName), 5 },
+                { nameof(ResolvedAddress.BuildingName), 6 },
+                { nameof(ResolvedAddress.BuildingNumber), 7 },
+                { nameof(ResolvedAddress.DependentThoroughfare), 8 },
+                { nameof(ResolvedAddress.Thoroughfare), 9 },
+                { nameof(ResolvedAddress.DoubleDependentLocality), 10 },
+                { nameof(ResolvedAddress.DependentLocality), 11 },
+                { nameof(ResolvedAddress.PostTown), 12 },
+                { nameof(ResolvedAddress.PostCode), 13 },
+                { nameof(ResolvedAddress.AddressFormatQuality), 14 },
+                { nameof(ResolvedAddress.PostCodeQuality), 15 },
+                { nameof(ResolvedAddress.MatchedWithAssign), 16 },
+                { nameof(ResolvedAddress.Qualifier), 17 },
+                { nameof(ResolvedAddress.Classification), 18 },
+                { nameof(ResolvedAddress.Algorithm), 19 },
+                { nameof(ResolvedAddress.MatchPattern), 20 },
+                { nameof(ResolvedAddress.UnstructuredPostalAddress), 21 }
+            };
+
+            return await this.csvHelperBroker
+               .MapObjectToCsvAsync(
+                    @object: resolvedAddresses,
+                    addHeaderRecord: true,
+                    fieldMappings: fieldMappings,
+                    shouldAddTrailingComma: true);
+        }
+
+        private async ValueTask<List<ResolvedAddress>> MapCsvToObject(string data)
+        {
+            Dictionary<string, int> fieldMappings = new Dictionary<string, int>
+            {
+                { nameof(ResolvedAddress.UniqueReference), 0 },
+                { nameof(ResolvedAddress.UPRN), 1 },
+                { nameof(ResolvedAddress.UPSN), 2 },
+                { nameof(ResolvedAddress.OrganisationName), 3 },
+                { nameof(ResolvedAddress.DepartmentName), 4 },
+                { nameof(ResolvedAddress.SubBuildingName), 5 },
+                { nameof(ResolvedAddress.BuildingName), 6 },
+                { nameof(ResolvedAddress.BuildingNumber), 7 },
+                { nameof(ResolvedAddress.DependentThoroughfare), 8 },
+                { nameof(ResolvedAddress.Thoroughfare), 9 },
+                { nameof(ResolvedAddress.DoubleDependentLocality), 10 },
+                { nameof(ResolvedAddress.DependentLocality), 11 },
+                { nameof(ResolvedAddress.PostTown), 12 },
+                { nameof(ResolvedAddress.PostCode), 13 },
+                { nameof(ResolvedAddress.AddressFormatQuality), 14 },
+                { nameof(ResolvedAddress.PostCodeQuality), 15 },
+                { nameof(ResolvedAddress.MatchedWithAssign), 16 },
+                { nameof(ResolvedAddress.Qualifier), 17 },
+                { nameof(ResolvedAddress.Classification), 18 },
+                { nameof(ResolvedAddress.Algorithm), 19 },
+                { nameof(ResolvedAddress.MatchPattern), 20 },
+                { nameof(ResolvedAddress.UnstructuredPostalAddress), 21 }
+            };
+
+            return await this.csvHelperBroker
+               .MapCsvToObjectAsync<ResolvedAddress>(
+                    data,
+                    hasHeaderRecord: true,
+                    fieldMappings: fieldMappings);
         }
     }
 }

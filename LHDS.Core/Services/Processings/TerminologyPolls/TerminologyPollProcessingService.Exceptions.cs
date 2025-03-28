@@ -1,6 +1,6 @@
-// ---------------------------------------------------------------
+// ---------------------------------------------------------
 // Copyright (c) North East London ICB. All rights reserved.
-// ---------------------------------------------------------------
+// ---------------------------------------------------------
 
 using System;
 using System.Linq;
@@ -15,7 +15,7 @@ namespace LHDS.Core.Services.Processings.TerminologyPolls
     public partial class TerminologyPollProcessingService
     {
         private delegate ValueTask<TerminologyPoll> ReturningTerminologyPollFunction();
-        private delegate IQueryable<TerminologyPoll> ReturningTerminologyPollsFunction();
+        private delegate ValueTask<IQueryable<TerminologyPoll>> ReturningTerminologyPollsFunction();
 
         private async ValueTask<TerminologyPoll> TryCatch(ReturningTerminologyPollFunction
             returningTerminologyPollFunction)
@@ -26,28 +26,29 @@ namespace LHDS.Core.Services.Processings.TerminologyPolls
             }
             catch (NullTerminologyPollProcessingException nullTerminologyPollProcessingException)
             {
-                throw CreateAndLogValidationException(nullTerminologyPollProcessingException);
+                throw await CreateAndLogValidationExceptionAsync(nullTerminologyPollProcessingException);
             }
-            catch (InvalidArgumentTerminologyPollsProcessingException 
+            catch (InvalidArgumentTerminologyPollsProcessingException
                 InvalidArgumentTerminologyPollsProcessingException)
             {
-                throw CreateAndLogValidationException(InvalidArgumentTerminologyPollsProcessingException);
+                throw await CreateAndLogValidationExceptionAsync(InvalidArgumentTerminologyPollsProcessingException);
             }
             catch (TerminologyPollValidationException terminologyPollValidationException)
             {
-                throw CreateAndLogDependencyValidationException(terminologyPollValidationException);
+                throw await CreateAndLogDependencyValidationExceptionAsync(terminologyPollValidationException);
             }
             catch (TerminologyPollDependencyValidationException terminologyPollDependencyValidationException)
             {
-                throw CreateAndLogDependencyValidationException(terminologyPollDependencyValidationException);
+                throw await CreateAndLogDependencyValidationExceptionAsync(
+                    terminologyPollDependencyValidationException);
             }
             catch (TerminologyPollDependencyException terminologyPollDependencyException)
             {
-                throw CreateAndLogDependencyException(terminologyPollDependencyException);
+                throw await CreateAndLogDependencyExceptionAsync(terminologyPollDependencyException);
             }
             catch (TerminologyPollServiceException terminologyPollServiceException)
             {
-                throw CreateAndLogDependencyException(terminologyPollServiceException);
+                throw await CreateAndLogDependencyExceptionAsync(terminologyPollServiceException);
             }
             catch (Exception exception)
             {
@@ -56,31 +57,33 @@ namespace LHDS.Core.Services.Processings.TerminologyPolls
                         message: "Failed terminology poll processing service error occurred, please contact support.",
                         innerException: exception);
 
-                throw CreateAndLogServiceException(failedTerminologyPollProcessingServiceException);
+                throw await CreateAndLogServiceExceptionAsync(failedTerminologyPollProcessingServiceException);
             }
         }
 
-        private IQueryable<TerminologyPoll> TryCatch(ReturningTerminologyPollsFunction returningTerminologyPollsFunction)
+        private async ValueTask<IQueryable<TerminologyPoll>>
+            TryCatch(ReturningTerminologyPollsFunction returningTerminologyPollsFunction)
         {
             try
             {
-                return returningTerminologyPollsFunction();
+                return await returningTerminologyPollsFunction();
             }
             catch (TerminologyPollValidationException terminologyPollValidationException)
             {
-                throw CreateAndLogDependencyValidationException(terminologyPollValidationException);
+                throw await CreateAndLogDependencyValidationExceptionAsync(terminologyPollValidationException);
             }
             catch (TerminologyPollDependencyValidationException terminologyPollDependencyValidationException)
             {
-                throw CreateAndLogDependencyValidationException(terminologyPollDependencyValidationException);
+                throw await CreateAndLogDependencyValidationExceptionAsync(
+                    terminologyPollDependencyValidationException);
             }
             catch (TerminologyPollDependencyException terminologyPollDependencyException)
             {
-                throw CreateAndLogDependencyException(terminologyPollDependencyException);
+                throw await CreateAndLogDependencyExceptionAsync(terminologyPollDependencyException);
             }
             catch (TerminologyPollServiceException terminologyPollServiceException)
             {
-                throw CreateAndLogDependencyException(terminologyPollServiceException);
+                throw await CreateAndLogDependencyExceptionAsync(terminologyPollServiceException);
             }
             catch (Exception exception)
             {
@@ -89,36 +92,37 @@ namespace LHDS.Core.Services.Processings.TerminologyPolls
                         message: "Failed terminology poll processing service error occurred, please contact support.",
                         innerException: exception);
 
-                throw CreateAndLogServiceException(failedTerminologyPollProcessingServiceException);
+                throw await CreateAndLogServiceExceptionAsync(failedTerminologyPollProcessingServiceException);
             }
         }
 
-        private TerminologyPollProcessingValidationException CreateAndLogValidationException(Xeption exception)
+        private async ValueTask<TerminologyPollProcessingValidationException> CreateAndLogValidationExceptionAsync(
+            Xeption exception)
         {
             var terminologyPollProcessingValidationException =
                 new TerminologyPollProcessingValidationException(
                     message: "Terminology poll processing validation errors occurred, please try again.",
                     innerException: exception);
 
-            this.loggingBroker.LogError(terminologyPollProcessingValidationException);
+            await this.loggingBroker.LogErrorAsync(terminologyPollProcessingValidationException);
 
             return terminologyPollProcessingValidationException;
         }
 
-        private TerminologyPollProcessingDependencyValidationException CreateAndLogDependencyValidationException(
-            Xeption exception)
+        private async ValueTask<TerminologyPollProcessingDependencyValidationException>
+            CreateAndLogDependencyValidationExceptionAsync(Xeption exception)
         {
             var terminologyPollProcessingDependencyValidationException =
                 new TerminologyPollProcessingDependencyValidationException(
                     message: "Terminology poll processing dependency validation error occurred, please try again.",
                     innerException: exception.InnerException as Xeption);
 
-            this.loggingBroker.LogError(terminologyPollProcessingDependencyValidationException);
+            await this.loggingBroker.LogErrorAsync(terminologyPollProcessingDependencyValidationException);
 
             return terminologyPollProcessingDependencyValidationException;
         }
 
-        private TerminologyPollProcessingDependencyException CreateAndLogDependencyException(
+        private async ValueTask<TerminologyPollProcessingDependencyException> CreateAndLogDependencyExceptionAsync(
             Xeption exception)
         {
             var terminologyPollProcessingDependencyException =
@@ -126,12 +130,12 @@ namespace LHDS.Core.Services.Processings.TerminologyPolls
                     message: "Terminology poll processing dependency error occurred, please try again.",
                     innerException: exception.InnerException as Xeption);
 
-            this.loggingBroker.LogError(terminologyPollProcessingDependencyException);
+            await this.loggingBroker.LogErrorAsync(terminologyPollProcessingDependencyException);
 
             return terminologyPollProcessingDependencyException;
         }
 
-        private TerminologyPollProcessingServiceException CreateAndLogServiceException(
+        private async ValueTask<TerminologyPollProcessingServiceException> CreateAndLogServiceExceptionAsync(
             Xeption exception)
         {
             var terminologyPollProcessingServiceException =
@@ -139,7 +143,7 @@ namespace LHDS.Core.Services.Processings.TerminologyPolls
                     message: "Terminology poll processing service error occurred, please contact support.",
                     innerException: exception);
 
-            this.loggingBroker.LogError(terminologyPollProcessingServiceException);
+            await this.loggingBroker.LogErrorAsync(terminologyPollProcessingServiceException);
 
             return terminologyPollProcessingServiceException;
         }

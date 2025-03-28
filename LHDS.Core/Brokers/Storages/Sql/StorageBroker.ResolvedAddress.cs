@@ -21,10 +21,11 @@ namespace LHDS.Core.Brokers.Storages.Sql
         public async ValueTask BulkInsertResolvedAddressesAsync(List<ResolvedAddress> resolvedAddresses) =>
             await BulkInsertAsync(resolvedAddresses);
 
-        public IQueryable<ResolvedAddress> SelectAllResolvedAddresses() => ReadAll<ResolvedAddress>();
+        public async ValueTask<IQueryable<ResolvedAddress>> SelectAllResolvedAddressesAsync() =>
+            await SelectAllAsync<ResolvedAddress>();
 
         public async ValueTask<ResolvedAddress> SelectResolvedAddressByIdAsync(Guid resolvedAddressId) =>
-            await ReadAsync<ResolvedAddress>(resolvedAddressId);
+            await SelectAsync<ResolvedAddress>(resolvedAddressId);
 
         public async ValueTask<ResolvedAddress> UpdateResolvedAddressAsync(ResolvedAddress resolvedAddress) =>
             await UpdateAsync(resolvedAddress);

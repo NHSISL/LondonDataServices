@@ -23,48 +23,48 @@ namespace LHDS.Core.Services.Coordinations.TppLandings
             }
             catch (InvalidArgumentTppLandingCoordinationException invalidArgumentTppLandingCoordinationException)
             {
-                throw CreateAndLogValidationException(invalidArgumentTppLandingCoordinationException);
+                throw await CreateAndLogValidationExceptionAsync(invalidArgumentTppLandingCoordinationException);
             }
             catch (TppLandingOrchestrationValidationException
                 tppLandingOrchestrationValidationException)
             {
-                throw CreateAndLogDependencyValidationException(tppLandingOrchestrationValidationException);
+                throw await CreateAndLogDependencyValidationExceptionAsync(tppLandingOrchestrationValidationException);
             }
             catch (TppLandingOrchestrationDependencyValidationException
                 tppLandingOrchestrationDependencyValidationException)
             {
-                throw CreateAndLogDependencyValidationException(
+                throw await CreateAndLogDependencyValidationExceptionAsync(
                     tppLandingOrchestrationDependencyValidationException);
             }
-            catch (IngresOrchestrationValidationException
+            catch (IngressOrchestrationValidationException
                 ingresOrchestrationValidationException)
             {
-                throw CreateAndLogDependencyValidationException(ingresOrchestrationValidationException);
+                throw await CreateAndLogDependencyValidationExceptionAsync(ingresOrchestrationValidationException);
             }
-            catch (IngresOrchestrationDependencyValidationException
+            catch (IngressOrchestrationDependencyValidationException
                 ingresOrchestrationDependencyValidationException)
             {
-                throw CreateAndLogDependencyValidationException(ingresOrchestrationDependencyValidationException);
+                throw await CreateAndLogDependencyValidationExceptionAsync(ingresOrchestrationDependencyValidationException);
             }
             catch (TppLandingOrchestrationDependencyException
                 tppLandingOrchestrationDependencyException)
             {
-                throw CreateAndLogDependencyException(tppLandingOrchestrationDependencyException);
+                throw await CreateAndLogDependencyExceptionAsync(tppLandingOrchestrationDependencyException);
             }
             catch (TppLandingOrchestrationServiceException
                 tppLandingOrchestrationServiceException)
             {
-                throw CreateAndLogDependencyException(tppLandingOrchestrationServiceException);
+                throw await CreateAndLogDependencyExceptionAsync(tppLandingOrchestrationServiceException);
             }
-            catch (IngresOrchestrationDependencyException
+            catch (IngressOrchestrationDependencyException
                 ingresOrchestrationDependencyException)
             {
-                throw CreateAndLogDependencyException(ingresOrchestrationDependencyException);
+                throw await CreateAndLogDependencyExceptionAsync(ingresOrchestrationDependencyException);
             }
-            catch (IngresOrchestrationServiceException
+            catch (IngressOrchestrationServiceException
                 ingresOrchestrationServiceException)
             {
-                throw CreateAndLogDependencyException(ingresOrchestrationServiceException);
+                throw await CreateAndLogDependencyExceptionAsync(ingresOrchestrationServiceException);
             }
             catch (Exception exception)
             {
@@ -73,50 +73,52 @@ namespace LHDS.Core.Services.Coordinations.TppLandings
                         message: "Failed TPP landing coordination service error occurred, please contact support.",
                         innerException: exception);
 
-                throw CreateAndLogServiceException(failedTppLandingCoordinationServiceException);
+                throw await CreateAndLogServiceExceptionAsync(failedTppLandingCoordinationServiceException);
             }
         }
 
-        private TppLandingCoordinationValidationException CreateAndLogValidationException(Xeption exception)
+        private async ValueTask<TppLandingCoordinationValidationException>
+            CreateAndLogValidationExceptionAsync(Xeption exception)
         {
             var tppLandingCoordinationValidationException =
                 new TppLandingCoordinationValidationException(
                     message: "TPP landing coordination validation errors occured, please try again.",
                     innerException: exception);
 
-            this.loggingBroker.LogError(tppLandingCoordinationValidationException);
+            await this.loggingBroker.LogErrorAsync(tppLandingCoordinationValidationException);
 
             return tppLandingCoordinationValidationException;
         }
 
-        private TppLandingCoordinationDependencyValidationException
-            CreateAndLogDependencyValidationException(Xeption exception)
+        private async ValueTask<TppLandingCoordinationDependencyValidationException>
+            CreateAndLogDependencyValidationExceptionAsync(Xeption exception)
         {
             var tppLandingCoordinationDependencyValidationException =
                 new TppLandingCoordinationDependencyValidationException(
-                    message: "TPP landing coordination dependency validation error occurred, fix the errors and try again.",
+                    message: "TPP landing coordination dependency validation error occurred, " +
+                        "fix the errors and try again.",
                     exception.InnerException as Xeption);
 
-            this.loggingBroker.LogError(tppLandingCoordinationDependencyValidationException);
+            await this.loggingBroker.LogErrorAsync(tppLandingCoordinationDependencyValidationException);
 
             return tppLandingCoordinationDependencyValidationException;
         }
 
-        private TppLandingCoordinationDependencyException
-            CreateAndLogDependencyException(Xeption exception)
+        private async ValueTask<TppLandingCoordinationDependencyException>
+            CreateAndLogDependencyExceptionAsync(Xeption exception)
         {
             var tppLandingCoordinationDependencyException =
                 new TppLandingCoordinationDependencyException(
                     message: "TPP landing coordination dependency error occurred, fix the errors and try again.",
                     innerException: exception.InnerException as Xeption);
 
-            this.loggingBroker.LogError(tppLandingCoordinationDependencyException);
+            await this.loggingBroker.LogErrorAsync(tppLandingCoordinationDependencyException);
 
-            throw tppLandingCoordinationDependencyException;
+            return tppLandingCoordinationDependencyException;
         }
 
-        private TppLandingCoordinationServiceException
-           CreateAndLogServiceException(Xeption exception)
+        private async ValueTask<TppLandingCoordinationServiceException>
+           CreateAndLogServiceExceptionAsync(Xeption exception)
         {
             var
                 tppLandingCoordinationServiceException =
@@ -124,9 +126,9 @@ namespace LHDS.Core.Services.Coordinations.TppLandings
                     message: "TPP landing coordination service error occurred, please contact support.",
                     exception);
 
-            this.loggingBroker.LogError(tppLandingCoordinationServiceException);
+            await this.loggingBroker.LogErrorAsync(tppLandingCoordinationServiceException);
 
-            throw tppLandingCoordinationServiceException;
+            return tppLandingCoordinationServiceException;
         }
 
     }

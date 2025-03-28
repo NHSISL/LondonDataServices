@@ -26,18 +26,19 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Pds
             int randomNumber = 1; // GetRandomNumber();
             List<string> randomMessageIds = GetRandomStrings(randomNumber);
             string mexWorkflowId = this.pdsConfiguration.WorkflowId;
+            string mexReturnWorkflowId = this.pdsConfiguration.ReturnWorkflowId;
             List<MeshMessage> retrievedMessages = GetRandomMessages(randomMessageIds, mexWorkflowId);
             string randomContainer = GetRandomString();
             string inputContainer = "pds";
             Guid identifier = Guid.NewGuid();
 
             this.dateTimeBrokerMock.Setup(broker =>
-                broker.GetCurrentDateTimeOffset())
-                    .Returns(randomDate);
+                broker.GetCurrentDateTimeOffsetAsync())
+                    .ReturnsAsync(randomDate);
 
             this.identifierBrokerMock.Setup(broker =>
-                broker.GetIdentifier())
-                    .Returns(identifier);
+                broker.GetIdentifierAsync())
+                    .ReturnsAsync(identifier);
 
             this.meshServiceMock.SetupSequence(service =>
                 service.RetrieveMessageIdsFromInboxAsync())
@@ -100,11 +101,11 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Pds
             pdsAuditsList.Count.Should().Be(retrievedMessages.Count);
 
             this.dateTimeBrokerMock.Verify(broker =>
-                broker.GetCurrentDateTimeOffset(),
+                broker.GetCurrentDateTimeOffsetAsync(),
                     Times.Exactly(retrievedMessages.Count));
 
             this.identifierBrokerMock.Verify(broker =>
-                broker.GetIdentifier(),
+                broker.GetIdentifierAsync(),
                     Times.Exactly(retrievedMessages.Count));
 
             this.meshServiceMock.Verify(service =>
@@ -151,6 +152,10 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Pds
                     service.AddPdsAuditAsync(It.Is(SamePdsAuditAs(pdsAudit))),
                         Times.Once);
 
+                this.meshServiceMock.Verify(service =>
+                    service.AcknowledgeMessageByIdAsync(message.MessageId),
+                        Times.Exactly(1));
+
                 pdsAuditsList.Add(pdsAudit);
             };
 
@@ -183,7 +188,8 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Pds
                     service.RetrieveMessageByIdAsync(message.MessageId))
                         .ReturnsAsync(message);
 
-                if (message.Headers["mex-workflowid"].FirstOrDefault() != this.pdsConfiguration.WorkflowId)
+                if (message.Headers["mex-workflowid"].FirstOrDefault() != this.pdsConfiguration.WorkflowId ||
+                    message.Headers["mex-workflowid"].FirstOrDefault() != this.pdsConfiguration.ReturnWorkflowId)
                 {
                     continue;
                 }
@@ -208,7 +214,8 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Pds
                     service.RetrieveMessageByIdAsync(message.MessageId),
                         Times.Once);
 
-                if (message.Headers["mex-workflowid"].FirstOrDefault() != this.pdsConfiguration.WorkflowId)
+                if (message.Headers["mex-workflowid"].FirstOrDefault() != this.pdsConfiguration.WorkflowId ||
+                    message.Headers["mex-workflowid"].FirstOrDefault() != this.pdsConfiguration.ReturnWorkflowId)
                 {
                     continue;
                 }

@@ -3,6 +3,8 @@
 // ---------------------------------------------------------
 
 using System.Linq;
+using System.Security.Claims;
+using System.Security.Principal;
 using System.Threading.Tasks;
 using LHDS.Core.Brokers.Loggings;
 using LHDS.Core.Brokers.Storages.Blobs;
@@ -29,6 +31,7 @@ namespace LHDS.Core.Tests.Integration.EmisLandings
     {
         private readonly ITestOutputHelper output;
         private readonly IEmisLandingClient landingClient;
+        private readonly IDecryptionClient decryptionClient;
         private readonly ILoggingBroker loggingBroker;
         private readonly IBlobStorageBroker blobStorageBroker;
         private readonly LandingConfiguration landingConfiguration;
@@ -52,6 +55,8 @@ namespace LHDS.Core.Tests.Integration.EmisLandings
                 .AddEnvironmentVariables();
 
             IConfiguration configuration = configurationBuilder.Build();
+            var windowsIdentity = WindowsIdentity.GetCurrent();
+            var claimsPrincipal = new ClaimsPrincipal(windowsIdentity);
 
             //setup our DI
             var serviceProvider = new ServiceCollection()
@@ -60,7 +65,8 @@ namespace LHDS.Core.Tests.Integration.EmisLandings
                     builder.AddConsole();
                     builder.AddApplicationInsights();
                 })
-                .AddEmisLandingClient(configuration)
+                .AddEmisLandingClient(configuration, claimsPrincipal)
+                .AddDecryptionClient(configuration, claimsPrincipal)
                 .UseFtpDownloadProvider(configuration, builder => builder.AddFtpDownloadProvider())
                 .BuildServiceProvider();
 
@@ -75,12 +81,14 @@ namespace LHDS.Core.Tests.Integration.EmisLandings
             dataSetSpecificationService = serviceProvider.GetService<IDataSetSpecificationService>();
             subscriberAgreementService = serviceProvider.GetService<ISubscriberAgreementService>();
             landingClient = serviceProvider.GetService<IEmisLandingClient>();
+            decryptionClient = serviceProvider.GetService<IDecryptionClient>();
         }
 
-        private async ValueTask<Supplier> GetEmisSupplier()
+        private async ValueTask<Supplier> GetEmisSupplierAsync()
         {
-            return supplierService.RetrieveAllSuppliers()
-                .First(s => s.Name == "EMIS");
+            IQueryable<Supplier> retrievedSuppliers = await supplierService.RetrieveAllSuppliersAsync();
+
+            return retrievedSuppliers.First(s => s.Name == "EMIS");
         }
     }
 }

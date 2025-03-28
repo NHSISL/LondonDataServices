@@ -2,6 +2,9 @@
 // Copyright (c) North East London ICB. All rights reserved.
 // ---------------------------------------------------------
 
+using System;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 using LHDS.Core.Brokers.Loggings;
 using LHDS.Core.Models.Foundations.IngestionTrackingAudits;
 using LHDS.Core.Models.Foundations.IngestionTrackings;
@@ -46,7 +49,7 @@ namespace LHDS.Core.SeedGenerator.Services
             catch (Exception ex)
             {
                 Console.WriteLine(ex.ToString());
-                this.loggingBroker.LogError(ex);
+                await this.loggingBroker.LogErrorAsync(ex);
             }
         }
 
@@ -65,7 +68,7 @@ namespace LHDS.Core.SeedGenerator.Services
                     catch (Exception ex)
                     {
                         Console.WriteLine(ex.ToString());
-                        this.loggingBroker.LogError(ex);
+                        await this.loggingBroker.LogErrorAsync(ex);
                     }
                 }
 
@@ -94,7 +97,7 @@ namespace LHDS.Core.SeedGenerator.Services
                     catch (Exception ex)
                     {
                         Console.WriteLine(ex.ToString());
-                        this.loggingBroker.LogError(ex);
+                        await this.loggingBroker.LogErrorAsync(ex);
                     }
                 }
 
@@ -123,7 +126,7 @@ namespace LHDS.Core.SeedGenerator.Services
                     catch (Exception ex)
                     {
                         Console.WriteLine(ex.ToString());
-                        this.loggingBroker.LogError(ex);
+                        await this.loggingBroker.LogErrorAsync(ex);
                     }
                 }
 

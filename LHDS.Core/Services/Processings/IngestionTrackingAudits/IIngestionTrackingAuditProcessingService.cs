@@ -1,6 +1,6 @@
-﻿// ---------------------------------------------------------------
+﻿// ---------------------------------------------------------
 // Copyright (c) North East London ICB. All rights reserved.
-// ---------------------------------------------------------------
+// ---------------------------------------------------------
 
 using System;
 using System.Linq;
@@ -12,7 +12,7 @@ namespace LHDS.Core.Services.Processings.IngestionTrackingAudits
     public interface IIngestionTrackingAuditProcessingService
     {
         ValueTask<IngestionTrackingAudit> AddIngestionTrackingAuditAsync(IngestionTrackingAudit audit);
-        IQueryable<IngestionTrackingAudit> RetrieveAllIngestionTrackingAudits();
+        ValueTask<IQueryable<IngestionTrackingAudit>> RetrieveAllIngestionTrackingAuditsAsync();
         ValueTask<IngestionTrackingAudit> RetrieveIngestionTrackingAuditByIdAsync(Guid auditId);
         ValueTask<IngestionTrackingAudit> RetrieveOrAddIngestionTrackingAuditAsync(IngestionTrackingAudit audit);
         ValueTask<IngestionTrackingAudit> ModifyOrAddIngestionTrackingAuditAsync(IngestionTrackingAudit audit);

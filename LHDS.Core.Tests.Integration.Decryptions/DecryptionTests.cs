@@ -2,6 +2,8 @@
 // Copyright (c) North East London ICB. All rights reserved.
 // ---------------------------------------------------------
 
+using System.Security.Claims;
+using System.Security.Principal;
 using LHDS.Core.Clients;
 using LHDS.Core.Clients.Extensions;
 using LHDS.Core.Providers.Cryptography.Extensions;
@@ -26,8 +28,7 @@ namespace LHDS.Core.Tests.Integration.Decryptions
         public DecryptionTests(ITestOutputHelper output)
         {
             this.output = output;
-
-            var environmentName = "Development";
+            var environmentName = "Production";
 
             var configurationBuilder = new ConfigurationBuilder()
                 .AddJsonFile("appsettings.json", optional: true, reloadOnChange: true)
@@ -36,6 +37,8 @@ namespace LHDS.Core.Tests.Integration.Decryptions
                 .AddEnvironmentVariables();
 
             IConfiguration configuration = configurationBuilder.Build();
+            var windowsIdentity = WindowsIdentity.GetCurrent();
+            var claimsPrincipal = new ClaimsPrincipal(windowsIdentity);
 
             //setup our DI
             var serviceProvider = new ServiceCollection()
@@ -44,7 +47,7 @@ namespace LHDS.Core.Tests.Integration.Decryptions
                     builder.AddConsole();
                     builder.AddApplicationInsights();
                 })
-                .AddDecryptionClient(configuration)
+                .AddDecryptionClient(configuration, claimsPrincipal)
                 .UseGpgCryptographyProvider(configuration, builder => builder.AddGpgCryptographyProvider())
                 .AddTransient<IDownloadProvider, MockDownloadProvider>()
                 .BuildServiceProvider();

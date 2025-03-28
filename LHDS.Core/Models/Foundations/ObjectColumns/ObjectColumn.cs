@@ -1,6 +1,6 @@
-﻿// ---------------------------------------------------------------
+﻿// ---------------------------------------------------------
 // Copyright (c) North East London ICB. All rights reserved.
-// ---------------------------------------------------------------
+// ---------------------------------------------------------
 
 using System;
 using LHDS.Core.Models.Bases;
@@ -40,6 +40,13 @@ namespace LHDS.Core.Models.Foundations.ObjectColumns
         public string CodeSystem { get; set; } = string.Empty;
         public string PartitionColumnLevel { get; set; } = string.Empty;
         public Guid DataTypeId { get; set; }
+        public bool IsForeignKey { get; set; } = false;
+        public string ForeignKeyTableName { get; set; } = string.Empty;
+        public string ForeignKeyColumnName { get; set; } = string.Empty;
+        public bool IsCaseSensitive { get; set; } = false;
+        public string DeleteCondition { get; set; } = string.Empty;
+        public bool IsPostcode { get; set; } = false;
+        public bool IsNumeric { get; set; } = false;
         public string CreatedBy { get; set; } = string.Empty;
         public string UpdatedBy { get; set; } = string.Empty;
         public DateTimeOffset UpdatedDate { get; set; }

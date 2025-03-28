@@ -35,8 +35,8 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.TerminologyPolls
                     innerException: failedTerminologyPollStorageException);
 
             this.dateTimeBrokerMock.Setup(broker =>
-                broker.GetCurrentDateTimeOffset())
-                    .Throws(sqlException);
+                broker.GetCurrentDateTimeOffsetAsync())
+                    .ThrowsAsync(sqlException);
 
             // when
             ValueTask<TerminologyPoll> addTerminologyPollTask =
@@ -51,7 +51,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.TerminologyPolls
                 .BeEquivalentTo(expectedTerminologyPollDependencyException);
 
             this.dateTimeBrokerMock.Verify(broker =>
-                broker.GetCurrentDateTimeOffset(),
+                broker.GetCurrentDateTimeOffsetAsync(),
                     Times.Once);
 
             this.storageBrokerMock.Verify(broker =>
@@ -59,7 +59,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.TerminologyPolls
                     Times.Never);
 
             this.loggingBrokerMock.Verify(broker =>
-                broker.LogCritical(It.Is(SameExceptionAs(
+                broker.LogCriticalAsync(It.Is(SameExceptionAs(
                     expectedTerminologyPollDependencyException))),
                         Times.Once);
 
@@ -90,8 +90,8 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.TerminologyPolls
                     innerException: alreadyExistsTerminologyPollException);
 
             this.dateTimeBrokerMock.Setup(broker =>
-                broker.GetCurrentDateTimeOffset())
-                    .Throws(duplicateKeyException);
+                broker.GetCurrentDateTimeOffsetAsync())
+                    .ThrowsAsync(duplicateKeyException);
 
             // when
             ValueTask<TerminologyPoll> addTerminologyPollTask =
@@ -106,7 +106,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.TerminologyPolls
                 .BeEquivalentTo(expectedTerminologyPollDependencyValidationException);
 
             this.dateTimeBrokerMock.Verify(broker =>
-                broker.GetCurrentDateTimeOffset(),
+                broker.GetCurrentDateTimeOffsetAsync(),
                     Times.Once);
 
             this.storageBrokerMock.Verify(broker =>
@@ -114,7 +114,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.TerminologyPolls
                     Times.Never);
 
             this.loggingBrokerMock.Verify(broker =>
-                broker.LogError(It.Is(SameExceptionAs(
+                broker.LogErrorAsync(It.Is(SameExceptionAs(
                     expectedTerminologyPollDependencyValidationException))),
                         Times.Once);
 
@@ -124,7 +124,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.TerminologyPolls
         }
 
         [Fact]
-        public async void ShouldThrowValidationExceptionOnAddIfReferenceErrorOccursAndLogItAsync()
+        public async Task ShouldThrowValidationExceptionOnAddIfReferenceErrorOccursAndLogItAsync()
         {
             // given
             TerminologyPoll someTerminologyPoll = CreateRandomTerminologyPoll();
@@ -145,8 +145,8 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.TerminologyPolls
                     innerException: invalidTerminologyPollReferenceException);
 
             this.dateTimeBrokerMock.Setup(broker =>
-                broker.GetCurrentDateTimeOffset())
-                    .Throws(foreignKeyConstraintConflictException);
+                broker.GetCurrentDateTimeOffsetAsync())
+                    .ThrowsAsync(foreignKeyConstraintConflictException);
 
             // when
             ValueTask<TerminologyPoll> addTerminologyPollTask =
@@ -161,11 +161,11 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.TerminologyPolls
                 .BeEquivalentTo(expectedTerminologyPollValidationException);
 
             this.dateTimeBrokerMock.Verify(broker =>
-                broker.GetCurrentDateTimeOffset(),
+                broker.GetCurrentDateTimeOffsetAsync(),
                     Times.Once());
 
             this.loggingBrokerMock.Verify(broker =>
-                broker.LogError(It.Is(SameExceptionAs(
+                broker.LogErrorAsync(It.Is(SameExceptionAs(
                     expectedTerminologyPollValidationException))),
                         Times.Once);
 
@@ -198,8 +198,8 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.TerminologyPolls
                     innerException: failedTerminologyPollStorageException);
 
             this.dateTimeBrokerMock.Setup(broker =>
-                broker.GetCurrentDateTimeOffset())
-                    .Throws(databaseUpdateException);
+                broker.GetCurrentDateTimeOffsetAsync())
+                    .ThrowsAsync(databaseUpdateException);
 
             // when
             ValueTask<TerminologyPoll> addTerminologyPollTask =
@@ -214,7 +214,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.TerminologyPolls
                 .BeEquivalentTo(expectedTerminologyPollDependencyException);
 
             this.dateTimeBrokerMock.Verify(broker =>
-                broker.GetCurrentDateTimeOffset(),
+                broker.GetCurrentDateTimeOffsetAsync(),
                     Times.Once);
 
             this.storageBrokerMock.Verify(broker =>
@@ -222,7 +222,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.TerminologyPolls
                     Times.Never);
 
             this.loggingBrokerMock.Verify(broker =>
-                broker.LogError(It.Is(SameExceptionAs(
+                broker.LogErrorAsync(It.Is(SameExceptionAs(
                     expectedTerminologyPollDependencyException))),
                         Times.Once);
 
@@ -249,8 +249,8 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.TerminologyPolls
                     innerException: failedTerminologyPollServiceException);
 
             this.dateTimeBrokerMock.Setup(broker =>
-                broker.GetCurrentDateTimeOffset())
-                    .Throws(serviceException);
+                broker.GetCurrentDateTimeOffsetAsync())
+                    .ThrowsAsync(serviceException);
 
             // when
             ValueTask<TerminologyPoll> addTerminologyPollTask =
@@ -265,7 +265,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.TerminologyPolls
                 .BeEquivalentTo(expectedTerminologyPollServiceException);
 
             this.dateTimeBrokerMock.Verify(broker =>
-                broker.GetCurrentDateTimeOffset(),
+                broker.GetCurrentDateTimeOffsetAsync(),
                     Times.Once);
 
             this.storageBrokerMock.Verify(broker =>
@@ -273,7 +273,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.TerminologyPolls
                     Times.Never);
 
             this.loggingBrokerMock.Verify(broker =>
-                broker.LogError(It.Is(SameExceptionAs(
+                broker.LogErrorAsync(It.Is(SameExceptionAs(
                     expectedTerminologyPollServiceException))),
                         Times.Once);
 

@@ -17,7 +17,7 @@ namespace LHDS.Core.Services.Foundations.DataSets
     public partial class DataSetService
     {
         private delegate ValueTask<DataSet> ReturningDataSetFunction();
-        private delegate IQueryable<DataSet> ReturningDataSetsFunction();
+        private delegate ValueTask<IQueryable<DataSet>> ReturningDataSetsFunction();
 
         private async ValueTask<DataSet> TryCatch(ReturningDataSetFunction returningDataSetFunction)
         {
@@ -27,11 +27,11 @@ namespace LHDS.Core.Services.Foundations.DataSets
             }
             catch (NullDataSetException nullDataSetException)
             {
-                throw CreateAndLogValidationException(nullDataSetException);
+                throw await CreateAndLogValidationExceptionAsync(nullDataSetException);
             }
             catch (InvalidDataSetException invalidDataSetException)
             {
-                throw CreateAndLogValidationException(invalidDataSetException);
+                throw await CreateAndLogValidationExceptionAsync(invalidDataSetException);
             }
             catch (SqlException sqlException)
             {
@@ -40,11 +40,11 @@ namespace LHDS.Core.Services.Foundations.DataSets
                         message: "Failed dataSet storage error occurred, please contact support.",
                         innerException: sqlException);
 
-                throw CreateAndLogCriticalDependencyException(failedDataSetStorageException);
+                throw await CreateAndLogCriticalDependencyExceptionAsync(failedDataSetStorageException);
             }
             catch (NotFoundDataSetException notFoundDataSetException)
             {
-                throw CreateAndLogValidationException(notFoundDataSetException);
+                throw await CreateAndLogValidationExceptionAsync(notFoundDataSetException);
             }
             catch (DuplicateKeyException duplicateKeyException)
             {
@@ -53,7 +53,7 @@ namespace LHDS.Core.Services.Foundations.DataSets
                         message: "DataSet with the same Id already exists.",
                         innerException: duplicateKeyException);
 
-                throw CreateAndLogDependencyValidationException(alreadyExistsDataSetException);
+                throw await CreateAndLogDependencyValidationExceptionAsync(alreadyExistsDataSetException);
             }
             catch (ForeignKeyConstraintConflictException foreignKeyConstraintConflictException)
             {
@@ -62,7 +62,7 @@ namespace LHDS.Core.Services.Foundations.DataSets
                         message: "Invalid dataSet reference error occurred.",
                         innerException: foreignKeyConstraintConflictException);
 
-                throw CreateAndLogDependencyValidationException(invalidDataSetReferenceException);
+                throw await CreateAndLogDependencyValidationExceptionAsync(invalidDataSetReferenceException);
             }
             catch (DbUpdateConcurrencyException dbUpdateConcurrencyException)
             {
@@ -71,7 +71,7 @@ namespace LHDS.Core.Services.Foundations.DataSets
                         message: "Locked dataSet record exception, please try again later",
                         innerException: dbUpdateConcurrencyException);
 
-                throw CreateAndLogDependencyValidationException(lockedDataSetException);
+                throw await CreateAndLogDependencyValidationExceptionAsync(lockedDataSetException);
             }
             catch (DbUpdateException databaseUpdateException)
             {
@@ -80,7 +80,7 @@ namespace LHDS.Core.Services.Foundations.DataSets
                         message: "Failed dataSet storage error occurred, please contact support.",
                         innerException: databaseUpdateException);
 
-                throw CreateAndLogDependencyException(failedDataSetStorageException);
+                throw await CreateAndLogDependencyExceptionAsync(failedDataSetStorageException);
             }
             catch (Exception exception)
             {
@@ -89,15 +89,15 @@ namespace LHDS.Core.Services.Foundations.DataSets
                         message: "Failed dataSet service error occurred, please contact support.",
                         innerException: exception);
 
-                throw CreateAndLogServiceException(failedDataSetServiceException);
+                throw await CreateAndLogServiceExceptionAsync(failedDataSetServiceException);
             }
         }
 
-        private IQueryable<DataSet> TryCatch(ReturningDataSetsFunction returningDataSetsFunction)
+        private async ValueTask<IQueryable<DataSet>> TryCatch(ReturningDataSetsFunction returningDataSetsFunction)
         {
             try
             {
-                return returningDataSetsFunction();
+                return await returningDataSetsFunction();
             }
             catch (SqlException sqlException)
             {
@@ -106,7 +106,7 @@ namespace LHDS.Core.Services.Foundations.DataSets
                         message: "Failed dataSet storage error occurred, please contact support.",
                         innerException: sqlException);
 
-                throw CreateAndLogCriticalDependencyException(failedDataSetStorageException);
+                throw await CreateAndLogCriticalDependencyExceptionAsync(failedDataSetStorageException);
             }
             catch (Exception exception)
             {
@@ -115,47 +115,47 @@ namespace LHDS.Core.Services.Foundations.DataSets
                         message: "Failed dataSet service error occurred, please contact support.",
                         innerException: exception);
 
-                throw CreateAndLogServiceException(failedDataSetServiceException);
+                throw await CreateAndLogServiceExceptionAsync(failedDataSetServiceException);
             }
         }
 
-        private DataSetValidationException CreateAndLogValidationException(Xeption exception)
+        private async ValueTask<DataSetValidationException> CreateAndLogValidationExceptionAsync(Xeption exception)
         {
             var dataSetValidationException =
                 new DataSetValidationException(
                     message: "DataSet validation errors occurred, please try again.",
                     innerException: exception);
 
-            this.loggingBroker.LogError(dataSetValidationException);
+            await this.loggingBroker.LogErrorAsync(dataSetValidationException);
 
             return dataSetValidationException;
         }
 
-        private DataSetDependencyException CreateAndLogCriticalDependencyException(Xeption exception)
+        private async ValueTask<DataSetDependencyException> CreateAndLogCriticalDependencyExceptionAsync(Xeption exception)
         {
             var dataSetDependencyException =
                 new DataSetDependencyException(
                     message: "DataSet dependency error occurred, please contact support.",
                     innerException: exception);
 
-            this.loggingBroker.LogCritical(dataSetDependencyException);
+            await this.loggingBroker.LogCriticalAsync(dataSetDependencyException);
 
             return dataSetDependencyException;
         }
 
-        private DataSetDependencyValidationException CreateAndLogDependencyValidationException(Xeption exception)
+        private async ValueTask<DataSetDependencyValidationException> CreateAndLogDependencyValidationExceptionAsync(Xeption exception)
         {
             var dataSetDependencyValidationException =
                 new DataSetDependencyValidationException(
                     message: "DataSet dependency validation occurred, please try again.",
                     innerException: exception);
 
-            this.loggingBroker.LogError(dataSetDependencyValidationException);
+            await this.loggingBroker.LogErrorAsync(dataSetDependencyValidationException);
 
             return dataSetDependencyValidationException;
         }
 
-        private DataSetDependencyException CreateAndLogDependencyException(
+        private async ValueTask<DataSetDependencyException> CreateAndLogDependencyExceptionAsync(
             Xeption exception)
         {
             var dataSetDependencyException =
@@ -163,12 +163,12 @@ namespace LHDS.Core.Services.Foundations.DataSets
                     message: "DataSet dependency error occurred, please contact support.",
                     innerException: exception);
 
-            this.loggingBroker.LogError(dataSetDependencyException);
+            await this.loggingBroker.LogErrorAsync(dataSetDependencyException);
 
             return dataSetDependencyException;
         }
 
-        private DataSetServiceException CreateAndLogServiceException(
+        private async ValueTask<DataSetServiceException> CreateAndLogServiceExceptionAsync(
             Xeption exception)
         {
             var dataSetServiceException =
@@ -176,7 +176,7 @@ namespace LHDS.Core.Services.Foundations.DataSets
                     message: "DataSet service error occurred, please contact support.",
                     innerException: exception);
 
-            this.loggingBroker.LogError(dataSetServiceException);
+            await this.loggingBroker.LogErrorAsync(dataSetServiceException);
 
             return dataSetServiceException;
         }

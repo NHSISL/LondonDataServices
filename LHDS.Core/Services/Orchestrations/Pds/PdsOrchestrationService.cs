@@ -12,7 +12,6 @@ using LHDS.Core.Brokers.Identifiers;
 using LHDS.Core.Brokers.Loggings;
 using LHDS.Core.Models.Brokers.Storages.Blobs;
 using LHDS.Core.Models.Foundations.PdsAudits;
-using LHDS.Core.Models.Foundations.ResolvedAddresses;
 using LHDS.Core.Models.Orchestrations.Pds;
 using LHDS.Core.Services.Foundations.Documents;
 using LHDS.Core.Services.Foundations.Mesh;
@@ -65,9 +64,9 @@ namespace LHDS.Core.Services.Orchestrations.Pds
             ValidateBlobContainers();
             ValidatePdsArgs(pdsFile, fileName);
 
-            DateTimeOffset timeStamp = this.dateTimeBroker.GetCurrentDateTimeOffset();
-            Guid id = this.identifierBroker.GetIdentifier();
-            Guid correlationId = this.identifierBroker.GetIdentifier();
+            DateTimeOffset timeStamp = await this.dateTimeBroker.GetCurrentDateTimeOffsetAsync();
+            Guid id = await this.identifierBroker.GetIdentifierAsync();
+            Guid correlationId = await this.identifierBroker.GetIdentifierAsync();
 
             var meshMessage = await this.meshService.SendMessageAsync(
                    mexTo: this.pdsConfiguration.To,
@@ -120,7 +119,8 @@ namespace LHDS.Core.Services.Orchestrations.Pds
                         {
                             var message = await this.meshService.RetrieveMessageByIdAsync(id);
 
-                            if (message.Headers["mex-workflowid"].FirstOrDefault() != this.pdsConfiguration.WorkflowId)
+                            if (message.Headers["mex-workflowid"].FirstOrDefault() != this.pdsConfiguration.WorkflowId &&
+                                message.Headers["mex-workflowid"].FirstOrDefault() != this.pdsConfiguration.ReturnWorkflowId)
                             {
                                 return null;
                             }
@@ -132,33 +132,34 @@ namespace LHDS.Core.Services.Orchestrations.Pds
                             string fileNameOutput =
                                 $"{fileNameParts[1]}_{fileNameParts[2]}_{fileNameParts[0]}_{fileNameParts[3]}";
 
-                        fileNameOutput += Path.GetExtension(filename);
-                        string fileName = $"{pdsConfiguration.OutputFolder}/{fileNameOutput}";
+                            fileNameOutput += Path.GetExtension(filename);
+                            string fileName = $"{pdsConfiguration.OutputFolder}/{fileNameOutput}";
 
-                        using (Stream input = new MemoryStream(message.FileContent))
-                        {
-                            //TODO:  Should we inject the container name into the method to have more control?
-                            await this.documentService.AddDocumentAsync(input, fileName, container: blobContainers.Pds);
-                        }
+                            using (Stream input = new MemoryStream(message.FileContent))
+                            {
+                                //TODO:  Should we inject the container name into the method to have more control?
+                                await this.documentService.AddDocumentAsync(input, fileName, container: blobContainers.Pds);
+                            }
 
-                        var correlationId = Guid.Parse(message.Headers["mex-localid"].FirstOrDefault());
-                        DateTimeOffset currentDate = this.dateTimeBroker.GetCurrentDateTimeOffset();
+                            var correlationId = Guid.Parse(message.Headers["mex-localid"].FirstOrDefault());
+                            DateTimeOffset currentDate = await this.dateTimeBroker.GetCurrentDateTimeOffsetAsync();
 
-                        var pdsAudit = new PdsAudit
-                        {
-                            Id = this.identifierBroker.GetIdentifier(),
-                            CorrelationId = correlationId,
-                            FileName = fileName,
-                            Message = $"Received message from mesh with id {message.MessageId}",
-                            MessageId = message.MessageId,
-                            CreatedDate = currentDate,
-                            UpdatedDate = currentDate,
-                            CreatedBy = "System",
-                            UpdatedBy = "System"
-                        };
+                            var pdsAudit = new PdsAudit
+                            {
+                                Id = await this.identifierBroker.GetIdentifierAsync(),
+                                CorrelationId = correlationId,
+                                FileName = fileName,
+                                Message = $"Received message from mesh with id {message.MessageId}",
+                                MessageId = message.MessageId,
+                                CreatedDate = currentDate,
+                                UpdatedDate = currentDate,
+                                CreatedBy = "System",
+                                UpdatedBy = "System"
+                            };
 
                             await this.pdsAuditService.AddPdsAuditAsync(pdsAudit);
-                            
+                            await this.meshService.AcknowledgeMessageByIdAsync(message.MessageId);
+
                             return pdsAudit;
                         });
 

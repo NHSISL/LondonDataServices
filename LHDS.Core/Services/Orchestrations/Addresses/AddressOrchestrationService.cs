@@ -15,7 +15,6 @@ using LHDS.Core.Brokers.DateTimes;
 using LHDS.Core.Brokers.Files;
 using LHDS.Core.Brokers.Loggings;
 using LHDS.Core.Models.Foundations.Addresses;
-using LHDS.Core.Models.Foundations.Mesh;
 using LHDS.Core.Services.Processings.Addresses;
 using LHDS.Core.Services.Processings.Assigns;
 using Xeptions;
@@ -68,9 +67,6 @@ namespace LHDS.Core.Services.Orchestrations.Addresses
                 await ReadCsvDataAndBulkAddAddresses(ordinanceTempFolder);
                 await this.fileBroker.DeleteDirectoryAsync(ordinanceTempFolder, true);
             });
-
-        public ValueTask SyncAddressesWithAssignAsync() =>
-            throw new NotImplementedException();
 
         virtual internal async ValueTask UnZipAndExtractAsync(Stream data, string extractPath)
         {
@@ -174,7 +170,7 @@ namespace LHDS.Core.Services.Orchestrations.Addresses
                 }
                 catch (Exception ex)
                 {
-                    ((Xeption) ex).AddData("ExtractionError", csvFile);
+                    ((Xeption)ex).AddData("ExtractionError", csvFile);
                     exceptions.Add(ex);
                 }
             }
@@ -185,6 +181,11 @@ namespace LHDS.Core.Services.Orchestrations.Addresses
                     $"File has been moved to the error folder.",
                     exceptions);
             }
+        }
+
+        public ValueTask SyncAddressesWithAssignAsync()
+        {
+            throw new NotImplementedException();
         }
     }
 }

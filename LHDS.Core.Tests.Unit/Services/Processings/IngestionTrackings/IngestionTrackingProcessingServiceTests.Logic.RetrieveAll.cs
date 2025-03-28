@@ -2,7 +2,9 @@
 // Copyright (c) North East London ICB. All rights reserved.
 // ---------------------------------------------------------
 
+using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using FluentAssertions;
 using LHDS.Core.Models.Foundations.IngestionTrackings;
 using Moq;
@@ -13,26 +15,26 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.IngestionTrackings
     public partial class IngestionTrackingProcessingServiceTests
     {
         [Fact]
-        public void ShouldRetrieveAllIngestionTrackings()
+        public async Task ShouldRetrieveAllIngestionTrackingsAsync()
         {
             // given
-            IQueryable<IngestionTracking> randomIngestionTrackings = CreateRandomIngestionTrackings();
-            IQueryable<IngestionTracking> storageIngestionTrackings = randomIngestionTrackings;
-            IQueryable<IngestionTracking> expectedIngestionTrackings = storageIngestionTrackings;
+            List<IngestionTracking> randomIngestionTrackings = CreateRandomIngestionTrackings();
+            List<IngestionTracking> storageIngestionTrackings = randomIngestionTrackings;
+            IQueryable<IngestionTracking> expectedIngestionTrackings = storageIngestionTrackings.AsQueryable();
 
             this.ingestionTrackingServiceMock.Setup(broker =>
-                broker.RetrieveAllIngestionTrackings())
-                    .Returns(storageIngestionTrackings);
+                broker.RetrieveAllIngestionTrackingsAsync())
+                    .ReturnsAsync(storageIngestionTrackings.AsQueryable());
 
             // when
             IQueryable<IngestionTracking> actualIngestionTrackings =
-                this.ingestionTrackingProcessingService.RetrieveAllIngestionTrackings();
+                await this.ingestionTrackingProcessingService.RetrieveAllIngestionTrackingsAsync();
 
             // then
             actualIngestionTrackings.Should().BeEquivalentTo(expectedIngestionTrackings);
 
             this.ingestionTrackingServiceMock.Verify(broker =>
-                broker.RetrieveAllIngestionTrackings(),
+                broker.RetrieveAllIngestionTrackingsAsync(),
                     Times.Once);
 
             this.ingestionTrackingServiceMock.VerifyNoOtherCalls();

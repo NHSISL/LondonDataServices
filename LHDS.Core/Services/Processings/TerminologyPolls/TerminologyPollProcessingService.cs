@@ -40,10 +40,10 @@ namespace LHDS.Core.Services.Processings.TerminologyPolls
                 return await this.terminologyPollService.AddTerminologyPollAsync(terminologyPoll);
             });
 
-        public IQueryable<TerminologyPoll> RetrieveAllTerminologyPolls() =>
-            TryCatch(() =>
+        public ValueTask<IQueryable<TerminologyPoll>> RetrieveAllTerminologyPollsAsync() =>
+            TryCatch(async () =>
             {
-                return this.terminologyPollService.RetrieveAllTerminologyPolls();
+                return await this.terminologyPollService.RetrieveAllTerminologyPollsAsync();
             });
 
         public ValueTask<TerminologyPoll> RetrieveTerminologyPollByIdAsync(Guid terminologyPollId) =>
@@ -76,7 +76,7 @@ namespace LHDS.Core.Services.Processings.TerminologyPolls
                 ValidateResourceType(resourceType);
 
                 IQueryable<TerminologyPoll> allTerminologyPolls =
-                    this.terminologyPollService.RetrieveAllTerminologyPolls();
+                    await this.terminologyPollService.RetrieveAllTerminologyPollsAsync();
 
                 TerminologyPoll? maybeTerminologyPoll = allTerminologyPolls
                     .Where(terminologyPoll => terminologyPoll.ResourceType == resourceType)
@@ -84,11 +84,11 @@ namespace LHDS.Core.Services.Processings.TerminologyPolls
 
                 if (maybeTerminologyPoll == null)
                 {
-                    DateTimeOffset dateTimeOffset = this.dateTimeBroker.GetCurrentDateTimeOffset();
+                    DateTimeOffset dateTimeOffset = await this.dateTimeBroker.GetCurrentDateTimeOffsetAsync();
 
                     TerminologyPoll terminologyPoll = new TerminologyPoll
                     {
-                        Id = this.identifierBroker.GetIdentifier(),
+                        Id = await this.identifierBroker.GetIdentifierAsync(),
                         ResourceType = resourceType,
                         LastPoll = DateTimeOffset.MinValue.AddMilliseconds(1),
                         CreatedBy = "System",

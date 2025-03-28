@@ -31,7 +31,7 @@ namespace LHDS.Core.Tests.Unit.Services.Coordinations.EmisLandings
             List<Exception> exceptions = new List<Exception>();
 
             this.subscriberCredentialOrchestrationMock.Setup(service =>
-                service.RetrieveAllActiveSubscriberCredentialIds())
+                service.RetrieveAllActiveSubscriberCredentialIdsAsync())
                     .ReturnsAsync(randomActiveSubscriberAgreementIds);
 
             foreach (Guid subscriberAgreementId in randomActiveSubscriberAgreementIds)
@@ -68,15 +68,15 @@ namespace LHDS.Core.Tests.Unit.Services.Coordinations.EmisLandings
                 supplierId: inputSupplierId);
 
             EmisLandingCoordinationServiceException actualEmisLandingCoordinationValidationException =
-                await Assert.ThrowsAsync<EmisLandingCoordinationServiceException>(async () =>
-                    await processDataTask);
+                await Assert.ThrowsAsync<EmisLandingCoordinationServiceException>(
+                    processDataTask.AsTask);
 
             // Then
             actualEmisLandingCoordinationValidationException.Should()
                 .BeEquivalentTo(expectedEmisLandingCoordinationServiceException);
 
             this.subscriberCredentialOrchestrationMock.Verify(service =>
-                service.RetrieveAllActiveSubscriberCredentialIds(),
+                service.RetrieveAllActiveSubscriberCredentialIdsAsync(),
                     Times.Once);
 
             foreach (Guid subscriberAgreementId in randomActiveSubscriberAgreementIds)
@@ -92,12 +92,12 @@ namespace LHDS.Core.Tests.Unit.Services.Coordinations.EmisLandings
                     innerException: dependancyValidationException.InnerException as Xeption);
 
             this.loggingBrokerMock.Verify(broker =>
-                 broker.LogError(It.Is(IsSameExceptionAs(
+                 broker.LogErrorAsync(It.Is(IsSameExceptionAs(
                      emisLandingCoordinationDependencyValidationLoggingException))),
                          Times.Exactly(randomActiveSubscriberAgreementIds.Count));
 
             this.loggingBrokerMock.Verify(broker =>
-                 broker.LogError(It.Is(IsSameExceptionAs(
+                 broker.LogErrorAsync(It.Is(IsSameExceptionAs(
                      expectedEmisLandingCoordinationServiceException))),
                          Times.Once);
 
@@ -122,7 +122,7 @@ namespace LHDS.Core.Tests.Unit.Services.Coordinations.EmisLandings
             List<Exception> exceptions = new List<Exception>();
 
             this.subscriberCredentialOrchestrationMock.Setup(service =>
-                service.RetrieveAllActiveSubscriberCredentialIds())
+                service.RetrieveAllActiveSubscriberCredentialIdsAsync())
                     .ReturnsAsync(randomActiveSubscriberAgreementIds);
 
             foreach (Guid subscriberAgreementId in randomActiveSubscriberAgreementIds)
@@ -159,15 +159,15 @@ namespace LHDS.Core.Tests.Unit.Services.Coordinations.EmisLandings
                 .ProcessAsync(supplierId: inputSupplierId);
 
             EmisLandingCoordinationServiceException actualEmisLandingCoordinationValidationException =
-                await Assert.ThrowsAsync<EmisLandingCoordinationServiceException>(async () =>
-                    await processDataTask);
+                await Assert.ThrowsAsync<EmisLandingCoordinationServiceException>(
+                    processDataTask.AsTask);
 
             // Then
             actualEmisLandingCoordinationValidationException.Should()
                 .BeEquivalentTo(expectedEmisLandingCoordinationServiceException);
 
             this.subscriberCredentialOrchestrationMock.Verify(service =>
-                service.RetrieveAllActiveSubscriberCredentialIds(),
+                service.RetrieveAllActiveSubscriberCredentialIdsAsync(),
                     Times.Once);
 
             foreach (Guid subscriberAgreementId in randomActiveSubscriberAgreementIds)
@@ -183,12 +183,12 @@ namespace LHDS.Core.Tests.Unit.Services.Coordinations.EmisLandings
                     innerException: dependancyValidationException.InnerException as Xeption);
 
             this.loggingBrokerMock.Verify(broker =>
-                 broker.LogError(It.Is(IsSameExceptionAs(
+                 broker.LogErrorAsync(It.Is(IsSameExceptionAs(
                      emisLandingCoordinationDependencyLoggingException))),
                          Times.Exactly(randomActiveSubscriberAgreementIds.Count));
 
             this.loggingBrokerMock.Verify(broker =>
-                 broker.LogError(It.Is(IsSameExceptionAs(
+                 broker.LogErrorAsync(It.Is(IsSameExceptionAs(
                      expectedEmisLandingCoordinationServiceException))),
                          Times.Once);
 
@@ -212,7 +212,7 @@ namespace LHDS.Core.Tests.Unit.Services.Coordinations.EmisLandings
             List<Exception> exceptions = new List<Exception>();
 
             this.subscriberCredentialOrchestrationMock.Setup(service =>
-                service.RetrieveAllActiveSubscriberCredentialIds())
+                service.RetrieveAllActiveSubscriberCredentialIdsAsync())
                     .ReturnsAsync(randomActiveSubscriberAgreementIds);
 
             var innerFailedEmisLandingCoordinationServiceException =
@@ -254,15 +254,15 @@ namespace LHDS.Core.Tests.Unit.Services.Coordinations.EmisLandings
                 .ProcessAsync(supplierId: inputSupplierId);
 
             EmisLandingCoordinationServiceException actualEmisLandingCoordinationValidationException =
-                await Assert.ThrowsAsync<EmisLandingCoordinationServiceException>(async () =>
-                    await processDataTask);
+                await Assert.ThrowsAsync<EmisLandingCoordinationServiceException>(
+                    processDataTask.AsTask);
 
             // Then
             actualEmisLandingCoordinationValidationException.Should()
                 .BeEquivalentTo(expectedEmisLandingCoordinationServiceException);
 
             this.subscriberCredentialOrchestrationMock.Verify(service =>
-                service.RetrieveAllActiveSubscriberCredentialIds(),
+                service.RetrieveAllActiveSubscriberCredentialIdsAsync(),
                     Times.Once);
 
             foreach (Guid subscriberAgreementId in randomActiveSubscriberAgreementIds)
@@ -273,12 +273,12 @@ namespace LHDS.Core.Tests.Unit.Services.Coordinations.EmisLandings
             }
 
             this.loggingBrokerMock.Verify(broker =>
-                 broker.LogError(It.Is(IsSameExceptionAs(
+                 broker.LogErrorAsync(It.Is(IsSameExceptionAs(
                      innerEmisLandingCoordinationServiceException))),
                          Times.Exactly(randomActiveSubscriberAgreementIds.Count));
 
             this.loggingBrokerMock.Verify(broker =>
-                 broker.LogError(It.Is(IsSameExceptionAs(
+                 broker.LogErrorAsync(It.Is(IsSameExceptionAs(
                      expectedEmisLandingCoordinationServiceException))),
                          Times.Once);
 
@@ -302,7 +302,7 @@ namespace LHDS.Core.Tests.Unit.Services.Coordinations.EmisLandings
             List<string> randomEmisLandingPaths = CreateRandomLandingPaths(number: GetRandomNumber());
 
             this.subscriberCredentialOrchestrationMock.Setup(service =>
-                service.RetrieveAllActiveSubscriberCredentialIds())
+                service.RetrieveAllActiveSubscriberCredentialIdsAsync())
                     .ThrowsAsync(dependancyValidationException);
 
             var expectedEmisLandingCoordinationDependencyValidationException =
@@ -316,19 +316,19 @@ namespace LHDS.Core.Tests.Unit.Services.Coordinations.EmisLandings
 
             EmisLandingCoordinationDependencyValidationException
                 actualEmisLandingCoordinationDependencyValidationException =
-                    await Assert.ThrowsAsync<EmisLandingCoordinationDependencyValidationException>(async () =>
-                        await processDataTask);
+                    await Assert.ThrowsAsync<EmisLandingCoordinationDependencyValidationException>(
+                        processDataTask.AsTask);
 
             // Then
             actualEmisLandingCoordinationDependencyValidationException.Should()
                 .BeEquivalentTo(expectedEmisLandingCoordinationDependencyValidationException);
 
             this.subscriberCredentialOrchestrationMock.Verify(service =>
-                service.RetrieveAllActiveSubscriberCredentialIds(),
+                service.RetrieveAllActiveSubscriberCredentialIdsAsync(),
                     Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>
-                 broker.LogError(It.Is(IsSameExceptionAs(
+                 broker.LogErrorAsync(It.Is(IsSameExceptionAs(
                      expectedEmisLandingCoordinationDependencyValidationException))),
                          Times.Once);
 
@@ -352,7 +352,7 @@ namespace LHDS.Core.Tests.Unit.Services.Coordinations.EmisLandings
             List<string> randomEmisLandingPaths = CreateRandomLandingPaths(number: GetRandomNumber());
 
             this.subscriberCredentialOrchestrationMock.Setup(service =>
-                service.RetrieveAllActiveSubscriberCredentialIds())
+                service.RetrieveAllActiveSubscriberCredentialIdsAsync())
                     .ThrowsAsync(dependancyValidationException);
 
             var expectedEmisLandingCoordinationDependencyException =
@@ -365,19 +365,19 @@ namespace LHDS.Core.Tests.Unit.Services.Coordinations.EmisLandings
                 .ProcessAsync(supplierId: inputSupplierId);
 
             EmisLandingCoordinationDependencyException actualEmisLandingCoordinationDependencyException =
-                await Assert.ThrowsAsync<EmisLandingCoordinationDependencyException>(async () =>
-                    await processDataTask);
+                await Assert.ThrowsAsync<EmisLandingCoordinationDependencyException>(
+                    processDataTask.AsTask);
 
             // Then
             actualEmisLandingCoordinationDependencyException.Should()
                 .BeEquivalentTo(expectedEmisLandingCoordinationDependencyException);
 
             this.subscriberCredentialOrchestrationMock.Verify(service =>
-                service.RetrieveAllActiveSubscriberCredentialIds(),
+                service.RetrieveAllActiveSubscriberCredentialIdsAsync(),
                     Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>
-                 broker.LogError(It.Is(IsSameExceptionAs(
+                 broker.LogErrorAsync(It.Is(IsSameExceptionAs(
                      expectedEmisLandingCoordinationDependencyException))),
                          Times.Once);
 
@@ -401,7 +401,7 @@ namespace LHDS.Core.Tests.Unit.Services.Coordinations.EmisLandings
             List<Exception> exceptions = new List<Exception>();
 
             this.subscriberCredentialOrchestrationMock.Setup(service =>
-                service.RetrieveAllActiveSubscriberCredentialIds())
+                service.RetrieveAllActiveSubscriberCredentialIdsAsync())
                     .ThrowsAsync(serviceException);
 
             var failedEmisLandingCoordinationServiceException =
@@ -419,19 +419,19 @@ namespace LHDS.Core.Tests.Unit.Services.Coordinations.EmisLandings
                 .ProcessAsync(supplierId: inputSupplierId);
 
             EmisLandingCoordinationServiceException actualEmisLandingCoordinationValidationException =
-                await Assert.ThrowsAsync<EmisLandingCoordinationServiceException>(async () =>
-                    await processDataTask);
+                await Assert.ThrowsAsync<EmisLandingCoordinationServiceException>(
+                    processDataTask.AsTask);
 
             // Then
             actualEmisLandingCoordinationValidationException.Should()
                 .BeEquivalentTo(expectedEmisLandingCoordinationServiceException);
 
             this.subscriberCredentialOrchestrationMock.Verify(service =>
-                service.RetrieveAllActiveSubscriberCredentialIds(),
+                service.RetrieveAllActiveSubscriberCredentialIdsAsync(),
                     Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>
-                 broker.LogError(It.Is(IsSameExceptionAs(
+                 broker.LogErrorAsync(It.Is(IsSameExceptionAs(
                      expectedEmisLandingCoordinationServiceException))),
                          Times.Once);
 

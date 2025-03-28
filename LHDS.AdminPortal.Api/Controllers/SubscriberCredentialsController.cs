@@ -9,12 +9,14 @@ using LHDS.Core.Models.Foundations.SubscriberAgreements.Exceptions;
 using LHDS.Core.Models.Orchestrations.SubscriberCredentials.Exceptions;
 using LHDS.Core.Models.Processings.SubscriberCredentials;
 using LHDS.Core.Services.Orchestrations.SubscriberCredentials;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.OData.Query;
 using RESTFulSense.Controllers;
 
 namespace LHDS.AdminPortal.Api.Controllers
 {
+    [Authorize(Roles = "ISL.LDS.AdminApi.Administrators, ISL.LDS.AdminApi.Configurations")]
     [ApiController]
     [Route("api/[controller]")]
     public class SubscriberCredentialsController : RESTFulController
@@ -24,13 +26,14 @@ namespace LHDS.AdminPortal.Api.Controllers
         public SubscriberCredentialsController(ISubscriberCredentialOrchestration subscriberCredentialOrchestration) =>
             this.subscriberCredentialOrchestration = subscriberCredentialOrchestration;
 
+        [Authorize(Roles = "ISL.LDS.AdminApi.Administrators, ISL.LDS.AdminApi.SubscriberCredentials")]
         [HttpPost]
         public async ValueTask<ActionResult<SubscriberCredential>> PostSubscriberCredentialAsync(
             [FromBody] SubscriberCredential subscriberCredential)
         {
             try
             {
-                return Ok(await this.subscriberCredentialOrchestration
+                return Created(await this.subscriberCredentialOrchestration
                     .ModifyOrAddSubscriberCredentialAsync(
                         subscriberCredential,
                         regenerateKeys: false,
@@ -58,6 +61,7 @@ namespace LHDS.AdminPortal.Api.Controllers
             }
         }
 
+        [Authorize(Roles = "ISL.LDS.AdminApi.Administrators, ISL.LDS.AdminApi.SubscriberCredentials")]
         [HttpPost("regeneratekeys")]
         public async ValueTask<ActionResult<SubscriberCredential>> PostSubscriberCredentialAndRegenerateKeysAsync(
             [FromBody] SubscriberCredential subscriberCredential)
@@ -99,12 +103,13 @@ namespace LHDS.AdminPortal.Api.Controllers
 #if DEBUG
         [EnableQuery(PageSize = 5000)]
 #endif
-        public ActionResult<IQueryable<SubscriberCredential>> Get()
+        [Authorize(Roles = "ISL.LDS.AdminApi.Administrators, ISL.LDS.AdminApi.SubscriberCredentials, ISL.LDS.AdminApi.ReadOnly")]
+        public async ValueTask<ActionResult<IQueryable<SubscriberCredential>>> Get()
         {
             try
             {
                 IQueryable<SubscriberCredential> retrievedSubscriberCredentials =
-                    this.subscriberCredentialOrchestration.RetrieveAllSubscriberCredentials();
+                    await this.subscriberCredentialOrchestration.RetrieveAllSubscriberCredentialsAsync();
 
                 return Ok(retrievedSubscriberCredentials);
             }
@@ -120,6 +125,7 @@ namespace LHDS.AdminPortal.Api.Controllers
             }
         }
 
+        [Authorize(Roles = "ISL.LDS.AdminApi.Administrators, ISL.LDS.AdminApi.SubscriberCredentials, ISL.LDS.AdminApi.ReadOnly")]
         [HttpGet("{subscriberCredentialId}")]
         public async ValueTask<ActionResult<SubscriberCredential>> GetSubscriberCredentialByIdAsync(
             Guid subscriberCredentialId)
@@ -153,6 +159,7 @@ namespace LHDS.AdminPortal.Api.Controllers
             }
         }
 
+        [Authorize(Roles = "ISL.LDS.AdminApi.Administrators, ISL.LDS.AdminApi.SubscriberCredentials")]
         [HttpPut]
         public async ValueTask<ActionResult<SubscriberCredential>> PutSubscriberCredentialAsync(
             [FromBody] SubscriberCredential subscriberCredential)
@@ -192,6 +199,7 @@ namespace LHDS.AdminPortal.Api.Controllers
             }
         }
 
+        [Authorize(Roles = "ISL.LDS.AdminApi.Administrators, ISL.LDS.AdminApi.SubscriberCredentials")]
         [HttpPut("regeneratekeys")]
         public async ValueTask<ActionResult<SubscriberCredential>> PutSubscriberCredentialAndRegenerateKeysAsync(
             [FromBody] SubscriberCredential subscriberCredential)
@@ -231,6 +239,7 @@ namespace LHDS.AdminPortal.Api.Controllers
             }
         }
 
+        [Authorize(Roles = "ISL.LDS.AdminApi.Administrators, ISL.LDS.AdminApi.SubscriberCredentials")]
         [HttpDelete("{subscriberCredentialId}")]
         public async ValueTask<ActionResult<SubscriberCredential>> DeleteSubscriberCredentialByIdAsync(
             Guid subscriberCredentialId)

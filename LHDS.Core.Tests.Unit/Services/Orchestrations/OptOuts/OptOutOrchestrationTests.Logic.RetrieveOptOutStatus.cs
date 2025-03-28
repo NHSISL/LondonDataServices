@@ -21,6 +21,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
             // given
             bool withHeader = optOutConfiguration.OptOutFileHasHeader;
             Dictionary<string, int> fieldMappings = null;
+            bool headerValidated = false;
             Guid identifier = Guid.NewGuid();
             bool shouldAddTrailingComma = optOutConfiguration.OptOutFileRequireTrailingComma;
             var randomString = GetRandomString();
@@ -30,23 +31,29 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
             var randomRecieveName = $"{GetRandomString()}.csv";
             DateTimeOffset randomDateTimeOffset = GetRandomDateTimeOffset();
             DateTimeOffset expireDate = randomDateTimeOffset.AddDays(-optOutConfiguration.ExpiredAfterDays);
+            string timestamp = randomDateTimeOffset.ToString("yyyyMMddHHmmss");
             List<OptOutIdentifier> randomOptOuts = CreateRandomOptOutIdentifiersList();
             List<OptOutIdentifier> outputOptOuts = randomOptOuts;
             string inputContainer = "optout";
 
             this.csvHelperBrokerMock.Setup(processing =>
-                processing.MapCsvToObjectAsync<OptOutIdentifier>(inputString, withHeader, fieldMappings))
-                    .ReturnsAsync(outputOptOuts);
+                processing.MapCsvToObjectAsync<OptOutIdentifier>(
+                    inputString,
+                    withHeader,
+                    fieldMappings,
+                    headerValidated))
+                        .ReturnsAsync(outputOptOuts);
 
             this.identifierBrokerMock.Setup(processing =>
-                processing.GetIdentifier())
-                    .Returns(identifier);
+                processing.GetIdentifierAsync())
+                    .ReturnsAsync(identifier);
 
             this.dateTimeBrokerMock.Setup(broker =>
-                broker.GetCurrentDateTimeOffset())
-                    .Returns(randomDateTimeOffset);
+                broker.GetCurrentDateTimeOffsetAsync())
+                    .ReturnsAsync(randomDateTimeOffset);
 
-            List<OptOut> processedOptOuts = new List<OptOut>();
+            List<OptOutIdentifier> expectedProcessedOptOutIdentifiers = new List<OptOutIdentifier>();
+            List<OptOutIdentifier> actualProcessedOptOutIdentifiers = new List<OptOutIdentifier>();
 
             foreach (var optOut in outputOptOuts)
             {
@@ -69,7 +76,15 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
                     service.RetrieveOrAddOptOutAsync(It.Is(SameOptOutAs(inputOptOut))))
                         .ReturnsAsync(storageOptOut);
 
-                processedOptOuts.Add(storageOptOut);
+                OptOutIdentifier processedOptOutIdentifier = new OptOutIdentifier
+                {
+                    NhsNumber = inputOptOut.NhsNumber,
+                    UniqueReference = inputOptOut.UniqueReference,
+                    Status = inputOptOut.Status,
+                    StatusChangedDateTime = inputOptOut.CacheTime
+                };
+
+                expectedProcessedOptOutIdentifiers.Add(processedOptOutIdentifier);
             }
 
             var randomOptOutData = GetRandomString();
@@ -77,7 +92,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
 
             this.csvHelperBrokerMock.Setup(processings =>
                 processings.MapObjectToCsvAsync(
-                    It.Is(SameOptOutListAs(processedOptOuts)),
+                    It.Is(SameOptOutIdentifierListAs(expectedProcessedOptOutIdentifiers)),
                     withHeader,
                     fieldMappings,
                     shouldAddTrailingComma))
@@ -89,7 +104,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
             Stream actualStream = new MemoryStream();
 
             string csvInputFileName = $"{optOutConfiguration.OutputFolder}/" +
-                $"{Path.GetFileNameWithoutExtension(randomRecieveName)}_Response.csv";
+                $"{Path.GetFileNameWithoutExtension(randomRecieveName)}_{timestamp}_Response.csv";
 
             this.documentProcessingServiceMock
                 .Setup(service => service.AddDocumentAsync(
@@ -110,8 +125,12 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
             Assert.True(IsSameStream(actualStream, expectedStream));
 
             this.csvHelperBrokerMock.Verify(processing =>
-                processing.MapCsvToObjectAsync<OptOutIdentifier>(inputString, withHeader, fieldMappings),
-                    Times.Once);
+                processing.MapCsvToObjectAsync<OptOutIdentifier>(
+                    inputString,
+                    withHeader,
+                    fieldMappings,
+                    headerValidated),
+                        Times.Once);
 
             foreach (var optOut in outputOptOuts)
             {
@@ -128,26 +147,32 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
                     UpdatedBy = "System"
                 };
 
-                var storageOptOut = inputOptOut;
+                OptOutIdentifier processedOptOutIdentifier = new OptOutIdentifier
+                {
+                    NhsNumber = inputOptOut.NhsNumber,
+                    UniqueReference = inputOptOut.UniqueReference,
+                    Status = inputOptOut.Status,
+                    StatusChangedDateTime = inputOptOut.CacheTime
+                };
 
                 this.optOutProcessingServiceMock.Verify(service =>
                     service.RetrieveOrAddOptOutAsync(It.Is(SameOptOutAs(inputOptOut))),
                         Times.Exactly(outputOptOuts.Count));
 
-                processedOptOuts.Add(storageOptOut);
+                actualProcessedOptOutIdentifiers.Add(processedOptOutIdentifier);
             }
 
             this.identifierBrokerMock.Verify(processing =>
-                processing.GetIdentifier(),
+                processing.GetIdentifierAsync(),
                     Times.Exactly(outputOptOuts.Count));
 
             this.dateTimeBrokerMock.Verify(broker =>
-                broker.GetCurrentDateTimeOffset(),
-                    Times.Exactly(outputOptOuts.Count));
+                broker.GetCurrentDateTimeOffsetAsync(),
+                    Times.Exactly(outputOptOuts.Count + 1));
 
             this.csvHelperBrokerMock.Verify(processings =>
                 processings.MapObjectToCsvAsync(
-                    It.IsAny<List<OptOut>>(),
+                    It.Is(SameOptOutIdentifierListAs(actualProcessedOptOutIdentifiers)),
                     withHeader,
                     fieldMappings,
                     shouldAddTrailingComma),

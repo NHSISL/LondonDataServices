@@ -24,8 +24,8 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Decryptions
             DateTimeOffset randomDateTimeOffset = GetRandomDateTimeOffset();
 
             this.dateTimeBrokerMock.Setup(broker =>
-                broker.GetCurrentDateTimeOffset())
-                    .Returns(randomDateTimeOffset);
+                broker.GetCurrentDateTimeOffsetAsync())
+                    .ReturnsAsync(randomDateTimeOffset);
 
             DateTimeOffset olderThanDateTimeOffset = randomDateTimeOffset.AddMinutes(-15);
             IngestionTracking randomIngestionTracking = CreateRandomIngestionTracking(randomDateTimeOffset);
@@ -42,22 +42,22 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Decryptions
             var outputIngestionTracking = updatedIngestionTracking.DeepClone();
 
             this.ingestionTrackingServiceMock.Setup(service =>
-               service.RetrieveAllIngestionTrackings())
-                   .Returns(new List<IngestionTracking> { storageIngestionTracking }.AsQueryable());
+               service.RetrieveAllIngestionTrackingsAsync())
+                   .ReturnsAsync(new List<IngestionTracking> { storageIngestionTracking }.AsQueryable());
 
             this.ingestionTrackingServiceMock.Setup(service =>
                 service.ModifyIngestionTrackingAsync(It.Is(SameIngestionTrackingAs(updatedIngestionTracking))))
                     .ReturnsAsync(outputIngestionTracking);
 
             // when
-            string? actualEncryptedFileName =
+            string actualEncryptedFileName =
                 await this.decryptionOrchestrationService.GetNextItemToBeDecrypted();
 
             // then
             actualEncryptedFileName.Should().Be(storageIngestionTracking.EncryptedFileName);
 
             this.ingestionTrackingServiceMock.Verify(service =>
-              service.RetrieveAllIngestionTrackings(),
+              service.RetrieveAllIngestionTrackingsAsync(),
                   Times.Once);
 
             this.ingestionTrackingServiceMock.Verify(service =>
@@ -65,7 +65,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Decryptions
                     Times.Once);
 
             this.dateTimeBrokerMock.Verify(broker =>
-                broker.GetCurrentDateTimeOffset(),
+                broker.GetCurrentDateTimeOffsetAsync(),
                     Times.Exactly(2));
 
             this.ingestionTrackingServiceMock.VerifyNoOtherCalls();

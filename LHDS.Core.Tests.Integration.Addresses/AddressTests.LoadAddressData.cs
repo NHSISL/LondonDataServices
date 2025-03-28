@@ -3,31 +3,33 @@
 // ---------------------------------------------------------
 
 using System.IO;
+using System.Reflection;
 using System.Threading.Tasks;
-using Xunit;
 
 namespace LHDS.Core.Tests.Integration.Addresses
 {
     public partial class AddressTests
     {
-        [Fact]
-        public async Task LoadAddressDataAsync()
+        [ReleaseCandidateFact]
+        public async Task ShouldLoadAddressDataAsync()
         {
-            string inputFilename = "pow.csv";
-            //var filePath = @"Resources\Ordnance\0040176014-6414006-1.zip";
-            //var filePath = @"Resources\Ordnance\0040176014-6414006-1SMALL.zip";
-            var filePath = @"Resources\Ordnance\0040176014-6414006-1VERYSMALL.zip";
-
             // Given
-            byte[] inputData = await File.ReadAllBytesAsync(filePath);
+            string assembly = Assembly.GetExecutingAssembly().Location;
+            char separator = Path.DirectorySeparatorChar;
+
+            string projectRoot = Path.GetFullPath(Path.Combine(Path.GetDirectoryName(assembly),
+                $"..{separator}..{separator}.."));
+
+            string inputFilePath = Path.Combine(
+                projectRoot,
+
+                @"Resources/Clients/Address/Ordinance_data_London.zip");
+
+            byte[] inputData = await File.ReadAllBytesAsync(inputFilePath);
             Stream inputStream = new MemoryStream(inputData);
 
             // When
-            //List<Address> returnedAddresses =
-            //    await addressClient.LoadAddressDataAsync(inputStream, inputFilename);
-
-            // Then
-
+            await this.addressClient.LoadAddressDataAsync(inputStream, "Ordinance_data_London.zip");
         }
     }
 }

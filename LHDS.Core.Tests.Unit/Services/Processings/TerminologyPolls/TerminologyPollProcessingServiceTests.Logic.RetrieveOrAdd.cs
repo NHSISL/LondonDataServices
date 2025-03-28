@@ -30,8 +30,8 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.TerminologyPolls
             TerminologyPoll expectedTerminologyPoll = storageTerminologyPoll;
 
             this.terminologyPollServiceMock.Setup(service =>
-                service.RetrieveAllTerminologyPolls())
-                    .Returns(storageTerminologyPolls);
+                service.RetrieveAllTerminologyPollsAsync())
+                    .ReturnsAsync(storageTerminologyPolls);
 
             // when
             TerminologyPoll actualTerminologyPoll = await this.terminologyPollProcessingService
@@ -41,7 +41,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.TerminologyPolls
             actualTerminologyPoll.Should().BeEquivalentTo(expectedTerminologyPoll);
 
             this.terminologyPollServiceMock.Verify(service =>
-                service.RetrieveAllTerminologyPolls(),
+                service.RetrieveAllTerminologyPollsAsync(),
                     Times.Once());
 
             this.terminologyPollServiceMock.Verify(service =>
@@ -66,16 +66,16 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.TerminologyPolls
             IQueryable<TerminologyPoll> storageTerminologyPolls = randomTerminologyPolls;
 
             this.terminologyPollServiceMock.Setup(service =>
-                service.RetrieveAllTerminologyPolls())
-                    .Returns(storageTerminologyPolls);
+                service.RetrieveAllTerminologyPollsAsync())
+                    .ReturnsAsync(storageTerminologyPolls);
 
             this.dateTimeBrokerMock.Setup(broker =>
-                broker.GetCurrentDateTimeOffset())
-                    .Returns(randomDateTimeOffset);
+                broker.GetCurrentDateTimeOffsetAsync())
+                    .ReturnsAsync(randomDateTimeOffset);
 
             this.identifierBrokerMock.Setup(broker =>
-                broker.GetIdentifier())
-                    .Returns(randomId);
+                broker.GetIdentifierAsync())
+                    .ReturnsAsync(randomId);
 
             TerminologyPoll inputTerminologyPoll = new TerminologyPoll
             {
@@ -103,15 +103,15 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.TerminologyPolls
             actualTerminologyPoll.Should().BeEquivalentTo(expectedTerminologyPoll);
 
             this.terminologyPollServiceMock.Verify(service =>
-                service.RetrieveAllTerminologyPolls(),
+                service.RetrieveAllTerminologyPollsAsync(),
                     Times.Once());
 
             this.dateTimeBrokerMock.Verify(broker =>
-                broker.GetCurrentDateTimeOffset(),
+                broker.GetCurrentDateTimeOffsetAsync(),
                     Times.Once());
 
             this.identifierBrokerMock.Verify(broker =>
-                broker.GetIdentifier(),
+                broker.GetIdentifierAsync(),
                     Times.Once());
 
             this.terminologyPollServiceMock.Verify(service =>

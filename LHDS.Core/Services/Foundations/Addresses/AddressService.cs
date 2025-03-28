@@ -10,7 +10,9 @@ using LHDS.Core.Brokers.Audits;
 using LHDS.Core.Brokers.DateTimes;
 using LHDS.Core.Brokers.Identifiers;
 using LHDS.Core.Brokers.Loggings;
+using LHDS.Core.Brokers.Securities;
 using LHDS.Core.Brokers.Storages.Sql;
+using LHDS.Core.Models.Brokers.Securities;
 using LHDS.Core.Models.Foundations.Addresses;
 using LHDS.Core.Models.Foundations.Addresses.Exceptions;
 
@@ -20,6 +22,7 @@ namespace LHDS.Core.Services.Foundations.Addresses
     {
         private readonly IStorageBroker storageBroker;
         private readonly IDateTimeBroker dateTimeBroker;
+        private readonly ISecurityBroker securityBroker;
         private readonly IIdentifierBroker identifierBroker;
         private readonly ILoggingBroker loggingBroker;
         private readonly IAuditBroker auditBroker;
@@ -27,12 +30,14 @@ namespace LHDS.Core.Services.Foundations.Addresses
         public AddressService(
             IStorageBroker storageBroker,
             IDateTimeBroker dateTimeBroker,
+            ISecurityBroker securityBroker,
             IIdentifierBroker identifierBroker,
             ILoggingBroker loggingBroker,
             IAuditBroker auditBroker)
         {
             this.storageBroker = storageBroker;
             this.dateTimeBroker = dateTimeBroker;
+            this.securityBroker = securityBroker;
             this.identifierBroker = identifierBroker;
             this.loggingBroker = loggingBroker;
             this.auditBroker = auditBroker;
@@ -41,7 +46,8 @@ namespace LHDS.Core.Services.Foundations.Addresses
         public ValueTask<Address> AddAddressAsync(Address address) =>
             TryCatch(async () =>
             {
-                ValidateAddressOnAdd(address);
+                Address addressWithAddAuditApplied = await ApplyAddAuditAsync(address);
+                await ValidateAddressOnAddAsync(addressWithAddAuditApplied);
 
                 return await this.storageBroker.InsertAddressAsync(address);
             });
@@ -66,10 +72,14 @@ namespace LHDS.Core.Services.Foundations.Addresses
                     await TryCatch(async () =>
                     {
                         var batch = addresses.Skip(i).Take(batchSize).ToList();
-                        List<Address> validatedAddresses = await ExtractValidAddressesAndAssignIdAndAudit(batch, fileName);
-                        var batchUPRNs = batch.Select(validatedAddress => validatedAddress.UPRN).ToList();
 
-                        var existingUPRNs = this.storageBroker.SelectAllAddresses()
+                        List<Address> validatedAddresses =
+                            await ExtractValidAddressesAndAssignIdAndAuditAsync(batch, fileName);
+
+                        var batchUPRNs = batch.Select(validatedAddress => validatedAddress.UPRN).ToList();
+                        var allAddresses = await this.storageBroker.SelectAllAddressesAsync();
+
+                        var existingUPRNs = allAddresses
                             .Where(address => batchUPRNs.Contains(address.UPRN))
                             .Select(address => address.UPRN)
                             .ToList();
@@ -96,7 +106,7 @@ namespace LHDS.Core.Services.Foundations.Addresses
             }
         }
 
-        virtual internal async ValueTask<List<Address>> ExtractValidAddressesAndAssignIdAndAudit(
+        virtual internal async ValueTask<List<Address>> ExtractValidAddressesAndAssignIdAndAuditAsync(
             List<Address> addresses,
             string fileName)
         {
@@ -106,14 +116,14 @@ namespace LHDS.Core.Services.Foundations.Addresses
             {
                 try
                 {
-                    var currentDateTime = this.dateTimeBroker.GetCurrentDateTimeOffset();
-
-                    address.Id = this.identifierBroker.GetIdentifier();
+                    EntraUser currentUser = await this.securityBroker.GetCurrentUserAsync();
+                    var currentDateTime = await this.dateTimeBroker.GetCurrentDateTimeOffsetAsync();
+                    address.Id = await this.identifierBroker.GetIdentifierAsync();
                     address.CreatedDate = currentDateTime;
-                    address.CreatedBy = "System";
+                    address.CreatedBy = currentUser.EntraUserId;
                     address.UpdatedDate = address.CreatedDate;
                     address.UpdatedBy = address.CreatedBy;
-                    ValidateAddressOnAdd(address);
+                    await ValidateAddressOnAddAsync(address);
                     validatedAddresses.Add(address);
                 }
                 catch (Exception ex)
@@ -124,7 +134,7 @@ namespace LHDS.Core.Services.Foundations.Addresses
 
                         if (indexOfInvalidItem != -1)
                         {
-                            await this.auditBroker.LogWarning(
+                            await this.auditBroker.LogWarningAsync(
                                 auditType: "Address",
                                 title: "Invalid address parts found",
                                 message: $"Invalid address parts found in line item: {indexOfInvalidItem + 1} " +
@@ -141,8 +151,8 @@ namespace LHDS.Core.Services.Foundations.Addresses
             return await ValueTask.FromResult(validatedAddresses);
         }
 
-        public IQueryable<Address> RetrieveAllAddresses() =>
-            TryCatch(() => this.storageBroker.SelectAllAddresses());
+        public ValueTask<IQueryable<Address>> RetrieveAllAddressesAsync() =>
+            TryCatch(async () => await this.storageBroker.SelectAllAddressesAsync());
 
         public ValueTask<Address> RetrieveAddressByIdAsync(Guid addressId) =>
             TryCatch(async () =>
@@ -160,11 +170,9 @@ namespace LHDS.Core.Services.Foundations.Addresses
         public ValueTask<Address> ModifyAddressAsync(Address address) =>
             TryCatch(async () =>
             {
-                ValidateAddressOnModify(address);
-
-                Address maybeAddress =
-                    await this.storageBroker.SelectAddressByIdAsync(address.Id);
-
+                Address addressWithModifyAuditApplied = await ApplyModifyAuditAsync(address);
+                await ValidateAddressOnModifyAsync(address);
+                Address maybeAddress = await this.storageBroker.SelectAddressByIdAsync(address.Id);
                 ValidateStorageAddress(maybeAddress, address.Id);
                 ValidateAgainstStorageAddressOnModify(inputAddress: address, storageAddress: maybeAddress);
 
@@ -188,14 +196,39 @@ namespace LHDS.Core.Services.Foundations.Addresses
             TryCatch(async () =>
             {
                 ValidatePostCode(postCode);
+                IQueryable<Address> allreturnedAddresses = await this.storageBroker.SelectAllAddressesAsync();
 
-                List<Address> returnedAddresses = this.storageBroker
-                    .SelectAllAddresses()
-                    .ToList()
+                List<Address> matchedAddresses = allreturnedAddresses
                     .Where(address => address.PostCode.Equals(postCode, StringComparison.OrdinalIgnoreCase))
                     .ToList();
 
-                return await ValueTask.FromResult(returnedAddresses);
+                return matchedAddresses;
             });
+
+        virtual internal async ValueTask<Address> ApplyAddAuditAsync(
+            Address csvIdentificationRequest)
+        {
+            ValidateAddressIsNotNull(csvIdentificationRequest);
+            var auditDateTimeOffset = await this.dateTimeBroker.GetCurrentDateTimeOffsetAsync();
+            var auditUser = await this.securityBroker.GetCurrentUserAsync();
+            csvIdentificationRequest.CreatedBy = auditUser?.EntraUserId.ToString() ?? string.Empty;
+            csvIdentificationRequest.CreatedDate = auditDateTimeOffset;
+            csvIdentificationRequest.UpdatedBy = auditUser?.EntraUserId.ToString() ?? string.Empty;
+            csvIdentificationRequest.UpdatedDate = auditDateTimeOffset;
+
+            return csvIdentificationRequest;
+        }
+
+        virtual internal async ValueTask<Address> ApplyModifyAuditAsync(
+            Address address)
+        {
+            ValidateAddressIsNotNull(address);
+            var auditDateTimeOffset = await this.dateTimeBroker.GetCurrentDateTimeOffsetAsync();
+            var auditUser = await this.securityBroker.GetCurrentUserAsync();
+            address.UpdatedBy = auditUser?.EntraUserId.ToString() ?? string.Empty;
+            address.UpdatedDate = auditDateTimeOffset;
+
+            return address;
+        }
     }
 }

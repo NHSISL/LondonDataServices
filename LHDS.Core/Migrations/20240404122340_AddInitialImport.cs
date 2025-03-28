@@ -272,7 +272,7 @@ namespace LHDS.Core.Migrations
                     Name = table.Column<string>(type: "nvarchar(450)", maxLength: 450, nullable: false),
                     FriendlyName = table.Column<string>(type: "nvarchar(450)", maxLength: 450, nullable: false),
                     Description = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    canRelandIngestionTracking = table.Column<bool>(type: "bit", nullable: false),
+                    CanRelandIngestionTracking = table.Column<bool>(type: "bit", nullable: false),
                     CanDecryptIngestionTracking = table.Column<bool>(type: "bit", nullable: false),
                     CanDownloadIngestionTracking = table.Column<bool>(type: "bit", nullable: false),
                     CreatedBy = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: false),
@@ -1047,7 +1047,7 @@ namespace LHDS.Core.Migrations
             migrationBuilder.InsertData(
                 schema: "Configuration",
                 table: "Suppliers",
-                columns: new[] { "Id", "CanDecryptIngestionTracking", "CanDownloadIngestionTracking", "CreatedBy", "CreatedDate", "Description", "FriendlyName", "Name", "UpdatedBy", "UpdatedDate", "canRelandIngestionTracking" },
+                columns: new[] { "Id", "CanDecryptIngestionTracking", "CanDownloadIngestionTracking", "CreatedBy", "CreatedDate", "Description", "FriendlyName", "Name", "UpdatedBy", "UpdatedDate", "CanRelandIngestionTracking" },
                 values: new object[] { new Guid("67680f17-9d0c-4474-8b35-56ca8f9df1f6"), false, false, "System", new DateTimeOffset(new DateTime(2023, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)), "Emis Supplier", "EMIS", "EMIS", "System", new DateTimeOffset(new DateTime(2023, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)), false });
 
             migrationBuilder.InsertData(

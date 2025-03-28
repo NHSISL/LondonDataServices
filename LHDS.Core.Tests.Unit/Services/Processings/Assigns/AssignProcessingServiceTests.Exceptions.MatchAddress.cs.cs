@@ -30,7 +30,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.Assigns
 
             this.assignServiceMock.Setup(service =>
                 service.MatchAddressAsync(It.IsAny<string>()))
-                    .Throws(dependencyValidationException);
+                    .ThrowsAsync(dependencyValidationException);
 
             // when
             ValueTask<AssignAddress> matchTask =
@@ -48,7 +48,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.Assigns
                     Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>
-                 broker.LogError(It.Is(SameExceptionAs(
+                 broker.LogErrorAsync(It.Is(SameExceptionAs(
                      expectedAssignAddressProcessingDependencyValidationException))),
                          Times.Once);
 
@@ -71,7 +71,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.Assigns
 
             this.assignServiceMock.Setup(service =>
                 service.MatchAddressAsync(It.IsAny<string>()))
-                    .Throws(dependencyException);
+                    .ThrowsAsync(dependencyException);
 
             // when
             ValueTask<AssignAddress> matchTask =
@@ -88,7 +88,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.Assigns
                     Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>
-                 broker.LogError(It.Is(SameExceptionAs(
+                 broker.LogErrorAsync(It.Is(SameExceptionAs(
                      expectedAssignAddressProcessingDependencyException))),
                          Times.Once);
 
@@ -116,7 +116,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.Assigns
 
             this.assignServiceMock.Setup(service =>
                 service.MatchAddressAsync(It.IsAny<string>()))
-                    .Throws(serviceException);
+                    .ThrowsAsync(serviceException);
 
             // when
             ValueTask<AssignAddress> addAssignAddressTask =
@@ -133,7 +133,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.Assigns
                     Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>
-                 broker.LogError(It.Is(SameExceptionAs(
+                 broker.LogErrorAsync(It.Is(SameExceptionAs(
                      expectedAssignAddressProcessingServiveException))),
                          Times.Once);
 

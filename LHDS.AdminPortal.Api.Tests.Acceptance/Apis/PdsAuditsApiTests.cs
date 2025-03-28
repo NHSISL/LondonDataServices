@@ -3,6 +3,7 @@
 // ---------------------------------------------------------
 
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using LHDS.AdminPortal.Api.Tests.Acceptance.Brokers;
@@ -56,11 +57,11 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.PdsAudits
             return randomIngestionTracking;
         }
 
-        private static IQueryable<PdsAudit> CreateRandomPdsAudits()
+        private static List<PdsAudit> CreateRandomPdsAudits()
         {
             return CreatePdsAuditFiller()
                 .Create(count: GetRandomNumber())
-                    .AsQueryable();
+                    .ToList();
         }
 
         private static PdsAudit CreateRandomPdsAudit() =>

@@ -1,0 +1,47 @@
+﻿// ---------------------------------------------------------
+// Copyright (c) North East London ICB. All rights reserved.
+// ---------------------------------------------------------
+
+using System;
+using System.IO;
+using System.Linq;
+using System.Reflection;
+using System.Threading.Tasks;
+using LHDS.Core.Models.Foundations.ResolvedAddresses;
+using Xunit;
+
+namespace LHDS.Core.Tests.Acceptance.Clients.Addresses
+{
+    public partial class AddressTests
+    {
+        [Fact]
+        public async Task ShouldLoadAddressesToResolveAsync()
+        {
+            // Given
+            string inputFilename = GetRandomString();
+            string assembly = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
+            char separator = Path.DirectorySeparatorChar;
+            Guid expectedUniqueRef = Guid.Parse("7b41335a-f2cf-4949-8b83-c5b210446631");
+
+            string inputFilePath = Path.Combine(
+                assembly,
+                $@"Resource{separator}Clients{separator}Address{separator}ShouldUploadAddressesSetup.csv");
+
+            byte[] inputData = await File.ReadAllBytesAsync(inputFilePath);
+            Stream inputStream = new MemoryStream(inputData);
+
+            // When
+            await this.addressClient.LoadAddressesToResolveAsync(inputStream, "ShouldUploadAddressesSetup.csv");
+
+            // Then
+            IQueryable<ResolvedAddress> retrievedAddresses =
+                await this.resolvedAddressService.RetrieveAllResolvedAddressesAsync();
+
+            ResolvedAddress retrievedAddress = retrievedAddresses
+                .Where(resolvedAddress => resolvedAddress.UniqueReference == expectedUniqueRef).FirstOrDefault();
+
+            await this.resolvedAddressService.RemoveResolvedAddressByIdAsync(retrievedAddress.Id);
+        }
+    }
+}
+

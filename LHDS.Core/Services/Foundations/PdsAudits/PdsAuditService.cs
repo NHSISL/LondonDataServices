@@ -1,6 +1,6 @@
-// ---------------------------------------------------------------
+// ---------------------------------------------------------
 // Copyright (c) North East London ICB. All rights reserved.
-// ---------------------------------------------------------------
+// ---------------------------------------------------------
 
 using System;
 using System.Linq;
@@ -31,13 +31,13 @@ namespace LHDS.Core.Services.Foundations.PdsAudits
         public ValueTask<PdsAudit> AddPdsAuditAsync(PdsAudit pdsAudit) =>
             TryCatch(async () =>
             {
-                ValidatePdsAuditOnAdd(pdsAudit);
+                await ValidatePdsAuditOnAddAsync(pdsAudit);
 
                 return await this.storageBroker.InsertPdsAuditAsync(pdsAudit);
             });
 
-        public IQueryable<PdsAudit> RetrieveAllPdsAudits() =>
-            TryCatch(() => this.storageBroker.SelectAllPdsAudits());
+        public ValueTask<IQueryable<PdsAudit>> RetrieveAllPdsAuditsAsync() =>
+            TryCatch(async () => await this.storageBroker.SelectAllPdsAuditsAsync());
 
         public ValueTask<PdsAudit> RetrievePdsAuditByIdAsync(Guid pdsAuditId) =>
             TryCatch(async () =>
@@ -55,7 +55,7 @@ namespace LHDS.Core.Services.Foundations.PdsAudits
         public ValueTask<PdsAudit> ModifyPdsAuditAsync(PdsAudit pdsAudit) =>
             TryCatch(async () =>
             {
-                ValidatePdsAuditOnModify(pdsAudit);
+                await ValidatePdsAuditOnModifyAsync(pdsAudit);
 
                 PdsAudit maybePdsAudit =
                     await this.storageBroker.SelectPdsAuditByIdAsync(pdsAudit.Id);

@@ -26,7 +26,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Pds
 
             this.meshServiceMock.Setup(service =>
               service.ValidateMailboxAccessAsync())
-                    .Throws(dependancyValidationException);
+                    .ThrowsAsync(dependancyValidationException);
 
             //when
             ValueTask<bool> validateMailboxAccessTask =
@@ -45,7 +45,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Pds
                    Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>
-               broker.LogError(It.Is(SameExceptionAs(
+               broker.LogErrorAsync(It.Is(SameExceptionAs(
                    expectedDependencyException))),
                        Times.Once);
 
@@ -70,7 +70,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Pds
 
             this.meshServiceMock.Setup(service =>
                 service.ValidateMailboxAccessAsync())
-                   .Throws(dependancyException);
+                   .ThrowsAsync(dependancyException);
 
             // when
             ValueTask<bool> validateMailboxAccessTask =
@@ -88,7 +88,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Pds
                     Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>
-                broker.LogError(It.Is(SameExceptionAs(
+                broker.LogErrorAsync(It.Is(SameExceptionAs(
                     expectedDependencyException))),
                         Times.Once);
 
@@ -118,7 +118,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Pds
 
             this.meshServiceMock.Setup(service =>
                 service.ValidateMailboxAccessAsync())
-                    .Throws(serviceException);
+                    .ThrowsAsync(serviceException);
 
             // when
             ValueTask<bool> validateMailboxAccessTask =
@@ -136,7 +136,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Pds
                      Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>
-                broker.LogError(It.Is(SameExceptionAs(
+                broker.LogErrorAsync(It.Is(SameExceptionAs(
                     expectedPdsOrchestrationServiceException))),
                         Times.Once);
 

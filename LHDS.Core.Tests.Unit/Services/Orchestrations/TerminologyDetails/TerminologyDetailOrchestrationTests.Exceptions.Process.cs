@@ -34,7 +34,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.TerminologyDetails
             this.terminologyArtifactProcessingServiceMock.SetupSequence(service =>
                 service.GetNonDownloadedArtifactAsync())
                     .ReturnsAsync(undownloadedTerminologyArtifact)
-                    .ReturnsAsync((TerminologyArtifact?)null);
+                    .ReturnsAsync((TerminologyArtifact)null);
 
             this.ontologyProcessingServiceMock.Setup(service =>
                 service.RetrieveArtifactDetailsAsync(undownloadedTerminologyArtifact.FullUrl))
@@ -105,12 +105,12 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.TerminologyDetails
                     innerException: dependencyValidationException.InnerException as Xeption);
 
             this.loggingBrokerMock.Verify(broker =>
-                broker.LogError(It.Is(SameExceptionAs(
+                broker.LogErrorAsync(It.Is(SameExceptionAs(
                     terminologyDetailOrchestrationDependencyValidationLoggingException))),
                         Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>
-                broker.LogError(It.Is(SameExceptionAs(
+                broker.LogErrorAsync(It.Is(SameExceptionAs(
                     actualException))),
                         Times.Once);
 
@@ -137,7 +137,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.TerminologyDetails
             this.terminologyArtifactProcessingServiceMock.SetupSequence(service =>
                 service.GetNonDownloadedArtifactAsync())
                     .ReturnsAsync(undownloadedTerminologyArtifact)
-                    .ReturnsAsync((TerminologyArtifact?)null);
+                    .ReturnsAsync((TerminologyArtifact)null);
 
             this.ontologyProcessingServiceMock.Setup(service =>
                 service.RetrieveArtifactDetailsAsync(undownloadedTerminologyArtifact.FullUrl))
@@ -208,12 +208,12 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.TerminologyDetails
                     innerException: dependencyException.InnerException as Xeption);
 
             this.loggingBrokerMock.Verify(broker =>
-                broker.LogError(It.Is(SameExceptionAs(
+                broker.LogErrorAsync(It.Is(SameExceptionAs(
                     terminologyDetailOrchestrationDependencyLoggingException))),
                         Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>
-                broker.LogError(It.Is(SameExceptionAs(
+                broker.LogErrorAsync(It.Is(SameExceptionAs(
                     actualException))),
                         Times.Once);
 
@@ -239,7 +239,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.TerminologyDetails
             this.terminologyArtifactProcessingServiceMock.SetupSequence(service =>
                 service.GetNonDownloadedArtifactAsync())
                     .ReturnsAsync(undownloadedTerminologyArtifact)
-                    .ReturnsAsync((TerminologyArtifact?)null);
+                    .ReturnsAsync((TerminologyArtifact)null);
 
             var innerFailedTerminologyDetailOrchestrationServiceException =
                 new FailedTerminologyDetailOrchestrationServiceException(
@@ -309,12 +309,12 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.TerminologyDetails
                         Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>
-                broker.LogError(It.Is(SameExceptionAs(
+                broker.LogErrorAsync(It.Is(SameExceptionAs(
                     innerTerminologyDetailOrchestrationServiceException))),
                         Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>
-                broker.LogError(It.Is(SameExceptionAs(
+                broker.LogErrorAsync(It.Is(SameExceptionAs(
                     actualException))),
                         Times.Once);
 
@@ -357,7 +357,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.TerminologyDetails
                 Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>
-               broker.LogError(It.Is(SameExceptionAs(
+               broker.LogErrorAsync(It.Is(SameExceptionAs(
                    expectedDependencyException))),
                        Times.Once);
 
@@ -399,7 +399,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.TerminologyDetails
                 Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>
-               broker.LogError(It.Is(SameExceptionAs(
+               broker.LogErrorAsync(It.Is(SameExceptionAs(
                    expectedDependencyException))),
                        Times.Once);
 
@@ -445,7 +445,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.TerminologyDetails
                     Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>
-                broker.LogError(It.Is(SameExceptionAs(
+                broker.LogErrorAsync(It.Is(SameExceptionAs(
                     expectedTerminologyDetailOrchestrationServiceException))),
                         Times.Once);
 

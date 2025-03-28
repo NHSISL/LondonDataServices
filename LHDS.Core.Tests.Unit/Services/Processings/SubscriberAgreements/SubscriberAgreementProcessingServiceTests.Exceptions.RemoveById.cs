@@ -30,7 +30,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.SubscriberAgreements
 
             this.subscriberAgreementServiceMock.Setup(service =>
                 service.RemoveSubscriberAgreementByIdAsync(someId))
-                    .Throws(dependencyValidationException);
+                    .ThrowsAsync(dependencyValidationException);
 
             // when
             ValueTask<SubscriberAgreement> subscriberAgreementRemoveByIdTask =
@@ -48,7 +48,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.SubscriberAgreements
                     Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>
-                 broker.LogError(It.Is(SameExceptionAs(
+                 broker.LogErrorAsync(It.Is(SameExceptionAs(
                      expectedSubscriberAgreementProcessingDependencyValidationException))),
                          Times.Once);
 
@@ -71,7 +71,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.SubscriberAgreements
 
             this.subscriberAgreementServiceMock.Setup(service =>
                 service.RemoveSubscriberAgreementByIdAsync(someId))
-                    .Throws(dependencyException);
+                    .ThrowsAsync(dependencyException);
 
             // when
             ValueTask<SubscriberAgreement> subscriberAgreementRemoveByIdTask =
@@ -89,7 +89,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.SubscriberAgreements
                     Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>
-                 broker.LogError(It.Is(SameExceptionAs(
+                 broker.LogErrorAsync(It.Is(SameExceptionAs(
                      expectedSubscriberAgreementProcessingDependencyException))),
                          Times.Once);
 
@@ -117,7 +117,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.SubscriberAgreements
 
             this.subscriberAgreementServiceMock.Setup(service =>
                 service.RemoveSubscriberAgreementByIdAsync(someId))
-                    .Throws(serviceException);
+                    .ThrowsAsync(serviceException);
 
             // when
             ValueTask<SubscriberAgreement> subscriberAgreementRemoveByIdTask =
@@ -135,7 +135,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.SubscriberAgreements
                     Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>
-                 broker.LogError(It.Is(SameExceptionAs(
+                 broker.LogErrorAsync(It.Is(SameExceptionAs(
                      expectedSubscriberAgreementProcessingServiveException))),
                          Times.Once);
 

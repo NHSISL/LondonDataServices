@@ -27,11 +27,8 @@ namespace LHDS.Core.Services.Processings.TerminologyArtifacts
             this.loggingBroker = loggingBroker;
             this.dateTimeBroker = dateTimeBroker;
         }
-        public IQueryable<TerminologyArtifact> RetrieveAllTerminologyArtifactsAsync() =>
-            TryCatch(() =>
-            {
-                return this.terminologyArtifactService.RetrieveAllTerminologyArtifacts();
-            });
+        public ValueTask<IQueryable<TerminologyArtifact>> RetrieveAllTerminologyArtifactsAsync() =>
+            TryCatch(async () => await this.terminologyArtifactService.RetrieveAllTerminologyArtifactsAsync());
 
         public ValueTask<TerminologyArtifact> RetrieveTerminologyArtifactByIdAsync(Guid Id) =>
             TryCatch(async () =>
@@ -48,21 +45,37 @@ namespace LHDS.Core.Services.Processings.TerminologyArtifacts
                 ValidateTerminologyArtifact(terminologyArtifact);
                 ValidateId(terminologyArtifact.Id);
 
-                var maybeTerminologyArtifact =
-                    this.terminologyArtifactService.RetrieveAllTerminologyArtifacts()
-                        .FirstOrDefault(artifact => artifact.FullUrl == terminologyArtifact.FullUrl);
+                var retrievedTerminologyArtifacts =
+                    await this.terminologyArtifactService.RetrieveAllTerminologyArtifactsAsync();
+
+                var maybeTerminologyArtifact = retrievedTerminologyArtifacts
+                    .FirstOrDefault(artifact => artifact.FullUrl == terminologyArtifact.FullUrl);
 
                 if (maybeTerminologyArtifact != null)
                 {
-                    terminologyArtifact.UpdatedDate = this.dateTimeBroker.GetCurrentDateTimeOffset();
+                    // NB: ONLY update the fields that are coming in from the terminology server.
+                    // We do not want to lose the existing statuses in the database i.e. IsCore
+                    maybeTerminologyArtifact.ResourceType = terminologyArtifact.ResourceType;
+                    maybeTerminologyArtifact.Version = terminologyArtifact.Version;
+                    maybeTerminologyArtifact.Name = terminologyArtifact.Name;
+                    maybeTerminologyArtifact.Title = terminologyArtifact.Title;
+                    maybeTerminologyArtifact.Status = terminologyArtifact.Status;
+                    maybeTerminologyArtifact.IsDownloaded = terminologyArtifact.IsDownloaded;
+                    maybeTerminologyArtifact.LastUpdated = terminologyArtifact.LastUpdated;
+                    maybeTerminologyArtifact.IsError = terminologyArtifact.IsError;
+                    maybeTerminologyArtifact.ErrorMessage = terminologyArtifact.ErrorMessage;
 
-                    return await this.terminologyArtifactService.ModifyTerminologyArtifactAsync(terminologyArtifact);
+                    // TODO:  Remove below once security broker has been added to all the foundation services
+                    maybeTerminologyArtifact.UpdatedDate = await this.dateTimeBroker
+                        .GetCurrentDateTimeOffsetAsync();
+
+                    return await this.terminologyArtifactService
+                        .ModifyTerminologyArtifactAsync(maybeTerminologyArtifact);
                 }
                 else
                 {
-                    terminologyArtifact.IsDownloaded = false;
-
-                    return await this.terminologyArtifactService.AddTerminologyArtifactAsync(terminologyArtifact);
+                    return await this.terminologyArtifactService
+                        .AddTerminologyArtifactAsync(terminologyArtifact);
                 }
             });
 
@@ -77,8 +90,11 @@ namespace LHDS.Core.Services.Processings.TerminologyArtifacts
         public ValueTask<TerminologyArtifact?> GetNonDownloadedArtifactAsync() =>
             TryCatch(async () =>
             {
+                IQueryable<TerminologyArtifact> retrievedTerminologyArtifacts =
+                     await this.terminologyArtifactService.RetrieveAllTerminologyArtifactsAsync();
+
                 TerminologyArtifact? nonDownloadedArtifact =
-                     this.terminologyArtifactService.RetrieveAllTerminologyArtifacts()
+                    retrievedTerminologyArtifacts
                         .OrderBy(terminologyArtifact => terminologyArtifact.ResourceType)
                         .FirstOrDefault(terminologyArtifact =>
                             terminologyArtifact.IsCore == true

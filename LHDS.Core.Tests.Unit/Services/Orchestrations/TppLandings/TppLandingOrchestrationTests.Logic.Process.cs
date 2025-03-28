@@ -46,15 +46,15 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.TppLandings
             randomIngestionTracking.FileName = inputFileName;
 
             this.ingestionTrackingProcessingServiceMock.Setup(service =>
-                service.RetrieveAllIngestionTrackings())
-                    .Returns(randomIngestionTrackings.AsQueryable());
+                service.RetrieveAllIngestionTrackingsAsync())
+                    .ReturnsAsync(randomIngestionTrackings.AsQueryable());
 
             this.dateTimeBrokerMock.Setup(broker =>
-                broker.GetCurrentDateTimeOffset())
-                   .Returns(randomDateTime);
+                broker.GetCurrentDateTimeOffsetAsync())
+                   .ReturnsAsync(randomDateTime);
 
-            this.hashBrokerMock.Setup(broker => broker.GenerateSha256Hash(inputData))
-                .Returns(randomHash);
+            this.hashBrokerMock.Setup(broker => broker.GenerateSha256HashAsync(inputData))
+                .ReturnsAsync(randomHash);
 
             // when
             ValueTask<Guid> returnedGuid = this.tppOrchestrationService.ProcessAsync(
@@ -64,15 +64,15 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.TppLandings
 
             // then
             this.dateTimeBrokerMock.Verify(broker =>
-                broker.GetCurrentDateTimeOffset(),
+                broker.GetCurrentDateTimeOffsetAsync(),
                     Times.Never);
 
             this.ingestionTrackingProcessingServiceMock.Verify(service =>
-                service.RetrieveAllIngestionTrackings(),
+                service.RetrieveAllIngestionTrackingsAsync(),
                     Times.Once);
 
             this.hashBrokerMock.Verify(broker =>
-                broker.GenerateSha256Hash(inputData),
+                broker.GenerateSha256HashAsync(inputData),
                     Times.Once);
 
             this.ingestionTrackingProcessingServiceMock.VerifyNoOtherCalls();
@@ -96,72 +96,85 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.TppLandings
             DataSet randomDataSet = CreateRandomDataSet(supplierId: randomSupplierId);
             string randomHash = GetRandomString(64);
             int randomNumber = GetRandomNumber();
+            string resourceGroup = GetRandomString();
+            string batch = randomDateTime.ToString("yyyyMMdd_HHmm");
+            string extractTime = DateTime.ParseExact(batch, "yyyyMMdd_HHmm", null).ToString("yyyyMMddHHmmss");
+            string objectName = GetRandomString();
+            string inputFileName = $"/{resourceGroup}/{batch}/{objectName}.csv";
+            string sourceFolderPath = $"/{resourceGroup}/{batch}";
 
-            List<string> randomFileNames = GetRandomStrings();
+            List<string> randomFileNames =
+                GetRandomTppFileNames(resourceGroup, batch, count: randomNumber);
+
             List<string> inputFileNames = randomFileNames;
-
             byte[] randomData = CreateRandomData();
             byte[] inputData = randomData;
             Stream inputDataStream = new MemoryStream(inputData);
 
-            List<IngestionTracking> randomIngestionTrackings =
-                CreateRandomIngestionTrackings(
-                    dateTimeOffset: randomDateTime,
-                    fileNames: inputFileNames,
-                    supplierId: randomSupplierId);
+            DataSetSpecification randomDataSetSpecification =
+               CreateRandomDataSetSpecification(dataSet: randomDataSet);
 
-            IQueryable<DataSetSpecification> randomDataSetSpecificationList =
-               CreateRandomDataSetSpecifications(dataSet: randomDataSet);
+            randomDataSetSpecification.DataSetId = randomDataSet.Id;
 
-            DataSetSpecification randomDataSetSpecification = randomDataSetSpecificationList.First();
+            string basePath =
+                $"/{landingConfiguration.DecryptedFolder}"
+                + $"/{randomDataSet.DataSetName}"
+                + $"/{randomDataSetSpecification.OurSpecificationVersion}"
+                + $"/{resourceGroup}"
+                + $"/{extractTime}";
+
+            string decryptedFileName =
+                $"{basePath}"
+                + $"/{objectName}.csv";
+
             IngestionTracking randomIngestionTracking = CreateRandomIngestionTracking(randomDateTime);
-            string inputFileName = randomIngestionTracking.FileName;
+            randomIngestionTracking.DataSetSpecificationId = randomDataSetSpecification.Id;
+            randomIngestionTracking.ObjectName = objectName;
+            randomIngestionTracking.BatchReadyFolderPath = basePath;
             IngestionTracking storageIngestionTracking = randomIngestionTracking;
             IngestionTracking updatedIngestionTracking = storageIngestionTracking.DeepClone();
 
             this.ingestionTrackingProcessingServiceMock.Setup(service =>
-                service.RetrieveAllIngestionTrackings())
-                    .Returns(randomIngestionTrackings.AsQueryable());
+                service.RetrieveAllIngestionTrackingsAsync())
+                    .ReturnsAsync(new List<IngestionTracking>().AsQueryable());
 
             this.hashBrokerMock.Setup(broker =>
-                broker.GenerateSha256Hash(inputDataStream))
-                    .Returns(randomHash);
+                broker.GenerateSha256HashAsync(inputDataStream))
+                    .ReturnsAsync(randomHash);
 
             this.dateTimeBrokerMock.Setup(broker =>
-                broker.GetCurrentDateTimeOffset())
-                    .Returns(randomDateTime);
+                broker.GetCurrentDateTimeOffsetAsync())
+                    .ReturnsAsync(randomDateTime);
+
+            this.identifierBrokerMock.Setup(broker =>
+                broker.GetIdentifierAsync())
+                    .ReturnsAsync(randomGuid);
 
             this.dataSetSpecificationProcessingServiceMock.Setup(service =>
                service.GetActiveDataSetSpecification(randomSupplierId))
-                   .Returns(ValueTask.FromResult(randomDataSetSpecificationList.FirstOrDefault()));
-
-            var filename = inputFileName.StartsWith('/')
-                ? inputFileName
-                : "/" + inputFileName;
+                   .Returns(ValueTask.FromResult(randomDataSetSpecification));
 
             IngestionTracking newIngestionTracking =
                 new IngestionTracking
                 {
                     Id = randomGuid,
-                    FileName = filename,
                     SupplierId = randomSupplierId,
+                    FileName = inputFileName,
+                    SourceFolderPath = sourceFolderPath,
+                    BatchReadyFolderPath = basePath,
+                    Batch = batch,
+                    ObjectName = objectName,
                     DataSetSpecificationId = randomDataSetSpecification.Id,
-                    EncryptedFileName = null,
-
-                    DecryptedFileName =
-                        $"/{landingConfiguration.DecryptedFolder}"
-                        + $"/{randomDataSet.DataSetName}"
-                        + $"/{randomDataSetSpecification.Id}"
-                        + $"{filename}",
-
-                    Decrypted = false,
+                    EncryptedFileName = "Not Encrypted",
+                    DecryptedFileName = decryptedFileName,
+                    Decrypted = true,
                     LastSeen = randomDateTime,
                     FileDeleted = false,
                     RecordCount = 0,
-                    EncryptedFileSize = inputData.Length,
-                    EncryptedFileSha256Hash = randomHash,
-                    DecryptedFileSize = 0,
-                    DecryptedFileSha256Hash = string.Empty,
+                    EncryptedFileSize = 0,
+                    EncryptedFileSha256Hash = string.Empty,
+                    DecryptedFileSize = inputData.Length,
+                    DecryptedFileSha256Hash = randomHash,
                     CreatedBy = "System",
                     CreatedDate = randomDateTime,
                     UpdatedBy = "System",
@@ -186,7 +199,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.TppLandings
                     .ReturnsAsync(value: ingestionTrackingAudit);
 
             // when
-            ValueTask<Guid> returnedGuid = this.tppOrchestrationService.ProcessAsync(
+            Guid returnedGuid = await this.tppOrchestrationService.ProcessAsync(
                 input: inputDataStream,
                 fileName: inputFileName,
                 supplierId: inputSupplierId);
@@ -194,15 +207,19 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.TppLandings
             // then
 
             this.ingestionTrackingProcessingServiceMock.Verify(service =>
-               service.RetrieveAllIngestionTrackings(),
+               service.RetrieveAllIngestionTrackingsAsync(),
                    Times.Once);
 
             this.hashBrokerMock.Verify(broker =>
-                broker.GenerateSha256Hash(inputDataStream),
+                broker.GenerateSha256HashAsync(inputDataStream),
                     Times.Once);
 
             this.dateTimeBrokerMock.Verify(broker =>
-                broker.GetCurrentDateTimeOffset(),
+                broker.GetCurrentDateTimeOffsetAsync(),
+                    Times.Once);
+
+            this.identifierBrokerMock.Verify(broker =>
+                broker.GetIdentifierAsync(),
                     Times.Once);
 
             this.dataSetSpecificationProcessingServiceMock.Verify(service =>
@@ -210,7 +227,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.TppLandings
                     Times.Once);
 
             this.ingestionTrackingProcessingServiceMock.Verify(service =>
-                service.AddIngestionTrackingAsync(It.IsAny<IngestionTracking>()),
+                service.AddIngestionTrackingAsync(It.Is(SameIngestionTrackingAs(newIngestionTracking))),
                     Times.Once);
 
             this.documentProcessingServiceMock.Verify(service =>
@@ -261,16 +278,16 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.TppLandings
             updatedIngestionTracking.DecryptedFileSha256Hash = randomHash;
 
             this.ingestionTrackingProcessingServiceMock.Setup(service =>
-                service.RetrieveAllIngestionTrackings())
-                    .Returns(randomIngestionTrackings.AsQueryable());
+                service.RetrieveAllIngestionTrackingsAsync())
+                    .ReturnsAsync(randomIngestionTrackings.AsQueryable());
 
             this.hashBrokerMock.Setup(broker =>
-               broker.GenerateSha256Hash(inputStream))
-                   .Returns(randomHash);
+               broker.GenerateSha256HashAsync(inputStream))
+                   .ReturnsAsync(randomHash);
 
             this.dateTimeBrokerMock.Setup(broker =>
-                broker.GetCurrentDateTimeOffset())
-                    .Returns(randomDateTime);
+                broker.GetCurrentDateTimeOffsetAsync())
+                    .ReturnsAsync(randomDateTime);
 
             this.documentProcessingServiceMock
                 .Setup(service =>
@@ -296,15 +313,15 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.TppLandings
 
             // then
             this.ingestionTrackingProcessingServiceMock.Verify(service =>
-                service.RetrieveAllIngestionTrackings(),
+                service.RetrieveAllIngestionTrackingsAsync(),
                     Times.Once);
 
             this.hashBrokerMock.Verify(broker =>
-                broker.GenerateSha256Hash(inputStream),
+                broker.GenerateSha256HashAsync(inputStream),
                     Times.Once);
 
             this.dateTimeBrokerMock.Verify(broker =>
-                broker.GetCurrentDateTimeOffset(),
+                broker.GetCurrentDateTimeOffsetAsync(),
                     Times.Once);
 
             this.documentProcessingServiceMock.Verify(service =>
@@ -312,7 +329,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.TppLandings
                     Times.Once);
 
             this.ingestionTrackingProcessingServiceMock.Verify(service =>
-                service.ModifyIngestionTrackingAsync(It.IsAny<IngestionTracking>()),
+                service.ModifyIngestionTrackingAsync(It.Is(SameIngestionTrackingAs(updatedIngestionTracking))),
                     Times.Once);
 
             this.ingestionTrackingProcessingAuditServiceMock.Verify(service =>

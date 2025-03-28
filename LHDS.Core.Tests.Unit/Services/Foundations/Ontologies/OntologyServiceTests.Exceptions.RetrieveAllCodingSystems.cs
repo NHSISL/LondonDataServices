@@ -52,7 +52,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Ontologies
                     Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>
-               broker.LogError(It.Is(SameExceptionAs(
+               broker.LogErrorAsync(It.Is(SameExceptionAs(
                    expectedOntologyServiceException))),
                         Times.Once);
 

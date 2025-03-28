@@ -7,6 +7,8 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
+using System.Security.Claims;
+using System.Security.Cryptography;
 using System.Security.Cryptography.X509Certificates;
 using System.Text;
 using Azure.Core.Pipeline;
@@ -17,6 +19,7 @@ using LHDS.Core.Brokers.DateTimes;
 using LHDS.Core.Brokers.Identifiers;
 using LHDS.Core.Brokers.Loggings;
 using LHDS.Core.Brokers.Mesh;
+using LHDS.Core.Brokers.Securities;
 using LHDS.Core.Brokers.Storages.Blobs;
 using LHDS.Core.Brokers.Storages.Sql;
 using LHDS.Core.Models.Brokers.Mesh;
@@ -40,19 +43,36 @@ namespace LHDS.Core.Clients.Extensions
             this IServiceCollection services,
             IConfiguration configuration)
         {
-            return AddPdsClient(services, configuration, acceptanceTest: false);
+            return AddPdsClient(services, configuration, claimsPrincipal: null, acceptanceTest: false);
+        }
+
+        public static IServiceCollection AddPdsClient(
+            this IServiceCollection services,
+            IConfiguration configuration,
+            ClaimsPrincipal claimsPrincipal)
+        {
+            return AddPdsClient(services, configuration, claimsPrincipal, acceptanceTest: false);
         }
 
         internal static IServiceCollection AddPdsClientForAcceptance(
             this IServiceCollection services,
             IConfiguration configuration)
         {
-            return AddPdsClient(services, configuration, acceptanceTest: true);
+            return AddPdsClient(services, configuration, claimsPrincipal: null, acceptanceTest: true);
+        }
+
+        internal static IServiceCollection AddPdsClientForAcceptance(
+            this IServiceCollection services,
+            IConfiguration configuration,
+            ClaimsPrincipal claimsPrincipal)
+        {
+            return AddPdsClient(services, configuration, claimsPrincipal, acceptanceTest: true);
         }
 
         private static IServiceCollection AddPdsClient(
             this IServiceCollection services,
             IConfiguration configuration,
+            ClaimsPrincipal claimsPrincipal,
             bool acceptanceTest)
         {
             services.AddSingleton<IConfiguration>(_ => configuration);
@@ -92,7 +112,7 @@ namespace LHDS.Core.Clients.Extensions
             }
 
             AddClients(services, configuration);
-            AddBrokers(services, acceptanceTest);
+            AddBrokers(services, claimsPrincipal, acceptanceTest);
             AddOrchestrations(services);
             AddServices(services);
 
@@ -140,7 +160,7 @@ namespace LHDS.Core.Clients.Extensions
             services.AddTransient<IAzureBlobClient, AzureBlobClient>();
         }
 
-        private static void AddBrokers(IServiceCollection services, bool acceptanceTest)
+        private static void AddBrokers(IServiceCollection services, ClaimsPrincipal claimsPrincipal, bool acceptanceTest)
         {
             services.AddTransient<ILoggingBroker, LoggingBroker>();
             services.AddTransient<ICsvHelperBroker, CsvHelperBroker>();
@@ -152,6 +172,16 @@ namespace LHDS.Core.Clients.Extensions
             {
                 services.AddTransient<IBlobStorageBroker, BlobStorageBroker>();
                 services.AddTransient<IMeshBroker, MeshBroker>();
+            }
+
+            if (claimsPrincipal != null)
+            {
+                var securityBroker = new SecurityBroker(claimsPrincipal);
+                services.AddTransient<ISecurityBroker>(_ => securityBroker);
+            }
+            else
+            {
+                services.AddTransient<ISecurityBroker, SecurityBroker>();
             }
         }
 
@@ -169,13 +199,37 @@ namespace LHDS.Core.Clients.Extensions
             services.AddTransient<IPdsAuditService, PdsAuditService>();
         }
 
+        public static X509Certificate2 LoadCertificate(byte[] certBytes, string password)
+        {
+            try
+            {
+                // Try to load as PKCS#12
+                return X509CertificateLoader.LoadPkcs12(certBytes, password);
+            }
+            catch (CryptographicException)
+            {
+                // If it fails, try to load as a regular certificate
+                return X509CertificateLoader.LoadCertificate(certBytes);
+            }
+        }
+
         private static X509Certificate2? GetCertificate(string value)
         {
             if (!string.IsNullOrEmpty(value))
             {
-                byte[] certBytes = Convert.FromBase64String(value);
-
-                return new X509Certificate2(certBytes);
+                try
+                {
+                    byte[] certBytes = Convert.FromBase64String(value);
+                    return LoadCertificate(certBytes, string.Empty);
+                }
+                catch (FormatException ex)
+                {
+                    Console.WriteLine($"Invalid Base64 string: {ex.Message}");
+                }
+                catch (CryptographicException ex)
+                {
+                    Console.WriteLine($"Error loading certificate: {ex.Message}");
+                }
             }
 
             return null;
@@ -192,7 +246,7 @@ namespace LHDS.Core.Clients.Extensions
                 foreach (string item in values)
                 {
                     byte[] certBytes = Convert.FromBase64String(item);
-                    certificates.Add(new X509Certificate2(certBytes));
+                    certificates.Add(LoadCertificate(certBytes, string.Empty));
                 }
             }
 

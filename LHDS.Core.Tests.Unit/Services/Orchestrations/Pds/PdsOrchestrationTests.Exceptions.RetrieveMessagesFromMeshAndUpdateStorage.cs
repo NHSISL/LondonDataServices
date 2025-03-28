@@ -63,12 +63,12 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Pds
                     innerException: failedPdsOrchestrationServiceException);
 
             // When
-            ValueTask<List<PdsAudit>> actualPdsAudits =
+            ValueTask<List<PdsAudit>> retreiveMessagesFromMeshAndUpdateStorageTask =
                 this.pdsOrchestrationService.RetreiveMessagesFromMeshAndUpdateStorage();
 
             PdsOrchestrationServiceException actualPdsOrchestrationServiceException =
-                await Assert.ThrowsAsync<PdsOrchestrationServiceException>(async () =>
-                    await actualPdsAudits);
+                await Assert.ThrowsAsync<PdsOrchestrationServiceException>(
+                    retreiveMessagesFromMeshAndUpdateStorageTask.AsTask);
 
             // Then
             actualPdsOrchestrationServiceException.Should()
@@ -92,12 +92,12 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Pds
                     innerException: dependencyValidationException.InnerException as Xeption);
 
             this.loggingBrokerMock.Verify(broker =>
-                broker.LogError(It.Is(SameExceptionAs(
+                broker.LogErrorAsync(It.Is(SameExceptionAs(
                     pdsOrchestrationDependencyValidationLoggingException))),
                         Times.Exactly(randomMessageIds.Count));
 
             this.loggingBrokerMock.Verify(broker =>
-                broker.LogError(It.Is(SameExceptionAs(
+                broker.LogErrorAsync(It.Is(SameExceptionAs(
                     actualPdsOrchestrationServiceException))),
                         Times.Once);
 
@@ -156,12 +156,12 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Pds
                     innerException: failedPdsOrchestrationServiceException);
 
             // When
-            ValueTask<List<PdsAudit>> actualPdsAudits =
+            ValueTask<List<PdsAudit>> retreiveMessagesFromMeshAndUpdateStorageTask =
                 this.pdsOrchestrationService.RetreiveMessagesFromMeshAndUpdateStorage();
 
             PdsOrchestrationServiceException actualPdsOrchestrationServiceException =
-                await Assert.ThrowsAsync<PdsOrchestrationServiceException>(async () =>
-                    await actualPdsAudits);
+                await Assert.ThrowsAsync<PdsOrchestrationServiceException>(
+                    retreiveMessagesFromMeshAndUpdateStorageTask.AsTask);
 
             // Then
             actualPdsOrchestrationServiceException.Should()
@@ -185,12 +185,12 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Pds
                     innerException: dependencyException.InnerException as Xeption);
 
             this.loggingBrokerMock.Verify(broker =>
-                broker.LogError(It.Is(SameExceptionAs(
+                broker.LogErrorAsync(It.Is(SameExceptionAs(
                     pdsOrchestrationDependencyLoggingException))),
                         Times.Exactly(randomMessageIds.Count));
 
             this.loggingBrokerMock.Verify(broker =>
-                broker.LogError(It.Is(SameExceptionAs(
+                broker.LogErrorAsync(It.Is(SameExceptionAs(
                     actualPdsOrchestrationServiceException))),
                         Times.Once);
 
@@ -251,12 +251,12 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Pds
                     innerException: failedPdsOrchestrationServiceException);
 
             // When
-            ValueTask<List<PdsAudit>> actualPdsAudits =
+            ValueTask<List<PdsAudit>> retreiveMessagesFromMeshAndUpdateStorageTask =
                  this.pdsOrchestrationService.RetreiveMessagesFromMeshAndUpdateStorage();
 
             PdsOrchestrationServiceException actualPdsOrchestrationServiceException =
-                await Assert.ThrowsAsync<PdsOrchestrationServiceException>(async () =>
-                    await actualPdsAudits);
+                await Assert.ThrowsAsync<PdsOrchestrationServiceException>(
+                    retreiveMessagesFromMeshAndUpdateStorageTask.AsTask);
 
             // Then
             actualPdsOrchestrationServiceException.Should()
@@ -274,12 +274,12 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Pds
             }
 
             this.loggingBrokerMock.Verify(broker =>
-                broker.LogError(It.Is(SameExceptionAs(
+                broker.LogErrorAsync(It.Is(SameExceptionAs(
                     innerPdsOrchestrationServiceException))),
                         Times.Exactly(randomMessageIds.Count));
 
             this.loggingBrokerMock.Verify(broker =>
-                broker.LogError(It.Is(SameExceptionAs(
+                broker.LogErrorAsync(It.Is(SameExceptionAs(
                     expectedPdsOrchestrationServiceException))),
                         Times.Once);
 
@@ -303,15 +303,15 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Pds
 
             this.meshServiceMock.Setup(service =>
               service.RetrieveMessageIdsFromInboxAsync())
-                .Throws(dependancyValidationException);
+                .ThrowsAsync(dependancyValidationException);
 
             //when
-            ValueTask<List<PdsAudit>> actualPdsAudits =
+            ValueTask<List<PdsAudit>> retreiveMessagesFromMeshAndUpdateStorageTask =
                 this.pdsOrchestrationService.RetreiveMessagesFromMeshAndUpdateStorage();
 
             PdsOrchestrationDependencyValidationException actualException =
                 await Assert.ThrowsAsync<PdsOrchestrationDependencyValidationException>(
-                    actualPdsAudits.AsTask);
+                    retreiveMessagesFromMeshAndUpdateStorageTask.AsTask);
 
             // then
             actualException.Should()
@@ -322,7 +322,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Pds
                    Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>
-                broker.LogError(It.Is(SameExceptionAs(
+                broker.LogErrorAsync(It.Is(SameExceptionAs(
                     expectedDependencyException))),
                         Times.Once);
 
@@ -347,14 +347,15 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Pds
 
             this.meshServiceMock.Setup(service =>
                 service.RetrieveMessageIdsFromInboxAsync())
-                    .Throws(dependancyException);
+                    .ThrowsAsync(dependancyException);
 
             // when
-            ValueTask<List<PdsAudit>> retrievePdsAudits =
+            ValueTask<List<PdsAudit>> retreiveMessagesFromMeshAndUpdateStorageTask =
                 this.pdsOrchestrationService.RetreiveMessagesFromMeshAndUpdateStorage();
 
             PdsOrchestrationDependencyException actualException =
-                await Assert.ThrowsAsync<PdsOrchestrationDependencyException>(retrievePdsAudits.AsTask);
+                await Assert.ThrowsAsync<PdsOrchestrationDependencyException>(
+                    retreiveMessagesFromMeshAndUpdateStorageTask.AsTask);
 
             // then
             actualException.Should()
@@ -365,7 +366,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Pds
                    Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>
-                broker.LogError(It.Is(SameExceptionAs(
+                broker.LogErrorAsync(It.Is(SameExceptionAs(
                     expectedDependencyException))),
                         Times.Once);
 
@@ -395,14 +396,15 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Pds
 
             this.meshServiceMock.Setup(service =>
                 service.RetrieveMessageIdsFromInboxAsync())
-                    .Throws(serviceException);
+                    .ThrowsAsync(serviceException);
 
             // when
-            ValueTask<List<PdsAudit>> retrievePdsAudits =
+            ValueTask<List<PdsAudit>> retreiveMessagesFromMeshAndUpdateStorageTask =
                 this.pdsOrchestrationService.RetreiveMessagesFromMeshAndUpdateStorage();
 
             PdsOrchestrationServiceException actualException =
-                await Assert.ThrowsAsync<PdsOrchestrationServiceException>(retrievePdsAudits.AsTask);
+                await Assert.ThrowsAsync<PdsOrchestrationServiceException>(
+                    retreiveMessagesFromMeshAndUpdateStorageTask.AsTask);
 
             // then
             actualException.Should()
@@ -413,7 +415,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Pds
                     Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>
-                broker.LogError(It.Is(SameExceptionAs(
+                broker.LogErrorAsync(It.Is(SameExceptionAs(
                     expectedPdsOrchestrationServiceException))),
                         Times.Once);
 

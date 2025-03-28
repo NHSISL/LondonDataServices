@@ -6,6 +6,7 @@ using System;
 using System.Threading.Tasks;
 using FluentAssertions;
 using Force.DeepCloner;
+using LHDS.Core.Models.Brokers.Securities;
 using LHDS.Core.Models.Foundations.SpecificationObjects;
 using Moq;
 using Xunit;
@@ -18,17 +19,23 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.SpecificationObjects
         public async Task ShouldAddSpecificationObjectAsync()
         {
             // given
-            DateTimeOffset randomDateTimeOffset =
-                GetRandomDateTimeOffset();
+            DateTimeOffset randomDateTimeOffset = GetRandomDateTimeOffset();
+            EntraUser randomEntraUser = CreateRandomEntraUser();
 
-            SpecificationObject randomSpecificationObject = CreateRandomSpecificationObject(randomDateTimeOffset);
+            SpecificationObject randomSpecificationObject = 
+                CreateRandomSpecificationObject(randomDateTimeOffset, randomEntraUser.EntraUserId);
+
             SpecificationObject inputSpecificationObject = randomSpecificationObject;
             SpecificationObject storageSpecificationObject = inputSpecificationObject;
             SpecificationObject expectedSpecificationObject = storageSpecificationObject.DeepClone();
 
             this.dateTimeBrokerMock.Setup(broker =>
-                broker.GetCurrentDateTimeOffset())
-                    .Returns(randomDateTimeOffset);
+                broker.GetCurrentDateTimeOffsetAsync())
+                    .ReturnsAsync(randomDateTimeOffset);
+
+            this.securityBrokerMock.Setup(broker =>
+                broker.GetCurrentUserAsync())
+                    .ReturnsAsync(randomEntraUser);
 
             this.storageBrokerMock.Setup(broker =>
                 broker.InsertSpecificationObjectAsync(inputSpecificationObject))
@@ -42,8 +49,12 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.SpecificationObjects
             actualSpecificationObject.Should().BeEquivalentTo(expectedSpecificationObject);
 
             this.dateTimeBrokerMock.Verify(broker =>
-                broker.GetCurrentDateTimeOffset(),
-                    Times.Once());
+                broker.GetCurrentDateTimeOffsetAsync(),
+                    Times.Exactly(2));
+
+            this.securityBrokerMock.Verify(broker =>
+                broker.GetCurrentUserAsync(),
+                    Times.Exactly(2));
 
             this.storageBrokerMock.Verify(broker =>
                 broker.InsertSpecificationObjectAsync(inputSpecificationObject),

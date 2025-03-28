@@ -1,6 +1,6 @@
-﻿// ---------------------------------------------------------------
+﻿// ---------------------------------------------------------
 // Copyright (c) North East London ICB. All rights reserved.
-// ---------------------------------------------------------------
+// ---------------------------------------------------------
 
 using System;
 using System.Collections.Generic;
@@ -28,7 +28,7 @@ namespace LHDS.Core.Services.Foundations.Files
             }
             catch (InvalidArgumentFileException invalidArgumentFileException)
             {
-                throw CreateAndLogValidationException(invalidArgumentFileException);
+                throw await CreateAndLogValidationExceptionAsync(invalidArgumentFileException);
             }
             catch (ArgumentNullException argumentNullException)
             {
@@ -37,7 +37,7 @@ namespace LHDS.Core.Services.Foundations.Files
                         message: "Invalid file service dependency validation error occurred.",
                         innerException: argumentNullException);
 
-                throw CreateAndLogDependencyValidationException(invalidFileDependencyException);
+                throw await CreateAndLogDependencyValidationExceptionAsync(invalidFileDependencyException);
             }
             catch (ArgumentOutOfRangeException argumentOutOfRangeException)
             {
@@ -46,7 +46,7 @@ namespace LHDS.Core.Services.Foundations.Files
                         message: "Invalid file service dependency validation error occurred.",
                         innerException: argumentOutOfRangeException);
 
-                throw CreateAndLogDependencyValidationException(invalidFileDependencyException);
+                throw await CreateAndLogDependencyValidationExceptionAsync(invalidFileDependencyException);
             }
             catch (ArgumentException argumentException)
             {
@@ -55,7 +55,7 @@ namespace LHDS.Core.Services.Foundations.Files
                         message: "Invalid file service dependency validation error occurred.",
                         innerException: argumentException);
 
-                throw CreateAndLogDependencyValidationException(invalidFileDependencyException);
+                throw await CreateAndLogDependencyValidationExceptionAsync(invalidFileDependencyException);
             }
             catch (SerializationException serializationException)
             {
@@ -64,7 +64,7 @@ namespace LHDS.Core.Services.Foundations.Files
                         message: "Failed file dependency error occurred, please contact support.",
                         innerException: serializationException);
 
-                throw CreateAndLogDependencyException(failedFileDependencyException);
+                throw await CreateAndLogDependencyExceptionAsync(failedFileDependencyException);
             }
             catch (OutOfMemoryException outOfMemoryException)
             {
@@ -73,7 +73,7 @@ namespace LHDS.Core.Services.Foundations.Files
                         message: "Failed file dependency error occurred, please contact support.",
                         innerException: outOfMemoryException);
 
-                throw CreateAndLogCriticalDependencyException(failedFileDependencyException);
+                throw await CreateAndLogCriticalDependencyExceptionAsync(failedFileDependencyException);
             }
             catch (IOException ioException)
             {
@@ -82,7 +82,7 @@ namespace LHDS.Core.Services.Foundations.Files
                         message: "Failed file dependency error occurred, please contact support.",
                         innerException: ioException);
 
-                throw CreateAndLogDependencyException(failedFileDependencyException);
+                throw await CreateAndLogDependencyExceptionAsync(failedFileDependencyException);
             }
             catch (UnauthorizedAccessException unauthorizedAccessException)
             {
@@ -91,7 +91,7 @@ namespace LHDS.Core.Services.Foundations.Files
                         message: "Failed file dependency error occurred, please contact support.",
                         innerException: unauthorizedAccessException);
 
-                throw CreateAndLogCriticalDependencyException(failedFileDependencyException);
+                throw await CreateAndLogCriticalDependencyExceptionAsync(failedFileDependencyException);
             }
             catch (Exception exception)
             {
@@ -100,7 +100,7 @@ namespace LHDS.Core.Services.Foundations.Files
                         message: "Failed file service error occurred, please contact support.",
                         innerException: exception);
 
-                throw CreateAndLogServiceException(failedFileServiceException);
+                throw await CreateAndLogServiceExceptionAsync(failedFileServiceException);
             }
         }
 
@@ -112,7 +112,7 @@ namespace LHDS.Core.Services.Foundations.Files
             }
             catch (InvalidArgumentFileException invalidArgumentFileException)
             {
-                throw CreateAndLogValidationException(invalidArgumentFileException);
+                throw await CreateAndLogValidationExceptionAsync(invalidArgumentFileException);
             }
             catch (ArgumentNullException argumentNullException)
             {
@@ -121,7 +121,7 @@ namespace LHDS.Core.Services.Foundations.Files
                         message: "Invalid file service dependency validation error occurred.",
                         innerException: argumentNullException);
 
-                throw CreateAndLogDependencyValidationException(invalidFileDependencyException);
+                throw await CreateAndLogDependencyValidationExceptionAsync(invalidFileDependencyException);
             }
             catch (ArgumentOutOfRangeException argumentOutOfRangeException)
             {
@@ -130,7 +130,7 @@ namespace LHDS.Core.Services.Foundations.Files
                         message: "Invalid file service dependency validation error occurred.",
                         innerException: argumentOutOfRangeException);
 
-                throw CreateAndLogDependencyValidationException(invalidFileDependencyException);
+                throw await CreateAndLogDependencyValidationExceptionAsync(invalidFileDependencyException);
             }
             catch (ArgumentException argumentException)
             {
@@ -139,7 +139,7 @@ namespace LHDS.Core.Services.Foundations.Files
                         message: "Invalid file service dependency validation error occurred.",
                         innerException: argumentException);
 
-                throw CreateAndLogDependencyValidationException(invalidFileDependencyException);
+                throw await CreateAndLogDependencyValidationExceptionAsync(invalidFileDependencyException);
             }
             catch (SerializationException serializationException)
             {
@@ -148,7 +148,7 @@ namespace LHDS.Core.Services.Foundations.Files
                         message: "Failed file dependency error occurred, please contact support.",
                         innerException: serializationException);
 
-                throw CreateAndLogDependencyException(failedFileDependencyException);
+                throw await CreateAndLogDependencyExceptionAsync(failedFileDependencyException);
             }
             catch (OutOfMemoryException outOfMemoryException)
             {
@@ -157,7 +157,7 @@ namespace LHDS.Core.Services.Foundations.Files
                         message: "Failed file dependency error occurred, please contact support.",
                         innerException: outOfMemoryException);
 
-                throw CreateAndLogCriticalDependencyException(failedFileDependencyException);
+                throw await CreateAndLogCriticalDependencyExceptionAsync(failedFileDependencyException);
             }
             catch (IOException ioException)
             {
@@ -166,7 +166,7 @@ namespace LHDS.Core.Services.Foundations.Files
                         message: "Failed file dependency error occurred, please contact support.",
                         innerException: ioException);
 
-                throw CreateAndLogDependencyException(failedFileDependencyException);
+                throw await CreateAndLogDependencyExceptionAsync(failedFileDependencyException);
             }
             catch (UnauthorizedAccessException unauthorizedAccessException)
             {
@@ -175,7 +175,7 @@ namespace LHDS.Core.Services.Foundations.Files
                         message: "Failed file dependency error occurred, please contact support.",
                         innerException: unauthorizedAccessException);
 
-                throw CreateAndLogCriticalDependencyException(failedFileDependencyException);
+                throw await CreateAndLogCriticalDependencyExceptionAsync(failedFileDependencyException);
             }
             catch (Exception exception)
             {
@@ -184,7 +184,7 @@ namespace LHDS.Core.Services.Foundations.Files
                         message: "Failed file service error occurred, please contact support.",
                         innerException: exception);
 
-                throw CreateAndLogServiceException(failedFileServiceException);
+                throw await CreateAndLogServiceExceptionAsync(failedFileServiceException);
             }
         }
 
@@ -196,7 +196,7 @@ namespace LHDS.Core.Services.Foundations.Files
             }
             catch (InvalidArgumentFileException invalidArgumentFileException)
             {
-                throw CreateAndLogValidationException(invalidArgumentFileException);
+                throw await CreateAndLogValidationExceptionAsync(invalidArgumentFileException);
             }
             catch (ArgumentNullException argumentNullException)
             {
@@ -205,7 +205,7 @@ namespace LHDS.Core.Services.Foundations.Files
                         message: "Invalid file service dependency validation error occurred.",
                         innerException: argumentNullException);
 
-                throw CreateAndLogDependencyValidationException(invalidFileDependencyException);
+                throw await CreateAndLogDependencyValidationExceptionAsync(invalidFileDependencyException);
             }
             catch (ArgumentOutOfRangeException argumentOutOfRangeException)
             {
@@ -214,7 +214,7 @@ namespace LHDS.Core.Services.Foundations.Files
                         message: "Invalid file service dependency validation error occurred.",
                         innerException: argumentOutOfRangeException);
 
-                throw CreateAndLogDependencyValidationException(invalidFileDependencyException);
+                throw await CreateAndLogDependencyValidationExceptionAsync(invalidFileDependencyException);
             }
             catch (ArgumentException argumentException)
             {
@@ -223,7 +223,7 @@ namespace LHDS.Core.Services.Foundations.Files
                         message: "Invalid file service dependency validation error occurred.",
                         innerException: argumentException);
 
-                throw CreateAndLogDependencyValidationException(invalidFileDependencyException);
+                throw await CreateAndLogDependencyValidationExceptionAsync(invalidFileDependencyException);
             }
             catch (SerializationException serializationException)
             {
@@ -232,7 +232,7 @@ namespace LHDS.Core.Services.Foundations.Files
                         message: "Failed file dependency error occurred, please contact support.",
                         innerException: serializationException);
 
-                throw CreateAndLogDependencyException(failedFileDependencyException);
+                throw await CreateAndLogDependencyExceptionAsync(failedFileDependencyException);
             }
             catch (OutOfMemoryException outOfMemoryException)
             {
@@ -241,7 +241,7 @@ namespace LHDS.Core.Services.Foundations.Files
                         message: "Failed file dependency error occurred, please contact support.",
                         innerException: outOfMemoryException);
 
-                throw CreateAndLogCriticalDependencyException(failedFileDependencyException);
+                throw await CreateAndLogCriticalDependencyExceptionAsync(failedFileDependencyException);
             }
             catch (IOException ioException)
             {
@@ -250,7 +250,7 @@ namespace LHDS.Core.Services.Foundations.Files
                         message: "Failed file dependency error occurred, please contact support.",
                         innerException: ioException);
 
-                throw CreateAndLogDependencyException(failedFileDependencyException);
+                throw await CreateAndLogDependencyExceptionAsync(failedFileDependencyException);
             }
             catch (UnauthorizedAccessException unauthorizedAccessException)
             {
@@ -259,7 +259,7 @@ namespace LHDS.Core.Services.Foundations.Files
                         message: "Failed file dependency error occurred, please contact support.",
                         innerException: unauthorizedAccessException);
 
-                throw CreateAndLogCriticalDependencyException(failedFileDependencyException);
+                throw await CreateAndLogCriticalDependencyExceptionAsync(failedFileDependencyException);
             }
             catch (Exception exception)
             {
@@ -268,7 +268,7 @@ namespace LHDS.Core.Services.Foundations.Files
                         message: "Failed file service error occurred, please contact support.",
                         innerException: exception);
 
-                throw CreateAndLogServiceException(failedFileServiceException);
+                throw await CreateAndLogServiceExceptionAsync(failedFileServiceException);
             }
         }
 
@@ -280,7 +280,7 @@ namespace LHDS.Core.Services.Foundations.Files
             }
             catch (InvalidArgumentFileException invalidArgumentFileException)
             {
-                throw CreateAndLogValidationException(invalidArgumentFileException);
+                throw await CreateAndLogValidationExceptionAsync(invalidArgumentFileException);
             }
             catch (ArgumentNullException argumentNullException)
             {
@@ -289,7 +289,7 @@ namespace LHDS.Core.Services.Foundations.Files
                         message: "Invalid file service dependency validation error occurred.",
                         innerException: argumentNullException);
 
-                throw CreateAndLogDependencyValidationException(invalidFileDependencyException);
+                throw await CreateAndLogDependencyValidationExceptionAsync(invalidFileDependencyException);
             }
             catch (ArgumentOutOfRangeException argumentOutOfRangeException)
             {
@@ -298,7 +298,7 @@ namespace LHDS.Core.Services.Foundations.Files
                         message: "Invalid file service dependency validation error occurred.",
                         innerException: argumentOutOfRangeException);
 
-                throw CreateAndLogDependencyValidationException(invalidFileDependencyException);
+                throw await CreateAndLogDependencyValidationExceptionAsync(invalidFileDependencyException);
             }
             catch (ArgumentException argumentException)
             {
@@ -307,7 +307,7 @@ namespace LHDS.Core.Services.Foundations.Files
                         message: "Invalid file service dependency validation error occurred.",
                         innerException: argumentException);
 
-                throw CreateAndLogDependencyValidationException(invalidFileDependencyException);
+                throw await CreateAndLogDependencyValidationExceptionAsync(invalidFileDependencyException);
             }
             catch (SerializationException serializationException)
             {
@@ -316,7 +316,7 @@ namespace LHDS.Core.Services.Foundations.Files
                         message: "Failed file dependency error occurred, please contact support.",
                         innerException: serializationException);
 
-                throw CreateAndLogDependencyException(failedFileDependencyException);
+                throw await CreateAndLogDependencyExceptionAsync(failedFileDependencyException);
             }
             catch (OutOfMemoryException outOfMemoryException)
             {
@@ -325,7 +325,7 @@ namespace LHDS.Core.Services.Foundations.Files
                         message: "Failed file dependency error occurred, please contact support.",
                         innerException: outOfMemoryException);
 
-                throw CreateAndLogCriticalDependencyException(failedFileDependencyException);
+                throw await CreateAndLogCriticalDependencyExceptionAsync(failedFileDependencyException);
             }
             catch (IOException ioException)
             {
@@ -334,7 +334,7 @@ namespace LHDS.Core.Services.Foundations.Files
                         message: "Failed file dependency error occurred, please contact support.",
                         innerException: ioException);
 
-                throw CreateAndLogDependencyException(failedFileDependencyException);
+                throw await CreateAndLogDependencyExceptionAsync(failedFileDependencyException);
             }
             catch (UnauthorizedAccessException unauthorizedAccessException)
             {
@@ -343,7 +343,7 @@ namespace LHDS.Core.Services.Foundations.Files
                         message: "Failed file dependency error occurred, please contact support.",
                         innerException: unauthorizedAccessException);
 
-                throw CreateAndLogCriticalDependencyException(failedFileDependencyException);
+                throw await CreateAndLogCriticalDependencyExceptionAsync(failedFileDependencyException);
             }
             catch (Exception exception)
             {
@@ -352,7 +352,7 @@ namespace LHDS.Core.Services.Foundations.Files
                         message: "Failed file service error occurred, please contact support.",
                         innerException: exception);
 
-                throw CreateAndLogServiceException(failedFileServiceException);
+                throw await CreateAndLogServiceExceptionAsync(failedFileServiceException);
             }
         }
 
@@ -364,7 +364,7 @@ namespace LHDS.Core.Services.Foundations.Files
             }
             catch (InvalidArgumentFileException invalidArgumentFileException)
             {
-                throw CreateAndLogValidationException(invalidArgumentFileException);
+                throw await CreateAndLogValidationExceptionAsync(invalidArgumentFileException);
             }
             catch (ArgumentNullException argumentNullException)
             {
@@ -373,7 +373,7 @@ namespace LHDS.Core.Services.Foundations.Files
                         message: "Invalid file service dependency validation error occurred.",
                         innerException: argumentNullException);
 
-                throw CreateAndLogDependencyValidationException(invalidFileDependencyException);
+                throw await CreateAndLogDependencyValidationExceptionAsync(invalidFileDependencyException);
             }
             catch (ArgumentOutOfRangeException argumentOutOfRangeException)
             {
@@ -382,7 +382,7 @@ namespace LHDS.Core.Services.Foundations.Files
                         message: "Invalid file service dependency validation error occurred.",
                         innerException: argumentOutOfRangeException);
 
-                throw CreateAndLogDependencyValidationException(invalidFileDependencyException);
+                throw await CreateAndLogDependencyValidationExceptionAsync(invalidFileDependencyException);
             }
             catch (ArgumentException argumentException)
             {
@@ -391,7 +391,7 @@ namespace LHDS.Core.Services.Foundations.Files
                         message: "Invalid file service dependency validation error occurred.",
                         innerException: argumentException);
 
-                throw CreateAndLogDependencyValidationException(invalidFileDependencyException);
+                throw await CreateAndLogDependencyValidationExceptionAsync(invalidFileDependencyException);
             }
             catch (SerializationException serializationException)
             {
@@ -400,7 +400,7 @@ namespace LHDS.Core.Services.Foundations.Files
                         message: "Failed file dependency error occurred, please contact support.",
                         innerException: serializationException);
 
-                throw CreateAndLogDependencyException(failedFileDependencyException);
+                throw await CreateAndLogDependencyExceptionAsync(failedFileDependencyException);
             }
             catch (OutOfMemoryException outOfMemoryException)
             {
@@ -409,7 +409,7 @@ namespace LHDS.Core.Services.Foundations.Files
                         message: "Failed file dependency error occurred, please contact support.",
                         innerException: outOfMemoryException);
 
-                throw CreateAndLogCriticalDependencyException(failedFileDependencyException);
+                throw await CreateAndLogCriticalDependencyExceptionAsync(failedFileDependencyException);
             }
             catch (IOException ioException)
             {
@@ -418,7 +418,7 @@ namespace LHDS.Core.Services.Foundations.Files
                         message: "Failed file dependency error occurred, please contact support.",
                         innerException: ioException);
 
-                throw CreateAndLogDependencyException(failedFileDependencyException);
+                throw await CreateAndLogDependencyExceptionAsync(failedFileDependencyException);
             }
             catch (UnauthorizedAccessException unauthorizedAccessException)
             {
@@ -427,7 +427,7 @@ namespace LHDS.Core.Services.Foundations.Files
                         message: "Failed file dependency error occurred, please contact support.",
                         innerException: unauthorizedAccessException);
 
-                throw CreateAndLogCriticalDependencyException(failedFileDependencyException);
+                throw await CreateAndLogCriticalDependencyExceptionAsync(failedFileDependencyException);
             }
             catch (Exception exception)
             {
@@ -436,11 +436,11 @@ namespace LHDS.Core.Services.Foundations.Files
                         message: "Failed file service error occurred, please contact support.",
                         innerException: exception);
 
-                throw CreateAndLogServiceException(failedFileServiceException);
+                throw await CreateAndLogServiceExceptionAsync(failedFileServiceException);
             }
         }
 
-        private FileValidationException CreateAndLogValidationException(Xeption exception)
+        private async ValueTask<FileValidationException> CreateAndLogValidationExceptionAsync(Xeption exception)
         {
             var fileValidationException = new FileValidationException(
                 message: "File validation error occurred, fix the errors and try again.",
@@ -449,7 +449,7 @@ namespace LHDS.Core.Services.Foundations.Files
             return fileValidationException;
         }
 
-        private FileDependencyValidationException CreateAndLogDependencyValidationException(Xeption exception)
+        private async ValueTask<FileDependencyValidationException> CreateAndLogDependencyValidationExceptionAsync(Xeption exception)
         {
             var fileServiceDependencyValidationException =
                 new FileDependencyValidationException(
@@ -459,7 +459,7 @@ namespace LHDS.Core.Services.Foundations.Files
             return fileServiceDependencyValidationException;
         }
 
-        private FileDependencyException CreateAndLogDependencyException(Xeption exception)
+        private async ValueTask<FileDependencyException> CreateAndLogDependencyExceptionAsync(Xeption exception)
         {
             var fileServiceDependencyException = new FileDependencyException(
                 message: "File dependency error occurred, please contact support.",
@@ -468,7 +468,7 @@ namespace LHDS.Core.Services.Foundations.Files
             return fileServiceDependencyException;
         }
 
-        private FileDependencyException CreateAndLogCriticalDependencyException(
+        private async ValueTask<FileDependencyException> CreateAndLogCriticalDependencyExceptionAsync(
             Xeption exception)
         {
             var fileServiceDependencyException = new FileDependencyException(
@@ -478,7 +478,7 @@ namespace LHDS.Core.Services.Foundations.Files
             return fileServiceDependencyException;
         }
 
-        private FileServiceException CreateAndLogServiceException(
+        private async ValueTask<FileServiceException> CreateAndLogServiceExceptionAsync(
             Xeption exception)
         {
             var fileServiceException = new FileServiceException(

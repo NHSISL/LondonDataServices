@@ -3,6 +3,7 @@
 // ---------------------------------------------------------
 
 using System;
+using System.Threading.Tasks;
 using LHDS.Core.Models.Foundations.TerminologyPolls;
 using LHDS.Core.Models.Foundations.TerminologyPolls.Exceptions;
 
@@ -10,7 +11,7 @@ namespace LHDS.Core.Services.Foundations.TerminologyPolls
 {
     public partial class TerminologyPollService
     {
-        private void ValidateTerminologyPollOnAdd(TerminologyPoll terminologyPoll)
+        private async ValueTask ValidateTerminologyPollOnAddAsync(TerminologyPoll terminologyPoll)
         {
             ValidateTerminologyPollIsNotNull(terminologyPoll);
 
@@ -35,10 +36,10 @@ namespace LHDS.Core.Services.Foundations.TerminologyPolls
                     secondName: nameof(TerminologyPoll.CreatedBy)),
                 Parameter: nameof(TerminologyPoll.UpdatedBy)),
 
-                (Rule: IsNotRecent(terminologyPoll.CreatedDate), Parameter: nameof(TerminologyPoll.CreatedDate)));
+                (Rule: await IsNotRecentAsync(terminologyPoll.CreatedDate), Parameter: nameof(TerminologyPoll.CreatedDate)));
         }
 
-        private void ValidateTerminologyPollOnModify(TerminologyPoll terminologyPoll)
+        private async ValueTask ValidateTerminologyPollOnModifyAsync(TerminologyPoll terminologyPoll)
         {
             ValidateTerminologyPollIsNotNull(terminologyPoll);
 
@@ -57,14 +58,14 @@ namespace LHDS.Core.Services.Foundations.TerminologyPolls
                     secondDateName: nameof(TerminologyPoll.CreatedDate)),
                 Parameter: nameof(TerminologyPoll.UpdatedDate)),
 
-                (Rule: IsNotRecent(terminologyPoll.UpdatedDate), Parameter: nameof(terminologyPoll.UpdatedDate)));
+                (Rule: await IsNotRecentAsync(terminologyPoll.UpdatedDate), Parameter: nameof(terminologyPoll.UpdatedDate)));
         }
 
         public void ValidateTerminologyPollId(Guid terminologyPollId) =>
             Validate((Rule: IsInvalid(terminologyPollId), Parameter: nameof(TerminologyPoll.Id)));
 
         private static void ValidateStorageTerminologyPoll(
-            TerminologyPoll maybeTerminologyPoll, 
+            TerminologyPoll maybeTerminologyPoll,
             Guid terminologyPollId)
         {
             if (maybeTerminologyPoll is null)
@@ -82,7 +83,7 @@ namespace LHDS.Core.Services.Foundations.TerminologyPolls
         }
 
         private static void ValidateAgainstStorageTerminologyPollOnModify(
-            TerminologyPoll inputTerminologyPoll, 
+            TerminologyPoll inputTerminologyPoll,
             TerminologyPoll storageTerminologyPoll)
         {
             Validate(
@@ -159,16 +160,16 @@ namespace LHDS.Core.Services.Foundations.TerminologyPolls
                Message = $"Text is not the same as {secondName}"
            };
 
-        private dynamic IsNotRecent(DateTimeOffset date) => new
+        private async ValueTask<dynamic> IsNotRecentAsync(DateTimeOffset date) => new
         {
-            Condition = IsDateNotRecent(date),
+            Condition = await IsDateNotRecentAsync(date),
             Message = "Date is not recent"
         };
 
-        private bool IsDateNotRecent(DateTimeOffset date)
+        private async ValueTask<bool> IsDateNotRecentAsync(DateTimeOffset date)
         {
             DateTimeOffset currentDateTime =
-                this.dateTimeBroker.GetCurrentDateTimeOffset();
+                await this.dateTimeBroker.GetCurrentDateTimeOffsetAsync();
 
             TimeSpan timeDifference = currentDateTime.Subtract(date);
             TimeSpan oneMinute = TimeSpan.FromMinutes(1);

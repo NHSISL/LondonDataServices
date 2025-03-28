@@ -6,19 +6,22 @@ using System;
 using System.Linq;
 using System.Threading.Tasks;
 using FluentAssertions;
-using Xunit;
+using LHDS.Core.Models.Foundations.IngestionTrackings;
 
 namespace LHDS.Core.Tests.Integration.Decryptions
 {
     public partial class DecryptionTests
     {
-        [Fact]
+        [ReleaseCandidateFact]
         public async Task ShouldRedecryptAsync()
         {
             // given
             DateTimeOffset olderThanDateTimeOffset = DateTimeOffset.UtcNow.AddMinutes(-15);
 
-            var itemsThatRequireDecryption = ingestionTrackingService.RetrieveAllIngestionTrackings()
+            IQueryable<IngestionTracking> allIngestionTrackings =
+                await this.ingestionTrackingService.RetrieveAllIngestionTrackingsAsync();
+
+            var itemsThatRequireDecryption = allIngestionTrackings
                 .Where(ingestionTrackingItem =>
                         ingestionTrackingItem.IsDownloaded == true
                         && ingestionTrackingItem.Decrypted == false
@@ -31,8 +34,11 @@ namespace LHDS.Core.Tests.Integration.Decryptions
             // when
             await decryptionClient.RetryDecryptAsync();
 
-            // then
-            var remainingItems = ingestionTrackingService.RetrieveAllIngestionTrackings()
+            //then
+            IQueryable<IngestionTracking> postIngestionTrackings =
+               await this.ingestionTrackingService.RetrieveAllIngestionTrackingsAsync();
+
+            var remainingItems = postIngestionTrackings
                 .Where(ingestionTrackingItem =>
                         ingestionTrackingItem.IsDownloaded == true
                         && ingestionTrackingItem.Decrypted == false

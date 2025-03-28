@@ -4,9 +4,11 @@
 
 using System;
 using System.Collections.Generic;
+using System.Security.Claims;
 using System.Threading.Tasks;
 using LHDS.Core.Brokers.DateTimes;
 using LHDS.Core.Brokers.Storages.Blobs;
+using LHDS.Core.Brokers.Storages.Sql;
 using LHDS.Core.Clients;
 using LHDS.Core.Clients.Extensions;
 using LHDS.Core.Models.Brokers.Storages.Blobs;
@@ -14,12 +16,16 @@ using LHDS.Core.Models.Foundations.DataSets;
 using LHDS.Core.Models.Foundations.DataSetSpecifications;
 using LHDS.Core.Models.Foundations.Documents;
 using LHDS.Core.Models.Foundations.IngestionTrackings;
+using LHDS.Core.Models.Foundations.ObjectColumns;
+using LHDS.Core.Models.Foundations.SpecificationObjects;
 using LHDS.Core.Models.Foundations.Suppliers;
 using LHDS.Core.Models.Orchestrations.EmisLandings;
 using LHDS.Core.Services.Foundations.DataSets;
 using LHDS.Core.Services.Foundations.DataSetSpecifications;
 using LHDS.Core.Services.Foundations.IngestionTrackingAudits;
 using LHDS.Core.Services.Foundations.IngestionTrackings;
+using LHDS.Core.Services.Foundations.ObjectColumns;
+using LHDS.Core.Services.Foundations.SpecificationObjects;
 using LHDS.Core.Services.Foundations.Suppliers;
 using LHDS.Core.Services.Processings.Documents;
 using LHDS.Core.Tests.Acceptance.Brokers.DependencyBrokers;
@@ -38,6 +44,8 @@ namespace LHDS.Core.Tests.Acceptance.Clients.TppLandings
         private readonly IDateTimeBroker dateTimeBroker;
         private readonly IIngestionTrackingService ingestionTrackingService;
         private readonly IDataSetSpecificationService dataSetSpecificationService;
+        private readonly ISpecificationObjectService specificationObjectService;
+        private readonly IObjectColumnService objectColumnService;
         private readonly ISupplierService supplierService;
         private readonly IDataSetService dataSetService;
         private readonly IDocumentProcessingService documentProcessingService;
@@ -45,7 +53,6 @@ namespace LHDS.Core.Tests.Acceptance.Clients.TppLandings
         private readonly LandingConfiguration landingConfiguration;
         private readonly BlobContainers blobContainers;
         private readonly IIngestionTrackingAuditService ingestionTrackingAuditService;
-
         private readonly DependencyBroker dependencyBroker;
 
         public TppLandingTests(DependencyBroker dependencyBroker)
@@ -59,14 +66,30 @@ namespace LHDS.Core.Tests.Acceptance.Clients.TppLandings
                 builder.AddConsole();
             });
 
-            serviceCollection.AddTppLandingClient(this.dependencyBroker.Configuration);
+            var claimsPrincipal = new ClaimsPrincipal();
+            
+            claimsPrincipal.AddIdentity(new ClaimsIdentity(new List<Claim>
+            {
+                new Claim("oid", Guid.NewGuid().ToString()),
+                new Claim(ClaimTypes.GivenName, "GivenName"),
+                new Claim(ClaimTypes.Surname, "Surname"),
+                new Claim("displayName", "DisplayName"),
+                new Claim(ClaimTypes.Email, "some@email.com"),
+                new Claim("jobTitle", "job title"),
+                new Claim(ClaimTypes.Name, "TestUser"),
+                new Claim(ClaimTypes.Role, "ISL.LDS.AdminApi.Administrators"),
+                new Claim(ClaimTypes.Role, "ISL.LDS.AdminApi.Configurations")
+            }));
 
-            serviceCollection.AddTppLandingClient(this.dependencyBroker.Configuration);
+            serviceCollection.AddTppLandingClient(this.dependencyBroker.Configuration, claimsPrincipal);
+            serviceCollection.AddSingleton<IStorageBroker, StorageBroker>();
             var serviceProvider = serviceCollection.BuildServiceProvider();
             this.ingestionTrackingService = serviceProvider.GetService<IIngestionTrackingService>();
             this.supplierService = serviceProvider.GetService<ISupplierService>();
             this.dataSetService = serviceProvider.GetService<IDataSetService>();
             this.dataSetSpecificationService = serviceProvider.GetService<IDataSetSpecificationService>();
+            this.specificationObjectService = serviceProvider.GetService<ISpecificationObjectService>();
+            this.objectColumnService = serviceProvider.GetService<IObjectColumnService>();
             this.documentProcessingService = serviceProvider.GetService<IDocumentProcessingService>();
             this.ingestionTrackingAuditService = serviceProvider.GetService<IIngestionTrackingAuditService>();
             this.landingConfiguration = serviceProvider.GetService<LandingConfiguration>();
@@ -80,14 +103,11 @@ namespace LHDS.Core.Tests.Acceptance.Clients.TppLandings
 
         private static string GetRandomFileName()
         {
+            string resourceGroup = GetRandomString();
+            string batch = DateTimeOffset.UtcNow.ToString("yyyyMMdd_HHmm");
             string filename = GetRandomString();
 
-            for (int i = 0; i < 6; i++)
-            {
-                filename = $"{filename}_{GetRandomString(10)}";
-            }
-
-            return filename;
+            return $"{resourceGroup}/{batch}/{filename}.csv";
         }
 
         private static string GetRandomString(int length) =>
@@ -238,6 +258,49 @@ namespace LHDS.Core.Tests.Acceptance.Clients.TppLandings
                 .OnProperty(dataSetSpecification => dataSetSpecification.CreatedBy).Use(user)
                 .OnProperty(dataSetSpecification => dataSetSpecification.CreatedBy).Use(user)
                 .OnProperty(dataSetSpecification => dataSetSpecification.UpdatedBy).Use(user);
+
+            return filler;
+        }
+
+        private static SpecificationObject CreateRandomSpecificationObjects(
+            DataSetSpecification dataSetSpecification) =>
+            CreateSpecificationObjectFiller(dataSetSpecification).Create();
+
+        private static Filler<SpecificationObject> CreateSpecificationObjectFiller(
+            DataSetSpecification dataSetSpecification)
+        {
+            string user = GetRandomString(255);
+            var filler = new Filler<SpecificationObject>();
+            var now = DateTimeOffset.UtcNow;
+
+            filler.Setup()
+                .OnType<DateTimeOffset>().Use(now)
+                .OnType<DateTimeOffset?>().Use(now)
+
+                .OnProperty(specificationObject => specificationObject.DataSetSpecificationId)
+                    .Use(dataSetSpecification.Id)
+
+                .OnProperty(specificationObject => specificationObject.CreatedBy).Use(user)
+                .OnProperty(specificationObject => specificationObject.UpdatedBy).Use(user);
+
+            return filler;
+        }
+
+        private static ObjectColumn CreateRandomObjectColumns(SpecificationObject specificationObject) =>
+            CreateObjectColumnFiller(specificationObject).Create();
+
+        private static Filler<ObjectColumn> CreateObjectColumnFiller(SpecificationObject specificationObject)
+        {
+            string user = GetRandomString(255);
+            var filler = new Filler<ObjectColumn>();
+            var now = DateTimeOffset.UtcNow;
+
+            filler.Setup()
+                .OnType<DateTimeOffset>().Use(now)
+                .OnType<DateTimeOffset?>().Use(now)
+                .OnProperty(objectColumn => objectColumn.SpecificationObjectId).Use(specificationObject.Id)
+                .OnProperty(objectColumn => objectColumn.CreatedBy).Use(user)
+                .OnProperty(objectColumn => objectColumn.UpdatedBy).Use(user);
 
             return filler;
         }

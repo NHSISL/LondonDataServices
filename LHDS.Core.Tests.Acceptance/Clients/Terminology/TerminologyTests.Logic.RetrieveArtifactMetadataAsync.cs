@@ -3,6 +3,7 @@
 // ---------------------------------------------------------
 
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
@@ -101,9 +102,10 @@ namespace LHDS.Core.Tests.Acceptance.Clients.Terminology
             await this.terminologyClient.RetrieveArtifactMetadataAsync(resourceTypes);
 
             //Then
-            IQueryable<TerminologyPoll> retrievedTerminologyPolls =
-                this.terminologyPollService.RetrieveAllTerminologyPolls();
+            IQueryable<TerminologyPoll> retrievedTerminologyPollsQueryable =
+                await this.terminologyPollService.RetrieveAllTerminologyPollsAsync();
 
+            List<TerminologyPoll> retrievedTerminologyPolls = retrievedTerminologyPollsQueryable.ToList();
             retrievedTerminologyPolls.Count().Should().BeGreaterThan(0);
 
             foreach (TerminologyPoll poll in retrievedTerminologyPolls)
@@ -112,12 +114,14 @@ namespace LHDS.Core.Tests.Acceptance.Clients.Terminology
             }
 
             IQueryable<TerminologyArtifact> retrievedTerminologyArtifacts =
-                this.terminologyArtifactService.RetrieveAllTerminologyArtifacts()
-                    .Where(artifact => artifact.ResourceType == resourceType);
+                await this.terminologyArtifactService.RetrieveAllTerminologyArtifactsAsync();
 
-            retrievedTerminologyArtifacts.Count().Should().BeGreaterThan(0);
+            List<TerminologyArtifact> matchedTerminologyArtifacts =
+                retrievedTerminologyArtifacts.Where(artifact => artifact.ResourceType == resourceType).ToList();
 
-            foreach (TerminologyArtifact artifact in retrievedTerminologyArtifacts)
+            matchedTerminologyArtifacts.Count().Should().BeGreaterThan(0);
+
+            foreach (TerminologyArtifact artifact in matchedTerminologyArtifacts)
             {
                 await this.terminologyArtifactService.RemoveTerminologyArtifactByIdAsync(artifact.Id);
             }

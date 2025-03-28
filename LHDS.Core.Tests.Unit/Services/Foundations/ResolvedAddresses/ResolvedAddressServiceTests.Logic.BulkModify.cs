@@ -23,14 +23,13 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.ResolvedAddresses
                 GetRandomDateTimeOffset();
 
             Guid randomIdentifier = Guid.NewGuid();
-            DateTimeOffset createdDate = randomDateTimeOffset;
             DateTimeOffset updatedDate = randomDateTimeOffset;
             string randomFileName = GetRandomString();
 
             List<ResolvedAddress> randomResolvedAddresses = new List<ResolvedAddress>
                 {
-                    CreateRandomResolvedAddress(randomDateTimeOffset),
-                    CreateRandomResolvedAddress(randomDateTimeOffset)
+                    CreateRandomModifyResolvedAddress(randomDateTimeOffset),
+                    CreateRandomModifyResolvedAddress(randomDateTimeOffset)
                 };
 
             List<ResolvedAddress> inputResolvedAddresses = randomResolvedAddresses;
@@ -44,12 +43,12 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.ResolvedAddresses
             List<ResolvedAddress> updatedResolvedAddresses = new List<ResolvedAddress> { validatedResolvedAddresses.Last() };
 
             this.storageBrokerMock.Setup(broker =>
-                broker.SelectAllResolvedAddresses())
-                    .Returns(new List<ResolvedAddress> { randomResolvedAddresses.Last() }.AsQueryable());
+                broker.SelectAllResolvedAddressesAsync())
+                    .ReturnsAsync(new List<ResolvedAddress> { randomResolvedAddresses.Last() }.AsQueryable());
 
             this.dateTimeBrokerMock.Setup(broker =>
-                broker.GetCurrentDateTimeOffset())
-                    .Returns(randomDateTimeOffset);
+                broker.GetCurrentDateTimeOffsetAsync())
+                    .ReturnsAsync(randomDateTimeOffset);
 
             // when
             await this.resolvedAddressService
@@ -57,11 +56,11 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.ResolvedAddresses
 
             // then
             this.dateTimeBrokerMock.Verify(broker =>
-                broker.GetCurrentDateTimeOffset(),
+                broker.GetCurrentDateTimeOffsetAsync(),
                     Times.Exactly(randomResolvedAddresses.Count * 2));
 
             this.storageBrokerMock.Verify(broker =>
-                broker.SelectAllResolvedAddresses(),
+                broker.SelectAllResolvedAddressesAsync(),
                     Times.Once);
 
             this.storageBrokerMock.Verify(broker =>

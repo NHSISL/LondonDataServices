@@ -3,7 +3,10 @@
 // ---------------------------------------------------------
 
 using System;
+using System.Linq;
+using System.Threading.Tasks;
 using FluentAssertions;
+using LHDS.Core.Models.Foundations.DataSets;
 using LHDS.Core.Models.Foundations.DataSets.Exceptions;
 using Microsoft.Data.SqlClient;
 using Moq;
@@ -14,7 +17,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.DataSets
     public partial class DataSetServiceTests
     {
         [Fact]
-        public void ShouldThrowCriticalDependencyExceptionOnRetrieveAllWhenSqlExceptionOccursAndLogIt()
+        public async Task ShouldThrowCriticalDependencyExceptionOnRetrieveAllWhenSqlExceptionOccursAndLogIt()
         {
             // given
             SqlException sqlException = GetSqlException();
@@ -30,36 +33,38 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.DataSets
                     innerException: failedDataSetStorageException);
 
             this.storageBrokerMock.Setup(broker =>
-                broker.SelectAllDataSets())
-                    .Throws(sqlException);
+                broker.SelectAllDataSetsAsync())
+                    .ThrowsAsync(sqlException);
 
             // when
-            Action retrieveAllDataSetsAction = () =>
-                this.dataSetService.RetrieveAllDataSets();
+            ValueTask<IQueryable<DataSet>> retrieveAllDataSetsTask =
+                this.dataSetService.RetrieveAllDataSetsAsync();
 
             DataSetDependencyException actualDataSetDependencyException =
-                Assert.Throws<DataSetDependencyException>(retrieveAllDataSetsAction);
+                await Assert.ThrowsAsync<DataSetDependencyException>(
+                    retrieveAllDataSetsTask.AsTask);
 
             // then
             actualDataSetDependencyException.Should()
                 .BeEquivalentTo(expectedDataSetDependencyException);
 
             this.storageBrokerMock.Verify(broker =>
-                broker.SelectAllDataSets(),
+                broker.SelectAllDataSetsAsync(),
                     Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>
-                broker.LogCritical(It.Is(SameExceptionAs(
+                broker.LogCriticalAsync(It.Is(SameExceptionAs(
                     expectedDataSetDependencyException))),
                         Times.Once);
 
             this.storageBrokerMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
             this.dateTimeBrokerMock.VerifyNoOtherCalls();
+            this.securityBrokerMock.VerifyNoOtherCalls();
         }
 
         [Fact]
-        public void ShouldThrowServiceExceptionOnRetrieveAllIfServiceErrorOccursAndLogItAsync()
+        public async Task ShouldThrowServiceExceptionOnRetrieveAllIfServiceErrorOccursAndLogItAsync()
         {
             // given
             string exceptionMessage = GetRandomString();
@@ -76,31 +81,34 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.DataSets
                     innerException: failedDataSetServiceException);
 
             this.storageBrokerMock.Setup(broker =>
-                broker.SelectAllDataSets())
-                    .Throws(serviceException);
+                broker.SelectAllDataSetsAsync())
+                    .ThrowsAsync(serviceException);
 
             // when
-            Action retrieveAllDataSetsAction = () =>
-                this.dataSetService.RetrieveAllDataSets();
+            ValueTask<IQueryable<DataSet>> retrieveAllDataSetsTask =
+                this.dataSetService.RetrieveAllDataSetsAsync();
 
             DataSetServiceException actualDataSetServiceException =
-                Assert.Throws<DataSetServiceException>(retrieveAllDataSetsAction);
+                await Assert.ThrowsAsync<DataSetServiceException>(
+                    retrieveAllDataSetsTask.AsTask);
 
             // then
             actualDataSetServiceException.Should()
                 .BeEquivalentTo(expectedDataSetServiceException);
 
             this.storageBrokerMock.Verify(broker =>
-                broker.SelectAllDataSets(),
+                broker.SelectAllDataSetsAsync(),
                     Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>
-                broker.LogError(It.Is(SameExceptionAs(
+                broker.LogErrorAsync(It.Is(SameExceptionAs(
                     expectedDataSetServiceException))),
                         Times.Once);
 
             this.storageBrokerMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
+            this.securityBrokerMock.VerifyNoOtherCalls();
         }
     }
 }

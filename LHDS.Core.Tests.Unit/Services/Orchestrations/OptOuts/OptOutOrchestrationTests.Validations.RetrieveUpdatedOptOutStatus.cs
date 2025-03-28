@@ -9,7 +9,6 @@ using FluentAssertions;
 using LHDS.Core.Models.Foundations.Mesh;
 using LHDS.Core.Models.Orchestrations.OptOuts.Exceptions;
 using Moq;
-using Xeptions;
 using Xunit;
 
 namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
@@ -72,8 +71,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
                 this.optOutOrchestrationService.RetrieveUpdatedMeshConsentStatusesChangesAsync();
 
             OptOutOrchestrationServiceException actualOptOutOrchestrationServiceException =
-                await Assert.ThrowsAsync<OptOutOrchestrationServiceException>(async () =>
-                    await actualMeshMessages);
+                await Assert.ThrowsAsync<OptOutOrchestrationServiceException>(actualMeshMessages.AsTask);
 
             // Then
             actualOptOutOrchestrationServiceException.Should()
@@ -93,12 +91,12 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
                     innerException: invalidMeshMessageOrchestrationException);
 
             this.loggingBrokerMock.Verify(broker =>
-                broker.LogError(It.Is(SameExceptionAs(
+                broker.LogErrorAsync(It.Is(SameExceptionAs(
                     expectedOptOutOrchestrationValidationLoggingException))),
                         Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>
-                broker.LogError(It.Is(SameExceptionAs(
+                broker.LogErrorAsync(It.Is(SameExceptionAs(
                     expectedOptOutOrchestrationServiceException))),
                         Times.Once);
 

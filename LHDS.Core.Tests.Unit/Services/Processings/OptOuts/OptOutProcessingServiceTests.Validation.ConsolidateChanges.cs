@@ -23,14 +23,17 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.OptOuts
             List<string> randomStringList = RandomStringList(randomNumber);
 
             var invalidArgumentOptOutProcessingException =
-                new InvalidArgumentOptOutProcessingException();
+                new InvalidArgumentOptOutProcessingException(
+                    message: "Invalid opt out processing argument. Please correct the errors and try again.");
 
             invalidArgumentOptOutProcessingException.AddData(
                 key: "OptOutList",
                 values: "Opt out list is required");
 
             var expectedOptOutProcessingValidationException =
-                new OptOutProcessingValidationException(innerException: invalidArgumentOptOutProcessingException);
+                new OptOutProcessingValidationException(
+                    message: "OptOut processing validation errors occured, please try again",
+                    innerException: invalidArgumentOptOutProcessingException);
 
             // when
             ValueTask<List<OptOut>> ConsolidateChangesOptOutTask =
@@ -44,7 +47,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.OptOuts
                 .BeEquivalentTo(expectedOptOutProcessingValidationException);
 
             this.loggingBrokerMock.Verify(broker =>
-                broker.LogError(It.Is(SameExceptionAs(
+                broker.LogErrorAsync(It.Is(SameExceptionAs(
                     expectedOptOutProcessingValidationException))),
                         Times.Once);
 
@@ -62,7 +65,8 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.OptOuts
             List<string> nullStringList = null;
 
             var invalidArgumentOptOutProcessingException =
-                new InvalidArgumentOptOutProcessingException();
+                new InvalidArgumentOptOutProcessingException(
+                    message: "Invalid opt out processing argument. Please correct the errors and try again.");
 
             invalidArgumentOptOutProcessingException.AddData(
                 key: "ConsentedItemsList",
@@ -70,6 +74,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.OptOuts
 
             var expectedOptOutProcessingValidationException =
                 new OptOutProcessingValidationException(
+                    message: "OptOut processing validation errors occured, please try again",
                     innerException: invalidArgumentOptOutProcessingException);
 
             // when
@@ -86,7 +91,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.OptOuts
                 .BeEquivalentTo(expectedOptOutProcessingValidationException);
 
             this.loggingBrokerMock.Verify(broker =>
-                broker.LogError(It.Is(SameExceptionAs(
+                broker.LogErrorAsync(It.Is(SameExceptionAs(
                     expectedOptOutProcessingValidationException))),
                         Times.Once);
 

@@ -3,6 +3,8 @@
 // ---------------------------------------------------------
 
 using System;
+using System.Threading.Tasks;
+using LHDS.Core.Models.Brokers.Securities;
 using LHDS.Core.Models.Foundations.TerminologyArtifacts;
 using LHDS.Core.Models.Foundations.TerminologyArtifacts.Exceptions;
 
@@ -10,9 +12,9 @@ namespace LHDS.Core.Services.Foundations.TerminologyArtifacts
 {
     public partial class TerminologyArtifactService
     {
-        private void ValidateTerminologyArtifactOnAdd(TerminologyArtifact terminologyArtifact)
+        private async ValueTask ValidateTerminologyArtifactOnAddAsync(TerminologyArtifact terminologyArtifact)
         {
-            ValidateTerminologyArtifactIsNotNull(terminologyArtifact);
+            EntraUser currentUser = await this.securityBroker.GetCurrentUserAsync();
 
             Validate(
                 (Rule: IsInvalid(terminologyArtifact.Id), Parameter: nameof(TerminologyArtifact.Id)),
@@ -22,6 +24,11 @@ namespace LHDS.Core.Services.Foundations.TerminologyArtifacts
                 (Rule: IsInvalid(terminologyArtifact.CreatedBy), Parameter: nameof(TerminologyArtifact.CreatedBy)),
                 (Rule: IsInvalid(terminologyArtifact.UpdatedDate), Parameter: nameof(TerminologyArtifact.UpdatedDate)),
                 (Rule: IsInvalid(terminologyArtifact.UpdatedBy), Parameter: nameof(TerminologyArtifact.UpdatedBy)),
+
+                (Rule: IsNotSame(
+                    first: currentUser.EntraUserId,
+                    second: terminologyArtifact.CreatedBy),
+                Parameter: nameof(TerminologyArtifact.CreatedBy)),
 
                 (Rule: IsNotSame(
                     firstDate: terminologyArtifact.UpdatedDate,
@@ -35,12 +42,12 @@ namespace LHDS.Core.Services.Foundations.TerminologyArtifacts
                     secondName: nameof(TerminologyArtifact.CreatedBy)),
                 Parameter: nameof(TerminologyArtifact.UpdatedBy)),
 
-                (Rule: IsNotRecent(terminologyArtifact.CreatedDate), Parameter: nameof(TerminologyArtifact.CreatedDate)));
+                (Rule: await IsNotRecentAsync(terminologyArtifact.CreatedDate), Parameter: nameof(TerminologyArtifact.CreatedDate)));
         }
 
-        private void ValidateTerminologyArtifactOnModify(TerminologyArtifact terminologyArtifact)
+        private async ValueTask ValidateTerminologyArtifactOnModifyAsync(TerminologyArtifact terminologyArtifact)
         {
-            ValidateTerminologyArtifactIsNotNull(terminologyArtifact);
+            EntraUser currentUser = await this.securityBroker.GetCurrentUserAsync();
 
             Validate(
                 (Rule: IsInvalid(terminologyArtifact.Id), Parameter: nameof(TerminologyArtifact.Id)),
@@ -51,13 +58,18 @@ namespace LHDS.Core.Services.Foundations.TerminologyArtifacts
                 (Rule: IsInvalid(terminologyArtifact.UpdatedDate), Parameter: nameof(TerminologyArtifact.UpdatedDate)),
                 (Rule: IsInvalid(terminologyArtifact.UpdatedBy), Parameter: nameof(TerminologyArtifact.UpdatedBy)),
 
+                (Rule: IsNotSame(
+                    first: currentUser.EntraUserId,
+                    second: terminologyArtifact.UpdatedBy),
+                Parameter: nameof(TerminologyArtifact.UpdatedBy)),
+
                 (Rule: IsSame(
                     firstDate: terminologyArtifact.UpdatedDate,
                     secondDate: terminologyArtifact.CreatedDate,
                     secondDateName: nameof(TerminologyArtifact.CreatedDate)),
                 Parameter: nameof(TerminologyArtifact.UpdatedDate)),
 
-                (Rule: IsNotRecent(terminologyArtifact.UpdatedDate), Parameter: nameof(terminologyArtifact.UpdatedDate)));
+                (Rule: await IsNotRecentAsync(terminologyArtifact.UpdatedDate), Parameter: nameof(terminologyArtifact.UpdatedDate)));
         }
 
         public void ValidateTerminologyArtifactId(Guid terminologyArtifactId) =>
@@ -105,6 +117,37 @@ namespace LHDS.Core.Services.Foundations.TerminologyArtifacts
                 Parameter: nameof(TerminologyArtifact.UpdatedDate)));
         }
 
+        private async ValueTask ValidateAgainstStorageTerminologyArtifactOnDeleteAsync(TerminologyArtifact terminologyArtifact, TerminologyArtifact maybeTerminologyArtifact)
+        {
+            EntraUser auditUser = await this.securityBroker.GetCurrentUserAsync();
+
+            Validate(
+                (Rule: IsNotSame(
+                    terminologyArtifact.CreatedDate,
+                    maybeTerminologyArtifact.CreatedDate,
+                    nameof(maybeTerminologyArtifact.CreatedDate)),
+                 Parameter: nameof(TerminologyArtifact.CreatedDate)),
+
+                (Rule: IsNotSame(
+                    terminologyArtifact.CreatedBy,
+                    maybeTerminologyArtifact.CreatedBy,
+                    nameof(maybeTerminologyArtifact.CreatedBy)),
+                 Parameter: nameof(TerminologyArtifact.CreatedBy)),
+
+                (Rule: IsNotSame(
+                    maybeTerminologyArtifact.UpdatedDate,
+                    terminologyArtifact.UpdatedDate,
+                    nameof(TerminologyArtifact.UpdatedDate)),
+                 Parameter: nameof(TerminologyArtifact.UpdatedDate)),
+
+                (Rule: IsNotSame(
+                    auditUser.EntraUserId.ToString(),
+                    terminologyArtifact.UpdatedBy,
+                    nameof(TerminologyArtifact.UpdatedBy)),
+                 Parameter: nameof(TerminologyArtifact.UpdatedBy))
+            );
+        }
+
         private static dynamic IsInvalid(Guid id) => new
         {
             Condition = id == Guid.Empty,
@@ -130,6 +173,14 @@ namespace LHDS.Core.Services.Foundations.TerminologyArtifacts
             {
                 Condition = firstDate == secondDate,
                 Message = $"Date is the same as {secondDateName}"
+            };
+
+        private static dynamic IsNotSame(
+            string first,
+            string second) => new
+            {
+                Condition = first != second,
+                Message = $"Expected value to be '{first}' but found '{second}'."
             };
 
         private static dynamic IsNotSame(
@@ -159,16 +210,16 @@ namespace LHDS.Core.Services.Foundations.TerminologyArtifacts
                Message = $"Text is not the same as {secondName}"
            };
 
-        private dynamic IsNotRecent(DateTimeOffset date) => new
+        private async ValueTask<dynamic> IsNotRecentAsync(DateTimeOffset date) => new
         {
-            Condition = IsDateNotRecent(date),
+            Condition = await IsDateNotRecentAsync(date),
             Message = "Date is not recent"
         };
 
-        private bool IsDateNotRecent(DateTimeOffset date)
+        private async ValueTask<bool> IsDateNotRecentAsync(DateTimeOffset date)
         {
             DateTimeOffset currentDateTime =
-                this.dateTimeBroker.GetCurrentDateTimeOffset();
+                await this.dateTimeBroker.GetCurrentDateTimeOffsetAsync();
 
             TimeSpan timeDifference = currentDateTime.Subtract(date);
             TimeSpan oneMinute = TimeSpan.FromMinutes(1);

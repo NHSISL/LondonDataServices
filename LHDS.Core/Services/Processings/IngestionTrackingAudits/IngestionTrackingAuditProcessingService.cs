@@ -1,6 +1,6 @@
-﻿// ---------------------------------------------------------------
+﻿// ---------------------------------------------------------
 // Copyright (c) North East London ICB. All rights reserved.
-// ---------------------------------------------------------------
+// ---------------------------------------------------------
 
 using System;
 using System.Linq;
@@ -33,8 +33,8 @@ namespace LHDS.Core.Services.Processings.IngestionTrackings
                 return await this.ingestionTrackingAuditService.AddIngestionTrackingAuditAsync(audit);
             });
 
-        public IQueryable<IngestionTrackingAudit> RetrieveAllIngestionTrackingAudits() =>
-            TryCatch(() => this.ingestionTrackingAuditService.RetrieveAllIngestionTrackingAudits());
+        public ValueTask<IQueryable<IngestionTrackingAudit>> RetrieveAllIngestionTrackingAuditsAsync() =>
+            TryCatch(async() => await this.ingestionTrackingAuditService.RetrieveAllIngestionTrackingAuditsAsync());
 
         public ValueTask<IngestionTrackingAudit> RetrieveIngestionTrackingAuditByIdAsync(Guid auditId) =>
             TryCatch(async () =>
@@ -59,7 +59,9 @@ namespace LHDS.Core.Services.Processings.IngestionTrackings
             {
                 ValidateIngestionTrackingAudit(audit);
                 ValidateIngestionTrackingAuditId(audit.Id);
-                var maybeIngestionTracking = await this.ingestionTrackingAuditService.RetrieveIngestionTrackingAuditByIdAsync(audit.Id);
+                
+                var maybeIngestionTracking = await this.ingestionTrackingAuditService
+                    .RetrieveIngestionTrackingAuditByIdAsync(audit.Id);
 
                 if (maybeIngestionTracking != null)
                 {

@@ -100,6 +100,14 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.ResolvedAddresses
                     .AreEqual;
         }
 
+        private Expression<Func<AssignAddress, bool>> SameAssignAddressAs(
+           AssignAddress expectedAssignAddress)
+        {
+            return actualAssignAddress =>
+                this.compareLogic.Compare(expectedAssignAddress, actualAssignAddress)
+                    .AreEqual;
+        }
+
         private Expression<Func<List<ResolvedAddress>, bool>> SameResolvedAddressListAs(
            List<ResolvedAddress> expectedResolvedAddressList)
         {
@@ -204,13 +212,13 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.ResolvedAddresses
             return filler;
         }
 
-        private static Address? CreateRandomAddress(DateTimeOffset dateTimeOffset) =>
+        private static Address CreateRandomAddress(DateTimeOffset dateTimeOffset) =>
              CreateAddressFiller(dateTimeOffset).Create();
 
-        private static Filler<Address?> CreateAddressFiller(DateTimeOffset dateTimeOffset)
+        private static Filler<Address> CreateAddressFiller(DateTimeOffset dateTimeOffset)
         {
             string user = Guid.NewGuid().ToString();
-            var filler = new Filler<Address?>();
+            var filler = new Filler<Address>();
 
             filler.Setup()
                 .OnType<DateTimeOffset>().Use(dateTimeOffset)

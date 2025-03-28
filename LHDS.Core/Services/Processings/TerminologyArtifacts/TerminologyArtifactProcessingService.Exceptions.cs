@@ -14,45 +14,48 @@ namespace LHDS.Core.Services.Processings.TerminologyArtifacts
 {
     public partial class TerminologyArtifactProcessingService
     {
-        private delegate ValueTask<T> ReturningTerminologyArtifactProcessingFunction<T>();
-        private delegate IQueryable<TerminologyArtifact> ReturningTerminologyArtifactsFunction();
+        private delegate ValueTask<TerminologyArtifact> ReturningTerminologyArtifactProcessingFunction();
+        private delegate ValueTask<IQueryable<TerminologyArtifact>> ReturningTerminologyArtifactsProcessingFunction();
 
-        private IQueryable<TerminologyArtifact> TryCatch(
-            ReturningTerminologyArtifactsFunction returningTerminologyArtifactsFunction)
+        private async ValueTask<IQueryable<TerminologyArtifact>> TryCatch(
+            ReturningTerminologyArtifactsProcessingFunction returningTerminologyArtifactsProcessingFunction)
         {
             try
             {
-                return returningTerminologyArtifactsFunction();
+                return await returningTerminologyArtifactsProcessingFunction();
             }
             catch (TerminologyArtifactValidationException terminologyArtifactValidationException)
             {
-                throw CreateAndLogDependencyValidationException(terminologyArtifactValidationException);
+                throw await CreateAndLogDependencyValidationExceptionAsync(terminologyArtifactValidationException);
             }
             catch (TerminologyArtifactDependencyValidationException terminologyArtifactDependencyValidationException)
             {
-                throw CreateAndLogDependencyValidationException(terminologyArtifactDependencyValidationException);
+                throw await CreateAndLogDependencyValidationExceptionAsync(
+                    terminologyArtifactDependencyValidationException);
             }
             catch (TerminologyArtifactDependencyException terminologyArtifactDependencyException)
             {
-                throw CreateAndLogDependencyException(terminologyArtifactDependencyException);
+                throw await CreateAndLogDependencyExceptionAsync(terminologyArtifactDependencyException);
             }
             catch (TerminologyArtifactServiceException terminologyArtifactServiceException)
             {
-                throw CreateAndLogDependencyException(terminologyArtifactServiceException);
+                throw await CreateAndLogDependencyExceptionAsync(terminologyArtifactServiceException);
             }
             catch (Exception exception)
             {
                 var failedTerminologyArtifactProcessingServiceException =
                     new FailedTerminologyArtifactProcessingServiceException(
-                        message: "Failed terminology artifact processing service error occurred, please contact support.",
+                        message: 
+                            "Failed terminology artifact processing service error occurred, " +
+                            "please contact support.",
                         innerException: exception);
 
-                throw CreateAndLogServiceException(failedTerminologyArtifactProcessingServiceException);
+                throw await CreateAndLogServiceExceptionAsync(failedTerminologyArtifactProcessingServiceException);
             }
         }
 
-        private async ValueTask<T> TryCatch<T>(
-            ReturningTerminologyArtifactProcessingFunction<T> returningTerminologyArtifactProcessingFunction)
+        private async ValueTask<TerminologyArtifact> TryCatch(
+            ReturningTerminologyArtifactProcessingFunction returningTerminologyArtifactProcessingFunction)
         {
             try
             {
@@ -60,66 +63,71 @@ namespace LHDS.Core.Services.Processings.TerminologyArtifacts
             }
             catch (NullTerminologyArtifactProcessingException nullTerminologyArtifactException)
             {
-                throw CreateAndLogValidationException(nullTerminologyArtifactException);
+                throw await CreateAndLogValidationExceptionAsync(nullTerminologyArtifactException);
             }
             catch (InvalidArgumentTerminologyArtifactProcessingException
                 invalidArgumentTerminologyArtifactProcessingException)
             {
-                throw CreateAndLogValidationException(invalidArgumentTerminologyArtifactProcessingException);
+                throw await CreateAndLogValidationExceptionAsync(
+                    invalidArgumentTerminologyArtifactProcessingException);
             }
             catch (TerminologyArtifactValidationException terminologyArtifactValidationException)
             {
-                throw CreateAndLogDependencyValidationException(terminologyArtifactValidationException);
+                throw await CreateAndLogDependencyValidationExceptionAsync(terminologyArtifactValidationException);
             }
             catch (TerminologyArtifactDependencyValidationException terminologyArtifactDependencyValidationException)
             {
-                throw CreateAndLogDependencyValidationException(terminologyArtifactDependencyValidationException);
+                throw await CreateAndLogDependencyValidationExceptionAsync(
+                    terminologyArtifactDependencyValidationException);
             }
             catch (TerminologyArtifactDependencyException terminologyArtifactDependencyException)
             {
-                throw CreateAndLogDependencyException(terminologyArtifactDependencyException);
+                throw await CreateAndLogDependencyExceptionAsync(terminologyArtifactDependencyException);
             }
             catch (TerminologyArtifactServiceException terminologyArtifactServiceException)
             {
-                throw CreateAndLogDependencyException(terminologyArtifactServiceException);
+                throw await CreateAndLogDependencyExceptionAsync(terminologyArtifactServiceException);
             }
             catch (Exception exception)
             {
                 var failedTerminologyArtifactProcessingServiceException =
                     new FailedTerminologyArtifactProcessingServiceException(
-                        message: "Failed terminology artifact processing service error occurred, please contact support.",
+                        message: 
+                            "Failed terminology artifact processing service error occurred, " +
+                            "please contact support.",
                         innerException: exception);
 
-                throw CreateAndLogServiceException(failedTerminologyArtifactProcessingServiceException);
+                throw await CreateAndLogServiceExceptionAsync(failedTerminologyArtifactProcessingServiceException);
             }
         }
 
-        private TerminologyArtifactProcessingValidationException CreateAndLogValidationException(Xeption exception)
+        private async ValueTask<TerminologyArtifactProcessingValidationException> CreateAndLogValidationExceptionAsync(
+            Xeption exception)
         {
             var terminologyArtifactProcessingValidationExceptionn =
                 new TerminologyArtifactProcessingValidationException(
                     message: "Terminology artifact processing validation error occurred, please try again.",
                     innerException: exception);
 
-            this.loggingBroker.LogError(terminologyArtifactProcessingValidationExceptionn);
+            await this.loggingBroker.LogErrorAsync(terminologyArtifactProcessingValidationExceptionn);
 
             return terminologyArtifactProcessingValidationExceptionn;
         }
 
-        private TerminologyArtifactProcessingDependencyValidationException CreateAndLogDependencyValidationException(
-            Xeption exception)
+        private async ValueTask<TerminologyArtifactProcessingDependencyValidationException>
+            CreateAndLogDependencyValidationExceptionAsync(Xeption exception)
         {
             var terminologyArtifactProcessingDependencyValidationException =
                 new TerminologyArtifactProcessingDependencyValidationException(
                     message: "Terminology artifact processing dependency validation error occurred, please try again.",
                     innerException: exception.InnerException as Xeption);
 
-            this.loggingBroker.LogError(terminologyArtifactProcessingDependencyValidationException);
+            await this.loggingBroker.LogErrorAsync(terminologyArtifactProcessingDependencyValidationException);
 
             return terminologyArtifactProcessingDependencyValidationException;
         }
 
-        private TerminologyArtifactProcessingDependencyException CreateAndLogDependencyException(
+        private async ValueTask<TerminologyArtifactProcessingDependencyException> CreateAndLogDependencyExceptionAsync(
             Xeption exception)
         {
             var terminologyArtifactProcessingDependencyException =
@@ -127,12 +135,12 @@ namespace LHDS.Core.Services.Processings.TerminologyArtifacts
                     message: "Terminology artifact processing dependency error occurred, please try again.",
                     innerException: exception.InnerException as Xeption);
 
-            this.loggingBroker.LogError(terminologyArtifactProcessingDependencyException);
+            await this.loggingBroker.LogErrorAsync(terminologyArtifactProcessingDependencyException);
 
             return terminologyArtifactProcessingDependencyException;
         }
 
-        private TerminologyArtifactProcessingServiceException CreateAndLogServiceException(
+        private async ValueTask<TerminologyArtifactProcessingServiceException> CreateAndLogServiceExceptionAsync(
            Xeption exception)
         {
             var terminologyArtifactProcessingServiceException =
@@ -140,7 +148,7 @@ namespace LHDS.Core.Services.Processings.TerminologyArtifacts
                     message: "Terminology artifact processing service error occurred, please contact support.",
                     innerException: exception);
 
-            this.loggingBroker.LogError(terminologyArtifactProcessingServiceException);
+            await this.loggingBroker.LogErrorAsync(terminologyArtifactProcessingServiceException);
 
             return terminologyArtifactProcessingServiceException;
         }

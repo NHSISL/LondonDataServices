@@ -1,6 +1,6 @@
-﻿// ---------------------------------------------------------------
+﻿// ---------------------------------------------------------
 // Copyright (c) North East London ICB. All rights reserved.
-// ---------------------------------------------------------------
+// ---------------------------------------------------------
 
 using System;
 using System.Collections.Generic;
@@ -26,23 +26,23 @@ namespace LHDS.Core.Services.Processings.Mesh
             }
             catch (InvalidMeshProcessingArgumentException exception)
             {
-                throw CreateAndLogValidationException(exception);
+                throw await CreateAndLogValidationExceptionAsync(exception);
             }
             catch (MeshValidationException meshValidationException)
             {
-                throw CreateAndLogDependencyValidationException(meshValidationException);
+                throw await CreateAndLogDependencyValidationExceptionAsync(meshValidationException);
             }
             catch (MeshDependencyValidationException meshDependencyValidationException)
             {
-                throw CreateAndLogDependencyValidationException(meshDependencyValidationException);
+                throw await CreateAndLogDependencyValidationExceptionAsync(meshDependencyValidationException);
             }
             catch (MeshDependencyException meshDependencyException)
             {
-                throw CreateAndLogDependencyException(meshDependencyException);
+                throw await CreateAndLogDependencyExceptionAsync(meshDependencyException);
             }
             catch (MeshServiceException meshServiceException)
             {
-                throw CreateAndLogDependencyException(meshServiceException);
+                throw await CreateAndLogDependencyExceptionAsync(meshServiceException);
             }
             catch (Exception exception)
             {
@@ -51,7 +51,7 @@ namespace LHDS.Core.Services.Processings.Mesh
                         message: "Failed mesh processing service error occurred, please contact support.",
                         innerException: exception);
 
-                throw CreateAndLogServiceException(failedMeshProcessingServiceException);
+                throw await CreateAndLogServiceExceptionAsync(failedMeshProcessingServiceException);
             }
         }
 
@@ -63,31 +63,31 @@ namespace LHDS.Core.Services.Processings.Mesh
             }
             catch (InvalidMeshProcessingArgumentException exception)
             {
-                throw CreateAndLogValidationException(exception);
+                throw await CreateAndLogValidationExceptionAsync(exception);
             }
             catch (InvalidMeshMessageProcessingException invalidMeshMessageProcessingException)
             {
-                throw CreateAndLogValidationException(invalidMeshMessageProcessingException);
+                throw await CreateAndLogValidationExceptionAsync(invalidMeshMessageProcessingException);
             }
             catch (MeshValidationException meshValidationException)
             {
-                throw CreateAndLogDependencyValidationException(meshValidationException);
+                throw await CreateAndLogDependencyValidationExceptionAsync(meshValidationException);
             }
             catch (NullMeshMessageProcessingException exception)
             {
-                throw CreateAndLogValidationException(exception);
+                throw await CreateAndLogValidationExceptionAsync(exception);
             }
             catch (MeshDependencyValidationException meshDependencyValidationException)
             {
-                throw CreateAndLogDependencyValidationException(meshDependencyValidationException);
+                throw await CreateAndLogDependencyValidationExceptionAsync(meshDependencyValidationException);
             }
             catch (MeshDependencyException meshDependencyException)
             {
-                throw CreateAndLogDependencyException(meshDependencyException);
+                throw await CreateAndLogDependencyExceptionAsync(meshDependencyException);
             }
             catch (MeshServiceException meshServiceException)
             {
-                throw CreateAndLogDependencyException(meshServiceException);
+                throw await CreateAndLogDependencyExceptionAsync(meshServiceException);
             }
             catch (Exception exception)
             {
@@ -96,7 +96,7 @@ namespace LHDS.Core.Services.Processings.Mesh
                         message: "Failed mesh processing service error occurred, please contact support.",
                         innerException: exception);
 
-                throw CreateAndLogServiceException(failedMeshProcessingServiceException);
+                throw await CreateAndLogServiceExceptionAsync(failedMeshProcessingServiceException);
             }
         }
 
@@ -108,23 +108,23 @@ namespace LHDS.Core.Services.Processings.Mesh
             }
             catch (MeshValidationException meshValidationException)
             {
-                throw CreateAndLogDependencyValidationException(meshValidationException);
+                throw await CreateAndLogDependencyValidationExceptionAsync(meshValidationException);
             }
             catch (MeshDependencyValidationException meshDependencyValidationException)
             {
-                throw CreateAndLogDependencyValidationException(meshDependencyValidationException);
+                throw await CreateAndLogDependencyValidationExceptionAsync(meshDependencyValidationException);
             }
             catch (MeshDependencyException meshDependencyException)
             {
-                throw CreateAndLogDependencyException(meshDependencyException);
+                throw await CreateAndLogDependencyExceptionAsync(meshDependencyException);
             }
             catch (MeshServiceException meshServiceException)
             {
-                throw CreateAndLogDependencyException(meshServiceException);
+                throw await CreateAndLogDependencyExceptionAsync(meshServiceException);
             }
             catch (InvalidMeshProcessingArgumentException exception)
             {
-                throw CreateAndLogValidationException(exception);
+                throw await CreateAndLogValidationExceptionAsync(exception);
             }
             catch (Exception exception)
             {
@@ -133,57 +133,57 @@ namespace LHDS.Core.Services.Processings.Mesh
                         message: "Failed mesh processing service error occurred, please contact support.",
                         innerException: exception);
 
-                throw CreateAndLogServiceException(failedMeshProcessingServiceException);
+                throw await CreateAndLogServiceExceptionAsync(failedMeshProcessingServiceException);
             }
         }
 
-        private MeshProcessingValidationException
-            CreateAndLogValidationException(Xeption exception)
+        private async ValueTask<MeshProcessingValidationException>
+            CreateAndLogValidationExceptionAsync(Xeption exception)
         {
             var meshProcessingValidationExceptionn =
                 new MeshProcessingValidationException(
                     message: "Mesh processing validation errors occured, please try again",
                     innerException: exception);
 
-            this.loggingBroker.LogError(meshProcessingValidationExceptionn);
+            await this.loggingBroker.LogErrorAsync(meshProcessingValidationExceptionn);
 
             return meshProcessingValidationExceptionn;
         }
 
-        private MeshProcessingDependencyValidationException
-            CreateAndLogDependencyValidationException(Xeption exception)
+        private async ValueTask<MeshProcessingDependencyValidationException>
+            CreateAndLogDependencyValidationExceptionAsync(Xeption exception)
         {
             var meshProcessingDependencyValidationException =
                 new MeshProcessingDependencyValidationException(
                     message: "Mesh processing dependency validation occurred, please try again.",
                     innerException: exception.InnerException as Xeption);
 
-            this.loggingBroker.LogError(meshProcessingDependencyValidationException);
+            await this.loggingBroker.LogErrorAsync(meshProcessingDependencyValidationException);
 
             return meshProcessingDependencyValidationException;
         }
 
-        private MeshProcessingDependencyException
-           CreateAndLogDependencyException(Xeption exception)
+        private async ValueTask<MeshProcessingDependencyException>
+           CreateAndLogDependencyExceptionAsync(Xeption exception)
         {
             var meshProcessingDependencyException =
                 new MeshProcessingDependencyException(
                     message: "Mesh processing dependency error occurred, please contact support.",
                     innerException: exception.InnerException as Xeption);
 
-            this.loggingBroker.LogError(meshProcessingDependencyException);
+            await this.loggingBroker.LogErrorAsync(meshProcessingDependencyException);
 
             throw meshProcessingDependencyException;
         }
 
-        private MeshProcessingServiceException CreateAndLogServiceException(Xeption exception)
+        private async ValueTask<MeshProcessingServiceException> CreateAndLogServiceExceptionAsync(Xeption exception)
         {
             var meshProcessingServiceException = new
                 MeshProcessingServiceException(
                 message: "Mesh processing service error occurred, please contact support.",
                 innerException: exception);
 
-            this.loggingBroker.LogError(meshProcessingServiceException);
+            await this.loggingBroker.LogErrorAsync(meshProcessingServiceException);
 
             return meshProcessingServiceException;
         }

@@ -38,7 +38,7 @@ namespace LHDS.Core.Tests.Unit.Services.Coordinations.Decryptions
 
             this.tppLandingOrchestrationServiceMock.Setup(service =>
                 service.ProcessAsync(It.IsAny<Stream>(), It.IsAny<string>(), It.IsAny<Guid>()))
-                    .Throws(dependancyValidationException);
+                    .ThrowsAsync(dependancyValidationException);
 
             // when
             ValueTask<Guid> processTask = this.tppLandingCoordinationService
@@ -55,7 +55,7 @@ namespace LHDS.Core.Tests.Unit.Services.Coordinations.Decryptions
                     Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>
-                broker.LogError(It.Is(SameExceptionAs(
+                broker.LogErrorAsync(It.Is(SameExceptionAs(
                     expectedDependencyException))),
                        Times.Once);
 
@@ -83,7 +83,7 @@ namespace LHDS.Core.Tests.Unit.Services.Coordinations.Decryptions
 
             this.tppLandingOrchestrationServiceMock.Setup(service =>
                 service.ProcessAsync(It.IsAny<Stream>(), It.IsAny<string>(), It.IsAny<Guid>()))
-                    .Throws(dependancyException);
+                    .ThrowsAsync(dependancyException);
 
             // when
             ValueTask<Guid> processTask = this.tppLandingCoordinationService
@@ -100,7 +100,7 @@ namespace LHDS.Core.Tests.Unit.Services.Coordinations.Decryptions
                     Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>
-                broker.LogError(It.Is(SameExceptionAs(
+                broker.LogErrorAsync(It.Is(SameExceptionAs(
                     expectedDependencyException))),
                         Times.Once);
 
@@ -132,7 +132,7 @@ namespace LHDS.Core.Tests.Unit.Services.Coordinations.Decryptions
 
             this.tppLandingOrchestrationServiceMock.Setup(service =>
                 service.ProcessAsync(It.IsAny<Stream>(), It.IsAny<string>(), It.IsAny<Guid>()))
-                    .Throws(serviceException);
+                    .ThrowsAsync(serviceException);
 
             // when
             ValueTask<Guid> processTask = this.tppLandingCoordinationService
@@ -149,7 +149,7 @@ namespace LHDS.Core.Tests.Unit.Services.Coordinations.Decryptions
                     Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>
-                broker.LogError(It.Is(SameExceptionAs(
+                broker.LogErrorAsync(It.Is(SameExceptionAs(
                     expectedTppCoordinationServiceException))),
                         Times.Once);
 

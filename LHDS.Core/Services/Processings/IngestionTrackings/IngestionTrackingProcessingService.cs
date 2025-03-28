@@ -1,8 +1,9 @@
-﻿// ---------------------------------------------------------------
+﻿// ---------------------------------------------------------
 // Copyright (c) North East London ICB. All rights reserved.
-// ---------------------------------------------------------------
+// ---------------------------------------------------------
 
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using LHDS.Core.Brokers.Loggings;
@@ -32,8 +33,8 @@ namespace LHDS.Core.Services.Processings.IngestionTrackings
                 return await this.ingestionTrackingService.AddIngestionTrackingAsync(ingestionTracking);
             });
 
-        public IQueryable<IngestionTracking> RetrieveAllIngestionTrackings() =>
-            TryCatch(() => this.ingestionTrackingService.RetrieveAllIngestionTrackings());
+        public ValueTask<IQueryable<IngestionTracking>> RetrieveAllIngestionTrackingsAsync() =>
+            TryCatch(async () => await this.ingestionTrackingService.RetrieveAllIngestionTrackingsAsync());
 
         public ValueTask<IngestionTracking> RetrieveIngestionTrackingByIdAsync(Guid ingestionTrackingId) =>
             TryCatch(async () =>
@@ -87,5 +88,70 @@ namespace LHDS.Core.Services.Processings.IngestionTrackings
 
                 return await this.ingestionTrackingService.RemoveIngestionTrackingByIdAsync(ingestionTrackingId);
             });
+
+        public ValueTask<List<string>> RetrieveObjectsInBatchByBatchReferenceAsync(
+            string bacthReference,
+            bool? decrypted = null) =>
+            TryCatch(async () =>
+            {
+                ValidateOnRetrieveObjectsInBatchByBatchReference(bacthReference);
+
+                List<string> objectNames = new List<string>();
+
+                IQueryable<IngestionTracking> allingestionTrackings =
+                    await this.ingestionTrackingService.RetrieveAllIngestionTrackingsAsync();
+
+                allingestionTrackings = allingestionTrackings
+                    .Where(ingestionTracking => ingestionTracking.Batch == bacthReference);
+
+                if (decrypted != null)
+                {
+                    allingestionTrackings = allingestionTrackings
+                        .Where(ingestionTracking => ingestionTracking.Decrypted == decrypted.Value);
+                }
+
+                List<string?> result = allingestionTrackings
+                    .Select(ingestionTracking => ingestionTracking.ObjectName)
+                    .ToList();
+
+                result.ForEach(objectName =>
+                {
+                    if (string.IsNullOrWhiteSpace(objectName) is false)
+                    {
+                        objectNames.Add(objectName);
+                    }
+                });
+
+                return objectNames;
+            });
+
+        public ValueTask<List<string>> RetrieveDecryptedObjectsInBatchByBatchReference(string bacthReference) =>
+        TryCatch(async () =>
+        {
+            ValidateOnRetrieveObjectsInBatchByBatchReference(bacthReference);
+
+            List<string> objectNames = new List<string>();
+
+            IQueryable<IngestionTracking> allingestionTrackings =
+                await this.ingestionTrackingService.RetrieveAllIngestionTrackingsAsync();
+
+            List<string?> result = allingestionTrackings
+
+                .Where(ingestionTracking => ingestionTracking.Batch == bacthReference
+                    && ingestionTracking.Decrypted == true)
+
+                .Select(ingestionTracking => ingestionTracking.ObjectName)
+                .ToList();
+
+            result.ForEach(objectName =>
+            {
+                if (string.IsNullOrWhiteSpace(objectName) is false)
+                {
+                    objectNames.Add(objectName);
+                }
+            });
+
+            return objectNames;
+        });
     }
 }

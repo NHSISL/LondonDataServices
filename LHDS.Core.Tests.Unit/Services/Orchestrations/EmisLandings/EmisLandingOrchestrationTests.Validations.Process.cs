@@ -24,7 +24,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.EmisLandings
             // given
             SubscriberCredential randomSubscriberCredential = CreateRandomSubscriberCredential();
             SubscriberCredential inputSubscriberCredential = randomSubscriberCredential;
-            var somefileName = GetRandomMessage();
+            var somefileName = GetRandomString();
             string randomFileName = GetRandomString();
             string inputFileName = randomFileName;
             Guid inputSupplierId = Guid.NewGuid();
@@ -66,7 +66,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.EmisLandings
                 .BeEquivalentTo(expectedEmisLandingOrchestrationValidationException);
 
             this.loggingBrokerMock.Verify(broker =>
-                broker.LogError(It.Is(SameExceptionAs(
+                broker.LogErrorAsync(It.Is(SameExceptionAs(
                     expectedEmisLandingOrchestrationValidationException))),
                         Times.Once);
 
@@ -111,7 +111,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.EmisLandings
                 .BeEquivalentTo(expectedEmisLandingOrchestrationValidationException);
 
             this.loggingBrokerMock.Verify(broker =>
-                broker.LogError(It.Is(SameExceptionAs(
+                broker.LogErrorAsync(It.Is(SameExceptionAs(
                     expectedEmisLandingOrchestrationValidationException))),
                         Times.Once);
 
@@ -171,7 +171,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.EmisLandings
                 .BeEquivalentTo(expectedEmisLandingOrchestrationValidationException);
 
             this.loggingBrokerMock.Verify(broker =>
-                broker.LogError(It.Is(SameExceptionAs(
+                broker.LogErrorAsync(It.Is(SameExceptionAs(
                     expectedEmisLandingOrchestrationValidationException))),
                         Times.Once);
 
@@ -221,7 +221,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.EmisLandings
                 .BeEquivalentTo(expectedEmisLandingOrchestrationValidationException);
 
             this.loggingBrokerMock.Verify(broker =>
-                broker.LogError(It.Is(SameExceptionAs(
+                broker.LogErrorAsync(It.Is(SameExceptionAs(
                     expectedEmisLandingOrchestrationValidationException))),
                         Times.Once);
 

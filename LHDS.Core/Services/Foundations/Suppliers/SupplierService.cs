@@ -1,6 +1,6 @@
-// ---------------------------------------------------------------
+// ---------------------------------------------------------
 // Copyright (c) North East London ICB. All rights reserved.
-// ---------------------------------------------------------------
+// ---------------------------------------------------------
 
 using System;
 using System.Linq;
@@ -31,7 +31,7 @@ namespace LHDS.Core.Services.Foundations.Suppliers
         public ValueTask<Supplier> AddSupplierAsync(Supplier supplier) =>
             TryCatch(async () =>
             {
-                ValidateSupplierOnAdd(supplier);
+                await ValidateSupplierOnAddAsync(supplier);
 
                 Supplier maybeSupplier =
                    await this.storageBroker.SelectSupplierByIdAsync(supplier.Id);
@@ -44,8 +44,8 @@ namespace LHDS.Core.Services.Foundations.Suppliers
                 return maybeSupplier;
             });
 
-        public IQueryable<Supplier> RetrieveAllSuppliers() =>
-            TryCatch(() => this.storageBroker.SelectAllSuppliers());
+        public ValueTask<IQueryable<Supplier>> RetrieveAllSuppliersAsync() =>
+            TryCatch(async () => await this.storageBroker.SelectAllSuppliersAsync());
 
         public ValueTask<Supplier> RetrieveSupplierByIdAsync(Guid supplierId) =>
             TryCatch(async () =>
@@ -63,7 +63,7 @@ namespace LHDS.Core.Services.Foundations.Suppliers
         public ValueTask<Supplier> ModifySupplierAsync(Supplier supplier) =>
             TryCatch(async () =>
             {
-                ValidateSupplierOnModify(supplier);
+                await ValidateSupplierOnModifyAsync(supplier);
 
                 Supplier maybeSupplier =
                     await this.storageBroker.SelectSupplierByIdAsync(supplier.Id);

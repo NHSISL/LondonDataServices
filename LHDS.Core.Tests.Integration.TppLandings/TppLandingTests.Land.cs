@@ -3,19 +3,20 @@
 // ---------------------------------------------------------
 
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using FluentAssertions;
+using LHDS.Core.Models.Foundations.IngestionTrackingAudits;
 using LHDS.Core.Models.Foundations.IngestionTrackings;
 using LHDS.Core.Models.Foundations.Suppliers;
-using Xunit;
 
 namespace LHDS.Core.Tests.Integration.TppLandings
 {
     public partial class TppLandingTests
     {
-        [Fact]
+        [ReleaseCandidateFact]
         public async Task ShouldLandTPPFileAsync()
         {
             // given
@@ -40,8 +41,10 @@ namespace LHDS.Core.Tests.Integration.TppLandings
             IngestionTracking actualIngestionTracking =
                 await this.ingestionTrackingService.RetrieveIngestionTrackingByIdAsync(actualGuid);
 
-            var audits = this.ingestionTrackingAuditService.RetrieveAllIngestionTrackingAudits()
-                .Where(audit => audit.IngestionTrackingId == actualGuid);
+            IQueryable<IngestionTrackingAudit> allAudits =
+                await this.ingestionTrackingAuditService.RetrieveAllIngestionTrackingAuditsAsync();
+
+            var audits = allAudits.Where(audit => audit.IngestionTrackingId == actualGuid).ToList();
 
             foreach (var audit in audits)
             {

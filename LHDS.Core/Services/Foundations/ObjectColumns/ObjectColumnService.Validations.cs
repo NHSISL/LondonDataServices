@@ -1,8 +1,10 @@
-// ---------------------------------------------------------------
+// ---------------------------------------------------------
 // Copyright (c) North East London ICB. All rights reserved.
-// ---------------------------------------------------------------
+// ---------------------------------------------------------
 
 using System;
+using System.Threading.Tasks;
+using LHDS.Core.Models.Brokers.Securities;
 using LHDS.Core.Models.Foundations.ObjectColumns;
 using LHDS.Core.Models.Foundations.ObjectColumns.Exceptions;
 
@@ -10,9 +12,9 @@ namespace LHDS.Core.Services.Foundations.ObjectColumns
 {
     public partial class ObjectColumnService
     {
-        private void ValidateObjectColumnOnAdd(ObjectColumn objectColumn)
+        private async ValueTask ValidateObjectColumnOnAddAsync(ObjectColumn objectColumn)
         {
-            ValidateObjectColumnIsNotNull(objectColumn);
+            EntraUser currentUser = await this.securityBroker.GetCurrentUserAsync();
 
             Validate(
                 (Rule: IsInvalid(objectColumn.Id), Parameter: nameof(ObjectColumn.Id)),
@@ -65,6 +67,11 @@ namespace LHDS.Core.Services.Foundations.ObjectColumns
 
                 (Rule: IsEqualOrSmallerThan(
                     objectColumn.UpdatedBy, 255), Parameter: nameof(objectColumn.UpdatedBy)),
+
+                (Rule: IsNotSame(
+                    first: currentUser.EntraUserId,
+                    second: objectColumn.CreatedBy),
+                Parameter: nameof(ObjectColumn.CreatedBy)),
 
                 (Rule: IsNotSame(
                     firstDate: objectColumn.UpdatedDate,
@@ -78,12 +85,12 @@ namespace LHDS.Core.Services.Foundations.ObjectColumns
                     secondName: nameof(ObjectColumn.CreatedBy)),
                 Parameter: nameof(ObjectColumn.UpdatedBy)),
 
-                (Rule: IsNotRecent(objectColumn.CreatedDate), Parameter: nameof(ObjectColumn.CreatedDate)));
+                (Rule: await IsNotRecentAsync(objectColumn.CreatedDate), Parameter: nameof(ObjectColumn.CreatedDate)));
         }
 
-        private void ValidateObjectColumnOnModify(ObjectColumn objectColumn)
+        private async ValueTask ValidateObjectColumnOnModifyAsync(ObjectColumn objectColumn)
         {
-            ValidateObjectColumnIsNotNull(objectColumn);
+            EntraUser currentUser = await this.securityBroker.GetCurrentUserAsync();
 
             Validate(
                 (Rule: IsInvalid(objectColumn.Id), Parameter: nameof(ObjectColumn.Id)),
@@ -137,13 +144,18 @@ namespace LHDS.Core.Services.Foundations.ObjectColumns
                 (Rule: IsEqualOrSmallerThan(
                     objectColumn.UpdatedBy, 255), Parameter: nameof(objectColumn.UpdatedBy)),
 
+                (Rule: IsNotSame(
+                    first: currentUser.EntraUserId,
+                    second: objectColumn.UpdatedBy),
+                Parameter: nameof(ObjectColumn.UpdatedBy)),
+
                 (Rule: IsSame(
                     firstDate: objectColumn.UpdatedDate,
                     secondDate: objectColumn.CreatedDate,
                     secondDateName: nameof(ObjectColumn.CreatedDate)),
                 Parameter: nameof(ObjectColumn.UpdatedDate)),
 
-                (Rule: IsNotRecent(objectColumn.UpdatedDate), Parameter: nameof(objectColumn.UpdatedDate)));
+                (Rule: await IsNotRecentAsync(objectColumn.UpdatedDate), Parameter: nameof(objectColumn.UpdatedDate)));
         }
 
         public void ValidateObjectColumnId(Guid objectColumnId) =>
@@ -165,7 +177,9 @@ namespace LHDS.Core.Services.Foundations.ObjectColumns
             }
         }
 
-        private static void ValidateAgainstStorageObjectColumnOnModify(ObjectColumn inputObjectColumn, ObjectColumn storageObjectColumn)
+        private static void ValidateAgainstStorageObjectColumnOnModify(
+            ObjectColumn inputObjectColumn,
+            ObjectColumn storageObjectColumn)
         {
             Validate(
                 (Rule: IsNotSame(
@@ -185,6 +199,39 @@ namespace LHDS.Core.Services.Foundations.ObjectColumns
                     secondDate: storageObjectColumn.UpdatedDate,
                     secondDateName: nameof(ObjectColumn.UpdatedDate)),
                 Parameter: nameof(ObjectColumn.UpdatedDate)));
+        }
+
+        private async ValueTask ValidateAgainstStorageObjectColumnOnDeleteAsync(
+            ObjectColumn objectColumn,
+            ObjectColumn maybeObjectColumn)
+        {
+            EntraUser auditUser = await this.securityBroker.GetCurrentUserAsync();
+
+            Validate(
+                (Rule: IsNotSame(
+                    objectColumn.CreatedDate,
+                    maybeObjectColumn.CreatedDate,
+                    nameof(maybeObjectColumn.CreatedDate)),
+                 Parameter: nameof(ObjectColumn.CreatedDate)),
+
+                (Rule: IsNotSame(
+                    objectColumn.CreatedBy,
+                    maybeObjectColumn.CreatedBy,
+                    nameof(maybeObjectColumn.CreatedBy)),
+                 Parameter: nameof(ObjectColumn.CreatedBy)),
+
+                (Rule: IsNotSame(
+                    maybeObjectColumn.UpdatedDate,
+                    objectColumn.UpdatedDate,
+                    nameof(ObjectColumn.UpdatedDate)),
+                 Parameter: nameof(ObjectColumn.UpdatedDate)),
+
+                (Rule: IsNotSame(
+                    auditUser.EntraUserId.ToString(),
+                    objectColumn.UpdatedBy,
+                    nameof(ObjectColumn.UpdatedBy)),
+                 Parameter: nameof(ObjectColumn.UpdatedBy))
+            );
         }
 
         private static dynamic IsInvalid(Guid id) => new
@@ -221,6 +268,14 @@ namespace LHDS.Core.Services.Foundations.ObjectColumns
             };
 
         private static dynamic IsNotSame(
+            string first,
+            string second) => new
+            {
+                Condition = first != second,
+                Message = $"Expected value to be '{first}' but found '{second}'."
+            };
+
+        private static dynamic IsNotSame(
             DateTimeOffset firstDate,
             DateTimeOffset secondDate,
             string secondDateName) => new
@@ -247,16 +302,16 @@ namespace LHDS.Core.Services.Foundations.ObjectColumns
                Message = $"Text is not the same as {secondName}"
            };
 
-        private dynamic IsNotRecent(DateTimeOffset date) => new
+        private async ValueTask<dynamic> IsNotRecentAsync(DateTimeOffset date) => new
         {
-            Condition = IsDateNotRecent(date),
+            Condition = await IsDateNotRecentAsync(date),
             Message = "Date is not recent"
         };
 
-        private bool IsDateNotRecent(DateTimeOffset date)
+        private async ValueTask<bool> IsDateNotRecentAsync(DateTimeOffset date)
         {
             DateTimeOffset currentDateTime =
-                this.dateTimeBroker.GetCurrentDateTimeOffset();
+                await this.dateTimeBroker.GetCurrentDateTimeOffsetAsync();
 
             TimeSpan timeDifference = currentDateTime.Subtract(date);
             TimeSpan oneMinute = TimeSpan.FromMinutes(1);

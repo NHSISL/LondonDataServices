@@ -15,7 +15,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.TerminologyArtifacts
     public partial class TerminologyArtifactProcessingServiceTests
     {
         [Fact]
-        public async Task ShouldGetNonDownloadedTerminologyArtifact()
+        public async Task ShouldGetNonDownloadedTerminologyArtifactAsync()
         {
             // given
             List<TerminologyArtifact> randomTerminologyArtifacts = CreateRandomTerminologyArtifacts();
@@ -27,18 +27,18 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.TerminologyArtifacts
             List<TerminologyArtifact> outputTerminologyArtifacts = artifactsList;
 
             this.terminologyArtifactServiceMock.Setup(service =>
-                service.RetrieveAllTerminologyArtifacts())
-                    .Returns(outputTerminologyArtifacts.AsQueryable());
+                service.RetrieveAllTerminologyArtifactsAsync())
+                    .ReturnsAsync(outputTerminologyArtifacts.AsQueryable());
 
             // when
-            TerminologyArtifact? actualTerminologyArtifact =
+            TerminologyArtifact actualTerminologyArtifact =
                 await this.terminologyArtifactProcessingService.GetNonDownloadedArtifactAsync();
 
             // then
             actualTerminologyArtifact.Should().BeEquivalentTo(expectedTerminologyArtifact);
 
             this.terminologyArtifactServiceMock.Verify(service =>
-                service.RetrieveAllTerminologyArtifacts(),
+                service.RetrieveAllTerminologyArtifactsAsync(),
                     Times.Once());
 
             this.terminologyArtifactServiceMock.VerifyNoOtherCalls();

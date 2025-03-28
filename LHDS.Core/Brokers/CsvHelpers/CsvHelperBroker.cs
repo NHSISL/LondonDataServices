@@ -20,10 +20,11 @@ namespace LHDS.Core.Brokers.CsvHelpers
         public async ValueTask<List<T>> MapCsvToObjectAsync<T>(
             string data,
             bool hasHeaderRecord,
-            Dictionary<string, int>? fieldMappings = null)
+            Dictionary<string, int>? fieldMappings = null,
+            bool headerValidated = true)
         {
             return await this.csvClient
-                .MapCsvToObjectAsync<T>(data, hasHeaderRecord, fieldMappings);
+                .MapCsvToObjectAsync<T>(data, hasHeaderRecord, fieldMappings, headerValidated);
         }
 
         public async ValueTask<string> MapObjectToCsvAsync<T>(

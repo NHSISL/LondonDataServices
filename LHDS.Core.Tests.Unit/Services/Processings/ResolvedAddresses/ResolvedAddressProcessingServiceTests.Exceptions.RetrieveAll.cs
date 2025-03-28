@@ -3,7 +3,10 @@
 // ---------------------------------------------------------
 
 using System;
+using System.Linq;
+using System.Threading.Tasks;
 using FluentAssertions;
+using LHDS.Core.Models.Foundations.ResolvedAddresses;
 using LHDS.Core.Models.Processings.ResolvedAddresses.Exceptions;
 using Moq;
 using Xeptions;
@@ -15,7 +18,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.ResolvedAddresses
     {
         [Theory]
         [MemberData(nameof(DependencyValidationExceptions))]
-        public void ShouldThrowDependencyValidationExceptionOnRetrieveAllIfErrorOccursAndLogItAsync(
+        public async Task ShouldThrowDependencyValidationExceptionOnRetrieveAllIfErrorOccursAndLogItAsync(
             Xeption dependencyValidationException)
         {
             // given
@@ -25,25 +28,26 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.ResolvedAddresses
                     innerException: dependencyValidationException.InnerException as Xeption);
 
             resolvedAddressServiceMock.Setup(service =>
-                service.RetrieveAllResolvedAddresses())
-                    .Throws(dependencyValidationException);
+                service.RetrieveAllResolvedAddressesAsync())
+                    .ThrowsAsync(dependencyValidationException);
 
             // when
-            Action resolvedAddressRetrieveAction = () =>
-                resolvedAddressProcessingService.RetrieveAllResolvedAddresses();
+            ValueTask<IQueryable<ResolvedAddress>> resolvedAddressRetrieveTask =
+                resolvedAddressProcessingService.RetrieveAllResolvedAddressesAsync();
 
             ResolvedAddressProcessingDependencyValidationException actualException =
-                Assert.Throws<ResolvedAddressProcessingDependencyValidationException>(resolvedAddressRetrieveAction);
+                await Assert.ThrowsAsync<ResolvedAddressProcessingDependencyValidationException>(
+                    testCode: resolvedAddressRetrieveTask.AsTask);
 
             // then
             actualException.Should().BeEquivalentTo(expectedResolvedAddressProcessingDependencyValidationException);
 
             resolvedAddressServiceMock.Verify(service =>
-                service.RetrieveAllResolvedAddresses(),
+                service.RetrieveAllResolvedAddressesAsync(),
                     Times.Once);
 
             loggingBrokerMock.Verify(broker =>
-                 broker.LogError(It.Is(SameExceptionAs(
+                 broker.LogErrorAsync(It.Is(SameExceptionAs(
                      expectedResolvedAddressProcessingDependencyValidationException))),
                          Times.Once);
 
@@ -53,7 +57,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.ResolvedAddresses
 
         [Theory]
         [MemberData(nameof(DependencyExceptions))]
-        public void ShouldThrowDependencyExceptionOnRetrieveAllIfDependencyErrorOccursAndLogItAsync(
+        public async Task ShouldThrowDependencyExceptionOnRetrieveAllIfDependencyErrorOccursAndLogItAsync(
             Xeption dependencyException)
         {
             // given
@@ -63,25 +67,26 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.ResolvedAddresses
                     innerException: dependencyException.InnerException as Xeption);
 
             resolvedAddressServiceMock.Setup(service =>
-                service.RetrieveAllResolvedAddresses())
-                    .Throws(dependencyException);
+                service.RetrieveAllResolvedAddressesAsync())
+                    .ThrowsAsync(dependencyException);
 
             // when
-            Action resolvedAddressRetrieveAction = () =>
-                resolvedAddressProcessingService.RetrieveAllResolvedAddresses();
+            ValueTask<IQueryable<ResolvedAddress>> resolvedAddressRetrieveTask =
+                resolvedAddressProcessingService.RetrieveAllResolvedAddressesAsync();
 
             ResolvedAddressProcessingDependencyException actualException =
-                Assert.Throws<ResolvedAddressProcessingDependencyException>(resolvedAddressRetrieveAction);
+                await Assert.ThrowsAsync<ResolvedAddressProcessingDependencyException>(
+                    testCode: resolvedAddressRetrieveTask.AsTask);
 
             // then
             actualException.Should().BeEquivalentTo(expectedResolvedAddressProcessingDependencyException);
 
             resolvedAddressServiceMock.Verify(service =>
-                service.RetrieveAllResolvedAddresses(),
+                service.RetrieveAllResolvedAddressesAsync(),
                     Times.Once);
 
             loggingBrokerMock.Verify(broker =>
-                 broker.LogError(It.Is(SameExceptionAs(
+                 broker.LogErrorAsync(It.Is(SameExceptionAs(
                      expectedResolvedAddressProcessingDependencyException))),
                          Times.Once);
 
@@ -90,7 +95,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.ResolvedAddresses
         }
 
         [Fact]
-        public void ShouldThrowServiceExceptionOnRetrieveAllIfServiceErrorOccursAsync()
+        public async Task ShouldThrowServiceExceptionOnRetrieveAllIfServiceErrorOccursAsync()
         {
             // given
             var serviceException = new Exception();
@@ -106,25 +111,26 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.ResolvedAddresses
                     innerException: failedResolvedAddressProcessingServiceException);
 
             resolvedAddressServiceMock.Setup(service =>
-                service.RetrieveAllResolvedAddresses())
-                    .Throws(serviceException);
+                service.RetrieveAllResolvedAddressesAsync())
+                    .ThrowsAsync(serviceException);
 
             // when
-            Action resolvedAddressRetrieveAction = () =>
-                resolvedAddressProcessingService.RetrieveAllResolvedAddresses();
+            ValueTask<IQueryable<ResolvedAddress>> resolvedAddressRetrieveTask =
+                resolvedAddressProcessingService.RetrieveAllResolvedAddressesAsync();
 
             ResolvedAddressProcessingServiceException actualException =
-                Assert.Throws<ResolvedAddressProcessingServiceException>(resolvedAddressRetrieveAction);
+                await Assert.ThrowsAsync<ResolvedAddressProcessingServiceException>(
+                    testCode: resolvedAddressRetrieveTask.AsTask);
 
             // then
             actualException.Should().BeEquivalentTo(expectedResolvedAddressProcessingServiveException);
 
             resolvedAddressServiceMock.Verify(service =>
-                service.RetrieveAllResolvedAddresses(),
+                service.RetrieveAllResolvedAddressesAsync(),
                     Times.Once);
 
             loggingBrokerMock.Verify(broker =>
-                 broker.LogError(It.Is(SameExceptionAs(
+                 broker.LogErrorAsync(It.Is(SameExceptionAs(
                      expectedResolvedAddressProcessingServiveException))),
                          Times.Once);
 

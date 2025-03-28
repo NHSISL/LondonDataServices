@@ -45,7 +45,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Documents
 
             this.blobStorageBrokerMock.Setup(broker =>
                  broker.DeleteFileAsync(It.IsAny<string>(), It.IsAny<string>()))
-                    .Throws(requestFailedException);
+                    .ThrowsAsync(requestFailedException);
 
             // when
             ValueTask getDocumentTask = this.documentService
@@ -62,7 +62,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Documents
                      Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>
-                 broker.LogError(It.Is(SameExceptionAs(
+                 broker.LogErrorAsync(It.Is(SameExceptionAs(
                      expectedDependencyException))),
                          Times.Once);
 
@@ -97,7 +97,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Documents
 
             this.blobStorageBrokerMock.Setup(broker =>
                  broker.DeleteFileAsync(It.IsAny<string>(), It.IsAny<string>()))
-                     .Throws(serviceException);
+                     .ThrowsAsync(serviceException);
 
             // when
             ValueTask getDocumentTask =
@@ -114,7 +114,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Documents
                      Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>
-                 broker.LogError(It.Is(SameExceptionAs(
+                 broker.LogErrorAsync(It.Is(SameExceptionAs(
                      expectedDocumentServiceException))),
                          Times.Once);
 

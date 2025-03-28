@@ -2,6 +2,7 @@
 // Copyright (c) North East London ICB. All rights reserved.
 // ---------------------------------------------------------
 
+using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using LHDS.Core.Models.Brokers.Mesh;
@@ -66,9 +67,9 @@ namespace LHDS.Core.Brokers.Mesh
                     contentEncoding: contentEncoding,
                     accept: accept);
             }
-            catch (System.Exception ex)
+            catch (Exception)
             {
-                throw ex;
+                throw;
             }
         }
 

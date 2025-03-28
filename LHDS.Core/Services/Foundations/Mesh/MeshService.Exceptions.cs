@@ -1,6 +1,6 @@
-﻿// ---------------------------------------------------------------
+﻿// ---------------------------------------------------------
 // Copyright (c) North East London ICB. All rights reserved.
-// ---------------------------------------------------------------
+// ---------------------------------------------------------
 
 using System;
 using System.Collections.Generic;
@@ -27,16 +27,16 @@ namespace LHDS.Core.Services.Foundations.Mesh
             }
             catch (InvalidArgumentMeshException invalidArgumentMeshException)
             {
-                throw CreateAndLogValidationException(invalidArgumentMeshException);
+                throw await CreateAndLogValidationExceptionAsync(invalidArgumentMeshException);
             }
             catch (Exception exception)
             {
                 var failedMeshServiceException =
                     new FailedMeshServiceException(
-                        message: "Failed mesh service error occurred, please contact support.", 
+                        message: "Failed mesh service error occurred, please contact support.",
                         innerException: exception);
 
-                throw CreateAndLogServiceException(failedMeshServiceException);
+                throw await CreateAndLogServiceExceptionAsync(failedMeshServiceException);
             }
         }
 
@@ -48,40 +48,40 @@ namespace LHDS.Core.Services.Foundations.Mesh
             }
             catch (NullMeshMessageException nullMeshMessageException)
             {
-                throw CreateAndLogValidationException(nullMeshMessageException);
+                throw await CreateAndLogValidationExceptionAsync(nullMeshMessageException);
             }
             catch (InvalidMeshMessageException invalidMeshException)
             {
-                throw CreateAndLogValidationException(invalidMeshException);
+                throw await CreateAndLogValidationExceptionAsync(invalidMeshException);
             }
             catch (InvalidArgumentMeshException invalidArgumentMeshException)
             {
-                throw CreateAndLogValidationException(invalidArgumentMeshException);
+                throw await CreateAndLogValidationExceptionAsync(invalidArgumentMeshException);
             }
             catch (MeshClientValidationException meshClientValidationException)
             {
-                throw CreateAndLogDependencyValidationException(meshClientValidationException);
+                throw await CreateAndLogDependencyValidationExceptionAsync(meshClientValidationException);
             }
             catch (MeshClientDependencyException meshClientDependencyException)
             {
-                throw CreateAndLogDependencyException(meshClientDependencyException);
+                throw await CreateAndLogDependencyExceptionAsync(meshClientDependencyException);
             }
             catch (MeshServiceDependencyValidationException invalidMeshException)
             {
-                throw CreateAndLogDependencyException(invalidMeshException);
+                throw await CreateAndLogDependencyExceptionAsync(invalidMeshException);
             }
             catch (MeshClientServiceException meshClientServiceException)
             {
-                throw CreateAndLogDependencyException(meshClientServiceException);
+                throw await CreateAndLogDependencyExceptionAsync(meshClientServiceException);
             }
             catch (Exception exception)
             {
                 var failedMeshServiceException =
                     new FailedMeshServiceException(
-                        message: "Failed mesh service error occurred, please contact support.", 
+                        message: "Failed mesh service error occurred, please contact support.",
                         innerException: exception);
 
-                throw CreateAndLogServiceException(failedMeshServiceException);
+                throw await CreateAndLogServiceExceptionAsync(failedMeshServiceException);
             }
         }
 
@@ -93,20 +93,20 @@ namespace LHDS.Core.Services.Foundations.Mesh
             }
             catch (MeshClientValidationException meshClientValidationException)
             {
-                throw CreateAndLogDependencyValidationException(meshClientValidationException);
+                throw await CreateAndLogDependencyValidationExceptionAsync(meshClientValidationException);
             }
             catch (MeshClientDependencyException meshClientDependencyException)
             {
-                throw CreateAndLogDependencyException(meshClientDependencyException);
+                throw await CreateAndLogDependencyExceptionAsync(meshClientDependencyException);
             }
             catch (Exception exception)
             {
                 var failedMeshServiceException =
                     new FailedMeshServiceException(
-                        message: "Failed mesh service error occurred, please contact support.", 
+                        message: "Failed mesh service error occurred, please contact support.",
                         innerException: exception);
 
-                throw CreateAndLogServiceException(failedMeshServiceException);
+                throw await CreateAndLogServiceExceptionAsync(failedMeshServiceException);
             }
         }
 
@@ -118,60 +118,62 @@ namespace LHDS.Core.Services.Foundations.Mesh
             }
             catch (InvalidArgumentMeshException invalidArgumentMeshException)
             {
-                throw CreateAndLogValidationException(invalidArgumentMeshException);
+                throw await CreateAndLogValidationExceptionAsync(invalidArgumentMeshException);
             }
             catch (Exception exception)
             {
                 var failedMeshServiceException =
                     new FailedMeshServiceException(
-                        message: "Failed mesh service error occurred, please contact support.", 
+                        message: "Failed mesh service error occurred, please contact support.",
                         innerException: exception);
 
-                throw CreateAndLogServiceException(failedMeshServiceException);
+                throw await CreateAndLogServiceExceptionAsync(failedMeshServiceException);
             }
         }
 
-        private MeshValidationException CreateAndLogValidationException(Xeption exception)
+        private async ValueTask<MeshValidationException> CreateAndLogValidationExceptionAsync(Xeption exception)
         {
             var meshValidationException = new MeshValidationException(
                 message: "Mesh validation errors occurred, please try again.",
                 innerException: exception);
-            this.loggingBroker.LogError(meshValidationException);
+
+            await this.loggingBroker.LogErrorAsync(meshValidationException);
 
             return meshValidationException;
         }
 
-        private MeshServiceException CreateAndLogServiceException(
+        private async ValueTask<MeshServiceException> CreateAndLogServiceExceptionAsync(
             Xeption exception)
         {
             var meshServiceException = new MeshServiceException(
-                message: "Mesh service error occurred, please contact support.", 
+                message: "Mesh service error occurred, please contact support.",
                 innerException: exception);
 
-            this.loggingBroker.LogError(meshServiceException);
+            await this.loggingBroker.LogErrorAsync(meshServiceException);
 
             return meshServiceException;
         }
 
-        private MeshServiceDependencyException CreateAndLogDependencyException(Xeption exception)
+        private async ValueTask<MeshServiceDependencyException> CreateAndLogDependencyExceptionAsync(Xeption exception)
         {
             var meshServiceDependencyException = new MeshServiceDependencyException(
-                message: "Mesh service dependency error occurred, please contact support.", 
+                message: "Mesh service dependency error occurred, please contact support.",
                 innerException: exception);
 
-            this.loggingBroker.LogError(meshServiceDependencyException);
+            await this.loggingBroker.LogErrorAsync(meshServiceDependencyException);
 
             return meshServiceDependencyException;
         }
 
-        private MeshServiceDependencyValidationException CreateAndLogDependencyValidationException(Xeption exception)
+        private async ValueTask<MeshServiceDependencyValidationException> 
+            CreateAndLogDependencyValidationExceptionAsync(Xeption exception)
         {
             var meshServiceDependencyValidationException =
                 new MeshServiceDependencyValidationException(
-                    message: "Mesh service dependency validation occurred, please try again.", 
+                    message: "Mesh service dependency validation occurred, please try again.",
                     innerException: exception);
 
-            this.loggingBroker.LogError(meshServiceDependencyValidationException);
+            await this.loggingBroker.LogErrorAsync(meshServiceDependencyValidationException);
 
             return meshServiceDependencyValidationException;
         }

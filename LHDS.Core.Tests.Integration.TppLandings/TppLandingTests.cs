@@ -4,7 +4,9 @@
 
 using System;
 using System.Linq;
+using System.Security.Claims;
 using System.Security.Cryptography;
+using System.Security.Principal;
 using System.Text;
 using System.Threading.Tasks;
 using LHDS.Core.Brokers.Loggings;
@@ -58,6 +60,8 @@ namespace LHDS.Core.Tests.Integration.TppLandings
                 .AddEnvironmentVariables();
 
             IConfiguration configuration = configurationBuilder.Build();
+            var windowsIdentity = WindowsIdentity.GetCurrent();
+            var claimsPrincipal = new ClaimsPrincipal(windowsIdentity);
 
             //setup our DI
             var serviceProvider = new ServiceCollection()
@@ -66,7 +70,7 @@ namespace LHDS.Core.Tests.Integration.TppLandings
                     builder.AddConsole();
                     builder.AddApplicationInsights();
                 })
-                .AddTppLandingClient(configuration)
+                .AddTppLandingClient(configuration, claimsPrincipal)
                 .BuildServiceProvider();
 
             landingConfiguration = serviceProvider.GetService<LandingConfiguration>();
@@ -99,7 +103,9 @@ namespace LHDS.Core.Tests.Integration.TppLandings
                 FriendlyName = "Test Supplier Friendly Name",
             };
 
-            Supplier maybeSupplier = supplierService.RetrieveAllSuppliers()
+            IQueryable<Supplier> retrievedSuppliers = await supplierService.RetrieveAllSuppliersAsync();
+
+            Supplier maybeSupplier = retrievedSuppliers
                 .FirstOrDefault(s => s.Id == supplier.Id);
 
             if (maybeSupplier == null)
@@ -112,9 +118,11 @@ namespace LHDS.Core.Tests.Integration.TppLandings
 
         private async ValueTask<Supplier> GetTppSupplier()
         {
-            return supplierService.RetrieveAllSuppliers()
-                .First(s => s.Name == "TPP");
+            IQueryable<Supplier> retrievedSuppliers = await supplierService.RetrieveAllSuppliersAsync();
+
+            return retrievedSuppliers.First(s => s.Name == "TPP");
         }
+
         private async ValueTask<DataSet> SetupDataSet(Guid SupplierId)
         {
             DateTimeOffset now = DateTimeOffset.UtcNow;
@@ -140,8 +148,8 @@ namespace LHDS.Core.Tests.Integration.TppLandings
                 CreatedDate = now
             };
 
-            DataSet maybeDataSet = dataSetService.RetrieveAllDataSets()
-                .FirstOrDefault(s => s.Id == dataSet.Id);
+            IQueryable<DataSet> retrievedDataSets = await dataSetService.RetrieveAllDataSetsAsync();
+            DataSet maybeDataSet = retrievedDataSets.FirstOrDefault(s => s.Id == dataSet.Id);
 
             if (maybeDataSet == null)
             {
@@ -179,7 +187,10 @@ namespace LHDS.Core.Tests.Integration.TppLandings
                 CreatedDate = now
             };
 
-            DataSetSpecification maybeDataSetSpecification = dataSetSpecificationService.RetrieveAllDataSetSpecifications()
+            IQueryable<DataSetSpecification> allDataSetSpecification =
+                await dataSetSpecificationService.RetrieveAllDataSetSpecificationsAsync();
+
+            DataSetSpecification maybeDataSetSpecification = allDataSetSpecification
                 .FirstOrDefault(s => s.Id == dataSetSpecification.Id);
 
             if (maybeDataSetSpecification == null)
@@ -189,7 +200,6 @@ namespace LHDS.Core.Tests.Integration.TppLandings
 
             return maybeDataSetSpecification;
         }
-
 
         // Helper method to calculate SHA256 hash from byte array
         private static string CalculateSHA256Hash(byte[] data)

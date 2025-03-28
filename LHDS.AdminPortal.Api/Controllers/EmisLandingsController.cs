@@ -5,9 +5,13 @@
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using Attrify.Attributes;
+using LHDS.Core.Models.Coordinations.EmisLandings.Exceptions;
 using LHDS.Core.Models.Foundations.Downloads.Exceptions;
 using LHDS.Core.Models.Foundations.IngestionTrackings.Exceptions;
+using LHDS.Core.Models.Orchestrations.EmisLandings.Exceptions;
 using LHDS.Core.Services.Coordinations.EmisLandings;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.OData.Query;
 using RESTFulSense.Controllers;
@@ -17,6 +21,7 @@ using Microsoft.AspNetCore.Authorization;
 
 namespace LHDS.AdminPortal.Api.Controllers
 {
+    [Authorize(Roles = "ISL.LDS.AdminApi.EmisLanding,ISL.LDS.AdminApi.Administrators")]
     [ApiController]
     [Route("api/[controller]")]
     public class EmisLandingsController : RESTFulController
@@ -33,9 +38,7 @@ namespace LHDS.AdminPortal.Api.Controllers
 #if DEBUG
         [EnableQuery(PageSize = 5000)]
 #endif
-#if RELEASE
-        [Authorize(Roles = "ISL.LDS.AdminApi.Administrators, lhds.AdminApi.Workflows.Downloads, ISL.LDS.AdminApi.ReadOnly")]
-#endif
+        [InvisibleApi]
         public async ValueTask<ActionResult<List<string>>> Get(Guid subscriberAgreementId)
         {
             try
@@ -45,20 +48,35 @@ namespace LHDS.AdminPortal.Api.Controllers
 
                 return Ok(retrieveFileList);
             }
-            catch (DownloadDependencyException downloadDependencyException)
+            catch (InvalidArgumentEmisLandingCoordinationException invalidArgumentEmisLandingCoordinationException)
             {
-                return InternalServerError(downloadDependencyException);
+                return BadRequest(invalidArgumentEmisLandingCoordinationException);
             }
-            catch (DownloadServiceException downloadServiceException)
+            catch (EmisLandingCoordinationValidationException emisLandingCoordinationValidationException)
             {
-                return InternalServerError(downloadServiceException);
+                return BadRequest(emisLandingCoordinationValidationException);
+            }
+            catch (EmisLandingCoordinationDependencyValidationException 
+                    emisLandingCoordinationDependencyValidationException)
+            {
+                return FailedDependency(emisLandingCoordinationDependencyValidationException);
+            }
+            catch (EmisLandingCoordinationDependencyException emisLandingCoordinationDependencyException)
+            {
+                return InternalServerError(emisLandingCoordinationDependencyException);
+            }
+            catch (EmisLandingCoordinationServiceException emisLandingCoordinationServiceException)
+            {
+                return InternalServerError(emisLandingCoordinationServiceException);
+            }
+            catch (FailedEmisLandingCoordinationServiceException failedEmisLandingCoordinationServiceException)
+            {
+                return InternalServerError(failedEmisLandingCoordinationServiceException);
             }
         }
 
+        [Authorize(Roles = "ISL.LDS.AdminApi.EmisLanding,ISL.LDS.AdminApi.Administrators")]
         [HttpPut("decrypt/{ingestionTrackingId}")]
-#if RELEASE
-        [Authorize(Roles = "ISL.LDS.AdminApi.Administrators, lhds.AdminApi.Workflows.Downloads, ISL.LDS.AdminApi.ReadOnly")]
-#endif
         public async ValueTask<ActionResult> RedecryptDocumentByIngestionTrackingIdAsync(Guid ingestionTrackingId)
         {
             try
@@ -68,22 +86,26 @@ namespace LHDS.AdminPortal.Api.Controllers
 
                 return Ok();
             }
-            catch (IngestionTrackingValidationException ingestionTrackingValidationException)
-                when (ingestionTrackingValidationException.InnerException is NotFoundIngestionTrackingException)
+            catch (InvalidArgumentEmisLandingCoordinationException invalidArgumentEmisLandingCoordinationException)
             {
-                return NotFound(ingestionTrackingValidationException.InnerException);
+                return BadRequest(invalidArgumentEmisLandingCoordinationException);
             }
-            catch (IngestionTrackingValidationException ingestionTrackingValidationException)
+            catch (EmisLandingCoordinationValidationException emisLandingCoordinationValidationException)
             {
-                return BadRequest(ingestionTrackingValidationException.InnerException);
+                return BadRequest(emisLandingCoordinationValidationException);
             }
-            catch (IngestionTrackingDependencyException ingestionTrackingDependencyException)
+            catch (EmisLandingCoordinationDependencyValidationException 
+                    emisLandingCoordinationDependencyValidationException)
             {
-                return InternalServerError(ingestionTrackingDependencyException);
+                return FailedDependency(emisLandingCoordinationDependencyValidationException);
             }
-            catch (IngestionTrackingServiceException ingestionTrackingServiceException)
+            catch (EmisLandingCoordinationDependencyException emisLandingCoordinationDependencyException)
             {
-                return InternalServerError(ingestionTrackingServiceException);
+                return InternalServerError(emisLandingCoordinationDependencyException);
+            }
+            catch (EmisLandingCoordinationServiceException emisLandingCoordinationServiceException)
+            {
+                return InternalServerError(emisLandingCoordinationServiceException);
             }
         }
     }

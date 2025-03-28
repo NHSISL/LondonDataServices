@@ -31,13 +31,13 @@ namespace LHDS.Core.Services.Foundations.TerminologyPolls
         public ValueTask<TerminologyPoll> AddTerminologyPollAsync(TerminologyPoll terminologyPoll) =>
             TryCatch(async () =>
             {
-                ValidateTerminologyPollOnAdd(terminologyPoll);
+                await ValidateTerminologyPollOnAddAsync(terminologyPoll);
 
                 return await this.storageBroker.InsertTerminologyPollAsync(terminologyPoll);
             });
 
-        public IQueryable<TerminologyPoll> RetrieveAllTerminologyPolls() =>
-            TryCatch(() => this.storageBroker.SelectAllTerminologyPolls());
+        public ValueTask<IQueryable<TerminologyPoll>> RetrieveAllTerminologyPollsAsync() =>
+            TryCatch(async () => await this.storageBroker.SelectAllTerminologyPollsAsync());
 
         public ValueTask<TerminologyPoll> RetrieveTerminologyPollByIdAsync(Guid terminologyPollId) =>
             TryCatch(async () =>
@@ -55,7 +55,7 @@ namespace LHDS.Core.Services.Foundations.TerminologyPolls
         public ValueTask<TerminologyPoll> ModifyTerminologyPollAsync(TerminologyPoll terminologyPoll) =>
             TryCatch(async () =>
             {
-                ValidateTerminologyPollOnModify(terminologyPoll);
+                await ValidateTerminologyPollOnModifyAsync(terminologyPoll);
 
                 TerminologyPoll maybeTerminologyPoll =
                     await this.storageBroker.SelectTerminologyPollByIdAsync(terminologyPoll.Id);
@@ -63,7 +63,7 @@ namespace LHDS.Core.Services.Foundations.TerminologyPolls
                 ValidateStorageTerminologyPoll(maybeTerminologyPoll, terminologyPoll.Id);
 
                 ValidateAgainstStorageTerminologyPollOnModify(
-                    inputTerminologyPoll: terminologyPoll, 
+                    inputTerminologyPoll: terminologyPoll,
                     storageTerminologyPoll: maybeTerminologyPoll);
 
                 return await this.storageBroker.UpdateTerminologyPollAsync(terminologyPoll);

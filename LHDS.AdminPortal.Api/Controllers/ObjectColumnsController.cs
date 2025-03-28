@@ -5,9 +5,11 @@
 using System;
 using System.Linq;
 using System.Threading.Tasks;
+using Attrify.Attributes;
 using LHDS.Core.Models.Foundations.ObjectColumns;
 using LHDS.Core.Models.Foundations.ObjectColumns.Exceptions;
 using LHDS.Core.Services.Foundations.ObjectColumns;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.OData.Query;
 using RESTFulSense.Controllers;
@@ -17,6 +19,7 @@ using Microsoft.AspNetCore.Authorization;
 
 namespace LHDS.AdminPortal.Api.Controllers
 {
+    [Authorize(Roles = "ISL.LDS.AdminApi.Configurations, ISL.LDS.AdminApi.Administrators")]
     [ApiController]
     [Route("api/[controller]")]
     public class ObjectColumnsController : RESTFulController
@@ -26,6 +29,7 @@ namespace LHDS.AdminPortal.Api.Controllers
         public ObjectColumnsController(IObjectColumnService objectColumnService) =>
             this.objectColumnService = objectColumnService;
 
+        [Authorize(Roles = "ISL.LDS.AdminApi.Configurations, ISL.LDS.AdminApi.Administrators")]
         [HttpPost]
         public async ValueTask<ActionResult<ObjectColumn>> PostObjectColumnAsync(ObjectColumn objectColumn)
         {
@@ -60,6 +64,7 @@ namespace LHDS.AdminPortal.Api.Controllers
             }
         }
 
+        [Authorize(Roles = "ISL.LDS.AdminApi.Configurations, ISL.LDS.AdminApi.Administrators, ISL.LDS.AdminApi.ReadOnly")]
         [HttpGet]
 #if !DEBUG
         [EnableQuery(PageSize = 50)]
@@ -67,15 +72,12 @@ namespace LHDS.AdminPortal.Api.Controllers
 #if DEBUG
         [EnableQuery(PageSize = 5000)]
 #endif
-#if RELEASE
-        [Authorize(Roles = "ISL.LDS.AdminApi.Administrators, lhds.Api.ObjectColumns, ISL.LDS.AdminApi.ReadOnly")]
-#endif
-        public ActionResult<IQueryable<ObjectColumn>> Get()
+        public async ValueTask<ActionResult<IQueryable<ObjectColumn>>> Get()
         {
             try
             {
                 IQueryable<ObjectColumn> retrievedObjectColumns =
-                    this.objectColumnService.RetrieveAllObjectColumns();
+                    await this.objectColumnService.RetrieveAllObjectColumnsAsync();
 
                 return Ok(retrievedObjectColumns);
             }
@@ -89,6 +91,7 @@ namespace LHDS.AdminPortal.Api.Controllers
             }
         }
 
+        [Authorize(Roles = "ISL.LDS.AdminApi.Configurations, ISL.LDS.AdminApi.Administrators, ISL.LDS.AdminApi.ReadOnly")]
         [HttpGet("{objectColumnId}")]
         public async ValueTask<ActionResult<ObjectColumn>> GetObjectColumnByIdAsync(Guid objectColumnId)
         {
@@ -117,6 +120,7 @@ namespace LHDS.AdminPortal.Api.Controllers
             }
         }
 
+        [Authorize(Roles = "ISL.LDS.AdminApi.Configurations, ISL.LDS.AdminApi.Administrators")]
         [HttpPut]
         public async ValueTask<ActionResult<ObjectColumn>> PutObjectColumnAsync(ObjectColumn objectColumn)
         {
@@ -156,6 +160,7 @@ namespace LHDS.AdminPortal.Api.Controllers
             }
         }
 
+        [Authorize(Roles = "ISL.LDS.AdminApi.Configurations, ISL.LDS.AdminApi.Administrators")]
         [HttpDelete("{objectColumnId}")]
         public async ValueTask<ActionResult<ObjectColumn>> DeleteObjectColumnByIdAsync(Guid objectColumnId)
         {

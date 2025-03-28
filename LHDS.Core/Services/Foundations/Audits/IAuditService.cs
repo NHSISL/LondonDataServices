@@ -16,11 +16,11 @@ namespace LHDS.Core.Services.Foundations.Audits
             string title,
             string? message,
             string? fileName,
-            Guid? correlationId,
+            string? correlationId,
             string? logLevel = "Information");
 
         ValueTask<Audit> AddAuditAsync(Audit audit);
-        IQueryable<Audit> RetrieveAllAudits();
+        ValueTask<IQueryable<Audit>> RetrieveAllAuditsAsync();
         ValueTask<Audit> RetrieveAuditByIdAsync(Guid auditId);
         ValueTask<Audit> ModifyAuditAsync(Audit audit);
         ValueTask<Audit> RemoveAuditByIdAsync(Guid auditId);

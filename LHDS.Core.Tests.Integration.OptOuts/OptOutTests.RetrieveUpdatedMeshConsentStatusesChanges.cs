@@ -4,11 +4,10 @@
 
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using FluentAssertions;
-using LHDS.Core.Models.Foundations.Documents;
 using LHDS.Core.Models.Foundations.Mesh;
 using LHDS.Core.Models.Foundations.OptOuts;
 using Xunit;
@@ -32,6 +31,9 @@ namespace LHDS.Core.Tests.Integration.OptOuts
                 List<OptOutIdentifier> expectedContent = ConvertNhsListToOptOutIdentifierList(content, dbItems)
                     .OrderBy(item => item.NhsNumber).ToList();
 
+                //Stream fileStream = new MemoryStream(fileBytes);
+                Stream expectedFileStream = new MemoryStream();
+
                 // when
                 List<MeshMessage> messages = await this.optOutClient.RetrieveUpdatedMeshConsentStatusesChangesAsync();
 
@@ -40,15 +42,20 @@ namespace LHDS.Core.Tests.Integration.OptOuts
                 {
                     string filepath =
                         $"{optOutConfiguration.OutputFolder}/{GetHeaderValue(message, "mex-localid")}"
-                        + "_deltaresponse.csv";
+                        + "_DeltaResponse.csv";
 
-                    Document document = await this.documentService
-                        .RetrieveDocumentByFileNameAsync(fileName: filepath, container: optOutFileContainer);
+                    await this.documentService
+                        .RetrieveDocumentByFileNameAsync(
+                            output: expectedFileStream,
+                            fileName: filepath,
+                            container: optOutFileContainer);
 
-                    document.Should().NotBeNull();
+                    expectedFileStream.Should().NotBeNull();
+                    StreamReader reader = new StreamReader(expectedFileStream);
+                    string fileText = reader.ReadToEnd();
 
                     List<OptOutIdentifier> actualContent =
-                        ConvertToOptOutIdentifierList(Encoding.ASCII.GetString(document.DocumentData), true)
+                        ConvertToOptOutIdentifierList(fileText, true)
                             .OrderBy(item => item.NhsNumber).ToList();
 
 
@@ -70,6 +77,7 @@ namespace LHDS.Core.Tests.Integration.OptOuts
             {
                 Assert.Fail($"{ex.Message} {ex?.InnerException?.Message} {ex.StackTrace}");
             }
+            await Task.CompletedTask;
         }
 
         private static List<OptOutIdentifier> ConvertToOptOutIdentifierList(string content, bool hasHeader = false)

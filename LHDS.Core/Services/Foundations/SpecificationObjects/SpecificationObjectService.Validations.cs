@@ -1,8 +1,10 @@
-// ---------------------------------------------------------------
+// ---------------------------------------------------------
 // Copyright (c) North East London ICB. All rights reserved.
-// ---------------------------------------------------------------
+// ---------------------------------------------------------
 
 using System;
+using System.Threading.Tasks;
+using LHDS.Core.Models.Brokers.Securities;
 using LHDS.Core.Models.Foundations.SpecificationObjects;
 using LHDS.Core.Models.Foundations.SpecificationObjects.Exceptions;
 
@@ -10,9 +12,9 @@ namespace LHDS.Core.Services.Foundations.SpecificationObjects
 {
     public partial class SpecificationObjectService
     {
-        private void ValidateSpecificationObjectOnAdd(SpecificationObject specificationObject)
+        private async ValueTask ValidateSpecificationObjectOnAddAsync(SpecificationObject specificationObject)
         {
-            ValidateSpecificationObjectIsNotNull(specificationObject);
+            EntraUser currentUser = await this.securityBroker.GetCurrentUserAsync();
 
             Validate(
                 (Rule: IsInvalid(specificationObject.Id), Parameter: nameof(SpecificationObject.Id)),
@@ -44,6 +46,11 @@ namespace LHDS.Core.Services.Foundations.SpecificationObjects
 
                 (Rule: IsEqualOrSmallerThan(
                     specificationObject.UpdatedBy, 255), Parameter: nameof(specificationObject.UpdatedBy)),
+
+                (Rule: IsNotSame(
+                    first: currentUser.EntraUserId,
+                    second: specificationObject.CreatedBy),
+                Parameter: nameof(SpecificationObject.CreatedBy)),
 
                 (Rule: IsNotSame(
                     firstDate: specificationObject.UpdatedDate,
@@ -57,12 +64,12 @@ namespace LHDS.Core.Services.Foundations.SpecificationObjects
                     secondName: nameof(SpecificationObject.CreatedBy)),
                 Parameter: nameof(SpecificationObject.UpdatedBy)),
 
-                (Rule: IsNotRecent(specificationObject.CreatedDate), Parameter: nameof(SpecificationObject.CreatedDate)));
+                (Rule: await IsNotRecentAsync(specificationObject.CreatedDate), Parameter: nameof(SpecificationObject.CreatedDate)));
         }
 
-        private void ValidateSpecificationObjectOnModify(SpecificationObject specificationObject)
+        private async ValueTask ValidateSpecificationObjectOnModifyAsync(SpecificationObject specificationObject)
         {
-            ValidateSpecificationObjectIsNotNull(specificationObject);
+            EntraUser currentUser = await this.securityBroker.GetCurrentUserAsync();
 
             Validate(
                 (Rule: IsInvalid(specificationObject.Id), Parameter: nameof(SpecificationObject.Id)),
@@ -95,13 +102,49 @@ namespace LHDS.Core.Services.Foundations.SpecificationObjects
                 (Rule: IsEqualOrSmallerThan(
                     specificationObject.UpdatedBy, 255), Parameter: nameof(specificationObject.UpdatedBy)),
 
+                (Rule: IsNotSame(
+                    first: currentUser.EntraUserId,
+                    second: specificationObject.UpdatedBy),
+                Parameter: nameof(SpecificationObject.UpdatedBy)),
+
                 (Rule: IsSame(
                     firstDate: specificationObject.UpdatedDate,
                     secondDate: specificationObject.CreatedDate,
                     secondDateName: nameof(SpecificationObject.CreatedDate)),
                 Parameter: nameof(SpecificationObject.UpdatedDate)),
 
-                (Rule: IsNotRecent(specificationObject.UpdatedDate), Parameter: nameof(specificationObject.UpdatedDate)));
+                (Rule: await IsNotRecentAsync(specificationObject.UpdatedDate), Parameter: nameof(specificationObject.UpdatedDate)));
+        }
+
+        private async ValueTask ValidateAgainstStorageSpecificationObjectOnDeleteAsync(SpecificationObject dataSet, SpecificationObject maybeSpecificationObject)
+        {
+            EntraUser auditUser = await this.securityBroker.GetCurrentUserAsync();
+
+            Validate(
+                (Rule: IsNotSame(
+                    dataSet.CreatedDate,
+                    maybeSpecificationObject.CreatedDate,
+                    nameof(maybeSpecificationObject.CreatedDate)),
+                 Parameter: nameof(SpecificationObject.CreatedDate)),
+
+                (Rule: IsNotSame(
+                    dataSet.CreatedBy,
+                    maybeSpecificationObject.CreatedBy,
+                    nameof(maybeSpecificationObject.CreatedBy)),
+                 Parameter: nameof(SpecificationObject.CreatedBy)),
+
+                (Rule: IsNotSame(
+                    maybeSpecificationObject.UpdatedDate,
+                    dataSet.UpdatedDate,
+                    nameof(SpecificationObject.UpdatedDate)),
+                 Parameter: nameof(SpecificationObject.UpdatedDate)),
+
+                (Rule: IsNotSame(
+                    auditUser.EntraUserId.ToString(),
+                    dataSet.UpdatedBy,
+                    nameof(SpecificationObject.UpdatedBy)),
+                 Parameter: nameof(SpecificationObject.UpdatedBy))
+            );
         }
 
         public void ValidateSpecificationObjectId(Guid specificationObjectId) =>
@@ -179,6 +222,14 @@ namespace LHDS.Core.Services.Foundations.SpecificationObjects
             };
 
         private static dynamic IsNotSame(
+            string first,
+            string second) => new
+            {
+                Condition = first != second,
+                Message = $"Expected value to be '{first}' but found '{second}'."
+            };
+
+        private static dynamic IsNotSame(
             DateTimeOffset firstDate,
             DateTimeOffset secondDate,
             string secondDateName) => new
@@ -205,16 +256,16 @@ namespace LHDS.Core.Services.Foundations.SpecificationObjects
                Message = $"Text is not the same as {secondName}"
            };
 
-        private dynamic IsNotRecent(DateTimeOffset date) => new
+        private async ValueTask<dynamic> IsNotRecentAsync(DateTimeOffset date) => new
         {
-            Condition = IsDateNotRecent(date),
+            Condition = await IsDateNotRecentAsync(date),
             Message = "Date is not recent"
         };
 
-        private bool IsDateNotRecent(DateTimeOffset date)
+        private async ValueTask<bool> IsDateNotRecentAsync(DateTimeOffset date)
         {
             DateTimeOffset currentDateTime =
-                this.dateTimeBroker.GetCurrentDateTimeOffset();
+                await this.dateTimeBroker.GetCurrentDateTimeOffsetAsync();
 
             TimeSpan timeDifference = currentDateTime.Subtract(date);
             TimeSpan oneMinute = TimeSpan.FromMinutes(1);

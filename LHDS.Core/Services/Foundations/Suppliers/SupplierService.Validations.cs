@@ -4,6 +4,7 @@
 
 using System;
 using System.Threading.Tasks;
+using LHDS.Core.Models.Brokers.Securities;
 using LHDS.Core.Models.Foundations.Suppliers;
 using LHDS.Core.Models.Foundations.Suppliers.Exceptions;
 
@@ -13,16 +14,28 @@ namespace LHDS.Core.Services.Foundations.Suppliers
     {
         private async ValueTask ValidateSupplierOnAddAsync(Supplier supplier)
         {
-            ValidateSupplierIsNotNull(supplier);
+            EntraUser currentUser = await this.securityBroker.GetCurrentUserAsync();
 
             Validate(
                 (Rule: IsInvalid(supplier.Id), Parameter: nameof(Supplier.Id)),
                 (Rule: IsInvalid(supplier.Name), Parameter: nameof(Supplier.Name)),
                 (Rule: IsInvalid(supplier.FriendlyName), Parameter: nameof(Supplier.FriendlyName)),
+                (Rule: IsInvalid(supplier.Description), Parameter: nameof(Supplier.Description)),
                 (Rule: IsInvalid(supplier.CreatedDate), Parameter: nameof(Supplier.CreatedDate)),
                 (Rule: IsInvalid(supplier.CreatedBy), Parameter: nameof(Supplier.CreatedBy)),
                 (Rule: IsInvalid(supplier.UpdatedDate), Parameter: nameof(Supplier.UpdatedDate)),
                 (Rule: IsInvalid(supplier.UpdatedBy), Parameter: nameof(Supplier.UpdatedBy)),
+
+                (Rule: IsEqualOrSmallerThan(
+                    supplier.CreatedBy, 255), Parameter: nameof(supplier.CreatedBy)),
+
+                (Rule: IsEqualOrSmallerThan(
+                    supplier.UpdatedBy, 255), Parameter: nameof(supplier.UpdatedBy)),
+
+                (Rule: IsNotSame(
+                    first: currentUser.EntraUserId,
+                    second: supplier.CreatedBy),
+                Parameter: nameof(Supplier.CreatedBy)),
 
                 (Rule: IsNotSame(
                     firstDate: supplier.UpdatedDate,
@@ -41,16 +54,28 @@ namespace LHDS.Core.Services.Foundations.Suppliers
 
         private async ValueTask ValidateSupplierOnModifyAsync(Supplier supplier)
         {
-            ValidateSupplierIsNotNull(supplier);
+            EntraUser currentUser = await this.securityBroker.GetCurrentUserAsync();
 
             Validate(
                 (Rule: IsInvalid(supplier.Id), Parameter: nameof(Supplier.Id)),
                 (Rule: IsInvalid(supplier.Name), Parameter: nameof(Supplier.Name)),
                 (Rule: IsInvalid(supplier.FriendlyName), Parameter: nameof(Supplier.FriendlyName)),
+                (Rule: IsInvalid(supplier.Description), Parameter: nameof(Supplier.Description)),
                 (Rule: IsInvalid(supplier.CreatedDate), Parameter: nameof(Supplier.CreatedDate)),
                 (Rule: IsInvalid(supplier.CreatedBy), Parameter: nameof(Supplier.CreatedBy)),
                 (Rule: IsInvalid(supplier.UpdatedDate), Parameter: nameof(Supplier.UpdatedDate)),
                 (Rule: IsInvalid(supplier.UpdatedBy), Parameter: nameof(Supplier.UpdatedBy)),
+
+                (Rule: IsEqualOrSmallerThan(
+                    supplier.CreatedBy, 255), Parameter: nameof(supplier.CreatedBy)),
+
+                (Rule: IsEqualOrSmallerThan(
+                    supplier.UpdatedBy, 255), Parameter: nameof(supplier.UpdatedBy)),
+
+                (Rule: IsNotSame(
+                    first: currentUser.EntraUserId,
+                    second: supplier.UpdatedBy),
+                Parameter: nameof(Supplier.UpdatedBy)),
 
                 (Rule: IsSame(
                     firstDate: supplier.UpdatedDate,
@@ -110,6 +135,38 @@ namespace LHDS.Core.Services.Foundations.Suppliers
                 Parameter: nameof(Supplier.UpdatedDate)));
         }
 
+        private async ValueTask ValidateAgainstStorageSupplierOnDeleteAsync(
+            Supplier supplier,
+            Supplier maybeSupplier)
+        {
+            EntraUser auditUser = await this.securityBroker.GetCurrentUserAsync();
+
+            Validate(
+                (Rule: IsNotSame(
+                    supplier.CreatedDate,
+                    maybeSupplier.CreatedDate,
+                    nameof(maybeSupplier.CreatedDate)),
+                 Parameter: nameof(Supplier.CreatedDate)),
+
+                (Rule: IsNotSame(
+                    supplier.CreatedBy,
+                    maybeSupplier.CreatedBy,
+                    nameof(maybeSupplier.CreatedBy)),
+                 Parameter: nameof(Supplier.CreatedBy)),
+
+                (Rule: IsNotSame(
+                    maybeSupplier.UpdatedDate,
+                    supplier.UpdatedDate,
+                    nameof(Supplier.UpdatedDate)),
+                 Parameter: nameof(Supplier.UpdatedDate)),
+
+                (Rule: IsNotSame(
+                    auditUser.EntraUserId.ToString(),
+                    supplier.UpdatedBy,
+                    nameof(Supplier.UpdatedBy)),
+                 Parameter: nameof(Supplier.UpdatedBy))
+            );
+        }
         private static dynamic IsInvalid(Guid id) => new
         {
             Condition = id == Guid.Empty,
@@ -128,6 +185,12 @@ namespace LHDS.Core.Services.Foundations.Suppliers
             Message = "Date is required"
         };
 
+        private static dynamic IsEqualOrSmallerThan(string text, int maxLength) => new
+        {
+            Condition = (text ?? string.Empty).Length > maxLength,
+            Message = "Text is exceeding max length"
+        };
+
         private static dynamic IsSame(
             DateTimeOffset firstDate,
             DateTimeOffset secondDate,
@@ -135,6 +198,14 @@ namespace LHDS.Core.Services.Foundations.Suppliers
             {
                 Condition = firstDate == secondDate,
                 Message = $"Date is the same as {secondDateName}"
+            };
+
+        private static dynamic IsNotSame(
+            string first,
+            string second) => new
+            {
+                Condition = first != second,
+                Message = $"Expected value to be '{first}' but found '{second}'."
             };
 
         private static dynamic IsNotSame(

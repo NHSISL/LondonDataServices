@@ -4,6 +4,7 @@
 
 using System;
 using System.Threading.Tasks;
+using LHDS.Core.Models.Brokers.Securities;
 using LHDS.Core.Models.Foundations.TerminologyPolls;
 using LHDS.Core.Models.Foundations.TerminologyPolls.Exceptions;
 
@@ -13,7 +14,7 @@ namespace LHDS.Core.Services.Foundations.TerminologyPolls
     {
         private async ValueTask ValidateTerminologyPollOnAddAsync(TerminologyPoll terminologyPoll)
         {
-            ValidateTerminologyPollIsNotNull(terminologyPoll);
+            EntraUser currentUser = await this.securityBroker.GetCurrentUserAsync();
 
             Validate(
                 (Rule: IsInvalid(terminologyPoll.Id), Parameter: nameof(TerminologyPoll.Id)),
@@ -23,6 +24,13 @@ namespace LHDS.Core.Services.Foundations.TerminologyPolls
                 (Rule: IsInvalid(terminologyPoll.CreatedBy), Parameter: nameof(TerminologyPoll.CreatedBy)),
                 (Rule: IsInvalid(terminologyPoll.UpdatedDate), Parameter: nameof(TerminologyPoll.UpdatedDate)),
                 (Rule: IsInvalid(terminologyPoll.UpdatedBy), Parameter: nameof(TerminologyPoll.UpdatedBy)),
+
+                (Rule: IsNotSame(
+                    first: currentUser.EntraUserId,
+                    second: terminologyPoll.CreatedBy),
+                Parameter: nameof(TerminologyPoll.CreatedBy)),
+
+                
 
                 (Rule: IsNotSame(
                     firstDate: terminologyPoll.UpdatedDate,
@@ -41,7 +49,7 @@ namespace LHDS.Core.Services.Foundations.TerminologyPolls
 
         private async ValueTask ValidateTerminologyPollOnModifyAsync(TerminologyPoll terminologyPoll)
         {
-            ValidateTerminologyPollIsNotNull(terminologyPoll);
+            EntraUser currentUser = await this.securityBroker.GetCurrentUserAsync();
 
             Validate(
                 (Rule: IsInvalid(terminologyPoll.Id), Parameter: nameof(TerminologyPoll.Id)),
@@ -51,6 +59,11 @@ namespace LHDS.Core.Services.Foundations.TerminologyPolls
                 (Rule: IsInvalid(terminologyPoll.CreatedBy), Parameter: nameof(TerminologyPoll.CreatedBy)),
                 (Rule: IsInvalid(terminologyPoll.UpdatedDate), Parameter: nameof(TerminologyPoll.UpdatedDate)),
                 (Rule: IsInvalid(terminologyPoll.UpdatedBy), Parameter: nameof(TerminologyPoll.UpdatedBy)),
+
+                (Rule: IsNotSame(
+                    first: currentUser.EntraUserId,
+                    second: terminologyPoll.UpdatedBy),
+                Parameter: nameof(TerminologyPoll.UpdatedBy)),
 
                 (Rule: IsSame(
                     firstDate: terminologyPoll.UpdatedDate,
@@ -106,6 +119,39 @@ namespace LHDS.Core.Services.Foundations.TerminologyPolls
                 Parameter: nameof(TerminologyPoll.UpdatedDate)));
         }
 
+        private async ValueTask ValidateAgainstStorageTerminologyPollOnDeleteAsync(
+            TerminologyPoll terminologyPoll,
+            TerminologyPoll maybeTerminologyPoll)
+        {
+            EntraUser auditUser = await this.securityBroker.GetCurrentUserAsync();
+
+            Validate(
+                (Rule: IsNotSame(
+                    terminologyPoll.CreatedDate,
+                    maybeTerminologyPoll.CreatedDate,
+                    nameof(maybeTerminologyPoll.CreatedDate)),
+                 Parameter: nameof(TerminologyPoll.CreatedDate)),
+
+                (Rule: IsNotSame(
+                    terminologyPoll.CreatedBy,
+                    maybeTerminologyPoll.CreatedBy,
+                    nameof(maybeTerminologyPoll.CreatedBy)),
+                 Parameter: nameof(TerminologyPoll.CreatedBy)),
+
+                (Rule: IsNotSame(
+                    maybeTerminologyPoll.UpdatedDate,
+                    terminologyPoll.UpdatedDate,
+                    nameof(TerminologyPoll.UpdatedDate)),
+                 Parameter: nameof(TerminologyPoll.UpdatedDate)),
+
+                (Rule: IsNotSame(
+                    auditUser.EntraUserId.ToString(),
+                    terminologyPoll.UpdatedBy,
+                    nameof(TerminologyPoll.UpdatedBy)),
+                 Parameter: nameof(TerminologyPoll.UpdatedBy))
+            );
+        }
+
         private static dynamic IsInvalid(Guid id) => new
         {
             Condition = id == Guid.Empty,
@@ -159,6 +205,14 @@ namespace LHDS.Core.Services.Foundations.TerminologyPolls
                Condition = first != second,
                Message = $"Text is not the same as {secondName}"
            };
+
+        private static dynamic IsNotSame(
+            string first,
+            string second) => new
+            {
+                Condition = first != second,
+                Message = $"Expected value to be '{first}' but found '{second}'."
+            };
 
         private async ValueTask<dynamic> IsNotRecentAsync(DateTimeOffset date) => new
         {

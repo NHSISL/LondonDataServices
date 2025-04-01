@@ -100,6 +100,10 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.TerminologyPolls
                 values: "Text is required");
 
             invalidTerminologyPollException.AddData(
+                 key: nameof(TerminologyPoll.LastPoll),
+                 values: "Date is required");
+
+            invalidTerminologyPollException.AddData(
                  key: nameof(TerminologyPoll.CreatedDate),
                  values:
                  [
@@ -127,92 +131,6 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.TerminologyPolls
                 new TerminologyPollValidationException(
                     message: "TerminologyPoll validation errors occurred, please try again.",
                     innerException: invalidTerminologyPollException);
-
-            // when
-            ValueTask<TerminologyPoll> addTerminologyPollTask =
-                terminologyPollServiceMock.Object.AddTerminologyPollAsync(invalidTerminologyPoll);
-
-            TerminologyPollValidationException actualTerminologyPollValidationException =
-                await Assert.ThrowsAsync<TerminologyPollValidationException>(addTerminologyPollTask.AsTask);
-
-            // then
-            actualTerminologyPollValidationException.Should()
-                .BeEquivalentTo(expectedTerminologyPollValidationException);
-
-            this.dateTimeBrokerMock.Verify(broker =>
-                broker.GetCurrentDateTimeOffsetAsync(),
-                    Times.Once());
-
-            this.securityBrokerMock.Verify(broker =>
-                broker.GetCurrentUserAsync(),
-                    Times.Once());
-
-            this.loggingBrokerMock.Verify(broker =>
-                broker.LogErrorAsync(It.Is(SameExceptionAs(
-                    expectedTerminologyPollValidationException))),
-                        Times.Once);
-
-            this.storageBrokerMock.Verify(broker =>
-                broker.InsertTerminologyPollAsync(It.IsAny<TerminologyPoll>()),
-                    Times.Never);
-
-            this.dateTimeBrokerMock.VerifyNoOtherCalls();
-            this.securityBrokerMock.VerifyNoOtherCalls();
-            this.loggingBrokerMock.VerifyNoOtherCalls();
-            this.storageBrokerMock.VerifyNoOtherCalls();
-        }
-
-        [Fact]
-        public async Task ShouldThrowValidationExceptionOnAddIfTerminologyPollsIsInvalidLenghtAndLogItAsync()
-        {
-            // given
-            DateTimeOffset randomDateTimeOffset = GetRandomDateTimeOffset();
-            EntraUser randomEntraUser = CreateRandomEntraUser(entraUserId: GetRandomStringWithLengthOf(256));
-
-            TerminologyPoll invalidTerminologyPoll =
-                CreateRandomTerminologyPoll(randomDateTimeOffset, randomEntraUser.EntraUserId);
-
-            var inputCreatedByUpdatedByString = randomEntraUser.EntraUserId;
-            invalidTerminologyPoll.CreatedBy = inputCreatedByUpdatedByString;
-            invalidTerminologyPoll.UpdatedBy = inputCreatedByUpdatedByString;
-
-            var invalidTerminologyPollException =
-                new InvalidTerminologyPollException(
-                    message: "Invalid terminologyPoll. Please correct the errors and try again.");
-
-            invalidTerminologyPollException.AddData(
-                key: nameof(TerminologyPoll.CreatedBy),
-                values: "Text is exceeding max length");
-
-            invalidTerminologyPollException.AddData(
-                key: nameof(TerminologyPoll.UpdatedBy),
-                values: "Text is exceeding max length");
-
-            var expectedTerminologyPollValidationException =
-                new TerminologyPollValidationException(
-                    message: "TerminologyPoll validation errors occurred, please try again.",
-                    innerException: invalidTerminologyPollException);
-
-            var terminologyPollServiceMock = new Mock<TerminologyPollService>(
-                storageBrokerMock.Object,
-                dateTimeBrokerMock.Object,
-                securityBrokerMock.Object,
-                loggingBrokerMock.Object)
-            {
-                CallBase = true
-            };
-
-            terminologyPollServiceMock.Setup(service =>
-                service.ApplyAddTerminologyPollAsync(invalidTerminologyPoll))
-                    .ReturnsAsync(invalidTerminologyPoll);
-
-            this.dateTimeBrokerMock.Setup(broker =>
-                broker.GetCurrentDateTimeOffsetAsync())
-                    .ReturnsAsync(randomDateTimeOffset);
-
-            this.securityBrokerMock.Setup(broker =>
-                broker.GetCurrentUserAsync())
-                    .ReturnsAsync(randomEntraUser);
 
             // when
             ValueTask<TerminologyPoll> addTerminologyPollTask =

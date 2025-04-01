@@ -30,8 +30,6 @@ namespace LHDS.Core.Services.Foundations.TerminologyPolls
                     second: terminologyPoll.CreatedBy),
                 Parameter: nameof(TerminologyPoll.CreatedBy)),
 
-                
-
                 (Rule: IsNotSame(
                     firstDate: terminologyPoll.UpdatedDate,
                     secondDate: terminologyPoll.CreatedDate,

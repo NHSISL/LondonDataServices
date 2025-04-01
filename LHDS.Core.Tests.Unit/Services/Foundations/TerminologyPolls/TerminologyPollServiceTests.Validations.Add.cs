@@ -5,8 +5,10 @@
 using System;
 using System.Threading.Tasks;
 using FluentAssertions;
+using LHDS.Core.Models.Brokers.Securities;
 using LHDS.Core.Models.Foundations.TerminologyPolls;
 using LHDS.Core.Models.Foundations.TerminologyPolls.Exceptions;
+using LHDS.Core.Services.Foundations.TerminologyPolls;
 using Moq;
 using Xunit;
 
@@ -53,13 +55,37 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.TerminologyPolls
         [InlineData(null)]
         [InlineData("")]
         [InlineData(" ")]
-        public async Task ShouldThrowValidationExceptionOnAddIfTerminologyPollIsInvalidAndLogItAsync(string invalidText)
+        public async Task ShouldThrowValidationExceptionOnAddIfTerminologyPollsIsInvalidAndLogItAsync(string invalidText)
         {
             // given
+            DateTimeOffset randomDataTimeOffset = GetRandomDateTimeOffset();
+            EntraUser randomEntraUser = CreateRandomEntraUser();
+
             var invalidTerminologyPoll = new TerminologyPoll
             {
                 ResourceType = invalidText,
             };
+
+            var terminologyPollServiceMock = new Mock<TerminologyPollService>(
+                storageBrokerMock.Object,
+                dateTimeBrokerMock.Object,
+                securityBrokerMock.Object,
+                loggingBrokerMock.Object)
+            {
+                CallBase = true
+            };
+
+            terminologyPollServiceMock.Setup(service =>
+                service.ApplyAddTerminologyPollAsync(invalidTerminologyPoll))
+                    .ReturnsAsync(invalidTerminologyPoll);
+
+            this.dateTimeBrokerMock.Setup(broker =>
+                broker.GetCurrentDateTimeOffsetAsync())
+                    .ReturnsAsync(randomDataTimeOffset);
+
+            this.securityBrokerMock.Setup(broker =>
+                broker.GetCurrentUserAsync())
+                    .ReturnsAsync(randomEntraUser);
 
             var invalidTerminologyPollException =
                 new InvalidTerminologyPollException(
@@ -74,16 +100,20 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.TerminologyPolls
                 values: "Text is required");
 
             invalidTerminologyPollException.AddData(
-                key: nameof(TerminologyPoll.LastPoll),
-                values: "Date is required");
-
-            invalidTerminologyPollException.AddData(
-                key: nameof(TerminologyPoll.CreatedDate),
-                values: "Date is required");
+                 key: nameof(TerminologyPoll.CreatedDate),
+                 values:
+                 [
+                    "Date is required",
+                    $"Date is not recent"
+                 ]);
 
             invalidTerminologyPollException.AddData(
                 key: nameof(TerminologyPoll.CreatedBy),
-                values: "Text is required");
+                values:
+                [
+                    "Text is required",
+                    $"Expected value to be '{randomEntraUser.EntraUserId}' but found '{invalidTerminologyPoll.CreatedBy}'."
+                ]);
 
             invalidTerminologyPollException.AddData(
                 key: nameof(TerminologyPoll.UpdatedDate),
@@ -100,7 +130,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.TerminologyPolls
 
             // when
             ValueTask<TerminologyPoll> addTerminologyPollTask =
-                this.terminologyPollService.AddTerminologyPollAsync(invalidTerminologyPoll);
+                terminologyPollServiceMock.Object.AddTerminologyPollAsync(invalidTerminologyPoll);
 
             TerminologyPollValidationException actualTerminologyPollValidationException =
                 await Assert.ThrowsAsync<TerminologyPollValidationException>(addTerminologyPollTask.AsTask);
@@ -113,6 +143,10 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.TerminologyPolls
                 broker.GetCurrentDateTimeOffsetAsync(),
                     Times.Once());
 
+            this.securityBrokerMock.Verify(broker =>
+                broker.GetCurrentUserAsync(),
+                    Times.Once());
+
             this.loggingBrokerMock.Verify(broker =>
                 broker.LogErrorAsync(It.Is(SameExceptionAs(
                     expectedTerminologyPollValidationException))),
@@ -122,9 +156,96 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.TerminologyPolls
                 broker.InsertTerminologyPollAsync(It.IsAny<TerminologyPoll>()),
                     Times.Never);
 
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
+            this.securityBrokerMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
             this.storageBrokerMock.VerifyNoOtherCalls();
+        }
+
+        [Fact]
+        public async Task ShouldThrowValidationExceptionOnAddIfTerminologyPollsIsInvalidLenghtAndLogItAsync()
+        {
+            // given
+            DateTimeOffset randomDateTimeOffset = GetRandomDateTimeOffset();
+            EntraUser randomEntraUser = CreateRandomEntraUser(entraUserId: GetRandomStringWithLengthOf(256));
+
+            TerminologyPoll invalidTerminologyPoll =
+                CreateRandomTerminologyPoll(randomDateTimeOffset, randomEntraUser.EntraUserId);
+
+            var inputCreatedByUpdatedByString = randomEntraUser.EntraUserId;
+            invalidTerminologyPoll.CreatedBy = inputCreatedByUpdatedByString;
+            invalidTerminologyPoll.UpdatedBy = inputCreatedByUpdatedByString;
+
+            var invalidTerminologyPollException =
+                new InvalidTerminologyPollException(
+                    message: "Invalid terminologyPoll. Please correct the errors and try again.");
+
+            invalidTerminologyPollException.AddData(
+                key: nameof(TerminologyPoll.CreatedBy),
+                values: "Text is exceeding max length");
+
+            invalidTerminologyPollException.AddData(
+                key: nameof(TerminologyPoll.UpdatedBy),
+                values: "Text is exceeding max length");
+
+            var expectedTerminologyPollValidationException =
+                new TerminologyPollValidationException(
+                    message: "TerminologyPoll validation errors occurred, please try again.",
+                    innerException: invalidTerminologyPollException);
+
+            var terminologyPollServiceMock = new Mock<TerminologyPollService>(
+                storageBrokerMock.Object,
+                dateTimeBrokerMock.Object,
+                securityBrokerMock.Object,
+                loggingBrokerMock.Object)
+            {
+                CallBase = true
+            };
+
+            terminologyPollServiceMock.Setup(service =>
+                service.ApplyAddTerminologyPollAsync(invalidTerminologyPoll))
+                    .ReturnsAsync(invalidTerminologyPoll);
+
+            this.dateTimeBrokerMock.Setup(broker =>
+                broker.GetCurrentDateTimeOffsetAsync())
+                    .ReturnsAsync(randomDateTimeOffset);
+
+            this.securityBrokerMock.Setup(broker =>
+                broker.GetCurrentUserAsync())
+                    .ReturnsAsync(randomEntraUser);
+
+            // when
+            ValueTask<TerminologyPoll> addTerminologyPollTask =
+                terminologyPollServiceMock.Object.AddTerminologyPollAsync(invalidTerminologyPoll);
+
+            TerminologyPollValidationException actualTerminologyPollValidationException =
+                await Assert.ThrowsAsync<TerminologyPollValidationException>(addTerminologyPollTask.AsTask);
+
+            // then
+            actualTerminologyPollValidationException.Should()
+                .BeEquivalentTo(expectedTerminologyPollValidationException);
+
+            this.dateTimeBrokerMock.Verify(broker =>
+                broker.GetCurrentDateTimeOffsetAsync(),
+                    Times.Once());
+
+            this.securityBrokerMock.Verify(broker =>
+                broker.GetCurrentUserAsync(),
+                    Times.Once());
+
+            this.loggingBrokerMock.Verify(broker =>
+                broker.LogErrorAsync(It.Is(SameExceptionAs(
+                    expectedTerminologyPollValidationException))),
+                        Times.Once);
+
+            this.storageBrokerMock.Verify(broker =>
+                broker.InsertTerminologyPollAsync(It.IsAny<TerminologyPoll>()),
+                    Times.Never);
+
             this.dateTimeBrokerMock.VerifyNoOtherCalls();
+            this.securityBrokerMock.VerifyNoOtherCalls();
+            this.loggingBrokerMock.VerifyNoOtherCalls();
+            this.storageBrokerMock.VerifyNoOtherCalls();
         }
 
         [Fact]
@@ -133,11 +254,14 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.TerminologyPolls
             // given
             int randomNumber = GetRandomNumber();
             DateTimeOffset randomDateTimeOffset = GetRandomDateTimeOffset();
-            TerminologyPoll randomTerminologyPoll = CreateRandomTerminologyPoll(randomDateTimeOffset);
-            TerminologyPoll invalidTerminologyPoll = randomTerminologyPoll;
+            EntraUser randomEntraUser = CreateRandomEntraUser();
 
-            invalidTerminologyPoll.UpdatedDate =
-                invalidTerminologyPoll.CreatedDate.AddDays(randomNumber);
+            TerminologyPoll randomTerminologyPoll =
+                CreateRandomTerminologyPoll(randomDateTimeOffset, randomEntraUser.EntraUserId);
+
+            TerminologyPoll invalidTerminologyPoll = randomTerminologyPoll;
+            invalidTerminologyPoll.CreatedDate = GetRandomDateTimeOffset();
+            invalidTerminologyPoll.UpdatedDate = GetRandomDateTimeOffset();
 
             var invalidTerminologyPollException =
                 new InvalidTerminologyPollException(
@@ -147,18 +271,39 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.TerminologyPolls
                 key: nameof(TerminologyPoll.UpdatedDate),
                 values: $"Date is not the same as {nameof(TerminologyPoll.CreatedDate)}");
 
+            invalidTerminologyPollException.AddData(
+                key: nameof(TerminologyPoll.CreatedDate),
+                values: $"Date is not recent");
+
             var expectedTerminologyPollValidationException =
                 new TerminologyPollValidationException(
                     message: "TerminologyPoll validation errors occurred, please try again.",
                     innerException: invalidTerminologyPollException);
 
+            var terminologyPollServiceMock = new Mock<TerminologyPollService>(
+                storageBrokerMock.Object,
+                dateTimeBrokerMock.Object,
+                securityBrokerMock.Object,
+                loggingBrokerMock.Object)
+            {
+                CallBase = true
+            };
+
+            terminologyPollServiceMock.Setup(service =>
+                service.ApplyAddTerminologyPollAsync(invalidTerminologyPoll))
+                    .ReturnsAsync(invalidTerminologyPoll);
+
             this.dateTimeBrokerMock.Setup(broker =>
                 broker.GetCurrentDateTimeOffsetAsync())
                     .ReturnsAsync(randomDateTimeOffset);
 
+            this.securityBrokerMock.Setup(broker =>
+                broker.GetCurrentUserAsync())
+                    .ReturnsAsync(randomEntraUser);
+
             // when
             ValueTask<TerminologyPoll> addTerminologyPollTask =
-                this.terminologyPollService.AddTerminologyPollAsync(invalidTerminologyPoll);
+                terminologyPollServiceMock.Object.AddTerminologyPollAsync(invalidTerminologyPoll);
 
             TerminologyPollValidationException actualTerminologyPollValidationException =
                 await Assert.ThrowsAsync<TerminologyPollValidationException>(addTerminologyPollTask.AsTask);
@@ -171,6 +316,10 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.TerminologyPolls
                 broker.GetCurrentDateTimeOffsetAsync(),
                     Times.Once());
 
+            this.securityBrokerMock.Verify(broker =>
+                broker.GetCurrentUserAsync(),
+                    Times.Once());
+
             this.loggingBrokerMock.Verify(broker =>
                 broker.LogErrorAsync(It.Is(SameExceptionAs(
                     expectedTerminologyPollValidationException))),
@@ -181,6 +330,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.TerminologyPolls
                     Times.Never);
 
             this.dateTimeBrokerMock.VerifyNoOtherCalls();
+            this.securityBrokerMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
             this.storageBrokerMock.VerifyNoOtherCalls();
         }
@@ -190,13 +340,23 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.TerminologyPolls
         {
             // given
             DateTimeOffset randomDateTimeOffset = GetRandomDateTimeOffset();
-            TerminologyPoll randomTerminologyPoll = CreateRandomTerminologyPoll(randomDateTimeOffset);
+            EntraUser randomEntraUser = CreateRandomEntraUser();
+
+            TerminologyPoll randomTerminologyPoll =
+                CreateRandomTerminologyPoll(randomDateTimeOffset, randomEntraUser.EntraUserId);
+
             TerminologyPoll invalidTerminologyPoll = randomTerminologyPoll;
-            invalidTerminologyPoll.UpdatedBy = Guid.NewGuid().ToString();
+            invalidTerminologyPoll.CreatedBy = GetRandomString();
+            invalidTerminologyPoll.UpdatedBy = GetRandomString();
 
             var invalidTerminologyPollException =
                 new InvalidTerminologyPollException(
                     message: "Invalid terminologyPoll. Please correct the errors and try again.");
+
+            invalidTerminologyPollException.AddData(
+                key: nameof(TerminologyPoll.CreatedBy),
+                values: $"Expected value to be '{randomEntraUser.EntraUserId}' " +
+                    $"but found '{invalidTerminologyPoll.CreatedBy}'.");
 
             invalidTerminologyPollException.AddData(
                 key: nameof(TerminologyPoll.UpdatedBy),
@@ -207,13 +367,30 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.TerminologyPolls
                     message: "TerminologyPoll validation errors occurred, please try again.",
                     innerException: invalidTerminologyPollException);
 
+            var terminologyPollServiceMock = new Mock<TerminologyPollService>(
+                storageBrokerMock.Object,
+                dateTimeBrokerMock.Object,
+                securityBrokerMock.Object,
+                loggingBrokerMock.Object)
+            {
+                CallBase = true
+            };
+
+            terminologyPollServiceMock.Setup(service =>
+                service.ApplyAddTerminologyPollAsync(invalidTerminologyPoll))
+                    .ReturnsAsync(invalidTerminologyPoll);
+
             this.dateTimeBrokerMock.Setup(broker =>
                 broker.GetCurrentDateTimeOffsetAsync())
                     .ReturnsAsync(randomDateTimeOffset);
 
+            this.securityBrokerMock.Setup(broker =>
+                broker.GetCurrentUserAsync())
+                    .ReturnsAsync(randomEntraUser);
+
             // when
             ValueTask<TerminologyPoll> addTerminologyPollTask =
-                this.terminologyPollService.AddTerminologyPollAsync(invalidTerminologyPoll);
+                terminologyPollServiceMock.Object.AddTerminologyPollAsync(invalidTerminologyPoll);
 
             TerminologyPollValidationException actualTerminologyPollValidationException =
                 await Assert.ThrowsAsync<TerminologyPollValidationException>(addTerminologyPollTask.AsTask);
@@ -226,6 +403,10 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.TerminologyPolls
                 broker.GetCurrentDateTimeOffsetAsync(),
                     Times.Once());
 
+            this.securityBrokerMock.Verify(broker =>
+                broker.GetCurrentUserAsync(),
+                    Times.Once());
+
             this.loggingBrokerMock.Verify(broker =>
                 broker.LogErrorAsync(It.Is(SameExceptionAs(
                     expectedTerminologyPollValidationException))),
@@ -235,9 +416,10 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.TerminologyPolls
                 broker.InsertTerminologyPollAsync(It.IsAny<TerminologyPoll>()),
                     Times.Never);
 
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
+            this.securityBrokerMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
             this.storageBrokerMock.VerifyNoOtherCalls();
-            this.dateTimeBrokerMock.VerifyNoOtherCalls();
         }
 
         [Theory]
@@ -247,11 +429,12 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.TerminologyPolls
         {
             // given
             DateTimeOffset randomDateTimeOffset = GetRandomDateTimeOffset();
+            EntraUser randomEntraUser = CreateRandomEntraUser();
+            DateTimeOffset invalidDateTime = randomDateTimeOffset.AddMinutes(minutesBeforeOrAfter);
 
-            DateTimeOffset invalidDateTime =
-                randomDateTimeOffset.AddMinutes(minutesBeforeOrAfter);
+            TerminologyPoll randomTerminologyPoll =
+                CreateRandomTerminologyPoll(invalidDateTime, randomEntraUser.EntraUserId);
 
-            TerminologyPoll randomTerminologyPoll = CreateRandomTerminologyPoll(invalidDateTime);
             TerminologyPoll invalidTerminologyPoll = randomTerminologyPoll;
 
             var invalidTerminologyPollException =
@@ -267,13 +450,30 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.TerminologyPolls
                     message: "TerminologyPoll validation errors occurred, please try again.",
                     innerException: invalidTerminologyPollException);
 
+            var terminologyPollServiceMock = new Mock<TerminologyPollService>(
+                storageBrokerMock.Object,
+                dateTimeBrokerMock.Object,
+                securityBrokerMock.Object,
+                loggingBrokerMock.Object)
+            {
+                CallBase = true
+            };
+
+            terminologyPollServiceMock.Setup(service =>
+                service.ApplyAddTerminologyPollAsync(invalidTerminologyPoll))
+                    .ReturnsAsync(invalidTerminologyPoll);
+
             this.dateTimeBrokerMock.Setup(broker =>
                 broker.GetCurrentDateTimeOffsetAsync())
                     .ReturnsAsync(randomDateTimeOffset);
 
+            this.securityBrokerMock.Setup(broker =>
+                broker.GetCurrentUserAsync())
+                    .ReturnsAsync(randomEntraUser);
+
             // when
             ValueTask<TerminologyPoll> addTerminologyPollTask =
-                this.terminologyPollService.AddTerminologyPollAsync(invalidTerminologyPoll);
+                terminologyPollServiceMock.Object.AddTerminologyPollAsync(invalidTerminologyPoll);
 
             TerminologyPollValidationException actualTerminologyPollValidationException =
                 await Assert.ThrowsAsync<TerminologyPollValidationException>(addTerminologyPollTask.AsTask);
@@ -286,6 +486,10 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.TerminologyPolls
                 broker.GetCurrentDateTimeOffsetAsync(),
                     Times.Once());
 
+            this.securityBrokerMock.Verify(broker =>
+                broker.GetCurrentUserAsync(),
+                    Times.Once());
+
             this.loggingBrokerMock.Verify(broker =>
                 broker.LogErrorAsync(It.Is(SameExceptionAs(
                     expectedTerminologyPollValidationException))),
@@ -296,6 +500,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.TerminologyPolls
                     Times.Never);
 
             this.dateTimeBrokerMock.VerifyNoOtherCalls();
+            this.securityBrokerMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
             this.storageBrokerMock.VerifyNoOtherCalls();
         }

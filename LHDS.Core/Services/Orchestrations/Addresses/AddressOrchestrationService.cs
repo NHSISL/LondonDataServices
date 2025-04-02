@@ -183,6 +183,46 @@ namespace LHDS.Core.Services.Orchestrations.Addresses
             }
         }
 
+        virtual internal async ValueTask ProcessDPAAddressesAsync(string dpaCsvFile)
+        {
+            List<Address> dpaAddresses = await MapDPADataToAddresses(dpaCsvFile);
+            Dictionary<string, Address> dpaAddressesDict = dpaAddresses.ToDictionary(a => a.UPRN, a => a);
+            IQueryable<Address> addresses = await addressProcessingService.RetrieveAllAddressesAsync();
+            HashSet<string> dpaFileUprns = dpaAddresses.Select(a => a.UPRN).ToHashSet();
+
+            List<Address> existingDpaAddresses = addresses.Where(address =>
+                dpaFileUprns.Contains(address.UPRN)).ToList();
+
+            HashSet<string> existingDpaUprns = existingDpaAddresses.Select(a => a.UPRN).ToHashSet();
+
+            List<Address> newDpaAddresses = dpaAddresses.Where(dpaAddress =>
+                !existingDpaUprns.Contains(dpaAddress.UPRN)).ToList();
+
+            foreach (Address address in existingDpaAddresses)
+            {
+                if (address.UPRN != null && dpaAddressesDict.TryGetValue(address.UPRN, out Address dpaAddress))
+                {
+                    address.OrganisationName = dpaAddress.OrganisationName;
+                    address.DepartmentName = dpaAddress.DepartmentName;
+                    address.SubBuildingName = dpaAddress.SubBuildingName;
+                    address.BuildingName = dpaAddress.BuildingName;
+                    address.BuildingNumber = dpaAddress.BuildingNumber;
+                    address.DependentThoroughfare = dpaAddress.DependentThoroughfare;
+                    address.Thoroughfare = dpaAddress.Thoroughfare;
+                    address.DoubleDependentLocality = dpaAddress.DoubleDependentLocality;
+                    address.DependentLocality = dpaAddress.DependentLocality;
+                    address.PostTown = dpaAddress.PostTown;
+                    address.PostCode = dpaAddress.PostCode;
+                }
+            }
+
+            await addressProcessingService.BulkAddAddressesAsync(newDpaAddresses, dpaCsvFile);
+            await addressProcessingService.BulkModifyAddressesAsync(existingDpaAddresses, dpaCsvFile);
+        }
+
+        virtual internal async ValueTask<List<Address>> MapDPADataToAddresses(string dpaCsvFile) =>
+            throw new NotImplementedException();
+
         public ValueTask SyncAddressesWithAssignAsync()
         {
             throw new NotImplementedException();

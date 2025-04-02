@@ -19,16 +19,16 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Addresses
         public async Task ShouldBulkModifyAddressesAsync()
         {
             // given
+            int randomCount = GetRandomNumber();
             EntraUser randomEntraUser = CreateRandomEntraUser();
             DateTimeOffset randomDateTimeOffset = GetRandomDateTimeOffset();
             string randomFileName = GetRandomString();
             string inputFileName = randomFileName;
 
-            List<Address> randomAddresses = new List<Address>
-                {
-                    CreateRandomAddress(randomDateTimeOffset, randomEntraUser.EntraUserId),
-                    CreateRandomAddress(randomDateTimeOffset, randomEntraUser.EntraUserId)
-                };
+            List<Address> randomAddresses = CreateRandomAddresses(
+                count: randomCount,
+                randomDateTimeOffset,
+                userId: randomEntraUser.EntraUserId);
 
             List<Address> inputAddresses = randomAddresses;
 
@@ -44,7 +44,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Addresses
             };
 
             addressServiceMock.Setup(service =>
-                service.BulkModifyBatch(inputAddresses, inputFileName, 10000))
+                service.BulkAddOrModifyBatch(inputAddresses, inputFileName, 10000))
                     .Returns(ValueTask.CompletedTask);
 
             // when
@@ -53,7 +53,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Addresses
 
             // then
             addressServiceMock.Verify(service =>
-                service.BulkModifyBatch(inputAddresses, inputFileName, 10000),
+                service.BulkAddOrModifyBatch(inputAddresses, inputFileName, 10000),
                     Times.Once);
 
             this.dateTimeBrokerMock.VerifyNoOtherCalls();

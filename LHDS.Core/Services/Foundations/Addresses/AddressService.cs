@@ -66,51 +66,51 @@ namespace LHDS.Core.Services.Foundations.Addresses
             await BulkAddOrModifyBatch(addresses, fileName);
         });
 
-        virtual internal async ValueTask BulkInsertBatch(List<Address> addresses, string fileName, int batchSize = 10000)
-        {
-            int totalRecords = addresses.Count;
-            var exceptions = new List<Exception>();
+        //virtual internal async ValueTask BulkInsertBatch(List<Address> addresses, string fileName, int batchSize = 10000)
+        //{
+        //    int totalRecords = addresses.Count;
+        //    var exceptions = new List<Exception>();
 
-            for (int i = 0; i < totalRecords; i += batchSize)
-            {
-                try
-                {
-                    await TryCatch(async () =>
-                    {
-                        var batch = addresses.Skip(i).Take(batchSize).ToList();
+        //    for (int i = 0; i < totalRecords; i += batchSize)
+        //    {
+        //        try
+        //        {
+        //            await TryCatch(async () =>
+        //            {
+        //                var batch = addresses.Skip(i).Take(batchSize).ToList();
 
-                        List<Address> validatedAddresses =
-                            await ValidateAddressesAndAssignIdAndAuditOnAddAsync(batch, fileName);
+        //                List<Address> validatedAddresses =
+        //                    await ValidateAddressesAndAssignIdAndAuditOnAddAsync(batch, fileName);
 
-                        var batchUPRNs = batch.Select(validatedAddress => validatedAddress.UPRN).ToList();
-                        var allAddresses = await this.storageBroker.SelectAllAddressesAsync();
+        //                var batchUPRNs = batch.Select(validatedAddress => validatedAddress.UPRN).ToList();
+        //                var allAddresses = await this.storageBroker.SelectAllAddressesAsync();
 
-                        var existingUPRNs = allAddresses
-                            .Where(address => batchUPRNs.Contains(address.UPRN))
-                            .Select(address => address.UPRN)
-                            .ToList();
+        //                var existingUPRNs = allAddresses
+        //                    .Where(address => batchUPRNs.Contains(address.UPRN))
+        //                    .Select(address => address.UPRN)
+        //                    .ToList();
 
-                        var newAddresses = batch.Where(address => !existingUPRNs.Contains(address.UPRN)).ToList();
+        //                var newAddresses = batch.Where(address => !existingUPRNs.Contains(address.UPRN)).ToList();
 
-                        if (newAddresses.Count != 0)
-                        {
-                            await this.storageBroker.BulkInsertAddressesAsync(newAddresses);
-                        }
-                    });
-                }
-                catch (Exception ex)
-                {
-                    exceptions.Add(ex);
-                }
-            }
+        //                if (newAddresses.Count != 0)
+        //                {
+        //                    await this.storageBroker.BulkInsertAddressesAsync(newAddresses);
+        //                }
+        //            });
+        //        }
+        //        catch (Exception ex)
+        //        {
+        //            exceptions.Add(ex);
+        //        }
+        //    }
 
-            if (exceptions.Any())
-            {
-                throw new AggregateException(
-                    $"Unable to process addresses in {exceptions.Count} of the batch(es) from {fileName}",
-                    exceptions);
-            }
-        }
+        //    if (exceptions.Any())
+        //    {
+        //        throw new AggregateException(
+        //            $"Unable to process addresses in {exceptions.Count} of the batch(es) from {fileName}",
+        //            exceptions);
+        //    }
+        //}
 
         virtual internal async ValueTask BulkAddOrModifyBatch(List<Address> addresses, string fileName, int batchSize = 10000)
         {

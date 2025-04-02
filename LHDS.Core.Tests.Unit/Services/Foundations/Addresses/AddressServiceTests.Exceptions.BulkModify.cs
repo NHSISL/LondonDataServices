@@ -6,7 +6,6 @@ using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using FluentAssertions;
-using LHDS.Core.Models.Brokers.Securities;
 using LHDS.Core.Models.Foundations.Addresses;
 using LHDS.Core.Models.Foundations.Addresses.Exceptions;
 using LHDS.Core.Services.Foundations.Addresses;
@@ -21,17 +20,10 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Addresses
         public async Task ShouldThrowAggregateServiceExceptionOnBulkModifyIfErrorOccursAndLogItAsync()
         {
             // given
-            EntraUser randomEntraUser = CreateRandomEntraUser();
-            DateTimeOffset randomDateTimeOffset = GetRandomDateTimeOffset();
+            int randomCount = GetRandomNumber();
             string randomFileName = GetRandomString();
             string inputFileName = randomFileName;
-
-            List<Address> someAddresses = new List<Address>
-                {
-                    CreateRandomAddress(randomDateTimeOffset, randomEntraUser.EntraUserId),
-                    CreateRandomAddress(randomDateTimeOffset, randomEntraUser.EntraUserId)
-                };
-
+            List<Address> someAddresses = CreateRandomAddresses(count: randomCount);
             List<Address> inputAddresses = someAddresses;
             string someFileName = GetRandomString();
             Exception exception = new Exception("Some exception");
@@ -63,7 +55,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Addresses
             };
 
             addressServiceMock.Setup(service =>
-                service.BulkModifyBatch(It.IsAny<List<Address>>(), It.IsAny<string>(), It.IsAny<int>()))
+                service.BulkAddOrModifyBatch(It.IsAny<List<Address>>(), It.IsAny<string>(), It.IsAny<int>()))
                     .ThrowsAsync(aggregateException);
 
             // when
@@ -79,7 +71,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Addresses
                 .BeEquivalentTo(expectedAddressServiceException);
 
             addressServiceMock.Verify(service =>
-                service.BulkModifyBatch(It.IsAny<List<Address>>(), It.IsAny<string>(), It.IsAny<int>()),
+                service.BulkAddOrModifyBatch(It.IsAny<List<Address>>(), It.IsAny<string>(), It.IsAny<int>()),
                     Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>
@@ -111,13 +103,12 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Addresses
             };
 
             addressServiceMock.Setup(service =>
-                service.BulkModifyBatch(It.IsAny<List<Address>>(), It.IsAny<string>(), It.IsAny<int>()))
+                service.BulkAddOrModifyBatch(It.IsAny<List<Address>>(), It.IsAny<string>(), It.IsAny<int>()))
                     .ThrowsAsync(serviceException);
 
-            AddressService addressService = addressServiceMock.Object;
-
+            int randomCount = GetRandomNumber();
             string someFileName = GetRandomString();
-            List<Address> someAddresses = new List<Address> { CreateRandomAddress() };
+            List<Address> someAddresses = CreateRandomAddresses(count: randomCount);
 
             var failedAddressServiceException =
                 new FailedAddressServiceException(

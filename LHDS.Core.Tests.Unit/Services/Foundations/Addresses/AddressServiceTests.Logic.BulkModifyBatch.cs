@@ -16,18 +16,19 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Addresses
     public partial class AddressServiceTests
     {
         [Fact]
-        public async Task ShouldBulkAddAddressesAsync()
+        public async Task ShouldBulkBatchModifyAddressesAsync()
         {
             // given
-            int randomCount = GetRandomNumber();
+            int randomBatchSize = GetRandomNumber();
+            int inputBatchSize = randomBatchSize;
             EntraUser randomEntraUser = CreateRandomEntraUser();
             DateTimeOffset randomDateTimeOffset = GetRandomDateTimeOffset();
             string randomFileName = GetRandomString();
             string inputFileName = randomFileName;
 
             List<Address> randomAddresses = CreateRandomAddresses(
-                count: randomCount,
-                randomDateTimeOffset,
+                count: inputBatchSize,
+                dateTimeOffset: randomDateTimeOffset,
                 userId: randomEntraUser.EntraUserId);
 
             List<Address> inputAddresses = randomAddresses;
@@ -49,7 +50,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Addresses
 
             // when
             await addressServiceMock.Object
-                .BulkAddAddressesAsync(inputAddresses, inputFileName);
+                .BulkAddOrModifyBatch(inputAddresses, inputFileName, inputBatchSize);
 
             // then
             addressServiceMock.Verify(service =>

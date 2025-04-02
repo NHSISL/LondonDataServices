@@ -147,6 +147,20 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Addresses
             return filler;
         }
 
+        private static List<Address> CreateRandomAddresses(int count) =>
+            Enumerable.Range(start: 0, count: count)
+                .Select(index => CreateRandomAddress())
+                    .ToList();
+
+        private static List<Address> CreateRandomAddresses(
+            int count,
+            DateTimeOffset dateTimeOffset,
+            string userId) =>
+            Enumerable.Range(start: 0, count: count)
+                .Select(index => CreateRandomAddress(dateTimeOffset, userId))
+                    .ToList();
+
+
         private static Address CreateRandomAddress(
             DateTimeOffset dateTimeOffset,
             string userId) =>

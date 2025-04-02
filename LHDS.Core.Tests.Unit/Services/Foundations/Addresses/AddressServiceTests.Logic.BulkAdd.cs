@@ -44,7 +44,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Addresses
             };
 
             addressServiceMock.Setup(service =>
-                service.BulkAddOrModifyBatch(inputAddresses, inputFileName, 10000))
+                service.BulkAddOrModifyBatchAsync(inputAddresses, inputFileName, 10000))
                     .Returns(ValueTask.CompletedTask);
 
             // when
@@ -53,7 +53,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Addresses
 
             // then
             addressServiceMock.Verify(service =>
-                service.BulkAddOrModifyBatch(inputAddresses, inputFileName, 10000),
+                service.BulkAddOrModifyBatchAsync(inputAddresses, inputFileName, 10000),
                     Times.Once);
 
             this.dateTimeBrokerMock.VerifyNoOtherCalls();

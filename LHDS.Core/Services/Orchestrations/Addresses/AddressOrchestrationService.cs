@@ -183,6 +183,42 @@ namespace LHDS.Core.Services.Orchestrations.Addresses
             }
         }
 
+        virtual internal async ValueTask<List<Address>> MapDPADataToAddressesAsync(string dpaCsvFile)
+        {
+            byte[] csvData = await fileBroker.ReadFileAsync(dpaCsvFile);
+            string stringData = Encoding.UTF8.GetString(csvData);
+
+            List<string> records = stringData.Split(
+                new[] { "\r\n", "\n" }, StringSplitOptions.None).ToList();
+
+            List<string> filteredRecords = records.Where(record =>
+               record.StartsWith("28,") || record.StartsWith("\"28\",")).ToList();
+
+            string stringRecords = string.Join(Environment.NewLine, filteredRecords);
+
+            Dictionary<string, int> fieldMappings = new Dictionary<string, int>
+            {
+                { "UPRN", 3 },
+                { "UPSN", 4 },
+                { "OrganisationName", 5 },
+                { "DepartmentName", 6 },
+                { "SubBuildingName", 7 },
+                { "BuildingName", 8 },
+                { "BuildingNumber", 9 },
+                { "DependentThoroughfare", 10 },
+                { "Thoroughfare", 11 },
+                { "DoubleDependentLocality", 12 },
+                { "DependentLocality", 13 },
+                { "PostTown", 14 },
+                { "PostCode", 15 }
+            };
+
+            List<Address> addresses = await this.csvHelperBroker
+                .MapCsvToObjectAsync<Address>(stringRecords, hasHeaderRecord: false, fieldMappings);
+
+            return addresses;
+        }
+
         public ValueTask SyncAddressesWithAssignAsync()
         {
             throw new NotImplementedException();

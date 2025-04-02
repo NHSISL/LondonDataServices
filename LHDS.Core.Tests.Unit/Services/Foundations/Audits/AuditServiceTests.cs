@@ -3,6 +3,7 @@
 // ---------------------------------------------------------
 
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Runtime.CompilerServices;
@@ -10,7 +11,9 @@ using KellermanSoftware.CompareNetObjects;
 using LHDS.Core.Brokers.DateTimes;
 using LHDS.Core.Brokers.Identifiers;
 using LHDS.Core.Brokers.Loggings;
+using LHDS.Core.Brokers.Securities;
 using LHDS.Core.Brokers.Storages.Sql;
+using LHDS.Core.Models.Brokers.Securities;
 using LHDS.Core.Models.Foundations.Audits;
 using LHDS.Core.Services.Foundations.Audits;
 using Microsoft.Data.SqlClient;
@@ -26,6 +29,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Audits
         private readonly Mock<IStorageBroker> storageBrokerMock;
         private readonly Mock<IIdentifierBroker> identifierBrokerMock;
         private readonly Mock<IDateTimeBroker> dateTimeBrokerMock;
+        private readonly Mock<ISecurityBroker> securityBrokerMock;
         private readonly Mock<ILoggingBroker> loggingBrokerMock;
         private readonly IAuditService auditService;
         private readonly ICompareLogic compareLogic;
@@ -35,6 +39,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Audits
             this.storageBrokerMock = new Mock<IStorageBroker>();
             this.identifierBrokerMock = new Mock<IIdentifierBroker>();
             this.dateTimeBrokerMock = new Mock<IDateTimeBroker>();
+            this.securityBrokerMock = new Mock<ISecurityBroker>();
             this.loggingBrokerMock = new Mock<ILoggingBroker>();
             this.compareLogic = new CompareLogic();
 
@@ -42,6 +47,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Audits
                 storageBroker: this.storageBrokerMock.Object,
                 identifierBroker: this.identifierBrokerMock.Object,
                 dateTimeBroker: this.dateTimeBrokerMock.Object,
+                securityBroker: this.securityBrokerMock.Object,
                 loggingBroker: this.loggingBrokerMock.Object);
         }
 
@@ -53,6 +59,13 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Audits
 
         private static string GetRandomString() =>
             new MnemonicString(wordCount: GetRandomNumber()).GetValue();
+
+        private static string GetRandomStringWithLengthOf(int length)
+        {
+            string result = new MnemonicString(wordCount: 1, wordMinLength: length, wordMaxLength: length).GetValue();
+
+            return result.Length > length ? result.Substring(0, length) : result;
+        }
 
         public static TheoryData<int> MinutesBeforeOrAfter()
         {
@@ -78,10 +91,12 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Audits
         private static DateTimeOffset GetRandomDateTimeOffset() =>
             new DateTimeRange(earliestDate: new DateTime()).GetValue();
 
-        private static Audit CreateRandomModifyAudit(DateTimeOffset dateTimeOffset)
+        private static Audit CreateRandomModifyAudit(
+            DateTimeOffset dateTimeOffset,
+            string userId)
         {
             int randomDaysInPast = GetRandomNegativeNumber();
-            Audit randomAudit = CreateRandomAudit(dateTimeOffset);
+            Audit randomAudit = CreateRandomAudit(dateTimeOffset, userId);
 
             randomAudit.CreatedDate =
                 randomAudit.CreatedDate.AddDays(randomDaysInPast);
@@ -113,6 +128,44 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Audits
                 .OnProperty(audit => audit.UpdatedBy).Use(user);
 
             return filler;
+        }
+
+        private static Audit CreateRandomAudit(
+            DateTimeOffset dateTimeOffset,
+            string userId) =>
+            CreateAuditFiller(dateTimeOffset, userId).Create();
+
+        private static Filler<Audit> CreateAuditFiller(
+            DateTimeOffset dateTimeOffset,
+            string userId)
+        {
+            var filler = new Filler<Audit>();
+
+            filler.Setup()
+                .OnType<DateTimeOffset>().Use(dateTimeOffset)
+                .OnProperty(audit => audit.CreatedBy).Use(userId)
+                .OnProperty(audit => audit.UpdatedBy).Use(userId);
+
+            return filler;
+        }
+
+        private EntraUser CreateRandomEntraUser(string entraUserId = "")
+        {
+            var userId = string.IsNullOrWhiteSpace(entraUserId) ? GetRandomStringWithLengthOf(255) : entraUserId;
+
+            return new EntraUser(
+                entraUserId: userId,
+                givenName: GetRandomString(),
+                surname: GetRandomString(),
+                displayName: GetRandomString(),
+                email: GetRandomString(),
+                jobTitle: GetRandomString(),
+                roles: new List<string> { GetRandomString() },
+
+                claims: new List<System.Security.Claims.Claim>
+                {
+                    new System.Security.Claims.Claim(type: GetRandomString(), value: GetRandomString())
+                });
         }
     }
 }

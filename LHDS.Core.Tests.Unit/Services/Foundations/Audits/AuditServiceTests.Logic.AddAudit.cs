@@ -6,6 +6,7 @@ using System;
 using System.Threading.Tasks;
 using FluentAssertions;
 using Force.DeepCloner;
+using LHDS.Core.Models.Brokers.Securities;
 using LHDS.Core.Models.Foundations.Audits;
 using Moq;
 using Xunit;
@@ -19,6 +20,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Audits
         {
             // given
             DateTimeOffset randomDateTimeOffset = GetRandomDateTimeOffset();
+            EntraUser randomEntraUser = CreateRandomEntraUser();
             Guid randomIdentifier = Guid.NewGuid();
             string randomAuditType = GetRandomString();
             string randomAuditTitle = GetRandomString();

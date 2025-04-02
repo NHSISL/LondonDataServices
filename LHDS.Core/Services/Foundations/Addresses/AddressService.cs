@@ -56,63 +56,19 @@ namespace LHDS.Core.Services.Foundations.Addresses
             TryCatch(async () =>
             {
                 ValidateOnBulkAddAddresses(addresses, fileName);
-                await BulkAddOrModifyBatch(addresses, fileName);
+                await BulkAddOrModifyBatchAsync(addresses, fileName);
             });
 
         public ValueTask BulkModifyAddressesAsync(List<Address> addresses, string fileName) =>
         TryCatch(async () =>
         {
             ValidateOnBulkModifyAddresses(addresses, fileName);
-            await BulkAddOrModifyBatch(addresses, fileName);
+            await BulkAddOrModifyBatchAsync(addresses, fileName);
         });
 
-        //virtual internal async ValueTask BulkInsertBatch(List<Address> addresses, string fileName, int batchSize = 10000)
-        //{
-        //    int totalRecords = addresses.Count;
-        //    var exceptions = new List<Exception>();
 
-        //    for (int i = 0; i < totalRecords; i += batchSize)
-        //    {
-        //        try
-        //        {
-        //            await TryCatch(async () =>
-        //            {
-        //                var batch = addresses.Skip(i).Take(batchSize).ToList();
 
-        //                List<Address> validatedAddresses =
-        //                    await ValidateAddressesAndAssignIdAndAuditOnAddAsync(batch, fileName);
-
-        //                var batchUPRNs = batch.Select(validatedAddress => validatedAddress.UPRN).ToList();
-        //                var allAddresses = await this.storageBroker.SelectAllAddressesAsync();
-
-        //                var existingUPRNs = allAddresses
-        //                    .Where(address => batchUPRNs.Contains(address.UPRN))
-        //                    .Select(address => address.UPRN)
-        //                    .ToList();
-
-        //                var newAddresses = batch.Where(address => !existingUPRNs.Contains(address.UPRN)).ToList();
-
-        //                if (newAddresses.Count != 0)
-        //                {
-        //                    await this.storageBroker.BulkInsertAddressesAsync(newAddresses);
-        //                }
-        //            });
-        //        }
-        //        catch (Exception ex)
-        //        {
-        //            exceptions.Add(ex);
-        //        }
-        //    }
-
-        //    if (exceptions.Any())
-        //    {
-        //        throw new AggregateException(
-        //            $"Unable to process addresses in {exceptions.Count} of the batch(es) from {fileName}",
-        //            exceptions);
-        //    }
-        //}
-
-        virtual internal async ValueTask BulkAddOrModifyBatch(List<Address> addresses, string fileName, int batchSize = 10000)
+        virtual internal async ValueTask BulkAddOrModifyBatchAsync(List<Address> addresses, string fileName, int batchSize = 10000)
         {
             int totalRecords = addresses.Count;
             var exceptions = new List<Exception>();
@@ -121,51 +77,52 @@ namespace LHDS.Core.Services.Foundations.Addresses
             {
                 try
                 {
-                    var batch = addresses.Skip(i).Take(batchSize).ToList();
-                    var batchIds = batch.Select(address => address.Id).ToList();
-                    var allAddresses = await this.storageBroker.SelectAllAddressesAsync();
+                    List<Address> batch = addresses.Skip(i).Take(batchSize).ToList();
+                    List<Guid> batchIds = batch.Select(address => address.Id).ToList();
 
-                    var existingIds = allAddresses
-                        .Where(address => batchIds.Contains(address.Id))
-                        .Select(address => address.Id)
-                        .ToList();
+                    IQueryable<Address> storageAddresses = (await this.storageBroker.SelectAllAddressesAsync())
+                        .Where(address => batchIds.Contains(address.Id));
 
-                    var existingAddresses = batch.Where(address => existingIds.Contains(address.Id)).ToList();
-                    var newAddresses = batch.Where(address => !existingIds.Contains(address.Id)).ToList();
+                    List<Guid> existingIds = storageAddresses.Select(address => address.Id).ToList();
+                    List<Address> existingAddresses = batch.Where(address => existingIds.Contains(address.Id)).ToList();
+                    List<Address> newAddresses = batch.Where(address => !existingIds.Contains(address.Id)).ToList();
 
                     try
                     {
                         if (newAddresses.Count != 0)
                         {
-                            List<Address> validatedAddresses =
-                                await ValidateAddressesAndAssignAuditOnModifyAsync(batch, fileName);
+                            List<Address> validatedAddAddresses =
+                                await ValidateAddressesAndAssignIdAndAuditOnAddAsync(newAddresses, fileName);
 
-                            await this.storageBroker.BulkInsertAddressesAsync(newAddresses);
+                            await this.storageBroker.BulkInsertAddressesAsync(validatedAddAddresses);
                         }
                     }
                     catch (Exception insertException)
                     {
                         exceptions.Add(insertException);
+                        await this.loggingBroker.LogErrorAsync(insertException);
                     }
 
                     try
                     {
                         if (existingAddresses.Count != 0)
                         {
-                            List<Address> validatedAddresses =
-                                await ValidateAddressesAndAssignAuditOnModifyAsync(batch, fileName);
+                            List<Address> validatedModifyAddresses =
+                                await ValidateAddressesAndAssignAuditOnModifyAsync(existingAddresses, fileName);
 
-                            await this.storageBroker.BulkUpdateAddressesAsync(existingAddresses);
+                            await this.storageBroker.BulkUpdateAddressesAsync(validatedModifyAddresses);
                         }
                     }
                     catch (Exception updateException)
                     {
                         exceptions.Add(updateException);
+                        await this.loggingBroker.LogErrorAsync(updateException);
                     }
                 }
-                catch (Exception ex)
+                catch (Exception exception)
                 {
-                    exceptions.Add(ex);
+                    exceptions.Add(exception);
+                    await this.loggingBroker.LogErrorAsync(exception);
                 }
             }
 

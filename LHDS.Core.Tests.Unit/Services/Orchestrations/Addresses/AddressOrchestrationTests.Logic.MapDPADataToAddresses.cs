@@ -65,7 +65,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Addresses
                 { "PostCode", 15 }
             };
 
-            List<Address> randomAddresses = CreateRandomAddresses(count: 1).ToList();
+            List<Address> randomAddresses = CreateRandomAddresses(count: 2).ToList();
             List<Address> outputAddresses = randomAddresses.DeepClone();
             List<Address> expectedAddresses = outputAddresses.DeepClone();
             string stringRecords = string.Join(Environment.NewLine, filteredRecords);

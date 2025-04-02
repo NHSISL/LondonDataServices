@@ -55,12 +55,12 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Addresses
                     .ThrowsAsync(sqlException);
 
             // when
-            ValueTask addAddressTask = this.addressService
+            ValueTask bulkAddAddressTask = this.addressService
                 .BulkAddAddressesAsync(addresses: someAddresses, fileName: someFileName);
 
             AddressServiceException actualAddressDependencyException =
                 await Assert.ThrowsAsync<AddressServiceException>(
-                    addAddressTask.AsTask);
+                    bulkAddAddressTask.AsTask);
 
             // then
             actualAddressDependencyException.Should()
@@ -127,13 +127,13 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Addresses
                     .ThrowsAsync(foreignKeyConstraintConflictException);
 
             // when
-            ValueTask addAddressTask = this.addressService
+            ValueTask bulkAddAddressTask = this.addressService
                 .BulkAddAddressesAsync(addresses: someAddresses, fileName: someFileName);
 
             // then
             AddressServiceException actualAddressServiceException =
                 await Assert.ThrowsAsync<AddressServiceException>(
-                    addAddressTask.AsTask);
+                    bulkAddAddressTask.AsTask);
 
             actualAddressServiceException.Should()
                 .BeEquivalentTo(expectedAddressServiceException);
@@ -197,12 +197,12 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Addresses
                     .ThrowsAsync(databaseUpdateException);
 
             // when
-            ValueTask addAddressTask = this.addressService
+            ValueTask bulkAddAddressTask = this.addressService
                 .BulkAddAddressesAsync(addresses: someAddresses, fileName: someFileName);
 
             AddressServiceException actualAddressServiceException =
                 await Assert.ThrowsAsync<AddressServiceException>(
-                    addAddressTask.AsTask);
+                    bulkAddAddressTask.AsTask);
 
             // then
             actualAddressServiceException.Should()
@@ -269,12 +269,12 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Addresses
                     .ThrowsAsync(serviceException);
 
             // when
-            ValueTask addAddressTask = addressServiceMock.Object
+            ValueTask bulkAddAddressTask = addressServiceMock.Object
                 .BulkAddAddressesAsync(addresses: someAddresses, fileName: someFileName);
 
             AddressServiceException actualAddressServiceException =
                 await Assert.ThrowsAsync<AddressServiceException>(
-                    addAddressTask.AsTask);
+                    bulkAddAddressTask.AsTask);
 
             // then
             actualAddressServiceException.Should()

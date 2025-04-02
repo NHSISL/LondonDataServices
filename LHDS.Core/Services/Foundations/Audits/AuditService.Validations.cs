@@ -4,6 +4,7 @@
 
 using System;
 using System.Threading.Tasks;
+using LHDS.Core.Models.Brokers.Securities;
 using LHDS.Core.Models.Foundations.Audits;
 using LHDS.Core.Models.Foundations.Audits.Exceptions;
 
@@ -13,7 +14,7 @@ namespace LHDS.Core.Services.Foundations.Audits
     {
         private async ValueTask ValidateAuditOnAddAsync(Audit audit)
         {
-            ValidateAuditIsNotNull(audit);
+            EntraUser currentUser = await this.securityBroker.GetCurrentUserAsync();
 
             Validate(
                 (Rule: IsInvalid(audit.Id), Parameter: nameof(Audit.Id)),
@@ -23,6 +24,11 @@ namespace LHDS.Core.Services.Foundations.Audits
                 (Rule: IsInvalid(audit.CreatedBy), Parameter: nameof(Audit.CreatedBy)),
                 (Rule: IsInvalid(audit.UpdatedDate), Parameter: nameof(Audit.UpdatedDate)),
                 (Rule: IsInvalid(audit.UpdatedBy), Parameter: nameof(Audit.UpdatedBy)),
+
+                (Rule: IsNotSame(
+                    first: currentUser.EntraUserId,
+                    second: audit.CreatedBy),
+                Parameter: nameof(Audit.CreatedBy)),
 
                 (Rule: IsNotSame(
                     firstDate: audit.UpdatedDate,
@@ -41,7 +47,7 @@ namespace LHDS.Core.Services.Foundations.Audits
 
         private async ValueTask ValidateAuditOnModifyAsync(Audit audit)
         {
-            ValidateAuditIsNotNull(audit);
+            EntraUser currentUser = await this.securityBroker.GetCurrentUserAsync();
 
             Validate(
                 (Rule: IsInvalid(audit.Id), Parameter: nameof(Audit.Id)),
@@ -52,6 +58,11 @@ namespace LHDS.Core.Services.Foundations.Audits
                 (Rule: IsInvalid(audit.UpdatedDate), Parameter: nameof(Audit.UpdatedDate)),
                 (Rule: IsInvalid(audit.UpdatedBy), Parameter: nameof(Audit.UpdatedBy)),
 
+                (Rule: IsNotSame(
+                    first: currentUser.EntraUserId,
+                    second: audit.UpdatedBy),
+                Parameter: nameof(Audit.UpdatedBy)),
+
                 (Rule: IsSame(
                     firstDate: audit.UpdatedDate,
                     secondDate: audit.CreatedDate,
@@ -59,6 +70,39 @@ namespace LHDS.Core.Services.Foundations.Audits
                 Parameter: nameof(Audit.UpdatedDate)),
 
                 (Rule: await IsNotRecentAsync(audit.UpdatedDate), Parameter: nameof(audit.UpdatedDate)));
+        }
+
+        private async ValueTask ValidateAgainstStorageAuditOnDeleteAsync(
+            Audit audit,
+            Audit maybeAudit)
+        {
+            EntraUser auditUser = await this.securityBroker.GetCurrentUserAsync();
+
+            Validate(
+                (Rule: IsNotSame(
+                    audit.CreatedDate,
+                    maybeAudit.CreatedDate,
+                    nameof(maybeAudit.CreatedDate)),
+                 Parameter: nameof(Audit.CreatedDate)),
+
+                (Rule: IsNotSame(
+                    audit.CreatedBy,
+                    maybeAudit.CreatedBy,
+                    nameof(maybeAudit.CreatedBy)),
+                 Parameter: nameof(Audit.CreatedBy)),
+
+                (Rule: IsNotSame(
+                    maybeAudit.UpdatedDate,
+                    audit.UpdatedDate,
+                    nameof(Audit.UpdatedDate)),
+                 Parameter: nameof(Audit.UpdatedDate)),
+
+                (Rule: IsNotSame(
+                    auditUser.EntraUserId.ToString(),
+                    audit.UpdatedBy,
+                    nameof(Audit.UpdatedBy)),
+                 Parameter: nameof(Audit.UpdatedBy))
+            );
         }
 
         public void ValidateAuditId(Guid auditId) =>
@@ -127,6 +171,14 @@ namespace LHDS.Core.Services.Foundations.Audits
             {
                 Condition = firstDate == secondDate,
                 Message = $"Date is the same as {secondDateName}"
+            };
+
+        private static dynamic IsNotSame(
+            string first,
+            string second) => new
+            {
+                Condition = first != second,
+                Message = $"Expected value to be '{first}' but found '{second}'."
             };
 
         private static dynamic IsNotSame(

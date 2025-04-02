@@ -56,11 +56,16 @@ namespace LHDS.Core.Services.Foundations.Addresses
             TryCatch(async () =>
             {
                 ValidateOnBulkAddAddresses(addresses, fileName);
-                int batchSize = 10000;
-                await BulkInsertBatch(addresses, batchSize, fileName);
+                await BulkInsertBatch(addresses, fileName);
             });
 
-        virtual internal async ValueTask BulkInsertBatch(List<Address> addresses, int batchSize, string fileName)
+        public ValueTask BulkModifyAddressesAsync(List<Address> addresses, string fileName) =>
+        TryCatch(async () =>
+        {
+            throw new NotImplementedException();
+        });
+
+        virtual internal async ValueTask BulkInsertBatch(List<Address> addresses, string fileName, int batchSize = 10000)
         {
             int totalRecords = addresses.Count;
             var exceptions = new List<Exception>();
@@ -104,6 +109,11 @@ namespace LHDS.Core.Services.Foundations.Addresses
                     $"Unable to process addresses in {exceptions.Count} of the batch(es) from {fileName}",
                     exceptions);
             }
+        }
+
+        virtual internal async ValueTask BulkModifyBatch(List<Address> addresses, string fileName, int batchSize = 10000)
+        {
+            throw new NotImplementedException();
         }
 
         virtual internal async ValueTask<List<Address>> ExtractValidAddressesAndAssignIdAndAuditAsync(

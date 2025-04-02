@@ -245,10 +245,9 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Addresses
                 CallBase = true
             };
 
-            addressServiceMock
-                .Setup(x =>
-                    x.BulkInsertBatch(It.IsAny<List<Address>>(), It.IsAny<int>(), It.IsAny<string>()))
-                .ThrowsAsync(serviceException);
+            addressServiceMock.Setup(service =>
+                service.BulkInsertBatch(It.IsAny<List<Address>>(), It.IsAny<string>(), It.IsAny<int>()))
+                    .ThrowsAsync(serviceException);
 
             AddressService addressService = addressServiceMock.Object;
 

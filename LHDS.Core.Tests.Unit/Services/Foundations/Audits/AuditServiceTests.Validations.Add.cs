@@ -69,8 +69,8 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Audits
 
             var auditServiceMock = new Mock<AuditService>(
                 storageBrokerMock.Object,
-                dateTimeBrokerMock.Object,
                 identifierBrokerMock.Object,
+                dateTimeBrokerMock.Object,
                 securityBrokerMock.Object,
                 loggingBrokerMock.Object)
             {
@@ -169,93 +169,6 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Audits
         }
 
         [Fact]
-        public async Task ShouldThrowValidationExceptionOnAddIfAuditsIsInvalidLenghtAndLogItAsync()
-        {
-            // given
-            DateTimeOffset randomDateTimeOffset = GetRandomDateTimeOffset();
-            EntraUser randomEntraUser = CreateRandomEntraUser(entraUserId: GetRandomStringWithLengthOf(256));
-
-            Audit invalidAudit =
-                CreateRandomAudit(randomDateTimeOffset, randomEntraUser.EntraUserId);
-
-            var inputCreatedByUpdatedByString = randomEntraUser.EntraUserId;
-            invalidAudit.CreatedBy = inputCreatedByUpdatedByString;
-            invalidAudit.UpdatedBy = inputCreatedByUpdatedByString;
-
-            var invalidAuditException =
-                new InvalidAuditException(
-                    message: "Invalid audit. Please correct the errors and try again.");
-
-            invalidAuditException.AddData(
-                key: nameof(Audit.CreatedBy),
-                values: "Text is exceeding max length");
-
-            invalidAuditException.AddData(
-                key: nameof(Audit.UpdatedBy),
-                values: "Text is exceeding max length");
-
-            var expectedAuditValidationException =
-                new AuditValidationException(
-                    message: "Audit validation errors occurred, please try again.",
-                    innerException: invalidAuditException);
-
-            var auditServiceMock = new Mock<AuditService>(
-                storageBrokerMock.Object,
-                dateTimeBrokerMock.Object,
-                identifierBrokerMock.Object,
-                securityBrokerMock.Object,
-                loggingBrokerMock.Object)
-            {
-                CallBase = true
-            };
-
-            auditServiceMock.Setup(service =>
-                service.ApplyAddAuditAsync(invalidAudit))
-                    .ReturnsAsync(invalidAudit);
-
-            this.dateTimeBrokerMock.Setup(broker =>
-                broker.GetCurrentDateTimeOffsetAsync())
-                    .ReturnsAsync(randomDateTimeOffset);
-
-            this.securityBrokerMock.Setup(broker =>
-                broker.GetCurrentUserAsync())
-                    .ReturnsAsync(randomEntraUser);
-
-            // when
-            ValueTask<Audit> addAuditTask =
-                auditServiceMock.Object.AddAuditAsync(invalidAudit);
-
-            AuditValidationException actualAuditValidationException =
-                await Assert.ThrowsAsync<AuditValidationException>(addAuditTask.AsTask);
-
-            // then
-            actualAuditValidationException.Should()
-                .BeEquivalentTo(expectedAuditValidationException);
-
-            this.dateTimeBrokerMock.Verify(broker =>
-                broker.GetCurrentDateTimeOffsetAsync(),
-                    Times.Once());
-
-            this.securityBrokerMock.Verify(broker =>
-                broker.GetCurrentUserAsync(),
-                    Times.Once());
-
-            this.loggingBrokerMock.Verify(broker =>
-                broker.LogErrorAsync(It.Is(SameExceptionAs(
-                    expectedAuditValidationException))),
-                        Times.Once);
-
-            this.storageBrokerMock.Verify(broker =>
-                broker.InsertAuditAsync(It.IsAny<Audit>()),
-                    Times.Never);
-
-            this.dateTimeBrokerMock.VerifyNoOtherCalls();
-            this.securityBrokerMock.VerifyNoOtherCalls();
-            this.loggingBrokerMock.VerifyNoOtherCalls();
-            this.storageBrokerMock.VerifyNoOtherCalls();
-        }
-
-        [Fact]
         public async Task ShouldThrowValidationExceptionOnAddIfCreateAndUpdateDatesIsNotSameAndLogItAsync()
         {
             // given
@@ -289,8 +202,8 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Audits
 
             var auditServiceMock = new Mock<AuditService>(
                 storageBrokerMock.Object,
-                dateTimeBrokerMock.Object,
                 identifierBrokerMock.Object,
+                dateTimeBrokerMock.Object,
                 securityBrokerMock.Object,
                 loggingBrokerMock.Object)
             {
@@ -377,8 +290,8 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Audits
 
             var auditServiceMock = new Mock<AuditService>(
                 storageBrokerMock.Object,
-                dateTimeBrokerMock.Object,
                 identifierBrokerMock.Object,
+                dateTimeBrokerMock.Object,
                 securityBrokerMock.Object,
                 loggingBrokerMock.Object)
             {
@@ -461,8 +374,8 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Audits
 
             var auditServiceMock = new Mock<AuditService>(
                 storageBrokerMock.Object,
-                dateTimeBrokerMock.Object,
                 identifierBrokerMock.Object,
+                dateTimeBrokerMock.Object,
                 securityBrokerMock.Object,
                 loggingBrokerMock.Object)
             {

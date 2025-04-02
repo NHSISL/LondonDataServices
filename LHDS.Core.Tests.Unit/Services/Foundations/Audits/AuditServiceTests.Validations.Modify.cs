@@ -107,8 +107,23 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Audits
                 values: "Id is required");
 
             invalidAuditException.AddData(
+                key: nameof(Audit.AuditType),
+                values: "Text is required");
+
+            invalidAuditException.AddData(
+                key: nameof(Audit.Title),
+                values: "Text is required");
+
+            invalidAuditException.AddData(
                 key: nameof(Audit.CreatedBy),
                 values: "Text is required");
+
+            invalidAuditException.AddData(
+                key: nameof(Audit.CreatedDate),
+                values:
+                    [
+                        "Date is required",
+                    ]);
 
             invalidAuditException.AddData(
                 key: nameof(Audit.UpdatedDate),

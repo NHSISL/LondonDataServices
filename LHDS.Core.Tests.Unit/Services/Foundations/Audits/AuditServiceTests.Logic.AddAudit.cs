@@ -37,9 +37,9 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Audits
                 CorrelationId = randomIdentifier.ToString(),
                 FileName = randomFileName,
                 LogLevel = randomLogLevel,
-                CreatedBy = "System",
+                CreatedBy = randomEntraUser.EntraUserId,
                 CreatedDate = randomDateTimeOffset,
-                UpdatedBy = "System",
+                UpdatedBy = randomEntraUser.EntraUserId,
                 UpdatedDate = randomDateTimeOffset,
             };
 
@@ -50,6 +50,10 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Audits
             this.dateTimeBrokerMock.Setup(broker =>
                 broker.GetCurrentDateTimeOffsetAsync())
                     .ReturnsAsync(randomDateTimeOffset);
+
+            this.securityBrokerMock.Setup(broker =>
+                broker.GetCurrentUserAsync())
+                    .ReturnsAsync(randomEntraUser);
 
             this.identifierBrokerMock.Setup(broker =>
                 broker.GetIdentifierAsync())
@@ -74,6 +78,10 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Audits
 
             this.dateTimeBrokerMock.Verify(broker =>
                 broker.GetCurrentDateTimeOffsetAsync(),
+                    Times.Exactly(3));
+
+            this.securityBrokerMock.Verify(broker =>
+                broker.GetCurrentUserAsync(),
                     Times.Exactly(2));
 
             this.identifierBrokerMock.Verify(broker =>
@@ -85,6 +93,8 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Audits
                     Times.Once);
 
             this.dateTimeBrokerMock.VerifyNoOtherCalls();
+            this.securityBrokerMock.VerifyNoOtherCalls();
+            this.identifierBrokerMock.VerifyNoOtherCalls();
             this.storageBrokerMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
             this.identifierBrokerMock.VerifyNoOtherCalls();

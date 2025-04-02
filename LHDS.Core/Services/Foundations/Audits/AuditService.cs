@@ -62,9 +62,10 @@ namespace LHDS.Core.Services.Foundations.Audits
                     UpdatedDate = dateTimeOffset,
                 };
 
-                await ValidateAuditOnAddAsync(audit);
+                Audit auditWithAddAuditApplied = await ApplyAddAuditAsync(audit);
+                await ValidateAuditOnAddAsync(auditWithAddAuditApplied);
 
-                return await this.storageBroker.InsertAuditAsync(audit);
+                return await this.storageBroker.InsertAuditAsync(auditWithAddAuditApplied);
             });
 
         public ValueTask<Audit> AddAuditAsync(Audit audit) =>
@@ -73,7 +74,7 @@ namespace LHDS.Core.Services.Foundations.Audits
                 Audit auditWithAddAuditApplied = await ApplyAddAuditAsync(audit);
                 await ValidateAuditOnAddAsync(auditWithAddAuditApplied);
 
-                return await this.storageBroker.InsertAuditAsync(audit);
+                return await this.storageBroker.InsertAuditAsync(auditWithAddAuditApplied);
             });
 
         public ValueTask<IQueryable<Audit>> RetrieveAllAuditsAsync() =>
@@ -101,7 +102,7 @@ namespace LHDS.Core.Services.Foundations.Audits
                 ValidateStorageAudit(maybeAudit, audit.Id);
                 ValidateAgainstStorageAuditOnModify(inputAudit: audit, storageAudit: maybeAudit);
 
-                return await this.storageBroker.UpdateAuditAsync(audit);
+                return await this.storageBroker.UpdateAuditAsync(auditWithModifyAuditApplied);
             });
 
         public ValueTask<Audit> RemoveAuditByIdAsync(Guid auditId) =>

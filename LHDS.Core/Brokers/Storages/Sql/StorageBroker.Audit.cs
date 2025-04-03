@@ -3,6 +3,7 @@
 // ---------------------------------------------------------
 
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using LHDS.Core.Models.Foundations.Audits;
@@ -14,10 +15,13 @@ namespace LHDS.Core.Brokers.Storages.Sql
     {
         public DbSet<Audit> Audits { get; set; }
 
+        public async ValueTask BulkInsertAuditAsync(List<Audit> audits) =>
+            await BulkInsertAsync(audits);
+
         public async ValueTask<Audit> InsertAuditAsync(Audit audit) =>
             await InsertAsync(audit);
 
-        public async ValueTask<IQueryable<Audit>> SelectAllAuditsAsync() => 
+        public async ValueTask<IQueryable<Audit>> SelectAllAuditsAsync() =>
             await SelectAllAsync<Audit>();
 
         public async ValueTask<Audit> SelectAuditByIdAsync(Guid auditId) =>

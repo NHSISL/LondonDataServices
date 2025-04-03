@@ -12,6 +12,7 @@ using System.Threading.Tasks;
 using FluentAssertions;
 using Force.DeepCloner;
 using LHDS.Core.Models.Foundations.Addresses;
+using LHDS.Core.Models.Orchestrations.Addresses;
 using LHDS.Core.Services.Orchestrations.Addresses;
 using Moq;
 using Xunit;
@@ -67,6 +68,8 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Addresses
                 { "USRN", 21 },
             };
 
+            List<LPIAddress> randomLpiAddresses = CreateRandomLPIAddresses(count: 2);
+            List<LPIAddress> inputLpiAddresses = randomLpiAddresses.DeepClone();
             List<Address> randomAddresses = CreateRandomAddresses(count: 2).ToList();
             List<Address> outputAddresses = randomAddresses.DeepClone();
             List<Address> expectedAddresses = outputAddresses.DeepClone();
@@ -78,8 +81,15 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Addresses
                     .ReturnsAsync(csvData);
 
             this.csvHelperBrokerMock.Setup(service =>
-                service.MapCsvToObjectAsync<Address>(stringRecords, hasHeaderRecord, fieldMappings, true))
-                    .ReturnsAsync(outputAddresses);
+                service.MapCsvToObjectAsync<LPIAddress>(stringRecords, hasHeaderRecord, fieldMappings, true))
+                    .ReturnsAsync(inputLpiAddresses);
+
+            for (int i = 0; i < inputLpiAddresses.Count; i++)
+            {
+                addressOrchestrationServiceMock.Setup(service =>
+                    service.MapLPIAddressToAddress(inputLpiAddresses[i]))
+                        .Returns(outputAddresses[i]);
+            }
 
             AddressOrchestrationService service = addressOrchestrationServiceMock.Object;
 
@@ -94,8 +104,15 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Addresses
                     Times.Once);
 
             this.csvHelperBrokerMock.Verify(service =>
-                service.MapCsvToObjectAsync<Address>(stringRecords, hasHeaderRecord, fieldMappings, true),
+                service.MapCsvToObjectAsync<LPIAddress>(stringRecords, hasHeaderRecord, fieldMappings, true),
                     Times.Once());
+
+            for (int i = 0; i < inputLpiAddresses.Count; i++)
+            {
+                addressOrchestrationServiceMock.Verify(service =>
+                    service.MapLPIAddressToAddress(inputLpiAddresses[i]),
+                        Times.Once);
+            }
 
             this.fileBrokerMock.VerifyNoOtherCalls();
             this.csvHelperBrokerMock.VerifyNoOtherCalls();

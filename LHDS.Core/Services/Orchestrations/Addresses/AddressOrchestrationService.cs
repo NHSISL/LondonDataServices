@@ -228,9 +228,9 @@ namespace LHDS.Core.Services.Orchestrations.Addresses
             return addresses;
         }
 
-        virtual internal async ValueTask ProcessLPIAddresses(string lpiCsvFile)
+        virtual internal async ValueTask ProcessLPIAddressesAsync(string lpiCsvFile)
         {
-            List<Address> lpiAddresses = await MapLPIDataToAddresses(lpiCsvFile);
+            List<Address> lpiAddresses = await MapLPIDataToAddressesAsync(lpiCsvFile);
             Dictionary<string, Address> lpiAddressesDict = lpiAddresses.ToDictionary(a => a.UPRN, a => a);
             IQueryable<Address> addresses = await addressProcessingService.RetrieveAllAddressesAsync();
             HashSet<string> lpiFileUprns = lpiAddresses.Select(a => a.UPRN).ToHashSet();
@@ -243,17 +243,20 @@ namespace LHDS.Core.Services.Orchestrations.Addresses
             List<Address> newLpiAddresses = lpiAddresses.Where(lpiAddress =>
                 !existingLpiUprns.Contains(lpiAddress.UPRN)).ToList();
 
-            foreach (Address address in existingLpiAddresses)
+            foreach (Address existingAddress in existingLpiAddresses)
             {
-                if (address.UPRN != null && lpiAddressesDict.TryGetValue(address.UPRN, out Address lpiAddress))
+                if (existingAddress.UPRN != null && lpiAddressesDict.TryGetValue(existingAddress.UPRN, out Address lpiAddress))
                 {
-                    address.USRN = lpiAddress.USRN;
+                    existingAddress.USRN = lpiAddress.USRN;
                 }
             }
 
             await addressProcessingService.BulkAddAddressesAsync(newLpiAddresses, lpiCsvFile);
             await addressProcessingService.BulkModifyAddressesAsync(existingLpiAddresses, lpiCsvFile);
         }
+
+        virtual internal async ValueTask<List<Address>> MapLPIDataToAddressesAsync(string lpiCsvFile) =>
+            throw new NotImplementedException();
 
         public ValueTask SyncAddressesWithAssignAsync()
         {

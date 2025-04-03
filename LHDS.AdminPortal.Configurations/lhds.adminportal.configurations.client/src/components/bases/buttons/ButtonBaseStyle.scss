@@ -1,0 +1,86 @@
+/*@import url('../../../../styles/color-theme.scss');
+*/
+@import url('../../styles/color-theme.scss');
+
+
+@mixin buttonShape {
+    font-weight: 100;
+    font-size: 14px;
+    font-size: 1rem;
+    line-height: 1.5;
+    -webkit-appearance: none;
+    border: 1px solid transparent;
+    border-radius: 4px;
+    box-sizing: border-box;
+    color: #ffffff;
+    cursor: pointer;
+    display: inline-block;
+    font-weight: 600;
+    margin-top: 0;
+    padding: 5px 10px;
+    position: relative;
+    text-align: center;
+    vertical-align: top;
+    width: auto;
+}
+
+// Blue NHS Size Button
+
+
+.nhsuk-buttonBlue {
+    @include buttonShape;
+    background: var( --primary-background);
+    box-shadow: none;
+}
+
+.nhsuk-buttonBlue:hover {
+    background-color: #6891B6;
+}
+
+// Green NHS Sizws Button
+.nhsuk-buttonGreen {
+    @include buttonShape;
+    background-color: #007f3b;
+    box-shadow: none;
+}
+
+.nhsuk-buttonGreen:hover {
+    background-color: #768692;
+}
+
+// Red NHS Sizws Button
+.nhsuk-buttonRed {
+    @include buttonShape;
+    background-color: #dc3545;
+    box-shadow: none;
+}
+
+.nhsuk-buttonRed:hover {
+    background-color: #ea2134;
+}
+
+.nhsuk-buttonGrey {
+    @include buttonShape;
+    background-color: grey;
+    box-shadow: none;
+}
+
+.nhsuk-buttonGrey:hover {
+    background-color: #9c9797;
+}
+
+.nhsuk-buttonPrimary {
+    @include buttonShape;
+    background-color: #005eb8;
+    box-shadow: none;
+}
+
+.nhsuk-buttonYellow {
+    @include buttonShape;
+    background-color: #6610f2;
+    box-shadow: none;
+}
+
+.nhsuk-buttonYellow:hover {
+    background-color: #823bf5;
+}

@@ -1,0 +1,6 @@
+@LHDS.AdminPortal.Configurations.Server_HostAddress = http://localhost:5101
+
+GET {{LHDS.AdminPortal.Configurations.Server_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###

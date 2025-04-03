@@ -55,6 +55,10 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Addresses
             actualFileAddressOrchestrationException.Should()
                 .BeEquivalentTo(expectedFileAddressOrchestrationException);
 
+            this.fileBrokerMock.Verify(broker =>
+                broker.CheckIfFileExistsAsync(invalidFileName),
+                    Times.Once);
+
             this.fileBrokerMock.VerifyNoOtherCalls();
             this.csvHelperBrokerMock.VerifyNoOtherCalls();
             this.auditBrokerMock.VerifyNoOtherCalls();

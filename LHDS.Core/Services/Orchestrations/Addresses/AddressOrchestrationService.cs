@@ -16,6 +16,7 @@ using LHDS.Core.Brokers.Files;
 using LHDS.Core.Brokers.Loggings;
 using LHDS.Core.Models.Foundations.Addresses;
 using LHDS.Core.Models.Orchestrations.Addresses;
+using LHDS.Core.Models.Orchestrations.Addresses.Exceptions;
 using LHDS.Core.Services.Processings.Addresses;
 using LHDS.Core.Services.Processings.Assigns;
 using Xeptions;
@@ -186,6 +187,14 @@ namespace LHDS.Core.Services.Orchestrations.Addresses
 
         virtual internal async ValueTask<List<Address>> MapLPIDataToAddressesAsync(string lpiCsvFile)
         {
+            bool fileExists = await this.fileBroker.CheckIfFileExistsAsync(lpiCsvFile);
+
+            if (!fileExists)
+            {
+                throw new InvalidFileAddressOrchestrationException(
+                    message: $"The file {lpiCsvFile} could not be found.");
+            }
+
             byte[] csvData = await fileBroker.ReadFileAsync(lpiCsvFile);
             string stringData = Encoding.UTF8.GetString(csvData);
 

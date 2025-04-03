@@ -198,5 +198,21 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Addresses
                     new System.Security.Claims.Claim(type: GetRandomString(), value: GetRandomString())
                 });
         }
+
+        int GetBatchSize(int count, int batchSize)
+        {
+            if (batchSize <= 0)
+            {
+                batchSize = 1;
+            }
+
+            if (count <= 0)
+            {
+                return 0;
+            }
+
+            return (count + batchSize - 1) / batchSize;
+        }
+
     }
 }

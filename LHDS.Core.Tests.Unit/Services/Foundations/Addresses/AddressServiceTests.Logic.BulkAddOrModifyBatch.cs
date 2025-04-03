@@ -40,6 +40,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Addresses
             List<Address> inputAddresses = new List<Address>();
             inputAddresses.AddRange(randomNewAddresses);
             inputAddresses.AddRange(randomExistingAddresses);
+            int batchCount = GetBatchSize(inputAddresses.Count, inputBatchSize);
 
             var addressServiceMock = new Mock<AddressService>(
                 this.storageBrokerMock.Object,
@@ -61,18 +62,19 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Addresses
             for (int i = 0; i < totalRecords; i += randomBatchSize)
             {
                 var batch = inputAddresses.Skip(i).Take(randomBatchSize).ToList();
-                var batchIds = batch.Select(address => address.Id).ToList();
+                List<Guid> batchIds = batch.Select(address => address.Id).ToList();
+                List<Guid> storageIds = randomExistingAddresses.Select(address => address.Id).ToList();
 
-                var existingIds = inputAddresses
-                    .Where(address => batchIds.Contains(address.Id))
-                    .Select(address => address.Id)
+                var existingIds = storageIds
+                    .Where(storageId => batchIds.Contains(storageId))
+                    .Select(storageId => storageId)
                     .ToList();
 
                 var existingAddresses = batch.Where(address => existingIds.Contains(address.Id)).ToList();
                 var newAddresses = batch.Where(address => !existingIds.Contains(address.Id)).ToList();
 
                 addressServiceMock.Setup(service =>
-                    service.ValidateAddressesAndAssignIdAndAuditOnAddAsync(It.IsAny<List<Address>>(), It.IsAny<string>()))
+                    service.ValidateAddressesAndAssignIdAndAuditOnAddAsync(newAddresses, randomFileName))
                         .ReturnsAsync(newAddresses);
 
                 this.storageBrokerMock.Setup(broker =>
@@ -93,18 +95,19 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Addresses
                 .BulkAddOrModifyBatchAsync(inputAddresses, inputFileName, inputBatchSize);
 
             // then
-            addressServiceMock.Verify(service =>
-                service.BulkAddOrModifyBatchAsync(inputAddresses, inputFileName, 10000),
-                    Times.Once);
+            this.storageBrokerMock.Verify(broker =>
+                broker.SelectAllAddressesAsync(),
+                    Times.Exactly(batchCount));
 
             for (int i = 0; i < totalRecords; i += randomBatchSize)
             {
                 var batch = inputAddresses.Skip(i).Take(randomBatchSize).ToList();
-                var batchIds = batch.Select(address => address.Id).ToList();
+                List<Guid> batchIds = batch.Select(address => address.Id).ToList();
+                List<Guid> storageIds = randomExistingAddresses.Select(address => address.Id).ToList();
 
-                var existingIds = inputAddresses
-                    .Where(address => batchIds.Contains(address.Id))
-                    .Select(address => address.Id)
+                var existingIds = storageIds
+                    .Where(storageId => batchIds.Contains(storageId))
+                    .Select(storageId => storageId)
                     .ToList();
 
                 var existingAddresses = batch.Where(address => existingIds.Contains(address.Id)).ToList();
@@ -127,6 +130,11 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Addresses
                         Times.Once);
             }
 
+            addressServiceMock.Verify(service =>
+                service.BulkAddOrModifyBatchAsync(inputAddresses, inputFileName, inputBatchSize),
+                    Times.Once);
+
+            addressServiceMock.VerifyNoOtherCalls();
             this.dateTimeBrokerMock.VerifyNoOtherCalls();
             this.identifierBrokerMock.VerifyNoOtherCalls();
             this.storageBrokerMock.VerifyNoOtherCalls();

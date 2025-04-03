@@ -65,6 +65,14 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "LHDS.ConfigImportExportTool
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LHDS.ConfigImportExportTool.Tests.Integration", "LHDS.ConfigImportExportTool.Tests.Integration\LHDS.ConfigImportExportTool.Tests.Integration.csproj", "{C6086A29-8DD9-464D-A268-C15FE8DF94D8}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "WebApps", "WebApps", "{080F66E5-DD3D-4CD9-920D-4A25E46A2D48}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Configurations", "Configurations", "{A1FF0613-FA5C-42CA-8DE9-EFD6099D0887}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LHDS.AdminPortal.Configurations.Server", "LHDS.AdminPortal.Configurations\LHDS.AdminPortal.Configurations.Server\LHDS.AdminPortal.Configurations.Server.csproj", "{4841B7B0-B852-4554-B308-EDC8251B6F86}"
+EndProject
+Project("{54A90642-561A-4BB1-A94E-469ADEE60C69}") = "LHDS.AdminPortal.Configurations.Client", "LHDS.AdminPortal.Configurations\lhds.adminportal.configurations.client\LHDS.AdminPortal.Configurations.Client.esproj", "{053A88B0-6F89-40B5-9474-825D5580C9BE}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Acceptance|Any CPU = Acceptance|Any CPU
@@ -281,6 +289,26 @@ Global
 		{C6086A29-8DD9-464D-A268-C15FE8DF94D8}.Release|Any CPU.Build.0 = Release|Any CPU
 		{C6086A29-8DD9-464D-A268-C15FE8DF94D8}.Test|Any CPU.ActiveCfg = Debug|Any CPU
 		{C6086A29-8DD9-464D-A268-C15FE8DF94D8}.Test|Any CPU.Build.0 = Debug|Any CPU
+		{4841B7B0-B852-4554-B308-EDC8251B6F86}.Acceptance|Any CPU.ActiveCfg = Debug|Any CPU
+		{4841B7B0-B852-4554-B308-EDC8251B6F86}.Acceptance|Any CPU.Build.0 = Debug|Any CPU
+		{4841B7B0-B852-4554-B308-EDC8251B6F86}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4841B7B0-B852-4554-B308-EDC8251B6F86}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4841B7B0-B852-4554-B308-EDC8251B6F86}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4841B7B0-B852-4554-B308-EDC8251B6F86}.Release|Any CPU.Build.0 = Release|Any CPU
+		{4841B7B0-B852-4554-B308-EDC8251B6F86}.Test|Any CPU.ActiveCfg = Debug|Any CPU
+		{4841B7B0-B852-4554-B308-EDC8251B6F86}.Test|Any CPU.Build.0 = Debug|Any CPU
+		{053A88B0-6F89-40B5-9474-825D5580C9BE}.Acceptance|Any CPU.ActiveCfg = Release|Any CPU
+		{053A88B0-6F89-40B5-9474-825D5580C9BE}.Acceptance|Any CPU.Build.0 = Release|Any CPU
+		{053A88B0-6F89-40B5-9474-825D5580C9BE}.Acceptance|Any CPU.Deploy.0 = Release|Any CPU
+		{053A88B0-6F89-40B5-9474-825D5580C9BE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{053A88B0-6F89-40B5-9474-825D5580C9BE}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{053A88B0-6F89-40B5-9474-825D5580C9BE}.Debug|Any CPU.Deploy.0 = Debug|Any CPU
+		{053A88B0-6F89-40B5-9474-825D5580C9BE}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{053A88B0-6F89-40B5-9474-825D5580C9BE}.Release|Any CPU.Build.0 = Release|Any CPU
+		{053A88B0-6F89-40B5-9474-825D5580C9BE}.Release|Any CPU.Deploy.0 = Release|Any CPU
+		{053A88B0-6F89-40B5-9474-825D5580C9BE}.Test|Any CPU.ActiveCfg = Release|Any CPU
+		{053A88B0-6F89-40B5-9474-825D5580C9BE}.Test|Any CPU.Build.0 = Release|Any CPU
+		{053A88B0-6F89-40B5-9474-825D5580C9BE}.Test|Any CPU.Deploy.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -312,6 +340,9 @@ Global
 		{9384DAB7-F90B-4CC0-8DE9-4C4D27817F8D} = {026243AA-56AF-48C7-9E7F-8279241AAE6E}
 		{95398998-8C96-4588-9342-934FF09CFA53} = {026243AA-56AF-48C7-9E7F-8279241AAE6E}
 		{C6086A29-8DD9-464D-A268-C15FE8DF94D8} = {026243AA-56AF-48C7-9E7F-8279241AAE6E}
+		{A1FF0613-FA5C-42CA-8DE9-EFD6099D0887} = {080F66E5-DD3D-4CD9-920D-4A25E46A2D48}
+		{4841B7B0-B852-4554-B308-EDC8251B6F86} = {A1FF0613-FA5C-42CA-8DE9-EFD6099D0887}
+		{053A88B0-6F89-40B5-9474-825D5580C9BE} = {A1FF0613-FA5C-42CA-8DE9-EFD6099D0887}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {A2D3C8D5-5968-4059-982D-D99C0CAC4331}

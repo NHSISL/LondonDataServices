@@ -15,6 +15,7 @@ using LHDS.Core.Brokers.DateTimes;
 using LHDS.Core.Brokers.Files;
 using LHDS.Core.Brokers.Loggings;
 using LHDS.Core.Models.Foundations.Addresses;
+using LHDS.Core.Models.Orchestrations.Addresses;
 using LHDS.Core.Services.Processings.Addresses;
 using LHDS.Core.Services.Processings.Assigns;
 using Xeptions;
@@ -181,6 +182,65 @@ namespace LHDS.Core.Services.Orchestrations.Addresses
                     $"File has been moved to the error folder.",
                     exceptions);
             }
+        }
+
+        virtual internal Address MapLPIAddressToAddress(LPIAddress lpiAddress)
+        {
+            string subBuildingName = "";
+            string buildingName = "";
+            string buildingNumber = "";
+
+            if (!string.IsNullOrWhiteSpace(lpiAddress.SAOText))
+            {
+                subBuildingName = lpiAddress.SAOText;
+            }
+            else if (!string.IsNullOrWhiteSpace(lpiAddress.SAOEndNumber + lpiAddress.SAOEndSuffix))
+            {
+                subBuildingName = string.IsNullOrWhiteSpace(lpiAddress.SAOEndSuffix + lpiAddress.SAOStartSuffix)
+                    ? $"{lpiAddress.SAOStartNumber}-{lpiAddress.SAOEndNumber}"
+                    : $"{lpiAddress.SAOStartNumber}{lpiAddress.SAOStartSuffix}-" +
+                        $"{lpiAddress.SAOEndNumber}{lpiAddress.SAOEndSuffix}";
+            }
+            else if (!string.IsNullOrWhiteSpace(lpiAddress.SAOStartNumber + lpiAddress.SAOStartSuffix))
+            {
+                subBuildingName = string.IsNullOrWhiteSpace(lpiAddress.SAOStartSuffix)
+                    ? lpiAddress.SAOStartNumber
+                    : $"{lpiAddress.SAOStartNumber}{lpiAddress.SAOStartSuffix}";
+            }
+
+            if (!string.IsNullOrWhiteSpace(lpiAddress.PAOText))
+            {
+                buildingName = lpiAddress.PAOText;
+            }
+            else if (string.IsNullOrWhiteSpace(
+                lpiAddress.PAOStartSuffix + lpiAddress.PAOEndNumber + lpiAddress.PAOEndSuffix))
+            {
+                buildingNumber = lpiAddress.PAOStartNumber;
+            }
+            else if (!string.IsNullOrWhiteSpace(lpiAddress.PAOEndNumber + lpiAddress.PAOEndSuffix))
+            {
+                buildingName = string.IsNullOrWhiteSpace(lpiAddress.PAOEndSuffix + lpiAddress.PAOStartSuffix)
+                    ? $"{lpiAddress.PAOStartNumber}-{lpiAddress.PAOEndNumber}"
+                    : $"{lpiAddress.PAOStartNumber}{lpiAddress.PAOStartSuffix}-" +
+                        $"{lpiAddress.PAOEndNumber}{lpiAddress.PAOEndSuffix}";
+            }
+            else if (!string.IsNullOrWhiteSpace(lpiAddress.PAOStartNumber + lpiAddress.PAOStartSuffix))
+            {
+                buildingName = string.IsNullOrWhiteSpace(lpiAddress.PAOStartSuffix)
+                    ? lpiAddress.PAOStartNumber
+                    : $"{lpiAddress.PAOStartNumber}{lpiAddress.PAOStartSuffix}";
+            }
+
+            Address address = new Address
+            {
+                UPRN = lpiAddress.UPRN,
+                USRN = lpiAddress.USRN,
+                SubBuildingName = subBuildingName,
+                BuildingName = buildingName,
+                BuildingNumber = buildingNumber
+            };
+
+            return address;
         }
 
         public ValueTask SyncAddressesWithAssignAsync()

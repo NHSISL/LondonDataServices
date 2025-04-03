@@ -141,7 +141,7 @@ namespace LHDS.Core.Services.Foundations.Audits
                     if (batch.Count != 0)
                     {
                         List<Audit> validatedAudits = await ValidateAuditsAndAssignIdAndAuditAsync(batch);
-                        await this.storageBroker.BulkInsertAuditAsync(validatedAudits);
+                        await this.storageBroker.BulkInsertAuditsAsync(validatedAudits);
                     }
                 }
                 catch (Exception ex)

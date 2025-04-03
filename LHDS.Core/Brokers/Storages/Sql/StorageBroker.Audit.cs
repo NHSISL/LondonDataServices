@@ -15,7 +15,7 @@ namespace LHDS.Core.Brokers.Storages.Sql
     {
         public DbSet<Audit> Audits { get; set; }
 
-        public async ValueTask BulkInsertAuditAsync(List<Audit> audits) =>
+        public async ValueTask BulkInsertAuditsAsync(List<Audit> audits) =>
             await BulkInsertAsync(audits);
 
         public async ValueTask<Audit> InsertAuditAsync(Audit audit) =>

@@ -468,7 +468,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.OptOuts
             OptOut nonExistOptOut = invalidOptOut;
 
             var notFoundOptOutException = new NotFoundOptOutException(
-                message: $"Couldn't find optOut with optOutId: {nonExistOptOut.Id}");
+                message: $"Couldn't find optOut with optOutId: {nonExistOptOut.Id}.");
 
             var expectedOptOutValidationException =
                 new OptOutValidationException(

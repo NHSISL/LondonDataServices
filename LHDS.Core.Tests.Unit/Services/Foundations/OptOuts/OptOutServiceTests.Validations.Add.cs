@@ -205,6 +205,10 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.OptOuts
                 values: "Text length should not be greater than 50");
 
             invalidOptOutException.AddData(
+               key: nameof(OptOut.CreatedBy),
+               values: "Text is exceeding max length");
+
+            invalidOptOutException.AddData(
                 key: nameof(OptOut.UpdatedBy),
                 values: "Text is exceeding max length");
 

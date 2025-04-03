@@ -226,7 +226,11 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.OptOuts
 
             invalidOptOutException.AddData(
                 key: nameof(OptOut.NhsNumber),
-                values: $"Text length should not be greater than 10");
+                values: 
+                [
+                    "Text length should not be greater than 10", 
+                    "NHS Number invalid"
+                ]);
 
             invalidOptOutException.AddData(
                 key: nameof(OptOut.Status),
@@ -462,7 +466,9 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.OptOuts
                 CreateRandomModifyOptOut(randomDateTimeOffset, randomEntraUser.EntraUserId);
 
             OptOut nonExistOptOut = invalidOptOut;
-            var notFoundOptOutException = new NotFoundOptOutException(nonExistOptOut.Id.ToString());
+
+            var notFoundOptOutException = new NotFoundOptOutException(
+                message: $"Couldn't find optOut with optOutId: {nonExistOptOut.Id}");
 
             var expectedOptOutValidationException =
                 new OptOutValidationException(

@@ -9,6 +9,7 @@ using System.Linq.Expressions;
 using System.Runtime.CompilerServices;
 using LHDS.Core.Brokers.DateTimes;
 using LHDS.Core.Brokers.Loggings;
+using LHDS.Core.Brokers.Securities;
 using LHDS.Core.Brokers.Storages.Sql;
 using LHDS.Core.Models.Brokers.Securities;
 using LHDS.Core.Models.Foundations.OptOuts;
@@ -25,6 +26,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.OptOuts
     {
         private readonly Mock<IStorageBroker> storageBrokerMock;
         private readonly Mock<IDateTimeBroker> dateTimeBrokerMock;
+        private readonly Mock<ISecurityBroker> securityBrokerMock;
         private readonly Mock<ILoggingBroker> loggingBrokerMock;
         private readonly IOptOutService optOutService;
 
@@ -32,11 +34,13 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.OptOuts
         {
             this.storageBrokerMock = new Mock<IStorageBroker>();
             this.dateTimeBrokerMock = new Mock<IDateTimeBroker>();
+            this.securityBrokerMock = new Mock<ISecurityBroker>();
             this.loggingBrokerMock = new Mock<ILoggingBroker>();
 
             this.optOutService = new OptOutService(
                 storageBroker: this.storageBrokerMock.Object,
                 dateTimeBroker: this.dateTimeBrokerMock.Object,
+                securityBroker: this.securityBrokerMock.Object,
                 loggingBroker: this.loggingBrokerMock.Object);
         }
 
@@ -188,6 +192,28 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.OptOuts
                 .OnProperty(optOut => optOut.Status).Use(GetRandomString(length: 20))
                 .OnProperty(optOut => optOut.CreatedBy).Use(user)
                 .OnProperty(optOut => optOut.UpdatedBy).Use(user);
+
+            return filler;
+        }
+
+        private static OptOut CreateRandomOptOut(
+            DateTimeOffset dateTimeOffset,
+            string userId) =>
+            CreateOptOutFiller(dateTimeOffset, userId).Create();
+
+        private static Filler<OptOut> CreateOptOutFiller(
+            DateTimeOffset dateTimeOffset,
+            string userId)
+        {
+            var filler = new Filler<OptOut>();
+
+            filler.Setup()
+                .OnType<DateTimeOffset>().Use(dateTimeOffset)
+                .OnType<DateTimeOffset?>().Use(dateTimeOffset)
+                .OnProperty(optOut => optOut.NhsNumber).Use(GenerateValidNhsNumber())
+                .OnProperty(optOut => optOut.Status).Use(GetRandomString(length: 20))
+                .OnProperty(optOut => optOut.CreatedBy).Use(userId)
+                .OnProperty(optOut => optOut.UpdatedBy).Use(userId);
 
             return filler;
         }

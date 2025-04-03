@@ -16,10 +16,8 @@ namespace LHDS.Core.Brokers.Audits
         public AuditBroker(IAuditClient auditClient) =>
             this.auditClient = auditClient;
 
-        public async ValueTask BulkLogAsync(List<Audit> audits)
-        {
+        public async ValueTask BulkLogAsync(List<Audit> audits) =>
             await auditClient.BulkLogAuditsAsync(audits);
-        }
 
         public async ValueTask<Audit> LogAsync(
             string auditType,

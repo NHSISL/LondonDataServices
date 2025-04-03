@@ -156,10 +156,12 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.OptOuts
         private static DateTimeOffset GetRandomDateTimeOffset() =>
             new DateTimeRange(earliestDate: new DateTime()).GetValue();
 
-        private static OptOut CreateRandomModifyOptOut(DateTimeOffset dateTimeOffset)
+        private static OptOut CreateRandomModifyOptOut(
+            DateTimeOffset dateTimeOffset,
+            string userId)
         {
             int randomDaysInPast = GetRandomNegativeNumber();
-            OptOut randomOptOut = CreateRandomOptOut(dateTimeOffset);
+            OptOut randomOptOut = CreateRandomOptOut(dateTimeOffset, userId);
 
             randomOptOut.CreatedDate =
                 randomOptOut.CreatedDate.AddDays(randomDaysInPast);

@@ -63,10 +63,8 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.OptOuts
 
             var invalidOptOut = new OptOut
             {
-                SupplierColumnName = invalidText,
-                OurColumnName = invalidText,
-                SqlDataType = invalidText,
-                CodeSystem = invalidText,
+                NhsNumber = invalidText,
+                Status = invalidText,
             };
 
             var optOutServiceMock = new Mock<OptOutService>(
@@ -99,24 +97,17 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.OptOuts
                 values: "Id is required");
 
             invalidOptOutException.AddData(
-                key: nameof(OptOut.SpecificationObjectId),
-                values: "Id is required");
-
-            invalidOptOutException.AddData(
-                key: nameof(OptOut.SupplierColumnName),
+                key: nameof(OptOut.Status),
                 values: "Text is required");
 
             invalidOptOutException.AddData(
-                key: nameof(OptOut.OurColumnName),
-                values: "Text is required");
-
-            invalidOptOutException.AddData(
-                key: nameof(OptOut.SqlDataType),
-                values: "Text is required");
-
-            invalidOptOutException.AddData(
-                key: nameof(OptOut.CodeSystem),
-                values: "Text is required");
+                key: nameof(OptOut.NhsNumber),
+                values: 
+                [
+                    
+                    "Text is required", 
+                    "NHS Number invalid"
+                ]);
 
             invalidOptOutException.AddData(
                  key: nameof(OptOut.CreatedDate),
@@ -192,17 +183,8 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.OptOuts
                 CreateRandomOptOut(randomDateTimeOffset, randomEntraUser.EntraUserId);
 
             var inputCreatedByUpdatedByString = randomEntraUser.EntraUserId;
-            invalidOptOut.SupplierColumnName = GetRandomString(256);
-            invalidOptOut.OurColumnName = GetRandomString(256);
-            invalidOptOut.ColumnDescription = GetRandomString(501);
-            invalidOptOut.PopulatedBy = GetRandomString(256);
-            invalidOptOut.SqlDataType = GetRandomString(51);
-            invalidOptOut.FhirDataType = GetRandomString(256);
-            invalidOptOut.SupplierDateFormat = GetRandomString(256);
-            invalidOptOut.PersonConfidentialDataType = GetRandomString(256);
-            invalidOptOut.MaskingMethod = GetRandomString(256);
-            invalidOptOut.CodeSystem = GetRandomString(256);
-            invalidOptOut.PartitionColumnLevel = GetRandomString(256);
+            invalidOptOut.NhsNumber = GetRandomString(11);
+            invalidOptOut.Status = GetRandomString(51);
             invalidOptOut.CreatedBy = inputCreatedByUpdatedByString;
             invalidOptOut.UpdatedBy = inputCreatedByUpdatedByString;
 
@@ -211,52 +193,12 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.OptOuts
                     message: "Invalid optOut. Please correct the errors and try again.");
 
             invalidOptOutException.AddData(
-                key: nameof(OptOut.SupplierColumnName),
-                values: "Text is exceeding max length");
+                key: nameof(OptOut.NhsNumber),
+                values: $"Text length should not be greater than 10");
 
             invalidOptOutException.AddData(
-                key: nameof(OptOut.OurColumnName),
-                values: "Text is exceeding max length");
-
-            invalidOptOutException.AddData(
-                key: nameof(OptOut.ColumnDescription),
-                values: "Text is exceeding max length");
-
-            invalidOptOutException.AddData(
-                key: nameof(OptOut.PopulatedBy),
-                values: "Text is exceeding max length");
-
-            invalidOptOutException.AddData(
-                key: nameof(OptOut.SqlDataType),
-                values: "Text is exceeding max length");
-
-            invalidOptOutException.AddData(
-                key: nameof(OptOut.FhirDataType),
-                values: "Text is exceeding max length");
-
-            invalidOptOutException.AddData(
-                key: nameof(OptOut.SupplierDateFormat),
-                values: "Text is exceeding max length");
-
-            invalidOptOutException.AddData(
-                key: nameof(OptOut.PersonConfidentialDataType),
-                values: "Text is exceeding max length");
-
-            invalidOptOutException.AddData(
-                key: nameof(OptOut.MaskingMethod),
-                values: "Text is exceeding max length");
-
-            invalidOptOutException.AddData(
-                key: nameof(OptOut.CodeSystem),
-                values: "Text is exceeding max length");
-
-            invalidOptOutException.AddData(
-                key: nameof(OptOut.PartitionColumnLevel),
-                values: "Text is exceeding max length");
-
-            invalidOptOutException.AddData(
-                key: nameof(OptOut.CreatedBy),
-                values: "Text is exceeding max length");
+                key: nameof(OptOut.Status),
+                values: "Text length should not be greater than 50");
 
             invalidOptOutException.AddData(
                 key: nameof(OptOut.UpdatedBy),

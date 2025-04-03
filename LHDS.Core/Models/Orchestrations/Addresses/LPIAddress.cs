@@ -25,8 +25,6 @@ namespace LHDS.Core.Models.Orchestrations.Addresses
         public string? PAOEndSuffix { get; set; }
         public string? PAOText { get; set; }
         public string? USRN { get; set; }
-        public bool IsProcessing { get; set; }
-        public bool IsSynced { get; set; }
         public string CreatedBy { get; set; } = string.Empty;
         public string UpdatedBy { get; set; } = string.Empty;
         public DateTimeOffset UpdatedDate { get; set; }

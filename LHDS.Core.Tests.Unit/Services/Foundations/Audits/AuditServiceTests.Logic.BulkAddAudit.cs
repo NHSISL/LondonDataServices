@@ -3,7 +3,6 @@
 // ---------------------------------------------------------
 
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 using LHDS.Core.Models.Foundations.Audits;
 using LHDS.Core.Services.Foundations.Audits;
@@ -18,7 +17,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Audits
         public async Task ShouldBulkAddAuditLogAsync()
         {
             // given
-            List<Audit> randomAudits = CreateRandomAudits().ToList();
+            List<Audit> randomAudits = CreateRandomAudits();
             List<Audit> inputAudits = randomAudits;
             int randomBatchSize = GetRandomNumber();
             int inputBatchSize = randomBatchSize;

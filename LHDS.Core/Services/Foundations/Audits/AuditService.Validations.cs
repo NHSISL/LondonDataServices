@@ -42,7 +42,10 @@ namespace LHDS.Core.Services.Foundations.Audits
 
         private void ValidateOnBulkAddAudits(List<Audit> audits)
         {
-            Validate((Rule: IsInvalid(audits), Parameter: nameof(audits)));
+            if (audits is null)
+            {
+                throw new NullAuditException(message: "Audits is null.");
+            }
         }
 
         private async ValueTask ValidateAuditOnModifyAsync(Audit audit)

@@ -100,6 +100,10 @@ namespace LHDS.Core.Services.Foundations.Audits
             {
                 await returningNothingFunction();
             }
+            catch (NullAuditException nullAuditException)
+            {
+                throw await CreateAndLogValidationExceptionAsync(nullAuditException);
+            }
             catch (Exception exception)
             {
                 var failedAuditServiceException =

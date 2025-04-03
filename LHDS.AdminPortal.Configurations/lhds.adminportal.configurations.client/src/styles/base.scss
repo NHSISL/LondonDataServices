@@ -1,6 +1,4 @@
-/*@import url('../../../../styles/color-theme.scss');
-*/
-@import url('../../styles/color-theme.scss');
+@import url('./src/styles/color-theme.scss');
 
 .text-hero {
     color: var( --hero-color);

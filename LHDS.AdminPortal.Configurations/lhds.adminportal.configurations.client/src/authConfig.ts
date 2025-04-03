@@ -93,12 +93,6 @@ export class MsalConfig {
     }
 };
 
-const scope = process.env.REACT_APP_API_SCOPE || "";
-export const loginRequest = {
-    scopes: [scope]
-};
-
-
 /*export class LoginRequest {
     static staticConfig?: FrontendConfiguration;
     static async build(): Promise<PopupRequest> {

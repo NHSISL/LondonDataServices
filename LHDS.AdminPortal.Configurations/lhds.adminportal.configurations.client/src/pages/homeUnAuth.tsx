@@ -32,11 +32,11 @@ export const HomeUnAuthorised = () => {
                                 To access all system features, please log in. For access requests, kindly contact your Manager.
                             </p>
 
-                            <ButtonBase
-                                className="btn btn-primary mt-3"
-                                onClick={() => instance.loginRedirect(loginRequest)}>
-                                Login
-                            </ButtonBase>
+                            {/*<ButtonBase*/}
+                            {/*    className="btn btn-primary mt-3"*/}
+                            {/*    onClick={() => instance.loginRedirect(loginRequest)}>*/}
+                            {/*    Login*/}
+                            {/*</ButtonBase>*/}
                         </CardBaseContent>
                     </CardBaseBody>
                 </CardBase>

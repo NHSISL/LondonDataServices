@@ -10,6 +10,8 @@ import { Home } from './pages/home';
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
 import "react-toastify/dist/ReactToastify.css";
 import ToastBroker from './brokers/toastBroker';
+import { IngestionTrackingHomepage } from './pages/IngestionTrackingHomepage';
+import { IngestionTrackingPage } from './pages/ingestionTrackingPage';
 
 
 function App({ instance }: any) {
@@ -23,6 +25,18 @@ function App({ instance }: any) {
                 {
                     path: "home",
                     element: <Home />
+                },
+                {
+                    path: "/ingestionTracking",
+                    element: <IngestionTrackingHomepage />
+                },
+                {
+                    path: "/ingestionTracking",
+                    element: <IngestionTrackingPage />
+                },
+                {
+                    path: "/ingestionTrackingDetail/:ingestionTrackingId",
+                    element: <IngestionTrackingPage />
                 },
                 {
                     index: true,

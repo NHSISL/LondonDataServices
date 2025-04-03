@@ -63,7 +63,7 @@
 .content-inner {
     flex-grow: 1;
     overflow-y: auto;
-    margin-top: 30px;
+    margin-top: 53px;
 }
 
 .footerContent {
@@ -84,4 +84,15 @@
     position: fixed;
     top: 0;
     z-index: 1000;
+}
+
+
+.list-group-item.active {
+    border-color: none !important;
+    border:none !important;
+}
+
+.list-group-item {
+    border-color: none !important;
+    border: none !important;
 }

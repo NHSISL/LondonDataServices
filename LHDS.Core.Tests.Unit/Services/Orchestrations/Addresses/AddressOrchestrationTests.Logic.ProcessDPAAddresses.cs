@@ -38,7 +38,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Addresses
             List<Address> dpaFileAddresses = [.. existingAddresses.DeepClone(), .. newAddresses.DeepClone()];
 
             addressOrchestrationServiceMock.Setup(service =>
-                service.MapDPADataToAddresses(inputDpaCsvFile))
+                service.MapDPADataToAddressesAsync(inputDpaCsvFile))
                     .ReturnsAsync(dpaFileAddresses);
 
             this.addressProcessingServiceMock.Setup(service =>
@@ -51,7 +51,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Addresses
             await service.ProcessDPAAddressesAsync(inputDpaCsvFile);
 
             addressOrchestrationServiceMock.Verify(service =>
-                service.MapDPADataToAddresses(inputDpaCsvFile),
+                service.MapDPADataToAddressesAsync(inputDpaCsvFile),
                     Times.Once());
 
             this.addressProcessingServiceMock.Verify(service =>

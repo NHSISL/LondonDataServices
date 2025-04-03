@@ -186,7 +186,7 @@ namespace LHDS.Core.Services.Orchestrations.Addresses
 
         virtual internal async ValueTask ProcessDPAAddressesAsync(string dpaCsvFile)
         {
-            List<Address> dpaAddresses = await MapDPADataToAddresses(dpaCsvFile);
+            List<Address> dpaAddresses = await MapDPADataToAddressesAsync(dpaCsvFile);
             Dictionary<string, Address> dpaAddressesDict = dpaAddresses.ToDictionary(a => a.UPRN, a => a);
             IQueryable<Address> addresses = await addressProcessingService.RetrieveAllAddressesAsync();
             HashSet<string> dpaFileUprns = dpaAddresses.Select(a => a.UPRN).ToHashSet();

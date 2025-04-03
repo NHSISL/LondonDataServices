@@ -36,9 +36,10 @@ namespace LHDS.Core.Services.Foundations.OptOuts
         public ValueTask<OptOut> AddOptOutAsync(OptOut optOut) =>
             TryCatch(async () =>
             {
-                await ValidateOptOutOnAddAsync(optOut);
+                ObjectColumn objectColumnWithAddAuditApplied = await ApplyAddObjectColumnAsync(objectColumn);
+                await ValidateOptOutOnAddAsync(objectColumnWithAddAuditApplied);
 
-                return await this.storageBroker.InsertOptOutAsync(optOut);
+                return await this.storageBroker.InsertOptOutAsync(objectColumnWithAddAuditApplied);
             });
 
         public ValueTask<IQueryable<OptOut>> RetrieveAllOptOutsAsync() =>
@@ -60,7 +61,8 @@ namespace LHDS.Core.Services.Foundations.OptOuts
         public ValueTask<OptOut> ModifyOptOutAsync(OptOut optOut) =>
             TryCatch(async () =>
             {
-                await ValidateOptOutOnModifyAsync(optOut);
+                ObjectColumn objectColumnWithModifyAuditApplied = await ApplyModifyAuditAsync(objectColumn);
+                await ValidateOptOutOnModifyAsync(objectColumnWithModifyAuditApplied);
 
                 OptOut maybeOptOut =
                     await this.storageBroker.SelectOptOutByIdAsync(optOut.Id);
@@ -71,17 +73,62 @@ namespace LHDS.Core.Services.Foundations.OptOuts
                 return await this.storageBroker.UpdateOptOutAsync(optOut);
             });
 
-        public ValueTask<OptOut> RemoveOptOutByIdAsync(Guid optOutId) =>
+        public ValueTask<ObjectColumn> RemoveObjectColumnByIdAsync(Guid objectColumnId) =>
             TryCatch(async () =>
             {
-                ValidateOptOutId(optOutId);
+                ValidateObjectColumnId(objectColumnId: objectColumnId);
 
-                OptOut maybeOptOut = await this.storageBroker
-                    .SelectOptOutByIdAsync(optOutId);
+                ObjectColumn maybeObjectColumn = await this.storageBroker
+                    .SelectObjectColumnByIdAsync(objectColumnId);
 
-                ValidateStorageOptOut(maybeOptOut, optOutId);
+                ValidateStorageObjectColumn(maybeObjectColumn, objectColumnId);
 
-                return await this.storageBroker.DeleteOptOutAsync(maybeOptOut);
+                ObjectColumn objectColumnWithDeleteAuditApplied =
+                    await ApplyDeleteAuditAsync(maybeObjectColumn);
+
+                ObjectColumn updatedObjectColumn =
+                    await this.storageBroker.UpdateObjectColumnAsync(objectColumnWithDeleteAuditApplied);
+
+                await ValidateAgainstStorageObjectColumnOnDeleteAsync(
+                    objectColumn: updatedObjectColumn,
+                    maybeObjectColumn: objectColumnWithDeleteAuditApplied);
+
+                return await this.storageBroker.DeleteObjectColumnAsync(updatedObjectColumn);
             });
+
+        virtual internal async ValueTask<ObjectColumn> ApplyAddObjectColumnAsync(ObjectColumn objectColumn)
+        {
+            ValidateObjectColumnIsNotNull(objectColumn);
+            var auditDateTimeOffset = await this.dateTimeBroker.GetCurrentDateTimeOffsetAsync();
+            var auditUser = await this.securityBroker.GetCurrentUserAsync();
+            objectColumn.CreatedBy = auditUser?.EntraUserId.ToString() ?? string.Empty;
+            objectColumn.CreatedDate = auditDateTimeOffset;
+            objectColumn.UpdatedBy = auditUser?.EntraUserId.ToString() ?? string.Empty;
+            objectColumn.UpdatedDate = auditDateTimeOffset;
+
+            return objectColumn;
+        }
+
+        virtual internal async ValueTask<ObjectColumn> ApplyModifyAuditAsync(ObjectColumn objectColumn)
+        {
+            ValidateObjectColumnIsNotNull(objectColumn);
+            var auditDateTimeOffset = await this.dateTimeBroker.GetCurrentDateTimeOffsetAsync();
+            var auditUser = await this.securityBroker.GetCurrentUserAsync();
+            objectColumn.UpdatedBy = auditUser?.EntraUserId.ToString() ?? string.Empty;
+            objectColumn.UpdatedDate = auditDateTimeOffset;
+
+            return objectColumn;
+        }
+
+        virtual internal async ValueTask<ObjectColumn> ApplyDeleteAuditAsync(ObjectColumn objectColumn)
+        {
+            ValidateObjectColumnIsNotNull(objectColumn);
+            var auditDateTimeOffset = await this.dateTimeBroker.GetCurrentDateTimeOffsetAsync();
+            var auditUser = await this.securityBroker.GetCurrentUserAsync();
+            objectColumn.UpdatedBy = auditUser?.EntraUserId.ToString() ?? string.Empty;
+            objectColumn.UpdatedDate = auditDateTimeOffset;
+
+            return objectColumn;
+        }
     }
 }

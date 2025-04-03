@@ -1,0 +1,17 @@
+﻿footer {
+    width: 100%;
+    background: #EBEFF2;
+    position: fixed;
+    bottom: 0;
+    -webkit-transition: all 0.5s ease;
+    -moz-transition: all 0.5s ease;
+    -o-transition: all 0.5s ease;
+    transition: all 0.5s ease;
+    border-top: 1px #cccccc solid;
+    padding-left: 20px;
+}
+
+    footer.toggled {
+        width: calc(100% - 250px);
+        left: 300px;
+    }

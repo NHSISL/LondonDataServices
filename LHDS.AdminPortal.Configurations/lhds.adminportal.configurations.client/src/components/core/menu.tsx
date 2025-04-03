@@ -1,4 +1,4 @@
-import { faHome, faCog, faUser, faUserDoctor, faAddressBook, faIdBadge } from '@fortawesome/free-solid-svg-icons';
+import { faHome, faUserDoctor } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import React, { useState } from 'react';
 import { ListGroup } from 'react-bootstrap';
@@ -8,7 +8,6 @@ import securityPoints from '../../securityMatrix';
 import { SecuredComponent } from '../securitys/securedComponents';
 import { FeatureDefinitions } from '../../featureDefinitions';
 import { FeatureSwitch } from '../accessControls/featureSwitch';
-import { faFontAwesomeLogoFull } from '@fortawesome/free-solid-svg-icons/faFontAwesomeLogoFull';
 
 const MenuComponent: React.FC = () => {
     const location = useLocation();
@@ -27,6 +26,17 @@ const MenuComponent: React.FC = () => {
                 <FontAwesomeIcon icon={faHome} className="me-2 fa-icon" />
                 <SecuredLink to="/home">Home</SecuredLink>
             </ListGroup.Item>
+
+            <FeatureSwitch feature={FeatureDefinitions.IngestionTracking}>
+                <SecuredComponent allowedRoles={securityPoints.ingestionTracking.view}>
+                    <ListGroup.Item
+                        className={`bg-dark text-white ${activePath === '/ingestionTracking' ? 'active' : ''}`}
+                        onClick={() => handleItemClick('/ingestionTracking')}>
+                        <FontAwesomeIcon icon={faUserDoctor} className="me-2 fa-icon" />
+                        <SecuredLink to="/ingestionTracking">Ingestion Tracking</SecuredLink>
+                    </ListGroup.Item>
+                </SecuredComponent>
+            </FeatureSwitch>
 
         </ListGroup>
     );

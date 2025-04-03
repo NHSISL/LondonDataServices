@@ -154,26 +154,21 @@ namespace LHDS.Core.Services.Foundations.Addresses
                     await ValidateAddressOnAddAsync(address);
                     validatedAddresses.Add(address);
                 }
-                catch (Exception ex)
+                catch (Exception exception)
                 {
-                    if (ex is NullAddressException || ex is InvalidAddressException)
+                    if (exception is NullAddressException || exception is InvalidAddressException)
                     {
-                        int indexOfInvalidItem = addresses.IndexOf(address);
+                        await this.auditBroker.LogWarningAsync(
+                            auditType: "Address",
+                            title: "Unable to add address",
+                            message: $"Invalid address - Id: {address.Id}; UPRN: {address.UPRN}; IPSN: {address.UPSN} " +
+                                        $"from file: {fileName}",
+                            fileName,
+                            null);
 
-                        if (indexOfInvalidItem != -1)
-                        {
-                            await this.auditBroker.LogWarningAsync(
-                                auditType: "Address",
-                                title: "Unable to add address",
-                                message: $"Invalid address - Id: {address.Id}; UPRN: {address.UPRN}; IPSN: {address.UPSN} " +
-                                         $"from file: {fileName}",
-                                fileName,
-                                null);
-
-                            await this.loggingBroker.LogWarningAsync(message:
-                                $"Unable to add address. Invalid address - Id: {address.Id}; UPRN: {address.UPRN}; IPSN: {address.UPSN} " +
-                                    $"from file: {fileName}");
-                        }
+                        await this.loggingBroker.LogWarningAsync(message:
+                            $"Unable to add address. Invalid address - Id: {address.Id}; UPRN: {address.UPRN}; IPSN: {address.UPSN} " +
+                                $"from file: {fileName}");
                     }
 
                     throw;
@@ -202,9 +197,9 @@ namespace LHDS.Core.Services.Foundations.Addresses
                     await ValidateAddressOnModifyAsync(address);
                     validatedAddresses.Add(address);
                 }
-                catch (Exception ex)
+                catch (Exception exception)
                 {
-                    if (ex is NullAddressException || ex is InvalidAddressException)
+                    if (exception is NullAddressException || exception is InvalidAddressException)
                     {
                         int indexOfInvalidItem = addresses.IndexOf(address);
 

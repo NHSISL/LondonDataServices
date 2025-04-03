@@ -26,6 +26,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Audits
                 this.storageBrokerMock.Object,
                 this.identifierBrokerMock.Object,
                 this.dateTimeBrokerMock.Object,
+                this.securityBrokerMock.Object,
                 this.loggingBrokerMock.Object)
             { CallBase = true };
 
@@ -35,7 +36,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Audits
                     .Returns(ValueTask.CompletedTask);
 
             // when
-            await this.auditService.BulkAddAuditsAsync(inputAudits, inputBatchSize);
+            await auditServiceMock.Object.BulkAddAuditsAsync(inputAudits, inputBatchSize);
 
             // then
             auditServiceMock.Verify(service =>

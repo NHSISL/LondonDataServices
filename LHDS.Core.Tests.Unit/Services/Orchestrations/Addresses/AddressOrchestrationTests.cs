@@ -181,14 +181,10 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Addresses
 
         private static Filler<LPIAddress> CreateLPIAddressFiller(DateTimeOffset dateTimeOffset)
         {
-            string user = Guid.NewGuid().ToString();
             var filler = new Filler<LPIAddress>();
 
             filler.Setup()
-                .OnType<DateTimeOffset>().Use(dateTimeOffset)
-                .OnType<DateTimeOffset?>().Use(dateTimeOffset)
-                .OnProperty(address => address.CreatedBy).Use(user)
-                .OnProperty(address => address.UpdatedBy).Use(user);
+                .OnType<DateTimeOffset?>().Use(dateTimeOffset);
 
             return filler;
         }

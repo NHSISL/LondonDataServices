@@ -379,5 +379,5 @@ appsettings.Development.json
 /LHDS.Core.Tests.Integration.Pds/appsettings.Development.json
 /LHDS.Core.Tests.Integration.EmisLandings/appsettings.Production.json
 /LHDS.Core.Tests.Integration.Addresses/Resources/Clients/Address/ordinance_test_ignore.zip
-/LHDS.Core.Tests.Integration.Addresses/Resources/Clients/Address/Ordinance_data_London.zip
 /LHDS.Core.Tests.Integration.Addresses/Resources/Clients/TestAddress/Ordinance_data_London.zip
+/LHDS.Core.Tests.Integration.Addresses/Resources/Clients/Address/Ordinance_data_London.zip

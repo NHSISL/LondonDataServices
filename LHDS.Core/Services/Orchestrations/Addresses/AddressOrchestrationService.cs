@@ -184,6 +184,60 @@ namespace LHDS.Core.Services.Orchestrations.Addresses
             }
         }
 
+        virtual internal async ValueTask<List<Address>> MapLPIDataToAddressesAsync(string lpiCsvFile)
+        {
+            byte[] csvData = await fileBroker.ReadFileAsync(lpiCsvFile);
+            string stringData = Encoding.UTF8.GetString(csvData);
+
+            List<string> records = stringData.Split(
+                new[] { "\r\n", "\n" }, StringSplitOptions.None).ToList();
+
+            List<string> filteredRecords = records.Where(record =>
+                record.StartsWith("24,") || record.StartsWith("\"24\",")).ToList();
+
+            string stringRecords = string.Join(Environment.NewLine, filteredRecords);
+
+            Dictionary<string, int> fieldMappings = new Dictionary<string, int>
+            {
+                { "UPRN", 3 },
+                { "LogicalStatus", 6 },
+                { "StartDate", 7 },
+                { "EndDate", 8 },
+                { "SAOStartNumber", 11 },
+                { "SAOStartSuffix", 12 },
+                { "SAOEndNumber", 13 },
+                { "SAOEndSuffix", 14 },
+                { "SAOText", 15 },
+                { "PAOStartNumber", 16 },
+                { "PAOStartSuffix", 17 },
+                { "PAOEndNumber", 18 },
+                { "PAOEndSuffix", 19 },
+                { "PAOText", 20 },
+                { "USRN", 21 },
+            };
+
+            List<LPIAddress> lpiAddresses = await this.csvHelperBroker
+                .MapCsvToObjectAsync<LPIAddress>(stringRecords, hasHeaderRecord: false, fieldMappings);
+
+            List<LPIAddress> lpiAddressesWithoutDuplicates = lpiAddresses
+                .OrderByDescending(address => address.EndDate)
+                .GroupBy(address => address.UPRN)
+                .Select(group => group.Count() > 1
+                    ? group.FirstOrDefault(a => a.LogicalStatus == 1) ?? group.First()
+                    : group.First())
+                .ToList();
+
+            List<Address> addresses = [];
+
+            foreach (LPIAddress lpiAddress in lpiAddressesWithoutDuplicates)
+            {
+                Address address = MapLPIAddressToAddress(lpiAddress);
+                addresses.Add(address);
+            }
+
+            return addresses;
+        }
+
         virtual internal Address MapLPIAddressToAddress(LPIAddress lpiAddress)
         {
             string subBuildingName = "";

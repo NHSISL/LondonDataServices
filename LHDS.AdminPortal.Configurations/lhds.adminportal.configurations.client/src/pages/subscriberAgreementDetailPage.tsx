@@ -7,7 +7,7 @@ export const SubscriberAgreementDetailPage = () => {
 
     const {subscriberAgreementId} = useParams();
 
-    return <>
+    return <div className="m-3">
         <section>
             <div className="container-fluid">
                 <main role="main">
@@ -26,5 +26,5 @@ export const SubscriberAgreementDetailPage = () => {
                 </main>
             </div>
         </section>
-    </>
+    </div>
 }

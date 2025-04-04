@@ -12,7 +12,7 @@ export const HomeUnAuthorised = () => {
     const { instance } = useMsal();
 
     return (
-        <>
+        <div className="m-3">
             <div className="container center max-width-400 min-height-600 vh-100">
                 
                 <CardBase classes="border">
@@ -43,6 +43,6 @@ export const HomeUnAuthorised = () => {
 
                 <div className="copyright">&copy; 2023 North East London ICB</div>
             </div>
-        </>
+        </div>
     );
 };

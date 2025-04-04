@@ -5,7 +5,7 @@ import { Container } from 'nhsuk-react-components'
 import PdsTable from "../components/pds/search/pdsTable";
 
 export const PdsSearchPage = () => {
-    return <>
+    return <div className="m-3">
         <section >
             <Container>
                 <main id="maincontent" className="NELTopPadding" role="main">
@@ -15,5 +15,5 @@ export const PdsSearchPage = () => {
                 </main>
             </Container>
         </section>
-    </>
+    </div>
 }

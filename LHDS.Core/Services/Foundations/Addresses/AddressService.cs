@@ -14,7 +14,7 @@ using LHDS.Core.Brokers.Securities;
 using LHDS.Core.Brokers.Storages.Sql;
 using LHDS.Core.Models.Brokers.Securities;
 using LHDS.Core.Models.Foundations.Addresses;
-using LHDS.Core.Models.Foundations.Addresses.Exceptions;
+using LHDS.Core.Models.Foundations.Audits;
 
 namespace LHDS.Core.Services.Foundations.Addresses
 {
@@ -139,6 +139,7 @@ namespace LHDS.Core.Services.Foundations.Addresses
             string fileName)
         {
             List<Address> validatedAddresses = new List<Address>();
+            List<Audit> audits = new List<Audit>();
 
             foreach (Address address in addresses)
             {
@@ -156,23 +157,34 @@ namespace LHDS.Core.Services.Foundations.Addresses
                 }
                 catch (Exception exception)
                 {
-                    if (exception is NullAddressException || exception is InvalidAddressException)
+
+                    Audit audit = new Audit
                     {
-                        await this.auditBroker.LogWarningAsync(
-                            auditType: "Address",
-                            title: "Unable to add address",
-                            message: $"Invalid address - Id: {address.Id}; UPRN: {address.UPRN}; IPSN: {address.UPSN} " +
-                                        $"from file: {fileName}",
-                            fileName,
-                            null);
+                        AuditType = "Address",
+                        Title = "Unable to add address",
 
-                        await this.loggingBroker.LogWarningAsync(message:
-                            $"Unable to add address. Invalid address - Id: {address.Id}; UPRN: {address.UPRN}; IPSN: {address.UPSN} " +
-                                $"from file: {fileName}");
-                    }
+                        Message =
+                            $"Invalid address - Id: {address.Id}; UPRN: {address.UPRN}; IPSN: {address.UPSN} " +
+                            $"from file: {fileName}" + Environment.NewLine +
+                            $"Error: {exception.Message}",
 
-                    throw;
+                        FileName = fileName,
+                        LogLevel = "Error",
+                    };
+
+                    audits.Add(audit);
+
+                    await this.loggingBroker.LogWarningAsync(message:
+                            $"Unable to add address. Invalid address - Id: {address.Id}; " +
+                            $"UPRN: {address.UPRN}; IPSN: {address.UPSN} " +
+                            $"from file: {fileName}" + Environment.NewLine +
+                            $"Error: {exception.Message}");
                 }
+            }
+
+            if (audits.Any())
+            {
+                await this.auditBroker.BulkLogAsync(audits);
             }
 
             return await ValueTask.FromResult(validatedAddresses);
@@ -183,6 +195,7 @@ namespace LHDS.Core.Services.Foundations.Addresses
             string fileName)
         {
             List<Address> validatedAddresses = new List<Address>();
+            List<Audit> audits = new List<Audit>();
 
             foreach (Address address in addresses)
             {
@@ -197,28 +210,34 @@ namespace LHDS.Core.Services.Foundations.Addresses
                 }
                 catch (Exception exception)
                 {
-                    if (exception is NullAddressException || exception is InvalidAddressException)
+
+                    Audit audit = new Audit
                     {
-                        int indexOfInvalidItem = addresses.IndexOf(address);
+                        AuditType = "Address",
+                        Title = "Unable to add address",
 
-                        if (indexOfInvalidItem != -1)
-                        {
-                            await this.auditBroker.LogWarningAsync(
-                                auditType: "Address",
-                                title: "Unable to update address",
-                                message: $"Invalid address - Id: {address.Id}; UPRN: {address.UPRN}; IPSN: {address.UPSN} " +
-                                         $"from file: {fileName}",
-                                fileName,
-                                null);
+                        Message =
+                            $"Invalid address - Id: {address.Id}; UPRN: {address.UPRN}; IPSN: {address.UPSN} " +
+                            $"from file: {fileName}" + Environment.NewLine +
+                            $"Error: {exception.Message}",
 
-                            await this.loggingBroker.LogWarningAsync(message:
-                                $"Unable to modify address. Invalid address - Id: {address.Id}; UPRN: {address.UPRN}; IPSN: {address.UPSN} " +
-                                    $"from file: {fileName}");
-                        }
-                    }
+                        FileName = fileName,
+                        LogLevel = "Error",
+                    };
 
-                    throw;
+                    audits.Add(audit);
+
+                    await this.loggingBroker.LogWarningAsync(message:
+                            $"Unable to add address. Invalid address - Id: {address.Id}; " +
+                            $"UPRN: {address.UPRN}; IPSN: {address.UPSN} " +
+                            $"from file: {fileName}" + Environment.NewLine +
+                            $"Error: {exception.Message}");
                 }
+            }
+
+            if (audits.Any())
+            {
+                await this.auditBroker.BulkLogAsync(audits);
             }
 
             return await ValueTask.FromResult(validatedAddresses);

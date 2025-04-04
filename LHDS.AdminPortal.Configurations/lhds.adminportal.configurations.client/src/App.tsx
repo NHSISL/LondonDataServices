@@ -12,6 +12,14 @@ import "react-toastify/dist/ReactToastify.css";
 import ToastBroker from './brokers/toastBroker';
 import { IngestionTrackingHomepage } from './pages/IngestionTrackingHomepage';
 import { IngestionTrackingPage } from './pages/ingestionTrackingPage';
+import { OptOutSearchPage } from './pages/optOutSearchPage';
+import { OptOutUploadPage } from './pages/optOutUploadPage';
+import { PdsSearchPage } from './pages/pdsSearchPage';
+import { PdsUploadPage } from './pages/pdsUploadPage';
+import { TerminologyArtifactDetailPage } from './pages/terminologyArtifactDetailPage';
+import { TerminologyArtifactPage } from './pages/terminologyArtifactPage';
+import { ConfigHomePage } from './pages/configuration/configHomePage';
+import { SuppliersPage } from './pages/configuration/suppliersPage';
 
 
 function App({ instance }: any) {
@@ -37,6 +45,38 @@ function App({ instance }: any) {
                 {
                     path: "/ingestionTrackingDetail/:ingestionTrackingId",
                     element: <IngestionTrackingPage />
+                },
+                {
+                    path: "/optOutSearch",
+                    element: <OptOutSearchPage />
+                },
+                {
+                    path: "/optOutUpload",
+                    element: <OptOutUploadPage />
+                },
+                {
+                    path: "/pds",
+                    element: <PdsSearchPage />
+                },
+                {
+                    path: "/pdsUpload",
+                    element: <PdsUploadPage />
+                },
+                {
+                    path: "/terminologyArtifact",
+                    element: <TerminologyArtifactPage />
+                },
+                {
+                    path: "/terminologyArtifactDetail/:terminologyArtifactId",
+                    element: <TerminologyArtifactDetailPage />
+                },
+                {
+                    path: "/configuration",
+                    element: <ConfigHomePage />
+                },
+                {
+                    path: "/configuration/suppliers",
+                    element: <SuppliersPage />
                 },
                 {
                     index: true,

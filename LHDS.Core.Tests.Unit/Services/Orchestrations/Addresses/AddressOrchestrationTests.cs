@@ -17,6 +17,7 @@ using LHDS.Core.Models.Foundations.Addresses;
 using LHDS.Core.Models.Foundations.Addresses.Exceptions;
 using LHDS.Core.Models.Foundations.Assigns.Exceptions;
 using LHDS.Core.Models.Foundations.ResolvedAddresses;
+using LHDS.Core.Models.Orchestrations.Addresses;
 using LHDS.Core.Services.Orchestrations.Addresses;
 using LHDS.Core.Services.Processings.Addresses;
 using LHDS.Core.Services.Processings.Assigns;
@@ -162,6 +163,24 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Addresses
 
             return filler;
         }
+
+        private static List<StreetDescriptor> CreateRandomStreetDescriptors(int count = 0)
+        {
+            if (count == 0)
+            {
+                count = GetRandomNumber();
+            }
+
+            return CreateStreetDescriptorFiller()
+                .Create(count)
+                    .ToList();
+        }
+
+        private static StreetDescriptor CreateRandomStreetDescriptor() =>
+            CreateStreetDescriptorFiller().Create();
+
+        private static Filler<StreetDescriptor> CreateStreetDescriptorFiller() =>
+            new Filler<StreetDescriptor>();
 
         public static TheoryData<Xeption> AddressOrchestrationDependencyValidationExceptions()
         {

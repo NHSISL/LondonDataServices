@@ -21,19 +21,23 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Addresses
         public async Task ShouldValidateAddressesAndAssignAuditOnModifyAsync()
         {
             // Given
-            List<Address> randomAddresses = CreateRandomAddresses();
+            DateTimeOffset randomDateTimeOffset = GetRandomDateTimeOffset();
+            EntraUser randomEntraUser = CreateRandomEntraUser();
+            int randomCount = GetRandomNumber();
+
+            List<Address> randomAddresses =
+                CreateRandomAddresses(
+                    count: randomCount,
+                    dateTimeOffset: randomDateTimeOffset.AddMinutes(-10),
+                    userId: randomEntraUser.EntraUserId);
+
             List<Address> inputAddresses = randomAddresses;
             string inputFilename = GetRandomString();
-            EntraUser randomEntraUser = CreateRandomEntraUser();
-            DateTimeOffset randomDateTimeOffset = GetRandomDateTimeOffset();
             Guid randomId = Guid.NewGuid();
             List<Address> outputAddresses = inputAddresses.DeepClone();
 
             foreach (Address address in outputAddresses)
             {
-                address.Id = randomId;
-                address.CreatedBy = randomEntraUser.EntraUserId;
-                address.CreatedDate = randomDateTimeOffset;
                 address.UpdatedBy = randomEntraUser.EntraUserId;
                 address.UpdatedDate = randomDateTimeOffset;
             }
@@ -55,35 +59,27 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Addresses
                 broker.GetCurrentDateTimeOffsetAsync())
                     .ReturnsAsync(randomDateTimeOffset);
 
-            this.identifierBrokerMock.Setup(broker =>
-                broker.GetIdentifierAsync())
-                    .ReturnsAsync(randomId);
-
             this.securityBrokerMock.Setup(broker =>
                 broker.GetCurrentUserAsync())
                     .ReturnsAsync(randomEntraUser);
 
             // When
             List<Address> actualAddresses = await addressServiceMock.Object
-                .ValidateAddressesAndAssignIdAndAuditOnAddAsync(inputAddresses, inputFilename);
+                .ValidateAddressesAndAssignAuditOnModifyAsync(inputAddresses, inputFilename);
 
             // Then
             actualAddresses.Should().BeEquivalentTo(expectedAddresses);
 
             this.dateTimeBrokerMock.Verify(broker =>
                 broker.GetCurrentDateTimeOffsetAsync(),
-                    Times.Exactly(inputAddresses.Count * 2));
-
-            this.identifierBrokerMock.Verify(broker =>
-                broker.GetIdentifierAsync(),
-                    Times.Exactly(inputAddresses.Count));
+                    Times.Exactly(randomCount * 2));
 
             this.securityBrokerMock.Verify(broker =>
                 broker.GetCurrentUserAsync(),
-                    Times.Exactly(inputAddresses.Count * 2));
+                    Times.Exactly(randomCount * 2));
 
             addressServiceMock.Verify(service =>
-                service.ValidateAddressesAndAssignIdAndAuditOnAddAsync(inputAddresses, inputFilename),
+                service.ValidateAddressesAndAssignAuditOnModifyAsync(inputAddresses, inputFilename),
                     Times.Once);
 
             addressServiceMock.VerifyNoOtherCalls();

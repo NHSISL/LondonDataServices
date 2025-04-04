@@ -149,8 +149,8 @@ namespace LHDS.Core.Services.Foundations.Addresses
                     address.Id = await this.identifierBroker.GetIdentifierAsync();
                     address.CreatedDate = currentDateTime;
                     address.CreatedBy = currentUser.EntraUserId;
-                    address.UpdatedDate = address.CreatedDate;
-                    address.UpdatedBy = address.CreatedBy;
+                    address.UpdatedDate = currentDateTime;
+                    address.UpdatedBy = currentUser.EntraUserId;
                     await ValidateAddressOnAddAsync(address);
                     validatedAddresses.Add(address);
                 }
@@ -190,10 +190,8 @@ namespace LHDS.Core.Services.Foundations.Addresses
                 {
                     EntraUser currentUser = await this.securityBroker.GetCurrentUserAsync();
                     var currentDateTime = await this.dateTimeBroker.GetCurrentDateTimeOffsetAsync();
-                    address.CreatedDate = currentDateTime;
-                    address.CreatedBy = currentUser.EntraUserId;
-                    address.UpdatedDate = address.CreatedDate;
-                    address.UpdatedBy = address.CreatedBy;
+                    address.UpdatedDate = currentDateTime;
+                    address.UpdatedBy = currentUser.EntraUserId;
                     await ValidateAddressOnModifyAsync(address);
                     validatedAddresses.Add(address);
                 }

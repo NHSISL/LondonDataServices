@@ -15,6 +15,7 @@ using LHDS.Core.Brokers.DateTimes;
 using LHDS.Core.Brokers.Files;
 using LHDS.Core.Brokers.Loggings;
 using LHDS.Core.Models.Foundations.Addresses;
+using LHDS.Core.Models.Orchestrations.Addresses;
 using LHDS.Core.Models.Orchestrations.Addresses.Exceptions;
 using LHDS.Core.Services.Processings.Addresses;
 using LHDS.Core.Services.Processings.Assigns;
@@ -224,6 +225,49 @@ namespace LHDS.Core.Services.Orchestrations.Addresses
 
             List<Address> addresses = await this.csvHelperBroker
                 .MapCsvToObjectAsync<Address>(stringRecords, hasHeaderRecord: false, fieldMappings);
+
+            return addresses;
+        }
+
+        virtual internal async ValueTask<List<Address>> MapStreetDescriptorDataToAddressesAsync(
+            string streetDescriptorCsvFile)
+        {
+            byte[] csvData = await fileBroker.ReadFileAsync(streetDescriptorCsvFile);
+            string stringData = Encoding.UTF8.GetString(csvData);
+
+            List<string> records = stringData.Split(
+                new[] { "\r\n", "\n" }, StringSplitOptions.None).ToList();
+
+            List<string> filteredRecords = records.Where(record =>
+                record.StartsWith("15,") || record.StartsWith("\"15\",")).ToList();
+
+            string stringRecords = string.Join(Environment.NewLine, filteredRecords);
+
+            Dictionary<string, int> fieldMappings = new Dictionary<string, int>
+            {
+                { "USRN", 3 },
+                { "StreetDescription", 4 },
+                { "Locality", 5 },
+                { "TownName", 6 },
+            };
+
+            List<StreetDescriptor> streetDescriptors = await this.csvHelperBroker
+                .MapCsvToObjectAsync<StreetDescriptor>(stringRecords, hasHeaderRecord: false, fieldMappings);
+
+            List<Address> addresses = [];
+
+            foreach (StreetDescriptor streetDescriptor in streetDescriptors)
+            {
+                Address address = new Address
+                {
+                    USRN = streetDescriptor.USRN,
+                    Thoroughfare = streetDescriptor.StreetDescription,
+                    DependentLocality = streetDescriptor.Locality,
+                    PostTown = streetDescriptor.TownName
+                };
+
+                addresses.Add(address);
+            }
 
             return addresses;
         }

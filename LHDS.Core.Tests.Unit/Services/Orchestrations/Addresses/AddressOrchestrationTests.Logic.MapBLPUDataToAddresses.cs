@@ -77,6 +77,10 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Addresses
             bool hasHeaderRecord = false;
 
             this.fileBrokerMock.Setup(service =>
+                service.CheckIfFileExistsAsync(inputCsvFilePath))
+                    .ReturnsAsync(true);
+
+            this.fileBrokerMock.Setup(service =>
                 service.ReadFileAsync(inputCsvFilePath))
                     .ReturnsAsync(csvData);
 
@@ -91,6 +95,10 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Addresses
 
             // Then
             actualAddresses.Should().BeEquivalentTo(expectedAddresses);
+
+            this.fileBrokerMock.Verify(service =>
+                service.CheckIfFileExistsAsync(inputCsvFilePath),
+                    Times.Once);
 
             this.fileBrokerMock.Verify(service =>
                 service.ReadFileAsync(inputCsvFilePath),

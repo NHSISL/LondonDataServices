@@ -231,6 +231,14 @@ namespace LHDS.Core.Services.Orchestrations.Addresses
 
         virtual internal async ValueTask<List<Address>> MapBLPUDataToAddressesAsync(string blpuCsvFile)
         {
+            bool fileExists = await this.fileBroker.CheckIfFileExistsAsync(blpuCsvFile);
+
+            if (!fileExists)
+            {
+                throw new InvalidFileAddressOrchestrationException(
+                    message: $"The file {blpuCsvFile} could not be found.");
+            }
+
             byte[] csvData = await fileBroker.ReadFileAsync(blpuCsvFile);
             string stringData = Encoding.UTF8.GetString(csvData);
 

@@ -121,11 +121,11 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Addresses
             return randomAddress;
         }
 
-        private static IQueryable<Address> CreateRandomAddresses()
+        private static List<Address> CreateRandomAddresses()
         {
             return CreateAddressFiller(dateTimeOffset: GetRandomDateTimeOffset())
                 .Create(count: GetRandomNumber())
-                    .AsQueryable();
+                    .ToList();
         }
 
         private static Address CreateRandomAddress() =>

@@ -1,6 +1,5 @@
 import React, { FunctionComponent, ChangeEvent, useState, useEffect } from "react";
 import { SupplierView } from "../../models/views/components/suppliers/supplierView";
-import { Guid } from "guid-typescript";
 import TextInputBase from "../bases/inputs/TextInputBase";
 import ButtonBase from "../bases/buttons/ButtonBase";
 import TableBaseRow from "../bases/components/Table/TableBase.Row";
@@ -23,7 +22,7 @@ const SupplierRowAdd: FunctionComponent<SupplierRowAddProps> = (props) => {
         apiError
     } = props;
 
-    const [supplier, setSupplier] = useState<SupplierView>(new SupplierView(Guid.create()));
+    const [supplier, setSupplier] = useState<SupplierView>(new SupplierView(crypto.randomUUID()));
 
     const { errors, processApiErrors, enableValidationMessages, validate } =
         useValidation(supplierErrors, supplierValidations, supplier);

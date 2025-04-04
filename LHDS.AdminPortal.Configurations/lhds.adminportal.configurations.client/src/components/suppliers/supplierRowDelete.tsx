@@ -3,12 +3,11 @@ import { SupplierView } from "../../models/views/components/suppliers/supplierVi
 import ButtonBase from "../bases/buttons/ButtonBase";
 import TableBaseRow from "../bases/components/Table/TableBase.Row";
 import TableBaseData from "../bases/components/Table/TableBase.Data";
-import { Guid } from "guid-typescript";
-import { toastSuccess } from "../../brokers/toastBroker";
+import { toastSuccess } from "../../brokers/toastBroker.success";
 
 interface SupplierRowDeleteProps {
     supplier: SupplierView;
-    onCancel: (id: Guid) => void;
+    onCancel: (id: string) => void;
     onDelete: (supplier: SupplierView) => void;
 }
 

@@ -14,7 +14,7 @@ export class Supplier {
     public updatedBy?: string;
     public updatedDate?: Date;
 
-    constructor(supplier: any) {
+    constructor(supplier: Supplier) {
         this.id = supplier.id ? supplier.id :"";
         this.name = supplier.name;
         this.friendlyName = supplier.friendlyName;

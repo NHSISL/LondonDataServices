@@ -10,7 +10,7 @@ export const ObjectColumnPage = () => {
 
     const { dataSetSpecificationId, objectColumnId, specificationObjectId } = useParams();
 
-    return <div>
+    return <div className="m-3">
         <section >
             <Container>
                 <main id="maincontent" className="NELTopPadding" role="main">

@@ -72,7 +72,7 @@ namespace LHDS.AdminPortal.Api.Controllers
         [EnableQuery(PageSize = 25)]
 #endif
         [Authorize(Roles =
-            "ISL.LDS.AdminSpa.Administrators,ISL.LDS.AdminSpa.IngestionTracking,ISL.LDS.AdminApi.ReadOnly")]
+            "ISL.LDS.AdminSpa.Administrators,ISL.LDS.AdminSpa.IngestionTracking,ISL.LDS.AdminSpa.ReadOnly")]
         public async ValueTask<ActionResult<IQueryable<IngestionTracking>>> Get()
         {
             try

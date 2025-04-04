@@ -3,10 +3,9 @@ import 'nhsuk-frontend/dist/nhsuk.min'
 import 'nhsuk-frontend/packages/polyfills';
 import { Container } from 'nhsuk-react-components'
 import DataSetTable from "../../components/dataSets/dataSetTable";
-import { PageLayout } from "../../components/pageLayout";
 
 export const DataSetsListPage = () => {
-    return <PageLayout>
+    return <div className="m-3">
         <section >
             <Container>
                 <main id="maincontent" className="NELTopPadding" role="main">
@@ -16,5 +15,5 @@ export const DataSetsListPage = () => {
                 </main>
             </Container>
         </section>
-    </PageLayout>
+    </div>
 }

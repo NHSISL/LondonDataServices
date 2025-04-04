@@ -23,7 +23,6 @@ namespace LHDS.Core.Services.Foundations.Audits
         private readonly IDateTimeBroker dateTimeBroker;
         private readonly ISecurityBroker securityBroker;
         private readonly ILoggingBroker loggingBroker;
-        private readonly ISecurityBroker securityBroker;
 
         public AuditService(
             IStorageBroker storageBroker,
@@ -49,6 +48,7 @@ namespace LHDS.Core.Services.Foundations.Audits
         TryCatch(async () =>
         {
             DateTimeOffset dateTimeOffset = await this.dateTimeBroker.GetCurrentDateTimeOffsetAsync();
+            var auditUser = await this.securityBroker.GetCurrentUserAsync();
 
             Audit audit = new Audit
             {
@@ -59,17 +59,17 @@ namespace LHDS.Core.Services.Foundations.Audits
                 CorrelationId = correlationId,
                 FileName = fileName,
                 LogLevel = logLevel,
-                CreatedBy = "System",
+                CreatedBy = auditUser?.EntraUserId.ToString() ?? string.Empty,
                 CreatedDate = dateTimeOffset,
-                UpdatedBy = "System",
+                UpdatedBy = auditUser?.EntraUserId.ToString() ?? string.Empty,
                 UpdatedDate = dateTimeOffset,
             };
 
-                Audit auditWithAddAuditApplied = await ApplyAddAuditAsync(audit);
-                await ValidateAuditOnAddAsync(auditWithAddAuditApplied);
+            Audit auditWithAddAuditApplied = await ApplyAddAuditAsync(audit);
+            await ValidateAuditOnAddAsync(auditWithAddAuditApplied);
 
-                return await this.storageBroker.InsertAuditAsync(auditWithAddAuditApplied);
-            });
+            return await this.storageBroker.InsertAuditAsync(auditWithAddAuditApplied);
+        });
 
         public ValueTask<Audit> AddAuditAsync(Audit audit) =>
             TryCatch(async () =>
@@ -103,12 +103,36 @@ namespace LHDS.Core.Services.Foundations.Audits
             return maybeAudit;
         });
 
+        virtual internal async ValueTask BatchBulkAddAuditsAsync(List<Audit> audits, int batchSize)
+        {
+            int totalRecords = audits.Count;
+            var exceptions = new List<Exception>();
+
+            for (int i = 0; i < totalRecords; i += batchSize)
+            {
+                try
+                {
+                    var batch = audits.Skip(i).Take(batchSize).ToList();
+
+                    if (batch.Count != 0)
+                    {
+                        List<Audit> validatedAudits = await ValidateAuditsAndAssignIdAndAuditAsync(batch);
+                        await this.storageBroker.BulkInsertAuditsAsync(validatedAudits);
+                    }
+                }
+                catch (Exception ex)
+                {
+                    await this.loggingBroker.LogErrorAsync(ex);
+                }
+            }
+        }
+
         public ValueTask<Audit> ModifyAuditAsync(Audit audit) =>
             TryCatch(async () =>
             {
                 Audit auditWithModifyAuditApplied = await ApplyModifyAuditAsync(audit);
                 await ValidateAuditOnModifyAsync(auditWithModifyAuditApplied);
-                Audit maybeAudit =  await this.storageBroker.SelectAuditByIdAsync(audit.Id);
+                Audit maybeAudit = await this.storageBroker.SelectAuditByIdAsync(audit.Id);
                 ValidateStorageAudit(maybeAudit, audit.Id);
                 ValidateAgainstStorageAuditOnModify(inputAudit: audit, storageAudit: maybeAudit);
 
@@ -125,18 +149,18 @@ namespace LHDS.Core.Services.Foundations.Audits
 
             ValidateStorageAudit(maybeAudit, auditId);
 
-                Audit auditWithDeleteAuditApplied =
-                    await ApplyDeleteAuditAsync(maybeAudit);
+            Audit auditWithDeleteAuditApplied =
+                await ApplyDeleteAuditAsync(maybeAudit);
 
-                Audit updatedAudit =
-                    await this.storageBroker.UpdateAuditAsync(auditWithDeleteAuditApplied);
+            Audit updatedAudit =
+                await this.storageBroker.UpdateAuditAsync(auditWithDeleteAuditApplied);
 
-                await ValidateAgainstStorageAuditOnDeleteAsync(
-                    audit: updatedAudit,
-                    maybeAudit: auditWithDeleteAuditApplied);
+            await ValidateAgainstStorageAuditOnDeleteAsync(
+                audit: updatedAudit,
+                maybeAudit: auditWithDeleteAuditApplied);
 
-                return await this.storageBroker.DeleteAuditAsync(updatedAudit);
-            });
+            return await this.storageBroker.DeleteAuditAsync(updatedAudit);
+        });
 
         virtual internal async ValueTask<Audit> ApplyAddAuditAsync(Audit audit)
         {
@@ -171,6 +195,33 @@ namespace LHDS.Core.Services.Foundations.Audits
             audit.UpdatedDate = auditDateTimeOffset;
 
             return audit;
+        }
+
+        virtual internal async ValueTask<List<Audit>> ValidateAuditsAndAssignIdAndAuditAsync(List<Audit> audits)
+        {
+            List<Audit> validatedAudites = new List<Audit>();
+
+            foreach (Audit address in audits)
+            {
+                try
+                {
+                    EntraUser currentUser = await this.securityBroker.GetCurrentUserAsync();
+                    var currentDateTime = await this.dateTimeBroker.GetCurrentDateTimeOffsetAsync();
+                    address.Id = await this.identifierBroker.GetIdentifierAsync();
+                    address.CreatedDate = currentDateTime;
+                    address.CreatedBy = currentUser.EntraUserId;
+                    address.UpdatedDate = address.CreatedDate;
+                    address.UpdatedBy = address.CreatedBy;
+                    await ValidateAuditOnAddAsync(address);
+                    validatedAudites.Add(address);
+                }
+                catch (Exception ex)
+                {
+                    await this.loggingBroker.LogErrorAsync(ex);
+                }
+            }
+
+            return await ValueTask.FromResult(validatedAudites);
         }
     }
 }

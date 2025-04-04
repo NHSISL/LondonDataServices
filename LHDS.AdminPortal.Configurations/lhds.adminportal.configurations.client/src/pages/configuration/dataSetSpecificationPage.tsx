@@ -5,14 +5,12 @@ import { Container } from 'nhsuk-react-components'
 import { useParams } from "react-router-dom";
 import DataSetSpecificationDetail from "../../components/dataSetSpecifications/dataSetSpecificationDetail";
 import BreadCrumbBase from "../../components/bases/layouts/BreadCrumb/BreadCrumbBase";
-import { PageLayout } from "../../components/pageLayout";
-
 export const DataSetSpecificationPage = () => {
 
     const { dataSetId, dataSetSpecificationId } = useParams();
 
-    return <PageLayout>
-        <section >
+    return <div className="m-3">
+        <section>
             <Container>
                 <main id="maincontent" className="NELTopPadding" role="main">
 
@@ -28,5 +26,5 @@ export const DataSetSpecificationPage = () => {
                 </main>
             </Container>
         </section>
-    </PageLayout>
+    </div>
 }

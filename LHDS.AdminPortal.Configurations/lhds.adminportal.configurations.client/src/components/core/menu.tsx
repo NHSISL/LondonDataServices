@@ -66,10 +66,10 @@ const MenuComponent: React.FC = () => {
             <FeatureSwitch feature={FeatureDefinitions.Configuration}>
                 <SecuredComponent allowedRoles={securityPoints.configuration.view}>
                     <ListGroup.Item
-                        className={`bg-dark text-white ${activePath === '/subscriberAgreements' ? 'active' : ''}`}
-                        onClick={() => handleItemClick('/subscriberAgreements')}>
+                        className={`bg-dark text-white ${activePath === '/configuration/dataSets' ? 'active' : ''}`}
+                        onClick={() => handleItemClick('/configuration/dataSets')}>
                         <FontAwesomeIcon icon={faCogs} className="me-2 fa-icon" />
-                        <SecuredLink to="/subscriberAgreements">Dataset Config Tools</SecuredLink>
+                        <SecuredLink to="/configuration/dataSets">Dataset Config Tools</SecuredLink>
                     </ListGroup.Item>
                 </SecuredComponent>
             </FeatureSwitch>

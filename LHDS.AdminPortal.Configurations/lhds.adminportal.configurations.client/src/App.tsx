@@ -23,6 +23,12 @@ import { SuppliersPage } from './pages/configuration/suppliersPage';
 import { SubscriberAgreementPage } from './pages/subscriberAgreementPage';
 import { SubscriberAgreementAddPage } from './pages/subscriberAgreementAddPage';
 import { SubscriberAgreementDetailPage } from './pages/subscriberAgreementDetailPage';
+import { DataTypesPage } from './pages/configuration/dataTypesPage';
+import { DataSetsListPage } from './pages/configuration/dataSetsListPage';
+import { DataSetPage } from './pages/configuration/dataSetPage';
+import { DataSetSpecificationPage } from './pages/configuration/dataSetSpecificationPage';
+import { SpecificationObjectPage } from './pages/configuration/specificationObjectPage';
+import { ObjectColumnPage } from './pages/configuration/objectColumnPage';
 
 
 function App({ instance }: any) {
@@ -92,6 +98,54 @@ function App({ instance }: any) {
                 {
                     path: "/subscriberAgreementDetail/:subscriberAgreementId",
                     element: <SubscriberAgreementDetailPage />
+                },
+                {
+                    path: "/configuration/dataTypes",
+                    element: <DataTypesPage />
+                },
+                {
+                    path: "/configuration/dataSets",
+                    element: <DataSetsListPage />
+                },
+                {
+                    path: "/configuration/dataSet",
+                    element: <DataSetPage />
+                },
+                {
+                    path: "/configuration/dataSet/:dataSetId",
+                    element: <DataSetPage />
+                },
+                {
+                    path: "/configuration/dataSetSpecification",
+                    element: <DataSetSpecificationPage />
+                },
+                {
+                    path: "/configuration/dataSetSpecification/:dataSetId",
+                    element: <DataSetSpecificationPage />
+                },
+                {
+                    path: "/configuration/dataSetSpecification/:dataSetId/:dataSetSpecificationId",
+                    element: <DataSetSpecificationPage />
+                },
+                {
+                    path: "/configuration/specificationObjectAdd/:dataSetSpecificationId/:dataSetId",
+                    element: <SpecificationObjectPage />
+                },
+                {
+                    path: "/configuration/specificationObject/:specificationObjectId/:dataSetSpecificationId/",
+                    element: <SpecificationObjectPage />
+                },
+                {
+                    path: "configuration/objectColumn/:dataSetSpecificationId/:specificationObjectId",
+                    element: <ObjectColumnPage />
+                },
+                {
+                    path: "configuration/objectColumn/:specificationObjectId",
+                    element: <ObjectColumnPage />
+                },
+                {
+                    path: "configuration/objectColumn/:dataSetSpecificationId/:objectColumnId/:specificationObjectId/",
+                    element: <ObjectColumnPage />
                 },
                 {
                     index: true,

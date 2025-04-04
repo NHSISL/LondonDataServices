@@ -5,6 +5,8 @@
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using FluentAssertions;
+using Force.DeepCloner;
 using LHDS.Core.Models.Brokers.Securities;
 using LHDS.Core.Models.Foundations.Addresses;
 using LHDS.Core.Services.Foundations.Addresses;
@@ -18,14 +20,25 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Addresses
         [Fact]
         public async Task ShouldValidateAddressesAndAssignIdAndAuditOnAddAsync()
         {
-            // given
-            int randomItems = GetRandomNumber();
-            Guid randomId = Guid.NewGuid();
+            // Given
+            List<Address> randomAddresses = CreateRandomAddresses();
+            List<Address> inputAddresses = randomAddresses;
+            string inputFilename = GetRandomString();
             EntraUser randomEntraUser = CreateRandomEntraUser();
             DateTimeOffset randomDateTimeOffset = GetRandomDateTimeOffset();
-            string randomFileName = GetRandomString();
-            string inputFileName = randomFileName;
-            List<Address> randomNewAddresses = CreateRandomAddresses(count: randomItems);
+            Guid randomId = Guid.NewGuid();
+            List<Address> outputAddresses = inputAddresses.DeepClone();
+
+            foreach (Address address in outputAddresses)
+            {
+                address.Id = randomId;
+                address.CreatedBy = randomEntraUser.EntraUserId;
+                address.CreatedDate = randomDateTimeOffset;
+                address.UpdatedBy = randomEntraUser.EntraUserId;
+                address.UpdatedDate = randomDateTimeOffset;
+            }
+
+            List<Address> expectedAddresses = outputAddresses.DeepClone();
 
             var addressServiceMock = new Mock<AddressService>(
                 this.storageBrokerMock.Object,
@@ -34,26 +47,50 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Addresses
                 this.identifierBrokerMock.Object,
                 this.loggingBrokerMock.Object,
                 this.auditBrokerMock.Object)
-            { CallBase = true };
+            {
+                CallBase = true
+            };
 
             this.dateTimeBrokerMock.Setup(broker =>
                 broker.GetCurrentDateTimeOffsetAsync())
                     .ReturnsAsync(randomDateTimeOffset);
 
-            this.securityBrokerMock.Setup(broker =>
-                broker.GetCurrentUserAsync())
-                    .ReturnsAsync(randomEntraUser);
-
             this.identifierBrokerMock.Setup(broker =>
                 broker.GetIdentifierAsync())
                     .ReturnsAsync(randomId);
 
-            // when
-            throw new NotImplementedException("This method is not implemented yet.");
+            this.securityBrokerMock.Setup(broker =>
+                broker.GetCurrentUserAsync())
+                    .ReturnsAsync(randomEntraUser);
 
+            // When
+            List<Address> actualAddresses = await addressServiceMock.Object
+                .ValidateAddressesAndAssignIdAndAuditOnAddAsync(inputAddresses, inputFilename);
 
-            // then
+            // Then
+            actualAddresses.Should().BeEquivalentTo(expectedAddresses);
 
+            this.dateTimeBrokerMock.Verify(broker =>
+                broker.GetCurrentDateTimeOffsetAsync(),
+                    Times.Exactly(inputAddresses.Count * 2));
+
+            this.identifierBrokerMock.Verify(broker =>
+                broker.GetIdentifierAsync(),
+                    Times.Exactly(inputAddresses.Count));
+
+            this.securityBrokerMock.Verify(broker =>
+                broker.GetCurrentUserAsync(),
+                    Times.Exactly(inputAddresses.Count * 2));
+
+            addressServiceMock.Verify(service =>
+                service.ValidateAddressesAndAssignIdAndAuditOnAddAsync(inputAddresses, inputFilename),
+                    Times.Once);
+
+            addressServiceMock.VerifyNoOtherCalls();
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
+            this.identifierBrokerMock.VerifyNoOtherCalls();
+            this.storageBrokerMock.VerifyNoOtherCalls();
+            this.loggingBrokerMock.VerifyNoOtherCalls();
         }
     }
 }

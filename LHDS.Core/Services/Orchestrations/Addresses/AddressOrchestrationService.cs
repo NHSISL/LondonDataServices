@@ -15,6 +15,7 @@ using LHDS.Core.Brokers.DateTimes;
 using LHDS.Core.Brokers.Files;
 using LHDS.Core.Brokers.Loggings;
 using LHDS.Core.Models.Foundations.Addresses;
+using LHDS.Core.Models.Orchestrations.Addresses;
 using LHDS.Core.Models.Orchestrations.Addresses.Exceptions;
 using LHDS.Core.Services.Processings.Addresses;
 using LHDS.Core.Services.Processings.Assigns;
@@ -224,6 +225,54 @@ namespace LHDS.Core.Services.Orchestrations.Addresses
 
             List<Address> addresses = await this.csvHelperBroker
                 .MapCsvToObjectAsync<Address>(stringRecords, hasHeaderRecord: false, fieldMappings);
+
+            return addresses;
+        }
+
+        virtual internal async ValueTask<List<Address>> MapBLPUDataToAddressesAsync(string blpuCsvFile)
+        {
+            byte[] csvData = await fileBroker.ReadFileAsync(blpuCsvFile);
+            string stringData = Encoding.UTF8.GetString(csvData);
+
+            List<string> records = stringData.Split(
+                new[] { "\r\n", "\n" }, StringSplitOptions.None).ToList();
+
+            List<string> filteredRecords = records.Where(record =>
+                record.StartsWith("21,") || record.StartsWith("\"21\",")).ToList();
+
+            string stringRecords = string.Join(Environment.NewLine, filteredRecords);
+
+            Dictionary<string, int> fieldMappings = new Dictionary<string, int>
+            {
+                { "UPRN", 3 },
+                { "LogicalStatus", 4 },
+                { "StartDate", 15 },
+                { "EndDate", 16 },
+                { "PostCode", 20 },
+            };
+
+            List<BLPUAddress> blpuAddresses = await this.csvHelperBroker
+                .MapCsvToObjectAsync<BLPUAddress>(stringRecords, hasHeaderRecord: false, fieldMappings);
+
+            var blpuAddressesWithoutDuplicates = blpuAddresses
+                .OrderByDescending(address => address.EndDate)
+                .GroupBy(address => address.UPRN)
+                .Select(group => group.Count() > 1
+                    ? group.FirstOrDefault(address => address.LogicalStatus == 1) ?? group.First()
+                    : group.First());
+
+            List<Address> addresses = [];
+
+            foreach (BLPUAddress blpuAddress in blpuAddressesWithoutDuplicates)
+            {
+                Address address = new Address
+                {
+                    UPRN = blpuAddress.UPRN,
+                    PostCode = blpuAddress.PostCode,
+                };
+
+                addresses.Add(address);
+            }
 
             return addresses;
         }

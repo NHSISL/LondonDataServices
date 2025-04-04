@@ -20,6 +20,9 @@ import { TerminologyArtifactDetailPage } from './pages/terminologyArtifactDetail
 import { TerminologyArtifactPage } from './pages/terminologyArtifactPage';
 import { ConfigHomePage } from './pages/configuration/configHomePage';
 import { SuppliersPage } from './pages/configuration/suppliersPage';
+import { SubscriberAgreementPage } from './pages/subscriberAgreementPage';
+import { SubscriberAgreementAddPage } from './pages/subscriberAgreementAddPage';
+import { SubscriberAgreementDetailPage } from './pages/subscriberAgreementDetailPage';
 
 
 function App({ instance }: any) {
@@ -79,6 +82,18 @@ function App({ instance }: any) {
                     element: <SuppliersPage />
                 },
                 {
+                    path: "/subscriberAgreements",
+                    element: <SubscriberAgreementPage />
+                },
+                {
+                    path: "/subscriberAgreement/new",
+                    element: <SubscriberAgreementAddPage />
+                },
+                {
+                    path: "/subscriberAgreementDetail/:subscriberAgreementId",
+                    element: <SubscriberAgreementDetailPage />
+                },
+                {
                     index: true,
                     element: <Navigate to="/home" />
                 }
@@ -97,8 +112,6 @@ function App({ instance }: any) {
             </MsalProvider>
         </>
     );
-
-
 }
 
 export default App;

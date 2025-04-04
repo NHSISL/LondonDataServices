@@ -30,12 +30,12 @@
     }
 
 .sidebar-open {
-    transition: transform 0.1s ease-in-out;
+    transition: transform 0.3s ease-in-out;
     transform: translateX(0);
 }
 
 .sidebar-closed {
-    transition: transform 0.1s ease-in-out;
+    transition: transform 0.6s ease-in-out;
     transform: translateX(-100%);
     overflow: hidden;
     width: 0;
@@ -47,7 +47,7 @@
     flex-direction: column;
     height: 100%;
     overflow: hidden;
-    transition: margin-left 0.3s;
+    transition: margin-left 0.6s;
 }
 
 .content-shift-left {

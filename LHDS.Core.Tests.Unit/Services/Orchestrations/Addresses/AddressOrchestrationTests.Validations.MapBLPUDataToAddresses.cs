@@ -16,7 +16,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Addresses
     public partial class AddressOrchestrationServiceTests
     {
         [Fact]
-        public async Task ShouldThrowValidationExceptionOnMapDPADataIfFileDoesNotExistAsync()
+        public async Task ShouldThrowValidationExceptionOnMapBLPUDataIfFileDoesNotExistAsync()
         {
             // Given
             var addressOrchestrationServiceMock = new Mock<AddressOrchestrationService>
@@ -45,11 +45,11 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Addresses
             AddressOrchestrationService service = addressOrchestrationServiceMock.Object;
 
             // When
-            ValueTask<List<Address>> mapDpaDataTask = service.MapDPADataToAddressesAsync(invalidFileName);
+            ValueTask<List<Address>> mapBlpuDataTask = service.MapBLPUDataToAddressesAsync(invalidFileName);
 
             InvalidFileAddressOrchestrationException actualFileAddressOrchestrationException =
                 await Assert.ThrowsAsync<InvalidFileAddressOrchestrationException>(
-                    mapDpaDataTask.AsTask);
+                    mapBlpuDataTask.AsTask);
 
             // Then
             actualFileAddressOrchestrationException.Should()

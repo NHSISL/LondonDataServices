@@ -232,6 +232,14 @@ namespace LHDS.Core.Services.Orchestrations.Addresses
         virtual internal async ValueTask<List<Address>> MapStreetDescriptorDataToAddressesAsync(
             string streetDescriptorCsvFile)
         {
+            bool fileExists = await this.fileBroker.CheckIfFileExistsAsync(streetDescriptorCsvFile);
+
+            if (!fileExists)
+            {
+                throw new InvalidFileAddressOrchestrationException(
+                    message: $"The file {streetDescriptorCsvFile} could not be found.");
+            }
+
             byte[] csvData = await fileBroker.ReadFileAsync(streetDescriptorCsvFile);
             string stringData = Encoding.UTF8.GetString(csvData);
 

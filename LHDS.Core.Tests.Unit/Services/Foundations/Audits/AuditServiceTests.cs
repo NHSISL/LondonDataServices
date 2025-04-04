@@ -104,11 +104,11 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Audits
             return randomAudit;
         }
 
-        private static IQueryable<Audit> CreateRandomAudits()
+        private static List<Audit> CreateRandomAudits()
         {
             return CreateAuditFiller(dateTimeOffset: GetRandomDateTimeOffset())
                 .Create(count: GetRandomNumber())
-                    .AsQueryable();
+                    .ToList();
         }
 
         private static Audit CreateRandomAudit() =>

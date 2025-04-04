@@ -3,6 +3,7 @@
 // ---------------------------------------------------------
 
 using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using LHDS.Core.Models.Brokers.Securities;
 using LHDS.Core.Models.Foundations.Audits;
@@ -43,6 +44,14 @@ namespace LHDS.Core.Services.Foundations.Audits
                 Parameter: nameof(Audit.UpdatedBy)),
 
                 (Rule: await IsNotRecentAsync(audit.CreatedDate), Parameter: nameof(Audit.CreatedDate)));
+        }
+
+        private void ValidateOnBulkAddAudits(List<Audit> audits)
+        {
+            if (audits is null)
+            {
+                throw new NullAuditException(message: "Audits is null.");
+            }
         }
 
         private async ValueTask ValidateAuditOnModifyAsync(Audit audit)
@@ -145,6 +154,12 @@ namespace LHDS.Core.Services.Foundations.Audits
                     secondDateName: nameof(Audit.UpdatedDate)),
                 Parameter: nameof(Audit.UpdatedDate)));
         }
+
+        private static dynamic IsInvalid(List<Audit> audits) => new
+        {
+            Condition = audits == null,
+            Message = "Audits is required"
+        };
 
         private static dynamic IsInvalid(Guid id) => new
         {

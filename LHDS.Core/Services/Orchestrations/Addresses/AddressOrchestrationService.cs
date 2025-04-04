@@ -15,6 +15,7 @@ using LHDS.Core.Brokers.DateTimes;
 using LHDS.Core.Brokers.Files;
 using LHDS.Core.Brokers.Loggings;
 using LHDS.Core.Models.Foundations.Addresses;
+using LHDS.Core.Models.Orchestrations.Addresses.Exceptions;
 using LHDS.Core.Services.Processings.Addresses;
 using LHDS.Core.Services.Processings.Assigns;
 using Xeptions;
@@ -181,6 +182,50 @@ namespace LHDS.Core.Services.Orchestrations.Addresses
                     $"File has been moved to the error folder.",
                     exceptions);
             }
+        }
+
+        virtual internal async ValueTask<List<Address>> MapDPADataToAddressesAsync(string dpaCsvFile)
+        {
+            bool fileExists = await this.fileBroker.CheckIfFileExistsAsync(dpaCsvFile);
+
+            if (!fileExists)
+            {
+                throw new InvalidFileAddressOrchestrationException(
+                    message: $"The file {dpaCsvFile} could not be found.");
+            }
+
+            byte[] csvData = await fileBroker.ReadFileAsync(dpaCsvFile);
+            string stringData = Encoding.UTF8.GetString(csvData);
+
+            List<string> records = stringData.Split(
+                new[] { "\r\n", "\n" }, StringSplitOptions.None).ToList();
+
+            List<string> filteredRecords = records.Where(record =>
+               record.StartsWith("28,") || record.StartsWith("\"28\",")).ToList();
+
+            string stringRecords = string.Join(Environment.NewLine, filteredRecords);
+
+            Dictionary<string, int> fieldMappings = new Dictionary<string, int>
+            {
+                { "UPRN", 3 },
+                { "UPSN", 4 },
+                { "OrganisationName", 5 },
+                { "DepartmentName", 6 },
+                { "SubBuildingName", 7 },
+                { "BuildingName", 8 },
+                { "BuildingNumber", 9 },
+                { "DependentThoroughfare", 10 },
+                { "Thoroughfare", 11 },
+                { "DoubleDependentLocality", 12 },
+                { "DependentLocality", 13 },
+                { "PostTown", 14 },
+                { "PostCode", 15 }
+            };
+
+            List<Address> addresses = await this.csvHelperBroker
+                .MapCsvToObjectAsync<Address>(stringRecords, hasHeaderRecord: false, fieldMappings);
+
+            return addresses;
         }
 
         public ValueTask SyncAddressesWithAssignAsync()

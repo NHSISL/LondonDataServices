@@ -17,7 +17,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Addresses
     public partial class AddressServiceTests
     {
         [Fact]
-        public async Task ShouldThrowAggregateServiceExceptionOnBulkAddIfErrorOccursAndLogItAsync()
+        public async Task ShouldThrowAggregateServiceExceptionOnBulkModifyIfErrorOccursAndLogItAsync()
         {
             // given
             int randomCount = GetRandomNumber();
@@ -59,12 +59,12 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Addresses
                     .ThrowsAsync(aggregateException);
 
             // when
-            ValueTask bulkAddAddressTask = addressServiceMock.Object
-                .BulkAddAddressesAsync(addresses: someAddresses, fileName: someFileName);
+            ValueTask bulkModifyAddressTask = addressServiceMock.Object
+                .BulkModifyAddressesAsync(addresses: someAddresses, fileName: someFileName);
 
             AddressServiceException actualAddressDependencyException =
                 await Assert.ThrowsAsync<AddressServiceException>(
-                    bulkAddAddressTask.AsTask);
+                    bulkModifyAddressTask.AsTask);
 
             // then
             actualAddressDependencyException.Should()
@@ -86,7 +86,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Addresses
         }
 
         [Fact]
-        public async Task ShouldThrowServiceExceptionOnBulkAddIfServiceErrorOccursAndLogItAsync()
+        public async Task ShouldThrowServiceExceptionOnBulkModifyIfServiceErrorOccursAndLogItAsync()
         {
             // given
             var serviceException = new Exception();
@@ -126,7 +126,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Addresses
 
             // when
             ValueTask addAddressTask = addressServiceMock.Object
-                .BulkAddAddressesAsync(addresses: someAddresses, fileName: someFileName);
+                .BulkModifyAddressesAsync(addresses: someAddresses, fileName: someFileName);
 
             AddressServiceException actualAddressServiceException =
                 await Assert.ThrowsAsync<AddressServiceException>(

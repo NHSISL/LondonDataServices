@@ -2,6 +2,7 @@
 // Copyright (c) North East London ICB. All rights reserved.
 // ---------------------------------------------------------
 
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using FluentAssertions;
@@ -17,13 +18,13 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Addresses
         public async Task ShouldReturnAddresses()
         {
             // given
-            IQueryable<Address> randomAddresses = CreateRandomAddresses();
-            IQueryable<Address> storageAddresses = randomAddresses;
-            IQueryable<Address> expectedAddresses = storageAddresses;
+            List<Address> randomAddresses = CreateRandomAddresses();
+            List<Address> storageAddresses = randomAddresses;
+            List<Address> expectedAddresses = storageAddresses;
 
             this.storageBrokerMock.Setup(broker =>
                 broker.SelectAllAddressesAsync())
-                    .ReturnsAsync(storageAddresses);
+                    .ReturnsAsync(storageAddresses.AsQueryable());
 
             // when
             IQueryable<Address> actualAddresses =

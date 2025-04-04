@@ -78,7 +78,7 @@ const SupplierTable: FunctionComponent<SupplierTableProps> = (props) => {
 
     return (
         <>
-            <SearchBase id="search" label="Search suppliers" value={searchTerm}
+            <SearchBase id="search" label="Search suppliers" placeholder="Search suppliers" value={searchTerm}
                 onChange={(e) => { handleSearchChange(e.currentTarget.value) }} />
             <CardBase>
                 <CardBaseBody>

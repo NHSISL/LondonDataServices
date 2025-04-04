@@ -5,7 +5,7 @@ import { Container } from 'nhsuk-react-components'
 import PdsUploadDetail from "../components/pds/upload/pdsUploadDetail";
 
 export const PdsUploadPage = () => {
-    return <>
+    return <div className="m-3">
         <section >
             <Container>
                 <main id="maincontent" className="NELTopPadding" role="main">
@@ -15,5 +15,5 @@ export const PdsUploadPage = () => {
                 </main>
             </Container>
         </section>
-    </>
+    </div>
 }

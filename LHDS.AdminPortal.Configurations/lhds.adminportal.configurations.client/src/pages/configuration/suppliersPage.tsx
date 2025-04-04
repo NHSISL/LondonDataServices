@@ -6,7 +6,7 @@ import SupplierTable from "../../components/suppliers/supplierTable";
 
 export const SuppliersPage = () => {
     return <>
-        <>
+        <div className="m-4">
             <section>
                 <Container>
                     <main id="maincontent" className="NELTopPadding" role="main">
@@ -16,6 +16,6 @@ export const SuppliersPage = () => {
                     </main>
                 </Container>
             </section>
-        </>
+        </div>
     </>
 }

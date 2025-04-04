@@ -1,4 +1,4 @@
-import { faHome, faUserDoctor } from '@fortawesome/free-solid-svg-icons';
+import { faAddressBook, faBookMedical, faCogs, faFileContract, faHome, faList, faList12, faMap, faMapPin, faTruckField, faUserDoctor } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import React, { useState } from 'react';
 import { ListGroup } from 'react-bootstrap';
@@ -19,7 +19,7 @@ const MenuComponent: React.FC = () => {
 
     return (
 
-        <ListGroup variant="flush" className="text-start border-0 mt-5">
+        <ListGroup variant="flush" className="text-start border-0 mt-4">
             <ListGroup.Item
                 className={`bg-dark text-white ${activePath === '/' ? 'active' : ''}`}
                 onClick={() => handleItemClick('/')}>
@@ -27,23 +27,63 @@ const MenuComponent: React.FC = () => {
                 <SecuredLink to="/home">Home</SecuredLink>
             </ListGroup.Item>
 
+            <hr className="p-0 m-2" style={{ color: 'gray' }} />
+
+            <small className="ms-2">Landing Tools</small>
+            <FeatureSwitch feature={FeatureDefinitions.Configuration}>
+                <SecuredComponent allowedRoles={securityPoints.configuration.view}>
+                    <ListGroup.Item
+                        className={`bg-dark text-white ${activePath === '/configuration/suppliers' ? 'active' : ''}`}
+                        onClick={() => handleItemClick('/configuration/suppliers')}>
+                        <FontAwesomeIcon icon={faTruckField} className="me-2 fa-icon" />
+                        <SecuredLink to="/configuration/suppliers">Suppliers</SecuredLink>
+                    </ListGroup.Item>
+                </SecuredComponent>
+            </FeatureSwitch>
+
             <FeatureSwitch feature={FeatureDefinitions.IngestionTracking}>
                 <SecuredComponent allowedRoles={securityPoints.ingestionTracking.view}>
                     <ListGroup.Item
                         className={`bg-dark text-white ${activePath === '/ingestionTracking' ? 'active' : ''}`}
                         onClick={() => handleItemClick('/ingestionTracking')}>
-                        <FontAwesomeIcon icon={faUserDoctor} className="me-2 fa-icon" />
+                        <FontAwesomeIcon icon={faList} className="me-2 fa-icon" />
                         <SecuredLink to="/ingestionTracking">Ingestion Tracking</SecuredLink>
                     </ListGroup.Item>
                 </SecuredComponent>
             </FeatureSwitch>
-            <hr />
+
+            <FeatureSwitch feature={FeatureDefinitions.Configuration}>
+                <SecuredComponent allowedRoles={securityPoints.configuration.view}>
+                    <ListGroup.Item
+                        className={`bg-dark text-white ${activePath === '/subscriberAgreements' ? 'active' : ''}`}
+                        onClick={() => handleItemClick('/subscriberAgreements')}>
+                        <FontAwesomeIcon icon={faFileContract} className="me-2 fa-icon" />
+                        <SecuredLink to="/subscriberAgreements">Subscriber Agreements</SecuredLink>
+                    </ListGroup.Item>
+                </SecuredComponent>
+            </FeatureSwitch>
+
+            <FeatureSwitch feature={FeatureDefinitions.Configuration}>
+                <SecuredComponent allowedRoles={securityPoints.configuration.view}>
+                    <ListGroup.Item
+                        className={`bg-dark text-white ${activePath === '/subscriberAgreements' ? 'active' : ''}`}
+                        onClick={() => handleItemClick('/subscriberAgreements')}>
+                        <FontAwesomeIcon icon={faCogs} className="me-2 fa-icon" />
+                        <SecuredLink to="/subscriberAgreements">Dataset Config Tools</SecuredLink>
+                    </ListGroup.Item>
+                </SecuredComponent>
+            </FeatureSwitch>
+
+            <hr className="p-0 m-2" style={{ color: 'gray' }} />
+
+            <small className="ms-2" style={{ color: 'gray' }}>Mesh Tools</small>
+
             <FeatureSwitch feature={FeatureDefinitions.OptOut}>
                 <SecuredComponent allowedRoles={securityPoints.optOut.view}>
                     <ListGroup.Item
                         className={`bg-dark text-white ${activePath === '/optOutSearch' ? 'active' : ''}`}
                         onClick={() => handleItemClick('/optOutSearch')}>
-                        <FontAwesomeIcon icon={faUserDoctor} className="me-2 fa-icon" />
+                        <FontAwesomeIcon icon={faBookMedical} className="me-2 fa-icon" />
                         <SecuredLink to="/optOutSearch">Opt Out</SecuredLink>
                     </ListGroup.Item>
                 </SecuredComponent>
@@ -54,8 +94,38 @@ const MenuComponent: React.FC = () => {
                     <ListGroup.Item
                         className={`bg-dark text-white ${activePath === '/pds' ? 'active' : ''}`}
                         onClick={() => handleItemClick('/pds')}>
-                        <FontAwesomeIcon icon={faUserDoctor} className="me-2 fa-icon" />
+                        <FontAwesomeIcon icon={faAddressBook} className="me-2 fa-icon" />
                         <SecuredLink to="/pds">Patient Demographic Search</SecuredLink>
+                    </ListGroup.Item>
+                </SecuredComponent>
+            </FeatureSwitch>
+
+            <hr className="p-0 m-2" style={{ color: 'gray' }} />
+
+            <small className="ms-2" style={{ color: 'gray' }}>Terminology Tools</small>
+
+            <FeatureSwitch feature={FeatureDefinitions.TerminologyArtifact}>
+                <SecuredComponent allowedRoles={securityPoints.terminologyArtifact.view}>
+                    <ListGroup.Item
+                        className={`bg-dark text-white ${activePath === '/terminologyArtifact' ? 'active' : ''}`}
+                        onClick={() => handleItemClick('/terminologyArtifact')}>
+                        <FontAwesomeIcon icon={faList} className="me-2 fa-icon" />
+                        <SecuredLink to="/terminologyArtifact">Terminology</SecuredLink>
+                    </ListGroup.Item>
+                </SecuredComponent>
+            </FeatureSwitch>
+
+            <hr className="p-0 m-2" style={{ color: 'gray' }} />
+
+            <small className="ms-2" style={{ color: 'gray' }}>Address Tools</small>
+
+            <FeatureSwitch feature={FeatureDefinitions.TerminologyArtifact}>
+                <SecuredComponent allowedRoles={securityPoints.terminologyArtifact.view}>
+                    <ListGroup.Item
+                        className={`bg-dark text-white ${activePath === '/terminologyArtifact2' ? 'active' : ''}`}
+                        onClick={() => handleItemClick('/terminologyArtifact2')}>
+                        <FontAwesomeIcon icon={faMap} className="me-2 fa-icon" />
+                        <SecuredLink to="/terminologyArtifact2">Addresses</SecuredLink>
                     </ListGroup.Item>
                 </SecuredComponent>
             </FeatureSwitch>
@@ -63,50 +133,14 @@ const MenuComponent: React.FC = () => {
             <FeatureSwitch feature={FeatureDefinitions.TerminologyArtifact}>
                 <SecuredComponent allowedRoles={securityPoints.terminologyArtifact.view}>
                     <ListGroup.Item
-                        className={`bg-dark text-white ${activePath === '/terminologyArtifact' ? 'active' : ''}`}
-                        onClick={() => handleItemClick('/terminologyArtifact')}>
-                        <FontAwesomeIcon icon={faUserDoctor} className="me-2 fa-icon" />
-                        <SecuredLink to="/terminologyArtifact">Terminology</SecuredLink>
+                        className={`bg-dark text-white ${activePath === '/terminologyArtifact1' ? 'active' : ''}`}
+                        onClick={() => handleItemClick('/terminologyArtifact1')}>
+                        <FontAwesomeIcon icon={faMapPin} className="me-2 fa-icon" />
+                        <SecuredLink to="/terminologyArtifact1">Resolved Address</SecuredLink>
                     </ListGroup.Item>
                 </SecuredComponent>
             </FeatureSwitch>
-
-            <hr />
-
-            {/*<FeatureSwitch feature={FeatureDefinitions.Configuration}>*/}
-            {/*    <SecuredComponent allowedRoles={securityPoints.configuration.view}>*/}
-            {/*        <ListGroup.Item*/}
-            {/*            className={`bg-dark text-white ${activePath === '/configuration' ? 'active' : ''}`}*/}
-            {/*            onClick={() => handleItemClick('/configuration')}>*/}
-            {/*            <FontAwesomeIcon icon={faUserDoctor} className="me-2 fa-icon" />*/}
-            {/*            <SecuredLink to="/configuration">Configuration</SecuredLink>*/}
-            {/*        </ListGroup.Item>*/}
-            {/*    </SecuredComponent>*/}
-            {/*</FeatureSwitch>*/}
-
-            <FeatureSwitch feature={FeatureDefinitions.Configuration}>
-                <SecuredComponent allowedRoles={securityPoints.configuration.view}>
-                    <ListGroup.Item
-                        className={`bg-dark text-white ${activePath === '/configuration/suppliers' ? 'active' : ''}`}
-                        onClick={() => handleItemClick('/configuration/suppliers')}>
-                        <FontAwesomeIcon icon={faUserDoctor} className="me-2 fa-icon" />
-                        <SecuredLink to="/configuration/suppliers">Suppliers</SecuredLink>
-                    </ListGroup.Item>
-                </SecuredComponent>
-            </FeatureSwitch>
-
-            <FeatureSwitch feature={FeatureDefinitions.Configuration}>
-                <SecuredComponent allowedRoles={securityPoints.configuration.view}>
-                    <ListGroup.Item
-                        className={`bg-dark text-white ${activePath === '/subscriberAgreements' ? 'active' : ''}`}
-                        onClick={() => handleItemClick('/subscriberAgreements')}>
-                        <FontAwesomeIcon icon={faUserDoctor} className="me-2 fa-icon" />
-                        <SecuredLink to="/subscriberAgreements">Subscriber Agreements</SecuredLink>
-                    </ListGroup.Item>
-                </SecuredComponent>
-            </FeatureSwitch>
-
-            <hr />
+            <hr className="p-0 m-2" style={{ color: 'gray' }} />
 
         </ListGroup>
     );

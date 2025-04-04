@@ -2,7 +2,7 @@ import React from "react";
 import IngestionTrackingTable from "../components/ingestionTracking/ingestionTrackingTable";
 
 export const IngestionTrackingHomepage = () => {
-    return <>
+    return <div className="m-3">
         <section>
             <div className="container-fluis">
                 <main id="maincontent" className="NELTopPadding" role="main">
@@ -12,5 +12,5 @@ export const IngestionTrackingHomepage = () => {
                 </main>
             </div>
         </section>
-    </>
+    </div>
 }

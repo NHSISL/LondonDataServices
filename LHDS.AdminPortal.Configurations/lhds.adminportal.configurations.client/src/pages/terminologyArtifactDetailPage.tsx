@@ -7,7 +7,7 @@ export const TerminologyArtifactDetailPage = () => {
 
     const { terminologyArtifactId } = useParams();
 
-    return <>
+    return <div className="m-3">
         <section>
             <div className="container-fluid">
                 <main role="main">
@@ -27,5 +27,5 @@ export const TerminologyArtifactDetailPage = () => {
                 </main>
             </div>
         </section>
-    </>
+    </div>
 }

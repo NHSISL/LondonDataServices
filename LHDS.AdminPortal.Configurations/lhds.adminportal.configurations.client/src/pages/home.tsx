@@ -12,7 +12,7 @@ import CardBaseContent from '../components/bases/Card/CardBase.Content';
 export const Home = () => {
     const isAuthenticated = useIsAuthenticated();
     return (
-        <>
+        <div className="m-3">
             <section>
                 <div>
                     {isAuthenticated ? (
@@ -122,6 +122,6 @@ export const Home = () => {
                     )}
                 </div>
             </section>
-        </>
+        </div>
     );
 };

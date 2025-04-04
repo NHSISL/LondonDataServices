@@ -6,7 +6,7 @@ export const IngestionTrackingPage = () => {
 
     const { ingestionTrackingId } = useParams();
 
-    return <>
+    return <div className="m-4">
         <section>
             <div className="container-fluid">
                 <main role="main">
@@ -24,5 +24,5 @@ export const IngestionTrackingPage = () => {
                 </main>
             </div>
         </section>
-    </>
+    </div>
 }

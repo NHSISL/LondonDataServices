@@ -5,7 +5,7 @@ import { Container } from 'nhsuk-react-components'
 import OptOutDetail from "../components/optOut/search/optOutDetail";
 
 export const OptOutSearchPage = () => {
-    return <>
+    return <div className="m-3">
         <section >
             <Container>
                 <main id="maincontent" className="NELTopPadding" role="main">
@@ -15,5 +15,5 @@ export const OptOutSearchPage = () => {
                 </main>
             </Container>
         </section>
-    </>
+    </div>
 }

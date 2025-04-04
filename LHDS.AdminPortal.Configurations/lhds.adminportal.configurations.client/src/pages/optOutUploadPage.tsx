@@ -5,7 +5,7 @@ import { Container } from 'nhsuk-react-components'
 import OptOutUploadDetail from "../components/optOut/upload/optOutUploadDetail";
 
 export const OptOutUploadPage = () => {
-    return <>
+    return <div className="m-3">
         <section >
             <Container>
                 <main id="maincontent" className="NELTopPadding" role="main">
@@ -15,5 +15,5 @@ export const OptOutUploadPage = () => {
                 </main>
             </Container>
         </section>
-    </>
+    </div>
 }

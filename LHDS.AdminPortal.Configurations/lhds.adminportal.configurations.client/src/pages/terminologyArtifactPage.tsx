@@ -2,7 +2,7 @@ import React from "react"
 import TerminologyArtifactTable from "../components/terminologyArtifacts/terminologyArtifactTable";
 
 export const TerminologyArtifactPage = () => {
-    return <>
+    return <div className="m-3">
         <section>
             <div className="container-fluis">
                 <main id="maincontent" className="NELTopPadding" role="main">
@@ -12,5 +12,5 @@ export const TerminologyArtifactPage = () => {
                 </main>
             </div>
         </section>
-    </>
+    </div>
 }

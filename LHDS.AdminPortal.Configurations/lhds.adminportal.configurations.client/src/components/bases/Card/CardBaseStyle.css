@@ -18,7 +18,7 @@
 
 .cardBaseTitle {
     margin-top: 0;
-    background: var( --dark-background);
+    background: var( --hero-color);
     color: #fff;
     display: inline-block;
     left: -33px;

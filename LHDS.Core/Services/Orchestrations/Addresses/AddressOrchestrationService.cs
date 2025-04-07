@@ -95,7 +95,8 @@ namespace LHDS.Core.Services.Orchestrations.Addresses
                         using (FileStream nestedZipStream =
                             new FileStream(entryPath, FileMode.Open, FileAccess.Read))
                         {
-                            string nestedExtractPath = Path.Combine(extractPath, Path.GetFileNameWithoutExtension(entry.FullName));
+                            string nestedExtractPath = 
+                                Path.Combine(extractPath, Path.GetFileNameWithoutExtension(entry.FullName));
 
                             if (!Directory.Exists(nestedExtractPath))
                             {

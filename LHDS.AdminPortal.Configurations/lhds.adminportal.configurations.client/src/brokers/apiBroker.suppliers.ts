@@ -1,4 +1,3 @@
-import { Guid } from "guid-typescript";
 import { Supplier } from "../models/suppliers/supplier";
 import ApiBroker from "./apiBroker";
 
@@ -13,13 +12,13 @@ class SupplierBroker {
     }
 
     async GetAllSuppliersAsync(queryString: string) {
-        var url = this.relativeSupplierUrl + queryString;
+        const url = this.relativeSupplierUrl + queryString;
 
         return await this.apiBroker.GetAsync(url)
-            .then(result => result.data.map((supplier: any) => new Supplier(supplier)));
+            .then(result => result.data.map((supplier: Supplier) => new Supplier(supplier)));
     }
 
-    async GetSupplierByIdAsync(id: Guid) {
+    async GetSupplierByIdAsync(id: string) {
         const url = `${this.relativeSupplierUrl}/${id}`;
 
         return await this.apiBroker.GetAsync(url)
@@ -31,7 +30,7 @@ class SupplierBroker {
             .then(result => new Supplier(result.data));
     }
 
-    async DeleteSupplierByIdAsync(id: Guid) {
+    async DeleteSupplierByIdAsync(id: string) {
         const url = `${this.relativeSupplierUrl}/${id}`;
 
         return await this.apiBroker.DeleteAsync(url)

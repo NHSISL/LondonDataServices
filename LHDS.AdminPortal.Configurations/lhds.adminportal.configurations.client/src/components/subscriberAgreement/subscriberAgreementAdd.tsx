@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import React, { FunctionComponent, useState } from "react";
 import { Form } from "react-bootstrap";
 import ButtonBase from "../bases/buttons/ButtonBase";

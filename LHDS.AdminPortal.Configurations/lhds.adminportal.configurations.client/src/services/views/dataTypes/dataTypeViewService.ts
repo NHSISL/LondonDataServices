@@ -10,37 +10,33 @@ export const dataTypeViewService = {
     },
 
     useGetAllDataTypes: (searchTerm?: string) => {
-        try {
-            let query = '?$orderby=Name';
+        let query = '?$orderby=Name';
 
-            if (searchTerm) {
-                query = query + `&$filter=contains(Name,'${searchTerm}')`;
+        if (searchTerm) {
+            query = query + `&$filter=contains(Name,'${searchTerm}')`;
+        }
+
+        const response = dataTypeService.useRetrieveAllDataType(query);
+        const [mappedDataTypes, setMappedDataTypes] = useState<Array<DataTypeView>>([]);
+
+        useEffect(() => {
+            if (response.data) {
+                const dataTypes = response.data.map((dataType: DataType) =>
+                    new DataTypeView(
+                        dataType.id,
+                        dataType.name,
+                        dataType.createdBy,
+                        dataType.createdDate,
+                        dataType.updatedBy,
+                        dataType.updatedDate,
+                    ));
+
+                setMappedDataTypes(dataTypes);
             }
+        }, [response.data]);
 
-            const response = dataTypeService.useRetrieveAllDataType(query);
-            const [mappedDataTypes, setMappedDataTypes] = useState<Array<DataTypeView>>([]);
-
-            useEffect(() => {
-                if (response.data) {
-                    const dataTypes = response.data.map((dataType: DataType) =>
-                        new DataTypeView(
-                            dataType.id,
-                            dataType.name,
-                            dataType.createdBy,
-                            dataType.createdDate,
-                            dataType.updatedBy,
-                            dataType.updatedDate,
-                        ));
-
-                    setMappedDataTypes(dataTypes);
-                }
-            }, [response.data]);
-
-            return {
-                mappedDataTypes, ...response
-            }
-        } catch (err) {
-            throw err;
+        return {
+            mappedDataTypes, ...response
         }
     },
 

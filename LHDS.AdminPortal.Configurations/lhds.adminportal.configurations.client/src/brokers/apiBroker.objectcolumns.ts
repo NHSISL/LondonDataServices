@@ -9,7 +9,7 @@ class ObjectColumnBroker {
     private apiBroker: ApiBroker = new ApiBroker();
 
     private processOdataResult = (result: AxiosResponse) => {
-        const data = result.data.value.map((objectColumn: any) => new ObjectColumn(objectColumn));
+        const data = result.data.value.map((objectColumn: ObjectColumn) => new ObjectColumn(objectColumn));
 
         const nextPage = result.data['@odata.nextLink'];
         return { data, nextPage }
@@ -28,11 +28,11 @@ class ObjectColumnBroker {
         }
         
         return await this.apiBroker.GetAsync(url)
-            .then(result => result.data.map((optOut: any) => new ObjectColumn(optOut)));
+            .then(result => result.data.map((objectColumn: ObjectColumn) => new ObjectColumn(objectColumn)));
     }
 
     async GetObjectColumnFirstPagesAsync(query: string) {
-        var url = this.relativeObjectColumnOdataUrl + query;
+        const url = this.relativeObjectColumnOdataUrl + query;
         return this.processOdataResult(await this.apiBroker.GetAsync(url));
     }
 

@@ -21,9 +21,7 @@ import { Row } from "react-bootstrap";
 import { subscriberCredentialViewService } from "../../services/views/subscriberCredentials/subscriberCredentialViewService";
 import { SubscriberCredentialView } from "../../models/views/components/subscriberCredentials/subscriberCredentialView";
 
-type SubscriberAgreementTableProps = {};
-
-const SubscriberAgreementTable: FunctionComponent<SubscriberAgreementTableProps> = (props) => {
+const SubscriberAgreementTable: FunctionComponent = () => {
     const [searchTerm, setSearchTerm] = useState<string>("");
     const [debouncedTerm, setDebouncedTerm] = useState<string>("");
     const [showSpinner, setShowSpinner] = useState(false);

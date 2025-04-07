@@ -3,6 +3,7 @@ import { DataTypeView } from "../../models/views/components/dataTypes/dataTypeVi
 import DataTypeRowView from "./dataTypeRowView";
 import DataTypeRowEdit from "./dataTypeRowEdit";
 import DataTypeRowDelete from "./dataTypeRowDelete";
+import { ApiError } from "../../types/apiError";
 
 
 type DataTypeRowProps = {
@@ -23,8 +24,7 @@ const DataTypeRow: FunctionComponent<DataTypeRowProps> = (props) => {
     } = props;
 
     const [mode, setMode] = useState<string>('VIEW');
-    const [apiError, setApiError] = useState<any>({});
-
+    const [apiError, setApiError] = useState<ApiError>({ response: { data: { errors: {} } } });
 
     const handleMode = (value: string) => {
         setMode(value);

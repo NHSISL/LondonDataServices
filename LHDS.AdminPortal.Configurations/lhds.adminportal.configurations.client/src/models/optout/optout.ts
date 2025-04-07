@@ -2,8 +2,8 @@ export class OptOut {
     public id: string;
     public nhsNumber: string;
     public status: string;
-    public cacheTime: Date | undefined;
-    public lastSentToMesh: Date | undefined;
+    public cacheTime?: Date | undefined;
+    public lastSentToMesh?: Date | undefined;
     public uniqueReference?: string;
     public batchReference?: number;
     public createdDate?: Date | undefined;

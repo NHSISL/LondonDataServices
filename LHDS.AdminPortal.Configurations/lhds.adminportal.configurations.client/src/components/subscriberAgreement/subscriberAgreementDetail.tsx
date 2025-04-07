@@ -17,7 +17,7 @@ const SubscriberAgreementDetail: FunctionComponent<SubscriberAgreementDetailProp
     let subscriberCredentialRetrieved: SubscriberCredentialView | undefined
 
     if (subscriberAgreementId !== "" && subscriberAgreementId !== undefined) {
-        let { mappedSubscriberCredential } =
+        const { mappedSubscriberCredential } =
             subscriberCredentialViewService.useGetSubscriberCredentialById(subscriberAgreementId ?? "");
 
         subscriberCredentialRetrieved = mappedSubscriberCredential;
@@ -37,9 +37,9 @@ const SubscriberAgreementDetail: FunctionComponent<SubscriberAgreementDetailProp
                 alert("save")
                 //navigate('/subscriberAgreements');
             },
-            onError: (error: any) => {
-                //setAddApiError(error?.response?.data?.errors);
-            },
+           // onError: (error: ApiError) => {
+           //     console.log(error?.response?.data?.errors);
+           // },
             onSettled: () => {
                 //setLoading(false); // Set loading to false when the operation finishes
             }

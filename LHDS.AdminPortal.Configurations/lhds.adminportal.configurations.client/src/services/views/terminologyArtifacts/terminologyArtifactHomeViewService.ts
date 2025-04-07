@@ -1,16 +1,15 @@
 import { useEffect, useState } from "react";
 import { TerminologyArtifactHomeView } from "../../../models/terminologyArtifacts/terminologyArtifactHomeView";
-import { TerminologyArtifact } from "../../../models/terminologyArtifacts/terminologyArtifact";
 import { terminologyArtifactService } from "../../foundations/terminologyArtifactService";
 
 type TerminologyArtifactHomeViewServiceResponse = {
     mappedTerminologyArtifacts: TerminologyArtifactHomeView[] | undefined;
-    pages: any;
+    pages: Array<{ data: TerminologyArtifactHomeView[] }>;
     isLoading: boolean;
     fetchNextPage: () => void;
     isFetchingNextPage: boolean;
     hasNextPage: boolean;
-    data: any;
+    data: { pages: Array<{ data: TerminologyArtifactHomeView[] }> } | undefined;
     refetch: () => void
 }
 
@@ -32,40 +31,13 @@ export const TerminologyArtifactHomeViewService = {
         }
 
         const response = terminologyArtifactService.useGetAllTerminologyArtifactsPages(query);
-
-        const [mappedTerminologyArtifacts, setMappedTerminologyArtifacts] =
-            useState<Array<TerminologyArtifactHomeView>>();
-
-        const [pages, setPages] = useState<any>([]);
+        const [mappedTerminologyArtifacts, setmappedTerminologyArtifacts] = useState<Array<TerminologyArtifactHomeView>>();
+        const [pages, setPages] = useState<Array<{ data: TerminologyArtifactHomeView[] }>>([]);
 
         useEffect(() => {
             if (response.data && response.data.pages) {
-                const terminologyArtifactArray: Array<TerminologyArtifactHomeView> = [];
-
-                response.data.pages.forEach((page: any) => {
-                    page.data.forEach((terminologyArtifact: TerminologyArtifact) => {
-                        terminologyArtifactArray.push(new TerminologyArtifactHomeView(
-                            terminologyArtifact.id,
-                            terminologyArtifact.fullUrl,
-                            terminologyArtifact.resourceType,
-                            terminologyArtifact.version,
-                            terminologyArtifact.name,
-                            terminologyArtifact.title,
-                            terminologyArtifact.status,
-                            terminologyArtifact.lastUpdated,
-                            terminologyArtifact.isCore,
-                            terminologyArtifact.isDownloaded,
-                            terminologyArtifact.isError,
-                            terminologyArtifact.errorMessage,
-                            terminologyArtifact.createdBy,
-                            terminologyArtifact.createdDate,
-                            terminologyArtifact.updatedBy,
-                            terminologyArtifact.updatedDate,
-                        ));
-                    });
-                });
-
-                setMappedTerminologyArtifacts(terminologyArtifactArray);
+                const terminologyArtifacts = response.data.pages.flatMap(x => x.data as TerminologyArtifactHomeView[]);
+                setmappedTerminologyArtifacts(terminologyArtifacts);
                 setPages(response.data.pages);
             }
         }, [response.data]);

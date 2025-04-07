@@ -7,6 +7,7 @@ import { useNavigate } from "react-router-dom";
 import { ObjectColumnView } from "../../models/views/components/objectColumns/objectColumnView";
 import ObjectColumnDetailCardView from "./objectColumnDetailCardView";
 import ObjectColumnDetailCardEdit from "./objectColumnDetailCardEdit";
+import { ApiError } from "../../types/apiError";
 
 interface ObjectColumnViewDetailCardProps {
     objectColumn: ObjectColumnView;
@@ -32,7 +33,7 @@ const ObjectColumnViewDetailCard: FunctionComponent<ObjectColumnViewDetailCardPr
     } = props;
 
     const [displayMode, setDisplayMode] = useState<string>(mode);
-    const [apiError, setApiError] = useState<any>({});
+    const [apiError, setApiError] = useState<ApiError>({ response: { data: { errors: {} } } });
 
     const handleModeChange = (value: string) => {
         setDisplayMode(value);
@@ -47,6 +48,7 @@ const ObjectColumnViewDetailCard: FunctionComponent<ObjectColumnViewDetailCardPr
             navigate('/configuration/SpecificationObject/' + specificationObjectId + '/' + dataSetSpecificationId);
         } catch (error) {
             setDisplayMode('EDIT');
+            console.log(error);
         }
     };
 

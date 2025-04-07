@@ -9,7 +9,7 @@ class DataSetSpecificationBroker {
     private apiBroker: ApiBroker = new ApiBroker();
 
     private processOdataResult = (result: AxiosResponse) => {
-        const data = result.data.value.map((dataSetSpecification: any) => new DataSetSpecification(dataSetSpecification));
+        const data = result.data.value.map((dataSetSpecification: DataSetSpecification) => new DataSetSpecification(dataSetSpecification));
 
         const nextPage = result.data['@odata.nextLink'];
         return { data, nextPage }
@@ -28,11 +28,11 @@ class DataSetSpecificationBroker {
         }
         
         return await this.apiBroker.GetAsync(url)
-            .then(result => result.data.map((optOut: any) => new DataSetSpecification(optOut)));
+            .then(result => result.data.map((optOut: DataSetSpecification) => new DataSetSpecification(optOut)));
     }
 
     async GetDataSetSpecificationFirstPagesAsync(query: string) {
-        var url = this.relativeDataSetSpecificationOdataUrl + query;
+        const url = this.relativeDataSetSpecificationOdataUrl + query;
         return this.processOdataResult(await this.apiBroker.GetAsync(url));
     }
 

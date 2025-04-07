@@ -6,7 +6,7 @@ class LandingBroker {
     private apiBroker: ApiBroker = new ApiBroker();
 
     async GetLandingDocumentByFileNameAsync(fileName: string) {
-        var url = this.relativeAuditUrl + '/' + encodeURIComponent(fileName);
+        const url = this.relativeAuditUrl + '/' + encodeURIComponent(fileName);
 
         return await this.apiBroker.GetAsync(url);
     }

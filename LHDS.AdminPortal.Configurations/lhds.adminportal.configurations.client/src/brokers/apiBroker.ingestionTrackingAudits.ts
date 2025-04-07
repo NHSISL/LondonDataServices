@@ -10,7 +10,7 @@ class IngestionTrackingAuditBroker {
         const url = this.relativeAuditUrl + queryString;
 
         return await this.apiBroker.GetAsync(url)
-            .then(result => result.data.map((ingestionTrackingAudit: any) => new IngestionTrackingAudit(ingestionTrackingAudit)));
+            .then(result => result.data.map((ingestionTrackingAudit: IngestionTrackingAudit) => new IngestionTrackingAudit(ingestionTrackingAudit)));
     }
 }
 

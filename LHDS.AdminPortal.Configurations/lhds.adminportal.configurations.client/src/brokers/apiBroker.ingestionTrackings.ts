@@ -1,5 +1,4 @@
 import { AxiosResponse } from "axios";
-import { Guid } from "guid-typescript";
 import { IngestionTracking } from "../models/ingestionTrackings/ingestionTracking";
 import ApiBroker from "./apiBroker";
 
@@ -32,7 +31,7 @@ class IngestionTrackingBroker {
         return this.processOdataResult(await this.apiBroker.GetAsyncAbsolute(absoluteUri));
     }
 
-    async GetIngestionTrackingByIdAsync(id: Guid) {
+    async GetIngestionTrackingByIdAsync(id: string) {
         const url = `${this.relativeIngestionTrackingUrl}/${id}`;
 
         return await this.apiBroker.GetAsync(url)

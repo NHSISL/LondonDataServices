@@ -1,4 +1,3 @@
-import { Guid } from "guid-typescript";
 import { SpecificationObject } from "../models/specificationObjects/specificationObject";
 import ApiBroker from "./apiBroker";
 import { AxiosResponse } from "axios";
@@ -10,7 +9,7 @@ class SpecificationObjectBroker {
     private apiBroker: ApiBroker = new ApiBroker();
 
     private processOdataResult = (result: AxiosResponse) => {
-        const data = result.data.value.map((specificationObject: any) => new SpecificationObject(specificationObject));
+        const data = result.data.value.map((specificationObject: SpecificationObject) => new SpecificationObject(specificationObject));
 
         const nextPage = result.data['@odata.nextLink'];
         return { data, nextPage }
@@ -29,11 +28,11 @@ class SpecificationObjectBroker {
         }
         
         return await this.apiBroker.GetAsync(url)
-            .then(result => result.data.map((optOut: any) => new SpecificationObject(optOut)));
+            .then(result => result.data.map((specificationObject: SpecificationObject) => new SpecificationObject(specificationObject)));
     }
 
     async GetSpecificationObjectFirstPagesAsync(query: string) {
-        var url = this.relativeSpecificationObjectOdataUrl + query;
+        const url = this.relativeSpecificationObjectOdataUrl + query;
         return this.processOdataResult(await this.apiBroker.GetAsync(url));
     }
 
@@ -41,7 +40,7 @@ class SpecificationObjectBroker {
         return this.processOdataResult(await this.apiBroker.GetAsyncAbsolute(absoluteUri));
     }
 
-    async GetSpecificationObjectByIdAsync(id: Guid) {
+    async GetSpecificationObjectByIdAsync(id: string) {
         const url = `${this.relativeSpecificationObjectUrl}/${id}`;
 
         return await this.apiBroker.GetAsync(url)
@@ -53,7 +52,7 @@ class SpecificationObjectBroker {
             .then(result => new SpecificationObject(result.data));
     }
 
-    async DeleteSpecificationObjectByIdAsync(id: Guid) {
+    async DeleteSpecificationObjectByIdAsync(id: string) {
         const url = `${this.relativeSpecificationObjectUrl}/${id}`;
 
         return await this.apiBroker.DeleteAsync(url)

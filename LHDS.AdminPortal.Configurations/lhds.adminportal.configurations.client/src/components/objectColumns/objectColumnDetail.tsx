@@ -21,7 +21,7 @@ const ObjectColumnDetail: FunctionComponent<ObjectColumnDetailProps> = (props) =
     let objectColumnRetrieved: ObjectColumnView | undefined
 
     if (objectColumnId !== "" && objectColumnId !== undefined) {
-        let { mappedObjectColumn } = objectColumnViewService.useGetObjectColumnById(objectColumnId);
+        const { mappedObjectColumn } = objectColumnViewService.useGetObjectColumnById(objectColumnId);
         objectColumnRetrieved = mappedObjectColumn;
     }
 
@@ -49,7 +49,7 @@ const ObjectColumnDetail: FunctionComponent<ObjectColumnDetailProps> = (props) =
             setMode('VIEW');
         }
         if (objectColumnId === "" || objectColumnId === undefined) {
-            setObjectColumn(new ObjectColumnView(Guid.create(), Guid.parse(specificationObjectId!)));
+            setObjectColumn(new ObjectColumnView(crypto.randomUUID(), specificationObjectId!));
             setMode('ADD');
         }
     }, [objectColumnId, objectColumnRetrieved, specificationObjectId]);

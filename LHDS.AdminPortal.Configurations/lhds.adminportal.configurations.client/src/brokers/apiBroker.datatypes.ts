@@ -9,7 +9,7 @@ class DataTypeBroker {
     private apiBroker: ApiBroker = new ApiBroker();
 
     private processOdataResult = (result: AxiosResponse) => {
-        const data = result.data.value.map((dataType: any) => new DataType(dataType));
+        const data = result.data.value.map((dataType: DataType) => new DataType(dataType));
 
         const nextPage = result.data['@odata.nextLink'];
         return { data, nextPage }
@@ -28,11 +28,11 @@ class DataTypeBroker {
         }
         
         return await this.apiBroker.GetAsync(url)
-            .then(result => result.data.map((optOut: any) => new DataType(optOut)));
+            .then(result => result.data.map((dataType: DataType) => new DataType(dataType)));
     }
 
     async GetDataTypeFirstPagesAsync(query: string) {
-        var url = this.relativeDataTypeOdataUrl + query;
+        const url = this.relativeDataTypeOdataUrl + query;
         return this.processOdataResult(await this.apiBroker.GetAsync(url));
     }
 

@@ -38,18 +38,18 @@ export const terminologyArtifactService = {
     },
 
     useGetAllTerminologyArtifactsPages: (query: string) => {
-        const terminologyArtifactBroker = new TerminologyArtifactBroker();
+        const broker = new TerminologyArtifactBroker();
 
         return useInfiniteQuery({
             queryKey: ["TerminologyArtifactsGetAll", { query: query }],
             queryFn: ({ pageParam }) => {
                 if (!pageParam) {
-                    return terminologyArtifactBroker.GetTerminologyArtifactsFirstPagesAsync(query)
+                    return broker.GetTerminologyArtifactsFirstPagesAsync(query)
                 }
-                return terminologyArtifactBroker.GetTerminologyArtifactsSubsequentPagesAsync(pageParam)
+                return broker.GetTerminologyArtifactsSubsequentPagesAsync(pageParam)
             },
-
-            getNextPageParam: (lastPage) => lastPage.nextPage,
+            initialPageParam: "",
+            getNextPageParam: (lastPage: { nextPage?: string }) => lastPage.nextPage ?? null,
             staleTime: Infinity
         });
     },

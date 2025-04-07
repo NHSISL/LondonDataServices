@@ -6,12 +6,12 @@ import { SubscriberAgreement } from "../../../models/subscriberAgreements/subscr
 
 type SubscriberAgreementViewServiceResponse = {
     mappedSubscriberAgreements: SubscriberAgreementView[] | undefined;
-    pages: any;
+    pages: Array<{ data: SubscriberAgreementView[] }>;
     isLoading: boolean;
     fetchNextPage: () => void;
     isFetchingNextPage: boolean;
     hasNextPage: boolean;
-    data: any;
+    data: { pages: Array<{ data: SubscriberAgreementView[] }> } | undefined;
     refetch: () => void
 }
 
@@ -30,7 +30,7 @@ export const subscriberAgreementViewService = {
 
         const response = subscriberAgreementService.useRetrieveAllSubscriberAgreementPages(query);
         const [mappedSubscriberAgreements, setMappedSubscriberAgreements] = useState<Array<SubscriberAgreementView>>();
-        const [pages, setPages] = useState<any>([]);
+        const [pages, setPages] = useState<Array<{ data: SubscriberAgreementView[] }>>([]);
 
         useEffect(() => {
             if (response.data && response.data.pages) {

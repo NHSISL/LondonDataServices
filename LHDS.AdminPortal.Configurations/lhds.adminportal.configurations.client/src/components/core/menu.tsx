@@ -1,4 +1,4 @@
-import { faAddressBook, faBookMedical, faCogs, faFileContract, faHome, faList, faList12, faMap, faMapPin, faTruckField, faUserDoctor } from '@fortawesome/free-solid-svg-icons';
+import { faAddressBook, faBookMedical, faCogs, faFileContract, faHome, faList, faMap, faMapPin, faTruckField } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import React, { useState } from 'react';
 import { ListGroup } from 'react-bootstrap';

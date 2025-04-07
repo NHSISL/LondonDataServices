@@ -13,7 +13,7 @@ import { specificationObjectErrors } from "./specificationObjectErrors";
 import { specificationObjectValidations } from "./specificationObjectValidations";
 import TextAreaInputBase from "../bases/inputs/TextAreaInputBase";
 import CheckboxBase from "../bases/inputs/CheckboxBase";
-
+import { ApiError } from "../../types/apiError";
 
 interface SpecificationObjectDetailCardEditProps {
     specificationObject: SpecificationObjectView;
@@ -22,7 +22,7 @@ interface SpecificationObjectDetailCardEditProps {
     onCancel: () => void;
     mode: string;
     onModeChange: (value: string) => void;
-    apiError?: any;
+    apiError?: ApiError;
 }
 
 const SpecificationObjectDetailCardEdit: FunctionComponent<SpecificationObjectDetailCardEditProps> = (props) => {

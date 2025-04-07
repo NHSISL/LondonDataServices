@@ -3,6 +3,7 @@ import { SupplierView } from "../../models/views/components/suppliers/supplierVi
 import SupplierRowView from "./supplierRowView";
 import SupplierRowEdit from "./supplierRowEdit";
 import SupplierRowDelete from "./supplierRowDelete";
+import { ApiError } from "../../types/apiError";
 
 type SupplierRowProps = {
     supplier: SupplierView;
@@ -22,8 +23,7 @@ const SupplierRow: FunctionComponent<SupplierRowProps> = (props) => {
     } = props;
 
     const [mode, setMode] = useState<string>('VIEW');
-    const [apiError, setApiError] = useState<any>({});
-
+    const [apiError, setApiError] = useState<ApiError>({ response: { data: { errors: {} } } });
 
     const handleMode = (value: string) => {
         setMode(value);
@@ -34,7 +34,8 @@ const SupplierRow: FunctionComponent<SupplierRowProps> = (props) => {
             await onUpdate(supplier);
             setMode('VIEW');
         } catch (error) {
-            setApiError(error);
+            const apiError = error as ApiError;
+            setApiError(apiError);
             setMode('EDIT');
         }
     };

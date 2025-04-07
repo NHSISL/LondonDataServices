@@ -1,4 +1,3 @@
-import { Guid } from "guid-typescript";
 import ApiBroker from "./apiBroker";
 import { AxiosResponse } from "axios";
 import { SubscriberAgreement } from "../models/subscriberAgreements/subscriberAgreements";
@@ -11,7 +10,7 @@ class SubscriberAgreementBroker {
     private apiBroker: ApiBroker = new ApiBroker();
 
     private processOdataResult = (result: AxiosResponse) => {
-        const data = result.data.value.map((subscriberAgreement: any) => new SubscriberAgreement(subscriberAgreement));
+        const data = result.data.value.map((subscriberAgreement: SubscriberAgreement) => new SubscriberAgreement(subscriberAgreement));
 
         const nextPage = result.data['@odata.nextLink'];
         return { data, nextPage }
@@ -30,11 +29,11 @@ class SubscriberAgreementBroker {
         }
         
         return await this.apiBroker.GetAsync(url)
-            .then(result => result.data.map((subscriberAgreement: any) => new SubscriberAgreement(subscriberAgreement)));
+            .then(result => result.data.map((subscriberAgreement: SubscriberAgreement) => new SubscriberAgreement(subscriberAgreement)));
     }
 
     async GetSubscriberAgreementFirstPagesAsync(query: string) {
-        var url = this.relativeSubscriberAgreementOdataUrl + query;
+        const url = this.relativeSubscriberAgreementOdataUrl + query;
         return this.processOdataResult(await this.apiBroker.GetAsync(url));
     }
 
@@ -42,7 +41,7 @@ class SubscriberAgreementBroker {
         return this.processOdataResult(await this.apiBroker.GetAsyncAbsolute(absoluteUri));
     }
 
-    async GetSubscriberAgreementByIdAsync(id: Guid) {
+    async GetSubscriberAgreementByIdAsync(id: string) {
         const url = `${this.relativeSubscriberAgreementUrl}/${id}`;
 
         return await this.apiBroker.GetAsync(url)
@@ -59,7 +58,7 @@ class SubscriberAgreementBroker {
             .then(result => new SubscriberAgreement(result.data));
     }
 
-    async DeleteSubscriberAgreementByIdAsync(id: Guid) {
+    async DeleteSubscriberAgreementByIdAsync(id: string) {
         const url = `${this.relativeSubscriberAgreementUrl}/${id}`;
 
         return await this.apiBroker.DeleteAsync(url)

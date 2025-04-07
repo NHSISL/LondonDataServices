@@ -7,6 +7,7 @@ import { useNavigate } from "react-router-dom";
 import { DataSetView } from "../../models/views/components/dataSets/dataSetView";
 import DataSetDetailCardView from "./dataSetDetailCardView";
 import DataSetDetailCardEdit from "./dataSetDetailCardEdit";
+import { ApiError } from "../../types/apiError";
 
 interface DataSetDetailCardProps {
     dataSet: DataSetView;
@@ -28,7 +29,7 @@ const DataSetDetailCard: FunctionComponent<DataSetDetailCardProps> = (props) => 
     } = props;
 
     const [displayMode, setDisplayMode] = useState<string>(mode);
-    const [apiError, setApiError] = useState<any>({});
+    const [apiError, setApiError] = useState<ApiError>({ response: { data: { errors: {} } } });
 
     const handleModeChange = (value: string) => {
         setDisplayMode(value);
@@ -42,6 +43,7 @@ const DataSetDetailCard: FunctionComponent<DataSetDetailCardProps> = (props) => 
             navigate('/configuration/dataSets');
         } catch (error) {
             setDisplayMode('EDIT');
+            console.log(error);
         }
     };
 

@@ -65,7 +65,7 @@ export const SecuredLink = ({ to, children, icon, allowedRoles = [], deniedRoles
         return []
     }
 
-    const userIsInRole = (roles: Array<string>): Boolean => {
+    const userIsInRole = (roles: Array<string>): boolean => {
         let found = false;
         roles.forEach(r => {
             if (userRoles().indexOf(r) > -1) {
@@ -104,7 +104,7 @@ export const SecuredComponents = ({ children, allowedRoles = [], deniedRoles = [
         return []
     }
 
-    const userIsInRole = (roles: Array<string>): Boolean => {
+    const userIsInRole = (roles: Array<string>): boolean => {
         let found = false;
         roles.forEach(r => {
             if (userRoles().indexOf(r) > -1) {

@@ -16,6 +16,7 @@ import TextAreaInputBase from "../bases/inputs/TextAreaInputBase";
 import CheckboxBase from "../bases/inputs/CheckboxBase";
 import DateInputBase from "../bases/inputs/DateInputBase";
 import moment from "moment";
+import { ApiError } from "../../types/apiError";
 
 interface DataSetSpecificationDetailCardEditProps {
     dataSetSpecification: DataSetSpecificationView;
@@ -25,7 +26,7 @@ interface DataSetSpecificationDetailCardEditProps {
     onCancel: () => void;
     mode: string;
     onModeChange: (value: string) => void;
-    apiError?: any;
+    apiError?: ApiError;
 }
 
 const DataSetSpecificationDetailCardEdit: FunctionComponent<DataSetSpecificationDetailCardEditProps> = (props) => {

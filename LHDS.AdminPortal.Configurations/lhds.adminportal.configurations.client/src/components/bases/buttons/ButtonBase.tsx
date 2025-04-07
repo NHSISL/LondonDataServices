@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import React, { FunctionComponent, HTMLProps } from "react";
 import classNames from 'classnames';
 import "./ButtonBaseStyle.scss"
@@ -33,8 +34,7 @@ const ButtonBase: FunctionComponent<ButtonBaseProps> = (
         cancel,
         view,
         info,
-        className,
-        ...rest
+        className
     }
 ) => 
     {

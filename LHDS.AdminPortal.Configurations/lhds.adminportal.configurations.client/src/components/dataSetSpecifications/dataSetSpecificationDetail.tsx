@@ -20,7 +20,7 @@ const DataSetSpecificationDetail: FunctionComponent<DataSetSpecificationDetailPr
     let dataSetSpecificationRetrieved: DataSetSpecificationView | undefined
 
     if (dataSetSpecificationId !== "" && dataSetSpecificationId !== undefined) {
-        let { mappedDataSetSpecification } = dataSetSpecificationViewService.useGetDataSetSpecificationById(dataSetSpecificationId);
+        const { mappedDataSetSpecification } = dataSetSpecificationViewService.useGetDataSetSpecificationById(dataSetSpecificationId);
         dataSetSpecificationRetrieved = mappedDataSetSpecification;
     }
 

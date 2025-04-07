@@ -228,6 +228,19 @@ namespace LHDS.Core.Services.Orchestrations.Addresses
             return addresses;
         }
 
+        virtual internal async ValueTask ProcessStreetDescriptorDataAsync(string streetDescriptorCsvFile)
+        {
+            List<Address> streetDescriptorAddresses =
+                await MapStreetDescriptorDataToAddressesAsync(streetDescriptorCsvFile);
+
+            IQueryable<Address> addresses = await this.addressProcessingService.RetrieveAllAddressesAsync();
+
+        }
+
+        virtual internal async ValueTask<List<Address>> MapStreetDescriptorDataToAddressesAsync(
+            string streetDescriptorCsvFile) =>
+            throw new NotImplementedException();
+
         public ValueTask SyncAddressesWithAssignAsync()
         {
             throw new NotImplementedException();

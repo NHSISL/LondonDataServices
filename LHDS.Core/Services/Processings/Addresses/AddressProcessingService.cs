@@ -29,7 +29,6 @@ namespace LHDS.Core.Services.Processings.Addresses
             TryCatch(async () =>
             {
                 ValidateArguments(addresses, fileName);
-
                 await this.addressService.BulkAddAddressesAsync(addresses, fileName);
             });
 
@@ -37,7 +36,6 @@ namespace LHDS.Core.Services.Processings.Addresses
             TryCatch(async () =>
             {
                 ValidateArguments(addresses, fileName);
-
                 await this.addressService.BulkModifyAddressesAsync(addresses, fileName);
             });
 

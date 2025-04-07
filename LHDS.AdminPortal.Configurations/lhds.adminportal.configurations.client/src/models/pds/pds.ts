@@ -9,7 +9,7 @@ export class Pds {
     public updatedDate?: Date;
     public updatedBy?: string;
 
-    constructor(pds: any) {
+    constructor(pds: Pds) {
         this.id = pds.id ? pds.id : "";
         this.correlationId = pds.correlationId;
         this.message = pds.message;

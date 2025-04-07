@@ -9,7 +9,7 @@ import { documentService } from "../foundations/documentService";
 
 type IngestionTrackingHomeViewServiceResponse = {
     mappedIngestionTrackings: IngestionTrackingHomeView[] | undefined;
-    pages: any;
+    pages: Array<{ data: IngestionTrackingHomeView[] }>;
     supplierOptions: Array<LookupView>; // Include the supplierOptions array in the returned object
     selectedOption: string | undefined;
     handleSupplierChange: (event: React.ChangeEvent<{ value: unknown }>) => void;
@@ -17,7 +17,7 @@ type IngestionTrackingHomeViewServiceResponse = {
     fetchNextPage: () => void;
     isFetchingNextPage: boolean;
     hasNextPage: boolean;
-    data: any;
+    data: { pages: Array<{ data: IngestionTrackingHomeView[] }> } | undefined;
     refetch: () => void
 }
 
@@ -36,7 +36,7 @@ export const ingestionTrackingHomeViewService = {
 
         const response = ingestionTrackingService.useGetAllIngestionTrackingPages(query);
         const [mappedIngestionTrackings, setMappedIngestionTrackings] = useState<Array<IngestionTrackingHomeView>>();
-        const [pages, setPages] = useState<any>([]);
+        const [pages, setPages] = useState<Array<{ data: IngestionTrackingHomeView[] }>>([]);
         const [supplierOptions, setSupplierOptions] = useState<Array<LookupView>>([]);
         const [selectedOption, setSelectedOption] = useState<string>();
 

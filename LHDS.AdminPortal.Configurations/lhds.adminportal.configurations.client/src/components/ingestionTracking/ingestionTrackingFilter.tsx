@@ -20,7 +20,7 @@ const IngestionFilterModal: FunctionComponent<FilterModalProps> = (props) => {
         onAddFilter
     } = props;
 
-    let { mappedSuppliers: suppliersRetrieved } = lookupViewService.useGetSupplierList("");
+    const { mappedSuppliers: suppliersRetrieved } = lookupViewService.useGetSupplierList("");
     const [supplier, setSupplier] = useState<SupplierView>(new SupplierView(crypto.randomUUID()));
 
     const handleFilterClick = () => {

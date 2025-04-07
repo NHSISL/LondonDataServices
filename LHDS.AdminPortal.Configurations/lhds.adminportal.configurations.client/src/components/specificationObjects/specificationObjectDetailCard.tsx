@@ -7,6 +7,7 @@ import { useNavigate } from "react-router-dom";
 import { SpecificationObjectView } from "../../models/views/components/specificationObjects/specificationObjectView";
 import SpecificationObjectDetailCardView from "./specificationObjectDetailCardView";
 import SpecificationObjectDetailCardEdit from "./specificationObjectDetailCardEdit";
+import { ApiError } from "../../types/apiError";
 
 interface SpecificationObjectDetailCardProps {
     specificationObject: SpecificationObjectView;
@@ -30,7 +31,7 @@ const SpecificationObjectDetailCard: FunctionComponent<SpecificationObjectDetail
     } = props;
 
     const [displayMode, setDisplayMode] = useState<string>(mode);
-    const [apiError, setApiError] = useState<any>({});
+    const [apiError, setApiError] = useState<ApiError>({ response: { data: { errors: {} } } });
 
     const handleModeChange = (value: string) => {
         setDisplayMode(value);
@@ -44,6 +45,7 @@ const SpecificationObjectDetailCard: FunctionComponent<SpecificationObjectDetail
             navigate('/configuration/dataSetSpecification/' + dataSetId + '' + specificationObject.dataSetSpecificationId);
         } catch (error) {
             setDisplayMode('EDIT');
+            console.log(error);
         }
     };
 

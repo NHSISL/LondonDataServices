@@ -1,4 +1,3 @@
-import { Guid } from "guid-typescript";
 import ApiBroker from "./apiBroker";
 import { TerminologyArtifact } from "../models/terminologyArtifacts/terminologyArtifact";
 import { AxiosResponse } from "axios";
@@ -10,7 +9,7 @@ class TerminologyArtifactBroker {
     private apiBroker: ApiBroker = new ApiBroker();
 
     private processOdataResult = (result: AxiosResponse) => {
-        const data = result.data.value.map((terminologyArtifact: any) => new TerminologyArtifact(terminologyArtifact));
+        const data = result.data.value.map((terminologyArtifact: TerminologyArtifact) => new TerminologyArtifact(terminologyArtifact));
 
         const nextPage = result.data['@odata.nextLink'];
         return { data, nextPage }
@@ -22,14 +21,14 @@ class TerminologyArtifactBroker {
     }
 
     async GetAllTerminologyArtifactsAsync(queryString: string) {
-        let url = this.relativeTerminologyArtifactUrl + queryString;
+        const url = this.relativeTerminologyArtifactUrl + queryString;
 
         return await this.apiBroker.GetAsync(url)
-            .then(result => result.data.map((terminologyArtifact: any) => new TerminologyArtifact(terminologyArtifact)));
+            .then(result => result.data.map((terminologyArtifact: TerminologyArtifact) => new TerminologyArtifact(terminologyArtifact)));
     }
 
     async GetTerminologyArtifactsFirstPagesAsync(query: string) {
-        var url = this.relativeTerminologyArtifactsOdataUrl + query;
+        const url = this.relativeTerminologyArtifactsOdataUrl + query;
         return this.processOdataResult(await this.apiBroker.GetAsync(url));
     }
 
@@ -37,7 +36,7 @@ class TerminologyArtifactBroker {
         return this.processOdataResult(await this.apiBroker.GetAsyncAbsolute(absoluteUri));
     }
 
-    async GetTerminologyArtifactByIdAsync(id: Guid) {
+    async GetTerminologyArtifactByIdAsync(id: string) {
         const url = `${this.relativeTerminologyArtifactUrl}/${id}`;
 
         return await this.apiBroker.GetAsync(url)
@@ -49,7 +48,7 @@ class TerminologyArtifactBroker {
             .then(result => new TerminologyArtifact(result.data));
     }
 
-    async DeleteTerminologyArtifactByIdAsync(id: Guid) {
+    async DeleteTerminologyArtifactByIdAsync(id: string) {
         const url = `${this.relativeTerminologyArtifactUrl}/${id}`;
 
         return await this.apiBroker.DeleteAsync(url)

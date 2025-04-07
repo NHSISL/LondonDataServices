@@ -7,6 +7,7 @@ import CardBaseContent from "../bases/components/Card/CardBase.Content";
 import { useNavigate } from "react-router-dom";
 import SubscriberAgreementDetailCardEdit from "./subscriberAgreementDetailCardEdit";
 import { SubscriberCredentialView } from "../../models/views/components/subscriberCredentials/subscriberCredentialView";
+import { ApiError } from "../../types/apiError";
 
 interface SubscriberAgreementDetailCardProps {
     subscriberCredential: SubscriberCredentialView;
@@ -30,7 +31,7 @@ const SubscriberAgreementDetailCard: FunctionComponent<SubscriberAgreementDetail
     } = props;
 
     const [displayMode, setDisplayMode] = useState<string>(mode);
-    const [apiError, setApiError] = useState<any>({});
+    const [apiError, setApiError] = useState<ApiError>({ response: { data: { errors: {} } } });
 
     const handleModeChange = (value: string) => {
         setDisplayMode(value);
@@ -43,6 +44,8 @@ const SubscriberAgreementDetailCard: FunctionComponent<SubscriberAgreementDetail
             await onAdd(subscriberCredential);
             navigate('/configuration/subscriberAgreements');
         } catch (error) {
+            const apiError = error as ApiError;
+            setApiError(apiError);
             setDisplayMode('EDIT');
         }
     };
@@ -52,7 +55,8 @@ const SubscriberAgreementDetailCard: FunctionComponent<SubscriberAgreementDetail
             await onUpdate(subscriberCredential);
             setDisplayMode('VIEW');
         } catch (error) {
-            setApiError(error);
+            const apiError = error as ApiError;
+            setApiError(apiError);
             setDisplayMode('EDIT');
         }
     };
@@ -67,7 +71,8 @@ const SubscriberAgreementDetailCard: FunctionComponent<SubscriberAgreementDetail
             await onRegenerate(subscriberCredential);
             setDisplayMode('VIEW');
         } catch (error) {
-            setApiError(error);
+            const apiError = error as ApiError;
+            setApiError(apiError);
             setDisplayMode('VIEW');
         }
     };

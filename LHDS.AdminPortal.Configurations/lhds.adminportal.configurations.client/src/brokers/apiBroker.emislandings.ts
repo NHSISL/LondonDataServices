@@ -7,7 +7,7 @@ class EmisLandingBroker {
     private apiBroker: ApiBroker = new ApiBroker();
 
     async PutRedecryptDocumentByIngestionTrackingIdAsync(ingestionTracking: IngestionTracking) {
-        var ingestionTrackingId = ingestionTracking.id;
+        const ingestionTrackingId = ingestionTracking.id;
         const url = `${this.relativeEmisLandingUrl}/decrypt/${ingestionTrackingId}`;
 
         return await this.apiBroker.PutAsync(url, {})

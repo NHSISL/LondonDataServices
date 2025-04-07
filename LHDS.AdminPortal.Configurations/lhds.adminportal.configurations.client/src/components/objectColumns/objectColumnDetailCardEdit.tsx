@@ -13,6 +13,7 @@ import { ObjectColumnView } from "../../models/views/components/objectColumns/ob
 import { objectColumnErrors } from "./objectColumnErrors";
 import { objectColumnValidations } from "./objectColumnValidations";
 import CheckboxBase from "../bases/inputs/CheckboxBase";
+import { ApiError } from "../../types/apiError";
 
 interface ObjectColumnDetailCardEditProps {
     objectColumn: ObjectColumnView;
@@ -21,7 +22,7 @@ interface ObjectColumnDetailCardEditProps {
     onCancel: () => void;
     mode: string;
     onModeChange: (value: string) => void;
-    apiError?: any;
+    apiError?: ApiError;
 }
 
 const SpecificationObjectDetailCardEdit: FunctionComponent<ObjectColumnDetailCardEditProps> = (props) => {

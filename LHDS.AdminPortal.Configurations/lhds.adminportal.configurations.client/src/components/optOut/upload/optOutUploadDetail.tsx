@@ -18,7 +18,7 @@ const OptOutUploadDetail: FunctionComponent<OptOutUploadDetailProps> = (props) =
     const addOptOut = optOutService.useCreateOptOut();
     const handleUpload = (values: OptOut[]) => {  
         values.forEach((value) => {
-            let DateNow = new Date();
+            const DateNow = new Date();
 
             const optOutData = {
                 id: crypto.randomUUID(),
@@ -37,7 +37,7 @@ const OptOutUploadDetail: FunctionComponent<OptOutUploadDetailProps> = (props) =
                     onUploadSuccess = true;
                 },
                 onError: (error) => {
-                    toastError("Error uploading values.");
+                    toastError(error.message);
                 }
             });
         });

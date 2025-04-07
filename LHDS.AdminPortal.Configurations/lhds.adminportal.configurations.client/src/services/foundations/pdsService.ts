@@ -48,8 +48,8 @@ export const pdsService = {
                 }
                 return pdsBroker.GetPdsSubsequentPagesAsync(pageParam)
             },
-
-            getNextPageParam: (lastPage) => lastPage.nextPage,
+            initialPageParam: "",
+            getNextPageParam: (lastPage: { nextPage?: string }) => lastPage.nextPage ?? null,
             staleTime: Infinity
         });
     },

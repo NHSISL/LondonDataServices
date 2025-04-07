@@ -9,7 +9,7 @@ class DataSetBroker {
     private apiBroker: ApiBroker = new ApiBroker();
 
     private processOdataResult = (result: AxiosResponse) => {
-        const data = result.data.value.map((dataSet: any) => new DataSet(dataSet));
+        const data = result.data.value.map((dataSet: DataSet) => new DataSet(dataSet));
 
         const nextPage = result.data['@odata.nextLink'];
         return { data, nextPage }
@@ -28,11 +28,11 @@ class DataSetBroker {
         }
         
         return await this.apiBroker.GetAsync(url)
-            .then(result => result.data.map((optOut: any) => new DataSet(optOut)));
+            .then(result => result.data.map((dataSet: DataSet) => new DataSet(dataSet)));
     }
 
     async GetDataSetFirstPagesAsync(query: string) {
-        var url = this.relativeDataSetOdataUrl + query;
+        const url = this.relativeDataSetOdataUrl + query;
         return this.processOdataResult(await this.apiBroker.GetAsync(url));
     }
 
@@ -40,7 +40,7 @@ class DataSetBroker {
         return this.processOdataResult(await this.apiBroker.GetAsyncAbsolute(absoluteUri));
     }
 
-    async GetDataSetByIdAsync(id: Guid) {
+    async GetDataSetByIdAsync(id: string) {
         const url = `${this.relativeDataSetUrl}/${id}`;
 
         return await this.apiBroker.GetAsync(url)

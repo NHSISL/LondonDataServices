@@ -41,7 +41,6 @@ const DataTypeTable: FunctionComponent<DataTypeTableProps> = (props) => {
     const deleteDataType = dataTypeViewService.useRemoveDataType();
 
     const [addMode, setAddMode] = useState<boolean>(false);
-    const [addApiError, setAddApiError] = useState<any>({});
 
     const handleSearchChange = (value: string) => {
         setSearchTerm(value);
@@ -52,13 +51,10 @@ const DataTypeTable: FunctionComponent<DataTypeTableProps> = (props) => {
         setAddMode(!addMode);
     };
 
-    const handleAddNew = (dataType: DataTypeView) => {
+    const handleAddNew = async (dataType: DataTypeView) => {
         return addDataType.mutate(dataType, {
             onSuccess: () => {
                 setAddMode(false);
-            },
-            onError: (error: any) => {
-                setAddApiError(error?.response?.data?.errors);
             }
         });
     };

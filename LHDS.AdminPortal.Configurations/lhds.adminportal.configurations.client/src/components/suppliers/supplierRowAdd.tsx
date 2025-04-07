@@ -8,11 +8,12 @@ import { useValidation } from "../../hooks/useValidation";
 import { supplierValidations } from "./supplierValidations";
 import { supplierErrors } from "./supplierErrors";
 import TextAreaInputBase from "../bases/inputs/TextAreaInputBase";
+import { ApiError } from "../../types/apiError";
 
 interface SupplierRowAddProps {
     onCancel: () => void;
     onAdd: (supplier: SupplierView) => void;
-    apiError?: any;
+    apiError?: ApiError;
 }
 
 const SupplierRowAdd: FunctionComponent<SupplierRowAddProps> = (props) => {

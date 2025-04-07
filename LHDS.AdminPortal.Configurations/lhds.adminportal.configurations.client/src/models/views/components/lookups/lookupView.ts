@@ -2,7 +2,7 @@ export class LookupView {
     public id: string;
     public name?: string;
 
-    constructor(id: string, name?: string, isActive?: boolean) {
+    constructor(id: string, name?: string) {
         this.id = id;
         this.name = name || "";
     }

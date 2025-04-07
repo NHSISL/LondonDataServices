@@ -1,4 +1,4 @@
-import React, { FunctionComponent} from "react";
+import React, { FunctionComponent } from "react";
 import TerminologyArtifactDetailCard from "./terminologyArtifactDetailCard";
 import { terminologyArtifactViewService } from "../../services/views/terminologyArtifacts/terminologyArtifactViewService";
 import { TerminologyArtifactView } from "../../models/views/components/terminologyArtifacts/terminologyArtifactsView";
@@ -14,10 +14,12 @@ const TerminologyArtifactDetail: FunctionComponent<TerminologyArtifactDetailProp
         children
     } = props;
 
-     const { mappedTerminologyArtifact: terminologyArtifactRetrieved } =
+    const { mappedTerminologyArtifact: terminologyArtifactRetrieved } =
         terminologyArtifactViewService.useGetTerminologyArtifactById(terminologyArtifactId)
 
-    const handleRefresh = async (terminologyArtifactView: TerminologyArtifactView) => { }
+    const handleRefresh = async () => {
+        console.log("TODO: ");
+    }
 
     const updateTerminology = terminologyArtifactViewService.useUpdateTerminologyArtifact();
 
@@ -38,7 +40,7 @@ const TerminologyArtifactDetail: FunctionComponent<TerminologyArtifactDetailProp
                         key={terminologyArtifactRetrieved.id.toString()}
                         terminologyArtifact={terminologyArtifactRetrieved}
                         onRefresh={handleRefresh}
-                        onUpdate={handleUpdate}>                   
+                        onUpdate={handleUpdate}>
                         {children}
                     </TerminologyArtifactDetailCard>
                 </div>

@@ -1,4 +1,3 @@
-import { Guid } from "guid-typescript";
 import { useEffect, useState } from "react";
 import { terminologyArtifactService } from "../../foundations/terminologyArtifactService";
 import { TerminologyArtifactView } from "../../../models/views/components/terminologyArtifacts/terminologyArtifactsView";
@@ -22,25 +21,25 @@ export const terminologyArtifactViewService = {
         const [mappedTerminologyArtifacts, setMappedTerminologyArtifacts] = useState<Array<TerminologyArtifactView>>([]);
 
         useEffect(() => {
-            if (response.data) {
+            if (response.data && response.data.pages) {
                 const terminologyArtifacts = response.data.map((terminologyArtifact: TerminologyArtifact) =>
                     new TerminologyArtifactView(
-                        terminologyArtifacts.id,
-                        terminologyArtifacts.fullUrl,
-                        terminologyArtifacts.resourceType,
-                        terminologyArtifacts.version,
-                        terminologyArtifacts.name,
-                        terminologyArtifacts.title,
-                        terminologyArtifacts.status,
-                        terminologyArtifacts.lastUpdated,
-                        terminologyArtifacts.isCore,
-                        terminologyArtifacts.isDownloaded,
-                        terminologyArtifacts.isError,
-                        terminologyArtifacts.errorMessage,
-                        terminologyArtifacts.createdBy,
-                        terminologyArtifacts.createdDate,
-                        terminologyArtifacts.updatedBy,
-                        terminologyArtifacts.updatedDate,
+                        terminologyArtifact.id,
+                        terminologyArtifact.fullUrl,
+                        terminologyArtifact.resourceType,
+                        terminologyArtifact.version,
+                        terminologyArtifact.name,
+                        terminologyArtifact.title,
+                        terminologyArtifact.status,
+                        terminologyArtifact.lastUpdated,
+                        terminologyArtifact.isCore,
+                        terminologyArtifact.isDownloaded,
+                        terminologyArtifact.isError,
+                        terminologyArtifact.errorMessage,
+                        terminologyArtifact.createdBy,
+                        terminologyArtifact.createdDate,
+                        terminologyArtifact.updatedBy,
+                        terminologyArtifact.updatedDate,
                     ));
 
                 setMappedTerminologyArtifacts(terminologyArtifacts);
@@ -52,7 +51,7 @@ export const terminologyArtifactViewService = {
         }
     },
 
-    useGetTerminologyArtifactById: (id: Guid) => {
+    useGetTerminologyArtifactById: (id: string) => {
 
         const query = `?$filter=id eq ${id}`
         const response = terminologyArtifactService.useGetAllTerminologyArtifacts(query);

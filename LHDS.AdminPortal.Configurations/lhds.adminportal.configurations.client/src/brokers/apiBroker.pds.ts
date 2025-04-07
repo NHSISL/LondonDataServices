@@ -1,4 +1,3 @@
-import { Guid } from "guid-typescript";
 import { Pds } from "../models/pds/pds";
 import ApiBroker from "./apiBroker";
 import { AxiosResponse } from "axios";
@@ -10,7 +9,7 @@ class PdsBroker {
     private apiBroker: ApiBroker = new ApiBroker();
 
     private processOdataResult = (result: AxiosResponse) => {
-        const data = result.data.value.map((pds: any) => new Pds(pds));
+        const data = result.data.value.map((pds: Pds) => new Pds(pds));
 
         const nextPage = result.data['@odata.nextLink'];
         return { data, nextPage }
@@ -22,11 +21,11 @@ class PdsBroker {
             return undefined;
         }
         return await this.apiBroker.GetAsync(url)
-            .then(result => result.data.map((pds: any) => new Pds(pds)));
+            .then(result => result.data.map((pds: Pds) => new Pds(pds)));
     }
 
     async GetPdsFirstPagesAsync(query: string) {
-        var url = this.relativePdsOdataUrl + query;
+        const url = this.relativePdsOdataUrl + query;
         return this.processOdataResult(await this.apiBroker.GetAsync(url));
     }
 
@@ -44,7 +43,7 @@ class PdsBroker {
             .then(result => new Pds(result.data));
     }
 
-    async DeletePdsByIdAsync(id: Guid) {
+    async DeletePdsByIdAsync(id: string) {
         const url = `${this.relativePdsUrl}/${id}`;
 
         return await this.apiBroker.DeleteAsync(url)

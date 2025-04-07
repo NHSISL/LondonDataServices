@@ -29,13 +29,14 @@ const OptOutUploadDetailCardView: FunctionComponent<OptOutUploadDetailCardViewPr
 
             const columns = row.split(',');
 
-            const optOut: any = {};
-            optOut.id = "";
-            optOut.nhsNumber = columns[1];
-            optOut.status = columns[2];
-            optOut.uniqueReference = columns[0];
+            const optOut: OptOut = {
+                id: "",
+                nhsNumber: columns[1],
+                status: columns[2],
+                uniqueReference: columns[0]
+            };
 
-            optOuts.push(new OptOut(optOut));
+            optOuts.push(optOut);
         }
 
         return optOuts;

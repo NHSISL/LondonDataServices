@@ -40,7 +40,6 @@ const SupplierTable: FunctionComponent<SupplierTableProps> = (props) => {
     const updateSupplier = supplierViewService.useUpdateSupplier();
     const deleteSupplier = supplierViewService.useRemoveSupplier();
     const [addMode, setAddMode] = useState<boolean>(false);
-    const [addApiError, setAddApiError] = useState<any>({});
 
     const handleSearchChange = (value: string) => {
         setSearchTerm(value);
@@ -55,9 +54,6 @@ const SupplierTable: FunctionComponent<SupplierTableProps> = (props) => {
         return addSupplier.mutate(supplier, {
             onSuccess: () => {
                 setAddMode(false);
-            },
-            onError: (error: any) => {
-                setAddApiError(error?.response?.data?.errors);
             }
         });
     };

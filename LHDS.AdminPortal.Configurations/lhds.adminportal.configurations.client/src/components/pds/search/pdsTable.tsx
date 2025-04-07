@@ -18,9 +18,7 @@ import TableBaseRow from "../../bases/components/Table/TableBase.Row";
 import TableBaseHeader from "../../bases/components/Table/TableBase.Header";
 import { Row } from "react-bootstrap";
 
-type PdsTableProps = {};
-
-const PdsTable: FunctionComponent<PdsTableProps> = (props) => {
+const PdsTable: FunctionComponent<PdsTableProps> = () => {
     const [searchTerm, setSearchTerm] = useState<string>("");
     const [debouncedTerm, setDebouncedTerm] = useState<string>("");
 

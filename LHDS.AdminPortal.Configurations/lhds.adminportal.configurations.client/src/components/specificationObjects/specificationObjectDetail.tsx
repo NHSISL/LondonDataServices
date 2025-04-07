@@ -22,7 +22,7 @@ const SpecificationObjectDetail: FunctionComponent<SpecificationObjectDetailProp
     let specificationObjectRetrieved: SpecificationObjectView | undefined
 
     if (specificationObjectId !== "" && specificationObjectId !== undefined) {
-        let { mappedSpecificationObject } = specificationObjectViewService.useGetSpecificationObjectById(specificationObjectId);
+        const { mappedSpecificationObject } = specificationObjectViewService.useGetSpecificationObjectById(specificationObjectId);
         specificationObjectRetrieved = mappedSpecificationObject;
     }
 

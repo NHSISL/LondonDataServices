@@ -15,6 +15,7 @@ import { dataSetValidation } from "./dataSetValidation";
 import CheckboxBase from "../bases/inputs/CheckboxBase";
 import DateInputBase from "../bases/inputs/DateInputBase";
 import moment from "moment";
+import { ApiError } from "../../types/apiError";
 
 interface DataSetDetailCardEditProps {
     dataSet: DataSetView;
@@ -23,7 +24,7 @@ interface DataSetDetailCardEditProps {
     onCancel: () => void;
     mode: string;
     onModeChange: (value: string) => void;
-    apiError?: any;
+    apiError?: ApiError;
 }
 
 const DataSetDetailCardEdit: FunctionComponent<DataSetDetailCardEditProps> = (props) => {

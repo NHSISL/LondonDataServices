@@ -1,4 +1,3 @@
-import { Guid } from "guid-typescript";
 import ApiBroker from "./apiBroker";
 import { AxiosResponse } from "axios";
 import { SubscriberCredential } from "../models/subscriberCredentials/subscriberCredentials";
@@ -11,7 +10,7 @@ class SubscriberCredentialBroker {
     private apiBroker: ApiBroker = new ApiBroker();
 
     private processOdataResult = (result: AxiosResponse) => {
-        const data = result.data.value.map((subscriberCredential: any) => new SubscriberCredential(subscriberCredential));
+        const data = result.data.value.map((subscriberCredential: SubscriberCredential) => new SubscriberCredential(subscriberCredential));
 
         const nextPage = result.data['@odata.nextLink'];
         return { data, nextPage }
@@ -35,11 +34,11 @@ class SubscriberCredentialBroker {
         }
         
         return await this.apiBroker.GetAsync(url)
-            .then(result => result.data.map((subscriberCredential: any) => new SubscriberCredential(subscriberCredential)));
+            .then(result => result.data.map((subscriberCredential: SubscriberCredential) => new SubscriberCredential(subscriberCredential)));
     }
 
     async GetSubscriberCredentialFirstPagesAsync(query: string) {
-        var url = this.relativeSubscriberCredentialOdataUrl + query;
+        const url = this.relativeSubscriberCredentialOdataUrl + query;
         return this.processOdataResult(await this.apiBroker.GetAsync(url));
     }
 
@@ -47,7 +46,7 @@ class SubscriberCredentialBroker {
         return this.processOdataResult(await this.apiBroker.GetAsyncAbsolute(absoluteUri));
     }
 
-    async GetSubscriberCredentialByIdAsync(id: Guid) {
+    async GetSubscriberCredentialByIdAsync(id: string) {
         const url = `${this.relativeSubscriberCredentialUrl}/${id}`;
 
         return await this.apiBroker.GetAsync(url)
@@ -64,7 +63,7 @@ class SubscriberCredentialBroker {
             .then(result => new SubscriberCredential(result.data));
     }
 
-    async DeleteSubscriberCredentialByIdAsync(id: Guid) {
+    async DeleteSubscriberCredentialByIdAsync(id: string) {
         const url = `${this.relativeSubscriberCredentialUrl}/${id}`;
 
         return await this.apiBroker.DeleteAsync(url)

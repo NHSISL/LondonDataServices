@@ -4,7 +4,7 @@ interface PdsUploadDetailCardViewProps {
     onUpload: (data: string[]) => void;
 }
 
-const PdsUploadDetailCardView: FunctionComponent<PdsUploadDetailCardViewProps> = (props) => {
+const PdsUploadDetailCardView: FunctionComponent<PdsUploadDetailCardViewProps> = () => {
    
     return (
         <>

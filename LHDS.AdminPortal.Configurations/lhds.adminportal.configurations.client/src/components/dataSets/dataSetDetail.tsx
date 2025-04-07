@@ -18,7 +18,7 @@ const DataSetDetail: FunctionComponent<DataSetDetailProps> = (props) => {
     let dataSetRetrieved: DataSetView | undefined
 
     if (dataSetId !== "" && dataSetId !== undefined) {
-        let { mappedDataSet } = dataSetViewService.useGetDataSetById(dataSetId ?? "");
+        const { mappedDataSet } = dataSetViewService.useGetDataSetById(dataSetId ?? "");
         dataSetRetrieved = mappedDataSet;
     }
 

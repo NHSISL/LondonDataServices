@@ -19,11 +19,6 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faDatabase, faFilter, faRefresh } from "@fortawesome/free-solid-svg-icons";
 import IngestionFilterModal from "./ingestionTrackingFilter"; 
 import { SupplierView } from "../../models/views/components/suppliers/supplierView";
-import { emisLandingService } from "../../services/foundations/emisLandingService";
-import { toastSuccess } from "../../brokers/toastBroker.success";
-import { toastError } from "../../brokers/toastBroker.error";
-
-type IngestionTrackingTableProps = {};
 
 const IngestionTrackingTable: FunctionComponent<IngestionTrackingTableProps> = () => {
     const [searchTerm, setSearchTerm] = useState<string>("");
@@ -39,7 +34,6 @@ const IngestionTrackingTable: FunctionComponent<IngestionTrackingTableProps> = (
         fetchNextPage,
         isFetchingNextPage,
         hasNextPage,
-        data,
         refetch
     } = ingestionTrackingHomeViewService.useGetAllIngestionTrackings(
         debouncedTerm, debouncedSupplierTerm
@@ -70,21 +64,13 @@ const IngestionTrackingTable: FunctionComponent<IngestionTrackingTableProps> = (
     const handleEncryptedDownload = (ingestionTracking: IngestionTracking) => {
         return downloadEncryptedDocument.mutateAsync(ingestionTracking, {
             onSuccess: () => {
-            },
-            onError: (error: any) => {
             }
         });
     };
 
-    const updateEmisLanding = emisLandingService.useModifyEmisLanding();
-    const handleReDecrypt = (ingestionTracking: IngestionTracking) => {
-        updateEmisLanding.updateIngestionTracking(ingestionTracking)
-            .then(() => {
-                toastSuccess("Ingestion Tracking Queued for Decrypt")
-            })
-            .catch(e => {
-                toastError("error")
-            });
+    //const updateEmisLanding = emisLandingService.useModifyEmisLanding();
+    const handleReDecrypt = () => {
+        console.log("TODO: Handle ReDecrypt");
     };
 
     const handleFilter = (supplier: SupplierView) => {
@@ -93,7 +79,7 @@ const IngestionTrackingTable: FunctionComponent<IngestionTrackingTableProps> = (
     };
 
     const hasNoMorePages = () => {
-        return !isLoading && data?.pages.at(-1)?.nextPage === undefined;
+        return !isLoading && !hasNextPage;
     };
 
     const refreshData = () => {

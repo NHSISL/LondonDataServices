@@ -7,11 +7,12 @@ import { useValidation } from "../../hooks/useValidation";
 import { DataTypeView } from "../../models/views/components/dataTypes/dataTypeView";
 import { dataTypeErrors } from "./dataTypeErrors";
 import { dataTypeValidations } from "./dataTypeValidations";
+import { ApiError } from "../../types/apiError";
 
 interface DataTypeRowAddProps {
     onCancel: () => void;
     onAdd: (dataType: DataTypeView) => void;
-    apiError?: any;
+    apiError?: ApiError;
 }
 
 const DataTypeRowAdd: FunctionComponent<DataTypeRowAddProps> = (props) => {

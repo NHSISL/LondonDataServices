@@ -24,9 +24,7 @@ import { Link } from "react-router-dom";
 import ButtonBase from "../bases/buttons/ButtonBase";
 import securityPoints from "../../securityMatrix";
 
-type DataSetTableProps = {};
-
-const DataSetTable: FunctionComponent<DataSetTableProps> = (props) => {
+const DataSetTable: FunctionComponent<DataSetTableProps> = () => {
     const [searchTerm, setSearchTerm] = useState<string>("");
     const [debouncedTerm, setDebouncedTerm] = useState<string>("");
     const [showSpinner, setShowSpinner] = useState(false);
@@ -37,7 +35,6 @@ const DataSetTable: FunctionComponent<DataSetTableProps> = (props) => {
         fetchNextPage,
         isFetchingNextPage,
         hasNextPage,
-        data,
         refetch
     } = dataSetViewService.useGetAllDataSets(
         debouncedTerm
@@ -57,7 +54,7 @@ const DataSetTable: FunctionComponent<DataSetTableProps> = (props) => {
     );
 
     const hasNoMorePages = () => {
-        return !isLoading && data?.pages.at(-1)?.nextPage === undefined;
+        return !isLoading && !hasNextPage;
     };
 
     const refreshData = () => {

@@ -2,9 +2,6 @@ import React, { FunctionComponent} from "react";
 import { IngestionTrackingView } from "../../models/views/components/ingestionTracking/ingestionTrackingView";
 import { ingestionTrackingViewService } from "../../services/views/ingestionTrackingViewService";
 import IngestionTrackingDetailCard from "./ingestionTrackingDetailCard";
-import { toastSuccess } from "../../brokers/toastBroker.success";
-import { toastError } from "../../brokers/toastBroker.error";
-import { emisLandingService } from "../../services/foundations/emisLandingService";
 
 interface IngestionTrackingDetailProps {
     ingestionTrackingId?: string;
@@ -20,30 +17,17 @@ const IngestionTrackingDetail: FunctionComponent<IngestionTrackingDetailProps> =
     const { mappedIngestionTracking: ingestionTrackingRetrieved } =
         ingestionTrackingViewService.useGetIngestionTrackingById(ingestionTrackingId)
 
-
-    //const [downloadFileName, setDownloadFileName] = useState<string>("");
-    //const { mappedLink } = documentService.useGetDownloadLinkByFileName(encodeURIComponent(downloadFileName))
-
     const handleDownload = async (ingestionTrackingView: IngestionTrackingView) => {
-       // if (ingestionTrackingView.decryptedFileName)
-        //    setDownloadFileName(ingestionTrackingView.decryptedFileName)
-        //const mappedLink = documentService.useGetDownloadLinkByFileName(ingestionTrackingView.fileName)
-        //toastSuccess(`${mappedLink}`);
+        console.log(ingestionTrackingView);
     }
 
-    const updateEmisLanding = emisLandingService.useModifyEmisLanding();
-
-    const handleReDecrypt = async (ingestionTrackingView: IngestionTrackingView) => {
-        updateEmisLanding.updateIngestionTracking(ingestionTrackingView)
-            .then(() => {
-                toastSuccess("Ingestion Tracking Queued for Decrypt")
-            })
-            .catch(e => {
-            toastError("error")
-        });
+    const handleReDecrypt = async () => {
+        console.log("TODO: Hanle ReDecrypt");
     };
 
-    const handleRefresh = async (ingestionTrackingView: IngestionTrackingView) => {}
+    const handleRefresh = async () => {
+        console.log("TODO: Refresh");
+    }
 
     return (
         <div>

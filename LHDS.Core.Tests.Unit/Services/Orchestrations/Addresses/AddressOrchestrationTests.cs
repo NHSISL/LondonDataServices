@@ -74,6 +74,13 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Addresses
                     .AreEqual;
         }
 
+        private Expression<Func<LPIAddress, bool>> SameLPIAddressAs(LPIAddress expectedAddress)
+        {
+            return actualAddress =>
+                this.compareLogic.Compare(expectedAddress, actualAddress)
+                    .AreEqual;
+        }
+
         private Expression<Func<List<Address>, bool>> SameAddressesAs(List<Address> expectedAddresses)
         {
             return actualAddresses =>

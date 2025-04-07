@@ -95,7 +95,7 @@ namespace LHDS.Core.Services.Orchestrations.Addresses
                         using (FileStream nestedZipStream =
                             new FileStream(entryPath, FileMode.Open, FileAccess.Read))
                         {
-                            string nestedExtractPath = 
+                            string nestedExtractPath =
                                 Path.Combine(extractPath, Path.GetFileNameWithoutExtension(entry.FullName));
 
                             if (!Directory.Exists(nestedExtractPath))
@@ -219,24 +219,8 @@ namespace LHDS.Core.Services.Orchestrations.Addresses
 
         virtual internal async ValueTask<List<Address>> MapLPIDataToAddressesAsync(string lpiCsvFile)
         {
-            bool fileExists = await this.fileBroker.CheckIfFileExistsAsync(lpiCsvFile);
-
-            if (!fileExists)
-            {
-                throw new InvalidFileAddressOrchestrationException(
-                    message: $"The file {lpiCsvFile} could not be found.");
-            }
-
-            byte[] csvData = await fileBroker.ReadFileAsync(lpiCsvFile);
-            string stringData = Encoding.UTF8.GetString(csvData);
-
-            List<string> records = stringData.Split(
-                new[] { "\r\n", "\n" }, StringSplitOptions.None).ToList();
-
-            List<string> filteredRecords = records.Where(record =>
-                record.StartsWith("24,") || record.StartsWith("\"24\",")).ToList();
-
-            string stringRecords = string.Join(Environment.NewLine, filteredRecords);
+            Func<string, bool> recordFilter = record =>
+                record.StartsWith("24,") || record.StartsWith("\"24\",");
 
             Dictionary<string, int> fieldMappings = new Dictionary<string, int>
             {
@@ -257,16 +241,17 @@ namespace LHDS.Core.Services.Orchestrations.Addresses
                 { "USRN", 21 },
             };
 
-            List<LPIAddress> lpiAddresses = await this.csvHelperBroker
-                .MapCsvToObjectAsync<LPIAddress>(stringRecords, hasHeaderRecord: false, fieldMappings);
+            List<LPIAddress> lpiAddresses = await LoadAndMapCsvAsync<LPIAddress>(
+                lpiCsvFile,
+                fieldMappings,
+                recordFilter);
 
-            List<LPIAddress> lpiAddressesWithoutDuplicates = lpiAddresses
-                .OrderByDescending(address => address.EndDate)
+            var lpiAddressesWithoutDuplicates = lpiAddresses
+                .OrderBy(address => address.LogicalStatus)
+                .ThenBy(address => address.EndDate == null)
+                .ThenByDescending(address => address.EndDate)
                 .GroupBy(address => address.UPRN)
-                .Select(group => group.Count() > 1
-                    ? group.FirstOrDefault(a => a.LogicalStatus == 1) ?? group.First()
-                    : group.First())
-                .ToList();
+                .Select(group => group.FirstOrDefault());
 
             List<Address> addresses = [];
 

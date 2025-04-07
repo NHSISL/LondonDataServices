@@ -2,6 +2,7 @@
 // Copyright (c) North East London ICB. All rights reserved.
 // ---------------------------------------------------------
 
+using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using FluentAssertions;
@@ -86,6 +87,74 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Addresses
                 },
             };
 
+            string multipleHistoricalsUprn = GetRandomString();
+            DateTimeOffset randomDateTimeOffset = GetRandomDateTimeOffset();
+            DateTimeOffset latestEndDate = randomDateTimeOffset.AddYears(-1);
+            DateTimeOffset olderEndDate = randomDateTimeOffset.AddYears(-5);
+            DateTimeOffset startDate = randomDateTimeOffset.AddYears(-20);
+            string updatedMultipleHistoricalsPaoText = GetRandomString();
+            string oldMultipleHistoricalsPaoText = GetRandomString();
+
+            List<LPIAddress> multipleHistoricalsLpiAddresses =
+            [
+                new LPIAddress
+                {
+                    UPRN = multipleHistoricalsUprn,
+                    LogicalStatus = 8,
+                    StartDate = startDate,
+                    EndDate = latestEndDate,
+                    PAOText = updatedMultipleHistoricalsPaoText
+                },
+                new LPIAddress
+                {
+                    UPRN = multipleHistoricalsUprn,
+                    LogicalStatus = 8,
+                    StartDate = startDate,
+                    EndDate = olderEndDate,
+                    PAOText = oldMultipleHistoricalsPaoText
+                },
+                new LPIAddress
+                {
+                    UPRN = multipleHistoricalsUprn,
+                    LogicalStatus = 8,
+                    StartDate = startDate,
+                    EndDate = null,
+                    PAOText = oldMultipleHistoricalsPaoText
+                },
+            ];
+
+            string multipleAlternativesUprn = GetRandomString();
+            string approvedPaoText = GetRandomString();
+            string alternativePaoText = GetRandomString();
+
+            List<LPIAddress> multipleAlternativesBlpuAddresses =
+            [
+                new LPIAddress
+                {
+                    UPRN = multipleAlternativesUprn,
+                    LogicalStatus = 1,
+                    StartDate = startDate,
+                    EndDate = null,
+                    PAOText = approvedPaoText
+                },
+                new LPIAddress
+                {
+                    UPRN = multipleAlternativesUprn,
+                    LogicalStatus = 3,
+                    StartDate = startDate,
+                    EndDate = null,
+                    PAOText = alternativePaoText
+                },
+                new LPIAddress
+                {
+                    UPRN = multipleAlternativesUprn,
+                    LogicalStatus = 3,
+                    StartDate = startDate,
+                    EndDate = null,
+                    PAOText = alternativePaoText
+                },
+            ];
+
             List<Address> expectedAddresses = new List<Address>()
             {
                 new Address
@@ -110,6 +179,20 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Addresses
                     USRN = thirdUsrn,
                     SubBuildingName = "",
                     BuildingName = "Sunshine Palace",
+                    BuildingNumber = ""
+                },
+                new Address
+                {
+                    UPRN = multipleHistoricalsUprn,
+                    SubBuildingName = "",
+                    BuildingName = updatedMultipleHistoricalsPaoText,
+                    BuildingNumber = ""
+                },
+                new Address
+                {
+                    UPRN = multipleAlternativesUprn,
+                    SubBuildingName = "",
+                    BuildingName = approvedPaoText,
                     BuildingNumber = ""
                 },
             };

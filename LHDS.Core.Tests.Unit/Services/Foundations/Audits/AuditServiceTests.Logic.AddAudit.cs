@@ -78,7 +78,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Audits
 
             this.dateTimeBrokerMock.Verify(broker =>
                 broker.GetCurrentDateTimeOffsetAsync(),
-                    Times.Exactly(3));
+                    Times.Exactly(2));
 
             this.securityBrokerMock.Verify(broker =>
                 broker.GetCurrentUserAsync(),

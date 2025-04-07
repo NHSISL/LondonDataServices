@@ -512,6 +512,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Audits
                    expectedAuditValidationException))),
                        Times.Once);
 
+            auditServiceMock.VerifyNoOtherCalls();
             this.dateTimeBrokerMock.VerifyNoOtherCalls();
             this.securityBrokerMock.VerifyNoOtherCalls();
             this.storageBrokerMock.VerifyNoOtherCalls();
@@ -600,10 +601,11 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Audits
                    expectedAuditValidationException))),
                        Times.Once);
 
+            auditServiceMock.VerifyNoOtherCalls();
             this.dateTimeBrokerMock.VerifyNoOtherCalls();
             this.securityBrokerMock.VerifyNoOtherCalls();
-            this.loggingBrokerMock.VerifyNoOtherCalls();
             this.storageBrokerMock.VerifyNoOtherCalls();
+            this.loggingBrokerMock.VerifyNoOtherCalls();
         }
 
         [Fact]
@@ -684,6 +686,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Audits
                 broker.SelectAuditByIdAsync(invalidAudit.Id),
                     Times.Once);
 
+            auditServiceMock.VerifyNoOtherCalls();
             this.dateTimeBrokerMock.VerifyNoOtherCalls();
             this.securityBrokerMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();

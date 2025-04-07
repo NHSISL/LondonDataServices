@@ -162,6 +162,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Audits
                 broker.InsertAuditAsync(It.IsAny<Audit>()),
                     Times.Never);
 
+            auditServiceMock.VerifyNoOtherCalls();
             this.dateTimeBrokerMock.VerifyNoOtherCalls();
             this.securityBrokerMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
@@ -250,6 +251,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Audits
                 broker.InsertAuditAsync(It.IsAny<Audit>()),
                     Times.Never);
 
+            auditServiceMock.VerifyNoOtherCalls();
             this.dateTimeBrokerMock.VerifyNoOtherCalls();
             this.securityBrokerMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
@@ -338,6 +340,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Audits
                 broker.InsertAuditAsync(It.IsAny<Audit>()),
                     Times.Never);
 
+            auditServiceMock.VerifyNoOtherCalls();
             this.dateTimeBrokerMock.VerifyNoOtherCalls();
             this.securityBrokerMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
@@ -422,6 +425,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Audits
                 broker.InsertAuditAsync(It.IsAny<Audit>()),
                     Times.Never);
 
+            auditServiceMock.VerifyNoOtherCalls();
             this.dateTimeBrokerMock.VerifyNoOtherCalls();
             this.securityBrokerMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();

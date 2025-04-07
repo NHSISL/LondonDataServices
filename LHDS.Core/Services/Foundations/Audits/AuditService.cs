@@ -65,10 +65,9 @@ namespace LHDS.Core.Services.Foundations.Audits
                 UpdatedDate = dateTimeOffset,
             };
 
-            Audit auditWithAddAuditApplied = await ApplyAddAuditAsync(audit);
-            await ValidateAuditOnAddAsync(auditWithAddAuditApplied);
+            await ValidateAuditOnAddAsync(audit);
 
-            return await this.storageBroker.InsertAuditAsync(auditWithAddAuditApplied);
+            return await this.storageBroker.InsertAuditAsync(audit);
         });
 
         public ValueTask<Audit> AddAuditAsync(Audit audit) =>

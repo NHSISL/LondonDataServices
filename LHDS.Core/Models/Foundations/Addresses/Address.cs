@@ -24,8 +24,6 @@ namespace LHDS.Core.Models.Foundations.Addresses
         public string? DependentLocality { get; set; }
         public string? PostTown { get; set; }
         public string? PostCode { get; set; }
-        public bool IsProcessing { get; set; }
-        public bool IsSynced { get; set; }
         public string CreatedBy { get; set; } = string.Empty;
         public string UpdatedBy { get; set; } = string.Empty;
         public DateTimeOffset UpdatedDate { get; set; }

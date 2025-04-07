@@ -17,6 +17,7 @@ using LHDS.Core.Models.Foundations.Addresses;
 using LHDS.Core.Models.Foundations.Addresses.Exceptions;
 using LHDS.Core.Models.Foundations.Assigns.Exceptions;
 using LHDS.Core.Models.Foundations.ResolvedAddresses;
+using LHDS.Core.Models.Orchestrations.Addresses;
 using LHDS.Core.Services.Orchestrations.Addresses;
 using LHDS.Core.Services.Processings.Addresses;
 using LHDS.Core.Services.Processings.Assigns;
@@ -159,6 +160,31 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Addresses
                 .OnType<DateTimeOffset>().Use(dateTimeOffset)
                 .OnProperty(address => address.CreatedBy).Use(user)
                 .OnProperty(address => address.UpdatedBy).Use(user);
+
+            return filler;
+        }
+
+        private static List<LPIAddress> CreateRandomLPIAddresses(int count = 0)
+        {
+            if (count == 0)
+            {
+                count = GetRandomNumber();
+            }
+
+            return CreateLPIAddressFiller(dateTimeOffset: GetRandomDateTimeOffset())
+                .Create(count)
+                    .ToList();
+        }
+
+        private static LPIAddress CreateRandomLPIAddress(DateTimeOffset dateTimeOffset) =>
+            CreateLPIAddressFiller(dateTimeOffset).Create();
+
+        private static Filler<LPIAddress> CreateLPIAddressFiller(DateTimeOffset dateTimeOffset)
+        {
+            var filler = new Filler<LPIAddress>();
+
+            filler.Setup()
+                .OnType<DateTimeOffset?>().Use(dateTimeOffset);
 
             return filler;
         }

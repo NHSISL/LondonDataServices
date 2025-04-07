@@ -15,6 +15,7 @@ using LHDS.Core.Brokers.DateTimes;
 using LHDS.Core.Brokers.Files;
 using LHDS.Core.Brokers.Loggings;
 using LHDS.Core.Models.Foundations.Addresses;
+using LHDS.Core.Models.Orchestrations.Addresses;
 using LHDS.Core.Models.Orchestrations.Addresses.Exceptions;
 using LHDS.Core.Services.Processings.Addresses;
 using LHDS.Core.Services.Processings.Assigns;
@@ -182,6 +183,164 @@ namespace LHDS.Core.Services.Orchestrations.Addresses
                     $"File has been moved to the error folder.",
                     exceptions);
             }
+        }
+
+        virtual internal async ValueTask<List<Address>> MapLPIDataToAddressesAsync(string lpiCsvFile)
+        {
+            bool fileExists = await this.fileBroker.CheckIfFileExistsAsync(lpiCsvFile);
+
+            if (!fileExists)
+            {
+                throw new InvalidFileAddressOrchestrationException(
+                    message: $"The file {lpiCsvFile} could not be found.");
+            }
+
+            byte[] csvData = await fileBroker.ReadFileAsync(lpiCsvFile);
+            string stringData = Encoding.UTF8.GetString(csvData);
+
+            List<string> records = stringData.Split(
+                new[] { "\r\n", "\n" }, StringSplitOptions.None).ToList();
+
+            List<string> filteredRecords = records.Where(record =>
+                record.StartsWith("24,") || record.StartsWith("\"24\",")).ToList();
+
+            string stringRecords = string.Join(Environment.NewLine, filteredRecords);
+
+            Dictionary<string, int> fieldMappings = new Dictionary<string, int>
+            {
+                { "UPRN", 3 },
+                { "LogicalStatus", 6 },
+                { "StartDate", 7 },
+                { "EndDate", 8 },
+                { "SAOStartNumber", 11 },
+                { "SAOStartSuffix", 12 },
+                { "SAOEndNumber", 13 },
+                { "SAOEndSuffix", 14 },
+                { "SAOText", 15 },
+                { "PAOStartNumber", 16 },
+                { "PAOStartSuffix", 17 },
+                { "PAOEndNumber", 18 },
+                { "PAOEndSuffix", 19 },
+                { "PAOText", 20 },
+                { "USRN", 21 },
+            };
+
+            List<LPIAddress> lpiAddresses = await this.csvHelperBroker
+                .MapCsvToObjectAsync<LPIAddress>(stringRecords, hasHeaderRecord: false, fieldMappings);
+
+            List<LPIAddress> lpiAddressesWithoutDuplicates = lpiAddresses
+                .OrderByDescending(address => address.EndDate)
+                .GroupBy(address => address.UPRN)
+                .Select(group => group.Count() > 1
+                    ? group.FirstOrDefault(a => a.LogicalStatus == 1) ?? group.First()
+                    : group.First())
+                .ToList();
+
+            List<Address> addresses = [];
+
+            foreach (LPIAddress lpiAddress in lpiAddressesWithoutDuplicates)
+            {
+                Address address = MapLPIAddressToAddress(lpiAddress);
+                addresses.Add(address);
+            }
+
+            return addresses;
+        }
+
+        virtual internal Address MapLPIAddressToAddress(LPIAddress lpiAddress)
+        {
+            string subBuildingName = "";
+            string buildingName = "";
+            string buildingNumber = "";
+
+            if (!string.IsNullOrWhiteSpace(lpiAddress.SAOText))
+            {
+                subBuildingName = lpiAddress.SAOText;
+            }
+            else if (!string.IsNullOrWhiteSpace(lpiAddress.SAOEndNumber + lpiAddress.SAOEndSuffix))
+            {
+                subBuildingName = string.IsNullOrWhiteSpace(lpiAddress.SAOEndSuffix + lpiAddress.SAOStartSuffix)
+                    ? $"{lpiAddress.SAOStartNumber}-{lpiAddress.SAOEndNumber}"
+                    : $"{lpiAddress.SAOStartNumber}{lpiAddress.SAOStartSuffix}-" +
+                        $"{lpiAddress.SAOEndNumber}{lpiAddress.SAOEndSuffix}";
+            }
+            else if (!string.IsNullOrWhiteSpace(lpiAddress.SAOStartNumber + lpiAddress.SAOStartSuffix))
+            {
+                subBuildingName = string.IsNullOrWhiteSpace(lpiAddress.SAOStartSuffix)
+                    ? lpiAddress.SAOStartNumber
+                    : $"{lpiAddress.SAOStartNumber}{lpiAddress.SAOStartSuffix}";
+            }
+
+            if (!string.IsNullOrWhiteSpace(lpiAddress.PAOText))
+            {
+                buildingName = lpiAddress.PAOText;
+            }
+            else if (string.IsNullOrWhiteSpace(
+                lpiAddress.PAOStartSuffix + lpiAddress.PAOEndNumber + lpiAddress.PAOEndSuffix))
+            {
+                buildingNumber = lpiAddress.PAOStartNumber;
+            }
+            else if (!string.IsNullOrWhiteSpace(lpiAddress.PAOEndNumber + lpiAddress.PAOEndSuffix))
+            {
+                buildingName = string.IsNullOrWhiteSpace(lpiAddress.PAOEndSuffix + lpiAddress.PAOStartSuffix)
+                    ? $"{lpiAddress.PAOStartNumber}-{lpiAddress.PAOEndNumber}"
+                    : $"{lpiAddress.PAOStartNumber}{lpiAddress.PAOStartSuffix}-" +
+                        $"{lpiAddress.PAOEndNumber}{lpiAddress.PAOEndSuffix}";
+            }
+            else if (!string.IsNullOrWhiteSpace(lpiAddress.PAOStartNumber + lpiAddress.PAOStartSuffix))
+            {
+                buildingName = string.IsNullOrWhiteSpace(lpiAddress.PAOStartSuffix)
+                    ? lpiAddress.PAOStartNumber
+                    : $"{lpiAddress.PAOStartNumber}{lpiAddress.PAOStartSuffix}";
+            }
+
+            Address address = new Address
+            {
+                UPRN = lpiAddress.UPRN,
+                USRN = lpiAddress.USRN,
+                SubBuildingName = subBuildingName,
+                BuildingName = buildingName,
+                BuildingNumber = buildingNumber
+            };
+
+            return address;
+        }
+
+        virtual internal async ValueTask ProcessDPAAddressesAsync(string dpaCsvFile)
+        {
+            List<Address> dpaAddresses = await MapDPADataToAddressesAsync(dpaCsvFile);
+            Dictionary<string, Address> dpaAddressesDict = dpaAddresses.ToDictionary(a => a.UPRN, a => a);
+            IQueryable<Address> addresses = await addressProcessingService.RetrieveAllAddressesAsync();
+            HashSet<string> dpaFileUprns = dpaAddresses.Select(a => a.UPRN).ToHashSet();
+
+            List<Address> existingDpaAddresses = addresses.Where(address =>
+                dpaFileUprns.Contains(address.UPRN)).ToList();
+
+            HashSet<string> existingDpaUprns = existingDpaAddresses.Select(a => a.UPRN).ToHashSet();
+
+            List<Address> newDpaAddresses = dpaAddresses.Where(dpaAddress =>
+                !existingDpaUprns.Contains(dpaAddress.UPRN)).ToList();
+
+            foreach (Address address in existingDpaAddresses)
+            {
+                if (address.UPRN != null && dpaAddressesDict.TryGetValue(address.UPRN, out Address dpaAddress))
+                {
+                    address.OrganisationName = dpaAddress.OrganisationName;
+                    address.DepartmentName = dpaAddress.DepartmentName;
+                    address.SubBuildingName = dpaAddress.SubBuildingName;
+                    address.BuildingName = dpaAddress.BuildingName;
+                    address.BuildingNumber = dpaAddress.BuildingNumber;
+                    address.DependentThoroughfare = dpaAddress.DependentThoroughfare;
+                    address.Thoroughfare = dpaAddress.Thoroughfare;
+                    address.DoubleDependentLocality = dpaAddress.DoubleDependentLocality;
+                    address.DependentLocality = dpaAddress.DependentLocality;
+                    address.PostTown = dpaAddress.PostTown;
+                    address.PostCode = dpaAddress.PostCode;
+                }
+            }
+
+            await addressProcessingService.BulkAddAddressesAsync(newDpaAddresses, dpaCsvFile);
+            await addressProcessingService.BulkModifyAddressesAsync(existingDpaAddresses, dpaCsvFile);
         }
 
         virtual internal async ValueTask<List<Address>> MapDPADataToAddressesAsync(string dpaCsvFile)

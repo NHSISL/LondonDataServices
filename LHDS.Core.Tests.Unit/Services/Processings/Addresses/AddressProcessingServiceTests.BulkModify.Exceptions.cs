@@ -18,7 +18,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.Addresses
     {
         [Theory]
         [MemberData(nameof(DependencyValidationExceptions))]
-        public async Task ShouldThrowDependencyValidationExceptionOnBulkAddIfErrorOccursAndLogItAsync(
+        public async Task ShouldThrowDependencyValidationExceptionOnBulkModifyIfErrorOccursAndLogItAsync(
             Xeption dependencyValidationException)
         {
             // given
@@ -32,22 +32,22 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.Addresses
                     innerException: dependencyValidationException.InnerException as Xeption);
 
             this.addressServiceMock.Setup(service =>
-                service.BulkAddAddressesAsync(inputAddresses, someFileName))
+                service.BulkModifyAddressesAsync(inputAddresses, someFileName))
                     .ThrowsAsync(dependencyValidationException);
 
             // when
-            ValueTask bulkAddAddressesTask = this.addressProcessingService
-                .BulkAddAddressesAsync(addresses: inputAddresses, fileName: someFileName);
+            ValueTask bulkModifyAddressesTask = this.addressProcessingService
+                .BulkModifyAddressesAsync(addresses: inputAddresses, fileName: someFileName);
 
             AddressProcessingDependencyValidationException actualException =
                 await Assert.ThrowsAsync<AddressProcessingDependencyValidationException>(
-                    bulkAddAddressesTask.AsTask);
+                    bulkModifyAddressesTask.AsTask);
 
             // then
             actualException.Should().BeEquivalentTo(expectedAddressProcessingDependencyValidationException);
 
             this.addressServiceMock.Verify(service =>
-                service.BulkAddAddressesAsync(inputAddresses, someFileName),
+                service.BulkModifyAddressesAsync(inputAddresses, someFileName),
                     Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>
@@ -61,7 +61,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.Addresses
 
         [Theory]
         [MemberData(nameof(DependencyExceptions))]
-        public async Task ShouldThrowDependencyExceptionOnBulkAddIfDependencyErrorOccursAndLogItAsync(
+        public async Task ShouldThrowDependencyExceptionOnBulkModifyIfDependencyErrorOccursAndLogItAsync(
             Xeption dependencyException)
         {
             // given
@@ -75,21 +75,21 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.Addresses
                     innerException: dependencyException.InnerException as Xeption);
 
             this.addressServiceMock.Setup(service =>
-                service.BulkAddAddressesAsync(inputAddresses, someFileName))
+                service.BulkModifyAddressesAsync(inputAddresses, someFileName))
                     .ThrowsAsync(dependencyException);
 
             // when
-            ValueTask bulkAddAddressesTask = this.addressProcessingService
-                .BulkAddAddressesAsync(addresses: inputAddresses, fileName: someFileName);
+            ValueTask bulkModifyAddressesTask = this.addressProcessingService
+                .BulkModifyAddressesAsync(addresses: inputAddresses, fileName: someFileName);
 
             AddressProcessingDependencyException actualException =
-                await Assert.ThrowsAsync<AddressProcessingDependencyException>(bulkAddAddressesTask.AsTask);
+                await Assert.ThrowsAsync<AddressProcessingDependencyException>(bulkModifyAddressesTask.AsTask);
 
             // then
             actualException.Should().BeEquivalentTo(expectedAddressProcessingDependencyException);
 
             this.addressServiceMock.Verify(service =>
-                service.BulkAddAddressesAsync(inputAddresses, someFileName),
+                service.BulkModifyAddressesAsync(inputAddresses, someFileName),
                     Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>
@@ -102,7 +102,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.Addresses
         }
 
         [Fact]
-        public async Task ShouldThrowServiceExceptionOnBulkAddIfServiceErrorOccursAsync()
+        public async Task ShouldThrowServiceExceptionOnBulkModifyIfServiceErrorOccursAsync()
         {
             // given
             string someFileName = GetRandomString();
@@ -122,21 +122,21 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.Addresses
                     innerException: failedAddressProcessingServiceException);
 
             this.addressServiceMock.Setup(service =>
-                service.BulkAddAddressesAsync(inputAddresses, someFileName))
+                service.BulkModifyAddressesAsync(inputAddresses, someFileName))
                     .ThrowsAsync(serviceException);
 
             // when
-            ValueTask bulkAddAddressesTask = this.addressProcessingService
-                .BulkAddAddressesAsync(addresses: inputAddresses, fileName: someFileName);
+            ValueTask bulkModifyAddressesTask = this.addressProcessingService
+                .BulkModifyAddressesAsync(addresses: inputAddresses, fileName: someFileName);
 
             AddressProcessingServiceException actualException =
-                await Assert.ThrowsAsync<AddressProcessingServiceException>(bulkAddAddressesTask.AsTask);
+                await Assert.ThrowsAsync<AddressProcessingServiceException>(bulkModifyAddressesTask.AsTask);
 
             // then
             actualException.Should().BeEquivalentTo(expectedAddressProcessingServiveException);
 
             this.addressServiceMock.Verify(service =>
-                service.BulkAddAddressesAsync(inputAddresses, someFileName),
+                service.BulkModifyAddressesAsync(inputAddresses, someFileName),
                     Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>

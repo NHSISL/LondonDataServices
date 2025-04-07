@@ -40,6 +40,8 @@ const SupplierTable: FunctionComponent<SupplierTableProps> = (props) => {
     const updateSupplier = supplierViewService.useUpdateSupplier();
     const deleteSupplier = supplierViewService.useRemoveSupplier();
     const [addMode, setAddMode] = useState<boolean>(false);
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const [addApiError, setAddApiError] = useState<any>({});
 
     const handleSearchChange = (value: string) => {
         setSearchTerm(value);
@@ -54,6 +56,10 @@ const SupplierTable: FunctionComponent<SupplierTableProps> = (props) => {
         return addSupplier.mutate(supplier, {
             onSuccess: () => {
                 setAddMode(false);
+            },
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            onError: (error: any) => {
+                setAddApiError(error?.response?.data?.errors);
             }
         });
     };

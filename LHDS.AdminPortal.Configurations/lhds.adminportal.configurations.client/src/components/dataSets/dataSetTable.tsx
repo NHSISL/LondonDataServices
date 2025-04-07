@@ -24,7 +24,7 @@ import { Link } from "react-router-dom";
 import ButtonBase from "../bases/buttons/ButtonBase";
 import securityPoints from "../../securityMatrix";
 
-const DataSetTable: FunctionComponent<DataSetTableProps> = () => {
+const DataSetTable: FunctionComponent = () => {
     const [searchTerm, setSearchTerm] = useState<string>("");
     const [debouncedTerm, setDebouncedTerm] = useState<string>("");
     const [showSpinner, setShowSpinner] = useState(false);

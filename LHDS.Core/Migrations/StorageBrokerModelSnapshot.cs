@@ -17,7 +17,7 @@ namespace LHDS.Core.Migrations
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "9.0.2")
+                .HasAnnotation("ProductVersion", "9.0.3")
                 .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
@@ -60,12 +60,6 @@ namespace LHDS.Core.Migrations
                         .HasMaxLength(255)
                         .HasColumnType("nvarchar(255)");
 
-                    b.Property<bool>("IsProcessing")
-                        .HasColumnType("bit");
-
-                    b.Property<bool>("IsSynced")
-                        .HasColumnType("bit");
-
                     b.Property<string>("OrganisationName")
                         .HasMaxLength(255)
                         .HasColumnType("nvarchar(255)");
@@ -94,6 +88,10 @@ namespace LHDS.Core.Migrations
                         .HasMaxLength(15)
                         .HasColumnType("nvarchar(15)");
 
+                    b.Property<string>("USRN")
+                        .HasMaxLength(15)
+                        .HasColumnType("nvarchar(15)");
+
                     b.Property<string>("UpdatedBy")
                         .IsRequired()
                         .HasMaxLength(255)
@@ -103,10 +101,6 @@ namespace LHDS.Core.Migrations
                         .HasColumnType("datetimeoffset");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("IsProcessing");
-
-                    b.HasIndex("IsSynced");
 
                     b.HasIndex("PostCode");
 

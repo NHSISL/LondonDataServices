@@ -29,12 +29,15 @@ namespace LHDS.Core.Services.Processings.Addresses
             TryCatch(async () =>
             {
                 ValidateArguments(addresses, fileName);
-
                 await this.addressService.BulkAddAddressesAsync(addresses, fileName);
             });
 
         public ValueTask BulkModifyAddressesAsync(List<Address> addresses, string fileName) =>
-            throw new NotImplementedException();
+            TryCatch(async () =>
+            {
+                ValidateArguments(addresses, fileName);
+                await this.addressService.BulkModifyAddressesAsync(addresses, fileName);
+            });
 
         public ValueTask<Address> AddAddressAsync(Address address) =>
             TryCatch(async () =>

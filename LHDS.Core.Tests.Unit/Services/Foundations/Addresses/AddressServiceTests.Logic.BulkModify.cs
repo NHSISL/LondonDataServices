@@ -16,7 +16,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Addresses
     public partial class AddressServiceTests
     {
         [Fact]
-        public async Task ShouldBulkAddAddressesAsync()
+        public async Task ShouldBulkModifyAddressesAsync()
         {
             // given
             int randomCount = GetRandomNumber();
@@ -49,7 +49,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Addresses
 
             // when
             await addressServiceMock.Object
-                .BulkAddAddressesAsync(inputAddresses, inputFileName);
+                .BulkModifyAddressesAsync(inputAddresses, inputFileName);
 
             // then
             addressServiceMock.Verify(service =>

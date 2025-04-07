@@ -14,7 +14,7 @@ using LHDS.Core.Brokers.Securities;
 using LHDS.Core.Brokers.Storages.Sql;
 using LHDS.Core.Models.Brokers.Securities;
 using LHDS.Core.Models.Foundations.Addresses;
-using LHDS.Core.Models.Foundations.Addresses.Exceptions;
+using LHDS.Core.Models.Foundations.Audits;
 
 namespace LHDS.Core.Services.Foundations.Addresses
 {
@@ -56,11 +56,19 @@ namespace LHDS.Core.Services.Foundations.Addresses
             TryCatch(async () =>
             {
                 ValidateOnBulkAddAddresses(addresses, fileName);
-                int batchSize = 10000;
-                await BulkInsertBatch(addresses, batchSize, fileName);
+                await BulkAddOrModifyBatchAsync(addresses, fileName);
             });
 
-        virtual internal async ValueTask BulkInsertBatch(List<Address> addresses, int batchSize, string fileName)
+        public ValueTask BulkModifyAddressesAsync(List<Address> addresses, string fileName) =>
+        TryCatch(async () =>
+        {
+            ValidateOnBulkModifyAddresses(addresses, fileName);
+            await BulkAddOrModifyBatchAsync(addresses, fileName);
+        });
+
+
+
+        virtual internal async ValueTask BulkAddOrModifyBatchAsync(List<Address> addresses, string fileName, int batchSize = 10000)
         {
             int totalRecords = addresses.Count;
             var exceptions = new List<Exception>();
@@ -69,32 +77,52 @@ namespace LHDS.Core.Services.Foundations.Addresses
             {
                 try
                 {
-                    await TryCatch(async () =>
+                    List<Address> batch = addresses.Skip(i).Take(batchSize).ToList();
+                    List<Guid> batchIds = batch.Select(address => address.Id).ToList();
+
+                    IQueryable<Address> storageAddresses = (await this.storageBroker.SelectAllAddressesAsync())
+                        .Where(address => batchIds.Contains(address.Id));
+
+                    List<Guid> existingIds = storageAddresses.Select(address => address.Id).ToList();
+                    List<Address> existingAddresses = batch.Where(address => existingIds.Contains(address.Id)).ToList();
+                    List<Address> newAddresses = batch.Where(address => !existingIds.Contains(address.Id)).ToList();
+
+                    try
                     {
-                        var batch = addresses.Skip(i).Take(batchSize).ToList();
-
-                        List<Address> validatedAddresses =
-                            await ExtractValidAddressesAndAssignIdAndAuditAsync(batch, fileName);
-
-                        var batchUPRNs = batch.Select(validatedAddress => validatedAddress.UPRN).ToList();
-                        var allAddresses = await this.storageBroker.SelectAllAddressesAsync();
-
-                        var existingUPRNs = allAddresses
-                            .Where(address => batchUPRNs.Contains(address.UPRN))
-                            .Select(address => address.UPRN)
-                            .ToList();
-
-                        var newAddresses = batch.Where(address => !existingUPRNs.Contains(address.UPRN)).ToList();
-
                         if (newAddresses.Count != 0)
                         {
-                            await this.storageBroker.BulkInsertAddressesAsync(newAddresses);
+                            List<Address> validatedAddAddresses =
+                                await ValidateAddressesAndAssignIdAndAuditOnAddAsync(newAddresses, fileName);
+
+                            await this.storageBroker.BulkInsertAddressesAsync(validatedAddAddresses);
                         }
-                    });
+                    }
+                    catch (Exception insertException)
+                    {
+                        exceptions.Add(insertException);
+                        await this.loggingBroker.LogErrorAsync(insertException);
+                    }
+
+                    try
+                    {
+                        if (existingAddresses.Count != 0)
+                        {
+                            List<Address> validatedModifyAddresses =
+                                await ValidateAddressesAndAssignAuditOnModifyAsync(existingAddresses, fileName);
+
+                            await this.storageBroker.BulkUpdateAddressesAsync(validatedModifyAddresses);
+                        }
+                    }
+                    catch (Exception updateException)
+                    {
+                        exceptions.Add(updateException);
+                        await this.loggingBroker.LogErrorAsync(updateException);
+                    }
                 }
-                catch (Exception ex)
+                catch (Exception exception)
                 {
-                    exceptions.Add(ex);
+                    exceptions.Add(exception);
+                    await this.loggingBroker.LogErrorAsync(exception);
                 }
             }
 
@@ -106,11 +134,12 @@ namespace LHDS.Core.Services.Foundations.Addresses
             }
         }
 
-        virtual internal async ValueTask<List<Address>> ExtractValidAddressesAndAssignIdAndAuditAsync(
+        virtual internal async ValueTask<List<Address>> ValidateAddressesAndAssignIdAndAuditOnAddAsync(
             List<Address> addresses,
             string fileName)
         {
             List<Address> validatedAddresses = new List<Address>();
+            List<Audit> audits = new List<Audit>();
 
             foreach (Address address in addresses)
             {
@@ -121,31 +150,94 @@ namespace LHDS.Core.Services.Foundations.Addresses
                     address.Id = await this.identifierBroker.GetIdentifierAsync();
                     address.CreatedDate = currentDateTime;
                     address.CreatedBy = currentUser.EntraUserId;
-                    address.UpdatedDate = address.CreatedDate;
-                    address.UpdatedBy = address.CreatedBy;
+                    address.UpdatedDate = currentDateTime;
+                    address.UpdatedBy = currentUser.EntraUserId;
                     await ValidateAddressOnAddAsync(address);
                     validatedAddresses.Add(address);
                 }
-                catch (Exception ex)
+                catch (Exception exception)
                 {
-                    if (ex is NullAddressException || ex is InvalidAddressException)
+
+                    Audit audit = new Audit
                     {
-                        int indexOfInvalidItem = addresses.IndexOf(address);
+                        AuditType = "Address",
+                        Title = "Unable to add address",
 
-                        if (indexOfInvalidItem != -1)
-                        {
-                            await this.auditBroker.LogWarningAsync(
-                                auditType: "Address",
-                                title: "Invalid address parts found",
-                                message: $"Invalid address parts found in line item: {indexOfInvalidItem + 1} " +
-                                         $"from file: {fileName}",
-                                fileName,
-                                null);
-                        }
-                    }
+                        Message =
+                            $"Invalid address - Id: {address.Id}; UPRN: {address.UPRN}; IPSN: {address.UPSN} " +
+                            $"from file: {fileName}" + Environment.NewLine +
+                            $"Error: {exception.Message}",
 
-                    throw;
+                        FileName = fileName,
+                        LogLevel = "Error",
+                    };
+
+                    audits.Add(audit);
+
+                    await this.loggingBroker.LogWarningAsync(message:
+                            $"Unable to add address. Invalid address - Id: {address.Id}; " +
+                            $"UPRN: {address.UPRN}; IPSN: {address.UPSN} " +
+                            $"from file: {fileName}" + Environment.NewLine +
+                            $"Error: {exception.Message}");
                 }
+            }
+
+            if (audits.Any())
+            {
+                await this.auditBroker.BulkLogAsync(audits);
+            }
+
+            return await ValueTask.FromResult(validatedAddresses);
+        }
+
+        virtual internal async ValueTask<List<Address>> ValidateAddressesAndAssignAuditOnModifyAsync(
+            List<Address> addresses,
+            string fileName)
+        {
+            List<Address> validatedAddresses = new List<Address>();
+            List<Audit> audits = new List<Audit>();
+
+            foreach (Address address in addresses)
+            {
+                try
+                {
+                    EntraUser currentUser = await this.securityBroker.GetCurrentUserAsync();
+                    var currentDateTime = await this.dateTimeBroker.GetCurrentDateTimeOffsetAsync();
+                    address.UpdatedDate = currentDateTime;
+                    address.UpdatedBy = currentUser.EntraUserId;
+                    await ValidateAddressOnModifyAsync(address);
+                    validatedAddresses.Add(address);
+                }
+                catch (Exception exception)
+                {
+
+                    Audit audit = new Audit
+                    {
+                        AuditType = "Address",
+                        Title = "Unable to add address",
+
+                        Message =
+                            $"Invalid address - Id: {address.Id}; UPRN: {address.UPRN}; IPSN: {address.UPSN} " +
+                            $"from file: {fileName}" + Environment.NewLine +
+                            $"Error: {exception.Message}",
+
+                        FileName = fileName,
+                        LogLevel = "Error",
+                    };
+
+                    audits.Add(audit);
+
+                    await this.loggingBroker.LogWarningAsync(message:
+                            $"Unable to add address. Invalid address - Id: {address.Id}; " +
+                            $"UPRN: {address.UPRN}; IPSN: {address.UPSN} " +
+                            $"from file: {fileName}" + Environment.NewLine +
+                            $"Error: {exception.Message}");
+                }
+            }
+
+            if (audits.Any())
+            {
+                await this.auditBroker.BulkLogAsync(audits);
             }
 
             return await ValueTask.FromResult(validatedAddresses);

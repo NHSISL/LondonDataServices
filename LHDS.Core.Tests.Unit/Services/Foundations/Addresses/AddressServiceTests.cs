@@ -121,11 +121,11 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Addresses
             return randomAddress;
         }
 
-        private static IQueryable<Address> CreateRandomAddresses()
+        private static List<Address> CreateRandomAddresses()
         {
             return CreateAddressFiller(dateTimeOffset: GetRandomDateTimeOffset())
                 .Create(count: GetRandomNumber())
-                    .AsQueryable();
+                    .ToList();
         }
 
         private static Address CreateRandomAddress() =>
@@ -146,6 +146,20 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Addresses
 
             return filler;
         }
+
+        private static List<Address> CreateRandomAddresses(int count) =>
+            Enumerable.Range(start: 0, count: count)
+                .Select(index => CreateRandomAddress())
+                    .ToList();
+
+        private static List<Address> CreateRandomAddresses(
+            int count,
+            DateTimeOffset dateTimeOffset,
+            string userId) =>
+            Enumerable.Range(start: 0, count: count)
+                .Select(index => CreateRandomAddress(dateTimeOffset, userId))
+                    .ToList();
+
 
         private static Address CreateRandomAddress(
             DateTimeOffset dateTimeOffset,
@@ -184,5 +198,21 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Addresses
                     new System.Security.Claims.Claim(type: GetRandomString(), value: GetRandomString())
                 });
         }
+
+        int GetBatchSize(int count, int batchSize)
+        {
+            if (batchSize <= 0)
+            {
+                batchSize = 1;
+            }
+
+            if (count <= 0)
+            {
+                return 0;
+            }
+
+            return (count + batchSize - 1) / batchSize;
+        }
+
     }
 }

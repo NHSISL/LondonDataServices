@@ -18,7 +18,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.Addresses
         [InlineData(null)]
         [InlineData("")]
         [InlineData(" ")]
-        public async Task ShouldThrowValidationExceptionsOnBulkAddIfAddressProcessingIsNullAndLogItAsync(
+        public async Task ShouldThrowValidationExceptionsOnBulkModifyIfAddressProcessingIsNullAndLogItAsync(
             string invalidText)
         {
             // given
@@ -43,11 +43,11 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.Addresses
                     innerException: invalidArgumentAddressProcessingException);
 
             // when
-            ValueTask bulkAddAddressTask = this.addressProcessingService
-                .BulkAddAddressesAsync(addresses: nullAddresses, fileName: invalidFileName);
+            ValueTask bulkModifyAddressTask = this.addressProcessingService
+                .BulkModifyAddressesAsync(addresses: nullAddresses, fileName: invalidFileName);
 
             AddressProcessingValidationException actualAddressProcessingValidationException =
-                await Assert.ThrowsAsync<AddressProcessingValidationException>(bulkAddAddressTask.AsTask);
+                await Assert.ThrowsAsync<AddressProcessingValidationException>(bulkModifyAddressTask.AsTask);
 
             //then
             actualAddressProcessingValidationException.Should()

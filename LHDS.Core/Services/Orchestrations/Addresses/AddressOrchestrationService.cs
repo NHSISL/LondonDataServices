@@ -414,9 +414,6 @@ namespace LHDS.Core.Services.Orchestrations.Addresses
             await addressProcessingService.BulkModifyAddressesAsync(existingLpiAddresses, lpiCsvFile);
         }
 
-        virtual internal async ValueTask<List<Address>> MapLPIDataToAddressesAsync(string lpiCsvFile) =>
-            throw new NotImplementedException();
-
         public ValueTask SyncAddressesWithAssignAsync()
         {
             throw new NotImplementedException();

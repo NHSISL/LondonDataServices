@@ -34,7 +34,12 @@ namespace LHDS.Core.Services.Processings.Addresses
             });
 
         public ValueTask BulkModifyAddressesAsync(List<Address> addresses, string fileName) =>
-            throw new NotImplementedException();
+            TryCatch(async () =>
+            {
+                ValidateArguments(addresses, fileName);
+
+                await this.addressService.BulkModifyAddressesAsync(addresses, fileName);
+            });
 
         public ValueTask<Address> AddAddressAsync(Address address) =>
             TryCatch(async () =>

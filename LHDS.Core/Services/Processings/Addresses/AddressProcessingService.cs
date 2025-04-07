@@ -58,8 +58,7 @@ namespace LHDS.Core.Services.Processings.Addresses
         public ValueTask<Address> RetrieveOrAddAddressAsync(Address address) =>
             TryCatch(async () =>
             {
-                ValidateAddress(address);
-                ValidateAddressId(address.Id);
+                ValidateAddressOnRetrieveOrAdd(address);
 
                 return await this.addressService.RetrieveAddressByIdAsync(address.Id) ??
                     await this.addressService.AddAddressAsync(address);
@@ -68,8 +67,7 @@ namespace LHDS.Core.Services.Processings.Addresses
         public ValueTask<Address> ModifyOrAddAddressAsync(Address address) =>
             TryCatch(async () =>
             {
-                ValidateAddress(address);
-                ValidateAddressId(address.Id);
+                ValidateAddressOnModifyOrAdd(address);
                 var allAddresses = await this.addressService.RetrieveAllAddressesAsync();
                 var maybeAddress = allAddresses.FirstOrDefault(storageAddress => storageAddress.Id == address.Id);
 

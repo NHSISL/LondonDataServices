@@ -2,6 +2,7 @@
 // Copyright (c) North East London ICB. All rights reserved.
 // ---------------------------------------------------------
 
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using FluentAssertions;
@@ -17,13 +18,13 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Audits
         public async Task ShouldReturnAuditsAsync()
         {
             // given
-            IQueryable<Audit> randomAudits = CreateRandomAudits();
-            IQueryable<Audit> storageAudits = randomAudits;
-            IQueryable<Audit> expectedAudits = storageAudits;
+            List<Audit> randomAudits = CreateRandomAudits();
+            List<Audit> storageAudits = randomAudits;
+            List<Audit> expectedAudits = storageAudits;
 
             this.storageBrokerMock.Setup(broker =>
                 broker.SelectAllAuditsAsync())
-                    .ReturnsAsync(storageAudits);
+                    .ReturnsAsync(storageAudits.AsQueryable());
 
             // when
             IQueryable<Audit> actualAudits =

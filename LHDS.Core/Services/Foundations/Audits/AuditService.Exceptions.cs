@@ -16,6 +16,7 @@ namespace LHDS.Core.Services.Foundations.Audits
 {
     public partial class AuditService
     {
+        private delegate ValueTask ReturningNothingFunction();
         private delegate ValueTask<Audit> ReturningAuditFunction();
         private delegate ValueTask<IQueryable<Audit>> ReturningAuditsFunction();
 
@@ -81,6 +82,27 @@ namespace LHDS.Core.Services.Foundations.Audits
                         innerException: databaseUpdateException);
 
                 throw await CreateAndLogDependencyExceptionAsync(failedAuditStorageException);
+            }
+            catch (Exception exception)
+            {
+                var failedAuditServiceException =
+                    new FailedAuditServiceException(
+                        message: "Failed audit service error occurred, please contact support.",
+                        innerException: exception);
+
+                throw await CreateAndLogServiceExceptionAsync(failedAuditServiceException);
+            }
+        }
+
+        private async ValueTask TryCatch(ReturningNothingFunction returningNothingFunction)
+        {
+            try
+            {
+                await returningNothingFunction();
+            }
+            catch (NullAuditException nullAuditException)
+            {
+                throw await CreateAndLogValidationExceptionAsync(nullAuditException);
             }
             catch (Exception exception)
             {

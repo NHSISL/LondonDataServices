@@ -2,6 +2,7 @@
 // Copyright (c) North East London ICB. All rights reserved.
 // ---------------------------------------------------------
 
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using LHDS.Core.Models.Clients.AuditClient.Exceptions;
 using LHDS.Core.Models.Foundations.Audits;
@@ -30,6 +31,38 @@ namespace LHDS.Core.Clients
             {
                 return await this.auditService
                     .AddAuditAsync(auditType, title, message, fileName, correlationId, logLevel);
+            }
+            catch (AuditValidationException auditValidationException)
+            {
+                throw new AuditClientValidationException(
+                    message: "Audit client validation error occurred, fix errors and try again.",
+                    innerException: auditValidationException.InnerException as Xeption);
+            }
+            catch (AuditDependencyValidationException auditDependencyValidationException)
+            {
+                throw new AuditClientValidationException(
+                    message: "Audit client validation error occurred, fix errors and try again.",
+                    innerException: auditDependencyValidationException.InnerException as Xeption);
+            }
+            catch (AuditDependencyException auditDependencyException)
+            {
+                throw new AuditClientDependencyException(
+                    message: "Audit client dependency error occurred, please contact support.",
+                    innerException: auditDependencyException.InnerException as Xeption);
+            }
+            catch (AuditServiceException auditServiceException)
+            {
+                throw new AuditClientServiceException(
+                    message: "Audit client service error occurred, fix errors and try again.",
+                    auditServiceException.InnerException as Xeption);
+            }
+        }
+
+        public async ValueTask BulkLogAuditsAsync(List<Audit> audits)
+        {
+            try
+            {
+                await this.auditService.BulkAddAuditsAsync(audits);
             }
             catch (AuditValidationException auditValidationException)
             {

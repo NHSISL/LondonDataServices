@@ -81,6 +81,13 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Addresses
                     .AreEqual;
         }
 
+        private Expression<Func<Func<string, bool>, bool>> SameFuncAs(Func<string, bool> expectedFilter)
+        {
+            return actualFilter =>
+                this.compareLogic.Compare(expectedFilter, actualFilter)
+                    .AreEqual;
+        }
+
         private static string GetRandomString() =>
            new MnemonicString(wordCount: GetRandomNumber()).GetValue();
 

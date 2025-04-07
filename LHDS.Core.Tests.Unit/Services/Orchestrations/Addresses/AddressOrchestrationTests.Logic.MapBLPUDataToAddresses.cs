@@ -4,13 +4,8 @@
 
 using System;
 using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Reflection;
-using System.Text;
 using System.Threading.Tasks;
 using FluentAssertions;
-using Force.DeepCloner;
 using LHDS.Core.Models.Foundations.Addresses;
 using LHDS.Core.Models.Orchestrations.Addresses;
 using LHDS.Core.Services.Orchestrations.Addresses;
@@ -35,21 +30,12 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Addresses
                 this.loggingBrokerMock.Object)
             { CallBase = true };
 
-            string assembly = Assembly.GetExecutingAssembly().Location;
-            string inputCsvFileName = "ShouldProcessZipFileWithOnlyCsvAddressesData.csv";
+            string inputCsvFileName = GetRandomString();
 
-            string inputCsvFilePath = Path.Combine(
-                Path.GetDirectoryName(assembly),
-                $"Resources/Services/Orchestrations/Addresses/{inputCsvFileName}");
+            Func<string, bool> inputRecordFilter = record =>
+                record.StartsWith("21,") || record.StartsWith("\"21\",");
 
-            byte[] csvData = await File.ReadAllBytesAsync(inputCsvFilePath);
-            string stringData = Encoding.UTF8.GetString(csvData);
-            List<string> records = stringData.Split(new[] { "\r\n", "\n" }, StringSplitOptions.None).ToList();
-
-            List<string> filteredRecords = records.Where(record =>
-               record.StartsWith("21,") || record.StartsWith("\"21\",")).ToList();
-
-            Dictionary<string, int> fieldMappings = new Dictionary<string, int>
+            Dictionary<string, int> inputFieldMappings = new Dictionary<string, int>
             {
                 { "UPRN", 3 },
                 { "LogicalStatus", 4 },
@@ -58,55 +44,113 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Addresses
                 { "PostCode", 20 },
             };
 
-            List<BLPUAddress> randomBlpuAddresses = CreateRandomBLPUAddresses(count: 2);
-            List<BLPUAddress> outputBlpuAddresses = randomBlpuAddresses.DeepClone();
-            List<Address> expectedAddresses = [];
+            string multipleHistoricalsUprn = GetRandomString();
+            DateTimeOffset randomDateTimeOffset = GetRandomDateTimeOffset();
+            DateTimeOffset latestEndDate = randomDateTimeOffset.AddYears(-1);
+            DateTimeOffset olderEndDate = randomDateTimeOffset.AddYears(-5);
+            DateTimeOffset startDate = randomDateTimeOffset.AddYears(-20);
+            string updatedMultipleHistoricalsPostCode = GetRandomString();
+            string oldMultipleHistoricalsPostCode = GetRandomString();
 
-            foreach (BLPUAddress blpuAddress in outputBlpuAddresses)
-            {
-                Address address = new Address
+            List<BLPUAddress> multipleHistoricalsBlpuAddresses =
+            [
+                new BLPUAddress
                 {
-                    UPRN = blpuAddress.UPRN,
-                    PostCode = blpuAddress.PostCode,
-                };
+                    UPRN = multipleHistoricalsUprn,
+                    LogicalStatus = 8,
+                    StartDate = startDate,
+                    EndDate = latestEndDate,
+                    PostCode = updatedMultipleHistoricalsPostCode
+                },
+                new BLPUAddress
+                {
+                    UPRN = multipleHistoricalsUprn,
+                    LogicalStatus = 8,
+                    StartDate = startDate,
+                    EndDate = olderEndDate,
+                    PostCode = oldMultipleHistoricalsPostCode
+                },
+                new BLPUAddress
+                {
+                    UPRN = multipleHistoricalsUprn,
+                    LogicalStatus = 8,
+                    StartDate = startDate,
+                    EndDate = null,
+                    PostCode = oldMultipleHistoricalsPostCode
+                },
+            ];
 
-                expectedAddresses.Add(address);
-            }
+            string multipleAlternativesUprn = GetRandomString();
+            string approvedPostCode = GetRandomString();
+            string alternativePostCode = GetRandomString();
 
-            string stringRecords = string.Join(Environment.NewLine, filteredRecords);
-            bool hasHeaderRecord = false;
+            List<BLPUAddress> multipleAlternativesBlpuAddresses =
+            [
+                new BLPUAddress
+                {
+                    UPRN = multipleAlternativesUprn,
+                    LogicalStatus = 1,
+                    StartDate = startDate,
+                    EndDate = null,
+                    PostCode = approvedPostCode
+                },
+                new BLPUAddress
+                {
+                    UPRN = multipleAlternativesUprn,
+                    LogicalStatus = 3,
+                    StartDate = startDate,
+                    EndDate = null,
+                    PostCode = alternativePostCode
+                },
+                new BLPUAddress
+                {
+                    UPRN = multipleAlternativesUprn,
+                    LogicalStatus = 3,
+                    StartDate = startDate,
+                    EndDate = null,
+                    PostCode = alternativePostCode
+                },
+            ];
 
-            this.fileBrokerMock.Setup(service =>
-                service.CheckIfFileExistsAsync(inputCsvFilePath))
-                    .ReturnsAsync(true);
+            List<BLPUAddress> outputBlpuAddresses = [
+                .. multipleHistoricalsBlpuAddresses,
+                .. multipleAlternativesBlpuAddresses];
 
-            this.fileBrokerMock.Setup(service =>
-                service.ReadFileAsync(inputCsvFilePath))
-                    .ReturnsAsync(csvData);
+            List<Address> expectedAddresses =
+            [
+                new Address
+                {
+                    UPRN = multipleHistoricalsUprn,
+                    PostCode= updatedMultipleHistoricalsPostCode,
+                },
+                new Address
+                {
+                    UPRN = multipleAlternativesUprn,
+                    PostCode= approvedPostCode,
+                },
+            ];
 
-            this.csvHelperBrokerMock.Setup(service =>
-                service.MapCsvToObjectAsync<BLPUAddress>(stringRecords, hasHeaderRecord, fieldMappings, true))
-                    .ReturnsAsync(outputBlpuAddresses);
+            addressOrchestrationServiceMock.Setup(service =>
+                service.LoadAndMapCsvAsync<BLPUAddress>(
+                    inputCsvFileName,
+                    inputFieldMappings,
+                    It.IsAny<Func<string, bool>>()))
+                        .ReturnsAsync(outputBlpuAddresses);
 
             AddressOrchestrationService service = addressOrchestrationServiceMock.Object;
 
             // When
-            List<Address> actualAddresses = await service.MapBLPUDataToAddressesAsync(inputCsvFilePath);
+            List<Address> actualAddresses = await service.MapBLPUDataToAddressesAsync(inputCsvFileName);
 
             // Then
             actualAddresses.Should().BeEquivalentTo(expectedAddresses);
 
-            this.fileBrokerMock.Verify(service =>
-                service.CheckIfFileExistsAsync(inputCsvFilePath),
-                    Times.Once);
-
-            this.fileBrokerMock.Verify(service =>
-                service.ReadFileAsync(inputCsvFilePath),
-                    Times.Once);
-
-            this.csvHelperBrokerMock.Verify(service =>
-                service.MapCsvToObjectAsync<BLPUAddress>(stringRecords, hasHeaderRecord, fieldMappings, true),
-                    Times.Once());
+            addressOrchestrationServiceMock.Verify(service =>
+                service.LoadAndMapCsvAsync<BLPUAddress>(
+                    inputCsvFileName,
+                    inputFieldMappings,
+                    It.IsAny<Func<string, bool>>()),
+                        Times.Once);
 
             this.fileBrokerMock.VerifyNoOtherCalls();
             this.csvHelperBrokerMock.VerifyNoOtherCalls();

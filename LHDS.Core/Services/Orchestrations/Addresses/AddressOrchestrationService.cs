@@ -185,6 +185,37 @@ namespace LHDS.Core.Services.Orchestrations.Addresses
             }
         }
 
+        virtual internal async ValueTask<List<T>> LoadAndMapCsvAsync<T>(
+            string filePath,
+            Dictionary<string, int> fieldMappings,
+            Func<string, bool> recordFilterPredicate)
+        {
+            bool fileExists = await this.fileBroker.CheckIfFileExistsAsync(filePath);
+
+            if (!fileExists)
+            {
+                throw new InvalidFileAddressOrchestrationException(
+                    message: $"The file {filePath} could not be found.");
+            }
+
+            byte[] csvData = await fileBroker.ReadFileAsync(filePath);
+            string stringData = Encoding.UTF8.GetString(csvData);
+
+            List<string> records = stringData.Split(
+                new[] { "\r\n", "\n" }, StringSplitOptions.None).ToList();
+
+            List<string> filteredRecords = records
+                .Where(recordFilterPredicate)
+                .ToList();
+
+            string filteredCsv = string.Join(Environment.NewLine, filteredRecords);
+
+            List<T> mappedObjects = await this.csvHelperBroker
+                .MapCsvToObjectAsync<T>(filteredCsv, hasHeaderRecord: false, fieldMappings);
+
+            return mappedObjects;
+        }
+
         virtual internal async ValueTask<List<Address>> MapLPIDataToAddressesAsync(string lpiCsvFile)
         {
             bool fileExists = await this.fileBroker.CheckIfFileExistsAsync(lpiCsvFile);
@@ -389,24 +420,8 @@ namespace LHDS.Core.Services.Orchestrations.Addresses
 
         virtual internal async ValueTask<List<Address>> MapBLPUDataToAddressesAsync(string blpuCsvFile)
         {
-            bool fileExists = await this.fileBroker.CheckIfFileExistsAsync(blpuCsvFile);
-
-            if (!fileExists)
-            {
-                throw new InvalidFileAddressOrchestrationException(
-                    message: $"The file {blpuCsvFile} could not be found.");
-            }
-
-            byte[] csvData = await fileBroker.ReadFileAsync(blpuCsvFile);
-            string stringData = Encoding.UTF8.GetString(csvData);
-
-            List<string> records = stringData.Split(
-                new[] { "\r\n", "\n" }, StringSplitOptions.None).ToList();
-
-            List<string> filteredRecords = records.Where(record =>
-                record.StartsWith("21,") || record.StartsWith("\"21\",")).ToList();
-
-            string stringRecords = string.Join(Environment.NewLine, filteredRecords);
+            Func<string, bool> recordFilter = record =>
+                record.StartsWith("21,") || record.StartsWith("\"21\",");
 
             Dictionary<string, int> fieldMappings = new Dictionary<string, int>
             {
@@ -417,15 +432,17 @@ namespace LHDS.Core.Services.Orchestrations.Addresses
                 { "PostCode", 20 },
             };
 
-            List<BLPUAddress> blpuAddresses = await this.csvHelperBroker
-                .MapCsvToObjectAsync<BLPUAddress>(stringRecords, hasHeaderRecord: false, fieldMappings);
+            List<BLPUAddress> blpuAddresses = await LoadAndMapCsvAsync<BLPUAddress>(
+                blpuCsvFile,
+                fieldMappings,
+                recordFilter);
 
             var blpuAddressesWithoutDuplicates = blpuAddresses
-                .OrderByDescending(address => address.EndDate)
+                .OrderBy(address => address.LogicalStatus)
+                .ThenBy(address => address.EndDate == null)
+                .ThenByDescending(address => address.EndDate)
                 .GroupBy(address => address.UPRN)
-                .Select(group => group.Count() > 1
-                    ? group.FirstOrDefault(address => address.LogicalStatus == 1) ?? group.First()
-                    : group.First());
+                .Select(group => group.FirstOrDefault());
 
             List<Address> addresses = [];
 

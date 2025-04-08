@@ -78,8 +78,10 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Addresses
                     Times.Once);
 
             this.addressProcessingServiceMock.Verify(service =>
-                service.BulkAddAddressesAsync(It.Is(SameAddressesAs(expectedAddedAddresses)), inputBlpuCsvFile),
-                    Times.Once);
+                service.BulkAddAddressesAsync(
+                    It.Is(SameAddressesAs(expectedAddedAddresses)),
+                    inputBlpuCsvFile),
+                        Times.Once);
 
             this.addressProcessingServiceMock.Verify(service =>
                 service.BulkModifyAddressesAsync(

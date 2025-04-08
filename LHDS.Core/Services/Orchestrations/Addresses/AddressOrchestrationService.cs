@@ -462,24 +462,8 @@ namespace LHDS.Core.Services.Orchestrations.Addresses
         virtual internal async ValueTask<List<Address>> MapStreetDescriptorDataToAddressesAsync(
             string streetDescriptorCsvFile)
         {
-            bool fileExists = await this.fileBroker.CheckIfFileExistsAsync(streetDescriptorCsvFile);
-
-            if (!fileExists)
-            {
-                throw new InvalidFileAddressOrchestrationException(
-                    message: $"The file {streetDescriptorCsvFile} could not be found.");
-            }
-
-            byte[] csvData = await fileBroker.ReadFileAsync(streetDescriptorCsvFile);
-            string stringData = Encoding.UTF8.GetString(csvData);
-
-            List<string> records = stringData.Split(
-                new[] { "\r\n", "\n" }, StringSplitOptions.None).ToList();
-
-            List<string> filteredRecords = records.Where(record =>
-                record.StartsWith("15,") || record.StartsWith("\"15\",")).ToList();
-
-            string stringRecords = string.Join(Environment.NewLine, filteredRecords);
+            Func<string, bool> recordFilter = record =>
+                record.StartsWith("15,") || record.StartsWith("\"15\",");
 
             Dictionary<string, int> fieldMappings = new Dictionary<string, int>
             {
@@ -489,8 +473,10 @@ namespace LHDS.Core.Services.Orchestrations.Addresses
                 { "TownName", 6 },
             };
 
-            List<StreetDescriptor> streetDescriptors = await this.csvHelperBroker
-                .MapCsvToObjectAsync<StreetDescriptor>(stringRecords, hasHeaderRecord: false, fieldMappings);
+            List<StreetDescriptor> streetDescriptors = await LoadAndMapCsvAsync<StreetDescriptor>(
+                streetDescriptorCsvFile,
+                fieldMappings,
+                recordFilter);
 
             List<Address> addresses = [];
 

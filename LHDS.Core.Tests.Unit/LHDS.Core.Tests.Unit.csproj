@@ -10,6 +10,10 @@
 	</PropertyGroup>
 
 	<ItemGroup>
+	  <Compile Remove="Services\Orchestrations\Addresses\AddressOrchestrationTests.Validations.MapStreetDescriptorDataToAddresses.cs" />
+	</ItemGroup>
+
+	<ItemGroup>
 	  <None Remove="Resources\Services\Orchestrations\Addresses\ShouldProcessAddressesAsync.csv" />
 	</ItemGroup>
 

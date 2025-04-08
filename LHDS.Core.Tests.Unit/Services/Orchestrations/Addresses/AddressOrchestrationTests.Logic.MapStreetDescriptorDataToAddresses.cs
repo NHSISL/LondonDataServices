@@ -4,10 +4,6 @@
 
 using System;
 using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Reflection;
-using System.Text;
 using System.Threading.Tasks;
 using FluentAssertions;
 using Force.DeepCloner;
@@ -35,21 +31,12 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Addresses
                 this.loggingBrokerMock.Object)
             { CallBase = true };
 
-            string assembly = Assembly.GetExecutingAssembly().Location;
-            string inputCsvFileName = "ShouldProcessZipFileWithOnlyCsvAddressesData.csv";
+            string inputCsvFileName = GetRandomString();
 
-            string inputCsvFilePath = Path.Combine(
-                Path.GetDirectoryName(assembly),
-                $"Resources/Services/Orchestrations/Addresses/{inputCsvFileName}");
+            Func<string, bool> inputRecordFilter = record =>
+                record.StartsWith("15,") || record.StartsWith("\"15\",");
 
-            byte[] csvData = await File.ReadAllBytesAsync(inputCsvFilePath);
-            string stringData = Encoding.UTF8.GetString(csvData);
-            List<string> records = stringData.Split(new[] { "\r\n", "\n" }, StringSplitOptions.None).ToList();
-
-            List<string> filteredRecords = records.Where(record =>
-               record.StartsWith("15,") || record.StartsWith("\"15\",")).ToList();
-
-            Dictionary<string, int> fieldMappings = new Dictionary<string, int>
+            Dictionary<string, int> inputFieldMappings = new Dictionary<string, int>
             {
                 { "USRN", 3 },
                 { "StreetDescription", 4 },
@@ -72,42 +59,29 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Addresses
                 };
 
                 expectedAddresses.Add(address);
-            }
+            };
 
-            string stringRecords = string.Join(Environment.NewLine, filteredRecords);
-            bool hasHeaderRecord = false;
-
-            this.fileBrokerMock.Setup(service =>
-                service.CheckIfFileExistsAsync(inputCsvFilePath))
-                    .ReturnsAsync(true);
-
-            this.fileBrokerMock.Setup(service =>
-                service.ReadFileAsync(inputCsvFilePath))
-                    .ReturnsAsync(csvData);
-
-            this.csvHelperBrokerMock.Setup(service =>
-                service.MapCsvToObjectAsync<StreetDescriptor>(stringRecords, hasHeaderRecord, fieldMappings, true))
-                    .ReturnsAsync(outputStreetDescriptors);
+            addressOrchestrationServiceMock.Setup(service =>
+                service.LoadAndMapCsvAsync<StreetDescriptor>(
+                    inputCsvFileName,
+                    inputFieldMappings,
+                    It.IsAny<Func<string, bool>>()))
+                        .ReturnsAsync(outputStreetDescriptors);
 
             AddressOrchestrationService service = addressOrchestrationServiceMock.Object;
 
             // When
-            List<Address> actualAddresses = await service.MapStreetDescriptorDataToAddressesAsync(inputCsvFilePath);
+            List<Address> actualAddresses = await service.MapStreetDescriptorDataToAddressesAsync(inputCsvFileName);
 
             // Then
             actualAddresses.Should().BeEquivalentTo(expectedAddresses);
 
-            this.fileBrokerMock.Verify(service =>
-                service.CheckIfFileExistsAsync(inputCsvFilePath),
-                    Times.Once);
-
-            this.fileBrokerMock.Verify(service =>
-                service.ReadFileAsync(inputCsvFilePath),
-                    Times.Once);
-
-            this.csvHelperBrokerMock.Verify(service =>
-                service.MapCsvToObjectAsync<StreetDescriptor>(stringRecords, hasHeaderRecord, fieldMappings, true),
-                    Times.Once());
+            addressOrchestrationServiceMock.Verify(service =>
+                service.LoadAndMapCsvAsync<StreetDescriptor>(
+                    inputCsvFileName,
+                    inputFieldMappings,
+                    It.IsAny<Func<string, bool>>()),
+                        Times.Once);
 
             this.fileBrokerMock.VerifyNoOtherCalls();
             this.csvHelperBrokerMock.VerifyNoOtherCalls();

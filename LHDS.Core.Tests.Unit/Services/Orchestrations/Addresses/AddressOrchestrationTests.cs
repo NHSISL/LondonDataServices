@@ -214,9 +214,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Addresses
         private static Filler<BLPUAddress> CreateBLPUAddressFiller(DateTimeOffset dateTimeOffset)
         {
             var filler = new Filler<BLPUAddress>();
-
-            filler.Setup()
-                .OnType<DateTimeOffset?>().Use(dateTimeOffset);
+            filler.Setup().OnType<DateTimeOffset?>().Use(dateTimeOffset);
 
             return filler;
         }

@@ -86,7 +86,6 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Addresses
                 },
             };
 
-
             List<Address> expectedAddresses = new List<Address>()
             {
                 new Address

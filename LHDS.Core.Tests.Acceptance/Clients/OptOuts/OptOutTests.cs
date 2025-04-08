@@ -5,10 +5,12 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Claims;
 using System.Text;
 using LHDS.Core.Brokers.CsvHelpers;
 using LHDS.Core.Brokers.DateTimes;
 using LHDS.Core.Brokers.Mesh;
+using LHDS.Core.Brokers.Securities;
 using LHDS.Core.Brokers.Storages.Blobs;
 using LHDS.Core.Clients;
 using LHDS.Core.Clients.Extensions;
@@ -38,6 +40,7 @@ namespace LHDS.Core.Tests.Acceptance.Clients.OptOuts
         private readonly MeshConfiguration meshConfiguration;
         private readonly OptOutConfiguration optOutConfiguration;
         private readonly IDateTimeBroker dateTimeBroker;
+        private readonly ISecurityBroker securityBroker;
         private readonly IOptOutService optOutService;
 
         public OptOutTests(DependencyBroker dependencyBroker)
@@ -46,6 +49,20 @@ namespace LHDS.Core.Tests.Acceptance.Clients.OptOuts
             this.blobStorageBrokerMock = new Mock<IBlobStorageBroker>();
             this.meshBrokerMock = new Mock<IMeshBroker>();
             var serviceCollection = new ServiceCollection();
+            var claimsPrincipal = new ClaimsPrincipal();
+
+            claimsPrincipal.AddIdentity(new ClaimsIdentity(new List<Claim>
+            {
+                new Claim("oid", Guid.NewGuid().ToString()),
+                new Claim(ClaimTypes.GivenName, "GivenName"),
+                new Claim(ClaimTypes.Surname, "Surname"),
+                new Claim("displayName", "DisplayName"),
+                new Claim(ClaimTypes.Email, "some@email.com"),
+                new Claim("jobTitle", "job title"),
+                new Claim(ClaimTypes.Name, "TestUser"),
+                new Claim(ClaimTypes.Role, "ISL.LDS.AdminApi.Administrators"),
+                new Claim(ClaimTypes.Role, "ISL.LDS.AdminApi.Configurations")
+            }));
 
             serviceCollection.AddLogging(builder =>
             {
@@ -61,13 +78,14 @@ namespace LHDS.Core.Tests.Acceptance.Clients.OptOuts
                 .AddTransient<IMeshBroker>(serviceProvider => meshBrokerMock.Object)
                 .AddTransient<IBlobStorageBroker>(serviceProvider => blobStorageBrokerMock.Object);
 
-            serviceCollection.AddOptOutClientForAcceptance(this.dependencyBroker.Configuration);
+            serviceCollection.AddOptOutClientForAcceptance(this.dependencyBroker.Configuration, claimsPrincipal);
             var serviceProvider = serviceCollection.BuildServiceProvider();
             this.optOutConfiguration = serviceProvider.GetService<OptOutConfiguration>();
             this.meshConfiguration = serviceProvider.GetService<MeshConfiguration>();
             this.csvHelperBroker = serviceProvider.GetService<ICsvHelperBroker>();
             this.dateTimeBroker = serviceProvider.GetService<IDateTimeBroker>();
             this.optOutService = serviceProvider.GetService<IOptOutService>();
+            this.securityBroker = serviceProvider.GetService<ISecurityBroker>();
             optOutClient = serviceProvider.GetService<IOptOutClient>();
         }
 

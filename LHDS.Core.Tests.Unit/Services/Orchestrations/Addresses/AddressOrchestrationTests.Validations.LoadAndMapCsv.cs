@@ -2,6 +2,7 @@
 // Copyright (c) North East London ICB. All rights reserved.
 // ---------------------------------------------------------
 
+using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using FluentAssertions;
@@ -16,7 +17,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Addresses
     public partial class AddressOrchestrationServiceTests
     {
         [Fact]
-        public async Task ShouldThrowValidationExceptionOnMapDPADataIfFileDoesNotExistAsync()
+        public async Task ShouldThrowValidationExceptionOnLoadAndMapCsvIfFileDoesNotExistAsync()
         {
             // Given
             var addressOrchestrationServiceMock = new Mock<AddressOrchestrationService>
@@ -45,11 +46,14 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Addresses
             AddressOrchestrationService service = addressOrchestrationServiceMock.Object;
 
             // When
-            ValueTask<List<Address>> mapLpiDataTask = service.MapDPADataToAddressesAsync(invalidFileName);
+            ValueTask<List<Address>> loadAndMapCsvTask = service.LoadAndMapCsvAsync<Address>(
+                invalidFileName,
+                It.IsAny<Dictionary<string, int>>(),
+                It.IsAny<Func<string, bool>>());
 
             InvalidFileAddressOrchestrationException actualFileAddressOrchestrationException =
                 await Assert.ThrowsAsync<InvalidFileAddressOrchestrationException>(
-                    mapLpiDataTask.AsTask);
+                    loadAndMapCsvTask.AsTask);
 
             // Then
             actualFileAddressOrchestrationException.Should()

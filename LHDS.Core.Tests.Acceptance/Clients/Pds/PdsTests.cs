@@ -2,6 +2,7 @@
 // Copyright (c) North East London ICB. All rights reserved.
 // ---------------------------------------------------------
 
+using System;
 using System.Collections.Generic;
 using System.Security.Claims;
 using LHDS.Core.Brokers.Identifiers;
@@ -44,6 +45,19 @@ namespace LHDS.Core.Tests.Acceptance.Clients.Pds
             this.identifierBroker = new IdentifierBroker();
             var serviceCollection = new ServiceCollection();
             var claimsPrincipal = new ClaimsPrincipal();
+
+            claimsPrincipal.AddIdentity(new ClaimsIdentity(new List<Claim>
+            {
+                new Claim("oid", Guid.NewGuid().ToString()),
+                new Claim(ClaimTypes.GivenName, "GivenName"),
+                new Claim(ClaimTypes.Surname, "Surname"),
+                new Claim("displayName", "DisplayName"),
+                new Claim(ClaimTypes.Email, "some@email.com"),
+                new Claim("jobTitle", "job title"),
+                new Claim(ClaimTypes.Name, "TestUser"),
+                new Claim(ClaimTypes.Role, "ISL.LDS.AdminApi.Administrators"),
+                new Claim(ClaimTypes.Role, "ISL.LDS.AdminApi.Configurations")
+            }));
 
             serviceCollection.AddLogging(builder =>
             {

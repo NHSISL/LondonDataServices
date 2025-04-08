@@ -491,9 +491,6 @@ namespace LHDS.Core.Services.Orchestrations.Addresses
             await addressProcessingService.BulkModifyAddressesAsync(updatedBlpuAddress, blpuCsvFile);
         }
 
-        virtual internal async ValueTask<List<Address>> MapBLPUDataToAddressesAsync(string blpuCsvFile) =>
-            throw new NotImplementedException();
-
         public ValueTask SyncAddressesWithAssignAsync()
         {
             throw new NotImplementedException();

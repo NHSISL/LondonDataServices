@@ -6,7 +6,6 @@ using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using FluentAssertions;
-using Force.DeepCloner;
 using LHDS.Core.Models.Foundations.Addresses;
 using LHDS.Core.Models.Orchestrations.Addresses;
 using LHDS.Core.Services.Orchestrations.Addresses;
@@ -18,7 +17,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Addresses
     public partial class AddressOrchestrationServiceTests
     {
         [Fact]
-        public async Task ShouldMapLPIDataToAddresses()
+        public async Task ShouldMapBLPUDataToAddressesAsync()
         {
             // Given
             var addressOrchestrationServiceMock = new Mock<AddressOrchestrationService>
@@ -34,25 +33,15 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Addresses
             string inputCsvFileName = GetRandomString();
 
             Func<string, bool> inputRecordFilter = record =>
-                record.StartsWith("24,") || record.StartsWith("\"24\",");
+                record.StartsWith("21,") || record.StartsWith("\"21\",");
 
             Dictionary<string, int> inputFieldMappings = new Dictionary<string, int>
             {
                 { "UPRN", 3 },
-                { "LogicalStatus", 6 },
-                { "StartDate", 7 },
-                { "EndDate", 8 },
-                { "SAOStartNumber", 11 },
-                { "SAOStartSuffix", 12 },
-                { "SAOEndNumber", 13 },
-                { "SAOEndSuffix", 14 },
-                { "SAOText", 15 },
-                { "PAOStartNumber", 16 },
-                { "PAOStartSuffix", 17 },
-                { "PAOEndNumber", 18 },
-                { "PAOEndSuffix", 19 },
-                { "PAOText", 20 },
-                { "USRN", 21 },
+                { "LogicalStatus", 4 },
+                { "StartDate", 15 },
+                { "EndDate", 16 },
+                { "PostCode", 20 },
             };
 
             string multipleHistoricalsUprn = GetRandomString();
@@ -60,150 +49,108 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Addresses
             DateTimeOffset latestEndDate = randomDateTimeOffset.AddYears(-1);
             DateTimeOffset olderEndDate = randomDateTimeOffset.AddYears(-5);
             DateTimeOffset startDate = randomDateTimeOffset.AddYears(-20);
-            string updatedMultipleHistoricalsPaoText = GetRandomString();
-            string oldMultipleHistoricalsPaoText = GetRandomString();
+            string updatedMultipleHistoricalsPostCode = GetRandomString();
+            string oldMultipleHistoricalsPostCode = GetRandomString();
 
-            List<LPIAddress> multipleHistoricalsLpiAddresses =
+            List<BLPUAddress> multipleHistoricalsBlpuAddresses =
             [
-                new LPIAddress
+                new BLPUAddress
                 {
                     UPRN = multipleHistoricalsUprn,
                     LogicalStatus = 8,
                     StartDate = startDate,
                     EndDate = latestEndDate,
-                    PAOText = updatedMultipleHistoricalsPaoText
+                    PostCode = updatedMultipleHistoricalsPostCode
                 },
-                new LPIAddress
+                new BLPUAddress
                 {
                     UPRN = multipleHistoricalsUprn,
                     LogicalStatus = 8,
                     StartDate = startDate,
                     EndDate = olderEndDate,
-                    PAOText = oldMultipleHistoricalsPaoText
+                    PostCode = oldMultipleHistoricalsPostCode
                 },
-                new LPIAddress
+                new BLPUAddress
                 {
                     UPRN = multipleHistoricalsUprn,
                     LogicalStatus = 8,
                     StartDate = startDate,
                     EndDate = null,
-                    PAOText = oldMultipleHistoricalsPaoText
+                    PostCode = oldMultipleHistoricalsPostCode
                 },
             ];
 
             string multipleAlternativesUprn = GetRandomString();
-            string approvedPaoText = GetRandomString();
-            string alternativePaoText = GetRandomString();
+            string approvedPostCode = GetRandomString();
+            string alternativePostCode = GetRandomString();
 
-            List<LPIAddress> multipleAlternativesLpiAddresses =
+            List<BLPUAddress> multipleAlternativesBlpuAddresses =
             [
-                new LPIAddress
+                new BLPUAddress
                 {
                     UPRN = multipleAlternativesUprn,
                     LogicalStatus = 1,
                     StartDate = startDate,
                     EndDate = null,
-                    PAOText = approvedPaoText
+                    PostCode = approvedPostCode
                 },
-                new LPIAddress
+                new BLPUAddress
                 {
                     UPRN = multipleAlternativesUprn,
                     LogicalStatus = 3,
                     StartDate = startDate,
                     EndDate = null,
-                    PAOText = alternativePaoText
+                    PostCode = alternativePostCode
                 },
-                new LPIAddress
+                new BLPUAddress
                 {
                     UPRN = multipleAlternativesUprn,
                     LogicalStatus = 3,
                     StartDate = startDate,
                     EndDate = null,
-                    PAOText = alternativePaoText
+                    PostCode = alternativePostCode
                 },
             ];
 
-            List<LPIAddress> outputLpiAddresses = [
-                .. multipleHistoricalsLpiAddresses,
-                .. multipleAlternativesLpiAddresses];
+            List<BLPUAddress> outputBlpuAddresses = [
+                .. multipleHistoricalsBlpuAddresses,
+                .. multipleAlternativesBlpuAddresses];
 
-
-            List<LPIAddress> inputLpiAddresses =
+            List<Address> expectedAddresses =
             [
-                new LPIAddress
+                new Address
                 {
                     UPRN = multipleHistoricalsUprn,
-                    LogicalStatus = 8,
-                    StartDate = startDate,
-                    EndDate = latestEndDate,
-                    PAOText = updatedMultipleHistoricalsPaoText
+                    PostCode= updatedMultipleHistoricalsPostCode,
                 },
-                new LPIAddress
+                new Address
                 {
                     UPRN = multipleAlternativesUprn,
-                    LogicalStatus = 1,
-                    StartDate = startDate,
-                    EndDate = null,
-                    PAOText = approvedPaoText
+                    PostCode= approvedPostCode,
                 },
             ];
-
-            List<Address> outputAddresses = new List<Address>()
-            {
-
-                new Address
-                {
-                    UPRN = multipleHistoricalsUprn,
-                    SubBuildingName = "",
-                    BuildingName = updatedMultipleHistoricalsPaoText,
-                    BuildingNumber = ""
-                },
-                new Address
-                {
-                    UPRN = multipleAlternativesUprn,
-                    SubBuildingName = "",
-                    BuildingName = approvedPaoText,
-                    BuildingNumber = ""
-                },
-            };
-
-            List<Address> expectedAddresses = outputAddresses.DeepClone();
 
             addressOrchestrationServiceMock.Setup(service =>
-                service.LoadAndMapCsvAsync<LPIAddress>(
+                service.LoadAndMapCsvAsync<BLPUAddress>(
                     inputCsvFileName,
                     inputFieldMappings,
                     It.IsAny<Func<string, bool>>()))
-                        .ReturnsAsync(outputLpiAddresses);
-
-            for (int i = 0; i < inputLpiAddresses.Count; i++)
-            {
-                addressOrchestrationServiceMock.Setup(service =>
-                    service.MapLPIAddressToAddress(inputLpiAddresses[i]))
-                        .Returns(outputAddresses[i]);
-            }
+                        .ReturnsAsync(outputBlpuAddresses);
 
             AddressOrchestrationService service = addressOrchestrationServiceMock.Object;
 
             // When
-            List<Address> actualAddresses = await service.MapLPIDataToAddressesAsync(inputCsvFileName);
+            List<Address> actualAddresses = await service.MapBLPUDataToAddressesAsync(inputCsvFileName);
 
             // Then
             actualAddresses.Should().BeEquivalentTo(expectedAddresses);
 
             addressOrchestrationServiceMock.Verify(service =>
-                service.LoadAndMapCsvAsync<LPIAddress>(
+                service.LoadAndMapCsvAsync<BLPUAddress>(
                     inputCsvFileName,
                     inputFieldMappings,
                     It.IsAny<Func<string, bool>>()),
                         Times.Once);
-
-            for (int i = 0; i < inputLpiAddresses.Count; i++)
-            {
-                addressOrchestrationServiceMock.Verify(service =>
-                    service.MapLPIAddressToAddress(It.Is(SameLPIAddressAs(inputLpiAddresses[i]))),
-                        Times.Once);
-            }
 
             this.fileBrokerMock.VerifyNoOtherCalls();
             this.csvHelperBrokerMock.VerifyNoOtherCalls();
@@ -216,4 +163,3 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Addresses
         }
     }
 }
-

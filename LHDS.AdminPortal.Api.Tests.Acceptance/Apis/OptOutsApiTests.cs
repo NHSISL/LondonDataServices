@@ -138,9 +138,9 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.OptOuts
         private async ValueTask<OptOut> PostRandomOptOutAsync()
         {
             OptOut randomOptOut = CreateRandomOptOut();
-            await this.apiBroker.PostOptOutAsync(randomOptOut);
+            OptOut storageOptOut = await this.apiBroker.PostOptOutAsync(randomOptOut);
 
-            return randomOptOut;
+            return storageOptOut;
         }
 
         private async ValueTask<IngestionTracking> PostRandomIngestionTrackingAsync(Guid supplierId)

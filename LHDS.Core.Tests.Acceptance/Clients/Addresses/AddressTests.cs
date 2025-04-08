@@ -235,8 +235,6 @@ namespace LHDS.Core.Tests.Acceptance.Clients.Addresses
                 DependentLocality = "Westminister",
                 PostTown = "London",
                 PostCode = "SW1A2AA",
-                IsProcessing = false,
-                IsSynced = false,
                 CreatedBy = "system",
                 UpdatedBy = "system",
                 CreatedDate = randomDateTime,

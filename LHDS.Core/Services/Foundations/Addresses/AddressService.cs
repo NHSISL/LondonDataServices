@@ -66,8 +66,6 @@ namespace LHDS.Core.Services.Foundations.Addresses
             await BulkAddOrModifyBatchAsync(addresses, fileName);
         });
 
-
-
         virtual internal async ValueTask BulkAddOrModifyBatchAsync(List<Address> addresses, string fileName, int batchSize = 10000)
         {
             int totalRecords = addresses.Count;

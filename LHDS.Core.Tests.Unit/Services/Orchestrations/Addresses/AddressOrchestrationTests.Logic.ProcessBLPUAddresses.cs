@@ -49,7 +49,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Addresses
             }
 
             List<Address> retrievedDatabaseAddresses = [
-                ..databaseAddresses,
+                .. databaseAddresses,
                 .. databaseAddressesNoPostcode];
 
             List<Address> expectedModifiedAddresses = existingAddressesNoPostcodeDb.DeepClone().ToList();

@@ -63,6 +63,18 @@ namespace LHDS.Core.Services.Processings.Addresses
                message: "Invalid argument(s). Please correct the errors and try again.",
                (Rule: IsInvalid(uprn), Parameter: "uprn"));
 
+        public void ValidateAddressOnRetrieveOrAdd(Address address)
+        {
+            ValidateAddress(address);
+            ValidateAddressId(address.Id);
+        }
+
+        public void ValidateAddressOnModifyOrAdd(Address address)
+        {
+            ValidateAddress(address);
+            ValidateAddressId(address.Id);
+        }
+
         private static dynamic IsInvalid(Guid id) => new
         {
             Condition = id == Guid.Empty,

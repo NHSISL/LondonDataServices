@@ -559,10 +559,6 @@ namespace LHDS.Core.Services.Orchestrations.Addresses
             await addressProcessingService.BulkModifyAddressesAsync(updatedAddresses, streetDescriptorCsvFile);
         }
 
-        virtual internal async ValueTask<List<Address>> MapStreetDescriptorDataToAddressesAsync(
-            string streetDescriptorCsvFile) =>
-            throw new NotImplementedException();
-
         public ValueTask SyncAddressesWithAssignAsync()
         {
             throw new NotImplementedException();

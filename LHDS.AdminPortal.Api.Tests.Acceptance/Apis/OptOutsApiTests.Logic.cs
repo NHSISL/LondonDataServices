@@ -26,7 +26,11 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.OptOuts
                 await this.apiBroker.PostOptOutAsync(inputOptOut);
 
             // Then
-            actualOptOut.Should().BeEquivalentTo(expectedOptOut);
+            actualOptOut.Should().BeEquivalentTo(expectedOptOut, options => options
+                .Excluding(property => property.CreatedBy)
+                .Excluding(property => property.CreatedDate)
+                .Excluding(property => property.UpdatedBy)
+                .Excluding(property => property.UpdatedDate));
 
             // Cleanup
             await this.apiBroker.DeleteOptOutByIdAsync(actualOptOut.Id);
@@ -44,7 +48,11 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.OptOuts
                 await this.apiBroker.GetOptOutByNhsNumberAsync(randomOptOut.NhsNumber);
 
             // Then
-            actualOptOut.Should().BeEquivalentTo(expectedOptOut);
+            actualOptOut.Should().BeEquivalentTo(expectedOptOut, options => options
+                .Excluding(property => property.CreatedBy)
+                .Excluding(property => property.CreatedDate)
+                .Excluding(property => property.UpdatedBy)
+                .Excluding(property => property.UpdatedDate));
 
             // Cleanup
             await this.apiBroker.DeleteOptOutByIdAsync(actualOptOut.Id);
@@ -70,7 +78,13 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.OptOuts
             foreach (OptOut expectedOptOut in expectedOptOuts)
             {
                 OptOut actualOptOut = actualOptOuts.Single(approval => approval.Id == expectedOptOut.Id);
-                actualOptOut.Should().BeEquivalentTo(expectedOptOut);
+
+                actualOptOut.Should().BeEquivalentTo(expectedOptOut, options => options
+                    .Excluding(property => property.CreatedBy)
+                    .Excluding(property => property.CreatedDate)
+                    .Excluding(property => property.UpdatedBy)
+                    .Excluding(property => property.UpdatedDate));
+
                 await this.apiBroker.DeleteOptOutByIdAsync(actualOptOut.Id);
             }
         }
@@ -87,7 +101,12 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.OptOuts
             OptOut actualOptOut = await this.apiBroker.GetOptOutByNhsNumberAsync(randomOptOut.NhsNumber);
 
             // then
-            actualOptOut.Should().BeEquivalentTo(modifiedOptOut);
+            actualOptOut.Should().BeEquivalentTo(modifiedOptOut, options => options
+                .Excluding(property => property.CreatedBy)
+                .Excluding(property => property.CreatedDate)
+                .Excluding(property => property.UpdatedBy)
+                .Excluding(property => property.UpdatedDate));
+
             await this.apiBroker.DeleteOptOutByIdAsync(actualOptOut.Id);
         }
 
@@ -107,7 +126,12 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.OptOuts
                  await this.apiBroker.GetOptOutByNhsNumberAsync(inputOptOut.NhsNumber);
 
             // then
-            deletedOptOut.Should().BeEquivalentTo(expectedOptOut);
+            deletedOptOut.Should().BeEquivalentTo(expectedOptOut, options => options
+                .Excluding(property => property.CreatedBy)
+                .Excluding(property => property.CreatedDate)
+                .Excluding(property => property.UpdatedBy)
+                .Excluding(property => property.UpdatedDate));
+
             optOutByNhsNumber.Should().BeNull();
         }
     }

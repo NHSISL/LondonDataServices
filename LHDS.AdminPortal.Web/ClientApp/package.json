@@ -84,6 +84,7 @@
     "build:idev": "env-cmd -f .env.idev react-scripts build",
     "build:odev": "env-cmd -f .env.odev react-scripts build",
     "build:Test": "env-cmd -f .env.test react-scripts build",
+    "build:PreProduction": "env-cmd -f .env.preproduction react-scripts build",
     "build:Production": "env-cmd -f .env.production react-scripts build",
     "test": "cross-env CI=true react-scripts test --env=jsdom",
     "test:ci": "cross-env CI=true react-scripts test --env=jsdom --reporters=default --reporters=jest-junit",

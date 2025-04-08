@@ -362,24 +362,8 @@ namespace LHDS.Core.Services.Orchestrations.Addresses
 
         virtual internal async ValueTask<List<Address>> MapDPADataToAddressesAsync(string dpaCsvFile)
         {
-            bool fileExists = await this.fileBroker.CheckIfFileExistsAsync(dpaCsvFile);
-
-            if (!fileExists)
-            {
-                throw new InvalidFileAddressOrchestrationException(
-                    message: $"The file {dpaCsvFile} could not be found.");
-            }
-
-            byte[] csvData = await fileBroker.ReadFileAsync(dpaCsvFile);
-            string stringData = Encoding.UTF8.GetString(csvData);
-
-            List<string> records = stringData.Split(
-                new[] { "\r\n", "\n" }, StringSplitOptions.None).ToList();
-
-            List<string> filteredRecords = records.Where(record =>
-               record.StartsWith("28,") || record.StartsWith("\"28\",")).ToList();
-
-            string stringRecords = string.Join(Environment.NewLine, filteredRecords);
+            Func<string, bool> recordFilter = record =>
+                record.StartsWith("28,") || record.StartsWith("\"28\",");
 
             Dictionary<string, int> fieldMappings = new Dictionary<string, int>
             {
@@ -398,8 +382,10 @@ namespace LHDS.Core.Services.Orchestrations.Addresses
                 { "PostCode", 15 }
             };
 
-            List<Address> addresses = await this.csvHelperBroker
-                .MapCsvToObjectAsync<Address>(stringRecords, hasHeaderRecord: false, fieldMappings);
+            List<Address> addresses = await LoadAndMapCsvAsync<Address>(
+                dpaCsvFile,
+                fieldMappings,
+                recordFilter);
 
             return addresses;
         }

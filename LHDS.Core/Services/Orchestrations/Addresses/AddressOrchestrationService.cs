@@ -186,6 +186,9 @@ namespace LHDS.Core.Services.Orchestrations.Addresses
             }
         }
 
+        virtual internal async ValueTask ReadCsvDataAndBulkAddAddressesAsync(string tempFolder) =>
+            throw new NotImplementedException();
+
         virtual internal async ValueTask<List<T>> LoadAndMapCsvAsync<T>(
             string filePath,
             Dictionary<string, int> fieldMappings,
@@ -490,6 +493,9 @@ namespace LHDS.Core.Services.Orchestrations.Addresses
             await addressProcessingService.BulkAddAddressesAsync(newBlpuAddresses, blpuCsvFile);
             await addressProcessingService.BulkModifyAddressesAsync(updatedBlpuAddress, blpuCsvFile);
         }
+
+        virtual internal async ValueTask ProcessStreetDescriptorDataAsync(string streetDescriptorCsvFile) =>
+            throw new NotImplementedException();
 
         public ValueTask SyncAddressesWithAssignAsync()
         {

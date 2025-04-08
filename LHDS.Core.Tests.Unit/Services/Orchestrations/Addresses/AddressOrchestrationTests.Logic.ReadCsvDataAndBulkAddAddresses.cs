@@ -38,11 +38,25 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Addresses
                 blpuCsvFilePath,
                 streetDescriptorCsvFilePath];
 
-
             this.fileBrokerMock.Setup(service =>
                 service.GetListOfFilesAsync(inputTempFolder, "*.csv"))
                     .ReturnsAsync(outputFileList);
 
+            addressOrchestrationServiceMock.Setup(service =>
+                service.ProcessDPAAddressesAsync(dpaCsvFilePath))
+                    .Returns(ValueTask.CompletedTask);
+
+            addressOrchestrationServiceMock.Setup(service =>
+                service.ProcessLPIAddressesAsync(lpiCsvFilePath))
+                    .Returns(ValueTask.CompletedTask);
+
+            addressOrchestrationServiceMock.Setup(service =>
+                service.ProcessBLPUAddressesAsync(blpuCsvFilePath))
+                    .Returns(ValueTask.CompletedTask);
+
+            addressOrchestrationServiceMock.Setup(service =>
+                service.ProcessStreetDescriptorDataAsync(streetDescriptorCsvFilePath))
+                    .Returns(ValueTask.CompletedTask);
 
             AddressOrchestrationService service = addressOrchestrationServiceMock.Object;
 

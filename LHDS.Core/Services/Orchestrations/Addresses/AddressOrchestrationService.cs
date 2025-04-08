@@ -186,8 +186,18 @@ namespace LHDS.Core.Services.Orchestrations.Addresses
             }
         }
 
-        virtual internal async ValueTask ReadCsvDataAndBulkAddAddressesAsync(string tempFolder) =>
-            throw new NotImplementedException();
+        virtual internal async ValueTask ReadCsvDataAndBulkAddAddressesAsync(string tempFolder)
+        {
+            List<string> csvFiles = await fileBroker.GetListOfFilesAsync(tempFolder, "*.csv");
+            string dpaCsvFile = csvFiles.Where(csv => csv.Contains("ID28")).FirstOrDefault();
+            string lpiCsvFile = csvFiles.Where(csv => csv.Contains("ID24")).FirstOrDefault();
+            string blpuCsvFile = csvFiles.Where(csv => csv.Contains("ID21")).FirstOrDefault();
+            string streetDescriptorCsvFile = csvFiles.Where(csv => csv.Contains("ID15")).FirstOrDefault();
+            await ProcessDPAAddressesAsync(dpaCsvFile);
+            await ProcessLPIAddressesAsync(lpiCsvFile);
+            await ProcessBLPUAddressesAsync(blpuCsvFile);
+            await ProcessStreetDescriptorDataAsync(streetDescriptorCsvFile);
+        }
 
         virtual internal async ValueTask<List<T>> LoadAndMapCsvAsync<T>(
             string filePath,

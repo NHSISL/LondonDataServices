@@ -95,7 +95,8 @@ namespace LHDS.Core.Services.Orchestrations.Addresses
                         using (FileStream nestedZipStream =
                             new FileStream(entryPath, FileMode.Open, FileAccess.Read))
                         {
-                            string nestedExtractPath = Path.Combine(extractPath, Path.GetFileNameWithoutExtension(entry.FullName));
+                            string nestedExtractPath =
+                                Path.Combine(extractPath, Path.GetFileNameWithoutExtension(entry.FullName));
 
                             if (!Directory.Exists(nestedExtractPath))
                             {
@@ -185,26 +186,41 @@ namespace LHDS.Core.Services.Orchestrations.Addresses
             }
         }
 
-        virtual internal async ValueTask<List<Address>> MapLPIDataToAddressesAsync(string lpiCsvFile)
+        virtual internal async ValueTask<List<T>> LoadAndMapCsvAsync<T>(
+            string filePath,
+            Dictionary<string, int> fieldMappings,
+            Func<string, bool> recordFilterPredicate)
         {
-            bool fileExists = await this.fileBroker.CheckIfFileExistsAsync(lpiCsvFile);
+            bool fileExists = await this.fileBroker.CheckIfFileExistsAsync(filePath);
 
             if (!fileExists)
             {
                 throw new InvalidFileAddressOrchestrationException(
-                    message: $"The file {lpiCsvFile} could not be found.");
+                    message: $"The file {filePath} could not be found.");
             }
 
-            byte[] csvData = await fileBroker.ReadFileAsync(lpiCsvFile);
+            byte[] csvData = await fileBroker.ReadFileAsync(filePath);
             string stringData = Encoding.UTF8.GetString(csvData);
 
             List<string> records = stringData.Split(
                 new[] { "\r\n", "\n" }, StringSplitOptions.None).ToList();
 
-            List<string> filteredRecords = records.Where(record =>
-                record.StartsWith("24,") || record.StartsWith("\"24\",")).ToList();
+            List<string> filteredRecords = records
+                .Where(recordFilterPredicate)
+                .ToList();
 
-            string stringRecords = string.Join(Environment.NewLine, filteredRecords);
+            string filteredCsv = string.Join(Environment.NewLine, filteredRecords);
+
+            List<T> mappedObjects = await this.csvHelperBroker
+                .MapCsvToObjectAsync<T>(filteredCsv, hasHeaderRecord: false, fieldMappings);
+
+            return mappedObjects;
+        }
+
+        virtual internal async ValueTask<List<Address>> MapLPIDataToAddressesAsync(string lpiCsvFile)
+        {
+            Func<string, bool> recordFilter = record =>
+                record.StartsWith("24,") || record.StartsWith("\"24\",");
 
             Dictionary<string, int> fieldMappings = new Dictionary<string, int>
             {
@@ -225,16 +241,17 @@ namespace LHDS.Core.Services.Orchestrations.Addresses
                 { "USRN", 21 },
             };
 
-            List<LPIAddress> lpiAddresses = await this.csvHelperBroker
-                .MapCsvToObjectAsync<LPIAddress>(stringRecords, hasHeaderRecord: false, fieldMappings);
+            List<LPIAddress> lpiAddresses = await LoadAndMapCsvAsync<LPIAddress>(
+                lpiCsvFile,
+                fieldMappings,
+                recordFilter);
 
-            List<LPIAddress> lpiAddressesWithoutDuplicates = lpiAddresses
-                .OrderByDescending(address => address.EndDate)
+            var lpiAddressesWithoutDuplicates = lpiAddresses
+                .OrderBy(address => address.LogicalStatus)
+                .ThenBy(address => address.EndDate == null)
+                .ThenByDescending(address => address.EndDate)
                 .GroupBy(address => address.UPRN)
-                .Select(group => group.Count() > 1
-                    ? group.FirstOrDefault(a => a.LogicalStatus == 1) ?? group.First()
-                    : group.First())
-                .ToList();
+                .Select(group => group.FirstOrDefault());
 
             List<Address> addresses = [];
 
@@ -345,24 +362,8 @@ namespace LHDS.Core.Services.Orchestrations.Addresses
 
         virtual internal async ValueTask<List<Address>> MapDPADataToAddressesAsync(string dpaCsvFile)
         {
-            bool fileExists = await this.fileBroker.CheckIfFileExistsAsync(dpaCsvFile);
-
-            if (!fileExists)
-            {
-                throw new InvalidFileAddressOrchestrationException(
-                    message: $"The file {dpaCsvFile} could not be found.");
-            }
-
-            byte[] csvData = await fileBroker.ReadFileAsync(dpaCsvFile);
-            string stringData = Encoding.UTF8.GetString(csvData);
-
-            List<string> records = stringData.Split(
-                new[] { "\r\n", "\n" }, StringSplitOptions.None).ToList();
-
-            List<string> filteredRecords = records.Where(record =>
-               record.StartsWith("28,") || record.StartsWith("\"28\",")).ToList();
-
-            string stringRecords = string.Join(Environment.NewLine, filteredRecords);
+            Func<string, bool> recordFilter = record =>
+                record.StartsWith("28,") || record.StartsWith("\"28\",");
 
             Dictionary<string, int> fieldMappings = new Dictionary<string, int>
             {
@@ -381,10 +382,81 @@ namespace LHDS.Core.Services.Orchestrations.Addresses
                 { "PostCode", 15 }
             };
 
-            List<Address> addresses = await this.csvHelperBroker
-                .MapCsvToObjectAsync<Address>(stringRecords, hasHeaderRecord: false, fieldMappings);
+            List<Address> addresses = await LoadAndMapCsvAsync<Address>(
+                dpaCsvFile,
+                fieldMappings,
+                recordFilter);
 
             return addresses;
+        }
+
+        virtual internal async ValueTask<List<Address>> MapBLPUDataToAddressesAsync(string blpuCsvFile)
+        {
+            Func<string, bool> recordFilter = record =>
+                record.StartsWith("21,") || record.StartsWith("\"21\",");
+
+            Dictionary<string, int> fieldMappings = new Dictionary<string, int>
+            {
+                { "UPRN", 3 },
+                { "LogicalStatus", 4 },
+                { "StartDate", 15 },
+                { "EndDate", 16 },
+                { "PostCode", 20 },
+            };
+
+            List<BLPUAddress> blpuAddresses = await LoadAndMapCsvAsync<BLPUAddress>(
+                blpuCsvFile,
+                fieldMappings,
+                recordFilter);
+
+            var blpuAddressesWithoutDuplicates = blpuAddresses
+                .OrderBy(address => address.LogicalStatus)
+                .ThenBy(address => address.EndDate == null)
+                .ThenByDescending(address => address.EndDate)
+                .GroupBy(address => address.UPRN)
+                .Select(group => group.FirstOrDefault());
+
+            List<Address> addresses = [];
+
+            foreach (BLPUAddress blpuAddress in blpuAddressesWithoutDuplicates)
+            {
+                Address address = new Address
+                {
+                    UPRN = blpuAddress.UPRN,
+                    PostCode = blpuAddress.PostCode,
+                };
+
+                addresses.Add(address);
+            }
+
+            return addresses;
+        }
+
+        virtual internal async ValueTask ProcessLPIAddressesAsync(string lpiCsvFile)
+        {
+            List<Address> lpiAddresses = await MapLPIDataToAddressesAsync(lpiCsvFile);
+            Dictionary<string, Address> lpiAddressesDict = lpiAddresses.ToDictionary(a => a.UPRN, a => a);
+            IQueryable<Address> addresses = await addressProcessingService.RetrieveAllAddressesAsync();
+            HashSet<string> lpiFileUprns = lpiAddresses.Select(a => a.UPRN).ToHashSet();
+
+            List<Address> existingLpiAddresses = addresses.Where(address =>
+                lpiFileUprns.Contains(address.UPRN)).ToList();
+
+            HashSet<string> existingLpiUprns = existingLpiAddresses.Select(a => a.UPRN).ToHashSet();
+
+            List<Address> newLpiAddresses = lpiAddresses.Where(lpiAddress =>
+                !existingLpiUprns.Contains(lpiAddress.UPRN)).ToList();
+
+            foreach (Address existingAddress in existingLpiAddresses)
+            {
+                if (existingAddress.UPRN != null && lpiAddressesDict.TryGetValue(existingAddress.UPRN, out Address lpiAddress))
+                {
+                    existingAddress.USRN = lpiAddress.USRN;
+                }
+            }
+
+            await addressProcessingService.BulkAddAddressesAsync(newLpiAddresses, lpiCsvFile);
+            await addressProcessingService.BulkModifyAddressesAsync(existingLpiAddresses, lpiCsvFile);
         }
 
         public ValueTask SyncAddressesWithAssignAsync()

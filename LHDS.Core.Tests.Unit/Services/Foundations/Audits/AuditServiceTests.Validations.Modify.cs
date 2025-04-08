@@ -161,7 +161,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Audits
                 .BeEquivalentTo(expectedAuditValidationException);
 
             auditServiceMock.Verify(service =>
-                service.ApplyAddAuditAsync(invalidAudit),
+                service.ApplyModifyAuditAsync(invalidAudit),
                     Times.Once());
 
             this.dateTimeBrokerMock.Verify(broker =>
@@ -247,7 +247,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Audits
                 .BeEquivalentTo(expectedAuditValidationException);
 
             auditServiceMock.Verify(service =>
-                service.ApplyAddAuditAsync(invalidAudit),
+                service.ApplyModifyAuditAsync(invalidAudit),
                     Times.Once());
 
             this.dateTimeBrokerMock.Verify(broker =>
@@ -338,7 +338,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Audits
                 .BeEquivalentTo(expectedAuditValidatonException);
 
             auditServiceMock.Verify(service =>
-                service.ApplyAddAuditAsync(invalidAudit),
+                service.ApplyModifyAuditAsync(invalidAudit),
                     Times.Once());
 
             this.dateTimeBrokerMock.Verify(broker =>
@@ -417,7 +417,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Audits
                 .BeEquivalentTo(expectedAuditValidationException);
 
             auditServiceMock.Verify(service =>
-                service.ApplyAddAuditAsync(invalidAudit),
+                service.ApplyModifyAuditAsync(invalidAudit),
                     Times.Once());
 
             this.storageBrokerMock.Verify(broker =>
@@ -512,7 +512,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Audits
                 .BeEquivalentTo(expectedAuditValidationException);
 
             auditServiceMock.Verify(service =>
-                service.ApplyAddAuditAsync(invalidAudit),
+                service.ApplyModifyAuditAsync(invalidAudit),
                     Times.Once());
 
             this.dateTimeBrokerMock.Verify(broker =>
@@ -605,7 +605,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Audits
             actualAuditValidationException.Should().BeEquivalentTo(expectedAuditValidationException);
 
             auditServiceMock.Verify(service =>
-                service.ApplyAddAuditAsync(invalidAudit),
+                service.ApplyModifyAuditAsync(invalidAudit),
                     Times.Once());
 
             this.dateTimeBrokerMock.Verify(broker =>
@@ -694,7 +694,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Audits
                 modifyAuditTask.AsTask);
 
             auditServiceMock.Verify(service =>
-                service.ApplyAddAuditAsync(invalidAudit),
+                service.ApplyModifyAuditAsync(invalidAudit),
                     Times.Once());
 
             this.dateTimeBrokerMock.Verify(broker =>

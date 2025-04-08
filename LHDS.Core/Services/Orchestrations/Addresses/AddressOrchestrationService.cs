@@ -15,6 +15,7 @@ using LHDS.Core.Brokers.DateTimes;
 using LHDS.Core.Brokers.Files;
 using LHDS.Core.Brokers.Loggings;
 using LHDS.Core.Models.Foundations.Addresses;
+using LHDS.Core.Models.Orchestrations.Addresses;
 using LHDS.Core.Models.Orchestrations.Addresses.Exceptions;
 using LHDS.Core.Services.Processings.Addresses;
 using LHDS.Core.Services.Processings.Assigns;
@@ -234,6 +235,13 @@ namespace LHDS.Core.Services.Orchestrations.Addresses
                 await MapStreetDescriptorDataToAddressesAsync(streetDescriptorCsvFile);
 
             IQueryable<Address> addresses = await this.addressProcessingService.RetrieveAllAddressesAsync();
+
+            Dictionary<string, StreetDescriptor> streetDescriptorsDict = streetDescriptorAddresses.ToDictionary(a => a.USRN)
+
+            foreach (Address address in addresses)
+            {
+
+            }
 
         }
 

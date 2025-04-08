@@ -74,6 +74,13 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Addresses
                     .AreEqual;
         }
 
+        private Expression<Func<LPIAddress, bool>> SameLPIAddressAs(LPIAddress expectedAddress)
+        {
+            return actualAddress =>
+                this.compareLogic.Compare(expectedAddress, actualAddress)
+                    .AreEqual;
+        }
+
         private Expression<Func<List<Address>, bool>> SameAddressesAs(List<Address> expectedAddresses)
         {
             return actualAddresses =>
@@ -181,6 +188,54 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Addresses
 
         private static Filler<StreetDescriptor> CreateStreetDescriptorFiller() =>
             new Filler<StreetDescriptor>();
+
+        private static List<LPIAddress> CreateRandomLPIAddresses(int count = 0)
+        {
+            if (count == 0)
+            {
+                count = GetRandomNumber();
+            }
+
+            return CreateLPIAddressFiller(dateTimeOffset: GetRandomDateTimeOffset())
+                .Create(count)
+                    .ToList();
+        }
+
+        private static LPIAddress CreateRandomLPIAddress(DateTimeOffset dateTimeOffset) =>
+            CreateLPIAddressFiller(dateTimeOffset).Create();
+
+        private static Filler<LPIAddress> CreateLPIAddressFiller(DateTimeOffset dateTimeOffset)
+        {
+            var filler = new Filler<LPIAddress>();
+
+            filler.Setup()
+                .OnType<DateTimeOffset?>().Use(dateTimeOffset);
+
+            return filler;
+        }
+
+        private static List<BLPUAddress> CreateRandomBLPUAddresses(int count = 0)
+        {
+            if (count == 0)
+            {
+                count = GetRandomNumber();
+            }
+
+            return CreateBLPUAddressFiller(dateTimeOffset: GetRandomDateTimeOffset())
+                .Create(count)
+                    .ToList();
+        }
+
+        private static BLPUAddress CreateRandomBLPUAddress(DateTimeOffset dateTimeOffset) =>
+            CreateBLPUAddressFiller(dateTimeOffset).Create();
+
+        private static Filler<BLPUAddress> CreateBLPUAddressFiller(DateTimeOffset dateTimeOffset)
+        {
+            var filler = new Filler<BLPUAddress>();
+            filler.Setup().OnType<DateTimeOffset?>().Use(dateTimeOffset);
+
+            return filler;
+        }
 
         public static TheoryData<Xeption> AddressOrchestrationDependencyValidationExceptions()
         {

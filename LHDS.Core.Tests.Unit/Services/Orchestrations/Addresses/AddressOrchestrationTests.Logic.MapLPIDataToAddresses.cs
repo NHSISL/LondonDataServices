@@ -191,7 +191,6 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Addresses
             // Then
             actualAddresses.Should().BeEquivalentTo(expectedAddresses);
 
-
             addressOrchestrationServiceMock.Verify(service =>
                 service.LoadAndMapCsvAsync<LPIAddress>(
                     inputCsvFileName,

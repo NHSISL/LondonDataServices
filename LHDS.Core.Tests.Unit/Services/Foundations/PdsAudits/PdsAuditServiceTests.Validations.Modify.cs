@@ -182,6 +182,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.PdsAudits
                 broker.UpdatePdsAuditAsync(It.IsAny<PdsAudit>()),
                     Times.Never);
 
+            pdsAuditServiceMock.VerifyNoOtherCalls();
             this.dateTimeBrokerMock.VerifyNoOtherCalls();
             this.securityBrokerMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
@@ -273,6 +274,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.PdsAudits
                 broker.UpdatePdsAuditAsync(It.IsAny<PdsAudit>()),
                     Times.Never);
 
+            pdsAuditServiceMock.VerifyNoOtherCalls();
             this.dateTimeBrokerMock.VerifyNoOtherCalls();
             this.securityBrokerMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
@@ -354,6 +356,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.PdsAudits
                 broker.SelectPdsAuditByIdAsync(invalidPdsAudit.Id),
                     Times.Never);
 
+            pdsAuditServiceMock.VerifyNoOtherCalls();
             this.dateTimeBrokerMock.VerifyNoOtherCalls();
             this.securityBrokerMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
@@ -440,6 +443,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.PdsAudits
                 broker.SelectPdsAuditByIdAsync(It.IsAny<Guid>()),
                     Times.Never);
 
+            pdsAuditServiceMock.VerifyNoOtherCalls();
             this.dateTimeBrokerMock.VerifyNoOtherCalls();
             this.securityBrokerMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
@@ -514,6 +518,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.PdsAudits
                     expectedPdsAuditValidationException))),
                         Times.Once);
 
+            pdsAuditServiceMock.VerifyNoOtherCalls();
             this.dateTimeBrokerMock.VerifyNoOtherCalls();
             this.securityBrokerMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
@@ -604,6 +609,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.PdsAudits
                    expectedPdsAuditValidationException))),
                        Times.Once);
 
+            pdsAuditServiceMock.VerifyNoOtherCalls();
             this.dateTimeBrokerMock.VerifyNoOtherCalls();
             this.securityBrokerMock.VerifyNoOtherCalls();
             this.storageBrokerMock.VerifyNoOtherCalls();
@@ -691,6 +697,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.PdsAudits
                    expectedPdsAuditValidationException))),
                        Times.Once);
 
+            pdsAuditServiceMock.VerifyNoOtherCalls();
             this.dateTimeBrokerMock.VerifyNoOtherCalls();
             this.securityBrokerMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
@@ -774,6 +781,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.PdsAudits
                 broker.SelectPdsAuditByIdAsync(invalidPdsAudit.Id),
                     Times.Once);
 
+            pdsAuditServiceMock.VerifyNoOtherCalls();
             this.dateTimeBrokerMock.VerifyNoOtherCalls();
             this.securityBrokerMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();

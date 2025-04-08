@@ -491,6 +491,43 @@ namespace LHDS.Core.Services.Orchestrations.Addresses
             await addressProcessingService.BulkModifyAddressesAsync(updatedBlpuAddress, blpuCsvFile);
         }
 
+        virtual internal async ValueTask<List<Address>> MapStreetDescriptorDataToAddressesAsync(
+            string streetDescriptorCsvFile)
+        {
+            Func<string, bool> recordFilter = record =>
+                record.StartsWith("15,") || record.StartsWith("\"15\",");
+
+            Dictionary<string, int> fieldMappings = new Dictionary<string, int>
+            {
+                { "USRN", 3 },
+                { "StreetDescription", 4 },
+                { "Locality", 5 },
+                { "TownName", 6 },
+            };
+
+            List<StreetDescriptor> streetDescriptors = await LoadAndMapCsvAsync<StreetDescriptor>(
+                streetDescriptorCsvFile,
+                fieldMappings,
+                recordFilter);
+
+            List<Address> addresses = [];
+
+            foreach (StreetDescriptor streetDescriptor in streetDescriptors)
+            {
+                Address address = new Address
+                {
+                    USRN = streetDescriptor.USRN,
+                    Thoroughfare = streetDescriptor.StreetDescription,
+                    DependentLocality = streetDescriptor.Locality,
+                    PostTown = streetDescriptor.TownName
+                };
+
+                addresses.Add(address);
+            }
+
+            return addresses;
+        }
+
         public ValueTask SyncAddressesWithAssignAsync()
         {
             throw new NotImplementedException();

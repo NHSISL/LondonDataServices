@@ -459,6 +459,75 @@ namespace LHDS.Core.Services.Orchestrations.Addresses
             await addressProcessingService.BulkModifyAddressesAsync(existingLpiAddresses, lpiCsvFile);
         }
 
+        virtual internal async ValueTask ProcessBLPUAddressesAsync(string blpuCsvFile)
+        {
+            List<Address> blpuAddresses = await MapBLPUDataToAddressesAsync(blpuCsvFile);
+            Dictionary<string, Address> blpuAddressesDict = blpuAddresses.ToDictionary(a => a.UPRN, a => a);
+            IQueryable<Address> addresses = await addressProcessingService.RetrieveAllAddressesAsync();
+            HashSet<string> blpuFileUprns = blpuAddresses.Select(a => a.UPRN).ToHashSet();
+
+            List<Address> existingBlpuAddresses = addresses.Where(address =>
+                blpuFileUprns.Contains(address.UPRN)).ToList();
+
+            HashSet<string> existingBlpuUprns = existingBlpuAddresses.Select(a => a.UPRN).ToHashSet();
+
+            List<Address> newBlpuAddresses = blpuAddresses.Where(blpuAddress =>
+                !existingBlpuUprns.Contains(blpuAddress.UPRN)).ToList();
+
+            List<Address> updatedBlpuAddress = [];
+
+            foreach (Address existingAddress in existingBlpuAddresses)
+            {
+                if (existingAddress.UPRN != null
+                    && blpuAddressesDict.TryGetValue(existingAddress.UPRN, out Address blpuAddress)
+                    && string.IsNullOrWhiteSpace(existingAddress.PostCode))
+                {
+                    existingAddress.PostCode = blpuAddress.PostCode;
+                    updatedBlpuAddress.Add(existingAddress);
+                }
+            }
+
+            await addressProcessingService.BulkAddAddressesAsync(newBlpuAddresses, blpuCsvFile);
+            await addressProcessingService.BulkModifyAddressesAsync(updatedBlpuAddress, blpuCsvFile);
+        }
+
+        virtual internal async ValueTask<List<Address>> MapStreetDescriptorDataToAddressesAsync(
+            string streetDescriptorCsvFile)
+        {
+            Func<string, bool> recordFilter = record =>
+                record.StartsWith("15,") || record.StartsWith("\"15\",");
+
+            Dictionary<string, int> fieldMappings = new Dictionary<string, int>
+            {
+                { "USRN", 3 },
+                { "StreetDescription", 4 },
+                { "Locality", 5 },
+                { "TownName", 6 },
+            };
+
+            List<StreetDescriptor> streetDescriptors = await LoadAndMapCsvAsync<StreetDescriptor>(
+                streetDescriptorCsvFile,
+                fieldMappings,
+                recordFilter);
+
+            List<Address> addresses = [];
+
+            foreach (StreetDescriptor streetDescriptor in streetDescriptors)
+            {
+                Address address = new Address
+                {
+                    USRN = streetDescriptor.USRN,
+                    Thoroughfare = streetDescriptor.StreetDescription,
+                    DependentLocality = streetDescriptor.Locality,
+                    PostTown = streetDescriptor.TownName
+                };
+
+                addresses.Add(address);
+            }
+
+            return addresses;
+        }
+
         virtual internal async ValueTask ProcessStreetDescriptorDataAsync(string streetDescriptorCsvFile)
         {
             List<Address> streetDescriptorAddresses =

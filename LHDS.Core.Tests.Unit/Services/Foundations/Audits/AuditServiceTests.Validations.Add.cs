@@ -424,6 +424,10 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Audits
             actualAuditValidationException.Should()
                 .BeEquivalentTo(expectedAuditValidationException);
 
+            auditServiceMock.Verify(service =>
+                service.ApplyModifyAuditAsync(invalidAudit),
+                    Times.Once());
+
             this.dateTimeBrokerMock.Verify(broker =>
                 broker.GetCurrentDateTimeOffsetAsync(),
                     Times.Once());

@@ -464,15 +464,30 @@ namespace LHDS.Core.Services.Orchestrations.Addresses
             List<Address> streetDescriptorAddresses =
                 await MapStreetDescriptorDataToAddressesAsync(streetDescriptorCsvFile);
 
+            Dictionary<string, Address> streetDescriptorsDict =
+                streetDescriptorAddresses.ToDictionary(a => a.USRN, a => a);
+
             IQueryable<Address> addresses = await this.addressProcessingService.RetrieveAllAddressesAsync();
 
-            Dictionary<string, StreetDescriptor> streetDescriptorsDict = streetDescriptorAddresses.ToDictionary(a => a.USRN)
+            IQueryable<Address> missingSreetDataAddresses = addresses
+                .Where(address => string.IsNullOrWhiteSpace(address.Thoroughfare)
+                    || string.IsNullOrWhiteSpace(address.PostTown));
 
-            foreach (Address address in addresses)
+            List<Address> updatedAddresses = [];
+
+            foreach (Address address in missingSreetDataAddresses)
             {
-
+                if (address.USRN != null
+                    && streetDescriptorsDict.TryGetValue(address.USRN, out Address streetDescriptor))
+                {
+                    address.Thoroughfare = streetDescriptor.Thoroughfare;
+                    address.DependentLocality = streetDescriptor.DependentLocality;
+                    address.PostTown = streetDescriptor.PostTown;
+                    updatedAddresses.Add(address);
+                }
             }
 
+            await addressProcessingService.BulkModifyAddressesAsync(updatedAddresses, streetDescriptorCsvFile);
         }
 
         virtual internal async ValueTask<List<Address>> MapStreetDescriptorDataToAddressesAsync(

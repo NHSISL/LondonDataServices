@@ -335,6 +335,17 @@ steps:
       modifyOutputPath: false
 
   - task: DotNetCoreCLI@2
+    displayName: "Dotnet Publish Frontend (PreProduction)"
+    condition: and(succeeded(), ne(variables['Build.Reason'], 'PullRequest'))
+    inputs:
+      command: "publish"
+      publishWebProjects: false
+      projects: "**/LHDS.AdminPortal.Web.csproj"
+      arguments: "-o $(Build.ArtifactStagingDirectory)/$(Build.BuildId)_preproduction_frontend_website --configuration PreProduction"
+      zipAfterPublish: true
+      modifyOutputPath: false
+
+  - task: DotNetCoreCLI@2
     displayName: "Dotnet Publish Frontend (Production)"
     condition: and(succeeded(), ne(variables['Build.Reason'], 'PullRequest'))
     inputs:
@@ -440,6 +451,11 @@ steps:
     condition: and(succeeded(), ne(variables['Build.Reason'], 'PullRequest'))  
     displayName: 'Publish Artifact - Frontend (Test)'
     artifact: drop-frontend-test
+
+  - publish: $(Build.ArtifactStagingDirectory)/$(Build.BuildId)_preproduction_frontend_website
+    condition: and(succeeded(), ne(variables['Build.Reason'], 'PullRequest'))  
+    displayName: 'Publish Artifact - Frontend (PreProduction)'
+    artifact: drop-frontend-preproduction
 
   - publish: $(Build.ArtifactStagingDirectory)/$(Build.BuildId)_production_frontend_website
     condition: and(succeeded(), ne(variables['Build.Reason'], 'PullRequest'))  

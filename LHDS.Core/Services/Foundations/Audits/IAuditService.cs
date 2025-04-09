@@ -3,6 +3,7 @@
 // ---------------------------------------------------------
 
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using LHDS.Core.Models.Foundations.Audits;
@@ -20,6 +21,7 @@ namespace LHDS.Core.Services.Foundations.Audits
             string? logLevel = "Information");
 
         ValueTask<Audit> AddAuditAsync(Audit audit);
+        ValueTask BulkAddAuditsAsync(List<Audit> audits, int batchSize = 10000);
         ValueTask<IQueryable<Audit>> RetrieveAllAuditsAsync();
         ValueTask<Audit> RetrieveAuditByIdAsync(Guid auditId);
         ValueTask<Audit> ModifyAuditAsync(Audit audit);

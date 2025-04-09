@@ -425,7 +425,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Audits
                 .BeEquivalentTo(expectedAuditValidationException);
 
             auditServiceMock.Verify(service =>
-                service.ApplyModifyAuditAsync(invalidAudit),
+                service.ApplyAddAuditAsync(invalidAudit),
                     Times.Once());
 
             this.dateTimeBrokerMock.Verify(broker =>

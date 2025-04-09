@@ -13,7 +13,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.Addresses
     public partial class AddressProcessingServiceTests
     {
         [Fact]
-        public async Task ShouldBulkAddAddressesAsync()
+        public async Task ShouldBulkModifyAddressesAsync()
         {
             // Given
             string randomFilename = GetRandomString();
@@ -23,12 +23,11 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.Addresses
 
             // When
             await this.addressProcessingService
-                .BulkAddAddressesAsync(addresses: inputAddresses, fileName: inputFileName);
+                .BulkModifyAddressesAsync(addresses: inputAddresses, fileName: inputFileName);
 
             // Then
-
             this.addressServiceMock.Verify(service =>
-                service.BulkAddAddressesAsync(inputAddresses, randomFilename),
+                service.BulkModifyAddressesAsync(inputAddresses, randomFilename),
                     Times.Once);
 
             this.addressServiceMock.VerifyNoOtherCalls();

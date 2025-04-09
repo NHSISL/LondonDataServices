@@ -189,6 +189,7 @@ namespace LHDS.Core.Services.Orchestrations.Addresses
         virtual internal async ValueTask ReadCsvDataAndBulkAddAddressesAsync(string tempFolder)
         {
             List<string> csvFiles = await fileBroker.GetListOfFilesAsync(tempFolder, "*.csv");
+            ValidateCsvFiles(csvFiles);
             string dpaCsvFile = csvFiles.Where(csv => csv.Contains("ID28")).FirstOrDefault();
             string lpiCsvFile = csvFiles.Where(csv => csv.Contains("ID24")).FirstOrDefault();
             string blpuCsvFile = csvFiles.Where(csv => csv.Contains("ID21")).FirstOrDefault();

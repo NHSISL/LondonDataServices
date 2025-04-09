@@ -4,6 +4,7 @@
 
 using System;
 using System.Threading.Tasks;
+using LHDS.Core.Models.Brokers.Securities;
 using LHDS.Core.Models.Foundations.PdsAudits;
 using LHDS.Core.Models.Foundations.PdsAudits.Exceptions;
 
@@ -13,16 +14,23 @@ namespace LHDS.Core.Services.Foundations.PdsAudits
     {
         private async ValueTask ValidatePdsAuditOnAddAsync(PdsAudit pdsAudit)
         {
-            ValidatePdsAuditIsNotNull(pdsAudit);
+            EntraUser currentUser = await this.securityBroker.GetCurrentUserAsync();
 
             Validate(
                 (Rule: IsInvalid(pdsAudit.Id), Parameter: nameof(PdsAudit.Id)),
+                (Rule: IsInvalid(pdsAudit.CorrelationId), Parameter: nameof(PdsAudit.CorrelationId)),
                 (Rule: IsInvalid(pdsAudit.FileName), Parameter: nameof(PdsAudit.FileName)),
                 (Rule: IsInvalid(pdsAudit.Message), Parameter: nameof(PdsAudit.Message)),
+                (Rule: IsInvalid(pdsAudit.MessageId), Parameter: nameof(PdsAudit.MessageId)),
                 (Rule: IsInvalid(pdsAudit.CreatedDate), Parameter: nameof(PdsAudit.CreatedDate)),
                 (Rule: IsInvalid(pdsAudit.CreatedBy), Parameter: nameof(PdsAudit.CreatedBy)),
                 (Rule: IsInvalid(pdsAudit.UpdatedDate), Parameter: nameof(PdsAudit.UpdatedDate)),
                 (Rule: IsInvalid(pdsAudit.UpdatedBy), Parameter: nameof(PdsAudit.UpdatedBy)),
+
+                (Rule: IsNotSame(
+                    first: currentUser.EntraUserId,
+                    second: pdsAudit.CreatedBy),
+                Parameter: nameof(PdsAudit.CreatedBy)),
 
                 (Rule: IsNotSame(
                     firstDate: pdsAudit.UpdatedDate,
@@ -47,16 +55,23 @@ namespace LHDS.Core.Services.Foundations.PdsAudits
 
         private async ValueTask ValidatePdsAuditOnModifyAsync(PdsAudit pdsAudit)
         {
-            ValidatePdsAuditIsNotNull(pdsAudit);
+            EntraUser currentUser = await this.securityBroker.GetCurrentUserAsync();
 
             Validate(
                 (Rule: IsInvalid(pdsAudit.Id), Parameter: nameof(PdsAudit.Id)),
+                (Rule: IsInvalid(pdsAudit.CorrelationId), Parameter: nameof(PdsAudit.CorrelationId)),
                 (Rule: IsInvalid(pdsAudit.FileName), Parameter: nameof(PdsAudit.FileName)),
                 (Rule: IsInvalid(pdsAudit.Message), Parameter: nameof(PdsAudit.Message)),
+                (Rule: IsInvalid(pdsAudit.MessageId), Parameter: nameof(PdsAudit.MessageId)),
                 (Rule: IsInvalid(pdsAudit.CreatedDate), Parameter: nameof(PdsAudit.CreatedDate)),
                 (Rule: IsInvalid(pdsAudit.CreatedBy), Parameter: nameof(PdsAudit.CreatedBy)),
                 (Rule: IsInvalid(pdsAudit.UpdatedDate), Parameter: nameof(PdsAudit.UpdatedDate)),
                 (Rule: IsInvalid(pdsAudit.UpdatedBy), Parameter: nameof(PdsAudit.UpdatedBy)),
+
+                (Rule: IsNotSame(
+                    first: currentUser.EntraUserId,
+                    second: pdsAudit.UpdatedBy),
+                Parameter: nameof(PdsAudit.UpdatedBy)),
 
                 (Rule: IsSame(
                     firstDate: pdsAudit.UpdatedDate,
@@ -114,6 +129,39 @@ namespace LHDS.Core.Services.Foundations.PdsAudits
                 Parameter: nameof(PdsAudit.UpdatedDate)));
         }
 
+        private async ValueTask ValidateAgainstStoragePdsAuditOnDeleteAsync(
+            PdsAudit pdsAudit,
+            PdsAudit maybePdsAudit)
+        {
+            EntraUser auditUser = await this.securityBroker.GetCurrentUserAsync();
+
+            Validate(
+                (Rule: IsNotSame(
+                    pdsAudit.CreatedDate,
+                    maybePdsAudit.CreatedDate,
+                    nameof(maybePdsAudit.CreatedDate)),
+                 Parameter: nameof(PdsAudit.CreatedDate)),
+
+                (Rule: IsNotSame(
+                    pdsAudit.CreatedBy,
+                    maybePdsAudit.CreatedBy,
+                    nameof(maybePdsAudit.CreatedBy)),
+                 Parameter: nameof(PdsAudit.CreatedBy)),
+
+                (Rule: IsNotSame(
+                    maybePdsAudit.UpdatedDate,
+                    pdsAudit.UpdatedDate,
+                    nameof(PdsAudit.UpdatedDate)),
+                 Parameter: nameof(PdsAudit.UpdatedDate)),
+
+                (Rule: IsNotSame(
+                    auditUser.EntraUserId.ToString(),
+                    pdsAudit.UpdatedBy,
+                    nameof(PdsAudit.UpdatedBy)),
+                 Parameter: nameof(PdsAudit.UpdatedBy))
+            );
+        }
+
         private static dynamic IsInvalid(Guid id) => new
         {
             Condition = id == Guid.Empty,
@@ -146,6 +194,14 @@ namespace LHDS.Core.Services.Foundations.PdsAudits
                 Condition = firstDate == secondDate,
                 Message = $"Date is the same as {secondDateName}"
             };
+
+        private static dynamic IsNotSame(
+           string first,
+           string second) => new
+           {
+               Condition = first != second,
+               Message = $"Expected value to be '{first}' but found '{second}'."
+           };
 
         private static dynamic IsNotSame(
             DateTimeOffset firstDate,

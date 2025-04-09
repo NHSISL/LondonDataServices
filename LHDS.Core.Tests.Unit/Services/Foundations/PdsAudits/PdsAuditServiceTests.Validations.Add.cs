@@ -5,8 +5,10 @@
 using System;
 using System.Threading.Tasks;
 using FluentAssertions;
+using LHDS.Core.Models.Brokers.Securities;
 using LHDS.Core.Models.Foundations.PdsAudits;
 using LHDS.Core.Models.Foundations.PdsAudits.Exceptions;
+using LHDS.Core.Services.Foundations.PdsAudits;
 using Moq;
 using Xunit;
 
@@ -53,14 +55,39 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.PdsAudits
         [InlineData(null)]
         [InlineData("")]
         [InlineData(" ")]
-        public async Task ShouldThrowValidationExceptionOnAddIfPdsAuditIsInvalidAndLogItAsync(string invalidText)
+        public async Task ShouldThrowValidationExceptionOnAddIfPdsAuditsIsInvalidAndLogItAsync(string invalidText)
         {
             // given
+            DateTimeOffset randomDataTimeOffset = GetRandomDateTimeOffset();
+            EntraUser randomEntraUser = CreateRandomEntraUser();
+
             var invalidPdsAudit = new PdsAudit
             {
                 FileName = invalidText,
-                Message = invalidText
+                Message = invalidText,
+                MessageId = invalidText,
             };
+
+            var pdsAuditServiceMock = new Mock<PdsAuditService>(
+                storageBrokerMock.Object,
+                dateTimeBrokerMock.Object,
+                securityBrokerMock.Object,
+                loggingBrokerMock.Object)
+            {
+                CallBase = true
+            };
+
+            pdsAuditServiceMock.Setup(service =>
+                service.ApplyAddPdsAuditAsync(invalidPdsAudit))
+                    .ReturnsAsync(invalidPdsAudit);
+
+            this.dateTimeBrokerMock.Setup(broker =>
+                broker.GetCurrentDateTimeOffsetAsync())
+                    .ReturnsAsync(randomDataTimeOffset);
+
+            this.securityBrokerMock.Setup(broker =>
+                broker.GetCurrentUserAsync())
+                    .ReturnsAsync(randomEntraUser);
 
             var invalidPdsAuditException =
                 new InvalidPdsAuditException(
@@ -68,6 +95,10 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.PdsAudits
 
             invalidPdsAuditException.AddData(
                 key: nameof(PdsAudit.Id),
+                values: "Id is required");
+
+            invalidPdsAuditException.AddData(
+                key: nameof(PdsAudit.CorrelationId),
                 values: "Id is required");
 
             invalidPdsAuditException.AddData(
@@ -79,12 +110,24 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.PdsAudits
                 values: "Text is required");
 
             invalidPdsAuditException.AddData(
-                key: nameof(PdsAudit.CreatedDate),
-                values: "Date is required");
+                key: nameof(PdsAudit.MessageId),
+                values: "Text is required");
+
+            invalidPdsAuditException.AddData(
+                 key: nameof(PdsAudit.CreatedDate),
+                 values:
+                 [
+                    "Date is required",
+                    $"Date is not recent"
+                 ]);
 
             invalidPdsAuditException.AddData(
                 key: nameof(PdsAudit.CreatedBy),
-                values: "Text is required");
+                values:
+                [
+                    "Text is required",
+                    $"Expected value to be '{randomEntraUser.EntraUserId}' but found '{invalidPdsAudit.CreatedBy}'."
+                ]);
 
             invalidPdsAuditException.AddData(
                 key: nameof(PdsAudit.UpdatedDate),
@@ -101,7 +144,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.PdsAudits
 
             // when
             ValueTask<PdsAudit> addPdsAuditTask =
-                this.pdsAuditService.AddPdsAuditAsync(invalidPdsAudit);
+                pdsAuditServiceMock.Object.AddPdsAuditAsync(invalidPdsAudit);
 
             PdsAuditValidationException actualPdsAuditValidationException =
                 await Assert.ThrowsAsync<PdsAuditValidationException>(addPdsAuditTask.AsTask);
@@ -110,8 +153,16 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.PdsAudits
             actualPdsAuditValidationException.Should()
                 .BeEquivalentTo(expectedPdsAuditValidationException);
 
+            pdsAuditServiceMock.Verify(service =>
+                service.ApplyAddPdsAuditAsync(invalidPdsAudit),
+                    Times.Once);
+
             this.dateTimeBrokerMock.Verify(broker =>
                 broker.GetCurrentDateTimeOffsetAsync(),
+                    Times.Once());
+
+            this.securityBrokerMock.Verify(broker =>
+                broker.GetCurrentUserAsync(),
                     Times.Once());
 
             this.loggingBrokerMock.Verify(broker =>
@@ -123,9 +174,102 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.PdsAudits
                 broker.InsertPdsAuditAsync(It.IsAny<PdsAudit>()),
                     Times.Never);
 
+            pdsAuditServiceMock.VerifyNoOtherCalls();
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
+            this.securityBrokerMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
             this.storageBrokerMock.VerifyNoOtherCalls();
+        }
+
+        [Fact]
+        public async Task ShouldThrowValidationExceptionOnAddIfPdsAuditsIsInvalidLenghtAndLogItAsync()
+        {
+            // given
+            DateTimeOffset randomDateTimeOffset = GetRandomDateTimeOffset();
+            EntraUser randomEntraUser = CreateRandomEntraUser(entraUserId: GetRandomStringWithLengthOf(256));
+
+            PdsAudit invalidPdsAudit =
+                CreateRandomPdsAudit(randomDateTimeOffset, randomEntraUser.EntraUserId);
+
+            var inputCreatedByUpdatedByString = randomEntraUser.EntraUserId;
+            invalidPdsAudit.CreatedBy = inputCreatedByUpdatedByString;
+            invalidPdsAudit.UpdatedBy = inputCreatedByUpdatedByString;
+
+            var invalidPdsAuditException =
+                new InvalidPdsAuditException(
+                    message: "Invalid pdsAudit. Please correct the errors and try again.");
+
+            invalidPdsAuditException.AddData(
+                key: nameof(PdsAudit.CreatedBy),
+                values: "Text is exceeding max length");
+
+            invalidPdsAuditException.AddData(
+                key: nameof(PdsAudit.UpdatedBy),
+                values: "Text is exceeding max length");
+
+            var expectedPdsAuditValidationException =
+                new PdsAuditValidationException(
+                    message: "PdsAudit validation errors occurred, please try again.",
+                    innerException: invalidPdsAuditException);
+
+            var pdsAuditServiceMock = new Mock<PdsAuditService>(
+                storageBrokerMock.Object,
+                dateTimeBrokerMock.Object,
+                securityBrokerMock.Object,
+                loggingBrokerMock.Object)
+            {
+                CallBase = true
+            };
+
+            pdsAuditServiceMock.Setup(service =>
+                service.ApplyAddPdsAuditAsync(invalidPdsAudit))
+                    .ReturnsAsync(invalidPdsAudit);
+
+            this.dateTimeBrokerMock.Setup(broker =>
+                broker.GetCurrentDateTimeOffsetAsync())
+                    .ReturnsAsync(randomDateTimeOffset);
+
+            this.securityBrokerMock.Setup(broker =>
+                broker.GetCurrentUserAsync())
+                    .ReturnsAsync(randomEntraUser);
+
+            // when
+            ValueTask<PdsAudit> addPdsAuditTask =
+                pdsAuditServiceMock.Object.AddPdsAuditAsync(invalidPdsAudit);
+
+            PdsAuditValidationException actualPdsAuditValidationException =
+                await Assert.ThrowsAsync<PdsAuditValidationException>(addPdsAuditTask.AsTask);
+
+            // then
+            actualPdsAuditValidationException.Should()
+                .BeEquivalentTo(expectedPdsAuditValidationException);
+
+            pdsAuditServiceMock.Verify(service =>
+                service.ApplyAddPdsAuditAsync(invalidPdsAudit),
+                    Times.Once);
+
+            this.dateTimeBrokerMock.Verify(broker =>
+                broker.GetCurrentDateTimeOffsetAsync(),
+                    Times.Once());
+
+            this.securityBrokerMock.Verify(broker =>
+                broker.GetCurrentUserAsync(),
+                    Times.Once());
+
+            this.loggingBrokerMock.Verify(broker =>
+                broker.LogErrorAsync(It.Is(SameExceptionAs(
+                    expectedPdsAuditValidationException))),
+                        Times.Once);
+
+            this.storageBrokerMock.Verify(broker =>
+                broker.InsertPdsAuditAsync(It.IsAny<PdsAudit>()),
+                    Times.Never);
+
+            pdsAuditServiceMock.VerifyNoOtherCalls();
             this.dateTimeBrokerMock.VerifyNoOtherCalls();
+            this.securityBrokerMock.VerifyNoOtherCalls();
+            this.loggingBrokerMock.VerifyNoOtherCalls();
+            this.storageBrokerMock.VerifyNoOtherCalls();
         }
 
         [Fact]
@@ -134,31 +278,56 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.PdsAudits
             // given
             int randomNumber = GetRandomNumber();
             DateTimeOffset randomDateTimeOffset = GetRandomDateTimeOffset();
-            PdsAudit randomPdsAudit = CreateRandomPdsAudit(randomDateTimeOffset);
+            EntraUser randomEntraUser = CreateRandomEntraUser();
+
+            PdsAudit randomPdsAudit =
+                CreateRandomPdsAudit(randomDateTimeOffset, randomEntraUser.EntraUserId);
+
             PdsAudit invalidPdsAudit = randomPdsAudit;
+            invalidPdsAudit.CreatedDate = GetRandomDateTimeOffset();
+            invalidPdsAudit.UpdatedDate = GetRandomDateTimeOffset();
 
-            invalidPdsAudit.UpdatedDate =
-                invalidPdsAudit.CreatedDate.AddDays(randomNumber);
-
-            var invalidPdsAuditException = new InvalidPdsAuditException(
-                message: "Invalid pdsAudit. Please correct the errors and try again.");
+            var invalidPdsAuditException =
+                new InvalidPdsAuditException(
+                    message: "Invalid pdsAudit. Please correct the errors and try again.");
 
             invalidPdsAuditException.AddData(
                 key: nameof(PdsAudit.UpdatedDate),
                 values: $"Date is not the same as {nameof(PdsAudit.CreatedDate)}");
+
+            invalidPdsAuditException.AddData(
+                key: nameof(PdsAudit.CreatedDate),
+                values: $"Date is not recent");
 
             var expectedPdsAuditValidationException =
                 new PdsAuditValidationException(
                     message: "PdsAudit validation errors occurred, please try again.",
                     innerException: invalidPdsAuditException);
 
+            var pdsAuditServiceMock = new Mock<PdsAuditService>(
+                storageBrokerMock.Object,
+                dateTimeBrokerMock.Object,
+                securityBrokerMock.Object,
+                loggingBrokerMock.Object)
+            {
+                CallBase = true
+            };
+
+            pdsAuditServiceMock.Setup(service =>
+                service.ApplyAddPdsAuditAsync(invalidPdsAudit))
+                    .ReturnsAsync(invalidPdsAudit);
+
             this.dateTimeBrokerMock.Setup(broker =>
                 broker.GetCurrentDateTimeOffsetAsync())
                     .ReturnsAsync(randomDateTimeOffset);
 
+            this.securityBrokerMock.Setup(broker =>
+                broker.GetCurrentUserAsync())
+                    .ReturnsAsync(randomEntraUser);
+
             // when
             ValueTask<PdsAudit> addPdsAuditTask =
-                this.pdsAuditService.AddPdsAuditAsync(invalidPdsAudit);
+                pdsAuditServiceMock.Object.AddPdsAuditAsync(invalidPdsAudit);
 
             PdsAuditValidationException actualPdsAuditValidationException =
                 await Assert.ThrowsAsync<PdsAuditValidationException>(addPdsAuditTask.AsTask);
@@ -167,8 +336,16 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.PdsAudits
             actualPdsAuditValidationException.Should()
                 .BeEquivalentTo(expectedPdsAuditValidationException);
 
+            pdsAuditServiceMock.Verify(service =>
+                service.ApplyAddPdsAuditAsync(invalidPdsAudit),
+                    Times.Once);
+
             this.dateTimeBrokerMock.Verify(broker =>
                 broker.GetCurrentDateTimeOffsetAsync(),
+                    Times.Once());
+
+            this.securityBrokerMock.Verify(broker =>
+                broker.GetCurrentUserAsync(),
                     Times.Once());
 
             this.loggingBrokerMock.Verify(broker =>
@@ -180,22 +357,35 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.PdsAudits
                 broker.InsertPdsAuditAsync(It.IsAny<PdsAudit>()),
                     Times.Never);
 
+            pdsAuditServiceMock.VerifyNoOtherCalls();
             this.dateTimeBrokerMock.VerifyNoOtherCalls();
+            this.securityBrokerMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
             this.storageBrokerMock.VerifyNoOtherCalls();
         }
 
         [Fact]
-        public async Task ShouldThrowValidationExceptionOnAddIfCreateAndUpdateUserIdsIsNotSameAndLogItAsync()
+        public async Task ShouldThrowValidationExceptionOnAddIfCreateAndUpdateUsersIsNotSameAndLogItAsync()
         {
             // given
             DateTimeOffset randomDateTimeOffset = GetRandomDateTimeOffset();
-            PdsAudit randomPdsAudit = CreateRandomPdsAudit(randomDateTimeOffset);
+            EntraUser randomEntraUser = CreateRandomEntraUser();
+
+            PdsAudit randomPdsAudit =
+                CreateRandomPdsAudit(randomDateTimeOffset, randomEntraUser.EntraUserId);
+
             PdsAudit invalidPdsAudit = randomPdsAudit;
-            invalidPdsAudit.UpdatedBy = Guid.NewGuid().ToString();
+            invalidPdsAudit.CreatedBy = GetRandomString();
+            invalidPdsAudit.UpdatedBy = GetRandomString();
 
             var invalidPdsAuditException =
-                new InvalidPdsAuditException(message: "Invalid pdsAudit. Please correct the errors and try again.");
+                new InvalidPdsAuditException(
+                    message: "Invalid pdsAudit. Please correct the errors and try again.");
+
+            invalidPdsAuditException.AddData(
+                key: nameof(PdsAudit.CreatedBy),
+                values: $"Expected value to be '{randomEntraUser.EntraUserId}' " +
+                    $"but found '{invalidPdsAudit.CreatedBy}'.");
 
             invalidPdsAuditException.AddData(
                 key: nameof(PdsAudit.UpdatedBy),
@@ -206,13 +396,30 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.PdsAudits
                     message: "PdsAudit validation errors occurred, please try again.",
                     innerException: invalidPdsAuditException);
 
+            var pdsAuditServiceMock = new Mock<PdsAuditService>(
+                storageBrokerMock.Object,
+                dateTimeBrokerMock.Object,
+                securityBrokerMock.Object,
+                loggingBrokerMock.Object)
+            {
+                CallBase = true
+            };
+
+            pdsAuditServiceMock.Setup(service =>
+                service.ApplyAddPdsAuditAsync(invalidPdsAudit))
+                    .ReturnsAsync(invalidPdsAudit);
+
             this.dateTimeBrokerMock.Setup(broker =>
                 broker.GetCurrentDateTimeOffsetAsync())
                     .ReturnsAsync(randomDateTimeOffset);
 
+            this.securityBrokerMock.Setup(broker =>
+                broker.GetCurrentUserAsync())
+                    .ReturnsAsync(randomEntraUser);
+
             // when
             ValueTask<PdsAudit> addPdsAuditTask =
-                this.pdsAuditService.AddPdsAuditAsync(invalidPdsAudit);
+                pdsAuditServiceMock.Object.AddPdsAuditAsync(invalidPdsAudit);
 
             PdsAuditValidationException actualPdsAuditValidationException =
                 await Assert.ThrowsAsync<PdsAuditValidationException>(addPdsAuditTask.AsTask);
@@ -221,8 +428,16 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.PdsAudits
             actualPdsAuditValidationException.Should()
                 .BeEquivalentTo(expectedPdsAuditValidationException);
 
+            pdsAuditServiceMock.Verify(service =>
+                service.ApplyAddPdsAuditAsync(invalidPdsAudit),
+                    Times.Once);
+
             this.dateTimeBrokerMock.Verify(broker =>
                 broker.GetCurrentDateTimeOffsetAsync(),
+                    Times.Once());
+
+            this.securityBrokerMock.Verify(broker =>
+                broker.GetCurrentUserAsync(),
                     Times.Once());
 
             this.loggingBrokerMock.Verify(broker =>
@@ -234,9 +449,11 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.PdsAudits
                 broker.InsertPdsAuditAsync(It.IsAny<PdsAudit>()),
                     Times.Never);
 
+            pdsAuditServiceMock.VerifyNoOtherCalls();
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
+            this.securityBrokerMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
             this.storageBrokerMock.VerifyNoOtherCalls();
-            this.dateTimeBrokerMock.VerifyNoOtherCalls();
         }
 
         [Theory]
@@ -246,15 +463,17 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.PdsAudits
         {
             // given
             DateTimeOffset randomDateTimeOffset = GetRandomDateTimeOffset();
+            EntraUser randomEntraUser = CreateRandomEntraUser();
+            DateTimeOffset invalidDateTime = randomDateTimeOffset.AddMinutes(minutesBeforeOrAfter);
 
-            DateTimeOffset invalidDateTime =
-                randomDateTimeOffset.AddMinutes(minutesBeforeOrAfter);
+            PdsAudit randomPdsAudit =
+                CreateRandomPdsAudit(invalidDateTime, randomEntraUser.EntraUserId);
 
-            PdsAudit randomPdsAudit = CreateRandomPdsAudit(invalidDateTime);
             PdsAudit invalidPdsAudit = randomPdsAudit;
 
             var invalidPdsAuditException =
-                new InvalidPdsAuditException(message: "Invalid pdsAudit. Please correct the errors and try again.");
+                new InvalidPdsAuditException(
+                    message: "Invalid pdsAudit. Please correct the errors and try again.");
 
             invalidPdsAuditException.AddData(
                 key: nameof(PdsAudit.CreatedDate),
@@ -265,13 +484,30 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.PdsAudits
                     message: "PdsAudit validation errors occurred, please try again.",
                     innerException: invalidPdsAuditException);
 
+            var pdsAuditServiceMock = new Mock<PdsAuditService>(
+                storageBrokerMock.Object,
+                dateTimeBrokerMock.Object,
+                securityBrokerMock.Object,
+                loggingBrokerMock.Object)
+            {
+                CallBase = true
+            };
+
+            pdsAuditServiceMock.Setup(service =>
+                service.ApplyAddPdsAuditAsync(invalidPdsAudit))
+                    .ReturnsAsync(invalidPdsAudit);
+
             this.dateTimeBrokerMock.Setup(broker =>
                 broker.GetCurrentDateTimeOffsetAsync())
                     .ReturnsAsync(randomDateTimeOffset);
 
+            this.securityBrokerMock.Setup(broker =>
+                broker.GetCurrentUserAsync())
+                    .ReturnsAsync(randomEntraUser);
+
             // when
             ValueTask<PdsAudit> addPdsAuditTask =
-                this.pdsAuditService.AddPdsAuditAsync(invalidPdsAudit);
+                pdsAuditServiceMock.Object.AddPdsAuditAsync(invalidPdsAudit);
 
             PdsAuditValidationException actualPdsAuditValidationException =
                 await Assert.ThrowsAsync<PdsAuditValidationException>(addPdsAuditTask.AsTask);
@@ -280,8 +516,16 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.PdsAudits
             actualPdsAuditValidationException.Should()
                 .BeEquivalentTo(expectedPdsAuditValidationException);
 
+            pdsAuditServiceMock.Verify(service =>
+                service.ApplyAddPdsAuditAsync(invalidPdsAudit),
+                    Times.Once);
+
             this.dateTimeBrokerMock.Verify(broker =>
                 broker.GetCurrentDateTimeOffsetAsync(),
+                    Times.Once());
+
+            this.securityBrokerMock.Verify(broker =>
+                broker.GetCurrentUserAsync(),
                     Times.Once());
 
             this.loggingBrokerMock.Verify(broker =>
@@ -293,68 +537,11 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.PdsAudits
                 broker.InsertPdsAuditAsync(It.IsAny<PdsAudit>()),
                     Times.Never);
 
+            pdsAuditServiceMock.VerifyNoOtherCalls();
             this.dateTimeBrokerMock.VerifyNoOtherCalls();
+            this.securityBrokerMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
             this.storageBrokerMock.VerifyNoOtherCalls();
-        }
-
-        [Fact]
-        public async Task ShouldThrowValidationExceptionOnPdsAuditAddIfInvalidLengthAndLogItAsync()
-        {
-            // given
-            DateTimeOffset randomDateTimeOffset = GetRandomDateTimeOffset();
-            PdsAudit randomPdsAudit = CreateRandomPdsAudit(randomDateTimeOffset);
-            PdsAudit invalidPdsAudit = randomPdsAudit;
-            invalidPdsAudit.CreatedBy = GetRandomString(256);
-            invalidPdsAudit.UpdatedBy = invalidPdsAudit.CreatedBy;
-
-            var invalidPdsAuditException =
-                new InvalidPdsAuditException(message: "Invalid pdsAudit. Please correct the errors and try again.");
-
-            invalidPdsAuditException.AddData(
-                key: nameof(PdsAudit.CreatedBy),
-                values: "Text is exceeding max length");
-
-            invalidPdsAuditException.AddData(
-                key: nameof(PdsAudit.UpdatedBy),
-                values: "Text is exceeding max length");
-
-            var expectedPdsAuditValidationException =
-                new PdsAuditValidationException(
-                    message: "PdsAudit validation errors occurred, please try again.",
-                    innerException: invalidPdsAuditException);
-
-            this.dateTimeBrokerMock.Setup(broker =>
-                broker.GetCurrentDateTimeOffsetAsync())
-                    .ReturnsAsync(randomDateTimeOffset);
-
-            // when
-            ValueTask<PdsAudit> addPdsAuditTask =
-                this.pdsAuditService.AddPdsAuditAsync(invalidPdsAudit);
-
-            PdsAuditValidationException actualPdsAuditValidationException =
-                await Assert.ThrowsAsync<PdsAuditValidationException>(addPdsAuditTask.AsTask);
-
-            // then
-            actualPdsAuditValidationException.Should()
-                .BeEquivalentTo(expectedPdsAuditValidationException);
-
-            this.dateTimeBrokerMock.Verify(broker =>
-                broker.GetCurrentDateTimeOffsetAsync(),
-                    Times.Once());
-
-            this.loggingBrokerMock.Verify(broker =>
-                broker.LogErrorAsync(It.Is(SameExceptionAs(
-                    expectedPdsAuditValidationException))),
-                        Times.Once);
-
-            this.storageBrokerMock.Verify(broker =>
-                broker.InsertPdsAuditAsync(It.IsAny<PdsAudit>()),
-                    Times.Never);
-
-            this.loggingBrokerMock.VerifyNoOtherCalls();
-            this.storageBrokerMock.VerifyNoOtherCalls();
-            this.dateTimeBrokerMock.VerifyNoOtherCalls();
         }
     }
 }

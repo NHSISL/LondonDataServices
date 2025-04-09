@@ -171,6 +171,24 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Addresses
             return filler;
         }
 
+        private static List<StreetDescriptor> CreateRandomStreetDescriptors(int count = 0)
+        {
+            if (count == 0)
+            {
+                count = GetRandomNumber();
+            }
+
+            return CreateStreetDescriptorFiller()
+                .Create(count)
+                    .ToList();
+        }
+
+        private static StreetDescriptor CreateRandomStreetDescriptor() =>
+            CreateStreetDescriptorFiller().Create();
+
+        private static Filler<StreetDescriptor> CreateStreetDescriptorFiller() =>
+            new Filler<StreetDescriptor>();
+
         private static List<LPIAddress> CreateRandomLPIAddresses(int count = 0)
         {
             if (count == 0)

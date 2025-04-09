@@ -3,7 +3,9 @@
 // ---------------------------------------------------------
 
 using System;
+using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using LHDS.Core.Models.Orchestrations.Addresses.Exceptions;
 using Xeptions;
 
@@ -18,6 +20,23 @@ namespace LHDS.Core.Services.Orchestrations.Addresses
                         "please correct the errors and try again.",
                     (Rule: IsInvalidInputStream(input), Parameter: nameof(input)),
                     (Rule: IsInvalid(fileName), Parameter: nameof(fileName)));
+        }
+
+        private void ValidateCsvFiles(List<string> csvFiles)
+        {
+            List<string> validFiles = csvFiles
+                .Where(file => file.Contains("ID28")
+                    || file.Contains("ID24")
+                    || file.Contains("ID21")
+                    || file.Contains("ID15"))
+                .ToList();
+
+            if (validFiles.Count != 4)
+            {
+                throw new InvalidFileAddressOrchestrationException(
+                    message: $"The zip file does not contain the required csv files. " +
+                        $"Please correct the errors and try again.");
+            }
         }
 
         private static dynamic IsInvalid(string? text) => new

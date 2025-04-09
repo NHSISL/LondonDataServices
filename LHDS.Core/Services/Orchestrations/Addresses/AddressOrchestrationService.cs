@@ -194,10 +194,54 @@ namespace LHDS.Core.Services.Orchestrations.Addresses
             string lpiCsvFile = csvFiles.Where(csv => csv.Contains("ID24")).FirstOrDefault();
             string blpuCsvFile = csvFiles.Where(csv => csv.Contains("ID21")).FirstOrDefault();
             string streetDescriptorCsvFile = csvFiles.Where(csv => csv.Contains("ID15")).FirstOrDefault();
-            await ProcessDPAAddressesAsync(dpaCsvFile);
-            await ProcessLPIAddressesAsync(lpiCsvFile);
-            await ProcessBLPUAddressesAsync(blpuCsvFile);
-            await ProcessStreetDescriptorDataAsync(streetDescriptorCsvFile);
+            var exceptions = new List<Exception>();
+
+            try
+            {
+                await ProcessDPAAddressesAsync(dpaCsvFile);
+            }
+            catch (Exception ex)
+            {
+                ((Xeption)ex).AddData("ExtractionError", dpaCsvFile);
+                exceptions.Add(ex);
+            }
+
+            try
+            {
+                await ProcessLPIAddressesAsync(lpiCsvFile);
+            }
+            catch (Exception ex)
+            {
+                ((Xeption)ex).AddData("ExtractionError", lpiCsvFile);
+                exceptions.Add(ex);
+            }
+
+            try
+            {
+                await ProcessBLPUAddressesAsync(blpuCsvFile);
+            }
+            catch (Exception ex)
+            {
+                ((Xeption)ex).AddData("ExtractionError", blpuCsvFile);
+                exceptions.Add(ex);
+            }
+
+            try
+            {
+                await ProcessStreetDescriptorDataAsync(streetDescriptorCsvFile);
+            }
+            catch (Exception ex)
+            {
+                ((Xeption)ex).AddData("ExtractionError", dpaCsvFile);
+                exceptions.Add(ex);
+            }
+
+            if (exceptions.Any())
+            {
+                throw new AggregateException(
+                    $"Unable to extract {exceptions.Count} address files.",
+                    exceptions);
+            }
         }
 
         virtual internal async ValueTask<List<T>> LoadAndMapCsvAsync<T>(

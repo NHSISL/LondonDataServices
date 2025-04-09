@@ -401,10 +401,6 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Audits
                 service.ApplyAddAuditAsync(invalidAudit))
                     .ReturnsAsync(invalidAudit);
 
-            auditServiceMock.Verify(service =>
-                service.ApplyAddAuditAsync(invalidAudit),
-                    Times.Once());
-
             this.dateTimeBrokerMock.Setup(broker =>
                 broker.GetCurrentDateTimeOffsetAsync())
                     .ReturnsAsync(randomDateTimeOffset);

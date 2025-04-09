@@ -528,6 +528,37 @@ namespace LHDS.Core.Services.Orchestrations.Addresses
             return addresses;
         }
 
+        virtual internal async ValueTask ProcessStreetDescriptorDataAsync(string streetDescriptorCsvFile)
+        {
+            List<Address> streetDescriptorAddresses =
+                await MapStreetDescriptorDataToAddressesAsync(streetDescriptorCsvFile);
+
+            Dictionary<string, Address> streetDescriptorsDict =
+                streetDescriptorAddresses.ToDictionary(a => a.USRN, a => a);
+
+            IQueryable<Address> addresses = await this.addressProcessingService.RetrieveAllAddressesAsync();
+
+            IQueryable<Address> missingSreetDataAddresses = addresses
+                .Where(address => string.IsNullOrWhiteSpace(address.Thoroughfare)
+                    || string.IsNullOrWhiteSpace(address.PostTown));
+
+            List<Address> updatedAddresses = [];
+
+            foreach (Address address in missingSreetDataAddresses)
+            {
+                if (address.USRN != null
+                    && streetDescriptorsDict.TryGetValue(address.USRN, out Address streetDescriptor))
+                {
+                    address.Thoroughfare = streetDescriptor.Thoroughfare;
+                    address.DependentLocality = streetDescriptor.DependentLocality;
+                    address.PostTown = streetDescriptor.PostTown;
+                    updatedAddresses.Add(address);
+                }
+            }
+
+            await addressProcessingService.BulkModifyAddressesAsync(updatedAddresses, streetDescriptorCsvFile);
+        }
+
         public ValueTask SyncAddressesWithAssignAsync()
         {
             throw new NotImplementedException();

@@ -676,6 +676,60 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Addresses
             this.dateTimeBrokerMock.VerifyNoOtherCalls();
             this.identifierBrokerMock.VerifyNoOtherCalls();
         }
+
+        [Fact]
+        public async Task ShouldThrowServiceExceptionOnAddressIfAggregateExceptionOccursAndLogItAsync()
+        {
+            // given
+            string someFilename = GetRandomString();
+            byte[] inputData = Encoding.UTF8.GetBytes(someFilename);
+            Stream inputStream = new MemoryStream(inputData);
+            var aggregateException = new AggregateException();
+
+            var failedAddressPersistanceOrchestrationServiceException =
+                new FailedAddressOrchestrationServiceException(
+                    message: "Failed address aggregate orchestration service error occurred, please contact support.",
+                    innerException: aggregateException);
+
+            var expectedAddressOrchestrationServiceException =
+                new AddressOrchestrationServiceException(
+                    message: "Address orchestration service error occurred, please contact support.",
+                    innerException: failedAddressPersistanceOrchestrationServiceException);
+
+            this.fileBrokerMock.Setup(service =>
+                service.GetTempPath())
+                    .ThrowsAsync(aggregateException);
+
+            // when
+            ValueTask processDataTask = this.addressOrchestrationService
+                .BulkAddAddressesAsync(input: inputStream, fileName: someFilename);
+
+            AddressOrchestrationServiceException actualException =
+                await Assert.ThrowsAsync<AddressOrchestrationServiceException>(
+                    processDataTask.AsTask);
+
+            // then
+            actualException.Should()
+                 .BeEquivalentTo(expectedAddressOrchestrationServiceException);
+
+            this.fileBrokerMock.Verify(service =>
+                service.GetTempPath(),
+                        Times.Once);
+
+            this.loggingBrokerMock.Verify(broker =>
+               broker.LogErrorAsync(It.Is(SameExceptionAs(
+                   expectedAddressOrchestrationServiceException))),
+                       Times.Once);
+
+            this.fileBrokerMock.VerifyNoOtherCalls();
+            this.csvHelperBrokerMock.VerifyNoOtherCalls();
+            this.auditBrokerMock.VerifyNoOtherCalls();
+            this.loggingBrokerMock.VerifyNoOtherCalls();
+            this.addressProcessingServiceMock.VerifyNoOtherCalls();
+            this.assignProcessingServiceMock.VerifyNoOtherCalls();
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
+            this.identifierBrokerMock.VerifyNoOtherCalls();
+        }
     }
 }
 

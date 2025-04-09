@@ -66,7 +66,7 @@ namespace LHDS.Core.Services.Orchestrations.Addresses
                 }
 
                 await UnZipAndExtractAsync(data: input, extractPath: ordinanceTempFolder);
-                await ReadCsvDataAndBulkAddAddresses(ordinanceTempFolder);
+                await ReadCsvDataAndBulkAddAddressesAsync(ordinanceTempFolder);
                 await this.fileBroker.DeleteDirectoryAsync(ordinanceTempFolder, true);
             });
 

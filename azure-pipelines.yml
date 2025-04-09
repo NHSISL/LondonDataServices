@@ -455,7 +455,7 @@ steps:
   - publish: $(Build.ArtifactStagingDirectory)/$(Build.BuildId)_preproduction_frontend_website
     condition: and(succeeded(), ne(variables['Build.Reason'], 'PullRequest'))  
     displayName: 'Publish Artifact - Frontend (PreProduction)'
-    artifact: drop-frontend-production
+    artifact: drop-frontend-preproduction
 
   - publish: $(Build.ArtifactStagingDirectory)/$(Build.BuildId)_production_frontend_website
     condition: and(succeeded(), ne(variables['Build.Reason'], 'PullRequest'))  

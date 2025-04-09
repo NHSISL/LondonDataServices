@@ -3,6 +3,7 @@
 // ---------------------------------------------------------
 
 using System.IO;
+using System.Text;
 using System.Threading.Tasks;
 using FluentAssertions;
 using LHDS.Core.Models.Orchestrations.Addresses.Exceptions;
@@ -78,7 +79,9 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Addresses
         {
             // Given
             string inputFileName = GetRandomString();
-            Stream inputStream = new MemoryStream();
+            string someStringData = GetRandomString();
+            byte[] someData = Encoding.ASCII.GetBytes(someStringData);
+            Stream inputStream = new MemoryStream(someData);
             string someMessage = GetRandomString();
 
             var invalidFileAddressOrchestrationException =
@@ -105,6 +108,10 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Addresses
             // Then
             actualAddressValidationOrchestrationException.Should()
                 .BeEquivalentTo(expectedAddressValidationOrchestrationException);
+
+            this.fileBrokerMock.Verify(broker =>
+                broker.GetTempPath(),
+                    Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>
                 broker.LogErrorAsync(It.Is(SameExceptionAs(

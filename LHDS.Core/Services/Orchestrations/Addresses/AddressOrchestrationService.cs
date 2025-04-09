@@ -202,7 +202,7 @@ namespace LHDS.Core.Services.Orchestrations.Addresses
             }
             catch (Exception ex)
             {
-                ((Xeption)ex).AddData("ExtractionError", dpaCsvFile);
+                ((Xeption)ex).AddData("DpaExtractionError", dpaCsvFile);
                 exceptions.Add(ex);
             }
 
@@ -212,7 +212,7 @@ namespace LHDS.Core.Services.Orchestrations.Addresses
             }
             catch (Exception ex)
             {
-                ((Xeption)ex).AddData("ExtractionError", lpiCsvFile);
+                ((Xeption)ex).AddData("LpiExtractionError", lpiCsvFile);
                 exceptions.Add(ex);
             }
 
@@ -222,7 +222,7 @@ namespace LHDS.Core.Services.Orchestrations.Addresses
             }
             catch (Exception ex)
             {
-                ((Xeption)ex).AddData("ExtractionError", blpuCsvFile);
+                ((Xeption)ex).AddData("BlpuExtractionError", blpuCsvFile);
                 exceptions.Add(ex);
             }
 
@@ -232,7 +232,7 @@ namespace LHDS.Core.Services.Orchestrations.Addresses
             }
             catch (Exception ex)
             {
-                ((Xeption)ex).AddData("ExtractionError", dpaCsvFile);
+                ((Xeption)ex).AddData("StreetDescriptorExtractionError", streetDescriptorCsvFile);
                 exceptions.Add(ex);
             }
 

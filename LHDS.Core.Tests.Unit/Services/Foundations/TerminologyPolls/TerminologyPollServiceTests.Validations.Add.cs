@@ -143,6 +143,10 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.TerminologyPolls
             actualTerminologyPollValidationException.Should()
                 .BeEquivalentTo(expectedTerminologyPollValidationException);
 
+            terminologyPollServiceMock.Verify(service =>
+                service.ApplyAddTerminologyPollAsync(invalidTerminologyPoll),
+                    Times.Once());
+
             this.dateTimeBrokerMock.Verify(broker =>
                 broker.GetCurrentDateTimeOffsetAsync(),
                     Times.Once());
@@ -160,6 +164,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.TerminologyPolls
                 broker.InsertTerminologyPollAsync(It.IsAny<TerminologyPoll>()),
                     Times.Never);
 
+            terminologyPollServiceMock.VerifyNoOtherCalls();
             this.dateTimeBrokerMock.VerifyNoOtherCalls();
             this.securityBrokerMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
@@ -230,6 +235,10 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.TerminologyPolls
             actualTerminologyPollValidationException.Should()
                 .BeEquivalentTo(expectedTerminologyPollValidationException);
 
+            terminologyPollServiceMock.Verify(service =>
+                service.ApplyAddTerminologyPollAsync(invalidTerminologyPoll),
+                    Times.Once());
+
             this.dateTimeBrokerMock.Verify(broker =>
                 broker.GetCurrentDateTimeOffsetAsync(),
                     Times.Once());
@@ -247,6 +256,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.TerminologyPolls
                 broker.InsertTerminologyPollAsync(It.IsAny<TerminologyPoll>()),
                     Times.Never);
 
+            terminologyPollServiceMock.VerifyNoOtherCalls();
             this.dateTimeBrokerMock.VerifyNoOtherCalls();
             this.securityBrokerMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
@@ -317,6 +327,10 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.TerminologyPolls
             actualTerminologyPollValidationException.Should()
                 .BeEquivalentTo(expectedTerminologyPollValidationException);
 
+            terminologyPollServiceMock.Verify(service =>
+                service.ApplyAddTerminologyPollAsync(invalidTerminologyPoll),
+                    Times.Once());
+
             this.dateTimeBrokerMock.Verify(broker =>
                 broker.GetCurrentDateTimeOffsetAsync(),
                     Times.Once());
@@ -334,6 +348,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.TerminologyPolls
                 broker.InsertTerminologyPollAsync(It.IsAny<TerminologyPoll>()),
                     Times.Never);
 
+            terminologyPollServiceMock.VerifyNoOtherCalls();
             this.dateTimeBrokerMock.VerifyNoOtherCalls();
             this.securityBrokerMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
@@ -400,6 +415,10 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.TerminologyPolls
             actualTerminologyPollValidationException.Should()
                 .BeEquivalentTo(expectedTerminologyPollValidationException);
 
+            terminologyPollServiceMock.Verify(service =>
+                service.ApplyAddTerminologyPollAsync(invalidTerminologyPoll),
+                    Times.Once());
+
             this.dateTimeBrokerMock.Verify(broker =>
                 broker.GetCurrentDateTimeOffsetAsync(),
                     Times.Once());
@@ -417,6 +436,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.TerminologyPolls
                 broker.InsertTerminologyPollAsync(It.IsAny<TerminologyPoll>()),
                     Times.Never);
 
+            terminologyPollServiceMock.VerifyNoOtherCalls();
             this.dateTimeBrokerMock.VerifyNoOtherCalls();
             this.securityBrokerMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();

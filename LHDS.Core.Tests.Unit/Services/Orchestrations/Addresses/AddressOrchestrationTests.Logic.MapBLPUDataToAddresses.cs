@@ -46,9 +46,9 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Addresses
 
             string multipleHistoricalsUprn = GetRandomString();
             DateTimeOffset randomDateTimeOffset = GetRandomDateTimeOffset();
-            DateTimeOffset latestEndDate = randomDateTimeOffset.AddYears(-1);
-            DateTimeOffset olderEndDate = randomDateTimeOffset.AddYears(-5);
-            DateTimeOffset startDate = randomDateTimeOffset.AddYears(-20);
+            DateTimeOffset latestEndDate = randomDateTimeOffset.AddDays(5);
+            DateTimeOffset olderEndDate = randomDateTimeOffset.AddDays(3);
+            DateTimeOffset startDate = randomDateTimeOffset.AddDays(1);
             string updatedMultipleHistoricalsPostCode = GetRandomString();
             string oldMultipleHistoricalsPostCode = GetRandomString();
 

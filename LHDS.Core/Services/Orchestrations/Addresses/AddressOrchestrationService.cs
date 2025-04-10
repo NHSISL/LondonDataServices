@@ -59,6 +59,7 @@ namespace LHDS.Core.Services.Orchestrations.Addresses
                 string ordinanceTempFolder = Path.Combine(tempfolder, "OrdinanceData");
                 string ordinanceFilePath = Path.Combine(ordinanceTempFolder, fileName);
                 bool folderExists = await this.fileBroker.CheckIfDirectoryExistsAsync(ordinanceTempFolder);
+                //await this.fileBroker.DeleteDirectoryAsync(ordinanceTempFolder, true);
 
                 if (!folderExists)
                 {

@@ -60,7 +60,9 @@ namespace LHDS.Core.Services.Foundations.TerminologyPolls
         public ValueTask<TerminologyPoll> ModifyTerminologyPollAsync(TerminologyPoll terminologyPoll) =>
             TryCatch(async () =>
             {
-                TerminologyPoll terminologyPollWithModifyAuditApplied = await ApplyModifyAuditAsync(terminologyPoll);
+                TerminologyPoll terminologyPollWithModifyAuditApplied = 
+                    await ApplyModifyTerminologyPollAsync(terminologyPoll);
+
                 await ValidateTerminologyPollOnModifyAsync(terminologyPollWithModifyAuditApplied);
 
                 TerminologyPoll maybeTerminologyPoll =
@@ -111,7 +113,7 @@ namespace LHDS.Core.Services.Foundations.TerminologyPolls
             return terminologyPoll;
         }
 
-        virtual internal async ValueTask<TerminologyPoll> ApplyModifyAuditAsync(TerminologyPoll terminologyPoll)
+        virtual internal async ValueTask<TerminologyPoll> ApplyModifyTerminologyPollAsync(TerminologyPoll terminologyPoll)
         {
             ValidateTerminologyPollIsNotNull(terminologyPoll);
             var auditDateTimeOffset = await this.dateTimeBroker.GetCurrentDateTimeOffsetAsync();

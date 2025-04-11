@@ -34,8 +34,6 @@ var host = new HostBuilder()
         var credential = new DefaultAzureCredential();
         var tokenRequestContext = new TokenRequestContext(new[] { "https://graph.microsoft.com/.default" });
         AccessToken accessToken = credential.GetTokenAsync(tokenRequestContext).Result;
-        SecurityBroker securityBroker = new SecurityBroker(accessToken.Token);
-        services.AddTransient<ISecurityBroker>(broker => securityBroker);
 
         services
             .AddLogging(setup =>
@@ -43,7 +41,7 @@ var host = new HostBuilder()
                 setup.AddApplicationInsights();
                 setup.AddConsole();
             })
-           .AddTerminologyClient(context.Configuration);
+           .AddTerminologyClient(context.Configuration, accessToken.Token);
     })
     .UseDefaultServiceProvider(options => options.ValidateScopes = false)
     .ConfigureFunctionsWorkerDefaults()

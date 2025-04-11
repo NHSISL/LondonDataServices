@@ -32,7 +32,6 @@ using LHDS.Core.Services.Processings.Documents;
 using LHDS.Core.Services.Processings.Ontologies;
 using LHDS.Core.Services.Processings.TerminologyArtifacts;
 using LHDS.Core.Services.Processings.TerminologyPolls;
-using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -66,6 +65,23 @@ namespace LHDS.Core.Clients.Extensions
 
             AddProviders(services);
             AddBrokers(services, claimsPrincipal, configuration);
+            AddServices(services);
+            AddProcessingServices(services);
+            AddOrchestrations(services);
+            AddCoordinations(services);
+            AddClients(services, configuration);
+
+            return services;
+        }
+
+        public static IServiceCollection AddTerminologyClient(
+            this IServiceCollection services,
+            IConfiguration configuration,
+            string accessToken)
+        {
+            services.AddSingleton<IConfiguration>(_ => configuration);
+            AddProviders(services);
+            AddBrokers(services, GetClaimsPrincipalFromToken(accessToken), configuration);
             AddServices(services);
             AddProcessingServices(services);
             AddOrchestrations(services);

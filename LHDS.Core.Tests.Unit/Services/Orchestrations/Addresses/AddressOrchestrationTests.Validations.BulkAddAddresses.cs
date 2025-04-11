@@ -3,6 +3,7 @@
 // ---------------------------------------------------------
 
 using System.IO;
+using System.Text;
 using System.Threading.Tasks;
 using FluentAssertions;
 using LHDS.Core.Models.Orchestrations.Addresses.Exceptions;
@@ -57,6 +58,60 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Addresses
             // Then
             actualAddressValidationOrchestrationException.Should()
                 .BeEquivalentTo(expectedAddressValidationOrchestrationException);
+
+            this.loggingBrokerMock.Verify(broker =>
+                broker.LogErrorAsync(It.Is(SameExceptionAs(
+                    expectedAddressValidationOrchestrationException))),
+                        Times.Once);
+
+            this.fileBrokerMock.VerifyNoOtherCalls();
+            this.csvHelperBrokerMock.VerifyNoOtherCalls();
+            this.auditBrokerMock.VerifyNoOtherCalls();
+            this.loggingBrokerMock.VerifyNoOtherCalls();
+            this.addressProcessingServiceMock.VerifyNoOtherCalls();
+            this.assignProcessingServiceMock.VerifyNoOtherCalls();
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
+            this.identifierBrokerMock.VerifyNoOtherCalls();
+        }
+
+        [Fact]
+        public async Task ShouldThrowValidationExceptionOnBulkAddAddressesIfFileInvalidAndLogItAsync()
+        {
+            // Given
+            string inputFileName = GetRandomString();
+            string someStringData = GetRandomString();
+            byte[] someData = Encoding.ASCII.GetBytes(someStringData);
+            Stream inputStream = new MemoryStream(someData);
+            string someMessage = GetRandomString();
+
+            var invalidFileAddressOrchestrationException =
+                new InvalidFileAddressOrchestrationException(
+                    message: someMessage);
+
+            var expectedAddressValidationOrchestrationException =
+                new AddressValidationOrchestrationException(
+                    message: "Address orchestration validation error occurred, please try again.",
+                    innerException: invalidFileAddressOrchestrationException);
+
+            this.fileBrokerMock.Setup(broker =>
+                broker.GetTempPath())
+                    .ThrowsAsync(invalidFileAddressOrchestrationException);
+
+            // When
+            ValueTask bulkAddAddressesTask = this.addressOrchestrationService
+                .BulkAddAddressesAsync(input: inputStream, fileName: inputFileName);
+
+            AddressValidationOrchestrationException actualAddressValidationOrchestrationException =
+                await Assert.ThrowsAsync<AddressValidationOrchestrationException>(
+                    bulkAddAddressesTask.AsTask);
+
+            // Then
+            actualAddressValidationOrchestrationException.Should()
+                .BeEquivalentTo(expectedAddressValidationOrchestrationException);
+
+            this.fileBrokerMock.Verify(broker =>
+                broker.GetTempPath(),
+                    Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>
                 broker.LogErrorAsync(It.Is(SameExceptionAs(

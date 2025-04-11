@@ -66,7 +66,7 @@ namespace LHDS.Core.Services.Orchestrations.Addresses
                 }
 
                 await UnZipAndExtractAsync(data: input, extractPath: ordinanceTempFolder);
-                await ReadCsvDataAndBulkAddAddresses(ordinanceTempFolder);
+                await ReadCsvDataAndBulkAddAddressesAsync(ordinanceTempFolder);
                 await this.fileBroker.DeleteDirectoryAsync(ordinanceTempFolder, true);
             });
 
@@ -122,67 +122,6 @@ namespace LHDS.Core.Services.Orchestrations.Addresses
                         }
                     }
                 }
-            }
-        }
-
-        virtual internal async Task ReadCsvDataAndBulkAddAddresses(string tempFolder)
-        {
-            List<string> csvFiles = await fileBroker.GetListOfFilesAsync(tempFolder, "*.csv");
-            var exceptions = new List<Exception>();
-
-            foreach (string csvFile in csvFiles)
-            {
-                try
-                {
-                    await TryCatch(async () =>
-                    {
-                        byte[] csvData = await fileBroker.ReadFileAsync(csvFile);
-
-                        string stringData = Encoding.UTF8.GetString(csvData);
-
-                        List<string> records = stringData.Split(
-                            new[] { "\r\n", "\n" }, StringSplitOptions.None).ToList();
-
-                        List<string> filteredRecords = records.Where(record =>
-                           record.StartsWith("28,") || record.StartsWith("\"28\",")).ToList();
-
-                        string stringRecords = string.Join(Environment.NewLine, filteredRecords);
-
-                        Dictionary<string, int> fieldMappings = new Dictionary<string, int>
-                        {
-                            { "UPRN", 3 },
-                            { "UPSN", 4 },
-                            { "OrganisationName", 5 },
-                            { "DepartmentName", 6 },
-                            { "SubBuildingName", 7 },
-                            { "BuildingName", 8 },
-                            { "BuildingNumber", 9 },
-                            { "DependentThoroughfare", 10 },
-                            { "Thoroughfare", 11 },
-                            { "DoubleDependentLocality", 12 },
-                            { "DependentLocality", 13 },
-                            { "PostTown", 14 },
-                            { "PostCode", 15 }
-                        };
-
-                        List<Address> addresses = await this.csvHelperBroker
-                            .MapCsvToObjectAsync<Address>(stringRecords, hasHeaderRecord: false, fieldMappings);
-
-                        await addressProcessingService.BulkAddAddressesAsync(addresses, csvFile);
-                    });
-                }
-                catch (Exception ex)
-                {
-                    ((Xeption)ex).AddData("ExtractionError", csvFile);
-                    exceptions.Add(ex);
-                }
-            }
-            if (exceptions.Any())
-            {
-                throw new AggregateException(
-                    $"Unable to extract {exceptions.Count} address files. " +
-                    $"File has been moved to the error folder.",
-                    exceptions);
             }
         }
 

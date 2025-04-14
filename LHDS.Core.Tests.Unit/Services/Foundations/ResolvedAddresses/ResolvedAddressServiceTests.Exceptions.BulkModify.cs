@@ -230,10 +230,12 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.ResolvedAddresses
         {
             // given
             var serviceException = new Exception();
+
             var resolvedAddressServiceMock = new Mock<ResolvedAddressService>(
                 this.storageBrokerMock.Object,
                 this.identifierBrokerMock.Object,
                 this.dateTimeBrokerMock.Object,
+                this.securityBrokerMock.Object,
                 this.loggingBrokerMock.Object,
                 this.auditBrokerMock.Object)
             {

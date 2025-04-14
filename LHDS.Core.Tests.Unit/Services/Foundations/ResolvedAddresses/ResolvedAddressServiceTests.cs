@@ -137,6 +137,25 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.ResolvedAddresses
             return filler;
         }
 
+        private static ResolvedAddress CreateRandomResolvedAddress(
+            DateTimeOffset dateTimeOffset,
+            string userId) =>
+            CreateResolvedAddressFiller(dateTimeOffset, userId).Create();
+
+        private static Filler<ResolvedAddress> CreateResolvedAddressFiller(
+            DateTimeOffset dateTimeOffset,
+            string userId)
+        {
+            var filler = new Filler<ResolvedAddress>();
+
+            filler.Setup()
+                .OnType<DateTimeOffset>().Use(dateTimeOffset)
+                .OnProperty(resolvedAddress => resolvedAddress.CreatedBy).Use(userId)
+                .OnProperty(resolvedAddress => resolvedAddress.UpdatedBy).Use(userId);
+
+            return filler;
+        }
+
         private EntraUser CreateRandomEntraUser(string entraUserId = "")
         {
             var userId = string.IsNullOrWhiteSpace(entraUserId) ? GetRandomStringWithLengthOf(255) : entraUserId;

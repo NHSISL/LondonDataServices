@@ -45,7 +45,10 @@ namespace LHDS.Core.Services.Foundations.ResolvedAddresses
         public ValueTask<ResolvedAddress> AddResolvedAddressAsync(ResolvedAddress resolvedAddress) =>
             TryCatch(async () =>
             {
-                await ValidateResolvedAddressOnAddAsync(resolvedAddress);
+                ResolvedAddress resolvedAddressWithAddAuditApplied = 
+                    await ApplyAddResolvedAddressAsync(resolvedAddress);
+
+                await ValidateResolvedAddressOnAddAsync(resolvedAddressWithAddAuditApplied);
 
                 return await this.storageBroker.InsertResolvedAddressAsync(resolvedAddress);
             });
@@ -298,6 +301,19 @@ namespace LHDS.Core.Services.Foundations.ResolvedAddresses
             }
 
             return await ValueTask.FromResult(validatedResolvedAddresses);
+        }
+
+        virtual internal async ValueTask<ResolvedAddress> ApplyAddResolvedAddressAsync(ResolvedAddress resolvedAddress)
+        {
+            ValidateResolvedAddressIsNotNull(resolvedAddress);
+            var auditDateTimeOffset = await this.dateTimeBroker.GetCurrentDateTimeOffsetAsync();
+            var auditUser = await this.securityBroker.GetCurrentUserAsync();
+            resolvedAddress.CreatedBy = auditUser?.EntraUserId.ToString() ?? string.Empty;
+            resolvedAddress.CreatedDate = auditDateTimeOffset;
+            resolvedAddress.UpdatedBy = auditUser?.EntraUserId.ToString() ?? string.Empty;
+            resolvedAddress.UpdatedDate = auditDateTimeOffset;
+
+            return resolvedAddress;
         }
     }
 }

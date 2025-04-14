@@ -21,7 +21,10 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.ObjectColumns
             // given
             DateTimeOffset randomDateTimeOffset = GetRandomDateTimeOffset();
             EntraUser randomEntraUser = CreateRandomEntraUser();
-            ObjectColumn randomObjectColumn = CreateRandomObjectColumn(randomDateTimeOffset, randomEntraUser.EntraUserId);
+
+            ObjectColumn randomObjectColumn = 
+                CreateRandomObjectColumn(randomDateTimeOffset, randomEntraUser.EntraUserId);
+
             ObjectColumn inputObjectColumn = randomObjectColumn;
             ObjectColumn storageObjectColumn = inputObjectColumn;
             ObjectColumn expectedObjectColumn = storageObjectColumn.DeepClone();

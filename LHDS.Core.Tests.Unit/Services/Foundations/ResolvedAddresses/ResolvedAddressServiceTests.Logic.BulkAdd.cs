@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Force.DeepCloner;
+using LHDS.Core.Models.Brokers.Securities;
 using LHDS.Core.Models.Foundations.ResolvedAddresses;
 using Moq;
 using Xunit;
@@ -19,17 +20,16 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.ResolvedAddresses
         public async Task ShouldBulkAddResolvedAddressesAsync()
         {
             // given
-            DateTimeOffset randomDateTimeOffset =
-                GetRandomDateTimeOffset();
-
+            DateTimeOffset randomDateTimeOffset = GetRandomDateTimeOffset();
+            EntraUser randomEntraUser = CreateRandomEntraUser();
             Guid randomIdentifier = Guid.NewGuid();
             string randomFileName = GetRandomString();
             string inputFileName = randomFileName;
 
             List<ResolvedAddress> randomResolvedAddresses = new List<ResolvedAddress>
                 {
-                    CreateRandomResolvedAddress(randomDateTimeOffset),
-                    CreateRandomResolvedAddress(randomDateTimeOffset)
+                    CreateRandomResolvedAddress(randomDateTimeOffset, randomEntraUser.EntraUserId),
+                    CreateRandomResolvedAddress(randomDateTimeOffset, randomEntraUser.EntraUserId)
                 };
 
             List<ResolvedAddress> inputResolvedAddresses = randomResolvedAddresses;
@@ -38,9 +38,9 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.ResolvedAddresses
             validatedResolvedAddresses.ForEach(address =>
             {
                 address.Id = randomIdentifier;
-                address.CreatedBy = "System";
+                address.CreatedBy = randomEntraUser.EntraUserId;
                 address.CreatedDate = randomDateTimeOffset;
-                address.UpdatedBy = "System";
+                address.UpdatedBy = randomEntraUser.EntraUserId;
                 address.UpdatedDate = randomDateTimeOffset;
             });
 
@@ -54,6 +54,10 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.ResolvedAddresses
                 broker.GetCurrentDateTimeOffsetAsync())
                     .ReturnsAsync(randomDateTimeOffset);
 
+            this.securityBrokerMock.Setup(broker =>
+                broker.GetCurrentUserAsync())
+                    .ReturnsAsync(randomEntraUser);
+
             this.identifierBrokerMock.Setup(broker =>
                 broker.GetIdentifierAsync())
                     .ReturnsAsync(randomIdentifier);
@@ -65,6 +69,10 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.ResolvedAddresses
             // then
             this.dateTimeBrokerMock.Verify(broker =>
                 broker.GetCurrentDateTimeOffsetAsync(),
+                    Times.Exactly(randomResolvedAddresses.Count * 2));
+
+            this.securityBrokerMock.Verify(broker =>
+                broker.GetCurrentUserAsync(),
                     Times.Exactly(randomResolvedAddresses.Count * 2));
 
             this.identifierBrokerMock.Verify(broker =>
@@ -80,6 +88,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.ResolvedAddresses
                     Times.Once);
 
             this.dateTimeBrokerMock.VerifyNoOtherCalls();
+            this.securityBrokerMock.VerifyNoOtherCalls();
             this.identifierBrokerMock.VerifyNoOtherCalls();
             this.storageBrokerMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();

@@ -5,6 +5,7 @@
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using LHDS.Core.Models.Brokers.Securities;
 using LHDS.Core.Models.Foundations.ResolvedAddresses;
 using LHDS.Core.Models.Foundations.ResolvedAddresses.Exceptions;
 
@@ -14,7 +15,7 @@ namespace LHDS.Core.Services.Foundations.ResolvedAddresses
     {
         private async ValueTask ValidateResolvedAddressOnAddAsync(ResolvedAddress resolvedAddress)
         {
-            ValidateResolvedAddressIsNotNull(resolvedAddress);
+            EntraUser currentUser = await this.securityBroker.GetCurrentUserAsync();
 
             Validate(
                 (Rule: IsInvalid(resolvedAddress.Id), Parameter: nameof(ResolvedAddress.Id)),
@@ -29,6 +30,11 @@ namespace LHDS.Core.Services.Foundations.ResolvedAddresses
                 (Rule: IsInvalid(resolvedAddress.UpdatedBy), Parameter: nameof(ResolvedAddress.UpdatedBy)),
 
                 (Rule: IsNotSame(
+                    first: currentUser.EntraUserId,
+                    second: resolvedAddress.CreatedBy),
+                Parameter: nameof(ResolvedAddress.CreatedBy)),
+
+                (Rule: IsNotSame(
                     firstDate: resolvedAddress.UpdatedDate,
                     secondDate: resolvedAddress.CreatedDate,
                     secondDateName: nameof(ResolvedAddress.CreatedDate)),
@@ -40,7 +46,8 @@ namespace LHDS.Core.Services.Foundations.ResolvedAddresses
                     secondName: nameof(ResolvedAddress.CreatedBy)),
                 Parameter: nameof(ResolvedAddress.UpdatedBy)),
 
-                (Rule: await IsNotRecentAsync(resolvedAddress.CreatedDate), Parameter: nameof(ResolvedAddress.CreatedDate)));
+                (Rule: await IsNotRecentAsync(resolvedAddress.CreatedDate), 
+                Parameter: nameof(ResolvedAddress.CreatedDate)));
         }
 
         private void ValidateOnBulkAddResolvedAddresses(List<ResolvedAddress> resolvedAddresses, string fileName)
@@ -153,6 +160,14 @@ namespace LHDS.Core.Services.Foundations.ResolvedAddresses
             {
                 Condition = firstDate == secondDate,
                 Message = $"Date is the same as {secondDateName}"
+            };
+
+        private static dynamic IsNotSame(
+            string first,
+            string second) => new
+            {
+                Condition = first != second,
+                Message = $"Expected value to be '{first}' but found '{second}'."
             };
 
         private static dynamic IsNotSame(

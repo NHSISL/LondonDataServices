@@ -6,8 +6,10 @@ using System;
 using System.Threading.Tasks;
 using FluentAssertions;
 using Force.DeepCloner;
+using LHDS.Core.Models.Brokers.Securities;
 using LHDS.Core.Models.Foundations.ResolvedAddresses;
 using LHDS.Core.Models.Foundations.ResolvedAddresses.Exceptions;
+using LHDS.Core.Services.Foundations.ResolvedAddresses;
 using Moq;
 using Xunit;
 
@@ -52,16 +54,47 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.ResolvedAddresses
                 broker.UpdateResolvedAddressAsync(It.IsAny<ResolvedAddress>()),
                     Times.Never);
 
-            this.loggingBrokerMock.VerifyNoOtherCalls();
             this.dateTimeBrokerMock.VerifyNoOtherCalls();
+            this.securityBrokerMock.VerifyNoOtherCalls();
+            this.loggingBrokerMock.VerifyNoOtherCalls();
             this.storageBrokerMock.VerifyNoOtherCalls();
         }
 
-        [Fact]
-        public async Task ShouldThrowValidationExceptionOnModifyIfResolvedAddressIsInvalidAndLogItAsync()
+        [Theory]
+        [InlineData(null)]
+        [InlineData("")]
+        [InlineData(" ")]
+        public async Task ShouldThrowValidationExceptionOnModifyIfResolvedAddressIsInvalidAndLogItAsync(string invalidText)
         {
             // given 
-            var invalidResolvedAddress = new ResolvedAddress();
+            EntraUser randomEntraUser = CreateRandomEntraUser();
+            DateTimeOffset randomDateTimeOffset = GetRandomDateTimeOffset();
+
+            var invalidResolvedAddress = new ResolvedAddress
+            {
+                UnstructuredPostalAddress = invalidText,
+            };
+
+            var resolvedAddressServiceMock = new Mock<ResolvedAddressService>(
+                storageBrokerMock.Object,
+                dateTimeBrokerMock.Object,
+                securityBrokerMock.Object,
+                loggingBrokerMock.Object)
+            {
+                CallBase = true
+            };
+
+            resolvedAddressServiceMock.Setup(service =>
+                service.ApplyModifyAuditAsync(invalidResolvedAddress))
+                    .ReturnsAsync(invalidResolvedAddress);
+
+            this.dateTimeBrokerMock.Setup(broker =>
+                broker.GetCurrentDateTimeOffsetAsync())
+                    .ReturnsAsync(randomDateTimeOffset);
+
+            this.securityBrokerMock.Setup(broker =>
+                broker.GetCurrentUserAsync())
+                    .ReturnsAsync(randomEntraUser);
 
             var invalidResolvedAddressException =
                 new InvalidResolvedAddressException(
@@ -90,14 +123,20 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.ResolvedAddresses
             invalidResolvedAddressException.AddData(
                 key: nameof(ResolvedAddress.UpdatedDate),
                 values:
-                new[] {
-                    "Date is required",
-                    $"Date is the same as {nameof(ResolvedAddress.CreatedDate)}"
-                });
+                    [
+                        "Date is required",
+                        "Date is the same as CreatedDate",
+                        $"Date is not recent"
+                    ]);
 
             invalidResolvedAddressException.AddData(
                 key: nameof(ResolvedAddress.UpdatedBy),
-                values: "Text is required");
+                values:
+                    [
+                        "Text is required",
+                        $"Expected value to be '{randomEntraUser.EntraUserId}' but found " +
+                        $"'{invalidResolvedAddress.UpdatedBy}'."
+                    ]);
 
             var expectedResolvedAddressValidationException =
                 new ResolvedAddressValidationException(
@@ -106,7 +145,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.ResolvedAddresses
 
             // when
             ValueTask<ResolvedAddress> modifyResolvedAddressTask =
-                this.resolvedAddressService.ModifyResolvedAddressAsync(invalidResolvedAddress);
+                resolvedAddressServiceMock.Object.ModifyResolvedAddressAsync(invalidResolvedAddress);
 
             ResolvedAddressValidationException actualResolvedAddressValidationException =
                 await Assert.ThrowsAsync<ResolvedAddressValidationException>(
@@ -120,6 +159,10 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.ResolvedAddresses
                 broker.GetCurrentDateTimeOffsetAsync(),
                     Times.Once);
 
+            this.securityBrokerMock.Verify(broker =>
+                broker.GetCurrentUserAsync(),
+                    Times.Once);
+
             this.loggingBrokerMock.Verify(broker =>
                 broker.LogErrorAsync(It.Is(SameExceptionAs(
                     expectedResolvedAddressValidationException))),
@@ -129,9 +172,101 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.ResolvedAddresses
                 broker.UpdateResolvedAddressAsync(It.IsAny<ResolvedAddress>()),
                     Times.Never);
 
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
+            this.securityBrokerMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
             this.storageBrokerMock.VerifyNoOtherCalls();
+        }
+
+        [Fact]
+        public async Task ShouldThrowValidationExceptionOnModifyIfResolvedAddressIsInvalidLengthAndLogItAsync()
+        {
+            // given 
+            DateTimeOffset randomDateTimeOffset = GetRandomDateTimeOffset();
+            EntraUser randomEntraUser = CreateRandomEntraUser(entraUserId: GetRandomStringWithLengthOf(256));
+
+            ResolvedAddress invalidResolvedAddress =
+                CreateRandomModifyResolvedAddress(randomDateTimeOffset, randomEntraUser.EntraUserId);
+
+            var inputCreatedByUpdatedByString = randomEntraUser.EntraUserId;
+            invalidResolvedAddress.CreatedBy = inputCreatedByUpdatedByString;
+            invalidResolvedAddress.UpdatedBy = inputCreatedByUpdatedByString;
+
+            var resolvedAddressServiceMock = new Mock<ResolvedAddressService>(
+                storageBrokerMock.Object,
+                dateTimeBrokerMock.Object,
+                securityBrokerMock.Object,
+                loggingBrokerMock.Object)
+            {
+                CallBase = true
+            };
+
+            resolvedAddressServiceMock.Setup(service =>
+                service.ApplyModifyAuditAsync(invalidResolvedAddress))
+                    .ReturnsAsync(invalidResolvedAddress);
+
+            this.dateTimeBrokerMock.Setup(broker =>
+                broker.GetCurrentDateTimeOffsetAsync())
+                    .ReturnsAsync(randomDateTimeOffset);
+
+            this.securityBrokerMock.Setup(broker =>
+                broker.GetCurrentUserAsync())
+                    .ReturnsAsync(randomEntraUser);
+
+            var invalidResolvedAddressException =
+                new InvalidResolvedAddressException(
+                    message: "Invalid resolvedAddress. Please correct the errors and try again.");
+
+            invalidResolvedAddressException.AddData(
+                key: nameof(ResolvedAddress.CreatedBy),
+                values: "Text is exceeding max length");
+
+            invalidResolvedAddressException.AddData(
+                key: nameof(ResolvedAddress.UpdatedBy),
+                values: "Text is exceeding max length");
+
+            var expectedResolvedAddressValidationException =
+                new ResolvedAddressValidationException(
+                    message: "Resolved address validation errors occurred, please try again.",
+                    innerException: invalidResolvedAddressException);
+
+            this.dateTimeBrokerMock.Setup(broker =>
+                broker.GetCurrentDateTimeOffsetAsync())
+                    .ReturnsAsync(randomDateTimeOffset);
+
+            // when
+            ValueTask<ResolvedAddress> modifyResolvedAddressTask =
+                resolvedAddressServiceMock.Object.ModifyResolvedAddressAsync(invalidResolvedAddress);
+
+            ResolvedAddressValidationException actualResolvedAddressValidationException =
+                await Assert.ThrowsAsync<ResolvedAddressValidationException>(
+                    modifyResolvedAddressTask.AsTask);
+
+            //then
+            actualResolvedAddressValidationException.Should()
+                .BeEquivalentTo(expectedResolvedAddressValidationException);
+
+            this.dateTimeBrokerMock.Verify(broker =>
+                broker.GetCurrentDateTimeOffsetAsync(),
+                    Times.Once);
+
+            this.securityBrokerMock.Verify(broker =>
+                broker.GetCurrentUserAsync(),
+                    Times.Once);
+
+            this.loggingBrokerMock.Verify(broker =>
+                broker.LogErrorAsync(It.Is(SameExceptionAs(
+                    expectedResolvedAddressValidationException))),
+                        Times.Once());
+
+            this.storageBrokerMock.Verify(broker =>
+                broker.UpdateResolvedAddressAsync(It.IsAny<ResolvedAddress>()),
+                    Times.Never);
+
             this.dateTimeBrokerMock.VerifyNoOtherCalls();
+            this.securityBrokerMock.VerifyNoOtherCalls();
+            this.loggingBrokerMock.VerifyNoOtherCalls();
+            this.storageBrokerMock.VerifyNoOtherCalls();
         }
 
         [Fact]
@@ -139,8 +274,33 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.ResolvedAddresses
         {
             // given
             DateTimeOffset randomDateTimeOffset = GetRandomDateTimeOffset();
-            ResolvedAddress randomResolvedAddress = CreateRandomResolvedAddress(randomDateTimeOffset);
+            EntraUser randomEntraUser = CreateRandomEntraUser();
+
+            ResolvedAddress randomResolvedAddress =
+                CreateRandomResolvedAddress(randomDateTimeOffset, randomEntraUser.EntraUserId);
+
             ResolvedAddress invalidResolvedAddress = randomResolvedAddress;
+
+            var resolvedAddressServiceMock = new Mock<ResolvedAddressService>(
+                storageBrokerMock.Object,
+                dateTimeBrokerMock.Object,
+                securityBrokerMock.Object,
+                loggingBrokerMock.Object)
+            {
+                CallBase = true
+            };
+
+            resolvedAddressServiceMock.Setup(service =>
+                service.ApplyModifyAuditAsync(invalidResolvedAddress))
+                    .ReturnsAsync(invalidResolvedAddress);
+
+            this.dateTimeBrokerMock.Setup(broker =>
+                broker.GetCurrentDateTimeOffsetAsync())
+                    .ReturnsAsync(randomDateTimeOffset);
+
+            this.securityBrokerMock.Setup(broker =>
+                broker.GetCurrentUserAsync())
+                    .ReturnsAsync(randomEntraUser);
 
             var invalidResolvedAddressException =
                 new InvalidResolvedAddressException(
@@ -155,13 +315,9 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.ResolvedAddresses
                     message: "Resolved address validation errors occurred, please try again.",
                     innerException: invalidResolvedAddressException);
 
-            this.dateTimeBrokerMock.Setup(broker =>
-                broker.GetCurrentDateTimeOffsetAsync())
-                    .ReturnsAsync(randomDateTimeOffset);
-
             // when
             ValueTask<ResolvedAddress> modifyResolvedAddressTask =
-                this.resolvedAddressService.ModifyResolvedAddressAsync(invalidResolvedAddress);
+                resolvedAddressServiceMock.Object.ModifyResolvedAddressAsync(invalidResolvedAddress);
 
             ResolvedAddressValidationException actualResolvedAddressValidationException =
                 await Assert.ThrowsAsync<ResolvedAddressValidationException>(
@@ -175,6 +331,10 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.ResolvedAddresses
                 broker.GetCurrentDateTimeOffsetAsync(),
                     Times.Once);
 
+            this.securityBrokerMock.Verify(broker =>
+                broker.GetCurrentUserAsync(),
+                    Times.Once);
+
             this.loggingBrokerMock.Verify(broker =>
                 broker.LogErrorAsync(It.Is(SameExceptionAs(
                     expectedResolvedAddressValidationException))),
@@ -184,9 +344,10 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.ResolvedAddresses
                 broker.SelectResolvedAddressByIdAsync(invalidResolvedAddress.Id),
                     Times.Never);
 
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
+            this.securityBrokerMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
             this.storageBrokerMock.VerifyNoOtherCalls();
-            this.dateTimeBrokerMock.VerifyNoOtherCalls();
         }
 
         [Theory]
@@ -195,8 +356,33 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.ResolvedAddresses
         {
             // given
             DateTimeOffset randomDateTimeOffset = GetRandomDateTimeOffset();
-            ResolvedAddress randomResolvedAddress = CreateRandomResolvedAddress(randomDateTimeOffset);
-            randomResolvedAddress.UpdatedDate = randomDateTimeOffset.AddMinutes(minutes);
+            EntraUser randomEntraUser = CreateRandomEntraUser();
+
+            ResolvedAddress invalidResolvedAddress =
+                CreateRandomResolvedAddress(randomDateTimeOffset, randomEntraUser.EntraUserId);
+
+            invalidResolvedAddress.UpdatedDate = randomDateTimeOffset.AddMinutes(minutes);
+
+            var resolvedAddressServiceMock = new Mock<ResolvedAddressService>(
+                storageBrokerMock.Object,
+                dateTimeBrokerMock.Object,
+                securityBrokerMock.Object,
+                loggingBrokerMock.Object)
+            {
+                CallBase = true
+            };
+
+            resolvedAddressServiceMock.Setup(service =>
+                service.ApplyModifyAuditAsync(invalidResolvedAddress))
+                    .ReturnsAsync(invalidResolvedAddress);
+
+            this.dateTimeBrokerMock.Setup(broker =>
+                broker.GetCurrentDateTimeOffsetAsync())
+                    .ReturnsAsync(randomDateTimeOffset);
+
+            this.securityBrokerMock.Setup(broker =>
+                broker.GetCurrentUserAsync())
+                    .ReturnsAsync(randomEntraUser);
 
             var invalidResolvedAddressException =
                 new InvalidResolvedAddressException(
@@ -217,7 +403,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.ResolvedAddresses
 
             // when
             ValueTask<ResolvedAddress> modifyResolvedAddressTask =
-                this.resolvedAddressService.ModifyResolvedAddressAsync(randomResolvedAddress);
+                resolvedAddressServiceMock.Object.ModifyResolvedAddressAsync(invalidResolvedAddress);
 
             ResolvedAddressValidationException actualResolvedAddressValidationException =
                 await Assert.ThrowsAsync<ResolvedAddressValidationException>(
@@ -231,6 +417,10 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.ResolvedAddresses
                 broker.GetCurrentDateTimeOffsetAsync(),
                     Times.Once);
 
+            this.securityBrokerMock.Verify(broker =>
+                broker.GetCurrentUserAsync(),
+                    Times.Once);
+
             this.loggingBrokerMock.Verify(broker =>
                 broker.LogErrorAsync(It.Is(SameExceptionAs(
                     expectedResolvedAddressValidatonException))),
@@ -241,6 +431,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.ResolvedAddresses
                     Times.Never);
 
             this.dateTimeBrokerMock.VerifyNoOtherCalls();
+            this.securityBrokerMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
             this.storageBrokerMock.VerifyNoOtherCalls();
         }
@@ -250,29 +441,43 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.ResolvedAddresses
         {
             // given
             DateTimeOffset randomDateTimeOffset = GetRandomDateTimeOffset();
-            ResolvedAddress randomResolvedAddress = CreateRandomModifyResolvedAddress(randomDateTimeOffset);
-            ResolvedAddress nonExistResolvedAddress = randomResolvedAddress;
-            ResolvedAddress nullResolvedAddress = null;
+            EntraUser randomEntraUser = CreateRandomEntraUser();
 
-            var notFoundResolvedAddressException =
-                new NotFoundResolvedAddressException(nonExistResolvedAddress.Id);
+            ResolvedAddress invalidResolvedAddress =
+                CreateRandomModifyResolvedAddress(randomDateTimeOffset, randomEntraUser.EntraUserId);
+
+            ResolvedAddress nonExistResolvedAddress = invalidResolvedAddress;
+            var notFoundResolvedAddressException = new NotFoundResolvedAddressException(nonExistResolvedAddress.Id);
 
             var expectedResolvedAddressValidationException =
                 new ResolvedAddressValidationException(
                     message: "Resolved address validation errors occurred, please try again.",
                     innerException: notFoundResolvedAddressException);
 
-            this.storageBrokerMock.Setup(broker =>
-                broker.SelectResolvedAddressByIdAsync(nonExistResolvedAddress.Id))
-                .ReturnsAsync(nullResolvedAddress);
+            var resolvedAddressServiceMock = new Mock<ResolvedAddressService>(
+                storageBrokerMock.Object,
+                dateTimeBrokerMock.Object,
+                securityBrokerMock.Object,
+                loggingBrokerMock.Object)
+            {
+                CallBase = true
+            };
+
+            resolvedAddressServiceMock.Setup(service =>
+                service.ApplyModifyAuditAsync(invalidResolvedAddress))
+                    .ReturnsAsync(invalidResolvedAddress);
 
             this.dateTimeBrokerMock.Setup(broker =>
                 broker.GetCurrentDateTimeOffsetAsync())
-                .ReturnsAsync(randomDateTimeOffset);
+                    .ReturnsAsync(randomDateTimeOffset);
+
+            this.securityBrokerMock.Setup(broker =>
+                broker.GetCurrentUserAsync())
+                    .ReturnsAsync(randomEntraUser);
 
             // when 
             ValueTask<ResolvedAddress> modifyResolvedAddressTask =
-                this.resolvedAddressService.ModifyResolvedAddressAsync(nonExistResolvedAddress);
+                resolvedAddressServiceMock.Object.ModifyResolvedAddressAsync(nonExistResolvedAddress);
 
             ResolvedAddressValidationException actualResolvedAddressValidationException =
                 await Assert.ThrowsAsync<ResolvedAddressValidationException>(
@@ -290,14 +495,19 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.ResolvedAddresses
                 broker.GetCurrentDateTimeOffsetAsync(),
                     Times.Once);
 
+            this.securityBrokerMock.Verify(broker =>
+                broker.GetCurrentUserAsync(),
+                    Times.Once);
+
             this.loggingBrokerMock.Verify(broker =>
                 broker.LogErrorAsync(It.Is(SameExceptionAs(
                     expectedResolvedAddressValidationException))),
                         Times.Once);
 
-            this.storageBrokerMock.VerifyNoOtherCalls();
             this.dateTimeBrokerMock.VerifyNoOtherCalls();
+            this.securityBrokerMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
+            this.storageBrokerMock.VerifyNoOtherCalls();
         }
 
         [Fact]
@@ -307,11 +517,36 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.ResolvedAddresses
             int randomNumber = GetRandomNegativeNumber();
             int randomMinutes = randomNumber;
             DateTimeOffset randomDateTimeOffset = GetRandomDateTimeOffset();
-            ResolvedAddress randomResolvedAddress = CreateRandomModifyResolvedAddress(randomDateTimeOffset);
+            EntraUser randomEntraUser = CreateRandomEntraUser();
+
+            ResolvedAddress randomResolvedAddress =
+                CreateRandomModifyResolvedAddress(randomDateTimeOffset, randomEntraUser.EntraUserId);
+
             ResolvedAddress invalidResolvedAddress = randomResolvedAddress.DeepClone();
             ResolvedAddress storageResolvedAddress = invalidResolvedAddress.DeepClone();
             storageResolvedAddress.CreatedDate = storageResolvedAddress.CreatedDate.AddMinutes(randomMinutes);
             storageResolvedAddress.UpdatedDate = storageResolvedAddress.UpdatedDate.AddMinutes(randomMinutes);
+
+            var resolvedAddressServiceMock = new Mock<ResolvedAddressService>(
+                storageBrokerMock.Object,
+                dateTimeBrokerMock.Object,
+                securityBrokerMock.Object,
+                loggingBrokerMock.Object)
+            {
+                CallBase = true
+            };
+
+            resolvedAddressServiceMock.Setup(service =>
+                service.ApplyModifyAuditAsync(invalidResolvedAddress))
+                    .ReturnsAsync(invalidResolvedAddress);
+
+            this.dateTimeBrokerMock.Setup(broker =>
+                broker.GetCurrentDateTimeOffsetAsync())
+                    .ReturnsAsync(randomDateTimeOffset);
+
+            this.securityBrokerMock.Setup(broker =>
+                broker.GetCurrentUserAsync())
+                    .ReturnsAsync(randomEntraUser);
 
             var invalidResolvedAddressException =
                 new InvalidResolvedAddressException(
@@ -328,15 +563,11 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.ResolvedAddresses
 
             this.storageBrokerMock.Setup(broker =>
                 broker.SelectResolvedAddressByIdAsync(invalidResolvedAddress.Id))
-                .ReturnsAsync(storageResolvedAddress);
-
-            this.dateTimeBrokerMock.Setup(broker =>
-                broker.GetCurrentDateTimeOffsetAsync())
-                .ReturnsAsync(randomDateTimeOffset);
+                    .ReturnsAsync(storageResolvedAddress);
 
             // when
             ValueTask<ResolvedAddress> modifyResolvedAddressTask =
-                this.resolvedAddressService.ModifyResolvedAddressAsync(invalidResolvedAddress);
+                resolvedAddressServiceMock.Object.ModifyResolvedAddressAsync(invalidResolvedAddress);
 
             ResolvedAddressValidationException actualResolvedAddressValidationException =
                 await Assert.ThrowsAsync<ResolvedAddressValidationException>(
@@ -346,12 +577,16 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.ResolvedAddresses
             actualResolvedAddressValidationException.Should()
                 .BeEquivalentTo(expectedResolvedAddressValidationException);
 
-            this.storageBrokerMock.Verify(broker =>
-                broker.SelectResolvedAddressByIdAsync(invalidResolvedAddress.Id),
-                    Times.Once);
-
             this.dateTimeBrokerMock.Verify(broker =>
                 broker.GetCurrentDateTimeOffsetAsync(),
+                    Times.Once);
+
+            this.securityBrokerMock.Verify(broker =>
+                broker.GetCurrentUserAsync(),
+                    Times.Once);
+
+            this.storageBrokerMock.Verify(broker =>
+                broker.SelectResolvedAddressByIdAsync(invalidResolvedAddress.Id),
                     Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>
@@ -359,8 +594,9 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.ResolvedAddresses
                    expectedResolvedAddressValidationException))),
                        Times.Once);
 
-            this.storageBrokerMock.VerifyNoOtherCalls();
             this.dateTimeBrokerMock.VerifyNoOtherCalls();
+            this.securityBrokerMock.VerifyNoOtherCalls();
+            this.storageBrokerMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
         }
 
@@ -369,7 +605,11 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.ResolvedAddresses
         {
             // given
             DateTimeOffset randomDateTimeOffset = GetRandomDateTimeOffset();
-            ResolvedAddress randomResolvedAddress = CreateRandomModifyResolvedAddress(randomDateTimeOffset);
+            EntraUser randomEntraUser = CreateRandomEntraUser();
+
+            ResolvedAddress randomResolvedAddress =
+                CreateRandomModifyResolvedAddress(randomDateTimeOffset, randomEntraUser.EntraUserId);
+
             ResolvedAddress invalidResolvedAddress = randomResolvedAddress.DeepClone();
             ResolvedAddress storageResolvedAddress = invalidResolvedAddress.DeepClone();
             invalidResolvedAddress.CreatedBy = Guid.NewGuid().ToString();
@@ -388,32 +628,52 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.ResolvedAddresses
                     message: "Resolved address validation errors occurred, please try again.",
                     innerException: invalidResolvedAddressException);
 
-            this.storageBrokerMock.Setup(broker =>
-                broker.SelectResolvedAddressByIdAsync(invalidResolvedAddress.Id))
-                .ReturnsAsync(storageResolvedAddress);
+            var resolvedAddressServiceMock = new Mock<ResolvedAddressService>(
+                storageBrokerMock.Object,
+                dateTimeBrokerMock.Object,
+                securityBrokerMock.Object,
+                loggingBrokerMock.Object)
+            {
+                CallBase = true
+            };
+
+            resolvedAddressServiceMock.Setup(service =>
+                service.ApplyModifyAuditAsync(invalidResolvedAddress))
+                    .ReturnsAsync(invalidResolvedAddress);
 
             this.dateTimeBrokerMock.Setup(broker =>
                 broker.GetCurrentDateTimeOffsetAsync())
-                .ReturnsAsync(randomDateTimeOffset);
+                    .ReturnsAsync(randomDateTimeOffset);
+
+            this.securityBrokerMock.Setup(broker =>
+                broker.GetCurrentUserAsync())
+                    .ReturnsAsync(randomEntraUser);
+
+            this.storageBrokerMock.Setup(broker =>
+                broker.SelectResolvedAddressByIdAsync(invalidResolvedAddress.Id))
+                    .ReturnsAsync(storageResolvedAddress);
 
             // when
             ValueTask<ResolvedAddress> modifyResolvedAddressTask =
-                this.resolvedAddressService.ModifyResolvedAddressAsync(invalidResolvedAddress);
+                resolvedAddressServiceMock.Object.ModifyResolvedAddressAsync(invalidResolvedAddress);
 
             ResolvedAddressValidationException actualResolvedAddressValidationException =
                 await Assert.ThrowsAsync<ResolvedAddressValidationException>(
                     modifyResolvedAddressTask.AsTask);
 
             // then
-            actualResolvedAddressValidationException.Should().BeEquivalentTo(
-                expectedResolvedAddressValidationException);
-
-            this.storageBrokerMock.Verify(broker =>
-                broker.SelectResolvedAddressByIdAsync(invalidResolvedAddress.Id),
-                    Times.Once);
+            actualResolvedAddressValidationException.Should().BeEquivalentTo(expectedResolvedAddressValidationException);
 
             this.dateTimeBrokerMock.Verify(broker =>
                 broker.GetCurrentDateTimeOffsetAsync(),
+                    Times.Once);
+
+            this.securityBrokerMock.Verify(broker =>
+                broker.GetCurrentUserAsync(),
+                    Times.Once);
+
+            this.storageBrokerMock.Verify(broker =>
+                broker.SelectResolvedAddressByIdAsync(invalidResolvedAddress.Id),
                     Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>
@@ -421,9 +681,10 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.ResolvedAddresses
                    expectedResolvedAddressValidationException))),
                        Times.Once);
 
-            this.storageBrokerMock.VerifyNoOtherCalls();
             this.dateTimeBrokerMock.VerifyNoOtherCalls();
+            this.securityBrokerMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
+            this.storageBrokerMock.VerifyNoOtherCalls();
         }
 
         [Fact]
@@ -431,9 +692,14 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.ResolvedAddresses
         {
             // given
             DateTimeOffset randomDateTimeOffset = GetRandomDateTimeOffset();
-            ResolvedAddress randomResolvedAddress = CreateRandomModifyResolvedAddress(randomDateTimeOffset);
+            EntraUser randomEntraUser = CreateRandomEntraUser();
+
+            ResolvedAddress randomResolvedAddress =
+                CreateRandomModifyResolvedAddress(randomDateTimeOffset, randomEntraUser.EntraUserId);
+
             ResolvedAddress invalidResolvedAddress = randomResolvedAddress;
             ResolvedAddress storageResolvedAddress = randomResolvedAddress.DeepClone();
+            invalidResolvedAddress.UpdatedDate = storageResolvedAddress.UpdatedDate;
 
             var invalidResolvedAddressException =
                 new InvalidResolvedAddressException(
@@ -448,17 +714,34 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.ResolvedAddresses
                     message: "Resolved address validation errors occurred, please try again.",
                     innerException: invalidResolvedAddressException);
 
-            this.storageBrokerMock.Setup(broker =>
-                broker.SelectResolvedAddressByIdAsync(invalidResolvedAddress.Id))
-                .ReturnsAsync(storageResolvedAddress);
+            var resolvedAddressServiceMock = new Mock<ResolvedAddressService>(
+                storageBrokerMock.Object,
+                dateTimeBrokerMock.Object,
+                securityBrokerMock.Object,
+                loggingBrokerMock.Object)
+            {
+                CallBase = true
+            };
+
+            resolvedAddressServiceMock.Setup(service =>
+                service.ApplyModifyAuditAsync(invalidResolvedAddress))
+                    .ReturnsAsync(invalidResolvedAddress);
 
             this.dateTimeBrokerMock.Setup(broker =>
                 broker.GetCurrentDateTimeOffsetAsync())
                     .ReturnsAsync(randomDateTimeOffset);
 
+            this.securityBrokerMock.Setup(broker =>
+                broker.GetCurrentUserAsync())
+                    .ReturnsAsync(randomEntraUser);
+
+            this.storageBrokerMock.Setup(broker =>
+                broker.SelectResolvedAddressByIdAsync(invalidResolvedAddress.Id))
+                    .ReturnsAsync(storageResolvedAddress);
+
             // when
             ValueTask<ResolvedAddress> modifyResolvedAddressTask =
-                this.resolvedAddressService.ModifyResolvedAddressAsync(invalidResolvedAddress);
+                resolvedAddressServiceMock.Object.ModifyResolvedAddressAsync(invalidResolvedAddress);
 
             // then
             await Assert.ThrowsAsync<ResolvedAddressValidationException>(
@@ -466,6 +749,10 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.ResolvedAddresses
 
             this.dateTimeBrokerMock.Verify(broker =>
                 broker.GetCurrentDateTimeOffsetAsync(),
+                    Times.Once);
+
+            this.securityBrokerMock.Verify(broker =>
+                broker.GetCurrentUserAsync(),
                     Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>
@@ -477,9 +764,10 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.ResolvedAddresses
                 broker.SelectResolvedAddressByIdAsync(invalidResolvedAddress.Id),
                     Times.Once);
 
-            this.storageBrokerMock.VerifyNoOtherCalls();
             this.dateTimeBrokerMock.VerifyNoOtherCalls();
+            this.securityBrokerMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
+            this.storageBrokerMock.VerifyNoOtherCalls();
         }
     }
 }

@@ -405,7 +405,8 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.ResolvedAddresses
                     modifyResolvedAddressTask.AsTask);
 
             // then
-            actualResolvedAddressValidationException.Should().BeEquivalentTo(expectedResolvedAddressValidationException);
+            actualResolvedAddressValidationException.Should().BeEquivalentTo(
+                expectedResolvedAddressValidationException);
 
             this.storageBrokerMock.Verify(broker =>
                 broker.SelectResolvedAddressByIdAsync(invalidResolvedAddress.Id),

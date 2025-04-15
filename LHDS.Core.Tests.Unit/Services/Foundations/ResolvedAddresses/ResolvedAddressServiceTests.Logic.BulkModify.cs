@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Force.DeepCloner;
+using LHDS.Core.Models.Brokers.Securities;
 using LHDS.Core.Models.Foundations.ResolvedAddresses;
 using Moq;
 using Xunit;
@@ -19,8 +20,8 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.ResolvedAddresses
         public async Task ShouldBulkModifyResolvedAddressesAsync()
         {
             // given
-            DateTimeOffset randomDateTimeOffset =
-                GetRandomDateTimeOffset();
+            DateTimeOffset randomDateTimeOffset = GetRandomDateTimeOffset();
+            EntraUser randomEntraUser = CreateRandomEntraUser();
 
             Guid randomIdentifier = Guid.NewGuid();
             DateTimeOffset updatedDate = randomDateTimeOffset;
@@ -50,6 +51,10 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.ResolvedAddresses
                 broker.GetCurrentDateTimeOffsetAsync())
                     .ReturnsAsync(randomDateTimeOffset);
 
+            this.securityBrokerMock.Setup(broker =>
+                broker.GetCurrentUserAsync())
+                    .ReturnsAsync(randomEntraUser);
+
             // when
             await this.resolvedAddressService
                 .BulkModifyResolvedAddressesAsync(inputResolvedAddresses);
@@ -57,6 +62,10 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.ResolvedAddresses
             // then
             this.dateTimeBrokerMock.Verify(broker =>
                 broker.GetCurrentDateTimeOffsetAsync(),
+                    Times.Exactly(randomResolvedAddresses.Count * 2));
+
+            this.securityBrokerMock.Verify(broker =>
+                broker.GetCurrentUserAsync(),
                     Times.Exactly(randomResolvedAddresses.Count * 2));
 
             this.storageBrokerMock.Verify(broker =>

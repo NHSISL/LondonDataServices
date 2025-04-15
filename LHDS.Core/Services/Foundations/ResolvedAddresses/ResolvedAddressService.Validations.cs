@@ -79,6 +79,11 @@ namespace LHDS.Core.Services.Foundations.ResolvedAddresses
                 (Rule: IsInvalid(resolvedAddress.UpdatedDate), Parameter: nameof(ResolvedAddress.UpdatedDate)),
                 (Rule: IsInvalid(resolvedAddress.UpdatedBy), Parameter: nameof(ResolvedAddress.UpdatedBy)),
 
+                (Rule: IsNotSame(
+                    first: currentUser.EntraUserId,
+                    second: resolvedAddress.UpdatedBy),
+                Parameter: nameof(ResolvedAddress.UpdatedBy)),
+
                 (Rule: IsSame(
                     firstDate: resolvedAddress.UpdatedDate,
                     secondDate: resolvedAddress.CreatedDate,

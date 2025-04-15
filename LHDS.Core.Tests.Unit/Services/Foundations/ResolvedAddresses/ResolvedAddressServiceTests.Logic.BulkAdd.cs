@@ -77,7 +77,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.ResolvedAddresses
 
             this.identifierBrokerMock.Verify(broker =>
                 broker.GetIdentifierAsync(),
-                    Times.Exactly(randomResolvedAddresses.Count));
+                    Times.Exactly(randomResolvedAddresses.Count)); 
 
             this.storageBrokerMock.Verify(broker =>
                 broker.SelectAllResolvedAddressesAsync(),

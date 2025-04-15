@@ -232,9 +232,10 @@ namespace LHDS.Core.Services.Foundations.ResolvedAddresses
                 try
                 {
                     var currentDateTime = await this.dateTimeBroker.GetCurrentDateTimeOffsetAsync();
+                    var currentEntraUser = await this.securityBroker.GetCurrentUserAsync();
                     resolvedAddress.Id = await this.identifierBroker.GetIdentifierAsync();
                     resolvedAddress.CreatedDate = currentDateTime;
-                    resolvedAddress.CreatedBy = "System";
+                    resolvedAddress.CreatedBy = currentEntraUser.EntraUserId;
                     resolvedAddress.UpdatedDate = resolvedAddress.CreatedDate;
                     resolvedAddress.UpdatedBy = resolvedAddress.CreatedBy;
                     await ValidateResolvedAddressOnAddAsync(resolvedAddress);

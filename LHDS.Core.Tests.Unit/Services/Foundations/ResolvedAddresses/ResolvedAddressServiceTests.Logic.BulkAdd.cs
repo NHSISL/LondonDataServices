@@ -44,7 +44,8 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.ResolvedAddresses
                 address.UpdatedDate = randomDateTimeOffset;
             });
 
-            List<ResolvedAddress> newResolvedAddresses = new List<ResolvedAddress> { validatedResolvedAddresses.First() };
+            List<ResolvedAddress> newResolvedAddresses = 
+                new List<ResolvedAddress> { validatedResolvedAddresses.First() };
 
             this.storageBrokerMock.Setup(broker =>
                 broker.SelectAllResolvedAddressesAsync())

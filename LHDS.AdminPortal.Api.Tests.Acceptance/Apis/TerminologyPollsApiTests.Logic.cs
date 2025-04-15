@@ -29,7 +29,12 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.TerminologyPolls
                 await this.apiBroker.GetTerminologyPollByIdAsync(inputTerminologyPoll.Id);
 
             // then
-            actualTerminologyPoll.Should().BeEquivalentTo(expectedTerminologyPoll);
+            actualTerminologyPoll.Should().BeEquivalentTo(expectedTerminologyPoll, options => options
+                .Excluding(property => property.CreatedBy)
+                .Excluding(property => property.CreatedDate)
+                .Excluding(property => property.UpdatedBy)
+                .Excluding(property => property.UpdatedDate));
+
             await this.apiBroker.DeleteTerminologyPollByIdAsync(actualTerminologyPoll.Id);
         }
 
@@ -47,7 +52,13 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.TerminologyPolls
             foreach (TerminologyPoll expectedTerminologyPoll in expectedTerminologyPolls)
             {
                 TerminologyPoll actualTerminologyPoll = actualTerminologyPolls.Single(approval => approval.Id == expectedTerminologyPoll.Id);
-                actualTerminologyPoll.Should().BeEquivalentTo(expectedTerminologyPoll);
+                
+                actualTerminologyPoll.Should().BeEquivalentTo(expectedTerminologyPoll, options => options
+                .Excluding(property => property.CreatedBy)
+                .Excluding(property => property.CreatedDate)
+                .Excluding(property => property.UpdatedBy)
+                .Excluding(property => property.UpdatedDate));
+
                 await this.apiBroker.DeleteTerminologyPollByIdAsync(actualTerminologyPoll.Id);
             }
         }
@@ -63,7 +74,12 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.TerminologyPolls
             TerminologyPoll actualTerminologyPoll = await this.apiBroker.GetTerminologyPollByIdAsync(randomTerminologyPoll.Id);
 
             // then
-            actualTerminologyPoll.Should().BeEquivalentTo(expectedTerminologyPoll);
+            actualTerminologyPoll.Should().BeEquivalentTo(expectedTerminologyPoll, options => options
+                .Excluding(property => property.CreatedBy)
+                .Excluding(property => property.CreatedDate)
+                .Excluding(property => property.UpdatedBy)
+                .Excluding(property => property.UpdatedDate));
+
             await this.apiBroker.DeleteTerminologyPollByIdAsync(actualTerminologyPoll.Id);
         }
 
@@ -79,7 +95,12 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.TerminologyPolls
             TerminologyPoll actualTerminologyPoll = await this.apiBroker.GetTerminologyPollByIdAsync(randomTerminologyPoll.Id);
 
             // then
-            actualTerminologyPoll.Should().BeEquivalentTo(modifiedTerminologyPoll);
+            actualTerminologyPoll.Should().BeEquivalentTo(modifiedTerminologyPoll, options => options
+                .Excluding(property => property.CreatedBy)
+                .Excluding(property => property.CreatedDate)
+                .Excluding(property => property.UpdatedBy)
+                .Excluding(property => property.UpdatedDate));
+
             await this.apiBroker.DeleteTerminologyPollByIdAsync(actualTerminologyPoll.Id);
         }
 
@@ -99,7 +120,12 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.TerminologyPolls
                 this.apiBroker.GetTerminologyPollByIdAsync(inputTerminologyPoll.Id);
 
             // then
-            deletedTerminologyPoll.Should().BeEquivalentTo(expectedTerminologyPoll);
+            deletedTerminologyPoll.Should().BeEquivalentTo(expectedTerminologyPoll, options => options
+                .Excluding(property => property.CreatedBy)
+                .Excluding(property => property.CreatedDate)
+                .Excluding(property => property.UpdatedBy)
+                .Excluding(property => property.UpdatedDate));
+
             await Assert.ThrowsAsync<HttpResponseNotFoundException>(getTerminologyPollbyIdTask.AsTask);
         }
     }

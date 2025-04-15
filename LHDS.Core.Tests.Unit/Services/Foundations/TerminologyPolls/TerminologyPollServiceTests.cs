@@ -3,12 +3,15 @@
 // ---------------------------------------------------------
 
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Runtime.CompilerServices;
 using LHDS.Core.Brokers.DateTimes;
 using LHDS.Core.Brokers.Loggings;
+using LHDS.Core.Brokers.Securities;
 using LHDS.Core.Brokers.Storages.Sql;
+using LHDS.Core.Models.Brokers.Securities;
 using LHDS.Core.Models.Foundations.TerminologyPolls;
 using LHDS.Core.Services.Foundations.TerminologyPolls;
 using Microsoft.Data.SqlClient;
@@ -23,6 +26,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.TerminologyPolls
     {
         private readonly Mock<IStorageBroker> storageBrokerMock;
         private readonly Mock<IDateTimeBroker> dateTimeBrokerMock;
+        private readonly Mock<ISecurityBroker> securityBrokerMock;
         private readonly Mock<ILoggingBroker> loggingBrokerMock;
         private readonly ITerminologyPollService terminologyPollService;
 
@@ -30,11 +34,13 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.TerminologyPolls
         {
             this.storageBrokerMock = new Mock<IStorageBroker>();
             this.dateTimeBrokerMock = new Mock<IDateTimeBroker>();
+            this.securityBrokerMock = new Mock<ISecurityBroker>();
             this.loggingBrokerMock = new Mock<ILoggingBroker>();
 
             this.terminologyPollService = new TerminologyPollService(
                 storageBroker: this.storageBrokerMock.Object,
                 dateTimeBroker: this.dateTimeBrokerMock.Object,
+                securityBroker: this.securityBrokerMock.Object,
                 loggingBroker: this.loggingBrokerMock.Object);
         }
 
@@ -43,6 +49,16 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.TerminologyPolls
 
         private static string GetRandomString() =>
             new MnemonicString(wordCount: GetRandomNumber()).GetValue();
+
+        private static string GetRandomString(int length) =>
+            new MnemonicString(wordCount: 1, wordMinLength: length, wordMaxLength: length).GetValue();
+
+        private static string GetRandomStringWithLengthOf(int length)
+        {
+            string result = new MnemonicString(wordCount: 1, wordMinLength: length, wordMaxLength: length).GetValue();
+
+            return result.Length > length ? result.Substring(0, length) : result;
+        }
 
         public static TheoryData<int> MinutesBeforeOrAfter()
         {
@@ -68,10 +84,12 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.TerminologyPolls
         private static DateTimeOffset GetRandomDateTimeOffset() =>
             new DateTimeRange(earliestDate: new DateTime()).GetValue();
 
-        private static TerminologyPoll CreateRandomModifyTerminologyPoll(DateTimeOffset dateTimeOffset)
+        private static TerminologyPoll CreateRandomModifyTerminologyPoll(
+            DateTimeOffset dateTimeOffset, 
+            string userId)
         {
             int randomDaysInPast = GetRandomNegativeNumber();
-            TerminologyPoll randomTerminologyPoll = CreateRandomTerminologyPoll(dateTimeOffset);
+            TerminologyPoll randomTerminologyPoll = CreateRandomTerminologyPoll(dateTimeOffset, userId);
 
             randomTerminologyPoll.CreatedDate =
                 randomTerminologyPoll.CreatedDate.AddDays(randomDaysInPast);
@@ -104,6 +122,45 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.TerminologyPolls
                 .OnProperty(terminologyPoll => terminologyPoll.UpdatedBy).Use(user);
 
             return filler;
+        }
+
+        private static TerminologyPoll CreateRandomTerminologyPoll(
+            DateTimeOffset dateTimeOffset,
+            string userId) =>
+            CreateTerminologyPollFiller(dateTimeOffset, userId).Create();
+
+        private static Filler<TerminologyPoll> CreateTerminologyPollFiller(
+            DateTimeOffset dateTimeOffset,
+            string userId)
+        {
+            var filler = new Filler<TerminologyPoll>();
+
+            filler.Setup()
+                .OnType<DateTimeOffset>().Use(dateTimeOffset)
+                .OnType<DateTimeOffset?>().Use(dateTimeOffset)
+                .OnProperty(terminologyPoll => terminologyPoll.CreatedBy).Use(userId)
+                .OnProperty(terminologyPoll => terminologyPoll.UpdatedBy).Use(userId);
+
+            return filler;
+        }
+
+        private EntraUser CreateRandomEntraUser(string entraUserId = "")
+        {
+            var userId = string.IsNullOrWhiteSpace(entraUserId) ? GetRandomStringWithLengthOf(255) : entraUserId;
+
+            return new EntraUser(
+                entraUserId: userId,
+                givenName: GetRandomString(),
+                surname: GetRandomString(),
+                displayName: GetRandomString(),
+                email: GetRandomString(),
+                jobTitle: GetRandomString(),
+                roles: new List<string> { GetRandomString() },
+
+                claims: new List<System.Security.Claims.Claim>
+                {
+                    new System.Security.Claims.Claim(type: GetRandomString(), value: GetRandomString())
+                });
         }
     }
 }

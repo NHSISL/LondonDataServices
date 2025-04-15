@@ -6,6 +6,7 @@ using System;
 using System.Threading.Tasks;
 using FluentAssertions;
 using Force.DeepCloner;
+using LHDS.Core.Models.Brokers.Securities;
 using LHDS.Core.Models.Foundations.TerminologyPolls;
 using Moq;
 using Xunit;
@@ -19,7 +20,11 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.TerminologyPolls
         {
             // given
             DateTimeOffset randomDateTimeOffset = GetRandomDateTimeOffset();
-            TerminologyPoll randomTerminologyPoll = CreateRandomModifyTerminologyPoll(randomDateTimeOffset);
+            EntraUser randomEntraUser = CreateRandomEntraUser();
+
+            TerminologyPoll randomTerminologyPoll =
+                CreateRandomModifyTerminologyPoll(randomDateTimeOffset, randomEntraUser.EntraUserId);
+
             TerminologyPoll inputTerminologyPoll = randomTerminologyPoll;
             TerminologyPoll storageTerminologyPoll = inputTerminologyPoll.DeepClone();
             storageTerminologyPoll.UpdatedDate = randomTerminologyPoll.CreatedDate;
@@ -30,6 +35,10 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.TerminologyPolls
             this.dateTimeBrokerMock.Setup(broker =>
                 broker.GetCurrentDateTimeOffsetAsync())
                     .ReturnsAsync(randomDateTimeOffset);
+
+            this.securityBrokerMock.Setup(broker =>
+                broker.GetCurrentUserAsync())
+                    .ReturnsAsync(randomEntraUser);
 
             this.storageBrokerMock.Setup(broker =>
                 broker.SelectTerminologyPollByIdAsync(terminologyPollId))
@@ -48,7 +57,11 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.TerminologyPolls
 
             this.dateTimeBrokerMock.Verify(broker =>
                 broker.GetCurrentDateTimeOffsetAsync(),
-                    Times.Once);
+                    Times.Exactly(2));
+
+            this.securityBrokerMock.Verify(broker =>
+                broker.GetCurrentUserAsync(),
+                    Times.Exactly(2));
 
             this.storageBrokerMock.Verify(broker =>
                 broker.SelectTerminologyPollByIdAsync(inputTerminologyPoll.Id),

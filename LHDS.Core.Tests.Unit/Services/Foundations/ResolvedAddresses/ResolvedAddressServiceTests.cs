@@ -111,6 +111,17 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.ResolvedAddresses
             return randomResolvedAddress;
         }
 
+        private static ResolvedAddress CreateRandomModifyResolvedAddress(
+            DateTimeOffset dateTimeOffset,
+            string userId)
+        {
+            int randomDaysInPast = GetRandomNegativeNumber();
+            ResolvedAddress randomResolvedAddress = CreateRandomResolvedAddress(dateTimeOffset, userId);
+            randomResolvedAddress.CreatedDate = randomResolvedAddress.CreatedDate.AddDays(randomDaysInPast);
+
+            return randomResolvedAddress;
+        }
+
         private static IQueryable<ResolvedAddress> CreateRandomResolvedAddresses()
         {
             return CreateResolvedAddressFiller(dateTimeOffset: GetRandomDateTimeOffset())

@@ -80,15 +80,19 @@ namespace LHDS.Core.Services.Foundations.ResolvedAddresses
         public ValueTask<ResolvedAddress> ModifyResolvedAddressAsync(ResolvedAddress resolvedAddress) =>
             TryCatch(async () =>
             {
-                await ValidateResolvedAddressOnModifyAsync(resolvedAddress);
+                ResolvedAddress resolvedAddressWithModifyAuditApplied = await ApplyModifyAuditAsync(resolvedAddress);
+                await ValidateResolvedAddressOnModifyAsync(resolvedAddressWithModifyAuditApplied);
 
                 ResolvedAddress maybeResolvedAddress =
                     await this.storageBroker.SelectResolvedAddressByIdAsync(resolvedAddress.Id);
 
                 ValidateStorageResolvedAddress(maybeResolvedAddress, resolvedAddress.Id);
-                ValidateAgainstStorageResolvedAddressOnModify(inputResolvedAddress: resolvedAddress, storageResolvedAddress: maybeResolvedAddress);
 
-                return await this.storageBroker.UpdateResolvedAddressAsync(resolvedAddress);
+                ValidateAgainstStorageResolvedAddressOnModify(
+                    inputResolvedAddress: resolvedAddressWithModifyAuditApplied, 
+                    storageResolvedAddress: maybeResolvedAddress);
+
+                return await this.storageBroker.UpdateResolvedAddressAsync(resolvedAddressWithModifyAuditApplied);
             });
 
         public ValueTask BulkModifyResolvedAddressesAsync(List<ResolvedAddress> resolvedAddresses) =>
@@ -311,6 +315,17 @@ namespace LHDS.Core.Services.Foundations.ResolvedAddresses
             var auditUser = await this.securityBroker.GetCurrentUserAsync();
             resolvedAddress.CreatedBy = auditUser?.EntraUserId.ToString() ?? string.Empty;
             resolvedAddress.CreatedDate = auditDateTimeOffset;
+            resolvedAddress.UpdatedBy = auditUser?.EntraUserId.ToString() ?? string.Empty;
+            resolvedAddress.UpdatedDate = auditDateTimeOffset;
+
+            return resolvedAddress;
+        }
+
+        virtual internal async ValueTask<ResolvedAddress> ApplyModifyAuditAsync(ResolvedAddress resolvedAddress)
+        {
+            ValidateResolvedAddressIsNotNull(resolvedAddress);
+            var auditDateTimeOffset = await this.dateTimeBroker.GetCurrentDateTimeOffsetAsync();
+            var auditUser = await this.securityBroker.GetCurrentUserAsync();
             resolvedAddress.UpdatedBy = auditUser?.EntraUserId.ToString() ?? string.Empty;
             resolvedAddress.UpdatedDate = auditDateTimeOffset;
 

@@ -65,7 +65,7 @@ namespace LHDS.Core.Services.Foundations.ResolvedAddresses
 
         private async ValueTask ValidateResolvedAddressOnModifyAsync(ResolvedAddress resolvedAddress)
         {
-            ValidateResolvedAddressIsNotNull(resolvedAddress);
+            EntraUser currentUser = await this.securityBroker.GetCurrentUserAsync();
 
             Validate(
                 (Rule: IsInvalid(resolvedAddress.Id), Parameter: nameof(ResolvedAddress.Id)),

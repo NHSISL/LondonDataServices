@@ -29,8 +29,8 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.ResolvedAddresses
 
             List<ResolvedAddress> randomResolvedAddresses = new List<ResolvedAddress>
                 {
-                    CreateRandomModifyResolvedAddress(randomDateTimeOffset),
-                    CreateRandomModifyResolvedAddress(randomDateTimeOffset)
+                    CreateRandomModifyResolvedAddress(randomDateTimeOffset, randomEntraUser.EntraUserId),
+                    CreateRandomModifyResolvedAddress(randomDateTimeOffset, randomEntraUser.EntraUserId)
                 };
 
             List<ResolvedAddress> inputResolvedAddresses = randomResolvedAddresses;
@@ -66,7 +66,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.ResolvedAddresses
 
             this.securityBrokerMock.Verify(broker =>
                 broker.GetCurrentUserAsync(),
-                    Times.Exactly(randomResolvedAddresses.Count * 2));
+                    Times.Exactly(randomResolvedAddresses.Count));
 
             this.storageBrokerMock.Verify(broker =>
                 broker.SelectAllResolvedAddressesAsync(),

@@ -134,6 +134,40 @@ namespace LHDS.Core.Services.Foundations.ResolvedAddresses
                 Parameter: nameof(ResolvedAddress.UpdatedDate)));
         }
 
+        private async ValueTask ValidateAgainstStorageResolvedAddressOnDeleteAsync(
+            ResolvedAddress resolvedAddress,
+            ResolvedAddress maybeResolvedAddress)
+        {
+            EntraUser auditUser = await this.securityBroker.GetCurrentUserAsync();
+
+            Validate(
+                (Rule: IsNotSame(
+                    resolvedAddress.CreatedDate,
+                    maybeResolvedAddress.CreatedDate,
+                    nameof(maybeResolvedAddress.CreatedDate)),
+                 Parameter: nameof(ResolvedAddress.CreatedDate)),
+
+                (Rule: IsNotSame(
+                    resolvedAddress.CreatedBy,
+                    maybeResolvedAddress.CreatedBy,
+                    nameof(maybeResolvedAddress.CreatedBy)),
+                 Parameter: nameof(ResolvedAddress.CreatedBy)),
+
+                (Rule: IsNotSame(
+                    maybeResolvedAddress.UpdatedDate,
+                    resolvedAddress.UpdatedDate,
+                    nameof(ResolvedAddress.UpdatedDate)),
+                 Parameter: nameof(ResolvedAddress.UpdatedDate)),
+
+                (Rule: IsNotSame(
+                    auditUser.EntraUserId.ToString(),
+                    resolvedAddress.UpdatedBy,
+                    nameof(ResolvedAddress.UpdatedBy)),
+                 Parameter: nameof(ResolvedAddress.UpdatedBy))
+            );
+        }
+
+
         private static dynamic IsInvalid(Guid id) => new
         {
             Condition = id == Guid.Empty,

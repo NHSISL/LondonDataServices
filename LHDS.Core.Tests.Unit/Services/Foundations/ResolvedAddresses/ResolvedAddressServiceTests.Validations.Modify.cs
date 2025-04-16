@@ -278,9 +278,11 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.ResolvedAddresses
 
             var resolvedAddressServiceMock = new Mock<ResolvedAddressService>(
                 storageBrokerMock.Object,
+                identifierBrokerMock.Object,
                 dateTimeBrokerMock.Object,
                 securityBrokerMock.Object,
-                loggingBrokerMock.Object)
+                loggingBrokerMock.Object,
+                auditBrokerMock.Object)
             {
                 CallBase = true
             };

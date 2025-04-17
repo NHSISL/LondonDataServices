@@ -237,6 +237,10 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.ResolvedAddresses
             actualResolvedAddressValidationException.Should()
                 .BeEquivalentTo(expectedResolvedAddressValidationException);
 
+            resolvedAddressServiceMock.Verify(service =>
+                service.ApplyAddResolvedAddressAsync(invalidResolvedAddress), 
+                    Times.Once());
+
             this.dateTimeBrokerMock.Verify(broker =>
                 broker.GetCurrentDateTimeOffsetAsync(),
                     Times.Once());
@@ -327,6 +331,10 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.ResolvedAddresses
             actualResolvedAddressValidationException.Should()
                 .BeEquivalentTo(expectedResolvedAddressValidationException);
 
+            resolvedAddressServiceMock.Verify(service =>
+                service.ApplyAddResolvedAddressAsync(invalidResolvedAddress),
+                    Times.Once());
+
             this.dateTimeBrokerMock.Verify(broker =>
                 broker.GetCurrentDateTimeOffsetAsync(),
                     Times.Once());
@@ -412,6 +420,10 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.ResolvedAddresses
             // then
             actualResolvedAddressValidationException.Should()
                 .BeEquivalentTo(expectedResolvedAddressValidationException);
+
+            resolvedAddressServiceMock.Verify(service =>
+                service.ApplyAddResolvedAddressAsync(invalidResolvedAddress),
+                    Times.Once());
 
             this.dateTimeBrokerMock.Verify(broker =>
                 broker.GetCurrentDateTimeOffsetAsync(),

@@ -281,6 +281,12 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.ResolvedAddresses
             this.dateTimeBrokerMock.VerifyNoOtherCalls();
             this.storageBrokerMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
+            this.storageBrokerMock..VerifyNoOtherCalls();
+            this.identifierBrokerMock..VerifyNoOtherCalls();
+            this.dateTimeBrokerMock..VerifyNoOtherCalls();
+            this.securityBrokerMock..VerifyNoOtherCalls();
+            this.loggingBrokerMock..VerifyNoOtherCalls();
+            this.auditBrokerMock..VerifyNoOtherCalls();
         }
     }
 }

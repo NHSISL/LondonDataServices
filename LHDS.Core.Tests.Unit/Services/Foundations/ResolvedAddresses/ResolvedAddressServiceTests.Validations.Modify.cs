@@ -338,6 +338,10 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.ResolvedAddresses
             actualResolvedAddressValidationException.Should()
                 .BeEquivalentTo(expectedResolvedAddressValidatonException);
 
+            resolvedAddressServiceMock.Verify(service =>
+                service.ApplyModifyAuditAsync(invalidResolvedAddress),
+                    Times.Once());
+
             this.dateTimeBrokerMock.Verify(broker =>
                 broker.GetCurrentDateTimeOffsetAsync(),
                     Times.Once);

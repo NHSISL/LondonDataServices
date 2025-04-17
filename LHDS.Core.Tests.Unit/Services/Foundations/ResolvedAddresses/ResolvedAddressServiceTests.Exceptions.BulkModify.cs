@@ -278,15 +278,12 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.ResolvedAddresses
                     expectedResolvedAddressServiceException))),
                         Times.Once);
 
+            resolvedAddressServiceMock.VerifyNoOtherCalls();
+            this.identifierBrokerMock.VerifyNoOtherCalls();
             this.dateTimeBrokerMock.VerifyNoOtherCalls();
-            this.storageBrokerMock.VerifyNoOtherCalls();
+            this.securityBrokerMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
-            this.storageBrokerMock..VerifyNoOtherCalls();
-            this.identifierBrokerMock..VerifyNoOtherCalls();
-            this.dateTimeBrokerMock..VerifyNoOtherCalls();
-            this.securityBrokerMock..VerifyNoOtherCalls();
-            this.loggingBrokerMock..VerifyNoOtherCalls();
-            this.auditBrokerMock..VerifyNoOtherCalls();
+            this.auditBrokerMock.VerifyNoOtherCalls();
         }
     }
 }

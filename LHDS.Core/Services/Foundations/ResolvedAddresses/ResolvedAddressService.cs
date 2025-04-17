@@ -46,7 +46,7 @@ namespace LHDS.Core.Services.Foundations.ResolvedAddresses
             TryCatch(async () =>
             {
                 ResolvedAddress resolvedAddressWithAddAuditApplied = 
-                    await ApplyAddResolvedAddressAsync(resolvedAddress);
+                    await ApplyAddAuditAsync(resolvedAddress);
 
                 await ValidateResolvedAddressOnAddAsync(resolvedAddressWithAddAuditApplied);
 
@@ -318,7 +318,7 @@ namespace LHDS.Core.Services.Foundations.ResolvedAddresses
             return await ValueTask.FromResult(validatedResolvedAddresses);
         }
 
-        virtual internal async ValueTask<ResolvedAddress> ApplyAddResolvedAddressAsync(ResolvedAddress resolvedAddress)
+        virtual internal async ValueTask<ResolvedAddress> ApplyAddAuditAsync(ResolvedAddress resolvedAddress)
         {
             ValidateResolvedAddressIsNotNull(resolvedAddress);
             var auditDateTimeOffset = await this.dateTimeBroker.GetCurrentDateTimeOffsetAsync();

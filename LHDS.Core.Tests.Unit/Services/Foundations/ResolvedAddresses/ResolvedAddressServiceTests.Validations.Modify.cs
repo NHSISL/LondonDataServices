@@ -174,7 +174,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.ResolvedAddresses
                 broker.UpdateResolvedAddressAsync(It.IsAny<ResolvedAddress>()),
                     Times.Never);
 
-            this.resolvedAddressServiceMock.VerifyNoOtherCalls();
+            resolvedAddressServiceMock.VerifyNoOtherCalls();
             this.dateTimeBrokerMock.VerifyNoOtherCalls();
             this.securityBrokerMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
@@ -258,7 +258,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.ResolvedAddresses
                 broker.SelectResolvedAddressByIdAsync(invalidResolvedAddress.Id),
                     Times.Never);
 
-            this.resolvedAddressServiceMock.VerifyNoOtherCalls();
+            resolvedAddressServiceMock.VerifyNoOtherCalls();
             this.dateTimeBrokerMock.VerifyNoOtherCalls();
             this.securityBrokerMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
@@ -347,7 +347,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.ResolvedAddresses
                 broker.SelectResolvedAddressByIdAsync(It.IsAny<Guid>()),
                     Times.Never);
 
-            this.resolvedAddressServiceMock.VerifyNoOtherCalls();
+            resolvedAddressServiceMock.VerifyNoOtherCalls();
             this.dateTimeBrokerMock.VerifyNoOtherCalls();
             this.securityBrokerMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
@@ -424,7 +424,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.ResolvedAddresses
                     expectedResolvedAddressValidationException))),
                         Times.Once);
 
-            this.resolvedAddressServiceMock.VerifyNoOtherCalls();
+            resolvedAddressServiceMock.VerifyNoOtherCalls();
             this.dateTimeBrokerMock.VerifyNoOtherCalls();
             this.securityBrokerMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
@@ -517,7 +517,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.ResolvedAddresses
                    expectedResolvedAddressValidationException))),
                        Times.Once);
 
-            this.resolvedAddressServiceMock.VerifyNoOtherCalls();
+            resolvedAddressServiceMock.VerifyNoOtherCalls();
             this.dateTimeBrokerMock.VerifyNoOtherCalls();
             this.securityBrokerMock.VerifyNoOtherCalls();
             this.storageBrokerMock.VerifyNoOtherCalls();
@@ -607,7 +607,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.ResolvedAddresses
                    expectedResolvedAddressValidationException))),
                        Times.Once);
 
-            this.resolvedAddressServiceMock.VerifyNoOtherCalls();
+            resolvedAddressServiceMock.VerifyNoOtherCalls();
             this.dateTimeBrokerMock.VerifyNoOtherCalls();
             this.securityBrokerMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
@@ -693,7 +693,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.ResolvedAddresses
                 broker.SelectResolvedAddressByIdAsync(invalidResolvedAddress.Id),
                     Times.Once);
 
-            this.resolvedAddressServiceMock.VerifyNoOtherCalls();
+            resolvedAddressServiceMock.VerifyNoOtherCalls();
             this.dateTimeBrokerMock.VerifyNoOtherCalls();
             this.securityBrokerMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();

@@ -10,7 +10,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCheck, faCopy, faKey, faTimes } from "@fortawesome/free-solid-svg-icons";
 import moment from "moment";
 import { SubscriberCredentialView } from "../../models/views/components/subscriberCredentials/subscriberCredentialView";
-
+import JSZip from "jszip";
 interface SubscriberAgreementDetailCardViewProps {
     subscriberCredential: SubscriberCredentialView;
     onDelete: (subscriberCredential: SubscriberCredentialView) => void;
@@ -90,9 +90,7 @@ const SubscriberAgreementDetailCardView: FunctionComponent<SubscriberAgreementDe
                 </SummaryListBaseRow>
 
                 <SummaryListBaseRow>
-                    <SummaryListBaseKey>Ftp Public Key&nbsp;
-
-                    </SummaryListBaseKey>
+                    <SummaryListBaseKey>Ftp Public Key&nbsp;</SummaryListBaseKey>
                     <SummaryListBaseValue>
                         {ftpKeyCopied ?
                             <FontAwesomeIcon icon={faCheck} className="text-secondary" />
@@ -123,6 +121,34 @@ const SubscriberAgreementDetailCardView: FunctionComponent<SubscriberAgreementDe
                             />
                         } &nbsp;
                         {decodeBase64(subscriberCredential.gpgPublicKey ?? "")}
+                    </SummaryListBaseValue>
+                </SummaryListBaseRow>
+
+                <SummaryListBaseRow>
+                    <SummaryListBaseKey>Keys to send Emis Zip</SummaryListBaseKey>
+                    <SummaryListBaseValue>
+                        <ButtonBase 
+                            onClick={async () => {
+                                const zip = new JSZip();
+                                const ftpPublicKey = decodeBase64(subscriberCredential.ftpPublicKey ?? "");
+                                const gpgPublicKey = decodeBase64(subscriberCredential.gpgPublicKey ?? "");
+
+                                zip.file("ftpPublicKey.ssh", ftpPublicKey);
+                                zip.file("gpgPublicKey.asc", gpgPublicKey);
+
+                                const zipBlob = await zip.generateAsync({ type: "blob" });
+
+                                const url = URL.createObjectURL(zipBlob);
+                                const link = document.createElement("a");
+                                link.href = url;
+                                link.download = subscriberCredential.supplierSharingAgreementShortName +  "_keys.zip";
+                                link.click();
+                                URL.revokeObjectURL(url);
+                            }}
+                            view
+                        >
+                            Download Key Zip
+                        </ButtonBase>
                     </SummaryListBaseValue>
                 </SummaryListBaseRow>
 

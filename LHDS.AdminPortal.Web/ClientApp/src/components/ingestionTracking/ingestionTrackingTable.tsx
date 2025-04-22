@@ -16,11 +16,12 @@ import IngestionTrackingRow from "./ingestionTrackingRow";
 import { IngestionTracking } from "../../models/ingestionTrackings/ingestionTracking";
 import { Row } from "react-bootstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faDatabase, faFilter, faRefresh } from "@fortawesome/free-solid-svg-icons";
+import { faDatabase, faRefresh } from "@fortawesome/free-solid-svg-icons";
 import IngestionFilterModal from "./ingestionTrackingFilter"; 
 import { SupplierView } from "../../models/views/components/suppliers/supplierView";
 import { emisLandingService } from "../../services/foundations/emisLandingService";
 import { toastError, toastSuccess } from "../../brokers/toastBroker";
+import { lookupViewService } from "../../services/views/lookups/lookupViewService";
 
 type IngestionTrackingTableProps = {};
 
@@ -30,7 +31,7 @@ const IngestionTrackingTable: FunctionComponent<IngestionTrackingTableProps> = (
     const [debouncedSupplierTerm, setDebouncedSupplierTerm] = useState<string>("");
     const [showSpinner, setShowSpinner] = useState(false);
     const [showModal, setShowModal] = useState(false);
-    
+    let { mappedSuppliers: suppliersRetrieved } = lookupViewService.useGetSupplierList("");
 
     const {
         mappedIngestionTrackings: ingestionTrackingsRetrieved,
@@ -91,6 +92,11 @@ const IngestionTrackingTable: FunctionComponent<IngestionTrackingTableProps> = (
         handleSupplierDebounce(supplier.id.toString());
     };
 
+    const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+        const selectedSupplierId = event.target.value;
+        setDebouncedSupplierTerm(selectedSupplierId);
+    };
+
     const hasNoMorePages = () => {
         return !isLoading && data?.pages.at(-1)?.nextPage === undefined;
     };
@@ -112,28 +118,18 @@ const IngestionTrackingTable: FunctionComponent<IngestionTrackingTableProps> = (
                     <CardBaseTitle> <FontAwesomeIcon icon={faDatabase} className="me-2" /> Ingestion Tracking</CardBaseTitle>
                     <CardBaseContent>
                         <InfiniteScroll loading={isLoading || showSpinner} hasNextPage={hasNextPage || false} loadMore={fetchNextPage}>
-                            <Row>
-                                <div className="input-group mb-3">
+                            <Row className="m-0 p-0">
+                                <div className="input-group mb-3 m-0 p-0">
                                     <SearchBase
                                         id="search"
                                         value={searchTerm}
                                         placeholder="Search for ingestion data..."
-                                        onChange={(e) => {handleSearchChange(e.currentTarget.value)}} />
-
-                                    <div className="input-group-append">
-                                        <button
-                                            className="btn btn-outline-secondary"
-                                            id="filterButton"
-                                            onClick={() => setShowModal(true)}>
-
-                                            <FontAwesomeIcon icon={faFilter}/> Filter
-                                        </button>
-                                    </div>
+                                        onChange={(e) => { handleSearchChange(e.currentTarget.value) }} />
 
                                     {showSpinner ? (
                                         <SpinnerBase />
                                     ) : (
-                                        <div className="input-group-append">
+                                            <div className="input-group-append m-0 p-0">
                                                 <button className="btn btn-outline-secondary" id="refreshButton" onClick={refreshData}>
                                                 <FontAwesomeIcon icon={faRefresh} /> Refresh
                                             </button>
@@ -141,6 +137,41 @@ const IngestionTrackingTable: FunctionComponent<IngestionTrackingTableProps> = (
                                     )}
                                 </div>
                             </Row>
+                            <span className="d-flex align-items-center">
+                                {/* "All" Option */}
+                                <div key="all-suppliers" className="form-check me-3">
+                                    <input
+                                        className="form-check-input"
+                                        type="radio"
+                                        name="supplier"
+                                        id="supplier-all"
+                                        value=""
+                                        onChange={handleChange}
+                                    />
+                                    <label className="form-check-label" htmlFor="supplier-all">
+                                        All
+                                    </label>
+                                </div>
+
+                                {/* Filtered Suppliers: Only "EMIS" and "TPP" */}
+                                {suppliersRetrieved
+                                    .filter((supplier) => supplier.name === "EMIS" || supplier.name === "TPP")
+                                    .map((supplier) => (
+                                        <div key={supplier.id.toString()} className="form-check me-3">
+                                            <input
+                                                className="form-check-input"
+                                                type="radio"
+                                                name="supplier"
+                                                id={`supplier-${supplier.id}`}
+                                                value={supplier.id.toString()}
+                                                onChange={handleChange}
+                                            />
+                                            <label className="form-check-label" htmlFor={`supplier-${supplier.id}`}>
+                                                {supplier.name || ""}
+                                            </label>
+                                        </div>
+                                    ))}
+                            </span>
                             <TableBase classes="table-bordered">
                                 <TableBaseTbody>
                                     {isLoading || showSpinner ? (

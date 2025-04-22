@@ -181,6 +181,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Audits
                 broker.UpdateAuditAsync(It.IsAny<Audit>()),
                     Times.Never);
 
+            auditServiceMock.VerifyNoOtherCalls();
             this.dateTimeBrokerMock.VerifyNoOtherCalls();
             this.securityBrokerMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
@@ -267,6 +268,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Audits
                 broker.SelectAuditByIdAsync(invalidAudit.Id),
                     Times.Never);
 
+            auditServiceMock.VerifyNoOtherCalls();
             this.dateTimeBrokerMock.VerifyNoOtherCalls();
             this.securityBrokerMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
@@ -316,7 +318,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Audits
                 key: nameof(Audit.UpdatedDate),
                 values: "Date is not recent");
 
-            var expectedAuditValidatonException =
+            var expectedAuditValidationException =
                 new AuditValidationException(
                     message: "Audit validation errors occurred, please try again.",
                     innerException: invalidAuditException);
@@ -335,7 +337,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Audits
 
             // then
             actualAuditValidationException.Should()
-                .BeEquivalentTo(expectedAuditValidatonException);
+                .BeEquivalentTo(expectedAuditValidationException);
 
             auditServiceMock.Verify(service =>
                 service.ApplyModifyAuditAsync(invalidAudit),
@@ -351,13 +353,14 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Audits
 
             this.loggingBrokerMock.Verify(broker =>
                 broker.LogErrorAsync(It.Is(SameExceptionAs(
-                    expectedAuditValidatonException))),
+                    expectedAuditValidationException))),
                         Times.Once);
 
             this.storageBrokerMock.Verify(broker =>
                 broker.SelectAuditByIdAsync(It.IsAny<Guid>()),
                     Times.Never);
 
+            auditServiceMock.VerifyNoOtherCalls();
             this.dateTimeBrokerMock.VerifyNoOtherCalls();
             this.securityBrokerMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();

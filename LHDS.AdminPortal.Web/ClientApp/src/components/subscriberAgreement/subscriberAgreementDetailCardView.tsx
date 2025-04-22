@@ -106,27 +106,6 @@ const SubscriberAgreementDetailCardView: FunctionComponent<SubscriberAgreementDe
                     </SummaryListBaseValue>
                 </SummaryListBaseRow>
 
-                {/*<SummaryListBaseRow>*/}
-                {/*    <SummaryListBaseKey>Ftp Public Key Download</SummaryListBaseKey>*/}
-                {/*    <SummaryListBaseValue>*/}
-                {/*        <ButtonBase*/}
-                {/*            onClick={() => {*/}
-                {/*                const publicKey = decodeBase64(subscriberCredential.ftpPublicKey ?? "");*/}
-                {/*                const blob = new Blob([publicKey], { type: "text/plain" });*/}
-                {/*                const url = URL.createObjectURL(blob);*/}
-                {/*                const link = document.createElement("a");*/}
-                {/*                link.href = url;*/}
-                {/*                link.download = "ftpPublicKey.ssh";*/}
-                {/*                link.click();*/}
-                {/*                URL.revokeObjectURL(url);*/}
-                {/*            }}*/}
-                {/*            info*/}
-                {/*        >*/}
-                {/*            Download Ftp Public Key*/}
-                {/*        </ButtonBase>*/}
-                {/*    </SummaryListBaseValue>*/}
-                {/*</SummaryListBaseRow>*/}
-
                 <SummaryListBaseRow>
                     <SummaryListBaseKey>Gpg Public Key&nbsp;
                     </SummaryListBaseKey>
@@ -144,29 +123,6 @@ const SubscriberAgreementDetailCardView: FunctionComponent<SubscriberAgreementDe
                         {decodeBase64(subscriberCredential.gpgPublicKey ?? "")}
                     </SummaryListBaseValue>
                 </SummaryListBaseRow>
-
-                {/*<SummaryListBaseRow>*/}
-                {/*    <SummaryListBaseKey>Gpg Public Key Download</SummaryListBaseKey>*/}
-                {/*    <SummaryListBaseValue>*/}
-                {/*        <ButtonBase*/}
-                {/*            onClick={() => {*/}
-                {/*                const publicKey = decodeBase64(subscriberCredential.gpgPublicKey ?? "");*/}
-                {/*                const blob = new Blob([publicKey], { type: "text/plain" });*/}
-                {/*                const url = URL.createObjectURL(blob);*/}
-                {/*                const link = document.createElement("a");*/}
-                {/*                link.href = url;*/}
-                {/*                link.download = "gpgPublicKey.asc";*/}
-                {/*                link.click();*/}
-                {/*                URL.revokeObjectURL(url);*/}
-                {/*            }}*/}
-                {/*            info*/}
-                {/*        >*/}
-                {/*            Download Gpg Public Key*/}
-                {/*        </ButtonBase>*/}
-                {/*    </SummaryListBaseValue>*/}
-                {/*</SummaryListBaseRow>*/}
-
-
 
                 <SummaryListBaseRow>
                     <SummaryListBaseKey>Keys to send Emis Zip</SummaryListBaseKey>

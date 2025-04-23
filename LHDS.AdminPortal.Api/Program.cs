@@ -217,7 +217,7 @@ namespace LHDS.AdminPortal.Api
             //services.AddHealthChecks().AddCheck<TppHealthCheck>("pdsHealthCheck");
             //services.AddHealthChecks().AddCheck<TppHealthCheck>("optoutHealthCheck");
             //services.AddHealthChecks().AddCheck<TppHealthCheck>("terminologyHealthCheck");
-            services.AddSingleton<IHealthCheckPublisher, HealthCheckPublisher>();
+            services.AddSingleton<IHealthCheckPublisher, HealthCheckPublisherService>();
 
             services.Configure<HealthCheckPublisherOptions>(options =>
             {

@@ -44,6 +44,7 @@ using LHDS.Core.Services.Foundations.DataSets;
 using LHDS.Core.Services.Foundations.DataSetSpecifications;
 using LHDS.Core.Services.Foundations.DataTypes;
 using LHDS.Core.Services.Foundations.Documents;
+using LHDS.Core.Services.Foundations.HealthChecks;
 using LHDS.Core.Services.Foundations.IngestionTrackingAudits;
 using LHDS.Core.Services.Foundations.IngestionTrackings;
 using LHDS.Core.Services.Foundations.ObjectColumns;
@@ -63,11 +64,13 @@ using LHDS.Core.Services.Processings.OptOuts;
 using LHDS.Core.Services.Processings.SecureDatas;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.AspNetCore.OData;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Diagnostics.HealthChecks;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Identity.Web;
 using Microsoft.IdentityModel.Logging;
@@ -191,6 +194,11 @@ namespace LHDS.AdminPortal.Api
                 app.UseODataRouteDebug();
             }
 
+            app.MapHealthChecks("/health", new HealthCheckOptions
+            {
+                ResponseWriter = HealthCheckResponseWriter.WriteResponse
+            });
+
             app.UseHttpsRedirection();
             app.UseCors("AllowFrontendOrigin");
             app.UseRouting();
@@ -199,6 +207,23 @@ namespace LHDS.AdminPortal.Api
             app.UseAuthorization();
             app.UseInvisibleApiMiddleware(invisibleApiKey);
             app.MapControllers().WithOpenApi();
+        }
+
+        private static void AddHealthApi(IServiceCollection services, IConfiguration configuration)
+        {
+            //services.AddHealthChecks().AddCheck<TppHealthCheck>("tppHealthCheck");
+            //services.AddHealthChecks().AddCheck<TppHealthCheck>("emisHealthCheck");
+            //services.AddHealthChecks().AddCheck<TppHealthCheck>("uprnHealthCheck");
+            //services.AddHealthChecks().AddCheck<TppHealthCheck>("pdsHealthCheck");
+            //services.AddHealthChecks().AddCheck<TppHealthCheck>("optoutHealthCheck");
+            //services.AddHealthChecks().AddCheck<TppHealthCheck>("terminologyHealthCheck");
+            services.AddSingleton<IHealthCheckPublisher, HealthCheckPublisher>();
+
+            services.Configure<HealthCheckPublisherOptions>(options =>
+            {
+                options.Delay = TimeSpan.FromSeconds(10);
+                options.Period = TimeSpan.FromSeconds(60);
+            });
         }
 
         private static void AddProviders(IServiceCollection services, IConfiguration configuration)

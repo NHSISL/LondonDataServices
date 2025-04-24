@@ -7,7 +7,7 @@ pr:
   branches:
     include:
     - main
-    drafts: false
+  drafts: false
 
 variables:
   - group: global-variables-lds
@@ -26,6 +26,16 @@ workspace:
   clean: all
 
 steps:  
+  - task: Bash@3
+    displayName: "Check Lables"
+    inputs:
+      script: |
+        echo "Getting labels for PR #${SYSTEM_PULLREQUEST_PULLREQUESTNUMBER}"
+        response=$(curl -s -H "Authorization: token $(GITHUB_TOKEN)" \
+          "$(githubApiUrl)/repos/$(githubRepo)/issues/${SYSTEM_PULLREQUEST_PULLREQUESTNUMBER}/labels")
+        echo "Labels:"
+        echo "$response" | jq '.[] | .name'
+
   - task: FileTransform@1
     displayName: "Transform AppSettings for CI"
     inputs:

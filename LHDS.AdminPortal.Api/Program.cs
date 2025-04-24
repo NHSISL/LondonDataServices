@@ -45,6 +45,7 @@ using LHDS.Core.Services.Foundations.DataSetSpecifications;
 using LHDS.Core.Services.Foundations.DataTypes;
 using LHDS.Core.Services.Foundations.Documents;
 using LHDS.Core.Services.Foundations.HealthChecks;
+using LHDS.Core.Services.Foundations.HealthChecks.Checks.IngestionTracking;
 using LHDS.Core.Services.Foundations.IngestionTrackingAudits;
 using LHDS.Core.Services.Foundations.IngestionTrackings;
 using LHDS.Core.Services.Foundations.ObjectColumns;
@@ -212,12 +213,8 @@ namespace LHDS.AdminPortal.Api
 
         private static void AddHealthApi(IServiceCollection services, IConfiguration configuration)
         {
-            //services.AddHealthChecks().AddCheck<TppHealthCheck>("tppHealthCheck");
-            //services.AddHealthChecks().AddCheck<TppHealthCheck>("emisHealthCheck");
-            //services.AddHealthChecks().AddCheck<TppHealthCheck>("uprnHealthCheck");
-            //services.AddHealthChecks().AddCheck<TppHealthCheck>("pdsHealthCheck");
-            //services.AddHealthChecks().AddCheck<TppHealthCheck>("optoutHealthCheck");
-            //services.AddHealthChecks().AddCheck<TppHealthCheck>("terminologyHealthCheck");
+            services.AddHealthChecks().AddCheck<IngestionTrackingDecryptionHealthCheckService>("ingestionTrackingDecryptionHealthCheck");
+            services.AddHealthChecks().AddCheck<IngestionTrackingProcessingHealthCheckService>("ingestionTrackingProcessingHealthCheckService");
             services.AddSingleton<IHealthCheckPublisher, HealthCheckPublisherService>();
 
             services.Configure<HealthCheckPublisherOptions>(options =>

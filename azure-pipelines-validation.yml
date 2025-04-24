@@ -33,6 +33,7 @@ workspace:
   clean: all
 
 steps:  
+# Need a PAT for git with permissions to read git pull requests for the next step
   - task: Bash@3
     displayName: "Check Lables"
     inputs:
@@ -44,7 +45,14 @@ steps:
           "https://api.github.com/repos/${BUILD_REPOSITORY_NAME}/issues/${SYSTEM_PULLREQUEST_PULLREQUESTNUMBER}/labels")
         echo "Labels:"
         echo "$response" | jq '.[] | .name'
-
+        echo "$response" | jq -e '.[] | select(.name == "draft")' > /dev/null
+        if [ $? -eq 0 ]; then
+          echo "draft tag not found"
+          echo "##vso[task.setvariable variable=runTests;isOutput=true]true"
+        else
+          echo "draft tag found"
+          echo "##vso[task.setvariable variable=runTests;isOutput=true]false"
+        fi
   - task: FileTransform@1
     displayName: "Transform AppSettings for CI"
     inputs:

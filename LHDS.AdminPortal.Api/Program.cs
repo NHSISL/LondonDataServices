@@ -147,6 +147,7 @@ namespace LHDS.AdminPortal.Api
 
             builder.Services.AddSingleton(invisibleApiKey);
             builder.Services.AddDbContext<StorageBroker>();
+            AddHealthApi(builder.Services, builder.Configuration);
             AddProviders(builder.Services, builder.Configuration);
             AddBrokers(builder.Services, builder.Configuration);
             AddFoundationServices(builder.Services, builder.Configuration);

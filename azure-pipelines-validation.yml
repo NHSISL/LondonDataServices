@@ -249,63 +249,7 @@ jobs:
       inputs:
         workingDir: '$(webProjectName)/ClientApp'
         command: 'install'
-
-    - task: DotNetCoreCLI@2
-      displayName: "Dotnet Build (API)"
-      inputs:
-        command: 'build'
-        projects: '**/LHDS.AdminPortal.Api.csproj'
-        arguments: --output $(System.DefaultWorkingDirectory)/publish_output_website_api --configuration Release
-
-    - task: DotNetCoreCLI@2
-      displayName: "Dotnet Build (Frontend)"
-      inputs:
-        command: 'build'
-        projects: '**/LHDS.AdminPortal.Web.csproj'
-        arguments: --output $(System.DefaultWorkingDirectory)/publish_output_website_frontend --configuration Release
-
-    - task: DotNetCoreCLI@2
-      displayName: "Dotnet Build (EMIS Landing Function)"
-      inputs:
-        command: 'build'
-        projects: '**/LHDS.Functions.Landings.Emis.csproj'
-        arguments: --output $(System.DefaultWorkingDirectory)/publish_output_emis_func --configuration Release
-
-    - task: DotNetCoreCLI@2
-      displayName: "Dotnet Build (Opt-Out Function)"
-      inputs:
-        command: 'build'
-        projects: '**/LHDS.Functions.OptOut.csproj'
-        arguments: --output $(System.DefaultWorkingDirectory)/publish_output_optout_func --configuration Release
-
-    - task: DotNetCoreCLI@2
-      displayName: "Dotnet Build (PDS Function)"
-      inputs:
-        command: 'build'
-        projects: '**/LHDS.Functions.Pds.csproj'
-        arguments: --output $(System.DefaultWorkingDirectory)/publish_output_pds_func --configuration Release
-    
-    - task: DotNetCoreCLI@2
-      displayName: "Dotnet Build (Tpp Function)"
-      inputs:
-        command: 'build'
-        projects: '**/LHDS.Functions.Landings.Tpp.csproj'
-        arguments: --output $(System.DefaultWorkingDirectory)/publish_output_tpp_func --configuration Release
-
-    - task: DotNetCoreCLI@2
-      displayName: "Dotnet Build (Addresses Function)"
-      inputs:
-        command: 'build'
-        projects: '**/LHDS.Functions.Addresses.csproj'
-        arguments: --output $(System.DefaultWorkingDirectory)/publish_output_addresses_func --configuration Release
-
-    - task: DotNetCoreCLI@2
-      displayName: "Dotnet Build (Terminology Function)"
-      inputs:
-        command: 'build'
-        projects: '**/LHDS.Functions.Terminology.csproj'
-        arguments: --output $(System.DefaultWorkingDirectory)/publish_output_terminology_func --configuration Release
-        
+     
     - task: Npm@1 
       displayName: Run Code linting
       inputs:

@@ -39,7 +39,6 @@ steps:
     inputs:
       targetType: 'inline'
       script: |
-        printenv | sort
         echo "Getting labels for PR #${SYSTEM_PULLREQUEST_PULLREQUESTNUMBER}"
         response=$(curl -s -H "Authorization: token $(GITHUB_TOKEN)" \
           "https://api.github.com/repos/${BUILD_REPOSITORY_NAME}/issues/${SYSTEM_PULLREQUEST_PULLREQUESTNUMBER}/labels")
@@ -47,10 +46,14 @@ steps:
         echo "$response" | jq '.[] | .name'
         echo "$response" | jq -e '.[] | select(.name == "draft")' > /dev/null
         if [ $? -eq 0 ]; then
-          echo "draft tag not found"
-          echo "##vso[task.setvariable variable=runTests;isOutput=true]true"
-        else
           echo "draft tag found"
+          curl -X PATCH \
+          -H "Authorization: Basic $(echo ":$SYSTEM_ACCESSTOKEN" | base64)" \
+          -H "Content-Type: application/json" \
+          -d '{"status": "cancelling"}' \
+          "https://dev.azure.com/$(System.TeamProject)/_apis/build/builds/$(Build.BuildId)?api-version=7.1-preview.7"
+        else
+          echo "draft tag not found"
           echo "##vso[task.setvariable variable=runTests;isOutput=true]false"
         fi
   - task: FileTransform@1

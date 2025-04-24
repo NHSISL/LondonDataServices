@@ -72,6 +72,9 @@ namespace LHDS.Core.Services.Foundations.TerminologyArtifacts
 
                 ValidateStorageTerminologyArtifact(maybeTerminologyArtifact, terminologyArtifact.Id);
 
+                terminologyArtifact.CreatedDate = maybeTerminologyArtifact.CreatedDate;
+                terminologyArtifact.CreatedBy = maybeTerminologyArtifact.CreatedBy;
+
                 ValidateAgainstStorageTerminologyArtifactOnModify(
                     inputTerminologyArtifact: terminologyArtifact,
                     storageTerminologyArtifact: maybeTerminologyArtifact);

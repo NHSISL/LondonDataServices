@@ -41,7 +41,7 @@ steps:
         printenv | sort
         echo "Getting labels for PR #${SYSTEM_PULLREQUEST_PULLREQUESTNUMBER}"
         response=$(curl -s -H "Authorization: token $(GITHUB_TOKEN)" \
-          "$(githubApiUrl)/repos/$(githubRepo)/issues/${SYSTEM_PULLREQUEST_PULLREQUESTNUMBER}/labels")
+          "https://api.github.com/repos/${BUILD_REPOSITORY_NAME}/issues/${SYSTEM_PULLREQUEST_PULLREQUESTNUMBER}/labels")
         echo "Labels:"
         echo "$response" | jq '.[] | .name'
 

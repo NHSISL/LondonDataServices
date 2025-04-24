@@ -18,6 +18,7 @@ using LHDS.Core.Brokers.Loggings;
 using LHDS.Core.Brokers.Securities;
 using LHDS.Core.Brokers.Storages.Blobs;
 using LHDS.Core.Brokers.Storages.Sql;
+using LHDS.Core.Brokers.Telemetries;
 using LHDS.Core.Clients;
 using LHDS.Core.Clients.Extensions;
 using LHDS.Core.Models.Brokers.Storages.Blobs;
@@ -241,6 +242,7 @@ namespace LHDS.AdminPortal.Api
             services.AddTransient<IHashBroker, HashBroker>();
             services.AddTransient<IAzureBlobClient, AzureBlobClient>();
             services.AddTransient<ISecurityBroker, SecurityBroker>();
+            services.AddTransient<ITelemetryBroker, TelemetryBroker>();
         }
 
         private static void AddFoundationServices(IServiceCollection services, IConfiguration configuration)

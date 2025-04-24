@@ -29,6 +29,7 @@ steps:
   - task: Bash@3
     displayName: "Check Lables"
     inputs:
+      targetType: 'inline'
       script: |
         echo "Getting labels for PR #${SYSTEM_PULLREQUEST_PULLREQUESTNUMBER}"
         response=$(curl -s -H "Authorization: token $(GITHUB_TOKEN)" \

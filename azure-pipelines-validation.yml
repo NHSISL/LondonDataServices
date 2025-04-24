@@ -6,7 +6,7 @@
 pr:
   branches:
     include:
-    -main
+    - main
     drafts: false
 
 variables:

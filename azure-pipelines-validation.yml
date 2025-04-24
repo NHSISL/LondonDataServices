@@ -24,6 +24,8 @@ variables:
     value: 'LHDS.AdminPortal.Web'
   - name: ConnectionStrings.DefaultConnection
     value: 'Server=localhost,1433;Database=LHDS-Acceptance-$(Build.BuildId);User Id=sa;Password=1Password;TrustServerCertificate=true'
+  - name: githubApiUrl
+
 
 pool: selfhosted-vmss-linux-lds-dev
 
@@ -36,6 +38,7 @@ steps:
     inputs:
       targetType: 'inline'
       script: |
+        printenv | sort
         echo "Getting labels for PR #${SYSTEM_PULLREQUEST_PULLREQUESTNUMBER}"
         response=$(curl -s -H "Authorization: token $(GITHUB_TOKEN)" \
           "$(githubApiUrl)/repos/$(githubRepo)/issues/${SYSTEM_PULLREQUEST_PULLREQUESTNUMBER}/labels")

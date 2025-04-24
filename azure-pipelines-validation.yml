@@ -28,9 +28,6 @@ variables:
 
 pool: selfhosted-vmss-linux-lds-dev
 
-workspace:
-  clean: all
-
 jobs:
 - job: CheckForDraft
   displayName: Check for Draft Label

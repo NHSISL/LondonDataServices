@@ -53,7 +53,7 @@ namespace LHDS.Core.Services.Foundations.HealthChecks.Checks.IngestionTracking
                 },
             };
 
-            if (stuckInProcessingCount > 0 || stuckInProcessingCount > 0)
+            if (stuckInProcessingCount > 0)
             {
                 return HealthCheckResult.Degraded(
                     description: "Ingestion Tracking - Processing is slow or stuck.",

@@ -54,7 +54,7 @@ namespace LHDS.Core.Services.Foundations.HealthChecks.Checks.IngestionTracking
                 },
             };
 
-            if (decryptionSlowOrStuckCount > 0 || stuckInProcessingCount > 0)
+            if (decryptionSlowOrStuckCount > 0)
             {
                 return HealthCheckResult.Degraded(
                     description: "Ingestion Tracking - Decryption is slow or stuck.",

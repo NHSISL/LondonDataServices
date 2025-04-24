@@ -4,22 +4,26 @@
 
 using System.Threading;
 using System.Threading.Tasks;
+using LHDS.Core.Brokers.Loggings;
 using LHDS.Core.Brokers.Telemetries;
 using Microsoft.ApplicationInsights.DataContracts;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
 
 namespace LHDS.Core.Services.Foundations.HealthChecks
 {
-    public class HealthCheckPublisherService : IHealthCheckPublisher
+    public partial class HealthCheckPublisherService : IHealthCheckPublisher
     {
         private readonly ITelemetryBroker telemetryBroker;
+        private readonly ILoggingBroker loggingBroker;
 
-        public HealthCheckPublisherService(ITelemetryBroker telemetryBroker)
+        public HealthCheckPublisherService(ITelemetryBroker telemetryBroker, ILoggingBroker loggingBroker)
         {
             this.telemetryBroker = telemetryBroker;
+            this.loggingBroker = loggingBroker;
         }
 
-        public async Task PublishAsync(HealthReport report, CancellationToken cancellationToken)
+        public Task PublishAsync(HealthReport report, CancellationToken cancellationToken) =>
+        TryCatch(async () =>
         {
             foreach (var entry in report.Entries)
             {
@@ -37,6 +41,6 @@ namespace LHDS.Core.Services.Foundations.HealthChecks
 
                 await telemetryBroker.TrackEventAsync(eventTelemetry);
             }
-        }
+        });
     }
 }

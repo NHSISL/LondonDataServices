@@ -214,14 +214,24 @@ namespace LHDS.AdminPortal.Api
 
         private static void AddHealthApi(IServiceCollection services, IConfiguration configuration)
         {
-            services.AddHealthChecks().AddCheck<IngestionTrackingDecryptionHealthCheckService>("ingestionTrackingDecryptionHealthCheck");
-            services.AddHealthChecks().AddCheck<IngestionTrackingProcessingHealthCheckService>("ingestionTrackingProcessingHealthCheckService");
+            services.AddHealthChecks().AddCheck<IngestionTrackingDecryptionHealthCheckService>(
+                "ingestionTrackingDecryptionHealthCheckService");
+
+            services.AddHealthChecks().AddCheck<IngestionTrackingProcessingHealthCheckService>(
+                "ingestionTrackingProcessingHealthCheckService");
+
             services.AddSingleton<IHealthCheckPublisher, HealthCheckPublisherService>();
+
+            int startupDelaySeconds = configuration.GetValue<int>(
+                "HealthChecks:StartupDelaySeconds", 10);
+
+            int publishIntervalSeconds = configuration.GetValue<int>(
+                "HealthChecks:PublishIntervalSeconds", 60);
 
             services.Configure<HealthCheckPublisherOptions>(options =>
             {
-                options.Delay = TimeSpan.FromSeconds(10);
-                options.Period = TimeSpan.FromSeconds(60);
+                options.Delay = TimeSpan.FromSeconds(startupDelaySeconds);
+                options.Period = TimeSpan.FromSeconds(publishIntervalSeconds);
             });
         }
 

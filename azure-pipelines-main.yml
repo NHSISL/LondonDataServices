@@ -25,16 +25,16 @@ workspace:
 
 steps:  
   - bash: |
-    echo "Build $(Build.SourceBranch)"
-    RELEASE_REGEX="v[0-9]+(.[0-9]+){3}"
-    tagName=${BUILD_SOURCEBRANCH#refs/tags/}
-    if [[ "$(Build.SourceBranch)" =~ $RELEASE_REGEX ]] 
-    then
-     echo "##vso[build.updatebuildnumber]$tagName"
-     echo "##vso[build.addbuildtag]$tagName"
-     echo "##vso[build.addbuildtag]Release"
-    fi
-  displayName: Tag Releases
+      echo "Build $(Build.SourceBranch)"
+      RELEASE_REGEX="v[0-9]+(.[0-9]+){3}"
+      tagName=${BUILD_SOURCEBRANCH#refs/tags/}
+      if [[ "$(Build.SourceBranch)" =~ $RELEASE_REGEX ]] 
+      then
+      echo "##vso[build.updatebuildnumber]$tagName"
+      echo "##vso[build.addbuildtag]$tagName"
+      echo "##vso[build.addbuildtag]Release"
+      fi
+    displayName: Tag Releases
   - task: FileTransform@1
     displayName: "Transform AppSettings for CI"
     inputs:

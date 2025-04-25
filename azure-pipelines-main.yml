@@ -46,7 +46,6 @@ steps:
         LHDS.AdminPortal.Api/appsettings.ContinuousIntegration.json
         LHDS.Core.Tests.Acceptance/appsettings.ContinuousIntegration.json
         LHDS.ConfigImportExportTool.Tests.Acceptance/appsettings.ContinuousIntegration.json
-
   - task: Bash@3
     displayName: "Show AppSettings for CI"
     inputs:
@@ -55,7 +54,6 @@ steps:
         cat LHDS.AdminPortal.Api/appsettings.ContinuousIntegration.json
         cat LHDS.Core.Tests.Acceptance/appsettings.ContinuousIntegration.json
         cat LHDS.ConfigImportExportTool.Tests.Acceptance/appsettings.ContinuousIntegration.json
-
   - task: AzureCLI@2
     displayName: "Add Service Connection to Environment"
     inputs:
@@ -99,135 +97,135 @@ steps:
       projects: "**/*.csproj"
       includeNuGetOrg: true
 
-# - task: DotNetCoreCLI@2
-#   displayName: "Dotnet Build with Warnings as Errors"
-#   inputs:
-#     command: "build"
-#     projects: "**/*.csproj"
-#     arguments: "--warnaserror"
-#
-# - task: DotNetCoreCLI@2
-#   displayName: C# Unit Tests
-#   inputs:
-#     command: 'test'
-#     projects: '**/*.Tests.Unit.csproj'
-#
-# - task: Bash@3
-#   enabled: true
-#   displayName: Install Docker
-#   inputs:
-#     targetType: inline
-#     script: >-
-#       sudo apt update
-#         
-#       sudo apt install apt-transport-https ca-certificates curl
-#       software-properties-common -y
-#       
-#       curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo
-#       apt-key add -
-#       
-#       sudo add-apt-repository "deb [arch=amd64]
-#       https://download.docker.com/linux/ubuntu bionic stable"
-#       
-#       sudo apt update
-#       
-#       apt-cache policy docker-ce
-#       
-#       sudo apt install docker-ce -y
-#       
-#       sudo systemctl start docker
-#
-# - task: Bash@3
-#   enabled: true
-#   displayName: Pulling Required Docker Images for SQL Server
-#   inputs:
-#     targetType: inline
-#     script: |-
-#       sudo docker stop sql1
-#
-#       sudo docker rm sql1
-#
-#       sudo docker run -e "ACCEPT_EULA=Y" -e "MSSQL_SA_PASSWORD=1Password" \
-#           -p 1433:1433 --name sql1 --hostname sql1 \
-#           -d \
-#           mcr.microsoft.com/mssql/server:2022-latest
-#           
-# - task: Bash@3
-#   enabled: true
-#   displayName: Docker SQL Connection Test
-#   inputs:
-#     targetType: inline
-#     script: |
-#       CONTAINER_NAME="sql1"
-#       # Set the maximum number of retries
-#       MAX_RETRIES=10
-#       # Set the retry interval in seconds
-#       RETRY_INTERVAL=5
-#       # Initialize the retry counter
-#       RETRY_COUNT=0
-#       
-#       while [[ $RETRY_COUNT -lt $MAX_RETRIES ]]; do
-#       
-#         # Check if the SQL container is running
-#         container_status=$(sudo docker inspect -f '{{.State.Status}}' $CONTAINER_NAME)
-#       
-#         if [[ $container_status != "running" ]]; then
-#           # The SQL container is not running
-#           echo "SQL Server container is not running. Retrying...(retry $RETRY_COUNT/$MAX_RETRIES)"
-#           sleep $RETRY_INTERVAL
-#           ((RETRY_COUNT++))
-#           continue
-#         fi
-#       
-#         # The SQL container is running
-#       
-#         # Wait for the SQL container to be ready
-#         if [[ "$(sudo docker logs $CONTAINER_NAME | grep 'SQL Server is now ready for client connections' | wc -l)" -eq 0 ]]; then
-#           echo "Waiting for SQL Server log entry stating its ready for connections...(retry $RETRY_COUNT/$MAX_RETRIES)"
-#           sleep $RETRY_INTERVAL
-#           ((RETRY_COUNT++))
-#         else
-#           # The SQL container is ready
-#           echo "SQL Server container is ready!"
-#           break
-#         fi
-#       
-#       done
-#       
-#       # If the retry counter is equal to the maximum number of retries, then the container failed to start
-#       if [[ $RETRY_COUNT -eq $MAX_RETRIES ]]; then
-#         echo "SQL Server container is not ready after $MAX_RETRIES retries"
-#         exit 1
-#       fi
-#       
-# - task: DotNetCoreCLI@2
-#   displayName: C# Acceptance Tests
-#   inputs: 
-#     command: 'test'
-#     projects: '**/*.Tests.Acceptance.csproj'
-#     arguments: '--environment ASPNETCORE_ENVIRONMENT=ContinuousIntegration'
-#     envVars: 'ASPNETCORE_ENVIRONMENT=ContinuousIntegration'
-#     environmentVariables: |
-#       MESHCONFIGURATION__MAILBOXID=$(MESHCONFIGURATION__MAILBOXID)
-#       MESHCONFIGURATION__PASSWORD=$(MESHCONFIGURATION__PASSWORD)
-#       MESHCONFIGURATION__KEY=$(MESHCONFIGURATION__KEY)
-#       MESHCONFIGURATION__ROOTCERTIFICATE=$(MESHCONFIGURATION__ROOTCERTIFICATE)
-#       MESHCONFIGURATION__INTERMEDIATECERTIFICATES__0=$(MESHCONFIGURATION__INTERMEDIATECERTIFICATES__0)
-#       MESHCONFIGURATION__CLIENTCERTIFICATE=$(MESHCONFIGURATION__CLIENTCERTIFICATE)
-#       CRYPTOGRAPHY__PRIVATEKEY=$(CRYPTOGRAPHY__PRIVATEKEY)
-#       CRYPTOGRAPHY__PUBLICKEY=$(CRYPTOGRAPHY__PUBLICKEY)
-#       CRYPTOGRAPHY__PASSPHRASE=$(CRYPTOGRAPHY__PASSPHRASE)
-#       FTPDOWNLOAD__FTPSERVER=$(FTPDOWNLOAD__FTPSERVER)
-#       FTPDOWNLOAD__FTPPORT=$(FTPDOWNLOAD__FTPPORT)
-#       FTPDOWNLOAD__FTPPASSWORD=$(FTPDOWNLOAD__FTPPASSWORD)
-#       FTPDOWNLOAD__FTPUSERNAME=$(FTPDOWNLOAD__FTPUSERNAME)
-#       FTPDOWNLOAD__FTPKEY=$(FTPDOWNLOAD__FTPKEY)
-#       FTPDOWNLOAD__FTPPASSPHRASE=$(FTPDOWNLOAD__FTPPASSPHRASE)
-#       ONTOLOGYSETTINGS__TERMINOLOGYSERVERAUTHENTICATIONRELATIVEURL=$(ONTOLOGYSETTINGS__TERMINOLOGYSERVERAUTHENTICATIONRELATIVEURL)
-#       ONTOLOGYSETTINGS__TERMINOLOGYSERVERRESOURCERELATIVEURL=$(ONTOLOGYSETTINGS__TERMINOLOGYSERVERRESOURCERELATIVEURL)
-#       ONTOLOGYSETTINGS__CLIENTID=$(ONTOLOGYSETTINGS__CLIENTID)
-#       ONTOLOGYSETTINGS__CLIENTSECRET=$(ONTOLOGYSETTINGS__CLIENTSECRET)
-#
+  - task: DotNetCoreCLI@2
+    displayName: "Dotnet Build with Warnings as Errors"
+    inputs:
+      command: "build"
+      projects: "**/*.csproj"
+      arguments: "--warnaserror"
+ 
+  - task: DotNetCoreCLI@2
+    displayName: C# Unit Tests
+    inputs:
+      command: 'test'
+      projects: '**/*.Tests.Unit.csproj'
+ 
+  - task: Bash@3
+    enabled: true
+    displayName: Install Docker
+    inputs:
+      targetType: inline
+      script: >-
+        sudo apt update
+          
+        sudo apt install apt-transport-https ca-certificates curl
+        software-properties-common -y
+        
+        curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo
+        apt-key add -
+        
+        sudo add-apt-repository "deb [arch=amd64]
+        https://download.docker.com/linux/ubuntu bionic stable"
+        
+        sudo apt update
+        
+        apt-cache policy docker-ce
+        
+        sudo apt install docker-ce -y
+        
+        sudo systemctl start docker
+ 
+  - task: Bash@3
+    enabled: true
+    displayName: Pulling Required Docker Images for SQL Server
+    inputs:
+      targetType: inline
+      script: |-
+        sudo docker stop sql1
+ 
+        sudo docker rm sql1
+ 
+        sudo docker run -e "ACCEPT_EULA=Y" -e "MSSQL_SA_PASSWORD=1Password" \
+            -p 1433:1433 --name sql1 --hostname sql1 \
+            -d \
+            mcr.microsoft.com/mssql/server:2022-latest
+            
+  - task: Bash@3
+    enabled: true
+    displayName: Docker SQL Connection Test
+    inputs:
+      targetType: inline
+      script: |
+        CONTAINER_NAME="sql1"
+        # Set the maximum number of retries
+        MAX_RETRIES=10
+        # Set the retry interval in seconds
+        RETRY_INTERVAL=5
+        # Initialize the retry counter
+        RETRY_COUNT=0
+        
+        while [[ $RETRY_COUNT -lt $MAX_RETRIES ]]; do
+        
+          # Check if the SQL container is running
+          container_status=$(sudo docker inspect -f '{{.State.Status}}' $CONTAINER_NAME)
+        
+          if [[ $container_status != "running" ]]; then
+            # The SQL container is not running
+            echo "SQL Server container is not running. Retrying...(retry $RETRY_COUNT/$MAX_RETRIES)"
+            sleep $RETRY_INTERVAL
+            ((RETRY_COUNT++))
+            continue
+          fi
+        
+          # The SQL container is running
+        
+          # Wait for the SQL container to be ready
+          if [[ "$(sudo docker logs $CONTAINER_NAME | grep 'SQL Server is now ready for client connections' | wc -l)" -eq 0 ]]; then
+            echo "Waiting for SQL Server log entry stating its ready for connections...(retry $RETRY_COUNT/$MAX_RETRIES)"
+            sleep $RETRY_INTERVAL
+            ((RETRY_COUNT++))
+          else
+            # The SQL container is ready
+            echo "SQL Server container is ready!"
+            break
+          fi
+        
+        done
+        
+        # If the retry counter is equal to the maximum number of retries, then the container failed to start
+        if [[ $RETRY_COUNT -eq $MAX_RETRIES ]]; then
+          echo "SQL Server container is not ready after $MAX_RETRIES retries"
+          exit 1
+        fi
+        
+  - task: DotNetCoreCLI@2
+    displayName: C# Acceptance Tests
+    inputs: 
+      command: 'test'
+      projects: '**/*.Tests.Acceptance.csproj'
+      arguments: '--environment ASPNETCORE_ENVIRONMENT=ContinuousIntegration'
+      envVars: 'ASPNETCORE_ENVIRONMENT=ContinuousIntegration'
+      environmentVariables: |
+        MESHCONFIGURATION__MAILBOXID=$(MESHCONFIGURATION__MAILBOXID)
+        MESHCONFIGURATION__PASSWORD=$(MESHCONFIGURATION__PASSWORD)
+        MESHCONFIGURATION__KEY=$(MESHCONFIGURATION__KEY)
+        MESHCONFIGURATION__ROOTCERTIFICATE=$(MESHCONFIGURATION__ROOTCERTIFICATE)
+        MESHCONFIGURATION__INTERMEDIATECERTIFICATES__0=$(MESHCONFIGURATION__INTERMEDIATECERTIFICATES__0)
+        MESHCONFIGURATION__CLIENTCERTIFICATE=$(MESHCONFIGURATION__CLIENTCERTIFICATE)
+        CRYPTOGRAPHY__PRIVATEKEY=$(CRYPTOGRAPHY__PRIVATEKEY)
+        CRYPTOGRAPHY__PUBLICKEY=$(CRYPTOGRAPHY__PUBLICKEY)
+        CRYPTOGRAPHY__PASSPHRASE=$(CRYPTOGRAPHY__PASSPHRASE)
+        FTPDOWNLOAD__FTPSERVER=$(FTPDOWNLOAD__FTPSERVER)
+        FTPDOWNLOAD__FTPPORT=$(FTPDOWNLOAD__FTPPORT)
+        FTPDOWNLOAD__FTPPASSWORD=$(FTPDOWNLOAD__FTPPASSWORD)
+        FTPDOWNLOAD__FTPUSERNAME=$(FTPDOWNLOAD__FTPUSERNAME)
+        FTPDOWNLOAD__FTPKEY=$(FTPDOWNLOAD__FTPKEY)
+        FTPDOWNLOAD__FTPPASSPHRASE=$(FTPDOWNLOAD__FTPPASSPHRASE)
+        ONTOLOGYSETTINGS__TERMINOLOGYSERVERAUTHENTICATIONRELATIVEURL=$(ONTOLOGYSETTINGS__TERMINOLOGYSERVERAUTHENTICATIONRELATIVEURL)
+        ONTOLOGYSETTINGS__TERMINOLOGYSERVERRESOURCERELATIVEURL=$(ONTOLOGYSETTINGS__TERMINOLOGYSERVERRESOURCERELATIVEURL)
+        ONTOLOGYSETTINGS__CLIENTID=$(ONTOLOGYSETTINGS__CLIENTID)
+        ONTOLOGYSETTINGS__CLIENTSECRET=$(ONTOLOGYSETTINGS__CLIENTSECRET)
+ 
   - task: Npm@1
     displayName: NPM Install
     inputs:
@@ -289,14 +287,14 @@ steps:
       command: 'build'
       projects: '**/LHDS.Functions.Terminology.csproj'
       arguments: --output $(System.DefaultWorkingDirectory)/publish_output_terminology_func --configuration Release
-#     
-# - task: Npm@1 
-#   displayName: Run Code linting
-#   inputs:
-#     command: 'custom'
-#     workingDir: $(webProjectName)/ClientApp
-#     customCommand: 'run lint'
-#
+     
+  - task: Npm@1 
+    displayName: Run Code linting
+    inputs:
+      command: 'custom'
+      workingDir: $(webProjectName)/ClientApp
+      customCommand: 'run lint'
+
   #- task: Npm@1
   #  displayName: Client Tests
   #  inputs:

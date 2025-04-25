@@ -46,17 +46,18 @@ namespace LHDS.Core.Services.Foundations.HealthChecks.Checks.IngestionTracking
                 .Count(ingestionTracking =>
                     ingestionTracking.IsProcessing == true && ingestionTracking.UpdatedDate <= thresholdDateTime) ?? 0;
 
+            string message = stuckInProcessingCount == 0
+                ? $"Nothing to process. All up to date."
+                : $"{stuckInProcessingCount} files have been stuck in processing for more than the " +
+                    $"{thresholdMinutes} minute threshold.  Please see the logs for any issues and " +
+                        $"set the status for IsProcessing to FALSE so the queue can re-process them.";
+
             var vals = new Dictionary<string, object>
             {
                 { "stuckInProcessing", stuckInProcessingCount },
                 { "thresholdMinutes", thresholdMinutes.ToString() },
                 { "checkedAt", currentDateTime.ToString("o") },
-
-                { "Message",
-                  $"{stuckInProcessingCount} files have been stuck in processing for more than the " +
-                    $"{thresholdMinutes} minute threshold.  Please see the logs for any issues and " +
-                        $"set the status for IsProcessing to FALSE so the queue can re-process them."
-                },
+                { "message", message }
             };
 
             if (stuckInProcessingCount > 0)

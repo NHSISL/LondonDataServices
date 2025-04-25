@@ -73,11 +73,12 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.HealthChecks
             {
                 var entry = new HealthReportEntry(
                     status: HealthStatus.Healthy,
-                    description: $"Service {i} is healthy.",
+                    description: $"Service {i} is unhealthy.",
                     duration: TimeSpan.FromMilliseconds(new Random().Next(10, 500)),
                     exception: null,
                     data: new Dictionary<string, object>
                     {
+                        { GetRandomString(), GetRandomNumber() },
                         { "checkedAt", DateTime.UtcNow }
                     });
 

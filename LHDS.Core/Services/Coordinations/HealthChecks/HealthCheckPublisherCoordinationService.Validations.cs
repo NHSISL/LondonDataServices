@@ -6,7 +6,7 @@ using Microsoft.Extensions.Diagnostics.HealthChecks;
 
 namespace LHDS.Core.Services.Foundations.HealthChecks
 {
-    public partial class HealthCheckPublisherService : IHealthCheckPublisher
+    public partial class HealthCheckPublisherCoordinationService : IHealthCheckPublisher
     {
 
     }

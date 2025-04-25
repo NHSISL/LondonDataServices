@@ -1,37 +1,36 @@
-﻿// ---------------------------------------------------------
+// ---------------------------------------------------------
 // Copyright (c) North East London ICB. All rights reserved.
 // ---------------------------------------------------------
 
 using System;
-using System.Threading;
 using System.Threading.Tasks;
-using LHDS.Core.Brokers.Loggings;
-using LHDS.Core.Brokers.Telemetries;
 using Microsoft.ApplicationInsights.DataContracts;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
+using Moq;
+using Xunit;
 
-namespace LHDS.Core.Services.Foundations.HealthChecks
+namespace LHDS.Core.Tests.Unit.Services.Coordinations.HealthChecks
 {
-    public partial class HealthCheckPublisherService : IHealthCheckPublisher
+    public partial class HealthCheckPublisherCoordinationServiceTests
     {
-        private readonly ITelemetryBroker telemetryBroker;
-        private readonly ILoggingBroker loggingBroker;
-
-        public HealthCheckPublisherService(ITelemetryBroker telemetryBroker, ILoggingBroker loggingBroker)
+        [Fact]
+        public async Task ShouldPublishAsync()
         {
-            this.telemetryBroker = telemetryBroker;
-            this.loggingBroker = loggingBroker;
-        }
+            // given
+            int randomCount = GetRandomNumber();
+            HealthReport randomHealthReport = CreateHealthReport(count: randomCount);
+            HealthReport inputHealthReport = randomHealthReport;
 
-        public Task PublishAsync(HealthReport report, CancellationToken cancellationToken = default) =>
-        TryCatch(async () =>
-        {
-            foreach (var entry in report.Entries)
+            // when
+            await this.healthCheckPublisherService.PublishAsync(inputHealthReport, default);
+
+            // then
+            foreach (var entry in inputHealthReport.Entries)
             {
                 var eventTelemetry = new EventTelemetry(entry.Key);
-                eventTelemetry.Properties.Add("Status", report.Status.ToString());
+                eventTelemetry.Properties.Add("Status", inputHealthReport.Status.ToString());
 
-                eventTelemetry.Metrics.Add("StatusCode", report.Status switch
+                eventTelemetry.Metrics.Add("StatusCode", inputHealthReport.Status switch
                 {
                     HealthStatus.Healthy => 0,
                     HealthStatus.Degraded => 1,
@@ -47,7 +46,9 @@ namespace LHDS.Core.Services.Foundations.HealthChecks
                         var metric = new MetricTelemetry(reading.Key, metricValue);
                         eventTelemetry.Metrics.Add(reading.Key, metricValue);
 
-                        await telemetryBroker.TrackMetricAsync(metric);
+                        this.telemetryBrokerMock.Verify(broker =>
+                            broker.TrackMetricAsync(It.Is(SameMetricTelemetryAs(metric))),
+                                Times.Once());
                     }
                     else if (reading.Value is DateTime dateTime)
                     {
@@ -63,8 +64,13 @@ namespace LHDS.Core.Services.Foundations.HealthChecks
                     }
                 }
 
-                await telemetryBroker.TrackEventAsync(eventTelemetry);
+                this.telemetryBrokerMock.Verify(broker =>
+                    broker.TrackEventAsync(It.Is(SameEventTelemetryAs(eventTelemetry))),
+                        Times.Once());
             }
-        });
+
+            this.telemetryBrokerMock.VerifyNoOtherCalls();
+            this.loggingBrokerMock.VerifyNoOtherCalls();
+        }
     }
 }

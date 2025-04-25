@@ -4,13 +4,13 @@
 
 using System;
 using System.Threading.Tasks;
-using LHDS.Core.Models.Foundations.HealthChecks.Exceptions;
+using LHDS.Core.Models.Coordinations.HealthChecks.Exceptions;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
 using Xeptions;
 
 namespace LHDS.Core.Services.Foundations.HealthChecks
 {
-    public partial class HealthCheckPublisherService : IHealthCheckPublisher
+    public partial class HealthCheckPublisherCoordinationService : IHealthCheckPublisher
     {
         private delegate Task ReturningNothingFunction();
 
@@ -23,20 +23,20 @@ namespace LHDS.Core.Services.Foundations.HealthChecks
             catch (Exception exception)
             {
                 var failedHealthCheckPublisherServiceException =
-                    new FailedHealthCheckPublisherServiceException(
-                        message: "Failed health check publisher service error occurred, please contact support.",
+                    new FailedHealthCheckPublisherCoordinationServiceException(
+                        message: "Failed health check publisher coordination service error occurred, please contact support.",
                         innerException: exception);
 
                 throw await CreateAndLogServiceExceptionAsync(failedHealthCheckPublisherServiceException);
             }
         }
 
-        private async ValueTask<HealthCheckPublisherServiceException> CreateAndLogServiceExceptionAsync(
+        private async ValueTask<HealthCheckPublisherCoordinationServiceException> CreateAndLogServiceExceptionAsync(
             Xeption exception)
         {
             var healthCheckPublisherServiceException =
-                new HealthCheckPublisherServiceException(
-                    message: "Health check publisher service error occurred, please contact support.",
+                new HealthCheckPublisherCoordinationServiceException(
+                    message: "Health check publisher coordination service error occurred, please contact support.",
                     innerException: exception);
 
             await this.loggingBroker.LogCriticalAsync(healthCheckPublisherServiceException);

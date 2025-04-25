@@ -46,12 +46,11 @@ steps:
         else
           echo "draft tag not found"
         fi
-  - task: FileTransform@1
+  - task: FileTransform@2
     displayName: "Transform AppSettings for CI"
     inputs:
       folderPath: '$(System.DefaultWorkingDirectory)'
-      fileType: 'json'
-      targetFiles: |
+      jsonTargetFiles:  |
         LHDS.AdminPortal.Api/appsettings.ContinuousIntegration.json
         LHDS.Core.Tests.Acceptance/appsettings.ContinuousIntegration.json
         LHDS.ConfigImportExportTool.Tests.Acceptance/appsettings.ContinuousIntegration.json

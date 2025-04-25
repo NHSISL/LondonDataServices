@@ -48,18 +48,18 @@ namespace LHDS.Core.Services.Foundations.HealthChecks.Checks.IngestionTracking
                     ingestionTracking.IsProcessing == false &&
                     ingestionTracking.UpdatedDate <= thresholdDateTime) ?? 0;
 
+            string message = decryptionSlowOrStuckCount == 0
+                ? $"Nothing to decrypt. All up to date."
+                : $"{decryptionSlowOrStuckCount} files have not been decrypted " +
+                        $"within the {thresholdMinutes} minute threshold. Please " +
+                            $"check that the function is running and check logs for any issues.";
+
             var vals = new Dictionary<string, object>
             {
-                { "DecryptionSlowOrStuckCount", decryptionSlowOrStuckCount },
-                { "ThresholdMinutes", thresholdMinutes.ToString() },
-                { "CheckedAt", currentDateTime.ToString("o") },
-
-                {
-                    "Message",
-                    $"{decryptionSlowOrStuckCount} files have not been decrypted " +
-                        $"within the {thresholdMinutes} minute threshold. Please " +
-                            $"check that the function is running and check logs for any issues."
-                }
+                { "decryptionSlowOrStuckCount", decryptionSlowOrStuckCount },
+                { "thresholdMinutes", thresholdMinutes.ToString() },
+                { "checkedAt", currentDateTime.ToString("o") },
+                { "message", message }
             };
 
             if (decryptionSlowOrStuckCount > 0)

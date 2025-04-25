@@ -5,20 +5,20 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading;
 using System.Threading.Tasks;
 using LHDS.Core.Brokers.DateTimes;
 using LHDS.Core.Brokers.Storages.Sql;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
 
-namespace LHDS.Core.Services.Foundations.HealthChecks.Checks.IngestionTracking
+namespace LHDS.Core.Services.Foundations.HealthChecks.Checks.IngestionTracking.HealthItems
 {
-    public class IngestionTrackingDecryptionHealthCheckService : IHealthCheck
+    public class IngestionTrackingDecryptionHealthCheckService : IIngestionTrackingHealthItemService
     {
         private readonly IStorageBroker storageBroker;
         private readonly IConfiguration configuration;
         private readonly IDateTimeBroker dateTimeBroker;
+        private const string CheckName = "decryption";
 
         public IngestionTrackingDecryptionHealthCheckService(
             IStorageBroker storageBroker,
@@ -30,17 +30,15 @@ namespace LHDS.Core.Services.Foundations.HealthChecks.Checks.IngestionTracking
             this.dateTimeBroker = dateTimeBroker;
         }
 
-        public async Task<HealthCheckResult> CheckHealthAsync(
-            HealthCheckContext context,
-            CancellationToken cancellationToken = default)
+        public async ValueTask<HealthCheckResult> GetHealthStatusAsync()
         {
-            DateTimeOffset currentDateTime = await this.dateTimeBroker.GetCurrentDateTimeOffsetAsync();
+            DateTimeOffset currentDateTime = await dateTimeBroker.GetCurrentDateTimeOffsetAsync();
 
-            int thresholdMinutes = this.configuration
-                .GetValue<int>("HealthChecks:IngestionTracking:DecryptionThresholdMinutes", 1440);
+            int thresholdMinutes = configuration
+                .GetValue("HealthChecks:IngestionTracking:DecryptionThresholdMinutes", 1440);
 
             DateTimeOffset thresholdDateTime = currentDateTime.AddMinutes(-1 * thresholdMinutes);
-            var ingestionTrackingQuery = await this.storageBroker.SelectAllIngestionTrackingsAsync();
+            var ingestionTrackingQuery = await storageBroker.SelectAllIngestionTrackingsAsync();
 
             int decryptionSlowOrStuckCount = ingestionTrackingQuery?
                 .Count(ingestionTracking =>
@@ -56,6 +54,7 @@ namespace LHDS.Core.Services.Foundations.HealthChecks.Checks.IngestionTracking
 
             var vals = new Dictionary<string, object>
             {
+                { "description", "Decryption Queue" },
                 { "decryptionSlowOrStuckCount", decryptionSlowOrStuckCount },
                 { "thresholdMinutes", thresholdMinutes.ToString() },
                 { "checkedAt", currentDateTime.ToString("o") },
@@ -64,14 +63,18 @@ namespace LHDS.Core.Services.Foundations.HealthChecks.Checks.IngestionTracking
 
             if (decryptionSlowOrStuckCount > 0)
             {
+                vals.Add("status", HealthStatus.Degraded.ToString());
+
                 return HealthCheckResult.Degraded(
-                    description: "Ingestion Tracking - Decryption is slow or stuck.",
+                    description: CheckName,
                     data: vals);
             }
             else
             {
+                vals.Add("status", HealthStatus.Healthy.ToString());
+
                 return HealthCheckResult.Healthy(
-                    description: "Ingestion Tracking - Decryption is healthy.",
+                    description: CheckName,
                     data: vals);
             }
         }

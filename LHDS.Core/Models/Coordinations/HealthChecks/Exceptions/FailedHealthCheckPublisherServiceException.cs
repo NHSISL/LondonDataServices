@@ -5,11 +5,11 @@
 using System;
 using Xeptions;
 
-namespace LHDS.Core.Models.Foundations.HealthChecks.Exceptions
+namespace LHDS.Core.Models.Coordinations.HealthChecks.Exceptions
 {
-    public class HealthCheckPublisherServiceException : Xeption
+    public class FailedHealthCheckPublisherCoordinationServiceException : Xeption
     {
-        public HealthCheckPublisherServiceException(string message, Exception innerException)
+        public FailedHealthCheckPublisherCoordinationServiceException(string message, Exception innerException)
             : base(message, innerException)
         { }
     }

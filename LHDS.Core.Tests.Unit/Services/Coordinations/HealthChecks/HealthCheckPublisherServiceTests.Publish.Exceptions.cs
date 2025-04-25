@@ -5,15 +5,15 @@
 using System;
 using System.Threading.Tasks;
 using FluentAssertions;
-using LHDS.Core.Models.Foundations.HealthChecks.Exceptions;
+using LHDS.Core.Models.Coordinations.HealthChecks.Exceptions;
 using Microsoft.ApplicationInsights.DataContracts;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
 using Moq;
 using Xunit;
 
-namespace LHDS.Core.Tests.Unit.Services.Foundations.HealthChecks
+namespace LHDS.Core.Tests.Unit.Services.Coordinations.HealthChecks
 {
-    public partial class HealthCheckPublisherServiceTests
+    public partial class HealthCheckPublisherCoordinationServiceTests
     {
         [Fact]
         public async Task ShouldThrowServiceExceptionOnAddIfServiceErrorOccursAndLogItAsync()
@@ -25,12 +25,12 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.HealthChecks
             var serviceException = new Exception();
 
             var failedHealthCheckPublisherServiceException =
-                new FailedHealthCheckPublisherServiceException(
+                new FailedHealthCheckPublisherCoordinationServiceException(
                     message: "Failed health check publisher service error occurred, please contact support.",
                     innerException: serviceException);
 
             var expectedHealthCheckPublisherServiceException =
-                new HealthCheckPublisherServiceException(
+                new HealthCheckPublisherCoordinationServiceException(
                     message: "Health check publisher service error occurred, please contact support.",
                     innerException: failedHealthCheckPublisherServiceException);
 
@@ -39,8 +39,8 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.HealthChecks
                     .ThrowsAsync(serviceException);
 
             // when
-            HealthCheckPublisherServiceException actualHealthCheckPublisherServiceException =
-                await Assert.ThrowsAsync<HealthCheckPublisherServiceException>(
+            HealthCheckPublisherCoordinationServiceException actualHealthCheckPublisherServiceException =
+                await Assert.ThrowsAsync<HealthCheckPublisherCoordinationServiceException>(
                     () => this.healthCheckPublisherService.PublishAsync(someHealthReport));
 
             // then

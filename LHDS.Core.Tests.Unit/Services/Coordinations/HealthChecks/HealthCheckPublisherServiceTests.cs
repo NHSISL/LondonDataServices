@@ -15,22 +15,22 @@ using Moq;
 using Tynamix.ObjectFiller;
 using Xeptions;
 
-namespace LHDS.Core.Tests.Unit.Services.Foundations.HealthChecks
+namespace LHDS.Core.Tests.Unit.Services.Coordinations.HealthChecks
 {
-    public partial class HealthCheckPublisherServiceTests
+    public partial class HealthCheckPublisherCoordinationServiceTests
     {
         private readonly Mock<ITelemetryBroker> telemetryBrokerMock;
         private readonly Mock<ILoggingBroker> loggingBrokerMock;
-        private readonly HealthCheckPublisherService healthCheckPublisherService;
+        private readonly HealthCheckPublisherCoordinationService healthCheckPublisherService;
         private readonly CompareLogic compareLogic;
 
-        public HealthCheckPublisherServiceTests()
+        public HealthCheckPublisherCoordinationServiceTests()
         {
             this.compareLogic = new CompareLogic();
             this.telemetryBrokerMock = new Mock<ITelemetryBroker>();
             this.loggingBrokerMock = new Mock<ILoggingBroker>();
 
-            this.healthCheckPublisherService = new HealthCheckPublisherService(
+            this.healthCheckPublisherService = new HealthCheckPublisherCoordinationService(
                 telemetryBroker: this.telemetryBrokerMock.Object,
                 loggingBroker: this.loggingBrokerMock.Object);
         }

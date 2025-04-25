@@ -31,7 +31,8 @@ namespace LHDS.Core.Services.Foundations.HealthChecks
             }
         }
 
-        private async ValueTask<HealthCheckPublisherServiceException> CreateAndLogServiceExceptionAsync(Xeption exception)
+        private async ValueTask<HealthCheckPublisherServiceException> CreateAndLogServiceExceptionAsync(
+            Xeption exception)
         {
             var healthCheckPublisherServiceException =
                 new HealthCheckPublisherServiceException(

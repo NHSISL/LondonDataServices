@@ -30,21 +30,27 @@ namespace LHDS.Core.Services.Foundations.HealthChecks.Checks.IngestionTracking
             this.dateTimeBroker = dateTimeBroker;
         }
 
-        public async Task<HealthCheckResult> CheckHealthAsync(HealthCheckContext context, CancellationToken cancellationToken = default)
+        public async Task<HealthCheckResult> CheckHealthAsync(
+            HealthCheckContext context,
+            CancellationToken cancellationToken = default)
         {
             DateTimeOffset currentDateTime = await this.dateTimeBroker.GetCurrentDateTimeOffsetAsync();
-            int thresholdMinutes = this.configuration.GetValue<int>("IngestionTracking:ThresholdMinutes", 1440);
+
+            int thresholdMinutes = this.configuration
+                .GetValue<int>("HealthChecks:IngestionTracking:ProcessingThresholdMinutes", 1440);
+
             DateTimeOffset thresholdDateTime = currentDateTime.AddMinutes(-1 * thresholdMinutes);
             var ingestionTrackingQuery = await this.storageBroker.SelectAllIngestionTrackingsAsync();
 
-            var stuckInProcessingCount = ingestionTrackingQuery
+            var stuckInProcessingCount = ingestionTrackingQuery?
                 .Count(ingestionTracking =>
-                    ingestionTracking.IsProcessing == true && ingestionTracking.UpdatedDate <= thresholdDateTime);
+                    ingestionTracking.IsProcessing == true && ingestionTracking.UpdatedDate <= thresholdDateTime) ?? 0;
 
             var vals = new Dictionary<string, object>
             {
-                { "QueueLength", stuckInProcessingCount },
-                { "ThresholdMinutes", thresholdMinutes },
+                { "stuckInProcessing", stuckInProcessingCount },
+                { "thresholdMinutes", thresholdMinutes.ToString() },
+                { "checkedAt", currentDateTime.ToString("o") },
 
                 { "Message",
                   $"{stuckInProcessingCount} files have been stuck in processing for more than the " +

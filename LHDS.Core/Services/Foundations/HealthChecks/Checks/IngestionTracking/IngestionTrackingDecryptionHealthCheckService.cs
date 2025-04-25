@@ -30,28 +30,36 @@ namespace LHDS.Core.Services.Foundations.HealthChecks.Checks.IngestionTracking
             this.dateTimeBroker = dateTimeBroker;
         }
 
-        public async Task<HealthCheckResult> CheckHealthAsync(HealthCheckContext context, CancellationToken cancellationToken = default)
+        public async Task<HealthCheckResult> CheckHealthAsync(
+            HealthCheckContext context,
+            CancellationToken cancellationToken = default)
         {
             DateTimeOffset currentDateTime = await this.dateTimeBroker.GetCurrentDateTimeOffsetAsync();
-            int thresholdMinutes = this.configuration.GetValue<int>("IngestionTracking:ThresholdMinutes", 1440);
+
+            int thresholdMinutes = this.configuration
+                .GetValue<int>("HealthChecks:IngestionTracking:DecryptionThresholdMinutes", 1440);
+
             DateTimeOffset thresholdDateTime = currentDateTime.AddMinutes(-1 * thresholdMinutes);
             var ingestionTrackingQuery = await this.storageBroker.SelectAllIngestionTrackingsAsync();
 
-            var decryptionSlowOrStuckCount = ingestionTrackingQuery
-                .Count(ingestionTracking => ingestionTracking.Decrypted == false
-                    && ingestionTracking.IsProcessing == false
-                        && ingestionTracking.UpdatedDate <= thresholdDateTime);
+            int decryptionSlowOrStuckCount = ingestionTrackingQuery?
+                .Count(ingestionTracking =>
+                    ingestionTracking.Decrypted == false &&
+                    ingestionTracking.IsProcessing == false &&
+                    ingestionTracking.UpdatedDate <= thresholdDateTime) ?? 0;
 
             var vals = new Dictionary<string, object>
             {
-                { "QueueLength", decryptionSlowOrStuckCount },
-                { "ThresholdMinutes", thresholdMinutes },
+                { "DecryptionSlowOrStuckCount", decryptionSlowOrStuckCount },
+                { "ThresholdMinutes", thresholdMinutes.ToString() },
+                { "CheckedAt", currentDateTime.ToString("o") },
 
-                { "Message",
-                  $"{decryptionSlowOrStuckCount} files have not be decrypted within " +
-                    $"the {thresholdMinutes} minute threshold.  Please check that the function " +
-                        $"is running and logs for any issues."
-                },
+                {
+                    "Message",
+                    $"{decryptionSlowOrStuckCount} files have not been decrypted " +
+                        $"within the {thresholdMinutes} minute threshold. Please " +
+                            $"check that the function is running and check logs for any issues."
+                }
             };
 
             if (decryptionSlowOrStuckCount > 0)
@@ -68,4 +76,5 @@ namespace LHDS.Core.Services.Foundations.HealthChecks.Checks.IngestionTracking
             }
         }
     }
+
 }

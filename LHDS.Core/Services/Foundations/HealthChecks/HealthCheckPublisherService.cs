@@ -23,7 +23,7 @@ namespace LHDS.Core.Services.Foundations.HealthChecks
             this.loggingBroker = loggingBroker;
         }
 
-        public Task PublishAsync(HealthReport report, CancellationToken cancellationToken) =>
+        public Task PublishAsync(HealthReport report, CancellationToken cancellationToken = default) =>
         TryCatch(async () =>
         {
             foreach (var entry in report.Entries)

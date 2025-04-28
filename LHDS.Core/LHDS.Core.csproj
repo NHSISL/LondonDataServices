@@ -1,4 +1,4 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
 
 	<PropertyGroup>
 		<TargetFramework>net9.0</TargetFramework>
@@ -40,7 +40,7 @@
 		<PackageReference Include="Microsoft.Extensions.Azure" Version="1.11.0" />
 		<PackageReference Include="NEL.MESH" Version="1.0.0.8" />
 		<PackageReference Include="RESTFulSense" Version="3.1.0" />
-		<PackageReference Include="SSH.NET" Version="2024.2.0" />
+		<PackageReference Include="SSH.NET" Version="2025.0.0" />
 		<PackageReference Include="STX.EFCore.Client" Version="2.0.0" />
 		<PackageReference Include="Xeption" Version="2.8.0" />
 	</ItemGroup>

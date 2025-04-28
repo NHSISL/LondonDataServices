@@ -6,6 +6,7 @@ using System;
 using System.Threading.Tasks;
 using FluentAssertions;
 using Force.DeepCloner;
+using LHDS.Core.Models.Brokers.Securities;
 using LHDS.Core.Models.Foundations.DataTypes;
 using Moq;
 using Xunit;
@@ -17,41 +18,66 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.DataTypes
         [Fact]
         public async Task ShouldRemoveDataTypeByIdAsync()
         {
-            // given
-            Guid randomId = Guid.NewGuid();
-            Guid inputDataTypeId = randomId;
-            DataType randomDataType = CreateRandomDataType();
+            DateTimeOffset randomDateTimeOffset = GetRandomDateTimeOffset();
+            EntraUser randomEntraUser = CreateRandomEntraUser();
+            DataType randomDataType = CreateRandomDataType(randomDateTimeOffset, randomEntraUser.EntraUserId);
+            Guid inputDataTypeId = randomDataType.Id;
             DataType storageDataType = randomDataType;
-            DataType expectedInputDataType = storageDataType;
-            DataType deletedDataType = expectedInputDataType;
+            DataType dataSetWithDeleteAuditApplied = storageDataType.DeepClone();
+            dataSetWithDeleteAuditApplied.UpdatedBy = randomEntraUser.EntraUserId.ToString();
+            dataSetWithDeleteAuditApplied.UpdatedDate = randomDateTimeOffset;
+            DataType updatedDataType = dataSetWithDeleteAuditApplied;
+            DataType deletedDataType = updatedDataType;
             DataType expectedDataType = deletedDataType.DeepClone();
+
+            this.dateTimeBrokerMock.Setup(broker =>
+                broker.GetCurrentDateTimeOffsetAsync())
+                    .ReturnsAsync(randomDateTimeOffset);
+
+            this.securityBrokerMock.Setup(broker =>
+                broker.GetCurrentUserAsync())
+                    .ReturnsAsync(randomEntraUser);
 
             this.storageBrokerMock.Setup(broker =>
                 broker.SelectDataTypeByIdAsync(inputDataTypeId))
                     .ReturnsAsync(storageDataType);
 
             this.storageBrokerMock.Setup(broker =>
-                broker.DeleteDataTypeAsync(expectedInputDataType))
+                broker.UpdateDataTypeAsync(randomDataType))
+                    .ReturnsAsync(updatedDataType);
+
+            this.storageBrokerMock.Setup(broker =>
+                broker.DeleteDataTypeAsync(updatedDataType))
                     .ReturnsAsync(deletedDataType);
 
-            // when
-            DataType actualDataType = await this.dataTypeService
-                .RemoveDataTypeByIdAsync(inputDataTypeId);
+            DataType actualDataType = await this.dataTypeService.RemoveDataTypeByIdAsync(inputDataTypeId);
 
-            // then
             actualDataType.Should().BeEquivalentTo(expectedDataType);
 
             this.storageBrokerMock.Verify(broker =>
                 broker.SelectDataTypeByIdAsync(inputDataTypeId),
                     Times.Once);
 
+            this.dateTimeBrokerMock.Verify(broker =>
+                broker.GetCurrentDateTimeOffsetAsync(),
+                    Times.Once);
+
+            this.securityBrokerMock.Verify(broker =>
+                broker.GetCurrentUserAsync(),
+                    Times.Exactly(2));
+
             this.storageBrokerMock.Verify(broker =>
-                broker.DeleteDataTypeAsync(expectedInputDataType),
+                broker.UpdateDataTypeAsync(randomDataType),
+                    Times.Once);
+
+            this.storageBrokerMock.Verify(broker =>
+                broker.DeleteDataTypeAsync(updatedDataType),
                     Times.Once);
 
             this.storageBrokerMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
             this.dateTimeBrokerMock.VerifyNoOtherCalls();
+            this.securityBrokerMock.VerifyNoOtherCalls();
         }
     }
 }

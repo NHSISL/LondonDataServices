@@ -74,12 +74,20 @@ namespace LHDS.Core.Services.Foundations.DataTypes
             {
                 ValidateDataTypeId(dataTypeId);
 
-                DataType maybeDataType = await this.storageBroker
-                    .SelectDataTypeByIdAsync(dataTypeId);
+                DataType maybeDataType = await this.storageBroker.SelectDataTypeByIdAsync(dataTypeId);
 
                 ValidateStorageDataType(maybeDataType, dataTypeId);
 
-                return await this.storageBroker.DeleteDataTypeAsync(maybeDataType);
+                DataType dataTypeWithDeleteAuditApplied = await ApplyDeleteAuditAsync(maybeDataType);
+
+                DataType updatedDataType =
+                    await this.storageBroker.UpdateDataTypeAsync(dataTypeWithDeleteAuditApplied);
+
+                await ValidateAgainstStorageDataTypeOnDeleteAsync(
+                    updatedDataType,
+                    dataTypeWithDeleteAuditApplied);
+
+                return await this.storageBroker.DeleteDataTypeAsync(updatedDataType);
             });
 
         virtual internal async ValueTask<DataType> ApplyAddAuditAsync(DataType dataType)
@@ -103,6 +111,16 @@ namespace LHDS.Core.Services.Foundations.DataTypes
             dataType.UpdatedBy = auditUser?.EntraUserId.ToString() ?? string.Empty;
             dataType.UpdatedDate = auditDateTimeOffset;
 
+            return dataType;
+        }
+
+        virtual internal async ValueTask<DataType> ApplyDeleteAuditAsync(DataType dataType)
+        {
+            ValidateDataTypeIsNotNull(dataType);
+            var auditDateTimeOffset = await this.dateTimeBroker.GetCurrentDateTimeOffsetAsync();
+            var auditUser = await this.securityBroker.GetCurrentUserAsync();
+            dataType.UpdatedBy = auditUser?.EntraUserId.ToString() ?? string.Empty;
+            dataType.UpdatedDate = auditDateTimeOffset;
             return dataType;
         }
     }

@@ -18,6 +18,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.DataTypes
         [Fact]
         public async Task ShouldRemoveDataTypeByIdAsync()
         {
+            //Given
             DateTimeOffset randomDateTimeOffset = GetRandomDateTimeOffset();
             EntraUser randomEntraUser = CreateRandomEntraUser();
             DataType randomDataType = CreateRandomDataType(randomDateTimeOffset, randomEntraUser.EntraUserId);
@@ -50,8 +51,10 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.DataTypes
                 broker.DeleteDataTypeAsync(updatedDataType))
                     .ReturnsAsync(deletedDataType);
 
+            //When
             DataType actualDataType = await this.dataTypeService.RemoveDataTypeByIdAsync(inputDataTypeId);
 
+            //Then
             actualDataType.Should().BeEquivalentTo(expectedDataType);
 
             this.storageBrokerMock.Verify(broker =>

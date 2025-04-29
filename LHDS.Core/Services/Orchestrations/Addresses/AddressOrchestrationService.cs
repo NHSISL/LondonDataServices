@@ -32,6 +32,7 @@ namespace LHDS.Core.Services.Orchestrations.Addresses
         private readonly IDateTimeBroker dateTimeBroker;
         private readonly IAuditBroker auditBroker;
         private readonly ILoggingBroker loggingBroker;
+        private readonly int batchSize = 120000;
 
         public AddressOrchestrationService(
             IAddressProcessingService addressProcessingService,
@@ -347,7 +348,7 @@ namespace LHDS.Core.Services.Orchestrations.Addresses
         virtual internal async ValueTask ProcessDPAAddressesAsync(string dpaCsvFile)
         {
             int skipCounter = 0;
-            int batchSize = 120000;
+            int batchSize = this.batchSize;
 
             while ((await fileBroker.ReadLinesBatchAsync(dpaCsvFile, batchSize, skipCounter)).Any())
             {
@@ -419,11 +420,11 @@ namespace LHDS.Core.Services.Orchestrations.Addresses
             return addresses;
         }
 
-        virtual internal async ValueTask<List<Address>> MapBLPUDataToAddressesAsync(string blpuCsvFile)
+        virtual internal async ValueTask<List<Address>> MapBLPUDataToAddressesAsync(
+            string blpuCsvFile,
+            int batchSize,
+            int skipCounter)
         {
-            Func<string, bool> recordFilter = record =>
-                record.StartsWith("21,") || record.StartsWith("\"21\",");
-
             Dictionary<string, int> fieldMappings = new Dictionary<string, int>
             {
                 { "UPRN", 3 },
@@ -436,7 +437,8 @@ namespace LHDS.Core.Services.Orchestrations.Addresses
             List<BLPUAddress> blpuAddresses = await LoadAndMapCsvAsync<BLPUAddress>(
                 blpuCsvFile,
                 fieldMappings,
-                recordFilter);
+                batchSize,
+                skipCounter);
 
             var blpuAddressesWithoutDuplicates = blpuAddresses
                 .OrderBy(address => address.LogicalStatus)
@@ -464,7 +466,7 @@ namespace LHDS.Core.Services.Orchestrations.Addresses
         virtual internal async ValueTask ProcessLPIAddressesAsync(string lpiCsvFile)
         {
             int skipCounter = 0;
-            int batchSize = 120000;
+            int batchSize = this.batchSize;
 
             while ((await fileBroker.ReadLinesBatchAsync(lpiCsvFile, batchSize, skipCounter)).Any())
             {
@@ -489,34 +491,41 @@ namespace LHDS.Core.Services.Orchestrations.Addresses
 
         virtual internal async ValueTask ProcessBLPUAddressesAsync(string blpuCsvFile)
         {
-            List<Address> blpuAddresses = await MapBLPUDataToAddressesAsync(blpuCsvFile);
-            Dictionary<string, Address> blpuAddressesDict = blpuAddresses.ToDictionary(a => a.UPRN, a => a);
-            IQueryable<Address> addresses = await addressProcessingService.RetrieveAllAddressesAsync();
-            HashSet<string> blpuFileUprns = blpuAddresses.Select(a => a.UPRN).ToHashSet();
+            int skipCounter = 0;
+            int batchSize = this.batchSize;
 
-            List<Address> existingBlpuAddresses = addresses.Where(address =>
-                blpuFileUprns.Contains(address.UPRN)).ToList();
-
-            HashSet<string> existingBlpuUprns = existingBlpuAddresses.Select(a => a.UPRN).ToHashSet();
-
-            List<Address> newBlpuAddresses = blpuAddresses.Where(blpuAddress =>
-                !existingBlpuUprns.Contains(blpuAddress.UPRN)).ToList();
-
-            List<Address> updatedBlpuAddress = [];
-
-            foreach (Address existingAddress in existingBlpuAddresses)
+            while ((await fileBroker.ReadLinesBatchAsync(blpuCsvFile, batchSize, skipCounter)).Any())
             {
-                if (existingAddress.UPRN != null
-                    && blpuAddressesDict.TryGetValue(existingAddress.UPRN, out Address blpuAddress)
-                    && string.IsNullOrWhiteSpace(existingAddress.PostCode))
-                {
-                    existingAddress.PostCode = blpuAddress.PostCode;
-                    updatedBlpuAddress.Add(existingAddress);
-                }
-            }
+                List<Address> blpuAddresses = await MapBLPUDataToAddressesAsync(blpuCsvFile, batchSize, skipCounter);
+                skipCounter = skipCounter + batchSize;
+                Dictionary<string, Address> blpuAddressesDict = blpuAddresses.ToDictionary(a => a.UPRN, a => a);
+                IQueryable<Address> addresses = await addressProcessingService.RetrieveAllAddressesAsync();
+                HashSet<string> blpuFileUprns = blpuAddresses.Select(a => a.UPRN).ToHashSet();
 
-            await addressProcessingService.BulkAddAddressesAsync(newBlpuAddresses, blpuCsvFile);
-            await addressProcessingService.BulkModifyAddressesAsync(updatedBlpuAddress, blpuCsvFile);
+                List<Address> existingBlpuAddresses = addresses.Where(address =>
+                    blpuFileUprns.Contains(address.UPRN)).ToList();
+
+                HashSet<string> existingBlpuUprns = existingBlpuAddresses.Select(a => a.UPRN).ToHashSet();
+
+                List<Address> newBlpuAddresses = blpuAddresses.Where(blpuAddress =>
+                    !existingBlpuUprns.Contains(blpuAddress.UPRN)).ToList();
+
+                List<Address> updatedBlpuAddress = [];
+
+                foreach (Address existingAddress in existingBlpuAddresses)
+                {
+                    if (existingAddress.UPRN != null
+                        && blpuAddressesDict.TryGetValue(existingAddress.UPRN, out Address blpuAddress)
+                        && string.IsNullOrWhiteSpace(existingAddress.PostCode))
+                    {
+                        existingAddress.PostCode = blpuAddress.PostCode;
+                        updatedBlpuAddress.Add(existingAddress);
+                    }
+                }
+
+                await addressProcessingService.BulkAddAddressesAsync(newBlpuAddresses, blpuCsvFile);
+                await addressProcessingService.BulkModifyAddressesAsync(updatedBlpuAddress, blpuCsvFile);
+            }
         }
 
         virtual internal async ValueTask<List<Address>> MapStreetDescriptorDataToAddressesAsync(

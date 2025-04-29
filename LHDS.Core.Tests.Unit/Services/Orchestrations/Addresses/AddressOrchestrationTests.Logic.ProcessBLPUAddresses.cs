@@ -31,6 +31,9 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Addresses
 
             string randomFile = GetRandomString();
             string inputBlpuCsvFile = randomFile;
+            int inputSkipCounter = 0;
+            int inputBatchSize = this.batchSize;
+            List<string> returnedStringList = CreateRandomStringList();
             IQueryable<Address> existingAddresses = CreateRandomAddresses();
             IQueryable<Address> existingAddressesNoPostcodeDb = CreateRandomAddresses();
             IQueryable<Address> newBlpuewAddresses = CreateRandomAddresses();
@@ -55,8 +58,16 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Addresses
             List<Address> expectedModifiedAddresses = existingAddressesNoPostcodeDb.DeepClone().ToList();
             List<Address> expectedAddedAddresses = newBlpuewAddresses.DeepClone().ToList();
 
+            this.fileBrokerMock.Setup(broker =>
+                broker.ReadLinesBatchAsync(inputBlpuCsvFile, inputBatchSize, inputSkipCounter))
+                    .ReturnsAsync(returnedStringList);
+
+            this.fileBrokerMock.Setup(broker =>
+                broker.ReadLinesBatchAsync(inputBlpuCsvFile, inputBatchSize, inputSkipCounter + inputBatchSize))
+                    .ReturnsAsync([]);
+
             addressOrchestrationServiceMock.Setup(service =>
-                service.MapBLPUDataToAddressesAsync(inputBlpuCsvFile))
+                service.MapBLPUDataToAddressesAsync(inputBlpuCsvFile, inputBatchSize, inputSkipCounter))
                     .ReturnsAsync(blpuFileAddresses);
 
             this.addressProcessingServiceMock.Setup(service =>
@@ -69,8 +80,16 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Addresses
             await service.ProcessBLPUAddressesAsync(inputBlpuCsvFile);
 
             // Then
+            this.fileBrokerMock.Verify(broker =>
+                broker.ReadLinesBatchAsync(inputBlpuCsvFile, inputBatchSize, inputSkipCounter),
+                    Times.Once);
+
+            this.fileBrokerMock.Verify(broker =>
+                broker.ReadLinesBatchAsync(inputBlpuCsvFile, inputBatchSize, inputSkipCounter + inputBatchSize),
+                    Times.Once);
+
             addressOrchestrationServiceMock.Verify(service =>
-                service.MapBLPUDataToAddressesAsync(inputBlpuCsvFile),
+                service.MapBLPUDataToAddressesAsync(inputBlpuCsvFile, inputBatchSize, inputSkipCounter),
                     Times.Once());
 
             this.addressProcessingServiceMock.Verify(service =>

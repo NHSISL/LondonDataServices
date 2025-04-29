@@ -35,9 +35,6 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Addresses
             int inputBatchSize = GetRandomNumber();
             int inputSkipCounter = GetRandomNumber();
 
-            Func<string, bool> inputRecordFilter = record =>
-                record.StartsWith("24,") || record.StartsWith("\"24\",");
-
             Dictionary<string, int> inputFieldMappings = new Dictionary<string, int>
             {
                 { "UPRN", 3 },

@@ -529,11 +529,10 @@ namespace LHDS.Core.Services.Orchestrations.Addresses
         }
 
         virtual internal async ValueTask<List<Address>> MapStreetDescriptorDataToAddressesAsync(
-            string streetDescriptorCsvFile)
+            string streetDescriptorCsvFile,
+            int batchSize,
+            int skipCounter)
         {
-            Func<string, bool> recordFilter = record =>
-                record.StartsWith("15,") || record.StartsWith("\"15\",");
-
             Dictionary<string, int> fieldMappings = new Dictionary<string, int>
             {
                 { "USRN", 3 },
@@ -545,7 +544,8 @@ namespace LHDS.Core.Services.Orchestrations.Addresses
             List<StreetDescriptor> streetDescriptors = await LoadAndMapCsvAsync<StreetDescriptor>(
                 streetDescriptorCsvFile,
                 fieldMappings,
-                recordFilter);
+                batchSize,
+                skipCounter);
 
             List<Address> addresses = [];
 
@@ -567,33 +567,41 @@ namespace LHDS.Core.Services.Orchestrations.Addresses
 
         virtual internal async ValueTask ProcessStreetDescriptorDataAsync(string streetDescriptorCsvFile)
         {
-            List<Address> streetDescriptorAddresses =
-                await MapStreetDescriptorDataToAddressesAsync(streetDescriptorCsvFile);
+            int skipCounter = 0;
+            int batchSize = this.batchSize;
 
-            Dictionary<string, Address> streetDescriptorsDict =
-                streetDescriptorAddresses.ToDictionary(a => a.USRN, a => a);
-
-            IQueryable<Address> addresses = await this.addressProcessingService.RetrieveAllAddressesAsync();
-
-            IQueryable<Address> missingSreetDataAddresses = addresses
-                .Where(address => string.IsNullOrWhiteSpace(address.Thoroughfare)
-                    || string.IsNullOrWhiteSpace(address.PostTown));
-
-            List<Address> updatedAddresses = [];
-
-            foreach (Address address in missingSreetDataAddresses)
+            while ((await fileBroker.ReadLinesBatchAsync(streetDescriptorCsvFile, batchSize, skipCounter)).Any())
             {
-                if (address.USRN != null
-                    && streetDescriptorsDict.TryGetValue(address.USRN, out Address streetDescriptor))
-                {
-                    address.Thoroughfare = streetDescriptor.Thoroughfare;
-                    address.DependentLocality = streetDescriptor.DependentLocality;
-                    address.PostTown = streetDescriptor.PostTown;
-                    updatedAddresses.Add(address);
-                }
-            }
+                List<Address> streetDescriptorAddresses =
+                    await MapStreetDescriptorDataToAddressesAsync(streetDescriptorCsvFile, batchSize, skipCounter);
 
-            await addressProcessingService.BulkModifyAddressesAsync(updatedAddresses, streetDescriptorCsvFile);
+                skipCounter = skipCounter + batchSize;
+
+                Dictionary<string, Address> streetDescriptorsDict =
+                    streetDescriptorAddresses.ToDictionary(a => a.USRN, a => a);
+
+                IQueryable<Address> addresses = await this.addressProcessingService.RetrieveAllAddressesAsync();
+
+                IQueryable<Address> missingSreetDataAddresses = addresses
+                    .Where(address => string.IsNullOrWhiteSpace(address.Thoroughfare)
+                        || string.IsNullOrWhiteSpace(address.PostTown));
+
+                List<Address> updatedAddresses = [];
+
+                foreach (Address address in missingSreetDataAddresses)
+                {
+                    if (address.USRN != null
+                        && streetDescriptorsDict.TryGetValue(address.USRN, out Address streetDescriptor))
+                    {
+                        address.Thoroughfare = streetDescriptor.Thoroughfare;
+                        address.DependentLocality = streetDescriptor.DependentLocality;
+                        address.PostTown = streetDescriptor.PostTown;
+                        updatedAddresses.Add(address);
+                    }
+                }
+
+                await addressProcessingService.BulkModifyAddressesAsync(updatedAddresses, streetDescriptorCsvFile);
+            }
         }
 
         public ValueTask SyncAddressesWithAssignAsync()

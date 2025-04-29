@@ -32,7 +32,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Addresses
             string randomFile = GetRandomString();
             string inputDpaCsvFile = randomFile;
             int inputSkipCounter = 0;
-            int inputBatchSize = 120000;
+            int inputBatchSize = this.batchSize;
             List<string> returnedStringList = CreateRandomStringList();
             IQueryable<Address> randomExistingAddresses = CreateRandomAddresses(2);
             IQueryable<Address> existingAddresses = randomExistingAddresses.DeepClone();

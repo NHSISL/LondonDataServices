@@ -32,6 +32,8 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Addresses
             { CallBase = true };
 
             string inputCsvFileName = GetRandomString();
+            int inputBatchSize = GetRandomNumber();
+            int inputSkipCounter = GetRandomNumber();
 
             Func<string, bool> inputRecordFilter = record =>
                 record.StartsWith("24,") || record.StartsWith("\"24\",");
@@ -173,7 +175,8 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Addresses
                 service.LoadAndMapCsvAsync<LPIAddress>(
                     inputCsvFileName,
                     inputFieldMappings,
-                    It.IsAny<Func<string, bool>>()))
+                    inputBatchSize,
+                    inputSkipCounter))
                         .ReturnsAsync(outputLpiAddresses);
 
             for (int i = 0; i < inputLpiAddresses.Count; i++)
@@ -186,7 +189,8 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Addresses
             AddressOrchestrationService service = addressOrchestrationServiceMock.Object;
 
             // When
-            List<Address> actualAddresses = await service.MapLPIDataToAddressesAsync(inputCsvFileName);
+            List<Address> actualAddresses = await service
+                .MapLPIDataToAddressesAsync(inputCsvFileName, inputBatchSize, inputSkipCounter);
 
             // Then
             actualAddresses.Should().BeEquivalentTo(expectedAddresses);
@@ -195,7 +199,8 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Addresses
                 service.LoadAndMapCsvAsync<LPIAddress>(
                     inputCsvFileName,
                     inputFieldMappings,
-                    It.IsAny<Func<string, bool>>()),
+                    inputBatchSize,
+                    inputSkipCounter),
                         Times.Once);
 
             for (int i = 0; i < inputLpiAddresses.Count; i++)

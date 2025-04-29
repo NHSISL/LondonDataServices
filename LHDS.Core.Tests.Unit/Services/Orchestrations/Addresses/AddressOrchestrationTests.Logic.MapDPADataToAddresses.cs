@@ -2,7 +2,6 @@
 // Copyright (c) North East London ICB. All rights reserved.
 // ---------------------------------------------------------
 
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -32,9 +31,8 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Addresses
             { CallBase = true };
 
             string inputCsvFileName = GetRandomString();
-
-            Func<string, bool> recordFilter = record =>
-                record.StartsWith("28,") || record.StartsWith("\"28\",");
+            int inputBatchSize = GetRandomNumber();
+            int inputSkipCounter = GetRandomNumber();
 
             Dictionary<string, int> fieldMappings = new Dictionary<string, int>
             {
@@ -61,13 +59,15 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Addresses
                 service.LoadAndMapCsvAsync<Address>(
                     inputCsvFileName,
                     fieldMappings,
-                    It.IsAny<Func<string, bool>>()))
+                    inputBatchSize,
+                    inputSkipCounter))
                         .ReturnsAsync(outputAddresses);
 
             AddressOrchestrationService service = addressOrchestrationServiceMock.Object;
 
             // When
-            List<Address> actualAddresses = await service.MapDPADataToAddressesAsync(inputCsvFileName);
+            List<Address> actualAddresses = await service
+                .MapDPADataToAddressesAsync(inputCsvFileName, inputBatchSize, inputSkipCounter);
 
             // Then
             actualAddresses.Should().BeEquivalentTo(expectedAddresses);
@@ -76,7 +76,8 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Addresses
                 service.LoadAndMapCsvAsync<Address>(
                     inputCsvFileName,
                     fieldMappings,
-                    It.IsAny<Func<string, bool>>()),
+                    inputBatchSize,
+                    inputSkipCounter),
                         Times.Once);
 
             this.fileBrokerMock.VerifyNoOtherCalls();

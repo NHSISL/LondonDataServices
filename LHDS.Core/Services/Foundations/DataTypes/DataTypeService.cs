@@ -73,11 +73,8 @@ namespace LHDS.Core.Services.Foundations.DataTypes
             TryCatch(async () =>
             {
                 ValidateDataTypeId(dataTypeId);
-
                 DataType maybeDataType = await this.storageBroker.SelectDataTypeByIdAsync(dataTypeId);
-
                 ValidateStorageDataType(maybeDataType, dataTypeId);
-
                 DataType dataTypeWithDeleteAuditApplied = await ApplyDeleteAuditAsync(maybeDataType);
 
                 DataType updatedDataType =

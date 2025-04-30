@@ -119,6 +119,37 @@ namespace LHDS.Core.Services.Foundations.DataTypes
                 Parameter: nameof(DataType.UpdatedDate)));
         }
 
+        private async ValueTask ValidateAgainstStorageDataTypeOnDeleteAsync(DataType dataType, DataType maybeDataType)
+        {
+            EntraUser auditUser = await this.securityBroker.GetCurrentUserAsync();
+
+            Validate(
+                (Rule: IsNotSame(
+                    dataType.CreatedDate,
+                    maybeDataType.CreatedDate,
+                    nameof(maybeDataType.CreatedDate)),
+                 Parameter: nameof(DataType.CreatedDate)),
+
+                (Rule: IsNotSame(
+                    dataType.CreatedBy,
+                    maybeDataType.CreatedBy,
+                    nameof(maybeDataType.CreatedBy)),
+                 Parameter: nameof(DataType.CreatedBy)),
+
+                (Rule: IsNotSame(
+                    maybeDataType.UpdatedDate,
+                    dataType.UpdatedDate,
+                    nameof(DataType.UpdatedDate)),
+                 Parameter: nameof(DataType.UpdatedDate)),
+
+                (Rule: IsNotSame(
+                    auditUser.EntraUserId.ToString(),
+                    dataType.UpdatedBy,
+                    nameof(DataType.UpdatedBy)),
+                 Parameter: nameof(DataType.UpdatedBy))
+            );
+        }
+
         private static dynamic IsInvalid(Guid id) => new
         {
             Condition = id == Guid.Empty,

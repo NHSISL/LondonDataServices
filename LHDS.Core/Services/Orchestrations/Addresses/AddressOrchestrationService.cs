@@ -31,7 +31,7 @@ namespace LHDS.Core.Services.Orchestrations.Addresses
         private readonly IDateTimeBroker dateTimeBroker;
         private readonly IAuditBroker auditBroker;
         private readonly ILoggingBroker loggingBroker;
-        private readonly int batchSize = 120000;
+        private const int BatchSize = 120000;
 
         public AddressOrchestrationService(
             IAddressProcessingService addressProcessingService,
@@ -316,7 +316,7 @@ namespace LHDS.Core.Services.Orchestrations.Addresses
         virtual internal async ValueTask ProcessDPAAddressesAsync(string dpaCsvFile)
         {
             int skipCounter = 0;
-            int batchSize = this.batchSize;
+            int batchSize = BatchSize;
 
             while ((await fileBroker.ReadLinesBatchAsync(dpaCsvFile, batchSize, skipCounter)).Any())
             {
@@ -434,7 +434,7 @@ namespace LHDS.Core.Services.Orchestrations.Addresses
         virtual internal async ValueTask ProcessLPIAddressesAsync(string lpiCsvFile)
         {
             int skipCounter = 0;
-            int batchSize = this.batchSize;
+            int batchSize = BatchSize;
 
             while ((await fileBroker.ReadLinesBatchAsync(lpiCsvFile, batchSize, skipCounter)).Any())
             {
@@ -460,7 +460,7 @@ namespace LHDS.Core.Services.Orchestrations.Addresses
         virtual internal async ValueTask ProcessBLPUAddressesAsync(string blpuCsvFile)
         {
             int skipCounter = 0;
-            int batchSize = this.batchSize;
+            int batchSize = BatchSize;
 
             while ((await fileBroker.ReadLinesBatchAsync(blpuCsvFile, batchSize, skipCounter)).Any())
             {
@@ -536,7 +536,7 @@ namespace LHDS.Core.Services.Orchestrations.Addresses
         virtual internal async ValueTask ProcessStreetDescriptorDataAsync(string streetDescriptorCsvFile)
         {
             int skipCounter = 0;
-            int batchSize = this.batchSize;
+            int batchSize = BatchSize;
 
             while ((await fileBroker.ReadLinesBatchAsync(streetDescriptorCsvFile, batchSize, skipCounter)).Any())
             {

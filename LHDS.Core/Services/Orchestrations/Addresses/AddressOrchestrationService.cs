@@ -7,7 +7,6 @@ using System.Collections.Generic;
 using System.IO;
 using System.IO.Compression;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using LHDS.Core.Brokers.Audits;
 using LHDS.Core.Brokers.CsvHelpers;
@@ -182,37 +181,6 @@ namespace LHDS.Core.Services.Orchestrations.Addresses
                     $"Unable to extract {exceptions.Count} address files.",
                     exceptions);
             }
-        }
-
-        virtual internal async ValueTask<List<T>> LoadAndMapCsvAsync<T>(
-            string filePath,
-            Dictionary<string, int> fieldMappings,
-            Func<string, bool> recordFilterPredicate)
-        {
-            bool fileExists = await this.fileBroker.CheckIfFileExistsAsync(filePath);
-
-            if (!fileExists)
-            {
-                throw new InvalidFileAddressOrchestrationException(
-                    message: $"The file {filePath} could not be found.");
-            }
-
-            byte[] csvData = await fileBroker.ReadFileAsync(filePath);
-            string stringData = Encoding.UTF8.GetString(csvData);
-
-            List<string> records = stringData.Split(
-                new[] { "\r\n", "\n" }, StringSplitOptions.None).ToList();
-
-            List<string> filteredRecords = records
-                .Where(recordFilterPredicate)
-                .ToList();
-
-            string filteredCsv = string.Join(Environment.NewLine, filteredRecords);
-
-            List<T> mappedObjects = await this.csvHelperBroker
-                .MapCsvToObjectAsync<T>(filteredCsv, hasHeaderRecord: false, fieldMappings);
-
-            return mappedObjects;
         }
 
         virtual internal async ValueTask<List<T>> LoadAndMapCsvAsync<T>(

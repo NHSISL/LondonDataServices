@@ -571,10 +571,5 @@ namespace LHDS.Core.Services.Orchestrations.Addresses
                 await addressProcessingService.BulkModifyAddressesAsync(updatedAddresses, streetDescriptorCsvFile);
             }
         }
-
-        public ValueTask SyncAddressesWithAssignAsync()
-        {
-            throw new NotImplementedException();
-        }
     }
 }

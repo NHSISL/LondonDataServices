@@ -317,43 +317,63 @@ namespace LHDS.Core.Services.Orchestrations.Addresses
         {
             int skipCounter = 0;
             int batchSize = BatchSize;
+            var exceptions = new List<Exception>();
 
             while ((await fileBroker.ReadLinesBatchAsync(dpaCsvFile, batchSize, skipCounter)).Any())
             {
-                List<Address> dpaAddresses = await MapDPADataToAddressesAsync(dpaCsvFile, batchSize, skipCounter);
-                skipCounter = skipCounter + batchSize;
-                Dictionary<string, Address> dpaAddressesDict = dpaAddresses.ToDictionary(a => a.UPRN, a => a);
-                IQueryable<Address> addresses = await addressProcessingService.RetrieveAllAddressesAsync();
-                HashSet<string> dpaFileUprns = dpaAddresses.Select(a => a.UPRN).ToHashSet();
-
-                List<Address> existingDpaAddresses = addresses.Where(address =>
-                    dpaFileUprns.Contains(address.UPRN)).ToList();
-
-                HashSet<string> existingDpaUprns = existingDpaAddresses.Select(a => a.UPRN).ToHashSet();
-
-                List<Address> newDpaAddresses = dpaAddresses.Where(dpaAddress =>
-                    !existingDpaUprns.Contains(dpaAddress.UPRN)).ToList();
-
-                foreach (Address address in existingDpaAddresses)
+                try
                 {
-                    if (address.UPRN != null && dpaAddressesDict.TryGetValue(address.UPRN, out Address dpaAddress))
-                    {
-                        address.OrganisationName = dpaAddress.OrganisationName;
-                        address.DepartmentName = dpaAddress.DepartmentName;
-                        address.SubBuildingName = dpaAddress.SubBuildingName;
-                        address.BuildingName = dpaAddress.BuildingName;
-                        address.BuildingNumber = dpaAddress.BuildingNumber;
-                        address.DependentThoroughfare = dpaAddress.DependentThoroughfare;
-                        address.Thoroughfare = dpaAddress.Thoroughfare;
-                        address.DoubleDependentLocality = dpaAddress.DoubleDependentLocality;
-                        address.DependentLocality = dpaAddress.DependentLocality;
-                        address.PostTown = dpaAddress.PostTown;
-                        address.PostCode = dpaAddress.PostCode;
-                    }
-                }
+                    List<Address> dpaAddresses = await MapDPADataToAddressesAsync(dpaCsvFile, batchSize, skipCounter);
+                    Dictionary<string, Address> dpaAddressesDict = dpaAddresses.ToDictionary(a => a.UPRN, a => a);
+                    IQueryable<Address> addresses = await addressProcessingService.RetrieveAllAddressesAsync();
+                    HashSet<string> dpaFileUprns = dpaAddresses.Select(a => a.UPRN).ToHashSet();
 
-                await addressProcessingService.BulkAddAddressesAsync(newDpaAddresses, dpaCsvFile);
-                await addressProcessingService.BulkModifyAddressesAsync(existingDpaAddresses, dpaCsvFile);
+                    List<Address> existingDpaAddresses = addresses.Where(address =>
+                        dpaFileUprns.Contains(address.UPRN)).ToList();
+
+                    HashSet<string> existingDpaUprns = existingDpaAddresses.Select(a => a.UPRN).ToHashSet();
+
+                    List<Address> newDpaAddresses = dpaAddresses.Where(dpaAddress =>
+                        !existingDpaUprns.Contains(dpaAddress.UPRN)).ToList();
+
+                    foreach (Address address in existingDpaAddresses)
+                    {
+                        if (address.UPRN != null && dpaAddressesDict.TryGetValue(address.UPRN, out Address dpaAddress))
+                        {
+                            address.OrganisationName = dpaAddress.OrganisationName;
+                            address.DepartmentName = dpaAddress.DepartmentName;
+                            address.SubBuildingName = dpaAddress.SubBuildingName;
+                            address.BuildingName = dpaAddress.BuildingName;
+                            address.BuildingNumber = dpaAddress.BuildingNumber;
+                            address.DependentThoroughfare = dpaAddress.DependentThoroughfare;
+                            address.Thoroughfare = dpaAddress.Thoroughfare;
+                            address.DoubleDependentLocality = dpaAddress.DoubleDependentLocality;
+                            address.DependentLocality = dpaAddress.DependentLocality;
+                            address.PostTown = dpaAddress.PostTown;
+                            address.PostCode = dpaAddress.PostCode;
+                        }
+                    }
+
+                    await addressProcessingService.BulkAddAddressesAsync(newDpaAddresses, dpaCsvFile);
+                    await addressProcessingService.BulkModifyAddressesAsync(existingDpaAddresses, dpaCsvFile);
+                    skipCounter = skipCounter + batchSize;
+                }
+                catch (Exception ex)
+                {
+                    ((Xeption)ex).AddData(
+                        $"DpaExtractionError in batch between lines {skipCounter} and {skipCounter + batchSize}.",
+                        dpaCsvFile);
+
+                    exceptions.Add(ex);
+                    skipCounter = skipCounter + batchSize;
+                }
+            }
+
+            if (exceptions.Any())
+            {
+                throw new AggregateException(
+                    $"Errors occurred during loading of {exceptions.Count} batches.",
+                    exceptions);
             }
         }
 

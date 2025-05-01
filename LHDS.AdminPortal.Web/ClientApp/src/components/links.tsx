@@ -42,11 +42,9 @@ export const PublicLink = ({ to, children, className }: PublicLinkParameters): R
 
     return (
         <NavItem>
-            <LinkContainer to={to} >
-                <NavLink className={className}>
-                    {children}
-                </NavLink>
-            </LinkContainer>
+            <NavLink as={Link} to={to} className={className}>
+                {children}
+            </NavLink>
         </NavItem>
     )
 }
@@ -59,7 +57,7 @@ export const SecuredLink = ({ to, children, icon, allowedRoles = [], deniedRoles
 
     const userRoles = (): Array<string> => {
         if (accounts.length && accounts[0].idTokenClaims && accounts[0].idTokenClaims.roles) {
-             return accounts[0].idTokenClaims.roles;
+            return accounts[0].idTokenClaims.roles;
         }
 
         return []

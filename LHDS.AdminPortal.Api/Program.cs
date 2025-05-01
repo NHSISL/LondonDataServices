@@ -243,6 +243,7 @@ namespace LHDS.AdminPortal.Api
 
         private static void AddBrokers(IServiceCollection services, IConfiguration configuration)
         {
+            ValidateAppInsightsCinfiguration(configuration);
             services.AddSingleton<IConfiguration>(_ => configuration);
             services.AddTransient<IDateTimeBroker, DateTimeBroker>();
             services.AddTransient<IIdentifierBroker, IdentifierBroker>();
@@ -307,6 +308,12 @@ namespace LHDS.AdminPortal.Api
 
                 (Rule: IsInvalid(blobStorageSettings.AzureTenantId),
                     Parameter: "blobStorage__azureTenantId"));
+        }
+
+        private static void ValidateAppInsightsCinfiguration(IConfiguration configuration)
+        {
+            string connectionString = configuration["ApplicationInsights:ConnectionString"] ?? string.Empty;
+            Validate((Rule: IsInvalid(connectionString), Parameter: "applicationInsights__connectionString"));
         }
 
         private static void ValidateBlobContainers(BlobContainers blobContainers)

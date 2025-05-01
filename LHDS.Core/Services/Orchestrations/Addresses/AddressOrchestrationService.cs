@@ -597,38 +597,59 @@ namespace LHDS.Core.Services.Orchestrations.Addresses
         {
             int skipCounter = 0;
             int batchSize = BatchSize;
+            var exceptions = new List<Exception>();
 
             while ((await fileBroker.ReadLinesBatchAsync(streetDescriptorCsvFile, batchSize, skipCounter)).Any())
             {
-                List<Address> streetDescriptorAddresses =
+                try
+                {
+                    List<Address> streetDescriptorAddresses =
                     await MapStreetDescriptorDataToAddressesAsync(streetDescriptorCsvFile, batchSize, skipCounter);
 
-                skipCounter = skipCounter + batchSize;
+                    Dictionary<string, Address> streetDescriptorsDict =
+                        streetDescriptorAddresses.ToDictionary(a => a.USRN, a => a);
 
-                Dictionary<string, Address> streetDescriptorsDict =
-                    streetDescriptorAddresses.ToDictionary(a => a.USRN, a => a);
+                    IQueryable<Address> addresses = await this.addressProcessingService.RetrieveAllAddressesAsync();
 
-                IQueryable<Address> addresses = await this.addressProcessingService.RetrieveAllAddressesAsync();
+                    IQueryable<Address> missingSreetDataAddresses = addresses
+                        .Where(address => string.IsNullOrWhiteSpace(address.Thoroughfare)
+                            || string.IsNullOrWhiteSpace(address.PostTown));
 
-                IQueryable<Address> missingSreetDataAddresses = addresses
-                    .Where(address => string.IsNullOrWhiteSpace(address.Thoroughfare)
-                        || string.IsNullOrWhiteSpace(address.PostTown));
+                    List<Address> updatedAddresses = [];
 
-                List<Address> updatedAddresses = [];
-
-                foreach (Address address in missingSreetDataAddresses)
-                {
-                    if (address.USRN != null
-                        && streetDescriptorsDict.TryGetValue(address.USRN, out Address streetDescriptor))
+                    foreach (Address address in missingSreetDataAddresses)
                     {
-                        address.Thoroughfare = streetDescriptor.Thoroughfare;
-                        address.DependentLocality = streetDescriptor.DependentLocality;
-                        address.PostTown = streetDescriptor.PostTown;
-                        updatedAddresses.Add(address);
+                        if (address.USRN != null
+                            && streetDescriptorsDict.TryGetValue(address.USRN, out Address streetDescriptor))
+                        {
+                            address.Thoroughfare = streetDescriptor.Thoroughfare;
+                            address.DependentLocality = streetDescriptor.DependentLocality;
+                            address.PostTown = streetDescriptor.PostTown;
+                            updatedAddresses.Add(address);
+                        }
                     }
-                }
 
-                await addressProcessingService.BulkModifyAddressesAsync(updatedAddresses, streetDescriptorCsvFile);
+                    await addressProcessingService.BulkModifyAddressesAsync(updatedAddresses, streetDescriptorCsvFile);
+                    skipCounter = skipCounter + batchSize;
+                }
+                catch (Exception ex)
+                {
+                    ((Xeption)ex).AddData(
+                        $"StreetDescriptorsExtractionError in batch between " +
+                        $"lines {skipCounter} and {skipCounter + batchSize}.",
+                        streetDescriptorCsvFile);
+
+                    exceptions.Add(ex);
+                    skipCounter = skipCounter + batchSize;
+                }
+            }
+
+            if (exceptions.Any())
+            {
+                throw new AggregateException(
+                    $"Errors occurred during loading of {exceptions.Count} batches.",
+                    exceptions);
+
             }
         }
     }

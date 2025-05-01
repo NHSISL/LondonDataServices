@@ -5,7 +5,6 @@ import { faHome, faDatabase, faCog, faMapMarker, faUserLock, faSitemap } from '@
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import React, { ReactElement } from 'react';
 import { NavItem, NavLink } from 'react-bootstrap';
-import { LinkContainer } from 'react-router-bootstrap'
 import { Link } from 'react-router-dom';
 
 const iconMapping: Record<string, IconProp | undefined> = {

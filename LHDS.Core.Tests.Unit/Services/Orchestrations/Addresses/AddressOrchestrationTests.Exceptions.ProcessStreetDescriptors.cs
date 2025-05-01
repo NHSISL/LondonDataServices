@@ -36,16 +36,25 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Addresses
             Xeption streetDescriptorsException = new Xeption();
 
             this.fileBrokerMock.Setup(broker =>
-                broker.ReadLinesBatchAsync(streetDescriptorsCsvFilePath, inputBatchSize, inputSkipCounter))
-                    .ReturnsAsync(returnedStringList);
+                broker.ReadLinesBatchAsync(
+                    streetDescriptorsCsvFilePath,
+                    inputBatchSize,
+                    inputSkipCounter))
+                        .ReturnsAsync(returnedStringList);
 
             addressOrchestrationServiceMock.Setup(service =>
-                service.MapStreetDescriptorDataToAddressesAsync(streetDescriptorsCsvFilePath, inputBatchSize, inputSkipCounter))
-                    .ThrowsAsync(streetDescriptorsException);
+                service.MapStreetDescriptorDataToAddressesAsync(
+                    streetDescriptorsCsvFilePath,
+                    inputBatchSize,
+                    inputSkipCounter))
+                        .ThrowsAsync(streetDescriptorsException);
 
             this.fileBrokerMock.Setup(broker =>
-                broker.ReadLinesBatchAsync(streetDescriptorsCsvFilePath, inputBatchSize, inputSkipCounter + inputBatchSize))
-                    .ReturnsAsync([]);
+                broker.ReadLinesBatchAsync(
+                    streetDescriptorsCsvFilePath,
+                    inputBatchSize,
+                    inputSkipCounter + inputBatchSize))
+                        .ReturnsAsync([]);
 
             Xeption expectedBlpuException = new Xeption();
             expectedBlpuException.AddData(
@@ -73,8 +82,11 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Addresses
             actualAggregateException.Should().BeEquivalentTo(expectedAggregateException);
 
             this.fileBrokerMock.Verify(broker =>
-                broker.ReadLinesBatchAsync(streetDescriptorsCsvFilePath, inputBatchSize, inputSkipCounter),
-                    Times.Once);
+                broker.ReadLinesBatchAsync(
+                    streetDescriptorsCsvFilePath,
+                    inputBatchSize,
+                    inputSkipCounter),
+                        Times.Once);
 
             addressOrchestrationServiceMock.Verify(service =>
                 service.MapStreetDescriptorDataToAddressesAsync(
@@ -84,8 +96,11 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Addresses
                         Times.Once);
 
             this.fileBrokerMock.Verify(broker =>
-                broker.ReadLinesBatchAsync(streetDescriptorsCsvFilePath, inputBatchSize, inputSkipCounter + inputBatchSize),
-                    Times.Once);
+                broker.ReadLinesBatchAsync(
+                    streetDescriptorsCsvFilePath,
+                    inputBatchSize,
+                    inputSkipCounter + inputBatchSize),
+                        Times.Once);
 
             this.fileBrokerMock.VerifyNoOtherCalls();
             this.csvHelperBrokerMock.VerifyNoOtherCalls();

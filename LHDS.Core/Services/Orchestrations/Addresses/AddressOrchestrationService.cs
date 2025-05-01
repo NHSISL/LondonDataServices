@@ -501,38 +501,58 @@ namespace LHDS.Core.Services.Orchestrations.Addresses
         {
             int skipCounter = 0;
             int batchSize = BatchSize;
+            var exceptions = new List<Exception>();
 
             while ((await fileBroker.ReadLinesBatchAsync(blpuCsvFile, batchSize, skipCounter)).Any())
             {
-                List<Address> blpuAddresses = await MapBLPUDataToAddressesAsync(blpuCsvFile, batchSize, skipCounter);
-                skipCounter = skipCounter + batchSize;
-                Dictionary<string, Address> blpuAddressesDict = blpuAddresses.ToDictionary(a => a.UPRN, a => a);
-                IQueryable<Address> addresses = await addressProcessingService.RetrieveAllAddressesAsync();
-                HashSet<string> blpuFileUprns = blpuAddresses.Select(a => a.UPRN).ToHashSet();
-
-                List<Address> existingBlpuAddresses = addresses.Where(address =>
-                    blpuFileUprns.Contains(address.UPRN)).ToList();
-
-                HashSet<string> existingBlpuUprns = existingBlpuAddresses.Select(a => a.UPRN).ToHashSet();
-
-                List<Address> newBlpuAddresses = blpuAddresses.Where(blpuAddress =>
-                    !existingBlpuUprns.Contains(blpuAddress.UPRN)).ToList();
-
-                List<Address> updatedBlpuAddress = [];
-
-                foreach (Address existingAddress in existingBlpuAddresses)
+                try
                 {
-                    if (existingAddress.UPRN != null
-                        && blpuAddressesDict.TryGetValue(existingAddress.UPRN, out Address blpuAddress)
-                        && string.IsNullOrWhiteSpace(existingAddress.PostCode))
-                    {
-                        existingAddress.PostCode = blpuAddress.PostCode;
-                        updatedBlpuAddress.Add(existingAddress);
-                    }
-                }
+                    List<Address> blpuAddresses = await MapBLPUDataToAddressesAsync(blpuCsvFile, batchSize, skipCounter);
+                    Dictionary<string, Address> blpuAddressesDict = blpuAddresses.ToDictionary(a => a.UPRN, a => a);
+                    IQueryable<Address> addresses = await addressProcessingService.RetrieveAllAddressesAsync();
+                    HashSet<string> blpuFileUprns = blpuAddresses.Select(a => a.UPRN).ToHashSet();
 
-                await addressProcessingService.BulkAddAddressesAsync(newBlpuAddresses, blpuCsvFile);
-                await addressProcessingService.BulkModifyAddressesAsync(updatedBlpuAddress, blpuCsvFile);
+                    List<Address> existingBlpuAddresses = addresses.Where(address =>
+                        blpuFileUprns.Contains(address.UPRN)).ToList();
+
+                    HashSet<string> existingBlpuUprns = existingBlpuAddresses.Select(a => a.UPRN).ToHashSet();
+
+                    List<Address> newBlpuAddresses = blpuAddresses.Where(blpuAddress =>
+                        !existingBlpuUprns.Contains(blpuAddress.UPRN)).ToList();
+
+                    List<Address> updatedBlpuAddress = [];
+
+                    foreach (Address existingAddress in existingBlpuAddresses)
+                    {
+                        if (existingAddress.UPRN != null
+                            && blpuAddressesDict.TryGetValue(existingAddress.UPRN, out Address blpuAddress)
+                            && string.IsNullOrWhiteSpace(existingAddress.PostCode))
+                        {
+                            existingAddress.PostCode = blpuAddress.PostCode;
+                            updatedBlpuAddress.Add(existingAddress);
+                        }
+                    }
+
+                    await addressProcessingService.BulkAddAddressesAsync(newBlpuAddresses, blpuCsvFile);
+                    await addressProcessingService.BulkModifyAddressesAsync(updatedBlpuAddress, blpuCsvFile);
+                    skipCounter = skipCounter + batchSize;
+                }
+                catch (Exception ex)
+                {
+                    ((Xeption)ex).AddData(
+                        $"BlpuExtractionError in batch between lines {skipCounter} and {skipCounter + batchSize}.",
+                        blpuCsvFile);
+
+                    exceptions.Add(ex);
+                    skipCounter = skipCounter + batchSize;
+                }
+            }
+
+            if (exceptions.Any())
+            {
+                throw new AggregateException(
+                    $"Errors occurred during loading of {exceptions.Count} batches.",
+                    exceptions);
             }
         }
 

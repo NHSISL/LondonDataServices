@@ -455,25 +455,45 @@ namespace LHDS.Core.Services.Orchestrations.Addresses
         {
             int skipCounter = 0;
             int batchSize = BatchSize;
+            var exceptions = new List<Exception>();
 
             while ((await fileBroker.ReadLinesBatchAsync(lpiCsvFile, batchSize, skipCounter)).Any())
             {
-                List<Address> lpiAddresses = await MapLPIDataToAddressesAsync(lpiCsvFile, batchSize, skipCounter);
-                skipCounter = skipCounter + batchSize;
-                Dictionary<string, Address> lpiAddressesDict = lpiAddresses.ToDictionary(a => a.UPRN, a => a);
-                IQueryable<Address> addresses = await addressProcessingService.RetrieveAllAddressesAsync();
-                HashSet<string> lpiFileUprns = lpiAddresses.Select(a => a.UPRN).ToHashSet();
+                try
+                {
+                    List<Address> lpiAddresses = await MapLPIDataToAddressesAsync(lpiCsvFile, batchSize, skipCounter);
+                    Dictionary<string, Address> lpiAddressesDict = lpiAddresses.ToDictionary(a => a.UPRN, a => a);
+                    IQueryable<Address> addresses = await addressProcessingService.RetrieveAllAddressesAsync();
+                    HashSet<string> lpiFileUprns = lpiAddresses.Select(a => a.UPRN).ToHashSet();
 
-                List<Address> existingLpiAddresses = addresses.Where(address =>
-                    lpiFileUprns.Contains(address.UPRN) && !string.IsNullOrWhiteSpace(address.USRN)).ToList();
+                    List<Address> existingLpiAddresses = addresses.Where(address =>
+                        lpiFileUprns.Contains(address.UPRN) && !string.IsNullOrWhiteSpace(address.USRN)).ToList();
 
-                HashSet<string> existingLpiUprns = existingLpiAddresses.Select(a => a.UPRN).ToHashSet();
+                    HashSet<string> existingLpiUprns = existingLpiAddresses.Select(a => a.UPRN).ToHashSet();
 
-                List<Address> newLpiAddresses = lpiAddresses.Where(lpiAddress =>
-                    !existingLpiUprns.Contains(lpiAddress.UPRN)).ToList();
+                    List<Address> newLpiAddresses = lpiAddresses.Where(lpiAddress =>
+                        !existingLpiUprns.Contains(lpiAddress.UPRN)).ToList();
 
-                await addressProcessingService.BulkAddAddressesAsync(newLpiAddresses, lpiCsvFile);
-                await addressProcessingService.BulkModifyAddressesAsync(existingLpiAddresses, lpiCsvFile);
+                    await addressProcessingService.BulkAddAddressesAsync(newLpiAddresses, lpiCsvFile);
+                    await addressProcessingService.BulkModifyAddressesAsync(existingLpiAddresses, lpiCsvFile);
+                    skipCounter = skipCounter + batchSize;
+                }
+                catch (Exception ex)
+                {
+                    ((Xeption)ex).AddData(
+                        $"LpiExtractionError in batch between lines {skipCounter} and {skipCounter + batchSize}.",
+                        lpiCsvFile);
+
+                    exceptions.Add(ex);
+                    skipCounter = skipCounter + batchSize;
+                }
+            }
+
+            if (exceptions.Any())
+            {
+                throw new AggregateException(
+                    $"Errors occurred during loading of {exceptions.Count} batches.",
+                    exceptions);
             }
         }
 

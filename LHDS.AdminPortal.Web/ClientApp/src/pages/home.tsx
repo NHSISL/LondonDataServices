@@ -25,7 +25,8 @@ export const Home = () => {
                                         {/*<img src="LHDLogoRound.png" alt="London Data Service logo" height="100" width="100" style={{marginRight: "20px"}} />*/}
                                         London Data Service
                                     </h1>
-                                    <p className="col-md-8 fs-4">"Empowering Healthcare with London's GP Data Excellence!"</p>
+                                    <p className="col-md-8 fs-4">"Empowering Healthcare with London's GP Data Excellence"</p>
+                                    <p></p>
                                 </div>
                                 <FeatureSwitch feature={FeatureDefinitions.IngestionTracking}>
                                     <div className="row">

@@ -6,7 +6,7 @@ on:
   
 jobs:
   tag:
-    if: github.event.pull_request.merged == true && github.event.pull_request.base.ref == 'main'
+    if: github.event.pull_request.merged == true && github.event.pull_request.base.ref == 'main' && startsWith(github.event.pull_request.title,'RELEASES:')
     name: Apply Tag
     runs-on: ubuntu-latest
     permissions:
@@ -28,17 +28,6 @@ jobs:
       with:
         github-token: ${{ secrets.GITHUB_TOKEN }}
         script: >-
-          const prefixes = [
-            'RELEASES:',
-          ];
-
-          const pullRequest = context.payload.pull_request;
-
-          if (!pullRequest) {
-            console.log('No pull request context available.');
-            return;
-          }
-
           const title = context.payload.pull_request.title;
           const match = title.match(/\d+\.\d+\.\d+\.\d+/);
 

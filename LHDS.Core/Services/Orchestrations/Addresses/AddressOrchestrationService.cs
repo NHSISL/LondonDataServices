@@ -313,10 +313,10 @@ namespace LHDS.Core.Services.Orchestrations.Addresses
             return address;
         }
 
-        virtual internal async ValueTask ProcessDPAAddressesAsync(string dpaCsvFile)
+        virtual internal async ValueTask ProcessDPAAddressesAsync(string dpaCsvFile, int batchSize = 120000)
         {
             int skipCounter = 0;
-            int batchSize = BatchSize;
+            //int batchSize = BatchSize;
             var exceptions = new List<Exception>();
 
             while ((await fileBroker.ReadLinesBatchAsync(dpaCsvFile, batchSize, skipCounter)).Any())
@@ -356,7 +356,6 @@ namespace LHDS.Core.Services.Orchestrations.Addresses
 
                     await addressProcessingService.BulkAddAddressesAsync(newDpaAddresses, dpaCsvFile);
                     await addressProcessingService.BulkModifyAddressesAsync(existingDpaAddresses, dpaCsvFile);
-                    skipCounter = skipCounter + batchSize;
                 }
                 catch (Exception ex)
                 {
@@ -365,6 +364,9 @@ namespace LHDS.Core.Services.Orchestrations.Addresses
                         dpaCsvFile);
 
                     exceptions.Add(ex);
+                }
+                finally
+                {
                     skipCounter = skipCounter + batchSize;
                 }
             }
@@ -451,10 +453,10 @@ namespace LHDS.Core.Services.Orchestrations.Addresses
             return addresses;
         }
 
-        virtual internal async ValueTask ProcessLPIAddressesAsync(string lpiCsvFile)
+        virtual internal async ValueTask ProcessLPIAddressesAsync(string lpiCsvFile, int batchSize = 120000)
         {
             int skipCounter = 0;
-            int batchSize = BatchSize;
+            //int batchSize = BatchSize;
             var exceptions = new List<Exception>();
 
             while ((await fileBroker.ReadLinesBatchAsync(lpiCsvFile, batchSize, skipCounter)).Any())
@@ -476,7 +478,6 @@ namespace LHDS.Core.Services.Orchestrations.Addresses
 
                     await addressProcessingService.BulkAddAddressesAsync(newLpiAddresses, lpiCsvFile);
                     await addressProcessingService.BulkModifyAddressesAsync(existingLpiAddresses, lpiCsvFile);
-                    skipCounter = skipCounter + batchSize;
                 }
                 catch (Exception ex)
                 {
@@ -485,6 +486,9 @@ namespace LHDS.Core.Services.Orchestrations.Addresses
                         lpiCsvFile);
 
                     exceptions.Add(ex);
+                }
+                finally
+                {
                     skipCounter = skipCounter + batchSize;
                 }
             }
@@ -497,10 +501,10 @@ namespace LHDS.Core.Services.Orchestrations.Addresses
             }
         }
 
-        virtual internal async ValueTask ProcessBLPUAddressesAsync(string blpuCsvFile)
+        virtual internal async ValueTask ProcessBLPUAddressesAsync(string blpuCsvFile, int batchSize = 120000)
         {
             int skipCounter = 0;
-            int batchSize = BatchSize;
+            //int batchSize = BatchSize;
             var exceptions = new List<Exception>();
 
             while ((await fileBroker.ReadLinesBatchAsync(blpuCsvFile, batchSize, skipCounter)).Any())
@@ -535,7 +539,6 @@ namespace LHDS.Core.Services.Orchestrations.Addresses
 
                     await addressProcessingService.BulkAddAddressesAsync(newBlpuAddresses, blpuCsvFile);
                     await addressProcessingService.BulkModifyAddressesAsync(updatedBlpuAddress, blpuCsvFile);
-                    skipCounter = skipCounter + batchSize;
                 }
                 catch (Exception ex)
                 {
@@ -544,6 +547,9 @@ namespace LHDS.Core.Services.Orchestrations.Addresses
                         blpuCsvFile);
 
                     exceptions.Add(ex);
+                }
+                finally
+                {
                     skipCounter = skipCounter + batchSize;
                 }
             }
@@ -593,10 +599,12 @@ namespace LHDS.Core.Services.Orchestrations.Addresses
             return addresses;
         }
 
-        virtual internal async ValueTask ProcessStreetDescriptorDataAsync(string streetDescriptorCsvFile)
+        virtual internal async ValueTask ProcessStreetDescriptorDataAsync(
+            string streetDescriptorCsvFile,
+            int batchSize = 120000)
         {
             int skipCounter = 0;
-            int batchSize = BatchSize;
+            //int batchSize = BatchSize;
             var exceptions = new List<Exception>();
 
             while ((await fileBroker.ReadLinesBatchAsync(streetDescriptorCsvFile, batchSize, skipCounter)).Any())
@@ -630,7 +638,6 @@ namespace LHDS.Core.Services.Orchestrations.Addresses
                     }
 
                     await addressProcessingService.BulkModifyAddressesAsync(updatedAddresses, streetDescriptorCsvFile);
-                    skipCounter = skipCounter + batchSize;
                 }
                 catch (Exception ex)
                 {
@@ -640,6 +647,9 @@ namespace LHDS.Core.Services.Orchestrations.Addresses
                         streetDescriptorCsvFile);
 
                     exceptions.Add(ex);
+                }
+                finally
+                {
                     skipCounter = skipCounter + batchSize;
                 }
             }

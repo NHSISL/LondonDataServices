@@ -6,6 +6,7 @@ on:
   
 jobs:
   tag:
+    if: github.event.pull_request.merged == true && github.event.pull_request.base.ref == 'main'
     name: Apply Tag
     runs-on: ubuntu-latest
     permissions:

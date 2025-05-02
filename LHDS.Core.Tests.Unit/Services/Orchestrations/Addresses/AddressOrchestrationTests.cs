@@ -241,6 +241,9 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Addresses
         private static List<string> CreateRandomStringList() =>
             Enumerable.Range(1, GetRandomNumber()).Select(x => GetRandomString()).ToList();
 
+        private static List<string> CreateRandomStringList(int numStrings) =>
+            Enumerable.Range(1, numStrings).Select(x => GetRandomString()).ToList();
+
         public static TheoryData<Xeption> AddressOrchestrationDependencyValidationExceptions()
         {
             string randomMessage = GetRandomString();

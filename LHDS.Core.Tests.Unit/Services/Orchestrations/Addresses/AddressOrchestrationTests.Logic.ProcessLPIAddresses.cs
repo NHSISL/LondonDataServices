@@ -47,7 +47,10 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Addresses
                 int batchStartLine = i * inputBatchSize;
                 int batchEndLine = batchStartLine + inputBatchSize;
                 List<Address> batchNewAddresses = [.. newAddresses.GetRange(batchStartLine, inputBatchSize)];
-                List<Address> batchExisitngAddresses = [.. databaseExistingAddresses.ToList().GetRange(batchStartLine, inputBatchSize)];
+
+                List<Address> batchExisitngAddresses = [
+                    .. databaseExistingAddresses.ToList().GetRange(batchStartLine, inputBatchSize)];
+
                 List<Address> lpiFileBatchAddresses = [.. batchNewAddresses, .. batchExisitngAddresses];
 
                 this.fileBrokerMock.Setup(broker =>
@@ -78,7 +81,10 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Addresses
                 int batchStartLine = i * inputBatchSize;
                 int batchEndLine = batchStartLine + inputBatchSize;
                 List<Address> batchNewAddresses = [.. newAddresses.GetRange(batchStartLine, inputBatchSize)];
-                List<Address> batchExisitngAddresses = [.. databaseExistingAddresses.ToList().GetRange(batchStartLine, inputBatchSize)];
+
+                List<Address> batchExisitngAddresses = [
+                    .. databaseExistingAddresses.ToList().GetRange(batchStartLine, inputBatchSize)];
+
                 List<Address> lpiFileBatchAddresses = [.. batchNewAddresses, .. batchExisitngAddresses];
 
                 this.fileBrokerMock.Verify(broker =>

@@ -31,10 +31,11 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Addresses
 
             string randomFile = GetRandomString();
             string inputStreetDescriptorFile = randomFile;
-            int inputSkipCounter = 0;
-            int inputBatchSize = this.batchSize;
-            List<string> returnedStringList = CreateRandomStringList();
-            IQueryable<Address> randomAddresses = CreateRandomAddresses();
+            int inputBatchSize = GetRandomNumber();
+            int numberOfBatches = GetRandomNumber();
+            int numberOfRecords = inputBatchSize * numberOfBatches;
+            List<string> returnedStringList = CreateRandomStringList(numberOfRecords);
+            IQueryable<Address> randomAddresses = CreateRandomAddresses(numberOfRecords);
             IQueryable<Address> retrievedAddresses = randomAddresses.DeepClone();
             List<Address> streetDescriptorAddresses = randomAddresses.DeepClone().ToList();
 
@@ -47,61 +48,81 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Addresses
 
             List<Address> expectedModifiedAddresses = streetDescriptorAddresses;
 
-            this.fileBrokerMock.Setup(broker =>
-                broker.ReadLinesBatchAsync(inputStreetDescriptorFile, inputBatchSize, inputSkipCounter))
-                    .ReturnsAsync(returnedStringList);
+            for (int i = 0; i < numberOfBatches; i++)
+            {
+                int batchStartLine = i * inputBatchSize;
+                int batchEndLine = batchStartLine + inputBatchSize;
+                List<Address> batchExisitngAddresses = [
+                    .. streetDescriptorAddresses.ToList().GetRange(batchStartLine, inputBatchSize)];
+
+                this.fileBrokerMock.Setup(broker =>
+                    broker.ReadLinesBatchAsync(
+                        inputStreetDescriptorFile,
+                        inputBatchSize,
+                        i * inputBatchSize))
+                            .ReturnsAsync(returnedStringList.GetRange(batchStartLine, inputBatchSize));
+
+                addressOrchestrationServiceMock.Setup(service =>
+                    service.MapStreetDescriptorDataToAddressesAsync(
+                        inputStreetDescriptorFile,
+                        inputBatchSize,
+                        i * inputBatchSize))
+                            .ReturnsAsync(batchExisitngAddresses);
+
+                this.addressProcessingServiceMock.Setup(service =>
+                    service.RetrieveAllAddressesAsync())
+                        .ReturnsAsync(retrievedAddresses);
+            }
 
             this.fileBrokerMock.Setup(broker =>
-                broker.ReadLinesBatchAsync(
-                    inputStreetDescriptorFile,
-                    inputBatchSize,
-                    inputSkipCounter + inputBatchSize))
-                        .ReturnsAsync([]);
-
-            addressOrchestrationServiceMock.Setup(service =>
-                service.MapStreetDescriptorDataToAddressesAsync(
-                    inputStreetDescriptorFile,
-                    inputBatchSize,
-                    inputSkipCounter))
-                        .ReturnsAsync(streetDescriptorAddresses);
-
-            this.addressProcessingServiceMock.Setup(service =>
-                service.RetrieveAllAddressesAsync())
-                    .ReturnsAsync(retrievedAddresses);
+                broker.ReadLinesBatchAsync(inputStreetDescriptorFile, inputBatchSize, numberOfRecords))
+                    .ReturnsAsync([]);
 
             AddressOrchestrationService service = addressOrchestrationServiceMock.Object;
 
             // When
-            await service.ProcessStreetDescriptorDataAsync(inputStreetDescriptorFile);
+            await service.ProcessStreetDescriptorDataAsync(inputStreetDescriptorFile, inputBatchSize);
 
             // Then
-            this.fileBrokerMock.Verify(broker =>
-               broker.ReadLinesBatchAsync(inputStreetDescriptorFile, inputBatchSize, inputSkipCounter),
-                   Times.Once);
+            for (int i = 0; i < numberOfBatches; i++)
+            {
+                int batchStartLine = i * inputBatchSize;
+                int batchEndLine = batchStartLine + inputBatchSize;
+                List<Address> batchExisitngAddresses = [
+                    .. streetDescriptorAddresses.ToList().GetRange(batchStartLine, inputBatchSize)];
+
+                this.fileBrokerMock.Verify(broker =>
+                    broker.ReadLinesBatchAsync(
+                        inputStreetDescriptorFile,
+                        inputBatchSize,
+                        i * inputBatchSize),
+                            Times.Once);
+
+                addressOrchestrationServiceMock.Verify(service =>
+                    service.MapStreetDescriptorDataToAddressesAsync(
+                        inputStreetDescriptorFile,
+                        inputBatchSize,
+                        i * inputBatchSize),
+                            Times.Once());
+
+                this.addressProcessingServiceMock.Setup(service =>
+                    service.RetrieveAllAddressesAsync())
+                        .ReturnsAsync(retrievedAddresses);
+
+                this.addressProcessingServiceMock.Verify(service =>
+                    service.BulkModifyAddressesAsync(
+                        It.Is(SameAddressesAs(batchExisitngAddresses)),
+                        inputStreetDescriptorFile),
+                            Times.Once);
+            }
 
             this.fileBrokerMock.Verify(broker =>
-                broker.ReadLinesBatchAsync(
-                    inputStreetDescriptorFile,
-                    inputBatchSize,
-                    inputSkipCounter + inputBatchSize),
-                        Times.Once);
-
-            addressOrchestrationServiceMock.Verify(service =>
-                service.MapStreetDescriptorDataToAddressesAsync(
-                    inputStreetDescriptorFile,
-                    inputBatchSize,
-                    inputSkipCounter),
-                        Times.Once());
-
-            this.addressProcessingServiceMock.Verify(service =>
-                service.RetrieveAllAddressesAsync(),
+                broker.ReadLinesBatchAsync(inputStreetDescriptorFile, inputBatchSize, numberOfRecords),
                     Times.Once);
 
             this.addressProcessingServiceMock.Verify(service =>
-                service.BulkModifyAddressesAsync(
-                    It.Is(SameAddressesAs(expectedModifiedAddresses)),
-                    inputStreetDescriptorFile),
-                        Times.Once);
+                service.RetrieveAllAddressesAsync(),
+                    Times.Exactly(numberOfBatches));
 
             this.fileBrokerMock.VerifyNoOtherCalls();
             this.csvHelperBrokerMock.VerifyNoOtherCalls();

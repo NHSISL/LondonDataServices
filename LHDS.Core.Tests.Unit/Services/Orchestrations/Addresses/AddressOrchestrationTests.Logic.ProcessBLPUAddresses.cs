@@ -46,15 +46,22 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Addresses
                 address.PostCode = string.Empty;
             }
 
-            IQueryable<Address> databaseAddresses = existingAddresses.DeepClone().Concat(existingAddressesNoPostcodeDb.DeepClone());
             List<Address> databaseAddressesNoPostcode = existingAddressesNoPostcodeDb.DeepClone().ToList();
+
+            IQueryable<Address> databaseAddresses =
+                existingAddresses.DeepClone().Concat(existingAddressesNoPostcodeDb.DeepClone());
 
             for (int i = 0; i < numberOfBatches; i++)
             {
                 int batchStartLine = i * inputBatchSize;
                 int batchEndLine = batchStartLine + inputBatchSize;
-                List<Address> batchNewAddresses = [.. newBlpuAddresses.ToList().GetRange(batchStartLine, inputBatchSize)];
-                List<Address> batchExisitngAddresses = [.. databaseAddressesNoPostcode.GetRange(batchStartLine, inputBatchSize)];
+
+                List<Address> batchNewAddresses = [
+                    .. newBlpuAddresses.ToList().GetRange(batchStartLine, inputBatchSize)];
+
+                List<Address> batchExisitngAddresses = [
+                    .. databaseAddressesNoPostcode.GetRange(batchStartLine, inputBatchSize)];
+
                 List<Address> dpaFileBatchAddresses = [.. batchNewAddresses, .. batchExisitngAddresses];
 
                 this.fileBrokerMock.Setup(broker =>
@@ -84,8 +91,12 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Addresses
             {
                 int batchStartLine = i * inputBatchSize;
                 int batchEndLine = batchStartLine + inputBatchSize;
-                List<Address> batchNewAddresses = [.. newBlpuAddresses.ToList().GetRange(batchStartLine, inputBatchSize)];
-                List<Address> batchExisitngAddresses = [.. databaseAddressesNoPostcode.GetRange(batchStartLine, inputBatchSize)];
+                List<Address> batchNewAddresses = [
+                    .. newBlpuAddresses.ToList().GetRange(batchStartLine, inputBatchSize)];
+
+                List<Address> batchExisitngAddresses = [
+                    .. databaseAddressesNoPostcode.GetRange(batchStartLine, inputBatchSize)];
+
                 List<Address> dpaFileBatchAddresses = [.. batchNewAddresses, .. batchExisitngAddresses];
 
 

@@ -62,7 +62,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Addresses
             AddressOrchestrationService service = addressOrchestrationServiceMock.Object;
 
             // When
-            await service.ReadCsvDataAndBulkAddAddressesAsync(inputTempFolder);
+            await service.ReadCsvDataAndBulkAddAddressesAsync(inputTempFolder, inputBatchSize);
 
             // Then
             this.fileBrokerMock.Verify(service =>

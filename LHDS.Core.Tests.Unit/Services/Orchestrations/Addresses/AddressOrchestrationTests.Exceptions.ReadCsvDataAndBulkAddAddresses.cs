@@ -34,6 +34,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Addresses
             string blpuCsvFilePath = "ID21.csv";
             string streetDescriptorCsvFilePath = "ID15.csv";
             int inputBatchSize = GetRandomNumber();
+            int initialSkipCounter = 0;
 
             List<string> fileList = [
                 dpaCsvFilePath,
@@ -52,20 +53,20 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Addresses
                 service.GetListOfFilesAsync(inputTempPath, inputSearchPattern))
                     .ReturnsAsync(fileList);
 
-            addressOrchestrationServiceMock.Setup(service =>
-                service.ProcessDPAAddressesAsync(dpaCsvFilePath, inputBatchSize))
+            this.fileBrokerMock.Setup(service =>
+                service.ReadLinesBatchAsync(dpaCsvFilePath, inputBatchSize, initialSkipCounter))
                     .ThrowsAsync(dpaException);
 
-            addressOrchestrationServiceMock.Setup(service =>
-                service.ProcessLPIAddressesAsync(lpiCsvFilePath, inputBatchSize))
+            this.fileBrokerMock.Setup(service =>
+                service.ReadLinesBatchAsync(lpiCsvFilePath, inputBatchSize, initialSkipCounter))
                     .ThrowsAsync(lpiException);
 
-            addressOrchestrationServiceMock.Setup(service =>
-                service.ProcessBLPUAddressesAsync(blpuCsvFilePath, inputBatchSize))
+            this.fileBrokerMock.Setup(service =>
+                service.ReadLinesBatchAsync(blpuCsvFilePath, inputBatchSize, initialSkipCounter))
                     .ThrowsAsync(blpuException);
 
-            addressOrchestrationServiceMock.Setup(service =>
-                service.ProcessStreetDescriptorDataAsync(streetDescriptorCsvFilePath, inputBatchSize))
+            this.fileBrokerMock.Setup(service =>
+                service.ReadLinesBatchAsync(streetDescriptorCsvFilePath, inputBatchSize, initialSkipCounter))
                     .ThrowsAsync(streetDescriptorException);
 
             Xeption expectedDpaException = new Xeption();
@@ -93,7 +94,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Addresses
             AddressOrchestrationService service = addressOrchestrationServiceMock.Object;
 
             // When
-            ValueTask readCsvDataTask = service.ReadCsvDataAndBulkAddAddressesAsync(inputTempPath);
+            ValueTask readCsvDataTask = service.ReadCsvDataAndBulkAddAddressesAsync(inputTempPath, inputBatchSize);
 
             AggregateException actualAggregateException =
                 await Assert.ThrowsAsync<AggregateException>(
@@ -106,20 +107,20 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Addresses
                 service.GetListOfFilesAsync(inputTempPath, inputSearchPattern),
                     Times.Once());
 
-            addressOrchestrationServiceMock.Verify(service =>
-                service.ProcessDPAAddressesAsync(dpaCsvFilePath, inputBatchSize),
+            this.fileBrokerMock.Verify(service =>
+                service.ReadLinesBatchAsync(dpaCsvFilePath, inputBatchSize, initialSkipCounter),
                     Times.Once);
 
-            addressOrchestrationServiceMock.Verify(service =>
-                service.ProcessLPIAddressesAsync(lpiCsvFilePath, inputBatchSize),
+            this.fileBrokerMock.Verify(service =>
+                service.ReadLinesBatchAsync(lpiCsvFilePath, inputBatchSize, initialSkipCounter),
                     Times.Once);
 
-            addressOrchestrationServiceMock.Verify(service =>
-                service.ProcessBLPUAddressesAsync(blpuCsvFilePath, inputBatchSize),
+            this.fileBrokerMock.Verify(service =>
+                service.ReadLinesBatchAsync(blpuCsvFilePath, inputBatchSize, initialSkipCounter),
                     Times.Once);
 
-            addressOrchestrationServiceMock.Verify(service =>
-                service.ProcessStreetDescriptorDataAsync(streetDescriptorCsvFilePath, inputBatchSize),
+            this.fileBrokerMock.Verify(service =>
+                service.ReadLinesBatchAsync(streetDescriptorCsvFilePath, inputBatchSize, initialSkipCounter),
                     Times.Once);
 
             this.fileBrokerMock.VerifyNoOtherCalls();

@@ -125,7 +125,7 @@ namespace LHDS.Core.Services.Orchestrations.Addresses
             }
         }
 
-        virtual internal async ValueTask ReadCsvDataAndBulkAddAddressesAsync(string tempFolder)
+        virtual internal async ValueTask ReadCsvDataAndBulkAddAddressesAsync(string tempFolder, int batchSize = 120000)
         {
             List<string> csvFiles = await fileBroker.GetListOfFilesAsync(tempFolder, "*.csv");
             ValidateCsvFiles(csvFiles);
@@ -137,7 +137,7 @@ namespace LHDS.Core.Services.Orchestrations.Addresses
 
             try
             {
-                await ProcessDPAAddressesAsync(dpaCsvFile);
+                await ProcessDPAAddressesAsync(dpaCsvFile, batchSize);
             }
             catch (Exception ex)
             {
@@ -147,7 +147,7 @@ namespace LHDS.Core.Services.Orchestrations.Addresses
 
             try
             {
-                await ProcessLPIAddressesAsync(lpiCsvFile);
+                await ProcessLPIAddressesAsync(lpiCsvFile, batchSize);
             }
             catch (Exception ex)
             {
@@ -157,7 +157,7 @@ namespace LHDS.Core.Services.Orchestrations.Addresses
 
             try
             {
-                await ProcessBLPUAddressesAsync(blpuCsvFile);
+                await ProcessBLPUAddressesAsync(blpuCsvFile, batchSize);
             }
             catch (Exception ex)
             {
@@ -167,7 +167,7 @@ namespace LHDS.Core.Services.Orchestrations.Addresses
 
             try
             {
-                await ProcessStreetDescriptorDataAsync(streetDescriptorCsvFile);
+                await ProcessStreetDescriptorDataAsync(streetDescriptorCsvFile, batchSize);
             }
             catch (Exception ex)
             {

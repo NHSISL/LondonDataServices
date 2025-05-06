@@ -37,7 +37,6 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Addresses
             List<string> returnedStringList = CreateRandomStringList(numberOfRecords);
             IQueryable<Address> randomExistingAddresses = CreateRandomAddresses(numberOfRecords);
             IQueryable<Address> existingAddresses = randomExistingAddresses.DeepClone();
-
             List<Address> randomAddressList = CreateRandomAddresses(numberOfRecords).ToList();
             List<Address> newAddresses = randomAddressList.DeepClone();
             List<Address> dpaFileAddresses = [.. existingAddresses.DeepClone(), .. newAddresses.DeepClone()];
@@ -66,7 +65,6 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Addresses
             this.fileBrokerMock.Setup(broker =>
                 broker.ReadLinesBatchAsync(inputDpaCsvFile, inputBatchSize, numberOfRecords))
                     .ReturnsAsync([]);
-
 
             AddressOrchestrationService service = addressOrchestrationServiceMock.Object;
 

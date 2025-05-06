@@ -31,82 +31,92 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Addresses
 
             string randomFile = GetRandomString();
             string inputBlpuCsvFile = randomFile;
-            int inputSkipCounter = 0;
-            int inputBatchSize = this.batchSize;
-            List<string> returnedStringList = CreateRandomStringList();
-            IQueryable<Address> existingAddresses = CreateRandomAddresses();
-            IQueryable<Address> existingAddressesNoPostcodeDb = CreateRandomAddresses();
-            IQueryable<Address> newBlpuewAddresses = CreateRandomAddresses();
+            int inputBatchSize = GetRandomNumber();
+            int numberOfBatches = GetRandomNumber();
+            int numberOfRecords = inputBatchSize * numberOfBatches;
+            List<string> returnedStringList = CreateRandomStringList(numberOfRecords);
+            IQueryable<Address> randomExistingAddresses = CreateRandomAddresses(numberOfRecords);
+            IQueryable<Address> existingAddresses = randomExistingAddresses.DeepClone();
+            IQueryable<Address> existingAddressesNoPostcodeDb = CreateRandomAddresses(numberOfRecords);
+            List<Address> randomAddresses = CreateRandomAddresses(numberOfRecords).ToList();
+            List<Address> newBlpuAddresses = randomAddresses;
 
-            List<Address> blpuFileAddresses = [
-                .. existingAddresses,
-                .. existingAddressesNoPostcodeDb,
-                .. newBlpuewAddresses];
-
-            List<Address> databaseAddresses = existingAddresses.DeepClone().ToList();
-            List<Address> databaseAddressesNoPostcode = existingAddressesNoPostcodeDb.DeepClone().ToList();
-
-            foreach (Address address in databaseAddressesNoPostcode)
+            foreach (Address address in existingAddressesNoPostcodeDb)
             {
                 address.PostCode = string.Empty;
             }
 
-            List<Address> retrievedDatabaseAddresses = [
-                .. databaseAddresses,
-                .. databaseAddressesNoPostcode];
+            IQueryable<Address> databaseAddresses = existingAddresses.DeepClone().Concat(existingAddressesNoPostcodeDb.DeepClone());
+            List<Address> databaseAddressesNoPostcode = existingAddressesNoPostcodeDb.DeepClone().ToList();
 
-            List<Address> expectedModifiedAddresses = existingAddressesNoPostcodeDb.DeepClone().ToList();
-            List<Address> expectedAddedAddresses = newBlpuewAddresses.DeepClone().ToList();
+            for (int i = 0; i < numberOfBatches; i++)
+            {
+                int batchStartLine = i * inputBatchSize;
+                int batchEndLine = batchStartLine + inputBatchSize;
+                List<Address> batchNewAddresses = [.. newBlpuAddresses.ToList().GetRange(batchStartLine, inputBatchSize)];
+                List<Address> batchExisitngAddresses = [.. databaseAddressesNoPostcode.GetRange(batchStartLine, inputBatchSize)];
+                List<Address> dpaFileBatchAddresses = [.. batchNewAddresses, .. batchExisitngAddresses];
+
+                this.fileBrokerMock.Setup(broker =>
+                    broker.ReadLinesBatchAsync(inputBlpuCsvFile, inputBatchSize, i * inputBatchSize))
+                        .ReturnsAsync(returnedStringList.GetRange(batchStartLine, inputBatchSize));
+
+                addressOrchestrationServiceMock.Setup(service =>
+                    service.MapBLPUDataToAddressesAsync(inputBlpuCsvFile, inputBatchSize, i * inputBatchSize))
+                        .ReturnsAsync(dpaFileBatchAddresses);
+
+                this.addressProcessingServiceMock.Setup(service =>
+                    service.RetrieveAllAddressesAsync())
+                        .ReturnsAsync(databaseAddresses);
+            }
 
             this.fileBrokerMock.Setup(broker =>
-                broker.ReadLinesBatchAsync(inputBlpuCsvFile, inputBatchSize, inputSkipCounter))
-                    .ReturnsAsync(returnedStringList);
-
-            this.fileBrokerMock.Setup(broker =>
-                broker.ReadLinesBatchAsync(inputBlpuCsvFile, inputBatchSize, inputSkipCounter + inputBatchSize))
+                broker.ReadLinesBatchAsync(inputBlpuCsvFile, inputBatchSize, numberOfRecords))
                     .ReturnsAsync([]);
-
-            addressOrchestrationServiceMock.Setup(service =>
-                service.MapBLPUDataToAddressesAsync(inputBlpuCsvFile, inputBatchSize, inputSkipCounter))
-                    .ReturnsAsync(blpuFileAddresses);
-
-            this.addressProcessingServiceMock.Setup(service =>
-                service.RetrieveAllAddressesAsync())
-                    .ReturnsAsync(retrievedDatabaseAddresses.AsQueryable());
 
             AddressOrchestrationService service = addressOrchestrationServiceMock.Object;
 
             // When
-            await service.ProcessBLPUAddressesAsync(inputBlpuCsvFile);
+            await service.ProcessBLPUAddressesAsync(inputBlpuCsvFile, inputBatchSize);
 
             // Then
-            this.fileBrokerMock.Verify(broker =>
-                broker.ReadLinesBatchAsync(inputBlpuCsvFile, inputBatchSize, inputSkipCounter),
+            for (int i = 0; i < numberOfBatches; i++)
+            {
+                int batchStartLine = i * inputBatchSize;
+                int batchEndLine = batchStartLine + inputBatchSize;
+                List<Address> batchNewAddresses = [.. newBlpuAddresses.ToList().GetRange(batchStartLine, inputBatchSize)];
+                List<Address> batchExisitngAddresses = [.. databaseAddressesNoPostcode.GetRange(batchStartLine, inputBatchSize)];
+                List<Address> dpaFileBatchAddresses = [.. batchNewAddresses, .. batchExisitngAddresses];
+
+
+                this.fileBrokerMock.Verify(broker =>
+                    broker.ReadLinesBatchAsync(inputBlpuCsvFile, inputBatchSize, i * inputBatchSize),
+                        Times.Once);
+
+                addressOrchestrationServiceMock.Verify(service =>
+                    service.MapBLPUDataToAddressesAsync(inputBlpuCsvFile, inputBatchSize, i * inputBatchSize),
+                        Times.Once());
+
+                this.addressProcessingServiceMock.Setup(service =>
+                    service.RetrieveAllAddressesAsync())
+                        .ReturnsAsync(existingAddresses);
+
+                this.addressProcessingServiceMock.Verify(service =>
+                service.BulkAddAddressesAsync(It.Is(SameAddressesAs(batchNewAddresses)), inputBlpuCsvFile),
                     Times.Once);
 
-            this.fileBrokerMock.Verify(broker =>
-                broker.ReadLinesBatchAsync(inputBlpuCsvFile, inputBatchSize, inputSkipCounter + inputBatchSize),
-                    Times.Once);
+                this.addressProcessingServiceMock.Verify(service =>
+                    service.BulkModifyAddressesAsync(It.Is(SameAddressesAs(batchExisitngAddresses)), inputBlpuCsvFile),
+                        Times.Once);
+            }
 
-            addressOrchestrationServiceMock.Verify(service =>
-                service.MapBLPUDataToAddressesAsync(inputBlpuCsvFile, inputBatchSize, inputSkipCounter),
-                    Times.Once());
+            this.fileBrokerMock.Verify(broker =>
+                broker.ReadLinesBatchAsync(inputBlpuCsvFile, inputBatchSize, numberOfRecords),
+                    Times.Once);
 
             this.addressProcessingServiceMock.Verify(service =>
                 service.RetrieveAllAddressesAsync(),
-                    Times.Once);
-
-            this.addressProcessingServiceMock.Verify(service =>
-                service.BulkAddAddressesAsync(
-                    It.Is(SameAddressesAs(expectedAddedAddresses)),
-                    inputBlpuCsvFile),
-                        Times.Once);
-
-            this.addressProcessingServiceMock.Verify(service =>
-                service.BulkModifyAddressesAsync(
-                    It.Is(SameAddressesAs(expectedModifiedAddresses)),
-                    inputBlpuCsvFile),
-                        Times.Once);
+                    Times.Exactly(numberOfBatches));
 
             this.fileBrokerMock.VerifyNoOtherCalls();
             this.csvHelperBrokerMock.VerifyNoOtherCalls();

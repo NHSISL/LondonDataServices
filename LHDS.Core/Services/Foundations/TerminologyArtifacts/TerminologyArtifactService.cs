@@ -75,7 +75,7 @@ namespace LHDS.Core.Services.Foundations.TerminologyArtifacts
 
                 TerminologyArtifact terminologyArtifactWithModifyAuditAppliedEnsured =
                     await EnsureCreatedAuditPropertiesIsSameAsStorageAsync(
-                        terminologyArtifact, 
+                        terminologyArtifact,
                         maybeTerminologyArtifact);
 
                 ValidateAgainstStorageTerminologyArtifactOnModify(

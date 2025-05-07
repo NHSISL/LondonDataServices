@@ -14,7 +14,9 @@
 
 	<ItemGroup>
 		<PackageReference Include="FluentAssertions" Version="7.2.0" />
+		<PackageReference Include="Microsoft.ApplicationInsights" Version="2.23.0" />
 		<PackageReference Include="Microsoft.Extensions.Configuration" Version="9.0.4" />
+		<PackageReference Include="Microsoft.Extensions.Diagnostics.HealthChecks.Abstractions" Version="9.0.4" />
 		<PackageReference Include="NHSISL.CsvHelperClient" Version="1.1.0" />
 		<PackageReference Include="SshKeyGenerator" Version="1.1.51" />
 		<PackageReference Include="Azure.Security.KeyVault.Secrets" Version="4.7.0" />
@@ -38,7 +40,7 @@
 		<PackageReference Include="Microsoft.Extensions.Azure" Version="1.11.0" />
 		<PackageReference Include="NEL.MESH" Version="1.0.0.8" />
 		<PackageReference Include="RESTFulSense" Version="3.1.0" />
-		<PackageReference Include="SSH.NET" Version="2024.2.0" />
+		<PackageReference Include="SSH.NET" Version="2025.0.0" />
 		<PackageReference Include="STX.EFCore.Client" Version="2.0.0" />
 		<PackageReference Include="Xeption" Version="2.8.0" />
 	</ItemGroup>

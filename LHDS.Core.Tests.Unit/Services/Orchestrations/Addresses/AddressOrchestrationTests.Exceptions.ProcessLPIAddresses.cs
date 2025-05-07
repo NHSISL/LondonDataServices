@@ -48,6 +48,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Addresses
                     .ReturnsAsync([]);
 
             Xeption expectedLpiException = new Xeption();
+
             expectedLpiException.AddData(
                 $"LpiExtractionError in batch between lines {inputSkipCounter} " +
                 $"and {inputSkipCounter + inputBatchSize}.",

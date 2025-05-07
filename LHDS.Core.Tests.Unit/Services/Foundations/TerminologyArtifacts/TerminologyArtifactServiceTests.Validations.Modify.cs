@@ -571,7 +571,6 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.TerminologyArtifacts
                 broker.GetCurrentUserAsync())
                     .ReturnsAsync(randomEntraUser);
 
-
             var invalidTerminologyArtifactException =
                 new InvalidTerminologyArtifactException(
                     message: "Invalid terminologyArtifact. Please correct the errors and try again.");

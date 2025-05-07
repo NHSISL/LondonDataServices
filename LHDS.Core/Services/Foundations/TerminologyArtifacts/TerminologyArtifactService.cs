@@ -65,42 +65,48 @@ namespace LHDS.Core.Services.Foundations.TerminologyArtifacts
                 TerminologyArtifact terminologyArtifactWithModifyAuditApplied = 
                     await ApplyModifyAuditAsync(terminologyArtifact);
 
-                await ValidateTerminologyArtifactOnModifyAsync(terminologyArtifact);
+                await ValidateTerminologyArtifactOnModifyAsync(terminologyArtifactWithModifyAuditApplied);
 
                 TerminologyArtifact maybeTerminologyArtifact =
-                    await this.storageBroker.SelectTerminologyArtifactByIdAsync(terminologyArtifact.Id);
+                    await this.storageBroker.SelectTerminologyArtifactByIdAsync(
+                        terminologyArtifactWithModifyAuditApplied.Id);
 
                 ValidateStorageTerminologyArtifact(maybeTerminologyArtifact, terminologyArtifact.Id);
 
-                terminologyArtifact.CreatedDate = maybeTerminologyArtifact.CreatedDate;
-                terminologyArtifact.CreatedBy = maybeTerminologyArtifact.CreatedBy;
+                TerminologyArtifact terminologyArtifactWithModifyAuditAppliedEnsured =
+                    await EnsureCreatedAuditPropertiesIsSameAsStorageAsync(
+                        terminologyArtifact, 
+                        maybeTerminologyArtifact);
 
                 ValidateAgainstStorageTerminologyArtifactOnModify(
-                    inputTerminologyArtifact: terminologyArtifact,
+                    inputTerminologyArtifact: terminologyArtifactWithModifyAuditAppliedEnsured,
                     storageTerminologyArtifact: maybeTerminologyArtifact);
 
-                return await this.storageBroker.UpdateTerminologyArtifactAsync(terminologyArtifact);
+                return await this.storageBroker.UpdateTerminologyArtifactAsync(
+                    terminologyArtifactWithModifyAuditAppliedEnsured);
             });
 
         public ValueTask<TerminologyArtifact> RemoveTerminologyArtifactByIdAsync(Guid terminologyArtifactId) =>
            TryCatch(async () =>
            {
-               ValidateTerminologyArtifactId(terminologyArtifactId);
+                ValidateTerminologyArtifactId(terminologyArtifactId);
 
-               TerminologyArtifact maybeTerminologyArtifact = await this.storageBroker.SelectTerminologyArtifactByIdAsync(terminologyArtifactId);
+                TerminologyArtifact maybeTerminologyArtifact = 
+                    await this.storageBroker.SelectTerminologyArtifactByIdAsync(terminologyArtifactId);
 
-               ValidateStorageTerminologyArtifact(maybeTerminologyArtifact, terminologyArtifactId);
+                ValidateStorageTerminologyArtifact(maybeTerminologyArtifact, terminologyArtifactId);
 
-               TerminologyArtifact terminologyArtifactWithDeleteAuditApplied = await ApplyDeleteAuditAsync(maybeTerminologyArtifact);
+                TerminologyArtifact terminologyArtifactWithDeleteAuditApplied = 
+                    await ApplyDeleteAuditAsync(maybeTerminologyArtifact);
 
-               TerminologyArtifact updatedTerminologyArtifact =
-                   await this.storageBroker.UpdateTerminologyArtifactAsync(terminologyArtifactWithDeleteAuditApplied);
+                TerminologyArtifact updatedTerminologyArtifact =
+                    await this.storageBroker.UpdateTerminologyArtifactAsync(terminologyArtifactWithDeleteAuditApplied);
 
-               await ValidateAgainstStorageTerminologyArtifactOnDeleteAsync(
-                   updatedTerminologyArtifact,
-                   terminologyArtifactWithDeleteAuditApplied);
+                await ValidateAgainstStorageTerminologyArtifactOnDeleteAsync(
+                    updatedTerminologyArtifact,
+                    terminologyArtifactWithDeleteAuditApplied);
 
-               return await this.storageBroker.DeleteTerminologyArtifactAsync(updatedTerminologyArtifact);
+                return await this.storageBroker.DeleteTerminologyArtifactAsync(updatedTerminologyArtifact);
            });
 
         virtual internal async ValueTask<TerminologyArtifact> 
@@ -139,5 +145,15 @@ namespace LHDS.Core.Services.Foundations.TerminologyArtifacts
             terminologyArtifact.UpdatedDate = auditDateTimeOffset;
             return terminologyArtifact;
         }
+
+        virtual internal async ValueTask<TerminologyArtifact> EnsureCreatedAuditPropertiesIsSameAsStorageAsync(
+                TerminologyArtifact terminologyArtifact, 
+                TerminologyArtifact maybeTerminologyArtifact)
+            {
+                terminologyArtifact.CreatedDate = maybeTerminologyArtifact.CreatedDate;
+                terminologyArtifact.CreatedBy = maybeTerminologyArtifact.CreatedBy;
+
+                return terminologyArtifact;
+            }
     }
 }

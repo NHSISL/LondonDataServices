@@ -138,40 +138,40 @@ namespace LHDS.Core.Services.Orchestrations.Addresses
             {
                 await ProcessDPAAddressesAsync(dpaCsvFile, batchSize);
             }
-            catch (Exception ex)
+            catch (Exception exception)
             {
-                ((Xeption)ex).AddData("DpaExtractionError", dpaCsvFile);
-                exceptions.Add(ex);
+                ((Xeption)exception).AddData("DpaExtractionError", dpaCsvFile);
+                exceptions.Add(exception);
             }
 
             try
             {
                 await ProcessLPIAddressesAsync(lpiCsvFile, batchSize);
             }
-            catch (Exception ex)
+            catch (Exception exception)
             {
-                ((Xeption)ex).AddData("LpiExtractionError", lpiCsvFile);
-                exceptions.Add(ex);
+                ((Xeption)exception).AddData("LpiExtractionError", lpiCsvFile);
+                exceptions.Add(exception);
             }
 
             try
             {
                 await ProcessBLPUAddressesAsync(blpuCsvFile, batchSize);
             }
-            catch (Exception ex)
+            catch (Exception exception)
             {
-                ((Xeption)ex).AddData("BlpuExtractionError", blpuCsvFile);
-                exceptions.Add(ex);
+                ((Xeption)exception).AddData("BlpuExtractionError", blpuCsvFile);
+                exceptions.Add(exception);
             }
 
             try
             {
                 await ProcessStreetDescriptorDataAsync(streetDescriptorCsvFile, batchSize);
             }
-            catch (Exception ex)
+            catch (Exception exception)
             {
-                ((Xeption)ex).AddData("StreetDescriptorExtractionError", streetDescriptorCsvFile);
-                exceptions.Add(ex);
+                ((Xeption)exception).AddData("StreetDescriptorExtractionError", streetDescriptorCsvFile);
+                exceptions.Add(exception);
             }
 
             if (exceptions.Any())
@@ -355,13 +355,13 @@ namespace LHDS.Core.Services.Orchestrations.Addresses
                     await addressProcessingService.BulkAddAddressesAsync(newDpaAddresses, dpaCsvFile);
                     await addressProcessingService.BulkModifyAddressesAsync(existingDpaAddresses, dpaCsvFile);
                 }
-                catch (Exception ex)
+                catch (Exception exception)
                 {
-                    ((Xeption)ex).AddData(
+                    ((Xeption)exception).AddData(
                         $"DpaExtractionError in batch between lines {skipCounter} and {skipCounter + batchSize}.",
                         dpaCsvFile);
 
-                    exceptions.Add(ex);
+                    exceptions.Add(exception);
                 }
                 finally
                 {
@@ -476,13 +476,13 @@ namespace LHDS.Core.Services.Orchestrations.Addresses
                     await addressProcessingService.BulkAddAddressesAsync(newLpiAddresses, lpiCsvFile);
                     await addressProcessingService.BulkModifyAddressesAsync(existingLpiAddresses, lpiCsvFile);
                 }
-                catch (Exception ex)
+                catch (Exception exception)
                 {
-                    ((Xeption)ex).AddData(
+                    ((Xeption)exception).AddData(
                         $"LpiExtractionError in batch between lines {skipCounter} and {skipCounter + batchSize}.",
                         lpiCsvFile);
 
-                    exceptions.Add(ex);
+                    exceptions.Add(exception);
                 }
                 finally
                 {
@@ -536,13 +536,13 @@ namespace LHDS.Core.Services.Orchestrations.Addresses
                     await addressProcessingService.BulkAddAddressesAsync(newBlpuAddresses, blpuCsvFile);
                     await addressProcessingService.BulkModifyAddressesAsync(updatedBlpuAddress, blpuCsvFile);
                 }
-                catch (Exception ex)
+                catch (Exception exception)
                 {
-                    ((Xeption)ex).AddData(
+                    ((Xeption)exception).AddData(
                         $"BlpuExtractionError in batch between lines {skipCounter} and {skipCounter + batchSize}.",
                         blpuCsvFile);
 
-                    exceptions.Add(ex);
+                    exceptions.Add(exception);
                 }
                 finally
                 {
@@ -634,14 +634,14 @@ namespace LHDS.Core.Services.Orchestrations.Addresses
 
                     await addressProcessingService.BulkModifyAddressesAsync(updatedAddresses, streetDescriptorCsvFile);
                 }
-                catch (Exception ex)
+                catch (Exception exception)
                 {
-                    ((Xeption)ex).AddData(
+                    ((Xeption)exception).AddData(
                         $"StreetDescriptorsExtractionError in batch between " +
                         $"lines {skipCounter} and {skipCounter + batchSize}.",
                         streetDescriptorCsvFile);
 
-                    exceptions.Add(ex);
+                    exceptions.Add(exception);
                 }
                 finally
                 {

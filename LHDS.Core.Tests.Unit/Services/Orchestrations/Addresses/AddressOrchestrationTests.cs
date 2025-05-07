@@ -43,6 +43,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Addresses
         private readonly ICompareLogic compareLogic;
         private readonly IAddressOrchestrationService addressOrchestrationService;
         private readonly ITestOutputHelper output;
+        private readonly int batchSize = 120000;
 
         public AddressOrchestrationServiceTests(ITestOutputHelper output)
         {
@@ -236,6 +237,12 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Addresses
 
             return filler;
         }
+
+        private static List<string> CreateRandomStringList() =>
+            Enumerable.Range(1, GetRandomNumber()).Select(x => GetRandomString()).ToList();
+
+        private static List<string> CreateRandomStringList(int numStrings) =>
+            Enumerable.Range(1, numStrings).Select(x => GetRandomString()).ToList();
 
         public static TheoryData<Xeption> AddressOrchestrationDependencyValidationExceptions()
         {

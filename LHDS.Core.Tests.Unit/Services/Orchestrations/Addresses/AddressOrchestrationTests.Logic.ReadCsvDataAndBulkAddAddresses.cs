@@ -31,6 +31,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Addresses
             string lpiCsvFilePath = "ID24_" + GetRandomString();
             string blpuCsvFilePath = "ID21_" + GetRandomString();
             string streetDescriptorCsvFilePath = "ID15_" + GetRandomString();
+            int inputBatchSize = GetRandomNumber();
 
             List<string> outputFileList = [
                 dpaCsvFilePath,
@@ -43,25 +44,25 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Addresses
                     .ReturnsAsync(outputFileList);
 
             addressOrchestrationServiceMock.Setup(service =>
-                service.ProcessDPAAddressesAsync(dpaCsvFilePath))
+                service.ProcessDPAAddressesAsync(dpaCsvFilePath, inputBatchSize))
                     .Returns(ValueTask.CompletedTask);
 
             addressOrchestrationServiceMock.Setup(service =>
-                service.ProcessLPIAddressesAsync(lpiCsvFilePath))
+                service.ProcessLPIAddressesAsync(lpiCsvFilePath, inputBatchSize))
                     .Returns(ValueTask.CompletedTask);
 
             addressOrchestrationServiceMock.Setup(service =>
-                service.ProcessBLPUAddressesAsync(blpuCsvFilePath))
+                service.ProcessBLPUAddressesAsync(blpuCsvFilePath, inputBatchSize))
                     .Returns(ValueTask.CompletedTask);
 
             addressOrchestrationServiceMock.Setup(service =>
-                service.ProcessStreetDescriptorDataAsync(streetDescriptorCsvFilePath))
+                service.ProcessStreetDescriptorDataAsync(streetDescriptorCsvFilePath, inputBatchSize))
                     .Returns(ValueTask.CompletedTask);
 
             AddressOrchestrationService service = addressOrchestrationServiceMock.Object;
 
             // When
-            await service.ReadCsvDataAndBulkAddAddressesAsync(inputTempFolder);
+            await service.ReadCsvDataAndBulkAddAddressesAsync(inputTempFolder, inputBatchSize);
 
             // Then
             this.fileBrokerMock.Verify(service =>
@@ -69,19 +70,19 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Addresses
                     Times.Once);
 
             addressOrchestrationServiceMock.Verify(service =>
-                service.ProcessDPAAddressesAsync(dpaCsvFilePath),
+                service.ProcessDPAAddressesAsync(dpaCsvFilePath, inputBatchSize),
                     Times.Once);
 
             addressOrchestrationServiceMock.Verify(service =>
-                service.ProcessLPIAddressesAsync(lpiCsvFilePath),
+                service.ProcessLPIAddressesAsync(lpiCsvFilePath, inputBatchSize),
                     Times.Once);
 
             addressOrchestrationServiceMock.Verify(service =>
-                service.ProcessBLPUAddressesAsync(blpuCsvFilePath),
+                service.ProcessBLPUAddressesAsync(blpuCsvFilePath, inputBatchSize),
                     Times.Once);
 
             addressOrchestrationServiceMock.Verify(service =>
-                service.ProcessStreetDescriptorDataAsync(streetDescriptorCsvFilePath),
+                service.ProcessStreetDescriptorDataAsync(streetDescriptorCsvFilePath, inputBatchSize),
                     Times.Once);
 
             this.fileBrokerMock.VerifyNoOtherCalls();

@@ -31,7 +31,6 @@ namespace LHDS.Core.Services.Orchestrations.Addresses
         private readonly IDateTimeBroker dateTimeBroker;
         private readonly IAuditBroker auditBroker;
         private readonly ILoggingBroker loggingBroker;
-        private const int BatchSize = 120000;
 
         public AddressOrchestrationService(
             IAddressProcessingService addressProcessingService,
@@ -316,7 +315,6 @@ namespace LHDS.Core.Services.Orchestrations.Addresses
         virtual internal async ValueTask ProcessDPAAddressesAsync(string dpaCsvFile, int batchSize = 120000)
         {
             int skipCounter = 0;
-            //int batchSize = BatchSize;
             var exceptions = new List<Exception>();
 
             while ((await fileBroker.ReadLinesBatchAsync(dpaCsvFile, batchSize, skipCounter)).Any())
@@ -456,7 +454,6 @@ namespace LHDS.Core.Services.Orchestrations.Addresses
         virtual internal async ValueTask ProcessLPIAddressesAsync(string lpiCsvFile, int batchSize = 120000)
         {
             int skipCounter = 0;
-            //int batchSize = BatchSize;
             var exceptions = new List<Exception>();
 
             while ((await fileBroker.ReadLinesBatchAsync(lpiCsvFile, batchSize, skipCounter)).Any())
@@ -504,7 +501,6 @@ namespace LHDS.Core.Services.Orchestrations.Addresses
         virtual internal async ValueTask ProcessBLPUAddressesAsync(string blpuCsvFile, int batchSize = 120000)
         {
             int skipCounter = 0;
-            //int batchSize = BatchSize;
             var exceptions = new List<Exception>();
 
             while ((await fileBroker.ReadLinesBatchAsync(blpuCsvFile, batchSize, skipCounter)).Any())
@@ -604,7 +600,6 @@ namespace LHDS.Core.Services.Orchestrations.Addresses
             int batchSize = 120000)
         {
             int skipCounter = 0;
-            //int batchSize = BatchSize;
             var exceptions = new List<Exception>();
 
             while ((await fileBroker.ReadLinesBatchAsync(streetDescriptorCsvFile, batchSize, skipCounter)).Any())

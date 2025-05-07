@@ -39,14 +39,16 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Addresses
             IQueryable<Address> existingAddresses = randomExistingAddresses.DeepClone();
             List<Address> randomAddressList = CreateRandomAddresses(numberOfRecords).ToList();
             List<Address> newAddresses = randomAddressList.DeepClone();
-            List<Address> dpaFileAddresses = [.. existingAddresses.DeepClone(), .. newAddresses.DeepClone()];
 
             for (int i = 0; i < numberOfBatches; i++)
             {
                 int batchStartLine = i * inputBatchSize;
                 int batchEndLine = batchStartLine + inputBatchSize;
                 List<Address> batchNewAddresses = [.. newAddresses.GetRange(batchStartLine, inputBatchSize)];
-                List<Address> batchExisitngAddresses = [.. existingAddresses.ToList().GetRange(batchStartLine, inputBatchSize)];
+
+                List<Address> batchExisitngAddresses = [
+                    .. existingAddresses.ToList().GetRange(batchStartLine, inputBatchSize)];
+
                 List<Address> dpaFileBatchAddresses = [.. batchNewAddresses, .. batchExisitngAddresses];
 
                 this.fileBrokerMock.Setup(broker =>
@@ -71,6 +73,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Addresses
             // When
             await service.ProcessDPAAddressesAsync(inputDpaCsvFile, inputBatchSize);
 
+            // Then
             for (int i = 0; i < numberOfBatches; i++)
             {
                 int batchStartLine = i * inputBatchSize;

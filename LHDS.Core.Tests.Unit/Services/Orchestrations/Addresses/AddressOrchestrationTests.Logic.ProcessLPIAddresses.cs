@@ -40,7 +40,6 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Addresses
             IQueryable<Address> lpiFileExistingAddresses = randomExistingAddresses.DeepClone();
             List<Address> randomAddressList = CreateRandomAddresses(numberOfRecords).ToList();
             List<Address> newAddresses = randomAddressList.DeepClone();
-            List<Address> lpiFileAddresses = [.. lpiFileExistingAddresses.DeepClone(), .. newAddresses.DeepClone()];
 
             for (int i = 0; i < numberOfBatches; i++)
             {

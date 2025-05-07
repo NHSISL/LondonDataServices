@@ -46,8 +46,6 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Addresses
                 retrievedAddress.DependentLocality = string.Empty;
             }
 
-            List<Address> expectedModifiedAddresses = streetDescriptorAddresses;
-
             for (int i = 0; i < numberOfBatches; i++)
             {
                 int batchStartLine = i * inputBatchSize;

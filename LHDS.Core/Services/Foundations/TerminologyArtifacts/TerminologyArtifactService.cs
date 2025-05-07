@@ -109,8 +109,8 @@ namespace LHDS.Core.Services.Foundations.TerminologyArtifacts
                 return await this.storageBroker.DeleteTerminologyArtifactAsync(updatedTerminologyArtifact);
            });
 
-        virtual internal async ValueTask<TerminologyArtifact> 
-            ApplyAddTerminologyArtifactAsync(TerminologyArtifact terminologyArtifact)
+        virtual internal async ValueTask<TerminologyArtifact> ApplyAddTerminologyArtifactAsync(
+            TerminologyArtifact terminologyArtifact)
         {
             ValidateTerminologyArtifactIsNotNull(terminologyArtifact);
             var auditDateTimeOffset = await this.dateTimeBroker.GetCurrentDateTimeOffsetAsync();
@@ -123,8 +123,8 @@ namespace LHDS.Core.Services.Foundations.TerminologyArtifacts
             return terminologyArtifact;
         }
 
-        virtual internal async ValueTask<TerminologyArtifact> 
-            ApplyModifyAuditAsync(TerminologyArtifact terminologyArtifact)
+        virtual internal async ValueTask<TerminologyArtifact> ApplyModifyAuditAsync(
+            TerminologyArtifact terminologyArtifact)
         {
             ValidateTerminologyArtifactIsNotNull(terminologyArtifact);
             var auditDateTimeOffset = await this.dateTimeBroker.GetCurrentDateTimeOffsetAsync();
@@ -135,8 +135,8 @@ namespace LHDS.Core.Services.Foundations.TerminologyArtifacts
             return terminologyArtifact;
         }
 
-        virtual internal async ValueTask<TerminologyArtifact> 
-            ApplyDeleteAuditAsync(TerminologyArtifact terminologyArtifact)
+        virtual internal async ValueTask<TerminologyArtifact> ApplyDeleteAuditAsync(
+            TerminologyArtifact terminologyArtifact)
         {
             ValidateTerminologyArtifactIsNotNull(terminologyArtifact);
             var auditDateTimeOffset = await this.dateTimeBroker.GetCurrentDateTimeOffsetAsync();
@@ -147,13 +147,13 @@ namespace LHDS.Core.Services.Foundations.TerminologyArtifacts
         }
 
         virtual internal async ValueTask<TerminologyArtifact> EnsureCreatedAuditPropertiesIsSameAsStorageAsync(
-                TerminologyArtifact terminologyArtifact, 
-                TerminologyArtifact maybeTerminologyArtifact)
-            {
-                terminologyArtifact.CreatedDate = maybeTerminologyArtifact.CreatedDate;
-                terminologyArtifact.CreatedBy = maybeTerminologyArtifact.CreatedBy;
+            TerminologyArtifact terminologyArtifact, 
+            TerminologyArtifact maybeTerminologyArtifact)
+        {
+            terminologyArtifact.CreatedDate = maybeTerminologyArtifact.CreatedDate;
+            terminologyArtifact.CreatedBy = maybeTerminologyArtifact.CreatedBy;
 
-                return terminologyArtifact;
-            }
+            return terminologyArtifact;
+        }
     }
 }

@@ -1,0 +1,55 @@
+name: Tag Release
+
+on:
+  pull_request:
+    types: [closed]
+  
+jobs:
+  tag:
+    if: github.event.pull_request.merged == true && github.event.pull_request.base.ref == 'main' && startsWith(github.event.pull_request.title,'RELEASES:')
+    name: Apply Tag
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      pull-requests: read
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v3
+      with:
+        token: ${{ secrets.GITHUB_TOKEN  }}
+    - name: Configure Git
+      run: >-
+        git config user.name "GitHub Action"
+
+        git config user.email "action@github.com"
+    - name: Extract Version Number
+      uses: actions/github-script@v6
+      id: extract_version
+      with:
+        github-token: ${{ secrets.GITHUB_TOKEN }}
+        script: >-
+          const title = context.payload.pull_request.title;
+          const match = title.match(/\d+\.\d+\.\d+\.\d+/);
+
+          if (match) {
+            const version = match[0];
+            core.setOutput('version_number', version);
+          } else {
+            core.setFailed('No version number found in PR title.');
+          }
+    - name: Create GitHub Tag
+      run: >-
+        git tag -a "v${{ steps.extract_version.outputs.version_number }}" -m "Release - v${{ steps.extract_version.outputs.version_number }}"
+
+        git push origin --tags
+    - name: Create GitHub Release
+      uses: actions/create-release@v1
+      with:
+        tag_name: v${{ steps.extract_version.outputs.version_number }}
+        release_name: Release - v${{ steps.extract_version.outputs.version_number }}
+        body: >-
+          ## Release - v${{ steps.extract_version.outputs.version_number }}
+          
+          ### Release Notes
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} 

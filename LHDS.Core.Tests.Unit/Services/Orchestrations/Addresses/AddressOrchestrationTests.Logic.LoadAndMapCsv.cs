@@ -48,9 +48,6 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Addresses
             List<string> filteredRecords = records.Where(record =>
                record.StartsWith("28,") || record.StartsWith("\"28\",")).ToList();
 
-            Func<string, bool> recordFilterPredicate = record =>
-                record.StartsWith("28,") || record.StartsWith("\"28\",");
-
             Dictionary<string, int> fieldMappings = new Dictionary<string, int>
             {
                 { "UPRN", 3 },
@@ -73,14 +70,16 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Addresses
             List<Address> expectedAddresses = outputAddresses.DeepClone();
             string stringRecords = string.Join(Environment.NewLine, filteredRecords);
             bool hasHeaderRecord = false;
+            int batchSize = GetRandomNumber();
+            int skipCounter = GetRandomNumber();
 
             this.fileBrokerMock.Setup(service =>
                 service.CheckIfFileExistsAsync(inputCsvFilePath))
                     .ReturnsAsync(true);
 
             this.fileBrokerMock.Setup(service =>
-                service.ReadFileAsync(inputCsvFilePath))
-                    .ReturnsAsync(csvData);
+                service.ReadLinesBatchAsync(inputCsvFilePath, batchSize, skipCounter))
+                    .ReturnsAsync(filteredRecords);
 
             this.csvHelperBrokerMock.Setup(service =>
                 service.MapCsvToObjectAsync<Address>(stringRecords, hasHeaderRecord, fieldMappings, true))
@@ -92,7 +91,8 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Addresses
             List<Address> actualAddresses = await service.LoadAndMapCsvAsync<Address>(
                 inputCsvFilePath,
                 fieldMappings,
-                recordFilterPredicate);
+                batchSize,
+                skipCounter);
 
             // Then
             actualAddresses.Should().BeEquivalentTo(expectedAddresses);
@@ -102,7 +102,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Addresses
                     Times.Once);
 
             this.fileBrokerMock.Verify(service =>
-                service.ReadFileAsync(inputCsvFilePath),
+                service.ReadLinesBatchAsync(inputCsvFilePath, batchSize, skipCounter),
                     Times.Once);
 
             this.csvHelperBrokerMock.Verify(service =>

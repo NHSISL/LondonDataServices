@@ -48,6 +48,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Addresses
                     .ReturnsAsync([]);
 
             Xeption expectedBlpuException = new Xeption();
+
             expectedBlpuException.AddData(
                 $"BlpuExtractionError in batch between lines {inputSkipCounter} " +
                 $"and {inputSkipCounter + inputBatchSize}.",

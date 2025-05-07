@@ -48,6 +48,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Addresses
                     .ReturnsAsync([]);
 
             Xeption expectedDpaException = new Xeption();
+
             expectedDpaException.AddData(
                 $"DpaExtractionError in batch between lines {inputSkipCounter} " +
                 $"and {inputSkipCounter + inputBatchSize}.",

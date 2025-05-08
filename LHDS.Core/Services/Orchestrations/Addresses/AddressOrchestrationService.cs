@@ -12,6 +12,7 @@ using LHDS.Core.Brokers.Audits;
 using LHDS.Core.Brokers.CsvHelpers;
 using LHDS.Core.Brokers.DateTimes;
 using LHDS.Core.Brokers.Files;
+using LHDS.Core.Brokers.Identifiers;
 using LHDS.Core.Brokers.Loggings;
 using LHDS.Core.Models.Foundations.Addresses;
 using LHDS.Core.Models.Orchestrations.Addresses;
@@ -31,6 +32,7 @@ namespace LHDS.Core.Services.Orchestrations.Addresses
         private readonly IDateTimeBroker dateTimeBroker;
         private readonly IAuditBroker auditBroker;
         private readonly ILoggingBroker loggingBroker;
+        private readonly IIdentifierBroker identifierBroker;
 
         public AddressOrchestrationService(
             IAddressProcessingService addressProcessingService,
@@ -39,7 +41,8 @@ namespace LHDS.Core.Services.Orchestrations.Addresses
             ICsvHelperBroker csvHelperBroker,
             IDateTimeBroker dateTimeBroker,
             IAuditBroker auditBroker,
-            ILoggingBroker loggingBroker)
+            ILoggingBroker loggingBroker,
+            IIdentifierBroker identifierBroker)
         {
             this.addressProcessingService = addressProcessingService;
             this.assignProcessingService = assignProcessingService;
@@ -48,6 +51,7 @@ namespace LHDS.Core.Services.Orchestrations.Addresses
             this.dateTimeBroker = dateTimeBroker;
             this.auditBroker = auditBroker;
             this.loggingBroker = loggingBroker;
+            this.identifierBroker = identifierBroker;
         }
 
         public ValueTask BulkAddAddressesAsync(Stream input, string fileName) =>
@@ -124,15 +128,23 @@ namespace LHDS.Core.Services.Orchestrations.Addresses
             }
         }
 
-        virtual internal async ValueTask ReadCsvDataAndBulkAddAddressesAsync(string tempFolder, int batchSize = 120000)
+        virtual internal async ValueTask ReadCsvDataAndBulkAddAddressesAsync(string folder, int batchSize = 120000)
         {
-            List<string> csvFiles = await fileBroker.GetListOfFilesAsync(tempFolder, "*.csv");
+            List<string> csvFiles = await fileBroker.GetListOfFilesAsync(folder, "*.csv");
             ValidateCsvFiles(csvFiles);
+            Guid correlationId = await this.identifierBroker.GetIdentifierAsync();
             string dpaCsvFile = csvFiles.Where(csv => csv.Contains("ID28")).FirstOrDefault();
             string lpiCsvFile = csvFiles.Where(csv => csv.Contains("ID24")).FirstOrDefault();
             string blpuCsvFile = csvFiles.Where(csv => csv.Contains("ID21")).FirstOrDefault();
             string streetDescriptorCsvFile = csvFiles.Where(csv => csv.Contains("ID15")).FirstOrDefault();
             var exceptions = new List<Exception>();
+
+            await this.auditBroker.LogInformationAsync(
+                auditType: "Address Import",
+                title: "Processing Address Files",
+                message: $"Starting processing of files in {folder}.",
+                fileName: folder,
+                correlationId: correlationId.ToString());
 
             try
             {
@@ -173,6 +185,13 @@ namespace LHDS.Core.Services.Orchestrations.Addresses
                 ((Xeption)exception).AddData("StreetDescriptorExtractionError", streetDescriptorCsvFile);
                 exceptions.Add(exception);
             }
+
+            await this.auditBroker.LogInformationAsync(
+                auditType: "Address Import",
+                title: "Processing Address Files",
+                message: $"Processing of files in {folder} is finished.",
+                fileName: folder,
+                correlationId: correlationId.ToString());
 
             if (exceptions.Any())
             {

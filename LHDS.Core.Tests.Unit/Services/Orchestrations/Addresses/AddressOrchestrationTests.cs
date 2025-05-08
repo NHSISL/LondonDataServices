@@ -65,7 +65,8 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Addresses
                 csvHelperBroker: csvHelperBrokerMock.Object,
                 dateTimeBroker: dateTimeBrokerMock.Object,
                 auditBroker: auditBrokerMock.Object,
-                loggingBroker: loggingBrokerMock.Object);
+                loggingBroker: loggingBrokerMock.Object,
+                identifierBroker: identifierBrokerMock.Object);
         }
 
         private Expression<Func<Address, bool>> SameAddressAs(Address expectedAddress)

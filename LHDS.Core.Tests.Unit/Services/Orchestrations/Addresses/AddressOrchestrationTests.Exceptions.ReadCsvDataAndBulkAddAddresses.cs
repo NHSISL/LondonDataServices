@@ -26,7 +26,8 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Addresses
                 this.csvHelperBrokerMock.Object,
                 this.dateTimeBrokerMock.Object,
                 this.auditBrokerMock.Object,
-                this.loggingBrokerMock.Object)
+                this.loggingBrokerMock.Object,
+                this.identifierBrokerMock.Object)
             { CallBase = true };
 
             string dpaCsvFilePath = "ID28.csv";
@@ -44,6 +45,8 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Addresses
 
             string inputTempPath = GetRandomString();
             string inputSearchPattern = "*.csv";
+            Guid randomGuid = Guid.NewGuid();
+            Guid inputCorrelationId = randomGuid;
             Xeption dpaException = new Xeption();
             Xeption lpiException = new Xeption();
             Xeption blpuException = new Xeption();
@@ -56,6 +59,10 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Addresses
             this.fileBrokerMock.Setup(service =>
                 service.ReadLinesBatchAsync(dpaCsvFilePath, inputBatchSize, initialSkipCounter))
                     .ThrowsAsync(dpaException);
+
+            this.identifierBrokerMock.Setup(broker =>
+                broker.GetIdentifierAsync())
+                    .ReturnsAsync(inputCorrelationId);
 
             this.fileBrokerMock.Setup(service =>
                 service.ReadLinesBatchAsync(lpiCsvFilePath, inputBatchSize, initialSkipCounter))
@@ -107,6 +114,19 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Addresses
                 service.GetListOfFilesAsync(inputTempPath, inputSearchPattern),
                     Times.Once());
 
+            this.identifierBrokerMock.Verify(broker =>
+                broker.GetIdentifierAsync(),
+                    Times.Once);
+
+            this.auditBrokerMock.Verify(broker =>
+                broker.LogInformationAsync(
+                    "Address Import",
+                    "Processing Address Files",
+                     $"Starting processing of files in {inputTempPath}.",
+                    inputTempPath,
+                    inputCorrelationId.ToString()),
+                        Times.Once);
+
             this.fileBrokerMock.Verify(service =>
                 service.ReadLinesBatchAsync(dpaCsvFilePath, inputBatchSize, initialSkipCounter),
                     Times.Once);
@@ -122,6 +142,15 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Addresses
             this.fileBrokerMock.Verify(service =>
                 service.ReadLinesBatchAsync(streetDescriptorCsvFilePath, inputBatchSize, initialSkipCounter),
                     Times.Once);
+
+            this.auditBrokerMock.Verify(broker =>
+                broker.LogInformationAsync(
+                    "Address Import",
+                    "Processing Address Files",
+                    $"Processing of files in {inputTempPath} is finished.",
+                    inputTempPath,
+                    inputCorrelationId.ToString()),
+                        Times.Once);
 
             this.fileBrokerMock.VerifyNoOtherCalls();
             this.csvHelperBrokerMock.VerifyNoOtherCalls();

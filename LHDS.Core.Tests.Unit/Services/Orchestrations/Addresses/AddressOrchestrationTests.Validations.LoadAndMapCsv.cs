@@ -2,7 +2,6 @@
 // Copyright (c) North East London ICB. All rights reserved.
 // ---------------------------------------------------------
 
-using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using FluentAssertions;
@@ -27,10 +26,13 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Addresses
                 this.csvHelperBrokerMock.Object,
                 this.dateTimeBrokerMock.Object,
                 this.auditBrokerMock.Object,
-                this.loggingBrokerMock.Object)
+                this.loggingBrokerMock.Object,
+                this.identifierBrokerMock.Object)
             { CallBase = true };
 
             string invalidFileName = GetRandomString();
+            int inputBatchSize = GetRandomNumber();
+            int inputSkipCounter = GetRandomNumber();
 
             var invalidFileAddressOrchestrationException =
                 new InvalidFileAddressOrchestrationException(
@@ -49,7 +51,8 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Addresses
             ValueTask<List<Address>> loadAndMapCsvTask = service.LoadAndMapCsvAsync<Address>(
                 invalidFileName,
                 It.IsAny<Dictionary<string, int>>(),
-                It.IsAny<Func<string, bool>>());
+                inputBatchSize,
+                inputSkipCounter);
 
             InvalidFileAddressOrchestrationException actualFileAddressOrchestrationException =
                 await Assert.ThrowsAsync<InvalidFileAddressOrchestrationException>(

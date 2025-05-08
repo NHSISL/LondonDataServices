@@ -16,9 +16,7 @@ namespace LHDS.ConfigImportExportTool.Models.Foundations.Suppliers
         public string Name { get; set; } = string.Empty;
         public string FriendlyName { get; set; } = string.Empty;
         public string Description { get; set; } = string.Empty;
-        public bool CanRelandIngestionTracking { get; set; }
         public bool CanDecryptIngestionTracking { get; set; }
-        public bool CanDownloadIngestionTracking { get; set; }
         public string CreatedBy { get; set; } = string.Empty;
         public DateTimeOffset CreatedDate { get; set; }
         public string UpdatedBy { get; set; } = string.Empty;

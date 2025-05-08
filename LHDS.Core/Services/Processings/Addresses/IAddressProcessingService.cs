@@ -15,6 +15,7 @@ namespace LHDS.Core.Services.Processings.Addresses
     public interface IAddressProcessingService
     {
         ValueTask BulkAddAddressesAsync(List<Address> addresses, string fileName);
+        ValueTask BulkModifyAddressesAsync(List<Address> addresses, string fileName);
         ValueTask<Address> AddAddressAsync(Address address);
         ValueTask<IQueryable<Address>> RetrieveAllAddressesAsync();
         ValueTask<Address> RetrieveAddressByIdAsync(Guid addressId);

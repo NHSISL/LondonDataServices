@@ -52,6 +52,13 @@ namespace LHDS.Core.Services.Foundations.Addresses
                 (Rule: IsInvalid(fileName), Parameter: nameof(fileName)));
         }
 
+        private void ValidateOnBulkModifyAddresses(List<Address> addresses, string fileName)
+        {
+            Validate(
+                (Rule: IsInvalid(addresses), Parameter: nameof(addresses)),
+                (Rule: IsInvalid(fileName), Parameter: nameof(fileName)));
+        }
+
         private async ValueTask ValidateAddressOnModifyAsync(Address address)
         {
             ValidateAddressIsNotNull(address);

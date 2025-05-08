@@ -71,9 +71,10 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.ObjectColumns
                 broker.UpdateObjectColumnAsync(inputObjectColumn),
                     Times.Once);
 
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
+            this.securityBrokerMock.VerifyNoOtherCalls();
             this.storageBrokerMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
-            this.dateTimeBrokerMock.VerifyNoOtherCalls();
         }
     }
 }

@@ -27,6 +27,10 @@ namespace LHDS.Core.Services.Orchestrations.Addresses
             {
                 throw await CreateAndLogValidationExceptionAsync(invalidArgumentAddressOrchestrationException);
             }
+            catch (InvalidFileAddressOrchestrationException invalidFileAddressOrchestrationException)
+            {
+                throw await CreateAndLogValidationExceptionAsync(invalidFileAddressOrchestrationException);
+            }
             catch (AddressValidationException addressValidationException)
             {
                 throw await CreateAndLogDependencyValidationExceptionAsync(addressValidationException);

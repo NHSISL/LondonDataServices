@@ -12,6 +12,15 @@ export class IngestionTrackingView {
     public recordCount: number;
     public encryptedFileSize: number;
     public decryptedFileSize: number;
+    public isDownloading: boolean;
+    public isProcessing: boolean;
+    public retryCount: number;
+    public sourceFolderPath: string;
+    public lastAttemptedDate: Date;
+    public dataSetSpecificationId: string;
+    public batch: string;
+    public objectName: string;
+    public batchReadyFolderPath: string;
     public createdBy?: string;
     public createdDate?: Date;
     public updatedBy?: string;
@@ -30,6 +39,15 @@ export class IngestionTrackingView {
         recordCount: number,
         encryptedFileSize: number,
         decryptedFileSize: number,
+        isDownloading: boolean,
+        isProcessing: boolean,
+        retryCount: number,
+        sourceFolderPath: string,
+        lastAttemptedDate: Date,
+        dataSetSpecificationId: string,
+        batch: string,
+        objectName: string,
+        batchReadyFolderPath: string,
         createdBy?: string,
         createdDate?: Date,
         updatedBy?: string,
@@ -47,6 +65,15 @@ export class IngestionTrackingView {
         this.recordCount = recordCount;
         this.encryptedFileSize = encryptedFileSize;
         this.decryptedFileSize = decryptedFileSize;
+        this.isDownloading = isDownloading;
+        this.isProcessing = isProcessing;
+        this.retryCount = retryCount;
+        this.sourceFolderPath = sourceFolderPath || "";
+        this.lastAttemptedDate = lastAttemptedDate;
+        this.dataSetSpecificationId = dataSetSpecificationId || "";
+        this.batch = batch || "";
+        this.objectName = objectName || "";
+        this.batchReadyFolderPath = batchReadyFolderPath || "";
         this.createdBy = createdBy;
         this.createdDate = createdDate;
         this.updatedBy = updatedBy;

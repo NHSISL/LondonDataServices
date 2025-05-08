@@ -8,8 +8,6 @@ export class SupplierView {
     public landingManualTriggerUrl?: string;
     public decryptionManualTriggerUrl?: string;
     public canDecryptIngestionTracking?: boolean;
-    public canDownloadIngestionTracking?: boolean;
-    public canRelandIngestionTracking?: boolean;
     public createdBy?: string;
     public createdDate?: Date;
     public updatedBy?: string;
@@ -23,8 +21,6 @@ export class SupplierView {
         landingManualTriggerUrl?: string,
         decryptionManualTriggerUrl?: string,
         canDecryptIngestionTracking?: boolean,
-        canDownloadIngestionTracking?: boolean,
-        canRelandIngestionTracking?: boolean,
         createdBy?: string,
         createdDate?: Date,
         updatedBy?: string,
@@ -37,8 +33,6 @@ export class SupplierView {
         this.landingManualTriggerUrl = landingManualTriggerUrl || "";
         this.decryptionManualTriggerUrl = decryptionManualTriggerUrl || "";
         this.canDecryptIngestionTracking = canDecryptIngestionTracking === true ? true : false;
-        this.canDownloadIngestionTracking = canDownloadIngestionTracking === true ? true : false;
-        this.canRelandIngestionTracking = canRelandIngestionTracking === true ? true : false;
         this.createdBy = createdBy !== undefined ? createdBy : '';
         this.createdDate = createdDate ;
         this.updatedBy = updatedBy !== undefined ? updatedBy : ''

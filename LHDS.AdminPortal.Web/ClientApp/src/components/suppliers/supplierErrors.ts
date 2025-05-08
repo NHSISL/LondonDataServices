@@ -8,8 +8,6 @@ export interface ISupplierErrors extends ErrorBase {
     landingManualTriggerUrl: string;
     decryptionManualTriggerUrl: string;
     canDecryptIngestionTracking: string;
-    canDownloadIngestionTracking: string;
-    canRelandIngestionTracking: string;
 }
 
 export const supplierErrors: ISupplierErrors = {
@@ -20,6 +18,4 @@ export const supplierErrors: ISupplierErrors = {
     landingManualTriggerUrl: "",
     decryptionManualTriggerUrl: "",
     canDecryptIngestionTracking: "",
-    canDownloadIngestionTracking: "",
-    canRelandIngestionTracking: ""
 };

@@ -4,6 +4,7 @@
 
 using System;
 using System.Threading.Tasks;
+using LHDS.Core.Models.Brokers.Securities;
 using LHDS.Core.Models.Foundations.OptOuts;
 using LHDS.Core.Models.Foundations.OptOuts.Exceptions;
 
@@ -13,7 +14,7 @@ namespace LHDS.Core.Services.Foundations.OptOuts
     {
         private async ValueTask ValidateOptOutOnAddAsync(OptOut optOut)
         {
-            ValidateOptOutIsNotNull(optOut);
+            EntraUser currentUser = await this.securityBroker.GetCurrentUserAsync();
 
             Validate(
                 (Rule: IsInvalid(optOut.Id), Parameter: nameof(OptOut.Id)),
@@ -26,6 +27,11 @@ namespace LHDS.Core.Services.Foundations.OptOuts
                 (Rule: IsInvalidLength(optOut.NhsNumber, 10), Parameter: nameof(OptOut.NhsNumber)),
                 (Rule: IsInvalidLength(optOut.Status, 50), Parameter: nameof(OptOut.Status)),
                 (Rule: IsInvalidNhsNumber(optOut.NhsNumber), Parameter: nameof(OptOut.NhsNumber)),
+
+                (Rule: IsNotSame(
+                    first: currentUser.EntraUserId,
+                    second: optOut.CreatedBy),
+                Parameter: nameof(OptOut.CreatedBy)),
 
                 (Rule: IsNotSame(
                     firstDate: optOut.UpdatedDate,
@@ -50,7 +56,7 @@ namespace LHDS.Core.Services.Foundations.OptOuts
 
         private async ValueTask ValidateOptOutOnModifyAsync(OptOut optOut)
         {
-            ValidateOptOutIsNotNull(optOut);
+            EntraUser currentUser = await this.securityBroker.GetCurrentUserAsync();
 
             Validate(
                 (Rule: IsInvalid(optOut.Id), Parameter: nameof(OptOut.Id)),
@@ -63,6 +69,11 @@ namespace LHDS.Core.Services.Foundations.OptOuts
                 (Rule: IsInvalidLength(optOut.NhsNumber, 10), Parameter: nameof(OptOut.NhsNumber)),
                 (Rule: IsInvalidLength(optOut.Status, 50), Parameter: nameof(OptOut.Status)),
                 (Rule: IsInvalidNhsNumber(optOut.NhsNumber), Parameter: nameof(OptOut.NhsNumber)),
+
+                (Rule: IsNotSame(
+                    first: currentUser.EntraUserId,
+                    second: optOut.UpdatedBy),
+                Parameter: nameof(OptOut.UpdatedBy)),
 
                 (Rule: IsSame(
                     firstDate: optOut.UpdatedDate,
@@ -121,6 +132,39 @@ namespace LHDS.Core.Services.Foundations.OptOuts
                 Parameter: nameof(OptOut.UpdatedDate)));
         }
 
+        private async ValueTask ValidateAgainstStorageOptOutOnDeleteAsync(
+            OptOut optOut,
+            OptOut maybeOptOut)
+        {
+            EntraUser auditUser = await this.securityBroker.GetCurrentUserAsync();
+
+            Validate(
+                (Rule: IsNotSame(
+                    optOut.CreatedDate,
+                    maybeOptOut.CreatedDate,
+                    nameof(maybeOptOut.CreatedDate)),
+                 Parameter: nameof(OptOut.CreatedDate)),
+
+                (Rule: IsNotSame(
+                    optOut.CreatedBy,
+                    maybeOptOut.CreatedBy,
+                    nameof(maybeOptOut.CreatedBy)),
+                 Parameter: nameof(OptOut.CreatedBy)),
+
+                (Rule: IsNotSame(
+                    maybeOptOut.UpdatedDate,
+                    optOut.UpdatedDate,
+                    nameof(OptOut.UpdatedDate)),
+                 Parameter: nameof(OptOut.UpdatedDate)),
+
+                (Rule: IsNotSame(
+                    auditUser.EntraUserId.ToString(),
+                    optOut.UpdatedBy,
+                    nameof(OptOut.UpdatedBy)),
+                 Parameter: nameof(OptOut.UpdatedBy))
+            );
+        }
+
         private static dynamic IsInvalid(Guid id) => new
         {
             Condition = id == Guid.Empty,
@@ -158,6 +202,14 @@ namespace LHDS.Core.Services.Foundations.OptOuts
             {
                 Condition = firstDate == secondDate,
                 Message = $"Date is the same as {secondDateName}"
+            };
+
+        private static dynamic IsNotSame(
+            string first,
+            string second) => new
+            {
+                Condition = first != second,
+                Message = $"Expected value to be '{first}' but found '{second}'."
             };
 
         private static dynamic IsNotSame(

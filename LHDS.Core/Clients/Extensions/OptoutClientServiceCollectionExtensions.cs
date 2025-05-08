@@ -5,6 +5,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
 using System.Net.Http;
 using System.Security.Claims;
@@ -115,6 +116,57 @@ namespace LHDS.Core.Clients.Extensions
             }
 
             AddBrokers(services, claimsPrincipal, acceptanceTest);
+            AddServices(services);
+            AddProcessingServices(services);
+            AddOrchestrations(services);
+            AddClients(services, configuration);
+
+            return services;
+        }
+
+        public static IServiceCollection AddOptOutClient(
+            this IServiceCollection services,
+            IConfiguration configuration,
+            string accessToken,
+            bool acceptanceTest)
+        {
+            services.AddSingleton<IConfiguration>(_ => configuration);
+
+            var meshConfigurationSettings =
+                configuration.GetSection("meshConfiguration").Get<MeshConfigurationSettings>();
+
+            ValidateMeshConfigurationSettings(meshConfigurationSettings, acceptanceTest);
+
+            if (meshConfigurationSettings != null)
+            {
+                var meshConfig = new MeshConfiguration
+                {
+                    MailboxId = meshConfigurationSettings.MailboxId,
+                    Password = meshConfigurationSettings.Password,
+                    Key = meshConfigurationSettings.Key,
+                    Url = meshConfigurationSettings.Url,
+                    MexClientVersion = meshConfigurationSettings.MexClientVersion,
+                    MexOSName = meshConfigurationSettings.MexOSName,
+                    MexOSVersion = meshConfigurationSettings.MexOSVersion,
+                    MaxChunkSizeInMegabytes = meshConfigurationSettings.MaxChunkSizeInMegabytes,
+                };
+
+                if (!acceptanceTest)
+                {
+                    meshConfig.RootCertificate =
+                        GetCertificate(value: meshConfigurationSettings.RootCertificate);
+
+                    meshConfig.IntermediateCertificates =
+                        GetCertificates(values: meshConfigurationSettings.IntermediateCertificates);
+
+                    meshConfig.ClientCertificate =
+                        GetCertificate(value: meshConfigurationSettings.ClientCertificate);
+                }
+
+                services.AddSingleton(meshConfig);
+            }
+
+            AddBrokers(services, GetClaimsPrincipalFromToken(accessToken), acceptanceTest);
             AddServices(services);
             AddProcessingServices(services);
             AddOrchestrations(services);
@@ -401,6 +453,20 @@ namespace LHDS.Core.Clients.Extensions
                 data: errors);
 
             invalidConfigurationException.ThrowIfContainsErrors();
+        }
+
+        /// <summary>
+        /// Extracts a <see cref="ClaimsPrincipal"/> from a given JWT token.
+        /// </summary>
+        /// <param name="token">The JWT token.</param>
+        /// <returns>A <see cref="ClaimsPrincipal"/> containing claims from the token.</returns>
+        private static ClaimsPrincipal GetClaimsPrincipalFromToken(string token)
+        {
+            var handler = new JwtSecurityTokenHandler();
+            var jwtToken = handler.ReadJwtToken(token);
+            var identity = new ClaimsIdentity(jwtToken.Claims, "jwt");
+
+            return new ClaimsPrincipal(identity);
         }
     }
 }

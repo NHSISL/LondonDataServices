@@ -5,8 +5,10 @@
 using System;
 using System.Threading.Tasks;
 using FluentAssertions;
+using LHDS.Core.Models.Brokers.Securities;
 using LHDS.Core.Models.Foundations.OptOuts;
 using LHDS.Core.Models.Foundations.OptOuts.Exceptions;
+using LHDS.Core.Services.Foundations.OptOuts;
 using Moq;
 using Xunit;
 
@@ -20,7 +22,8 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.OptOuts
             // given
             OptOut nullOptOut = null;
 
-            var nullOptOutException = new NullOptOutException(message: "OptOut is null.");
+            var nullOptOutException =
+                new NullOptOutException(message: "OptOut is null.");
 
             var expectedOptOutValidationException =
                 new OptOutValidationException(
@@ -52,41 +55,75 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.OptOuts
         [InlineData(null)]
         [InlineData("")]
         [InlineData(" ")]
-        public async Task ShouldThrowValidationExceptionOnAddIfOptOutIsInvalidAndLogItAsync(string invalidText)
+        public async Task ShouldThrowValidationExceptionOnAddIfOptOutsIsInvalidAndLogItAsync(string invalidText)
         {
             // given
+            DateTimeOffset randomDataTimeOffset = GetRandomDateTimeOffset();
+            EntraUser randomEntraUser = CreateRandomEntraUser();
+
             var invalidOptOut = new OptOut
             {
                 NhsNumber = invalidText,
                 Status = invalidText,
             };
 
+            var optOutServiceMock = new Mock<OptOutService>(
+                storageBrokerMock.Object,
+                dateTimeBrokerMock.Object,
+                securityBrokerMock.Object,
+                loggingBrokerMock.Object)
+            {
+                CallBase = true
+            };
+
+            optOutServiceMock.Setup(service =>
+                service.ApplyAddOptOutAsync(invalidOptOut))
+                    .ReturnsAsync(invalidOptOut);
+
+            this.dateTimeBrokerMock.Setup(broker =>
+                broker.GetCurrentDateTimeOffsetAsync())
+                    .ReturnsAsync(randomDataTimeOffset);
+
+            this.securityBrokerMock.Setup(broker =>
+                broker.GetCurrentUserAsync())
+                    .ReturnsAsync(randomEntraUser);
+
             var invalidOptOutException =
-                new InvalidOptOutException(message: "Invalid optOut. Please correct the errors and try again.");
+                new InvalidOptOutException(
+                    message: "Invalid optOut. Please correct the errors and try again.");
 
             invalidOptOutException.AddData(
                 key: nameof(OptOut.Id),
                 values: "Id is required");
 
             invalidOptOutException.AddData(
-                key: nameof(OptOut.NhsNumber),
-                values:
-                    new[] {
-                        "Text is required",
-                        "NHS Number invalid"
-                    });
-
-            invalidOptOutException.AddData(
                 key: nameof(OptOut.Status),
                 values: "Text is required");
 
             invalidOptOutException.AddData(
-                key: nameof(OptOut.CreatedDate),
-                values: "Date is required");
+                key: nameof(OptOut.NhsNumber),
+                values: 
+                [
+                    
+                    "Text is required", 
+                    "NHS Number invalid"
+                ]);
+
+            invalidOptOutException.AddData(
+                 key: nameof(OptOut.CreatedDate),
+                 values:
+                 [
+                    "Date is required",
+                    $"Date is not recent"
+                 ]);
 
             invalidOptOutException.AddData(
                 key: nameof(OptOut.CreatedBy),
-                values: "Text is required");
+                values:
+                [
+                    "Text is required",
+                    $"Expected value to be '{randomEntraUser.EntraUserId}' but found '{invalidOptOut.CreatedBy}'."
+                ]);
 
             invalidOptOutException.AddData(
                 key: nameof(OptOut.UpdatedDate),
@@ -103,7 +140,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.OptOuts
 
             // when
             ValueTask<OptOut> addOptOutTask =
-                this.optOutService.AddOptOutAsync(invalidOptOut);
+                optOutServiceMock.Object.AddOptOutAsync(invalidOptOut);
 
             OptOutValidationException actualOptOutValidationException =
                 await Assert.ThrowsAsync<OptOutValidationException>(addOptOutTask.AsTask);
@@ -116,6 +153,10 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.OptOuts
                 broker.GetCurrentDateTimeOffsetAsync(),
                     Times.Once());
 
+            this.securityBrokerMock.Verify(broker =>
+                broker.GetCurrentUserAsync(),
+                    Times.Once());
+
             this.loggingBrokerMock.Verify(broker =>
                 broker.LogErrorAsync(It.Is(SameExceptionAs(
                     expectedOptOutValidationException))),
@@ -125,48 +166,47 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.OptOuts
                 broker.InsertOptOutAsync(It.IsAny<OptOut>()),
                     Times.Never);
 
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
+            this.securityBrokerMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
             this.storageBrokerMock.VerifyNoOtherCalls();
-            this.dateTimeBrokerMock.VerifyNoOtherCalls();
         }
 
         [Fact]
-        public async Task ShouldThrowValidationExceptionOnAddIfOptOutLengthValidationIsInvalidAndLogItAsync()
+        public async Task ShouldThrowValidationExceptionOnAddIfOptOutsIsInvalidLenghtAndLogItAsync()
         {
             // given
-            DateTimeOffset randomDateTimeOffset =
-                GetRandomDateTimeOffset();
+            DateTimeOffset randomDateTimeOffset = GetRandomDateTimeOffset();
+            EntraUser randomEntraUser = CreateRandomEntraUser(entraUserId: GetRandomStringWithLengthOf(256));
 
-            int nhsNumberMaxLength = 10;
-            int optOutStatusMaxLength = 50;
-            OptOut invalidOptOut = CreateRandomOptOut(randomDateTimeOffset);
-            invalidOptOut.NhsNumber = GetRandomString(length: nhsNumberMaxLength + 1);
-            invalidOptOut.Status = GetRandomString(length: optOutStatusMaxLength + 1);
-            invalidOptOut.CreatedBy = GetRandomString(256);
-            invalidOptOut.UpdatedBy = invalidOptOut.CreatedBy;
+            OptOut invalidOptOut =
+                CreateRandomOptOut(randomDateTimeOffset, randomEntraUser.EntraUserId);
 
-            this.dateTimeBrokerMock.Setup(broker =>
-                broker.GetCurrentDateTimeOffsetAsync())
-                    .ReturnsAsync(randomDateTimeOffset);
+            var inputCreatedByUpdatedByString = randomEntraUser.EntraUserId;
+            invalidOptOut.NhsNumber = GetRandomString(11);
+            invalidOptOut.Status = GetRandomString(51);
+            invalidOptOut.CreatedBy = inputCreatedByUpdatedByString;
+            invalidOptOut.UpdatedBy = inputCreatedByUpdatedByString;
 
             var invalidOptOutException =
-                new InvalidOptOutException(message: "Invalid optOut. Please correct the errors and try again.");
+                new InvalidOptOutException(
+                    message: "Invalid optOut. Please correct the errors and try again.");
 
             invalidOptOutException.AddData(
                 key: nameof(OptOut.NhsNumber),
-                values:
-                    new[] {
-                        $"Text length should not be greater than {nhsNumberMaxLength}",
-                        "NHS Number invalid"
-                    });
+                values: 
+                [
+                    "Text length should not be greater than 10",
+                    "NHS Number invalid"
+                ]);
 
             invalidOptOutException.AddData(
                 key: nameof(OptOut.Status),
-                values: $"Text length should not be greater than {optOutStatusMaxLength}");
+                values: "Text length should not be greater than 50");
 
             invalidOptOutException.AddData(
-                key: nameof(OptOut.CreatedBy),
-                values: "Text is exceeding max length");
+               key: nameof(OptOut.CreatedBy),
+               values: "Text is exceeding max length");
 
             invalidOptOutException.AddData(
                 key: nameof(OptOut.UpdatedBy),
@@ -177,64 +217,30 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.OptOuts
                     message: "OptOut validation errors occurred, please try again.",
                     innerException: invalidOptOutException);
 
-            // when
-            ValueTask<OptOut> addOptOutTask =
-                this.optOutService.AddOptOutAsync(invalidOptOut);
+            var optOutServiceMock = new Mock<OptOutService>(
+                storageBrokerMock.Object,
+                dateTimeBrokerMock.Object,
+                securityBrokerMock.Object,
+                loggingBrokerMock.Object)
+            {
+                CallBase = true
+            };
 
-            OptOutValidationException actualOptOutValidationException =
-                await Assert.ThrowsAsync<OptOutValidationException>(addOptOutTask.AsTask);
-
-            // then
-            actualOptOutValidationException.Should()
-                .BeEquivalentTo(expectedOptOutValidationException);
-
-            this.dateTimeBrokerMock.Verify(broker =>
-                broker.GetCurrentDateTimeOffsetAsync(),
-                    Times.Once());
-
-            this.loggingBrokerMock.Verify(broker =>
-                broker.LogErrorAsync(It.Is(SameExceptionAs(
-                    expectedOptOutValidationException))),
-                        Times.Once);
-
-            this.storageBrokerMock.Verify(broker =>
-                broker.InsertOptOutAsync(It.IsAny<OptOut>()),
-                    Times.Never);
-
-            this.loggingBrokerMock.VerifyNoOtherCalls();
-            this.storageBrokerMock.VerifyNoOtherCalls();
-            this.dateTimeBrokerMock.VerifyNoOtherCalls();
-        }
-
-        [Fact]
-        public async Task ShouldThrowValidationExceptionOnAddIfNhsNumberIsInvalidAndLogItAsync()
-        {
-            // given
-            DateTimeOffset randomDateTimeOffset =
-                GetRandomDateTimeOffset();
-
-            OptOut invalidOptOut = CreateRandomOptOut(randomDateTimeOffset);
-            invalidOptOut.NhsNumber = GenerateInvalidNhsNumber();
+            optOutServiceMock.Setup(service =>
+                service.ApplyAddOptOutAsync(invalidOptOut))
+                    .ReturnsAsync(invalidOptOut);
 
             this.dateTimeBrokerMock.Setup(broker =>
                 broker.GetCurrentDateTimeOffsetAsync())
                     .ReturnsAsync(randomDateTimeOffset);
 
-            var invalidOptOutException =
-                new InvalidOptOutException(message: "Invalid optOut. Please correct the errors and try again.");
-
-            invalidOptOutException.AddData(
-                key: nameof(OptOut.NhsNumber),
-                values: $"NHS Number invalid");
-
-            var expectedOptOutValidationException =
-                new OptOutValidationException(
-                    message: "OptOut validation errors occurred, please try again.",
-                    innerException: invalidOptOutException);
+            this.securityBrokerMock.Setup(broker =>
+                broker.GetCurrentUserAsync())
+                    .ReturnsAsync(randomEntraUser);
 
             // when
             ValueTask<OptOut> addOptOutTask =
-                this.optOutService.AddOptOutAsync(invalidOptOut);
+                optOutServiceMock.Object.AddOptOutAsync(invalidOptOut);
 
             OptOutValidationException actualOptOutValidationException =
                 await Assert.ThrowsAsync<OptOutValidationException>(addOptOutTask.AsTask);
@@ -247,6 +253,10 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.OptOuts
                 broker.GetCurrentDateTimeOffsetAsync(),
                     Times.Once());
 
+            this.securityBrokerMock.Verify(broker =>
+                broker.GetCurrentUserAsync(),
+                    Times.Once());
+
             this.loggingBrokerMock.Verify(broker =>
                 broker.LogErrorAsync(It.Is(SameExceptionAs(
                     expectedOptOutValidationException))),
@@ -256,9 +266,10 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.OptOuts
                 broker.InsertOptOutAsync(It.IsAny<OptOut>()),
                     Times.Never);
 
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
+            this.securityBrokerMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
             this.storageBrokerMock.VerifyNoOtherCalls();
-            this.dateTimeBrokerMock.VerifyNoOtherCalls();
         }
 
         [Fact]
@@ -267,31 +278,56 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.OptOuts
             // given
             int randomNumber = GetRandomNumber();
             DateTimeOffset randomDateTimeOffset = GetRandomDateTimeOffset();
-            OptOut randomOptOut = CreateRandomOptOut(randomDateTimeOffset);
+            EntraUser randomEntraUser = CreateRandomEntraUser();
+
+            OptOut randomOptOut =
+                CreateRandomOptOut(randomDateTimeOffset, randomEntraUser.EntraUserId);
+
             OptOut invalidOptOut = randomOptOut;
+            invalidOptOut.CreatedDate = GetRandomDateTimeOffset();
+            invalidOptOut.UpdatedDate = GetRandomDateTimeOffset();
 
-            invalidOptOut.UpdatedDate =
-                invalidOptOut.CreatedDate.AddDays(randomNumber);
-
-            var invalidOptOutException = new InvalidOptOutException(
-                message: "Invalid optOut. Please correct the errors and try again.");
+            var invalidOptOutException =
+                new InvalidOptOutException(
+                    message: "Invalid optOut. Please correct the errors and try again.");
 
             invalidOptOutException.AddData(
                 key: nameof(OptOut.UpdatedDate),
                 values: $"Date is not the same as {nameof(OptOut.CreatedDate)}");
+
+            invalidOptOutException.AddData(
+                key: nameof(OptOut.CreatedDate),
+                values: $"Date is not recent");
 
             var expectedOptOutValidationException =
                 new OptOutValidationException(
                     message: "OptOut validation errors occurred, please try again.",
                     innerException: invalidOptOutException);
 
+            var optOutServiceMock = new Mock<OptOutService>(
+                storageBrokerMock.Object,
+                dateTimeBrokerMock.Object,
+                securityBrokerMock.Object,
+                loggingBrokerMock.Object)
+            {
+                CallBase = true
+            };
+
+            optOutServiceMock.Setup(service =>
+                service.ApplyAddOptOutAsync(invalidOptOut))
+                    .ReturnsAsync(invalidOptOut);
+
             this.dateTimeBrokerMock.Setup(broker =>
                 broker.GetCurrentDateTimeOffsetAsync())
                     .ReturnsAsync(randomDateTimeOffset);
 
+            this.securityBrokerMock.Setup(broker =>
+                broker.GetCurrentUserAsync())
+                    .ReturnsAsync(randomEntraUser);
+
             // when
             ValueTask<OptOut> addOptOutTask =
-                this.optOutService.AddOptOutAsync(invalidOptOut);
+                optOutServiceMock.Object.AddOptOutAsync(invalidOptOut);
 
             OptOutValidationException actualOptOutValidationException =
                 await Assert.ThrowsAsync<OptOutValidationException>(addOptOutTask.AsTask);
@@ -304,6 +340,10 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.OptOuts
                 broker.GetCurrentDateTimeOffsetAsync(),
                     Times.Once());
 
+            this.securityBrokerMock.Verify(broker =>
+                broker.GetCurrentUserAsync(),
+                    Times.Once());
+
             this.loggingBrokerMock.Verify(broker =>
                 broker.LogErrorAsync(It.Is(SameExceptionAs(
                     expectedOptOutValidationException))),
@@ -314,21 +354,33 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.OptOuts
                     Times.Never);
 
             this.dateTimeBrokerMock.VerifyNoOtherCalls();
+            this.securityBrokerMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
             this.storageBrokerMock.VerifyNoOtherCalls();
         }
 
         [Fact]
-        public async Task ShouldThrowValidationExceptionOnAddIfCreateAndUpdateUserIdsIsNotSameAndLogItAsync()
+        public async Task ShouldThrowValidationExceptionOnAddIfCreateAndUpdateUsersIsNotSameAndLogItAsync()
         {
             // given
             DateTimeOffset randomDateTimeOffset = GetRandomDateTimeOffset();
-            OptOut randomOptOut = CreateRandomOptOut(randomDateTimeOffset);
+            EntraUser randomEntraUser = CreateRandomEntraUser();
+
+            OptOut randomOptOut =
+                CreateRandomOptOut(randomDateTimeOffset, randomEntraUser.EntraUserId);
+
             OptOut invalidOptOut = randomOptOut;
-            invalidOptOut.UpdatedBy = Guid.NewGuid().ToString();
+            invalidOptOut.CreatedBy = GetRandomString();
+            invalidOptOut.UpdatedBy = GetRandomString();
 
             var invalidOptOutException =
-                new InvalidOptOutException(message: "Invalid optOut. Please correct the errors and try again.");
+                new InvalidOptOutException(
+                    message: "Invalid optOut. Please correct the errors and try again.");
+
+            invalidOptOutException.AddData(
+                key: nameof(OptOut.CreatedBy),
+                values: $"Expected value to be '{randomEntraUser.EntraUserId}' " +
+                    $"but found '{invalidOptOut.CreatedBy}'.");
 
             invalidOptOutException.AddData(
                 key: nameof(OptOut.UpdatedBy),
@@ -339,13 +391,30 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.OptOuts
                     message: "OptOut validation errors occurred, please try again.",
                     innerException: invalidOptOutException);
 
+            var optOutServiceMock = new Mock<OptOutService>(
+                storageBrokerMock.Object,
+                dateTimeBrokerMock.Object,
+                securityBrokerMock.Object,
+                loggingBrokerMock.Object)
+            {
+                CallBase = true
+            };
+
+            optOutServiceMock.Setup(service =>
+                service.ApplyAddOptOutAsync(invalidOptOut))
+                    .ReturnsAsync(invalidOptOut);
+
             this.dateTimeBrokerMock.Setup(broker =>
                 broker.GetCurrentDateTimeOffsetAsync())
                     .ReturnsAsync(randomDateTimeOffset);
 
+            this.securityBrokerMock.Setup(broker =>
+                broker.GetCurrentUserAsync())
+                    .ReturnsAsync(randomEntraUser);
+
             // when
             ValueTask<OptOut> addOptOutTask =
-                this.optOutService.AddOptOutAsync(invalidOptOut);
+                optOutServiceMock.Object.AddOptOutAsync(invalidOptOut);
 
             OptOutValidationException actualOptOutValidationException =
                 await Assert.ThrowsAsync<OptOutValidationException>(addOptOutTask.AsTask);
@@ -358,6 +427,10 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.OptOuts
                 broker.GetCurrentDateTimeOffsetAsync(),
                     Times.Once());
 
+            this.securityBrokerMock.Verify(broker =>
+                broker.GetCurrentUserAsync(),
+                    Times.Once());
+
             this.loggingBrokerMock.Verify(broker =>
                 broker.LogErrorAsync(It.Is(SameExceptionAs(
                     expectedOptOutValidationException))),
@@ -367,9 +440,10 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.OptOuts
                 broker.InsertOptOutAsync(It.IsAny<OptOut>()),
                     Times.Never);
 
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
+            this.securityBrokerMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
             this.storageBrokerMock.VerifyNoOtherCalls();
-            this.dateTimeBrokerMock.VerifyNoOtherCalls();
         }
 
         [Theory]
@@ -379,15 +453,17 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.OptOuts
         {
             // given
             DateTimeOffset randomDateTimeOffset = GetRandomDateTimeOffset();
+            EntraUser randomEntraUser = CreateRandomEntraUser();
+            DateTimeOffset invalidDateTime = randomDateTimeOffset.AddMinutes(minutesBeforeOrAfter);
 
-            DateTimeOffset invalidDateTime =
-                randomDateTimeOffset.AddMinutes(minutesBeforeOrAfter);
+            OptOut randomOptOut =
+                CreateRandomOptOut(invalidDateTime, randomEntraUser.EntraUserId);
 
-            OptOut randomOptOut = CreateRandomOptOut(invalidDateTime);
             OptOut invalidOptOut = randomOptOut;
 
             var invalidOptOutException =
-                new InvalidOptOutException(message: "Invalid optOut. Please correct the errors and try again.");
+                new InvalidOptOutException(
+                    message: "Invalid optOut. Please correct the errors and try again.");
 
             invalidOptOutException.AddData(
                 key: nameof(OptOut.CreatedDate),
@@ -398,13 +474,30 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.OptOuts
                     message: "OptOut validation errors occurred, please try again.",
                     innerException: invalidOptOutException);
 
+            var optOutServiceMock = new Mock<OptOutService>(
+                storageBrokerMock.Object,
+                dateTimeBrokerMock.Object,
+                securityBrokerMock.Object,
+                loggingBrokerMock.Object)
+            {
+                CallBase = true
+            };
+
+            optOutServiceMock.Setup(service =>
+                service.ApplyAddOptOutAsync(invalidOptOut))
+                    .ReturnsAsync(invalidOptOut);
+
             this.dateTimeBrokerMock.Setup(broker =>
                 broker.GetCurrentDateTimeOffsetAsync())
                     .ReturnsAsync(randomDateTimeOffset);
 
+            this.securityBrokerMock.Setup(broker =>
+                broker.GetCurrentUserAsync())
+                    .ReturnsAsync(randomEntraUser);
+
             // when
             ValueTask<OptOut> addOptOutTask =
-                this.optOutService.AddOptOutAsync(invalidOptOut);
+                optOutServiceMock.Object.AddOptOutAsync(invalidOptOut);
 
             OptOutValidationException actualOptOutValidationException =
                 await Assert.ThrowsAsync<OptOutValidationException>(addOptOutTask.AsTask);
@@ -417,6 +510,10 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.OptOuts
                 broker.GetCurrentDateTimeOffsetAsync(),
                     Times.Once());
 
+            this.securityBrokerMock.Verify(broker =>
+                broker.GetCurrentUserAsync(),
+                    Times.Once());
+
             this.loggingBrokerMock.Verify(broker =>
                 broker.LogErrorAsync(It.Is(SameExceptionAs(
                     expectedOptOutValidationException))),
@@ -427,6 +524,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.OptOuts
                     Times.Never);
 
             this.dateTimeBrokerMock.VerifyNoOtherCalls();
+            this.securityBrokerMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
             this.storageBrokerMock.VerifyNoOtherCalls();
         }

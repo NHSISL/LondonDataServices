@@ -19,12 +19,7 @@ const TerminologyArtifactDetail: FunctionComponent<TerminologyArtifactDetailProp
         terminologyArtifactViewService.useGetTerminologyArtifactById(Guid.parse(terminologyArtifactId))
 
     const handleRefresh = async (terminologyArtifactView: TerminologyArtifactView) => { }
-
     const updateTerminology = terminologyArtifactViewService.useUpdateTerminologyArtifact();
-
-    //const handleUpdate = async (terminologyArtifact: TerminologyArtifactView) => {
-    //    return updateDataSet.mutateAsync(terminologyArtifact);
-    //}
 
     const handleUpdate = async (terminologyArtifact: TerminologyArtifactView) => {
         console.log(terminologyArtifact);

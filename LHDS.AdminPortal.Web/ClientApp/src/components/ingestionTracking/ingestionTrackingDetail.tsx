@@ -20,17 +20,6 @@ const IngestionTrackingDetail: FunctionComponent<IngestionTrackingDetailProps> =
     const { mappedIngestionTracking: ingestionTrackingRetrieved } =
         ingestionTrackingViewService.useGetIngestionTrackingById(Guid.parse(ingestionTrackingId))
 
-
-    //const [downloadFileName, setDownloadFileName] = useState<string>("");
-    //const { mappedLink } = documentService.useGetDownloadLinkByFileName(encodeURIComponent(downloadFileName))
-
-    const handleDownload = async (ingestionTrackingView: IngestionTrackingView) => {
-       // if (ingestionTrackingView.decryptedFileName)
-        //    setDownloadFileName(ingestionTrackingView.decryptedFileName)
-        //const mappedLink = documentService.useGetDownloadLinkByFileName(ingestionTrackingView.fileName)
-        //toastSuccess(`${mappedLink}`);
-    }
-
     const updateEmisLanding = emisLandingService.useModifyEmisLanding();
 
     const handleReDecrypt = async (ingestionTrackingView: IngestionTrackingView) => {
@@ -46,21 +35,18 @@ const IngestionTrackingDetail: FunctionComponent<IngestionTrackingDetailProps> =
     const handleRefresh = async (ingestionTrackingView: IngestionTrackingView) => {}
 
     return (
-        <div>
+        <>
             {ingestionTrackingRetrieved !== undefined && (
-                <div>
                     <IngestionTrackingDetailCard
                         key={ingestionTrackingRetrieved.id.toString()}
                         ingestionTracking={ingestionTrackingRetrieved}
-                        onDownload={handleDownload}
                         onReDecrypt={handleReDecrypt}
                         onRefresh={handleRefresh}>
 
                         {children}
                     </IngestionTrackingDetailCard>
-                </div>
             )}
-        </div>
+        </>
     );
 }
 export default IngestionTrackingDetail;

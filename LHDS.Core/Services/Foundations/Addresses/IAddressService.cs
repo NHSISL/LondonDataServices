@@ -13,6 +13,7 @@ namespace LHDS.Core.Services.Foundations.Addresses
     public interface IAddressService
     {
         ValueTask BulkAddAddressesAsync(List<Address> addresses, string fileName);
+        ValueTask BulkModifyAddressesAsync(List<Address> addresses, string fileName);
         ValueTask<Address> AddAddressAsync(Address address);
         ValueTask<IQueryable<Address>> RetrieveAllAddressesAsync();
         ValueTask<Address> RetrieveAddressByIdAsync(Guid addressId);

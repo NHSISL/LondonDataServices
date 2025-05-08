@@ -12,7 +12,9 @@ using LHDS.Core.Brokers.Audits;
 using LHDS.Core.Brokers.DateTimes;
 using LHDS.Core.Brokers.Identifiers;
 using LHDS.Core.Brokers.Loggings;
+using LHDS.Core.Brokers.Securities;
 using LHDS.Core.Brokers.Storages.Sql;
+using LHDS.Core.Models.Brokers.Securities;
 using LHDS.Core.Models.Foundations.ResolvedAddresses;
 using LHDS.Core.Services.Foundations.ResolvedAddresses;
 using Microsoft.Data.SqlClient;
@@ -28,6 +30,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.ResolvedAddresses
         private readonly Mock<IStorageBroker> storageBrokerMock;
         private readonly Mock<IIdentifierBroker> identifierBrokerMock;
         private readonly Mock<IDateTimeBroker> dateTimeBrokerMock;
+        private readonly Mock<ISecurityBroker> securityBrokerMock;
         private readonly Mock<ILoggingBroker> loggingBrokerMock;
         private readonly Mock<IAuditBroker> auditBrokerMock;
         private readonly IResolvedAddressService resolvedAddressService;
@@ -39,6 +42,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.ResolvedAddresses
             this.storageBrokerMock = new Mock<IStorageBroker>();
             this.identifierBrokerMock = new Mock<IIdentifierBroker>();
             this.dateTimeBrokerMock = new Mock<IDateTimeBroker>();
+            this.securityBrokerMock = new Mock<ISecurityBroker>();
             this.loggingBrokerMock = new Mock<ILoggingBroker>();
             this.auditBrokerMock = new Mock<IAuditBroker>();
 
@@ -46,6 +50,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.ResolvedAddresses
                 storageBroker: this.storageBrokerMock.Object,
                 identifierBroker: this.identifierBrokerMock.Object,
                 dateTimeBroker: this.dateTimeBrokerMock.Object,
+                securityBroker: this.securityBrokerMock.Object,
                 loggingBroker: this.loggingBrokerMock.Object,
                 auditBroker: this.auditBrokerMock.Object);
         }
@@ -63,6 +68,13 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.ResolvedAddresses
 
         private static string GetRandomString() =>
             new MnemonicString(wordCount: GetRandomNumber()).GetValue();
+
+        private static string GetRandomStringWithLengthOf(int length)
+        {
+            string result = new MnemonicString(wordCount: 1, wordMinLength: length, wordMaxLength: length).GetValue();
+
+            return result.Length > length ? result.Substring(0, length) : result;
+        }
 
         public static TheoryData<int> MinutesBeforeOrAfter()
         {
@@ -99,6 +111,17 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.ResolvedAddresses
             return randomResolvedAddress;
         }
 
+        private static ResolvedAddress CreateRandomModifyResolvedAddress(
+            DateTimeOffset dateTimeOffset,
+            string userId)
+        {
+            int randomDaysInPast = GetRandomNegativeNumber();
+            ResolvedAddress randomResolvedAddress = CreateRandomResolvedAddress(dateTimeOffset, userId);
+            randomResolvedAddress.CreatedDate = randomResolvedAddress.CreatedDate.AddDays(randomDaysInPast);
+
+            return randomResolvedAddress;
+        }
+
         private static IQueryable<ResolvedAddress> CreateRandomResolvedAddresses()
         {
             return CreateResolvedAddressFiller(dateTimeOffset: GetRandomDateTimeOffset())
@@ -123,6 +146,44 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.ResolvedAddresses
                 .OnProperty(resolvedAddress => resolvedAddress.UpdatedBy).Use(user);
 
             return filler;
+        }
+
+        private static ResolvedAddress CreateRandomResolvedAddress(
+            DateTimeOffset dateTimeOffset,
+            string userId) =>
+            CreateResolvedAddressFiller(dateTimeOffset, userId).Create();
+
+        private static Filler<ResolvedAddress> CreateResolvedAddressFiller(
+            DateTimeOffset dateTimeOffset,
+            string userId)
+        {
+            var filler = new Filler<ResolvedAddress>();
+
+            filler.Setup()
+                .OnType<DateTimeOffset>().Use(dateTimeOffset)
+                .OnProperty(resolvedAddress => resolvedAddress.CreatedBy).Use(userId)
+                .OnProperty(resolvedAddress => resolvedAddress.UpdatedBy).Use(userId);
+
+            return filler;
+        }
+
+        private EntraUser CreateRandomEntraUser(string entraUserId = "")
+        {
+            var userId = string.IsNullOrWhiteSpace(entraUserId) ? GetRandomStringWithLengthOf(255) : entraUserId;
+
+            return new EntraUser(
+                entraUserId: userId,
+                givenName: GetRandomString(),
+                surname: GetRandomString(),
+                displayName: GetRandomString(),
+                email: GetRandomString(),
+                jobTitle: GetRandomString(),
+                roles: new List<string> { GetRandomString() },
+
+                claims: new List<System.Security.Claims.Claim>
+                {
+                    new System.Security.Claims.Claim(type: GetRandomString(), value: GetRandomString())
+                });
         }
     }
 }

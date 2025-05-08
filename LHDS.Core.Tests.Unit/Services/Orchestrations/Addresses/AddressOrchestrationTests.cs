@@ -17,6 +17,7 @@ using LHDS.Core.Models.Foundations.Addresses;
 using LHDS.Core.Models.Foundations.Addresses.Exceptions;
 using LHDS.Core.Models.Foundations.Assigns.Exceptions;
 using LHDS.Core.Models.Foundations.ResolvedAddresses;
+using LHDS.Core.Models.Orchestrations.Addresses;
 using LHDS.Core.Services.Orchestrations.Addresses;
 using LHDS.Core.Services.Processings.Addresses;
 using LHDS.Core.Services.Processings.Assigns;
@@ -42,6 +43,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Addresses
         private readonly ICompareLogic compareLogic;
         private readonly IAddressOrchestrationService addressOrchestrationService;
         private readonly ITestOutputHelper output;
+        private readonly int batchSize = 120000;
 
         public AddressOrchestrationServiceTests(ITestOutputHelper output)
         {
@@ -63,10 +65,18 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Addresses
                 csvHelperBroker: csvHelperBrokerMock.Object,
                 dateTimeBroker: dateTimeBrokerMock.Object,
                 auditBroker: auditBrokerMock.Object,
-                loggingBroker: loggingBrokerMock.Object);
+                loggingBroker: loggingBrokerMock.Object,
+                identifierBroker: identifierBrokerMock.Object);
         }
 
         private Expression<Func<Address, bool>> SameAddressAs(Address expectedAddress)
+        {
+            return actualAddress =>
+                this.compareLogic.Compare(expectedAddress, actualAddress)
+                    .AreEqual;
+        }
+
+        private Expression<Func<LPIAddress, bool>> SameLPIAddressAs(LPIAddress expectedAddress)
         {
             return actualAddress =>
                 this.compareLogic.Compare(expectedAddress, actualAddress)
@@ -162,6 +172,78 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Addresses
 
             return filler;
         }
+
+        private static List<StreetDescriptor> CreateRandomStreetDescriptors(int count = 0)
+        {
+            if (count == 0)
+            {
+                count = GetRandomNumber();
+            }
+
+            return CreateStreetDescriptorFiller()
+                .Create(count)
+                    .ToList();
+        }
+
+        private static StreetDescriptor CreateRandomStreetDescriptor() =>
+            CreateStreetDescriptorFiller().Create();
+
+        private static Filler<StreetDescriptor> CreateStreetDescriptorFiller() =>
+            new Filler<StreetDescriptor>();
+
+        private static List<LPIAddress> CreateRandomLPIAddresses(int count = 0)
+        {
+            if (count == 0)
+            {
+                count = GetRandomNumber();
+            }
+
+            return CreateLPIAddressFiller(dateTimeOffset: GetRandomDateTimeOffset())
+                .Create(count)
+                    .ToList();
+        }
+
+        private static LPIAddress CreateRandomLPIAddress(DateTimeOffset dateTimeOffset) =>
+            CreateLPIAddressFiller(dateTimeOffset).Create();
+
+        private static Filler<LPIAddress> CreateLPIAddressFiller(DateTimeOffset dateTimeOffset)
+        {
+            var filler = new Filler<LPIAddress>();
+
+            filler.Setup()
+                .OnType<DateTimeOffset?>().Use(dateTimeOffset);
+
+            return filler;
+        }
+
+        private static List<BLPUAddress> CreateRandomBLPUAddresses(int count = 0)
+        {
+            if (count == 0)
+            {
+                count = GetRandomNumber();
+            }
+
+            return CreateBLPUAddressFiller(dateTimeOffset: GetRandomDateTimeOffset())
+                .Create(count)
+                    .ToList();
+        }
+
+        private static BLPUAddress CreateRandomBLPUAddress(DateTimeOffset dateTimeOffset) =>
+            CreateBLPUAddressFiller(dateTimeOffset).Create();
+
+        private static Filler<BLPUAddress> CreateBLPUAddressFiller(DateTimeOffset dateTimeOffset)
+        {
+            var filler = new Filler<BLPUAddress>();
+            filler.Setup().OnType<DateTimeOffset?>().Use(dateTimeOffset);
+
+            return filler;
+        }
+
+        private static List<string> CreateRandomStringList() =>
+            Enumerable.Range(1, GetRandomNumber()).Select(x => GetRandomString()).ToList();
+
+        private static List<string> CreateRandomStringList(int numStrings) =>
+            Enumerable.Range(1, numStrings).Select(x => GetRandomString()).ToList();
 
         public static TheoryData<Xeption> AddressOrchestrationDependencyValidationExceptions()
         {

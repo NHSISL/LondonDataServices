@@ -31,7 +31,7 @@ namespace LHDS.Functions.Addresses
             await loggingBroker
                   .LogInformationAsync(
                      $"C# Blob trigger function Processing blob\n " +
-                     $"Name: address/in/{{name}}");
+                     $"Name: addresses/ordinance/in/{{name}}");
 
             try
             {

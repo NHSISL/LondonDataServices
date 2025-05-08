@@ -6,8 +6,10 @@ using System;
 using System.Threading.Tasks;
 using FluentAssertions;
 using Force.DeepCloner;
+using LHDS.Core.Models.Brokers.Securities;
 using LHDS.Core.Models.Foundations.Suppliers;
 using LHDS.Core.Models.Foundations.Suppliers.Exceptions;
+using LHDS.Core.Services.Foundations.Suppliers;
 using Moq;
 using Xunit;
 
@@ -64,25 +66,55 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Suppliers
         public async Task ShouldThrowValidationExceptionOnModifyIfSupplierIsInvalidAndLogItAsync(string invalidText)
         {
             // given 
+            EntraUser randomEntraUser = CreateRandomEntraUser();
+            DateTimeOffset randomDateTimeOffset = GetRandomDateTimeOffset();
+
             var invalidSupplier = new Supplier
             {
                 Name = invalidText,
                 FriendlyName = invalidText,
+                Description = invalidText,
             };
 
-            var invalidSupplierException = new InvalidSupplierException(
-                message: "Invalid supplier. Please correct the errors and try again.");
+            var supplierServiceMock = new Mock<SupplierService>(
+                storageBrokerMock.Object,
+                dateTimeBrokerMock.Object,
+                securityBrokerMock.Object,
+                loggingBrokerMock.Object)
+            {
+                CallBase = true
+            };
+
+            supplierServiceMock.Setup(service =>
+                service.ApplyModifyAuditAsync(invalidSupplier))
+                    .ReturnsAsync(invalidSupplier);
+
+            this.dateTimeBrokerMock.Setup(broker =>
+                broker.GetCurrentDateTimeOffsetAsync())
+                    .ReturnsAsync(randomDateTimeOffset);
+
+            this.securityBrokerMock.Setup(broker =>
+                broker.GetCurrentUserAsync())
+                    .ReturnsAsync(randomEntraUser);
+
+            var invalidSupplierException =
+                new InvalidSupplierException(
+                    message: "Invalid supplier. Please correct the errors and try again.");
 
             invalidSupplierException.AddData(
                 key: nameof(Supplier.Id),
                 values: "Id is required");
 
             invalidSupplierException.AddData(
-                 key: nameof(Supplier.Name),
-                 values: "Text is required");
+                key: nameof(Supplier.Name),
+                values: "Text is required");
 
             invalidSupplierException.AddData(
                 key: nameof(Supplier.FriendlyName),
+                values: "Text is required");
+
+            invalidSupplierException.AddData(
+                key: nameof(Supplier.Description),
                 values: "Text is required");
 
             invalidSupplierException.AddData(
@@ -96,14 +128,20 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Suppliers
             invalidSupplierException.AddData(
                 key: nameof(Supplier.UpdatedDate),
                 values:
-                new[] {
-                    "Date is required",
-                    $"Date is the same as {nameof(Supplier.CreatedDate)}"
-                });
+                    [
+                        "Date is required",
+                        "Date is the same as CreatedDate",
+                        $"Date is not recent"
+                    ]);
 
             invalidSupplierException.AddData(
                 key: nameof(Supplier.UpdatedBy),
-                values: "Text is required");
+                values:
+                    [
+                        "Text is required",
+                        $"Expected value to be '{randomEntraUser.EntraUserId}' but found " +
+                        $"'{invalidSupplier.UpdatedBy}'."
+                    ]);
 
             var expectedSupplierValidationException =
                 new SupplierValidationException(
@@ -112,7 +150,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Suppliers
 
             // when
             ValueTask<Supplier> modifySupplierTask =
-                this.supplierService.ModifySupplierAsync(invalidSupplier);
+                supplierServiceMock.Object.ModifySupplierAsync(invalidSupplier);
 
             SupplierValidationException actualSupplierValidationException =
                 await Assert.ThrowsAsync<SupplierValidationException>(
@@ -126,6 +164,10 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Suppliers
                 broker.GetCurrentDateTimeOffsetAsync(),
                     Times.Once);
 
+            this.securityBrokerMock.Verify(broker =>
+                broker.GetCurrentUserAsync(),
+                    Times.Once);
+
             this.loggingBrokerMock.Verify(broker =>
                 broker.LogErrorAsync(It.Is(SameExceptionAs(
                     expectedSupplierValidationException))),
@@ -135,25 +177,58 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Suppliers
                 broker.UpdateSupplierAsync(It.IsAny<Supplier>()),
                     Times.Never);
 
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
+            this.securityBrokerMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
             this.storageBrokerMock.VerifyNoOtherCalls();
-            this.dateTimeBrokerMock.VerifyNoOtherCalls();
         }
 
         [Fact]
-        public async Task ShouldThrowValidationExceptionOnModifyIfUpdatedDateIsSameAsCreatedDateAndLogItAsync()
+        public async Task ShouldThrowValidationExceptionOnModifyIfSupplierIsInvalidLengthAndLogItAsync()
         {
-            // given
+            // given 
             DateTimeOffset randomDateTimeOffset = GetRandomDateTimeOffset();
-            Supplier randomSupplier = CreateRandomSupplier(randomDateTimeOffset);
-            Supplier invalidSupplier = randomSupplier;
+            EntraUser randomEntraUser = CreateRandomEntraUser(entraUserId: GetRandomStringWithLengthOf(256));
 
-            var invalidSupplierException = new InvalidSupplierException(
-                message: "Invalid supplier. Please correct the errors and try again.");
+            Supplier invalidSupplier =
+                CreateRandomModifySupplier(randomDateTimeOffset, randomEntraUser.EntraUserId);
+
+            var inputCreatedByUpdatedByString = randomEntraUser.EntraUserId;
+            invalidSupplier.CreatedBy = inputCreatedByUpdatedByString;
+            invalidSupplier.UpdatedBy = inputCreatedByUpdatedByString;
+
+            var supplierServiceMock = new Mock<SupplierService>(
+                storageBrokerMock.Object,
+                dateTimeBrokerMock.Object,
+                securityBrokerMock.Object,
+                loggingBrokerMock.Object)
+            {
+                CallBase = true
+            };
+
+            supplierServiceMock.Setup(service =>
+                service.ApplyModifyAuditAsync(invalidSupplier))
+                    .ReturnsAsync(invalidSupplier);
+
+            this.dateTimeBrokerMock.Setup(broker =>
+                broker.GetCurrentDateTimeOffsetAsync())
+                    .ReturnsAsync(randomDateTimeOffset);
+
+            this.securityBrokerMock.Setup(broker =>
+                broker.GetCurrentUserAsync())
+                    .ReturnsAsync(randomEntraUser);
+
+            var invalidSupplierException =
+                new InvalidSupplierException(
+                    message: "Invalid supplier. Please correct the errors and try again.");
 
             invalidSupplierException.AddData(
-                key: nameof(Supplier.UpdatedDate),
-                values: $"Date is the same as {nameof(Supplier.CreatedDate)}");
+                key: nameof(Supplier.CreatedBy),
+                values: "Text is exceeding max length");
+
+            invalidSupplierException.AddData(
+                key: nameof(Supplier.UpdatedBy),
+                values: "Text is exceeding max length");
 
             var expectedSupplierValidationException =
                 new SupplierValidationException(
@@ -166,7 +241,88 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Suppliers
 
             // when
             ValueTask<Supplier> modifySupplierTask =
-                this.supplierService.ModifySupplierAsync(invalidSupplier);
+                supplierServiceMock.Object.ModifySupplierAsync(invalidSupplier);
+
+            SupplierValidationException actualSupplierValidationException =
+                await Assert.ThrowsAsync<SupplierValidationException>(
+                    modifySupplierTask.AsTask);
+
+            //then
+            actualSupplierValidationException.Should()
+                .BeEquivalentTo(expectedSupplierValidationException);
+
+            this.dateTimeBrokerMock.Verify(broker =>
+                broker.GetCurrentDateTimeOffsetAsync(),
+                    Times.Once);
+
+            this.securityBrokerMock.Verify(broker =>
+                broker.GetCurrentUserAsync(),
+                    Times.Once);
+
+            this.loggingBrokerMock.Verify(broker =>
+                broker.LogErrorAsync(It.Is(SameExceptionAs(
+                    expectedSupplierValidationException))),
+                        Times.Once());
+
+            this.storageBrokerMock.Verify(broker =>
+                broker.UpdateSupplierAsync(It.IsAny<Supplier>()),
+                    Times.Never);
+
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
+            this.securityBrokerMock.VerifyNoOtherCalls();
+            this.loggingBrokerMock.VerifyNoOtherCalls();
+            this.storageBrokerMock.VerifyNoOtherCalls();
+        }
+
+        [Fact]
+        public async Task ShouldThrowValidationExceptionOnModifyIfUpdatedDateIsSameAsCreatedDateAndLogItAsync()
+        {
+            // given
+            DateTimeOffset randomDateTimeOffset = GetRandomDateTimeOffset();
+            EntraUser randomEntraUser = CreateRandomEntraUser();
+
+            Supplier randomSupplier =
+                CreateRandomSupplier(randomDateTimeOffset, randomEntraUser.EntraUserId);
+
+            Supplier invalidSupplier = randomSupplier;
+
+            var supplierServiceMock = new Mock<SupplierService>(
+                storageBrokerMock.Object,
+                dateTimeBrokerMock.Object,
+                securityBrokerMock.Object,
+                loggingBrokerMock.Object)
+            {
+                CallBase = true
+            };
+
+            supplierServiceMock.Setup(service =>
+                service.ApplyModifyAuditAsync(invalidSupplier))
+                    .ReturnsAsync(invalidSupplier);
+
+            this.dateTimeBrokerMock.Setup(broker =>
+                broker.GetCurrentDateTimeOffsetAsync())
+                    .ReturnsAsync(randomDateTimeOffset);
+
+            this.securityBrokerMock.Setup(broker =>
+                broker.GetCurrentUserAsync())
+                    .ReturnsAsync(randomEntraUser);
+
+            var invalidSupplierException =
+                new InvalidSupplierException(
+                    message: "Invalid supplier. Please correct the errors and try again.");
+
+            invalidSupplierException.AddData(
+                key: nameof(Supplier.UpdatedDate),
+                values: $"Date is the same as {nameof(Supplier.CreatedDate)}");
+
+            var expectedSupplierValidationException =
+                new SupplierValidationException(
+                    message: "Supplier validation errors occurred, please try again.",
+                    innerException: invalidSupplierException);
+
+            // when
+            ValueTask<Supplier> modifySupplierTask =
+                supplierServiceMock.Object.ModifySupplierAsync(invalidSupplier);
 
             SupplierValidationException actualSupplierValidationException =
                 await Assert.ThrowsAsync<SupplierValidationException>(
@@ -180,6 +336,10 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Suppliers
                 broker.GetCurrentDateTimeOffsetAsync(),
                     Times.Once);
 
+            this.securityBrokerMock.Verify(broker =>
+                broker.GetCurrentUserAsync(),
+                    Times.Once);
+
             this.loggingBrokerMock.Verify(broker =>
                 broker.LogErrorAsync(It.Is(SameExceptionAs(
                     expectedSupplierValidationException))),
@@ -189,9 +349,10 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Suppliers
                 broker.SelectSupplierByIdAsync(invalidSupplier.Id),
                     Times.Never);
 
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
+            this.securityBrokerMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
             this.storageBrokerMock.VerifyNoOtherCalls();
-            this.dateTimeBrokerMock.VerifyNoOtherCalls();
         }
 
         [Theory]
@@ -200,11 +361,37 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Suppliers
         {
             // given
             DateTimeOffset randomDateTimeOffset = GetRandomDateTimeOffset();
-            Supplier randomSupplier = CreateRandomSupplier(randomDateTimeOffset);
-            randomSupplier.UpdatedDate = randomDateTimeOffset.AddMinutes(minutes);
+            EntraUser randomEntraUser = CreateRandomEntraUser();
+
+            Supplier invalidSupplier =
+                CreateRandomSupplier(randomDateTimeOffset, randomEntraUser.EntraUserId);
+
+            invalidSupplier.UpdatedDate = randomDateTimeOffset.AddMinutes(minutes);
+
+            var supplierServiceMock = new Mock<SupplierService>(
+                storageBrokerMock.Object,
+                dateTimeBrokerMock.Object,
+                securityBrokerMock.Object,
+                loggingBrokerMock.Object)
+            {
+                CallBase = true
+            };
+
+            supplierServiceMock.Setup(service =>
+                service.ApplyModifyAuditAsync(invalidSupplier))
+                    .ReturnsAsync(invalidSupplier);
+
+            this.dateTimeBrokerMock.Setup(broker =>
+                broker.GetCurrentDateTimeOffsetAsync())
+                    .ReturnsAsync(randomDateTimeOffset);
+
+            this.securityBrokerMock.Setup(broker =>
+                broker.GetCurrentUserAsync())
+                    .ReturnsAsync(randomEntraUser);
 
             var invalidSupplierException =
-                new InvalidSupplierException(message: "Invalid supplier. Please correct the errors and try again.");
+                new InvalidSupplierException(
+                    message: "Invalid supplier. Please correct the errors and try again.");
 
             invalidSupplierException.AddData(
                 key: nameof(Supplier.UpdatedDate),
@@ -221,7 +408,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Suppliers
 
             // when
             ValueTask<Supplier> modifySupplierTask =
-                this.supplierService.ModifySupplierAsync(randomSupplier);
+                supplierServiceMock.Object.ModifySupplierAsync(invalidSupplier);
 
             SupplierValidationException actualSupplierValidationException =
                 await Assert.ThrowsAsync<SupplierValidationException>(
@@ -235,6 +422,10 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Suppliers
                 broker.GetCurrentDateTimeOffsetAsync(),
                     Times.Once);
 
+            this.securityBrokerMock.Verify(broker =>
+                broker.GetCurrentUserAsync(),
+                    Times.Once);
+
             this.loggingBrokerMock.Verify(broker =>
                 broker.LogErrorAsync(It.Is(SameExceptionAs(
                     expectedSupplierValidatonException))),
@@ -245,6 +436,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Suppliers
                     Times.Never);
 
             this.dateTimeBrokerMock.VerifyNoOtherCalls();
+            this.securityBrokerMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
             this.storageBrokerMock.VerifyNoOtherCalls();
         }
@@ -254,29 +446,43 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Suppliers
         {
             // given
             DateTimeOffset randomDateTimeOffset = GetRandomDateTimeOffset();
-            Supplier randomSupplier = CreateRandomModifySupplier(randomDateTimeOffset);
-            Supplier nonExistSupplier = randomSupplier;
-            Supplier nullSupplier = null;
+            EntraUser randomEntraUser = CreateRandomEntraUser();
 
-            var notFoundSupplierException =
-                new NotFoundSupplierException(nonExistSupplier.Id);
+            Supplier invalidSupplier =
+                CreateRandomModifySupplier(randomDateTimeOffset, randomEntraUser.EntraUserId);
+
+            Supplier nonExistSupplier = invalidSupplier;
+            var notFoundSupplierException = new NotFoundSupplierException(nonExistSupplier.Id);
 
             var expectedSupplierValidationException =
                 new SupplierValidationException(
                     message: "Supplier validation errors occurred, please try again.",
-                    notFoundSupplierException);
+                    innerException: notFoundSupplierException);
 
-            this.storageBrokerMock.Setup(broker =>
-                broker.SelectSupplierByIdAsync(nonExistSupplier.Id))
-                .ReturnsAsync(nullSupplier);
+            var supplierServiceMock = new Mock<SupplierService>(
+                storageBrokerMock.Object,
+                dateTimeBrokerMock.Object,
+                securityBrokerMock.Object,
+                loggingBrokerMock.Object)
+            {
+                CallBase = true
+            };
+
+            supplierServiceMock.Setup(service =>
+                service.ApplyModifyAuditAsync(invalidSupplier))
+                    .ReturnsAsync(invalidSupplier);
 
             this.dateTimeBrokerMock.Setup(broker =>
                 broker.GetCurrentDateTimeOffsetAsync())
-                .ReturnsAsync(randomDateTimeOffset);
+                    .ReturnsAsync(randomDateTimeOffset);
+
+            this.securityBrokerMock.Setup(broker =>
+                broker.GetCurrentUserAsync())
+                    .ReturnsAsync(randomEntraUser);
 
             // when 
             ValueTask<Supplier> modifySupplierTask =
-                this.supplierService.ModifySupplierAsync(nonExistSupplier);
+                supplierServiceMock.Object.ModifySupplierAsync(nonExistSupplier);
 
             SupplierValidationException actualSupplierValidationException =
                 await Assert.ThrowsAsync<SupplierValidationException>(
@@ -294,14 +500,19 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Suppliers
                 broker.GetCurrentDateTimeOffsetAsync(),
                     Times.Once);
 
+            this.securityBrokerMock.Verify(broker =>
+                broker.GetCurrentUserAsync(),
+                    Times.Once);
+
             this.loggingBrokerMock.Verify(broker =>
                 broker.LogErrorAsync(It.Is(SameExceptionAs(
                     expectedSupplierValidationException))),
                         Times.Once);
 
-            this.storageBrokerMock.VerifyNoOtherCalls();
             this.dateTimeBrokerMock.VerifyNoOtherCalls();
+            this.securityBrokerMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
+            this.storageBrokerMock.VerifyNoOtherCalls();
         }
 
         [Fact]
@@ -311,14 +522,40 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Suppliers
             int randomNumber = GetRandomNegativeNumber();
             int randomMinutes = randomNumber;
             DateTimeOffset randomDateTimeOffset = GetRandomDateTimeOffset();
-            Supplier randomSupplier = CreateRandomModifySupplier(randomDateTimeOffset);
+            EntraUser randomEntraUser = CreateRandomEntraUser();
+
+            Supplier randomSupplier =
+                CreateRandomModifySupplier(randomDateTimeOffset, randomEntraUser.EntraUserId);
+
             Supplier invalidSupplier = randomSupplier.DeepClone();
             Supplier storageSupplier = invalidSupplier.DeepClone();
             storageSupplier.CreatedDate = storageSupplier.CreatedDate.AddMinutes(randomMinutes);
             storageSupplier.UpdatedDate = storageSupplier.UpdatedDate.AddMinutes(randomMinutes);
 
-            var invalidSupplierException = new InvalidSupplierException(
-                message: "Invalid supplier. Please correct the errors and try again.");
+            var supplierServiceMock = new Mock<SupplierService>(
+                storageBrokerMock.Object,
+                dateTimeBrokerMock.Object,
+                securityBrokerMock.Object,
+                loggingBrokerMock.Object)
+            {
+                CallBase = true
+            };
+
+            supplierServiceMock.Setup(service =>
+                service.ApplyModifyAuditAsync(invalidSupplier))
+                    .ReturnsAsync(invalidSupplier);
+
+            this.dateTimeBrokerMock.Setup(broker =>
+                broker.GetCurrentDateTimeOffsetAsync())
+                    .ReturnsAsync(randomDateTimeOffset);
+
+            this.securityBrokerMock.Setup(broker =>
+                broker.GetCurrentUserAsync())
+                    .ReturnsAsync(randomEntraUser);
+
+            var invalidSupplierException =
+                new InvalidSupplierException(
+                    message: "Invalid supplier. Please correct the errors and try again.");
 
             invalidSupplierException.AddData(
                 key: nameof(Supplier.CreatedDate),
@@ -331,15 +568,11 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Suppliers
 
             this.storageBrokerMock.Setup(broker =>
                 broker.SelectSupplierByIdAsync(invalidSupplier.Id))
-                .ReturnsAsync(storageSupplier);
-
-            this.dateTimeBrokerMock.Setup(broker =>
-                broker.GetCurrentDateTimeOffsetAsync())
-                .ReturnsAsync(randomDateTimeOffset);
+                    .ReturnsAsync(storageSupplier);
 
             // when
             ValueTask<Supplier> modifySupplierTask =
-                this.supplierService.ModifySupplierAsync(invalidSupplier);
+                supplierServiceMock.Object.ModifySupplierAsync(invalidSupplier);
 
             SupplierValidationException actualSupplierValidationException =
                 await Assert.ThrowsAsync<SupplierValidationException>(
@@ -349,12 +582,16 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Suppliers
             actualSupplierValidationException.Should()
                 .BeEquivalentTo(expectedSupplierValidationException);
 
-            this.storageBrokerMock.Verify(broker =>
-                broker.SelectSupplierByIdAsync(invalidSupplier.Id),
-                    Times.Once);
-
             this.dateTimeBrokerMock.Verify(broker =>
                 broker.GetCurrentDateTimeOffsetAsync(),
+                    Times.Once);
+
+            this.securityBrokerMock.Verify(broker =>
+                broker.GetCurrentUserAsync(),
+                    Times.Once);
+
+            this.storageBrokerMock.Verify(broker =>
+                broker.SelectSupplierByIdAsync(invalidSupplier.Id),
                     Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>
@@ -362,24 +599,30 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Suppliers
                    expectedSupplierValidationException))),
                        Times.Once);
 
-            this.storageBrokerMock.VerifyNoOtherCalls();
             this.dateTimeBrokerMock.VerifyNoOtherCalls();
+            this.securityBrokerMock.VerifyNoOtherCalls();
+            this.storageBrokerMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
         }
 
         [Fact]
-        public async Task ShouldThrowValidationExceptionOnModifyIfCreatedUserIdDontMatchStorageAndLogItAsync()
+        public async Task ShouldThrowValidationExceptionOnModifyIfCreatedUserDontMatchStorageAndLogItAsync()
         {
             // given
             DateTimeOffset randomDateTimeOffset = GetRandomDateTimeOffset();
-            Supplier randomSupplier = CreateRandomModifySupplier(randomDateTimeOffset);
+            EntraUser randomEntraUser = CreateRandomEntraUser();
+
+            Supplier randomSupplier =
+                CreateRandomModifySupplier(randomDateTimeOffset, randomEntraUser.EntraUserId);
+
             Supplier invalidSupplier = randomSupplier.DeepClone();
             Supplier storageSupplier = invalidSupplier.DeepClone();
             invalidSupplier.CreatedBy = Guid.NewGuid().ToString();
             storageSupplier.UpdatedDate = storageSupplier.CreatedDate;
 
-            var invalidSupplierException = new InvalidSupplierException(
-                message: "Invalid supplier. Please correct the errors and try again.");
+            var invalidSupplierException =
+                new InvalidSupplierException(
+                    message: "Invalid supplier. Please correct the errors and try again.");
 
             invalidSupplierException.AddData(
                 key: nameof(Supplier.CreatedBy),
@@ -390,17 +633,34 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Suppliers
                     message: "Supplier validation errors occurred, please try again.",
                     innerException: invalidSupplierException);
 
-            this.storageBrokerMock.Setup(broker =>
-                broker.SelectSupplierByIdAsync(invalidSupplier.Id))
-                .ReturnsAsync(storageSupplier);
+            var supplierServiceMock = new Mock<SupplierService>(
+                storageBrokerMock.Object,
+                dateTimeBrokerMock.Object,
+                securityBrokerMock.Object,
+                loggingBrokerMock.Object)
+            {
+                CallBase = true
+            };
+
+            supplierServiceMock.Setup(service =>
+                service.ApplyModifyAuditAsync(invalidSupplier))
+                    .ReturnsAsync(invalidSupplier);
 
             this.dateTimeBrokerMock.Setup(broker =>
                 broker.GetCurrentDateTimeOffsetAsync())
-                .ReturnsAsync(randomDateTimeOffset);
+                    .ReturnsAsync(randomDateTimeOffset);
+
+            this.securityBrokerMock.Setup(broker =>
+                broker.GetCurrentUserAsync())
+                    .ReturnsAsync(randomEntraUser);
+
+            this.storageBrokerMock.Setup(broker =>
+                broker.SelectSupplierByIdAsync(invalidSupplier.Id))
+                    .ReturnsAsync(storageSupplier);
 
             // when
             ValueTask<Supplier> modifySupplierTask =
-                this.supplierService.ModifySupplierAsync(invalidSupplier);
+                supplierServiceMock.Object.ModifySupplierAsync(invalidSupplier);
 
             SupplierValidationException actualSupplierValidationException =
                 await Assert.ThrowsAsync<SupplierValidationException>(
@@ -409,12 +669,16 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Suppliers
             // then
             actualSupplierValidationException.Should().BeEquivalentTo(expectedSupplierValidationException);
 
-            this.storageBrokerMock.Verify(broker =>
-                broker.SelectSupplierByIdAsync(invalidSupplier.Id),
-                    Times.Once);
-
             this.dateTimeBrokerMock.Verify(broker =>
                 broker.GetCurrentDateTimeOffsetAsync(),
+                    Times.Once);
+
+            this.securityBrokerMock.Verify(broker =>
+                broker.GetCurrentUserAsync(),
+                    Times.Once);
+
+            this.storageBrokerMock.Verify(broker =>
+                broker.SelectSupplierByIdAsync(invalidSupplier.Id),
                     Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>
@@ -422,9 +686,10 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Suppliers
                    expectedSupplierValidationException))),
                        Times.Once);
 
-            this.storageBrokerMock.VerifyNoOtherCalls();
             this.dateTimeBrokerMock.VerifyNoOtherCalls();
+            this.securityBrokerMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
+            this.storageBrokerMock.VerifyNoOtherCalls();
         }
 
         [Fact]
@@ -432,12 +697,18 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Suppliers
         {
             // given
             DateTimeOffset randomDateTimeOffset = GetRandomDateTimeOffset();
-            Supplier randomSupplier = CreateRandomModifySupplier(randomDateTimeOffset);
+            EntraUser randomEntraUser = CreateRandomEntraUser();
+
+            Supplier randomSupplier =
+                CreateRandomModifySupplier(randomDateTimeOffset, randomEntraUser.EntraUserId);
+
             Supplier invalidSupplier = randomSupplier;
             Supplier storageSupplier = randomSupplier.DeepClone();
+            invalidSupplier.UpdatedDate = storageSupplier.UpdatedDate;
 
-            var invalidSupplierException = new InvalidSupplierException(
-                message: "Invalid supplier. Please correct the errors and try again.");
+            var invalidSupplierException =
+                new InvalidSupplierException(
+                    message: "Invalid supplier. Please correct the errors and try again.");
 
             invalidSupplierException.AddData(
                 key: nameof(Supplier.UpdatedDate),
@@ -448,17 +719,34 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Suppliers
                     message: "Supplier validation errors occurred, please try again.",
                     innerException: invalidSupplierException);
 
-            this.storageBrokerMock.Setup(broker =>
-                broker.SelectSupplierByIdAsync(invalidSupplier.Id))
-                .ReturnsAsync(storageSupplier);
+            var supplierServiceMock = new Mock<SupplierService>(
+                storageBrokerMock.Object,
+                dateTimeBrokerMock.Object,
+                securityBrokerMock.Object,
+                loggingBrokerMock.Object)
+            {
+                CallBase = true
+            };
+
+            supplierServiceMock.Setup(service =>
+                service.ApplyModifyAuditAsync(invalidSupplier))
+                    .ReturnsAsync(invalidSupplier);
 
             this.dateTimeBrokerMock.Setup(broker =>
                 broker.GetCurrentDateTimeOffsetAsync())
                     .ReturnsAsync(randomDateTimeOffset);
 
+            this.securityBrokerMock.Setup(broker =>
+                broker.GetCurrentUserAsync())
+                    .ReturnsAsync(randomEntraUser);
+
+            this.storageBrokerMock.Setup(broker =>
+                broker.SelectSupplierByIdAsync(invalidSupplier.Id))
+                    .ReturnsAsync(storageSupplier);
+
             // when
             ValueTask<Supplier> modifySupplierTask =
-                this.supplierService.ModifySupplierAsync(invalidSupplier);
+                supplierServiceMock.Object.ModifySupplierAsync(invalidSupplier);
 
             // then
             await Assert.ThrowsAsync<SupplierValidationException>(
@@ -466,6 +754,10 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Suppliers
 
             this.dateTimeBrokerMock.Verify(broker =>
                 broker.GetCurrentDateTimeOffsetAsync(),
+                    Times.Once);
+
+            this.securityBrokerMock.Verify(broker =>
+                broker.GetCurrentUserAsync(),
                     Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>
@@ -477,9 +769,10 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Suppliers
                 broker.SelectSupplierByIdAsync(invalidSupplier.Id),
                     Times.Once);
 
-            this.storageBrokerMock.VerifyNoOtherCalls();
             this.dateTimeBrokerMock.VerifyNoOtherCalls();
+            this.securityBrokerMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
+            this.storageBrokerMock.VerifyNoOtherCalls();
         }
     }
 }

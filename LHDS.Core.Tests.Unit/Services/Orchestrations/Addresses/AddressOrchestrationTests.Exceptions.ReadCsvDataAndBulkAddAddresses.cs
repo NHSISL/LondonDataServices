@@ -56,17 +56,14 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Addresses
                 service.GetListOfFilesAsync(inputTempPath, inputSearchPattern))
                     .ReturnsAsync(fileList);
 
+            this.identifierBrokerMock.SetupSequence(broker =>
+                broker.GetIdentifierAsync())
+                    .ReturnsAsync(inputCorrelationId)
+                    .ThrowsAsync(lpiException);
+
             this.fileBrokerMock.Setup(service =>
                 service.ReadLinesBatchAsync(dpaCsvFilePath, inputBatchSize, initialSkipCounter))
                     .ThrowsAsync(dpaException);
-
-            this.identifierBrokerMock.Setup(broker =>
-                broker.GetIdentifierAsync())
-                    .ReturnsAsync(inputCorrelationId);
-
-            this.fileBrokerMock.Setup(service =>
-                service.ReadLinesBatchAsync(lpiCsvFilePath, inputBatchSize, initialSkipCounter))
-                    .ThrowsAsync(lpiException);
 
             this.fileBrokerMock.Setup(service =>
                 service.ReadLinesBatchAsync(blpuCsvFilePath, inputBatchSize, initialSkipCounter))
@@ -116,7 +113,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Addresses
 
             this.identifierBrokerMock.Verify(broker =>
                 broker.GetIdentifierAsync(),
-                    Times.Once);
+                    Times.Exactly(2));
 
             this.auditBrokerMock.Verify(broker =>
                 broker.LogInformationAsync(
@@ -129,10 +126,6 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Addresses
 
             this.fileBrokerMock.Verify(service =>
                 service.ReadLinesBatchAsync(dpaCsvFilePath, inputBatchSize, initialSkipCounter),
-                    Times.Once);
-
-            this.fileBrokerMock.Verify(service =>
-                service.ReadLinesBatchAsync(lpiCsvFilePath, inputBatchSize, initialSkipCounter),
                     Times.Once);
 
             this.fileBrokerMock.Verify(service =>

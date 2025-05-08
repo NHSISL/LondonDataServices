@@ -15,7 +15,6 @@ type IngestionTrackingRowProps = {
 
 const IngestionTrackingRow: FunctionComponent<IngestionTrackingRowProps> = (props) => {
     const {
-        onReDecrypted,
         ingestionTracking
     } = props;
 

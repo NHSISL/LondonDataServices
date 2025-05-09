@@ -381,3 +381,5 @@ appsettings.Development.json
 /LHDS.Core.Tests.Integration.Addresses/Resources/Clients/Address/ordinance_test_ignore.zip
 /LHDS.Core.Tests.Integration.Addresses/Resources/Clients/TestAddress/Ordinance_data_London.zip
 /LHDS.Core.Tests.Integration.Addresses/Resources/Clients/Address/Ordinance_data_London.zip
+/LHDS.Core.Tests.Integration.Addresses/Resources/Clients/Address/CombinedFiles_London5k.zip
+/LHDS.Core.Tests.Integration.Addresses/Resources/Clients/Address/CombinedFiles_Stratford.zip

@@ -526,11 +526,11 @@ namespace LHDS.Core.Services.Orchestrations.Addresses
                     await this.auditBroker.LogInformationAsync(
                         auditType: "Address Import - LPI Processing",
                         title: "Processing LPI File",
-                        
+
                         message:
                             $"Processing LPI File - Processing lines {skipCounter} to " +
                             $"{skipCounter + batchSize}. Correlation Id: {correlationId}.",
-                        
+
                         fileName: lpiCsvFile,
                         correlationId: correlationId.ToString());
 
@@ -541,6 +541,7 @@ namespace LHDS.Core.Services.Orchestrations.Addresses
                     List<Address> lpiAddresses = await MapLPIDataToAddressesAsync(lpiCsvFile, batchSize, skipCounter);
                     Dictionary<string, Address> lpiAddressesDict = lpiAddresses.ToDictionary(a => a.UPRN, a => a);
                     IQueryable<Address> addresses = await addressProcessingService.RetrieveAllAddressesAsync();
+                    HashSet<string> existingDatabaseUprns = addresses.Select(a => a.UPRN).ToHashSet();
                     HashSet<string> lpiFileUprns = lpiAddresses.Select(a => a.UPRN).ToHashSet();
 
                     List<Address> existingLpiAddresses = addresses.Where(address =>
@@ -549,7 +550,8 @@ namespace LHDS.Core.Services.Orchestrations.Addresses
                     HashSet<string> existingLpiUprns = existingLpiAddresses.Select(a => a.UPRN).ToHashSet();
 
                     List<Address> newLpiAddresses = lpiAddresses.Where(lpiAddress =>
-                        !existingLpiUprns.Contains(lpiAddress.UPRN)).ToList();
+                        !existingLpiUprns.Contains(lpiAddress.UPRN) &&
+                        !existingDatabaseUprns.Contains(lpiAddress.UPRN)).ToList();
 
                     await addressProcessingService.BulkAddAddressesAsync(newLpiAddresses, lpiCsvFile);
                     await addressProcessingService.BulkModifyAddressesAsync(existingLpiAddresses, lpiCsvFile);
@@ -603,10 +605,6 @@ namespace LHDS.Core.Services.Orchestrations.Addresses
                         blpuFileUprns.Contains(address.UPRN)).ToList();
 
                     HashSet<string> existingBlpuUprns = existingBlpuAddresses.Select(a => a.UPRN).ToHashSet();
-
-                    List<Address> newBlpuAddresses = blpuAddresses.Where(blpuAddress =>
-                        !existingBlpuUprns.Contains(blpuAddress.UPRN)).ToList();
-
                     List<Address> updatedBlpuAddress = [];
 
                     foreach (Address existingAddress in existingBlpuAddresses)
@@ -620,7 +618,6 @@ namespace LHDS.Core.Services.Orchestrations.Addresses
                         }
                     }
 
-                    await addressProcessingService.BulkAddAddressesAsync(newBlpuAddresses, blpuCsvFile);
                     await addressProcessingService.BulkModifyAddressesAsync(updatedBlpuAddress, blpuCsvFile);
                 }
                 catch (Exception exception)

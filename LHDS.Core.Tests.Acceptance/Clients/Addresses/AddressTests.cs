@@ -235,8 +235,6 @@ namespace LHDS.Core.Tests.Acceptance.Clients.Addresses
                 DependentLocality = "Westminister",
                 PostTown = "London",
                 PostCode = "SW1A2AA",
-                IsProcessing = false,
-                IsSynced = false,
                 CreatedBy = "system",
                 UpdatedBy = "system",
                 CreatedDate = randomDateTime,
@@ -460,6 +458,78 @@ namespace LHDS.Core.Tests.Acceptance.Clients.Addresses
                     data,
                     hasHeaderRecord: true,
                     fieldMappings: fieldMappings);
+        }
+
+        private static List<Address> GetExpectedAddresses()
+        {
+            List<Address> expectedAddresses = [
+                new Address
+                {
+                    UPRN = "6044747",
+                    UPSN = "",
+                    OrganisationName = "",
+                    DepartmentName = "",
+                    SubBuildingName = "FLAT 24",
+                    BuildingName = "CROMARTY HOUSE",
+                    BuildingNumber = "",
+                    DependentThoroughfare = "",
+                    Thoroughfare = "BEN JONSON ROAD",
+                    DoubleDependentLocality = "",
+                    DependentLocality = "",
+                    PostTown = "LONDON",
+                    PostCode = "E1 4QG"
+                },
+                new Address
+                {
+                    UPRN = "10094881956",
+                    UPSN = "56027796",
+                    OrganisationName = "",
+                    DepartmentName = "",
+                    SubBuildingName = "FLAT 240",
+                    BuildingName = "EFFRA GARDENS",
+                    BuildingNumber = "1",
+                    DependentThoroughfare = "",
+                    Thoroughfare = "PETO STREET NORTH",
+                    DoubleDependentLocality = "",
+                    DependentLocality = "",
+                    PostTown = "LONDON",
+                    PostCode = "E16 1RD"
+                },
+                new Address
+                {
+                    UPRN = "10094881505",
+                    UPSN = "56027168",
+                    OrganisationName = "",
+                    DepartmentName = "",
+                    SubBuildingName = "FLAT 81",
+                    BuildingName = "FLEET HEIGHTS",
+                    BuildingNumber = "7",
+                    DependentThoroughfare = "",
+                    Thoroughfare = "SILVERTOWN WAY",
+                    DoubleDependentLocality = "",
+                    DependentLocality = "",
+                    PostTown = "LONDON",
+                    PostCode = "E16 1DJ"
+                },
+                new Address
+                {
+                    UPRN = "6027433",
+                    UPSN = "56027168",
+                    OrganisationName = "",
+                    DepartmentName = "",
+                    SubBuildingName = "FLAT 23",
+                    BuildingName = "MAURETANIA BUILDING",
+                    BuildingNumber = "7",
+                    DependentThoroughfare = "",
+                    Thoroughfare = "JARDINE ROAD",
+                    DoubleDependentLocality = "",
+                    DependentLocality = "",
+                    PostTown = "LONDON",
+                    PostCode = "E1W 3WB"
+                },
+            ];
+
+            return expectedAddresses;
         }
     }
 }

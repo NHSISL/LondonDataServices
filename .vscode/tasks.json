@@ -71,7 +71,7 @@
 			"type": "func",
 			"dependsOn": "build (functions)",
 			"options": {
-				"cwd": "${workspaceFolder}/LHDS.Functions.Landings.Emis/bin/Debug/net7.0"
+				"cwd": "${workspaceFolder}/LHDS.Functions.Landings.Emis/bin/Debug/net9.0"
 			},
 			"command": "host start",
 			"isBackground": true,

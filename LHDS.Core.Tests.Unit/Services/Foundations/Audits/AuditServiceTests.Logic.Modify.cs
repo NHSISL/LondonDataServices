@@ -6,6 +6,7 @@ using System;
 using System.Threading.Tasks;
 using FluentAssertions;
 using Force.DeepCloner;
+using LHDS.Core.Models.Brokers.Securities;
 using LHDS.Core.Models.Foundations.Audits;
 using Moq;
 using Xunit;
@@ -19,7 +20,11 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Audits
         {
             // given
             DateTimeOffset randomDateTimeOffset = GetRandomDateTimeOffset();
-            Audit randomAudit = CreateRandomModifyAudit(randomDateTimeOffset);
+            EntraUser randomEntraUser = CreateRandomEntraUser();
+
+            Audit randomAudit =
+                CreateRandomModifyAudit(randomDateTimeOffset, randomEntraUser.EntraUserId);
+
             Audit inputAudit = randomAudit;
             Audit storageAudit = inputAudit.DeepClone();
             storageAudit.UpdatedDate = randomAudit.CreatedDate;
@@ -30,6 +35,10 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Audits
             this.dateTimeBrokerMock.Setup(broker =>
                 broker.GetCurrentDateTimeOffsetAsync())
                     .ReturnsAsync(randomDateTimeOffset);
+
+            this.securityBrokerMock.Setup(broker =>
+                broker.GetCurrentUserAsync())
+                    .ReturnsAsync(randomEntraUser);
 
             this.storageBrokerMock.Setup(broker =>
                 broker.SelectAuditByIdAsync(auditId))
@@ -48,7 +57,11 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Audits
 
             this.dateTimeBrokerMock.Verify(broker =>
                 broker.GetCurrentDateTimeOffsetAsync(),
-                    Times.Once);
+                    Times.Exactly(2));
+
+            this.securityBrokerMock.Verify(broker =>
+                broker.GetCurrentUserAsync(),
+                    Times.Exactly(2));
 
             this.storageBrokerMock.Verify(broker =>
                 broker.SelectAuditByIdAsync(inputAudit.Id),
@@ -58,10 +71,10 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Audits
                 broker.UpdateAuditAsync(inputAudit),
                     Times.Once);
 
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
+            this.securityBrokerMock.VerifyNoOtherCalls();
             this.storageBrokerMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
-            this.dateTimeBrokerMock.VerifyNoOtherCalls();
-            this.identifierBrokerMock.VerifyNoOtherCalls();
         }
     }
 }

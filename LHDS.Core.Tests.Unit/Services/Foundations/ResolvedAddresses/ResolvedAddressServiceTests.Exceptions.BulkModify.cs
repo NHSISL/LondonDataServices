@@ -230,10 +230,12 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.ResolvedAddresses
         {
             // given
             var serviceException = new Exception();
+
             var resolvedAddressServiceMock = new Mock<ResolvedAddressService>(
                 this.storageBrokerMock.Object,
                 this.identifierBrokerMock.Object,
                 this.dateTimeBrokerMock.Object,
+                this.securityBrokerMock.Object,
                 this.loggingBrokerMock.Object,
                 this.auditBrokerMock.Object)
             {
@@ -271,14 +273,21 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.ResolvedAddresses
             actualResolvedAddressServiceException.Should()
                 .BeEquivalentTo(expectedResolvedAddressServiceException);
 
+            resolvedAddressServiceMock.Verify(service =>
+                service.BulkUpdateBatch(It.IsAny<List<ResolvedAddress>>(), It.IsAny<int>()),
+                    Times.Once());
+
             this.loggingBrokerMock.Verify(broker =>
                 broker.LogErrorAsync(It.Is(SameExceptionAs(
                     expectedResolvedAddressServiceException))),
                         Times.Once);
 
+            resolvedAddressServiceMock.VerifyNoOtherCalls();
+            this.identifierBrokerMock.VerifyNoOtherCalls();
             this.dateTimeBrokerMock.VerifyNoOtherCalls();
-            this.storageBrokerMock.VerifyNoOtherCalls();
+            this.securityBrokerMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
+            this.auditBrokerMock.VerifyNoOtherCalls();
         }
     }
 }

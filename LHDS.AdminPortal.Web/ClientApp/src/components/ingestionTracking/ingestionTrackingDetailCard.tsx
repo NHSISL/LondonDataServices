@@ -10,7 +10,6 @@ import IngestionTrackingAuditTable from "../ingestionTrackingAudit/ingestionTrac
 interface IngestionTrackingDetailCardProps {
     ingestionTracking: IngestionTrackingView;
     children?: React.ReactNode;
-    onDownload: (ingestionTracking: IngestionTrackingView) => void;
     onReDecrypt: (ingestionTracking: IngestionTrackingView) => void;
     onRefresh: (ingestionTracking: IngestionTrackingView) => void;
 }
@@ -19,15 +18,9 @@ const IngestionTrackingDetailCard: FunctionComponent<IngestionTrackingDetailCard
     const {
         ingestionTracking,
         children,
-        onDownload,
         onReDecrypt,
         onRefresh
     } = props;
-
-
-    const handleDownload = async (ingestionTracking: IngestionTrackingView) => {
-        await onDownload(ingestionTracking);
-    }
 
     const handleReDecrypt = async (ingestionTracking: IngestionTrackingView) => {
         await onReDecrypt(ingestionTracking);
@@ -38,7 +31,7 @@ const IngestionTrackingDetailCard: FunctionComponent<IngestionTrackingDetailCard
     }
 
     return (
-        <div>
+        <>
             <CardBase>
                 <CardBaseBody>
                     <CardBaseTitle>
@@ -47,13 +40,11 @@ const IngestionTrackingDetailCard: FunctionComponent<IngestionTrackingDetailCard
                     <CardBaseContent>
                         <SupplierDetailCardView
                             ingestionTracking={ingestionTracking}
-                            onDownload={handleDownload}
                             onReDecrypt={handleReDecrypt}
                             onRefresh={handlRefresh} />
 
                         {children !== undefined && (
                             <>
-                                <br />
                                 {children}
                             </>
                         )}
@@ -71,7 +62,7 @@ const IngestionTrackingDetailCard: FunctionComponent<IngestionTrackingDetailCard
                     </CardBaseContent>
                 </CardBaseBody>
             </CardBase>
-        </div>
+        </>
     );
 }
 export default IngestionTrackingDetailCard;

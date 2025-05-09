@@ -6,6 +6,7 @@ using System;
 using System.Threading.Tasks;
 using FluentAssertions;
 using Force.DeepCloner;
+using LHDS.Core.Models.Brokers.Securities;
 using LHDS.Core.Models.Foundations.PdsAudits;
 using Moq;
 using Xunit;
@@ -19,7 +20,11 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.PdsAudits
         {
             // given
             DateTimeOffset randomDateTimeOffset = GetRandomDateTimeOffset();
-            PdsAudit randomPdsAudit = CreateRandomModifyPdsAudit(randomDateTimeOffset);
+            EntraUser randomEntraUser = CreateRandomEntraUser();
+
+            PdsAudit randomPdsAudit =
+                CreateRandomModifyPdsAudit(randomDateTimeOffset, randomEntraUser.EntraUserId);
+
             PdsAudit inputPdsAudit = randomPdsAudit;
             PdsAudit storagePdsAudit = inputPdsAudit.DeepClone();
             storagePdsAudit.UpdatedDate = randomPdsAudit.CreatedDate;
@@ -30,6 +35,10 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.PdsAudits
             this.dateTimeBrokerMock.Setup(broker =>
                 broker.GetCurrentDateTimeOffsetAsync())
                     .ReturnsAsync(randomDateTimeOffset);
+
+            this.securityBrokerMock.Setup(broker =>
+                broker.GetCurrentUserAsync())
+                    .ReturnsAsync(randomEntraUser);
 
             this.storageBrokerMock.Setup(broker =>
                 broker.SelectPdsAuditByIdAsync(pdsAuditId))
@@ -48,7 +57,11 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.PdsAudits
 
             this.dateTimeBrokerMock.Verify(broker =>
                 broker.GetCurrentDateTimeOffsetAsync(),
-                    Times.Once);
+                    Times.Exactly(2));
+
+            this.securityBrokerMock.Verify(broker =>
+                broker.GetCurrentUserAsync(),
+                    Times.Exactly(2));
 
             this.storageBrokerMock.Verify(broker =>
                 broker.SelectPdsAuditByIdAsync(inputPdsAudit.Id),

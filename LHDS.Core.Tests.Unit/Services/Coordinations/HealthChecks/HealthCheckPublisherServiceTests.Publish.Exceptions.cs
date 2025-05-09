@@ -26,12 +26,12 @@ namespace LHDS.Core.Tests.Unit.Services.Coordinations.HealthChecks
 
             var failedHealthCheckPublisherServiceException =
                 new FailedHealthCheckPublisherCoordinationServiceException(
-                    message: "Failed health check publisher service error occurred, please contact support.",
+                    message: "Failed health check publisher coordination service error occurred, please contact support.",
                     innerException: serviceException);
 
             var expectedHealthCheckPublisherServiceException =
                 new HealthCheckPublisherCoordinationServiceException(
-                    message: "Health check publisher service error occurred, please contact support.",
+                    message: "Health check publisher coordination service error occurred, please contact support.",
                     innerException: failedHealthCheckPublisherServiceException);
 
             this.telemetryBrokerMock.Setup(broker =>

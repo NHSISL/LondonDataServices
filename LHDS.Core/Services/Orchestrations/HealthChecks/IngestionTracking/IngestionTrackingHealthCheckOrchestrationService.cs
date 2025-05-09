@@ -8,7 +8,7 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using LHDS.Core.Brokers.DateTimes;
-using LHDS.Core.Services.Foundations.HealthChecks.Checks.IngestionTracking;
+using LHDS.Core.Services.Foundations.HealthChecks.IngestionTracking;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
 

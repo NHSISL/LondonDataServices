@@ -24,6 +24,9 @@ namespace LHDS.Core.Brokers.Files
         public async ValueTask<byte[]> ReadFileAsync(string path) =>
             await File.ReadAllBytesAsync(path);
 
+        public async ValueTask<List<string>> ReadLinesBatchAsync(string path, int batchSize, int skipCounter) =>
+            File.ReadLines(path).Skip(skipCounter).Take(batchSize).ToList();
+
         public async ValueTask<bool> DeleteFileAsync(string path)
         {
             File.Delete(path);

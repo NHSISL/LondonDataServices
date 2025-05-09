@@ -1184,16 +1184,6 @@ namespace LHDS.Core.Migrations
                         .HasColumnType("bit")
                         .HasDefaultValue(false);
 
-                    b.Property<bool>("CanDownloadIngestionTracking")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("bit")
-                        .HasDefaultValue(false);
-
-                    b.Property<bool>("CanRelandIngestionTracking")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("bit")
-                        .HasDefaultValue(false);
-
                     b.Property<string>("CreatedBy")
                         .IsRequired()
                         .HasMaxLength(255)

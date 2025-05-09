@@ -1,4 +1,4 @@
-import { faCheck, faTimes, faFileDownload } from "@fortawesome/free-solid-svg-icons";
+import { faCheck, faTimes } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import React, { FunctionComponent } from "react";
 import moment from "moment";
@@ -16,7 +16,6 @@ import GridBase from "../bases/layouts/Grid/GridBase";
 
 interface IngestionTrackingDetailCardViewProps {
     ingestionTracking: IngestionTrackingView;
-    onDownload: (ingestionTracking: IngestionTrackingView) => void;
     onReDecrypt: (ingestionTracking: IngestionTrackingView) => void;
     onRefresh: (ingestionTracking: IngestionTrackingView) => void;
 }
@@ -24,127 +23,157 @@ interface IngestionTrackingDetailCardViewProps {
 const IngestionTrackingDetailCardView: FunctionComponent<IngestionTrackingDetailCardViewProps> = (props) => {
     const {
         ingestionTracking,
-        onDownload,
         onReDecrypt
     } = props;
 
     return (
         <>
-            <div className="row">
-                <GridBase size="Two-Third">
-                    <CardBase>
-                        <CardBaseBody>
-                            <CardBaseTitle>Details</CardBaseTitle>
-                            <CardBaseContent>
-                                <SummaryListBase>
-                                    <SummaryListBaseRow>
-                                        <SummaryListBaseKey>Supplier</SummaryListBaseKey>
-                                        <SummaryListBaseValue>{ingestionTracking.supplier?.name}</SummaryListBaseValue>
-                                    </SummaryListBaseRow>
-                                    <SummaryListBaseRow>
-                                        <SummaryListBaseKey>Encrypted File Name</SummaryListBaseKey>
-                                        <SummaryListBaseValue>
-                                            {ingestionTracking.encryptedFileName}
-                                        </SummaryListBaseValue>
-                                    </SummaryListBaseRow>
-                                    <SummaryListBaseRow>
-                                        <SummaryListBaseKey>Decrypted File Name</SummaryListBaseKey>
-                                        <SummaryListBaseValue>
-                                            {ingestionTracking.decryptedFileName}
-                                        </SummaryListBaseValue>
-                                    </SummaryListBaseRow>
-                                    <SummaryListBaseRow>
-                                        <SummaryListBaseKey>Decrypted</SummaryListBaseKey>
-                                        <SummaryListBaseValue>{ingestionTracking.decrypted ?
+            <GridBase >
+                <CardBase>
+                    <CardBaseBody>
+                        <CardBaseTitle>Details</CardBaseTitle>
+                        <CardBaseContent>
+                            <SummaryListBase>
+                                <SummaryListBaseRow>
+                                    <SummaryListBaseKey>Supplier</SummaryListBaseKey>
+                                    <SummaryListBaseValue>{ingestionTracking.supplier?.name}</SummaryListBaseValue>
+                                </SummaryListBaseRow>
+                                <SummaryListBaseRow>
+                                    <SummaryListBaseKey>Encrypted File Name</SummaryListBaseKey>
+                                    <SummaryListBaseValue>
+                                        {ingestionTracking.encryptedFileName}
+                                    </SummaryListBaseValue>
+                                </SummaryListBaseRow>
+                                <SummaryListBaseRow>
+                                    <SummaryListBaseKey>Decrypted File Name</SummaryListBaseKey>
+                                    <SummaryListBaseValue>
+                                        {ingestionTracking.decryptedFileName}
+                                    </SummaryListBaseValue>
+                                </SummaryListBaseRow>
+                                <SummaryListBaseRow>
+                                    <SummaryListBaseKey>Decrypted</SummaryListBaseKey>
+                                    <SummaryListBaseValue>{ingestionTracking.decrypted ?
+                                        <FontAwesomeIcon icon={faCheck} className="text-success" /> :
+                                        <FontAwesomeIcon icon={faTimes} className="text-danger" />}
+                                    </SummaryListBaseValue>
+                                </SummaryListBaseRow>
+                                <SummaryListBaseRow>
+                                    <SummaryListBaseKey>Last Seen</SummaryListBaseKey>
+                                    <SummaryListBaseValue>
+                                        {moment(ingestionTracking.lastSeen?.toString()).format("Do-MMM-yyyy HH:mm")}
+                                    </SummaryListBaseValue>
+                                </SummaryListBaseRow>
+                                <SummaryListBaseRow>
+                                    <SummaryListBaseKey>File Deleted</SummaryListBaseKey>
+                                    <SummaryListBaseValue>{ingestionTracking.fileDeleted ?
+                                        <FontAwesomeIcon icon={faCheck} className="text-success" /> :
+                                        <FontAwesomeIcon icon={faTimes} className="text-danger" />}
+                                    </SummaryListBaseValue>
+                                </SummaryListBaseRow>
+                                <SummaryListBaseRow>
+                                    <SummaryListBaseKey>Record Count</SummaryListBaseKey>
+                                    <SummaryListBaseValue>{ingestionTracking.recordCount}</SummaryListBaseValue>
+                                </SummaryListBaseRow>
+                                <SummaryListBaseRow>
+                                    <SummaryListBaseKey>Encrypted File Size</SummaryListBaseKey>
+                                    <SummaryListBaseValue>
+                                        {ingestionTracking.encryptedFileSize}
+                                    </SummaryListBaseValue>
+                                </SummaryListBaseRow>
+                                <SummaryListBaseRow>
+                                    <SummaryListBaseKey>Decrypted File Size</SummaryListBaseKey>
+                                    <SummaryListBaseValue>
+                                        {ingestionTracking.decryptedFileSize}
+                                    </SummaryListBaseValue>
+                                </SummaryListBaseRow>
+                                <SummaryListBaseRow>
+                                    <SummaryListBaseKey>Is Downloading</SummaryListBaseKey>
+                                    <SummaryListBaseValue>
+                                        <SummaryListBaseValue>{ingestionTracking.isDownloading ?
                                             <FontAwesomeIcon icon={faCheck} className="text-success" /> :
                                             <FontAwesomeIcon icon={faTimes} className="text-danger" />}
                                         </SummaryListBaseValue>
-                                    </SummaryListBaseRow>
-                                    <SummaryListBaseRow>
-                                        <SummaryListBaseKey>Last Seen</SummaryListBaseKey>
-                                        <SummaryListBaseValue>
-                                            {moment(ingestionTracking.lastSeen?.toString()).format("Do-MMM-yyyy HH:mm")}
-                                        </SummaryListBaseValue>
-                                    </SummaryListBaseRow>
-                                    <SummaryListBaseRow>
-                                        <SummaryListBaseKey>File Deleted</SummaryListBaseKey>
-                                        <SummaryListBaseValue>{ingestionTracking.fileDeleted ?
+                                    </SummaryListBaseValue>
+                                </SummaryListBaseRow>
+                                <SummaryListBaseRow>
+                                    <SummaryListBaseKey>Is Processing</SummaryListBaseKey>
+                                    <SummaryListBaseValue>
+                                        <SummaryListBaseValue>{ingestionTracking.isProcessing ?
                                             <FontAwesomeIcon icon={faCheck} className="text-success" /> :
                                             <FontAwesomeIcon icon={faTimes} className="text-danger" />}
                                         </SummaryListBaseValue>
-                                    </SummaryListBaseRow>
-                                    <SummaryListBaseRow>
-                                        <SummaryListBaseKey>Record Count</SummaryListBaseKey>
-                                        <SummaryListBaseValue>{ingestionTracking.recordCount}</SummaryListBaseValue>
-                                    </SummaryListBaseRow>
-                                    <SummaryListBaseRow>
-                                        <SummaryListBaseKey>Encrypted File Size</SummaryListBaseKey>
-                                        <SummaryListBaseValue>
-                                            {ingestionTracking.encryptedFileSize}
-                                        </SummaryListBaseValue>
-                                    </SummaryListBaseRow>
-                                    <SummaryListBaseRow>
-                                        <SummaryListBaseKey>Decrypted File Size</SummaryListBaseKey>
-                                        <SummaryListBaseValue>
-                                            {ingestionTracking.decryptedFileSize}
-                                        </SummaryListBaseValue>
-                                    </SummaryListBaseRow>
-                                    <SummaryListBaseRow>
-                                        <SummaryListBaseKey>Created Date</SummaryListBaseKey>
-                                        <SummaryListBaseValue>
-                                            {moment(ingestionTracking.createdDate?.toString()).format("Do-MMM-yyyy HH:mm")}
-                                        </SummaryListBaseValue>
-                                    </SummaryListBaseRow>
-                                    <SummaryListBaseRow>
-                                        <SummaryListBaseKey>Updated Date</SummaryListBaseKey>
-                                        <SummaryListBaseValue>
-                                            {moment(ingestionTracking.updatedDate?.toString()).format("Do-MMM-yyyy HH:mm")}
-                                        </SummaryListBaseValue>
-                                    </SummaryListBaseRow>
-                                </SummaryListBase>
-                            </CardBaseContent>
-                        </CardBaseBody>
-                    </CardBase>
-                </GridBase>
+                                    </SummaryListBaseValue>
+                                </SummaryListBaseRow>
+                                <SummaryListBaseRow>
+                                    <SummaryListBaseKey>RetryCount</SummaryListBaseKey>
+                                    <SummaryListBaseValue>
+                                        {ingestionTracking.retryCount}
+                                    </SummaryListBaseValue>
+                                </SummaryListBaseRow>
+                                <SummaryListBaseRow>
+                                    <SummaryListBaseKey>Source Folder Path</SummaryListBaseKey>
+                                    <SummaryListBaseValue>
+                                        {ingestionTracking.sourceFolderPath}
+                                    </SummaryListBaseValue>
+                                </SummaryListBaseRow>
+                                <SummaryListBaseRow>
+                                    <SummaryListBaseKey>Last Attempted Date</SummaryListBaseKey>
+                                    <SummaryListBaseValue>
+                                        {moment(ingestionTracking.lastAttemptedDate?.toString()).format("Do-MMM-yyyy HH:mm")}
+                                    </SummaryListBaseValue>
+                                </SummaryListBaseRow>
+                                <SummaryListBaseRow>
+                                    <SummaryListBaseKey>DataSet Specification Id</SummaryListBaseKey>
+                                    <SummaryListBaseValue>
+                                        {ingestionTracking.dataSetSpecificationId}
+                                    </SummaryListBaseValue>
+                                </SummaryListBaseRow>
+                                <SummaryListBaseRow>
+                                    <SummaryListBaseKey>Batch</SummaryListBaseKey>
+                                    <SummaryListBaseValue>
+                                        {ingestionTracking.batch}
+                                    </SummaryListBaseValue>
+                                </SummaryListBaseRow>
+                                <SummaryListBaseRow>
+                                    <SummaryListBaseKey>Object Name</SummaryListBaseKey>
+                                    <SummaryListBaseValue>
+                                        {ingestionTracking.objectName}
+                                    </SummaryListBaseValue>
+                                </SummaryListBaseRow>
+                                <SummaryListBaseRow>
+                                    <SummaryListBaseKey>Batch Ready Folder Path</SummaryListBaseKey>
+                                    <SummaryListBaseValue>
+                                        {ingestionTracking.batchReadyFolderPath}
+                                    </SummaryListBaseValue>
+                                </SummaryListBaseRow>
+                                <SummaryListBaseRow>
+                                    <SummaryListBaseKey>Created Date</SummaryListBaseKey>
+                                    <SummaryListBaseValue>
+                                        {moment(ingestionTracking.createdDate?.toString()).format("Do-MMM-yyyy HH:mm")}
+                                    </SummaryListBaseValue>
+                                </SummaryListBaseRow>
+                                <SummaryListBaseRow>
+                                    <SummaryListBaseKey>Updated Date</SummaryListBaseKey>
+                                    <SummaryListBaseValue>
+                                        {moment(ingestionTracking.updatedDate?.toString()).format("Do-MMM-yyyy HH:mm")}
+                                    </SummaryListBaseValue>
+                                </SummaryListBaseRow>
 
-                {(ingestionTracking.supplier?.canDownloadIngestionTracking || ingestionTracking.supplier?.canRelandIngestionTracking) && (
-                    <>
-                        <GridBase size="One-Third">
-                            <CardBase>
-                                <CardBaseBody>
-                                    <CardBaseTitle>
-                                        Actions
-                                    </CardBaseTitle>
-                                    <CardBaseContent>
-                                        <ul className="ps-0 mb-4">
-                                            <li>
-                                                <span>1</span> Re-Encrypt
-                                                <p>Use this option to re-encrypt a file.</p>
-                                            </li>
-                                            <li>
-                                                <span>3</span> Download Decrypted
-                                                <p>Use this option to download a successfully decrypted file.</p>
-                                            </li>
-                                        </ul>
-                                        {ingestionTracking.decrypted && (
-                                            <>
-                                                <ButtonBase onClick={() => onReDecrypt(ingestionTracking)} add>
-                                                    &nbsp;Re-Decrypt
-                                                </ButtonBase> &nbsp;
-                                            </>
-                                        )}
-
-                                        <ButtonBase onClick={() => onDownload(ingestionTracking)} add>
-                                            <FontAwesomeIcon icon={faFileDownload} />&nbsp;Download
-                                        </ButtonBase>&nbsp;
-
-                                    </CardBaseContent>
-                                </CardBaseBody>
-                            </CardBase>
-                        </GridBase>
-                    </>
-                )}
-            </div>
+                                {ingestionTracking.supplier?.canDecryptIngestionTracking && ingestionTracking.decrypted && (
+                                    <SummaryListBaseRow>
+                                        <SummaryListBaseKey>Actions</SummaryListBaseKey>
+                                        <SummaryListBaseValue>
+                                            <ButtonBase onClick={() => onReDecrypt(ingestionTracking)} add>
+                                                &nbsp;Re-Decrypt Document
+                                            </ButtonBase> &nbsp;
+                                        </SummaryListBaseValue>
+                                    </SummaryListBaseRow>
+                                )}
+                            </SummaryListBase>
+                        </CardBaseContent>
+                    </CardBaseBody>
+                </CardBase>
+            </GridBase>
         </>
     );
 }

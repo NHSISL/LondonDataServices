@@ -12,6 +12,15 @@ export class IngestionTracking {
     public recordCount: number;
     public encryptedFileSize: number;
     public decryptedFileSize: number;
+    public isDownloading: boolean;
+    public isProcessing: boolean;
+    public retryCount: number;
+    public sourceFolderPath: string;
+    public lastAttemptedDate: Date;
+    public dataSetSpecificationId: string;
+    public batch: string;
+    public objectName: string;
+    public batchReadyFolderPath: string;
     public createdBy?: string;
     public createdDate?: Date;
     public updatedBy?: string;
@@ -30,6 +39,16 @@ export class IngestionTracking {
         this.recordCount = ingestionTracking.recordCount;
         this.encryptedFileSize = ingestionTracking.encryptedFileSize;
         this.decryptedFileSize = ingestionTracking.decryptedFileSize;
+        this.isDownloading = ingestionTracking.isDownloading;
+        this.isProcessing = ingestionTracking.isProcessing;
+        this.retryCount = ingestionTracking.retryCount;
+        this.sourceFolderPath = ingestionTracking.sourceFolderPath || "";
+        this.lastAttemptedDate = ingestionTracking.lastAttemptedDate ? new Date(ingestionTracking.lastAttemptedDate) : new Date();
+        this.dataSetSpecificationId = ingestionTracking.dataSetSpecificationId || "";
+        this.batch = ingestionTracking.batch || "";
+        this.objectName = ingestionTracking.objectName || "";
+        this.batchReadyFolderPath = ingestionTracking.batchReadyFolderPath || "";
+
         this.createdBy = ingestionTracking.createdBy !== undefined ? ingestionTracking.createdBy : '';
         this.createdDate = ingestionTracking.createdDate;
         this.updatedBy = ingestionTracking.updatedBy !== undefined ? ingestionTracking.updatedBy : ''

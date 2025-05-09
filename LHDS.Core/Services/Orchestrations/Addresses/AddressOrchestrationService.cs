@@ -7,12 +7,12 @@ using System.Collections.Generic;
 using System.IO;
 using System.IO.Compression;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using LHDS.Core.Brokers.Audits;
 using LHDS.Core.Brokers.CsvHelpers;
 using LHDS.Core.Brokers.DateTimes;
 using LHDS.Core.Brokers.Files;
+using LHDS.Core.Brokers.Identifiers;
 using LHDS.Core.Brokers.Loggings;
 using LHDS.Core.Models.Foundations.Addresses;
 using LHDS.Core.Models.Orchestrations.Addresses;
@@ -32,6 +32,7 @@ namespace LHDS.Core.Services.Orchestrations.Addresses
         private readonly IDateTimeBroker dateTimeBroker;
         private readonly IAuditBroker auditBroker;
         private readonly ILoggingBroker loggingBroker;
+        private readonly IIdentifierBroker identifierBroker;
 
         public AddressOrchestrationService(
             IAddressProcessingService addressProcessingService,
@@ -40,7 +41,8 @@ namespace LHDS.Core.Services.Orchestrations.Addresses
             ICsvHelperBroker csvHelperBroker,
             IDateTimeBroker dateTimeBroker,
             IAuditBroker auditBroker,
-            ILoggingBroker loggingBroker)
+            ILoggingBroker loggingBroker,
+            IIdentifierBroker identifierBroker)
         {
             this.addressProcessingService = addressProcessingService;
             this.assignProcessingService = assignProcessingService;
@@ -49,6 +51,7 @@ namespace LHDS.Core.Services.Orchestrations.Addresses
             this.dateTimeBroker = dateTimeBroker;
             this.auditBroker = auditBroker;
             this.loggingBroker = loggingBroker;
+            this.identifierBroker = identifierBroker;
         }
 
         public ValueTask BulkAddAddressesAsync(Stream input, string fileName) =>
@@ -125,55 +128,70 @@ namespace LHDS.Core.Services.Orchestrations.Addresses
             }
         }
 
-        virtual internal async ValueTask ReadCsvDataAndBulkAddAddressesAsync(string tempFolder)
+        virtual internal async ValueTask ReadCsvDataAndBulkAddAddressesAsync(string folder, int batchSize = 120000)
         {
-            List<string> csvFiles = await fileBroker.GetListOfFilesAsync(tempFolder, "*.csv");
+            List<string> csvFiles = await fileBroker.GetListOfFilesAsync(folder, "*.csv");
             ValidateCsvFiles(csvFiles);
+            Guid correlationId = await this.identifierBroker.GetIdentifierAsync();
             string dpaCsvFile = csvFiles.Where(csv => csv.Contains("ID28")).FirstOrDefault();
             string lpiCsvFile = csvFiles.Where(csv => csv.Contains("ID24")).FirstOrDefault();
             string blpuCsvFile = csvFiles.Where(csv => csv.Contains("ID21")).FirstOrDefault();
             string streetDescriptorCsvFile = csvFiles.Where(csv => csv.Contains("ID15")).FirstOrDefault();
             var exceptions = new List<Exception>();
 
+            await this.auditBroker.LogInformationAsync(
+                auditType: "Address Import",
+                title: "Processing Address Files",
+                message: $"Starting processing of files in {folder}.",
+                fileName: folder,
+                correlationId: correlationId.ToString());
+
             try
             {
-                await ProcessDPAAddressesAsync(dpaCsvFile);
+                await ProcessDPAAddressesAsync(dpaCsvFile, batchSize);
             }
-            catch (Exception ex)
+            catch (Exception exception)
             {
-                ((Xeption)ex).AddData("DpaExtractionError", dpaCsvFile);
-                exceptions.Add(ex);
+                ((Xeption)exception).AddData("DpaExtractionError", dpaCsvFile);
+                exceptions.Add(exception);
             }
 
             try
             {
-                await ProcessLPIAddressesAsync(lpiCsvFile);
+                await ProcessLPIAddressesAsync(lpiCsvFile, batchSize);
             }
-            catch (Exception ex)
+            catch (Exception exception)
             {
-                ((Xeption)ex).AddData("LpiExtractionError", lpiCsvFile);
-                exceptions.Add(ex);
+                ((Xeption)exception).AddData("LpiExtractionError", lpiCsvFile);
+                exceptions.Add(exception);
             }
 
             try
             {
-                await ProcessBLPUAddressesAsync(blpuCsvFile);
+                await ProcessBLPUAddressesAsync(blpuCsvFile, batchSize);
             }
-            catch (Exception ex)
+            catch (Exception exception)
             {
-                ((Xeption)ex).AddData("BlpuExtractionError", blpuCsvFile);
-                exceptions.Add(ex);
+                ((Xeption)exception).AddData("BlpuExtractionError", blpuCsvFile);
+                exceptions.Add(exception);
             }
 
             try
             {
-                await ProcessStreetDescriptorDataAsync(streetDescriptorCsvFile);
+                await ProcessStreetDescriptorDataAsync(streetDescriptorCsvFile, batchSize);
             }
-            catch (Exception ex)
+            catch (Exception exception)
             {
-                ((Xeption)ex).AddData("StreetDescriptorExtractionError", streetDescriptorCsvFile);
-                exceptions.Add(ex);
+                ((Xeption)exception).AddData("StreetDescriptorExtractionError", streetDescriptorCsvFile);
+                exceptions.Add(exception);
             }
+
+            await this.auditBroker.LogInformationAsync(
+                auditType: "Address Import",
+                title: "Processing Address Files",
+                message: $"Processing of files in {folder} is finished.",
+                fileName: folder,
+                correlationId: correlationId.ToString());
 
             if (exceptions.Any())
             {
@@ -186,7 +204,8 @@ namespace LHDS.Core.Services.Orchestrations.Addresses
         virtual internal async ValueTask<List<T>> LoadAndMapCsvAsync<T>(
             string filePath,
             Dictionary<string, int> fieldMappings,
-            Func<string, bool> recordFilterPredicate)
+            int batchSize,
+            int skipCounter)
         {
             bool fileExists = await this.fileBroker.CheckIfFileExistsAsync(filePath);
 
@@ -196,29 +215,20 @@ namespace LHDS.Core.Services.Orchestrations.Addresses
                     message: $"The file {filePath} could not be found.");
             }
 
-            byte[] csvData = await fileBroker.ReadFileAsync(filePath);
-            string stringData = Encoding.UTF8.GetString(csvData);
-
-            List<string> records = stringData.Split(
-                new[] { "\r\n", "\n" }, StringSplitOptions.None).ToList();
-
-            List<string> filteredRecords = records
-                .Where(recordFilterPredicate)
-                .ToList();
-
-            string filteredCsv = string.Join(Environment.NewLine, filteredRecords);
+            List<string> csvLines = await fileBroker.ReadLinesBatchAsync(filePath, batchSize, skipCounter);
+            string csvString = string.Join(Environment.NewLine, csvLines);
 
             List<T> mappedObjects = await this.csvHelperBroker
-                .MapCsvToObjectAsync<T>(filteredCsv, hasHeaderRecord: false, fieldMappings);
+                .MapCsvToObjectAsync<T>(csvString, hasHeaderRecord: false, fieldMappings);
 
             return mappedObjects;
         }
 
-        virtual internal async ValueTask<List<Address>> MapLPIDataToAddressesAsync(string lpiCsvFile)
+        virtual internal async ValueTask<List<Address>> MapLPIDataToAddressesAsync(
+            string lpiCsvFile,
+            int batchSize,
+            int skipCounter)
         {
-            Func<string, bool> recordFilter = record =>
-                record.StartsWith("24,") || record.StartsWith("\"24\",");
-
             Dictionary<string, int> fieldMappings = new Dictionary<string, int>
             {
                 { "UPRN", 3 },
@@ -241,7 +251,8 @@ namespace LHDS.Core.Services.Orchestrations.Addresses
             List<LPIAddress> lpiAddresses = await LoadAndMapCsvAsync<LPIAddress>(
                 lpiCsvFile,
                 fieldMappings,
-                recordFilter);
+                batchSize,
+                skipCounter);
 
             var lpiAddressesWithoutDuplicates = lpiAddresses
                 .OrderBy(address => address.LogicalStatus)
@@ -320,48 +331,76 @@ namespace LHDS.Core.Services.Orchestrations.Addresses
             return address;
         }
 
-        virtual internal async ValueTask ProcessDPAAddressesAsync(string dpaCsvFile)
+        virtual internal async ValueTask ProcessDPAAddressesAsync(string dpaCsvFile, int batchSize = 120000)
         {
-            List<Address> dpaAddresses = await MapDPADataToAddressesAsync(dpaCsvFile);
-            Dictionary<string, Address> dpaAddressesDict = dpaAddresses.ToDictionary(a => a.UPRN, a => a);
-            IQueryable<Address> addresses = await addressProcessingService.RetrieveAllAddressesAsync();
-            HashSet<string> dpaFileUprns = dpaAddresses.Select(a => a.UPRN).ToHashSet();
+            int skipCounter = 0;
+            var exceptions = new List<Exception>();
 
-            List<Address> existingDpaAddresses = addresses.Where(address =>
-                dpaFileUprns.Contains(address.UPRN)).ToList();
-
-            HashSet<string> existingDpaUprns = existingDpaAddresses.Select(a => a.UPRN).ToHashSet();
-
-            List<Address> newDpaAddresses = dpaAddresses.Where(dpaAddress =>
-                !existingDpaUprns.Contains(dpaAddress.UPRN)).ToList();
-
-            foreach (Address address in existingDpaAddresses)
+            while ((await fileBroker.ReadLinesBatchAsync(dpaCsvFile, batchSize, skipCounter)).Any())
             {
-                if (address.UPRN != null && dpaAddressesDict.TryGetValue(address.UPRN, out Address dpaAddress))
+                try
                 {
-                    address.OrganisationName = dpaAddress.OrganisationName;
-                    address.DepartmentName = dpaAddress.DepartmentName;
-                    address.SubBuildingName = dpaAddress.SubBuildingName;
-                    address.BuildingName = dpaAddress.BuildingName;
-                    address.BuildingNumber = dpaAddress.BuildingNumber;
-                    address.DependentThoroughfare = dpaAddress.DependentThoroughfare;
-                    address.Thoroughfare = dpaAddress.Thoroughfare;
-                    address.DoubleDependentLocality = dpaAddress.DoubleDependentLocality;
-                    address.DependentLocality = dpaAddress.DependentLocality;
-                    address.PostTown = dpaAddress.PostTown;
-                    address.PostCode = dpaAddress.PostCode;
+                    List<Address> dpaAddresses = await MapDPADataToAddressesAsync(dpaCsvFile, batchSize, skipCounter);
+                    Dictionary<string, Address> dpaAddressesDict = dpaAddresses.ToDictionary(a => a.UPRN, a => a);
+                    IQueryable<Address> addresses = await addressProcessingService.RetrieveAllAddressesAsync();
+                    HashSet<string> dpaFileUprns = dpaAddresses.Select(a => a.UPRN).ToHashSet();
+
+                    List<Address> existingDpaAddresses = addresses.Where(address =>
+                        dpaFileUprns.Contains(address.UPRN)).ToList();
+
+                    HashSet<string> existingDpaUprns = existingDpaAddresses.Select(a => a.UPRN).ToHashSet();
+
+                    List<Address> newDpaAddresses = dpaAddresses.Where(dpaAddress =>
+                        !existingDpaUprns.Contains(dpaAddress.UPRN)).ToList();
+
+                    foreach (Address address in existingDpaAddresses)
+                    {
+                        if (address.UPRN != null && dpaAddressesDict.TryGetValue(address.UPRN, out Address dpaAddress))
+                        {
+                            address.OrganisationName = dpaAddress.OrganisationName;
+                            address.DepartmentName = dpaAddress.DepartmentName;
+                            address.SubBuildingName = dpaAddress.SubBuildingName;
+                            address.BuildingName = dpaAddress.BuildingName;
+                            address.BuildingNumber = dpaAddress.BuildingNumber;
+                            address.DependentThoroughfare = dpaAddress.DependentThoroughfare;
+                            address.Thoroughfare = dpaAddress.Thoroughfare;
+                            address.DoubleDependentLocality = dpaAddress.DoubleDependentLocality;
+                            address.DependentLocality = dpaAddress.DependentLocality;
+                            address.PostTown = dpaAddress.PostTown;
+                            address.PostCode = dpaAddress.PostCode;
+                        }
+                    }
+
+                    await addressProcessingService.BulkAddAddressesAsync(newDpaAddresses, dpaCsvFile);
+                    await addressProcessingService.BulkModifyAddressesAsync(existingDpaAddresses, dpaCsvFile);
+                }
+                catch (Exception exception)
+                {
+                    ((Xeption)exception).AddData(
+                        $"DpaExtractionError in batch between lines {skipCounter} and {skipCounter + batchSize}.",
+                        dpaCsvFile);
+
+                    exceptions.Add(exception);
+                }
+                finally
+                {
+                    skipCounter = skipCounter + batchSize;
                 }
             }
 
-            await addressProcessingService.BulkAddAddressesAsync(newDpaAddresses, dpaCsvFile);
-            await addressProcessingService.BulkModifyAddressesAsync(existingDpaAddresses, dpaCsvFile);
+            if (exceptions.Any())
+            {
+                throw new AggregateException(
+                    $"Errors occurred during loading of {exceptions.Count} batches.",
+                    exceptions);
+            }
         }
 
-        virtual internal async ValueTask<List<Address>> MapDPADataToAddressesAsync(string dpaCsvFile)
+        virtual internal async ValueTask<List<Address>> MapDPADataToAddressesAsync(
+            string dpaCsvFile,
+            int batchSize,
+            int skipCounter)
         {
-            Func<string, bool> recordFilter = record =>
-                record.StartsWith("28,") || record.StartsWith("\"28\",");
-
             Dictionary<string, int> fieldMappings = new Dictionary<string, int>
             {
                 { "UPRN", 3 },
@@ -382,16 +421,17 @@ namespace LHDS.Core.Services.Orchestrations.Addresses
             List<Address> addresses = await LoadAndMapCsvAsync<Address>(
                 dpaCsvFile,
                 fieldMappings,
-                recordFilter);
+                batchSize,
+                skipCounter);
 
             return addresses;
         }
 
-        virtual internal async ValueTask<List<Address>> MapBLPUDataToAddressesAsync(string blpuCsvFile)
+        virtual internal async ValueTask<List<Address>> MapBLPUDataToAddressesAsync(
+            string blpuCsvFile,
+            int batchSize,
+            int skipCounter)
         {
-            Func<string, bool> recordFilter = record =>
-                record.StartsWith("21,") || record.StartsWith("\"21\",");
-
             Dictionary<string, int> fieldMappings = new Dictionary<string, int>
             {
                 { "UPRN", 3 },
@@ -404,7 +444,8 @@ namespace LHDS.Core.Services.Orchestrations.Addresses
             List<BLPUAddress> blpuAddresses = await LoadAndMapCsvAsync<BLPUAddress>(
                 blpuCsvFile,
                 fieldMappings,
-                recordFilter);
+                batchSize,
+                skipCounter);
 
             var blpuAddressesWithoutDuplicates = blpuAddresses
                 .OrderBy(address => address.LogicalStatus)
@@ -429,71 +470,149 @@ namespace LHDS.Core.Services.Orchestrations.Addresses
             return addresses;
         }
 
-        virtual internal async ValueTask ProcessLPIAddressesAsync(string lpiCsvFile)
+        virtual internal async ValueTask ProcessLPIAddressesAsync(string lpiCsvFile, int batchSize = 120000)
         {
-            List<Address> lpiAddresses = await MapLPIDataToAddressesAsync(lpiCsvFile);
-            Dictionary<string, Address> lpiAddressesDict = lpiAddresses.ToDictionary(a => a.UPRN, a => a);
-            IQueryable<Address> addresses = await addressProcessingService.RetrieveAllAddressesAsync();
-            HashSet<string> lpiFileUprns = lpiAddresses.Select(a => a.UPRN).ToHashSet();
+            int skipCounter = 0;
+            var exceptions = new List<Exception>();
+            Guid correlationId = await this.identifierBroker.GetIdentifierAsync();
 
-            List<Address> existingLpiAddresses = addresses.Where(address =>
-                lpiFileUprns.Contains(address.UPRN)).ToList();
+            await this.auditBroker.LogInformationAsync(
+                auditType: "Address Import - LPI Processing",
+                title: "Processing LPI File",
+                message: $"Starting processing file {lpiCsvFile}.",
+                fileName: lpiCsvFile,
+                correlationId: correlationId.ToString());
 
-            HashSet<string> existingLpiUprns = existingLpiAddresses.Select(a => a.UPRN).ToHashSet();
+            await this.loggingBroker.LogInformationAsync(message: $"Starting processing file {lpiCsvFile}.");
 
-            List<Address> newLpiAddresses = lpiAddresses.Where(lpiAddress =>
-                !existingLpiUprns.Contains(lpiAddress.UPRN)).ToList();
-
-            foreach (Address existingAddress in existingLpiAddresses)
+            while ((await fileBroker.ReadLinesBatchAsync(lpiCsvFile, batchSize, skipCounter)).Any())
             {
-                if (existingAddress.UPRN != null && lpiAddressesDict.TryGetValue(existingAddress.UPRN, out Address lpiAddress))
+                try
                 {
-                    existingAddress.USRN = lpiAddress.USRN;
+                    await this.auditBroker.LogInformationAsync(
+                        auditType: "Address Import - LPI Processing",
+                        title: "Processing LPI File",
+
+                        message:
+                            $"Processing LPI File - Processing lines {skipCounter} to " +
+                            $"{skipCounter + batchSize}. Correlation Id: {correlationId}.",
+
+                        fileName: lpiCsvFile,
+                        correlationId: correlationId.ToString());
+
+                    await this.loggingBroker.LogInformationAsync(
+                        message: $"Processing LPI File - Processing lines {skipCounter} to " +
+                            $"{skipCounter + batchSize}. Correlation Id: {correlationId}.");
+
+                    List<Address> lpiAddresses = await MapLPIDataToAddressesAsync(lpiCsvFile, batchSize, skipCounter);
+                    Dictionary<string, Address> lpiAddressesDict = lpiAddresses.ToDictionary(a => a.UPRN, a => a);
+                    IQueryable<Address> addresses = await addressProcessingService.RetrieveAllAddressesAsync();
+                    HashSet<string> existingDatabaseUprns = addresses.Select(a => a.UPRN).ToHashSet();
+                    HashSet<string> lpiFileUprns = lpiAddresses.Select(a => a.UPRN).ToHashSet();
+
+                    List<Address> existingLpiAddresses = addresses.Where(address =>
+                        lpiFileUprns.Contains(address.UPRN) && !string.IsNullOrWhiteSpace(address.USRN)).ToList();
+
+                    HashSet<string> existingLpiUprns = existingLpiAddresses.Select(a => a.UPRN).ToHashSet();
+
+                    List<Address> newLpiAddresses = lpiAddresses.Where(lpiAddress =>
+                        !existingLpiUprns.Contains(lpiAddress.UPRN) &&
+                        !existingDatabaseUprns.Contains(lpiAddress.UPRN)).ToList();
+
+                    await addressProcessingService.BulkAddAddressesAsync(newLpiAddresses, lpiCsvFile);
+                    await addressProcessingService.BulkModifyAddressesAsync(existingLpiAddresses, lpiCsvFile);
+                }
+                catch (Exception exception)
+                {
+                    ((Xeption)exception).AddData(
+                        $"LpiExtractionError in batch between lines {skipCounter} and {skipCounter + batchSize}.",
+                        lpiCsvFile);
+
+                    exceptions.Add(exception);
+                }
+                finally
+                {
+                    skipCounter = skipCounter + batchSize;
                 }
             }
 
-            await addressProcessingService.BulkAddAddressesAsync(newLpiAddresses, lpiCsvFile);
-            await addressProcessingService.BulkModifyAddressesAsync(existingLpiAddresses, lpiCsvFile);
+            await this.auditBroker.LogInformationAsync(
+                auditType: "Address Import - LPI Processing",
+                title: "Processing LPI File",
+                message: $"Finished processing file {lpiCsvFile}.",
+                fileName: lpiCsvFile,
+                correlationId: correlationId.ToString());
+
+            await this.loggingBroker.LogInformationAsync(message: $"Finished processing file {lpiCsvFile}.");
+
+            if (exceptions.Any())
+            {
+                throw new AggregateException(
+                    $"Errors occurred during loading of {exceptions.Count} batches.",
+                    exceptions);
+            }
         }
 
-        virtual internal async ValueTask ProcessBLPUAddressesAsync(string blpuCsvFile)
+        virtual internal async ValueTask ProcessBLPUAddressesAsync(string blpuCsvFile, int batchSize = 120000)
         {
-            List<Address> blpuAddresses = await MapBLPUDataToAddressesAsync(blpuCsvFile);
-            Dictionary<string, Address> blpuAddressesDict = blpuAddresses.ToDictionary(a => a.UPRN, a => a);
-            IQueryable<Address> addresses = await addressProcessingService.RetrieveAllAddressesAsync();
-            HashSet<string> blpuFileUprns = blpuAddresses.Select(a => a.UPRN).ToHashSet();
+            int skipCounter = 0;
+            var exceptions = new List<Exception>();
 
-            List<Address> existingBlpuAddresses = addresses.Where(address =>
-                blpuFileUprns.Contains(address.UPRN)).ToList();
-
-            HashSet<string> existingBlpuUprns = existingBlpuAddresses.Select(a => a.UPRN).ToHashSet();
-
-            List<Address> newBlpuAddresses = blpuAddresses.Where(blpuAddress =>
-                !existingBlpuUprns.Contains(blpuAddress.UPRN)).ToList();
-
-            List<Address> updatedBlpuAddress = [];
-
-            foreach (Address existingAddress in existingBlpuAddresses)
+            while ((await fileBroker.ReadLinesBatchAsync(blpuCsvFile, batchSize, skipCounter)).Any())
             {
-                if (existingAddress.UPRN != null
-                    && blpuAddressesDict.TryGetValue(existingAddress.UPRN, out Address blpuAddress)
-                    && string.IsNullOrWhiteSpace(existingAddress.PostCode))
+                try
                 {
-                    existingAddress.PostCode = blpuAddress.PostCode;
-                    updatedBlpuAddress.Add(existingAddress);
+                    List<Address> blpuAddresses = await MapBLPUDataToAddressesAsync(blpuCsvFile, batchSize, skipCounter);
+                    Dictionary<string, Address> blpuAddressesDict = blpuAddresses.ToDictionary(a => a.UPRN, a => a);
+                    IQueryable<Address> addresses = await addressProcessingService.RetrieveAllAddressesAsync();
+                    HashSet<string> blpuFileUprns = blpuAddresses.Select(a => a.UPRN).ToHashSet();
+
+                    List<Address> existingBlpuAddresses = addresses.Where(address =>
+                        blpuFileUprns.Contains(address.UPRN)).ToList();
+
+                    HashSet<string> existingBlpuUprns = existingBlpuAddresses.Select(a => a.UPRN).ToHashSet();
+                    List<Address> updatedBlpuAddress = [];
+
+                    foreach (Address existingAddress in existingBlpuAddresses)
+                    {
+                        if (existingAddress.UPRN != null
+                            && blpuAddressesDict.TryGetValue(existingAddress.UPRN, out Address blpuAddress)
+                            && string.IsNullOrWhiteSpace(existingAddress.PostCode))
+                        {
+                            existingAddress.PostCode = blpuAddress.PostCode;
+                            updatedBlpuAddress.Add(existingAddress);
+                        }
+                    }
+
+                    await addressProcessingService.BulkModifyAddressesAsync(updatedBlpuAddress, blpuCsvFile);
+                }
+                catch (Exception exception)
+                {
+                    ((Xeption)exception).AddData(
+                        $"BlpuExtractionError in batch between lines {skipCounter} and {skipCounter + batchSize}.",
+                        blpuCsvFile);
+
+                    exceptions.Add(exception);
+                }
+                finally
+                {
+                    skipCounter = skipCounter + batchSize;
                 }
             }
 
-            await addressProcessingService.BulkAddAddressesAsync(newBlpuAddresses, blpuCsvFile);
-            await addressProcessingService.BulkModifyAddressesAsync(updatedBlpuAddress, blpuCsvFile);
+            if (exceptions.Any())
+            {
+                throw new AggregateException(
+                    $"Errors occurred during loading of {exceptions.Count} batches.",
+                    exceptions);
+            }
         }
 
         virtual internal async ValueTask<List<Address>> MapStreetDescriptorDataToAddressesAsync(
-            string streetDescriptorCsvFile)
+            string streetDescriptorCsvFile,
+            int batchSize,
+            int skipCounter)
         {
-            Func<string, bool> recordFilter = record =>
-                record.StartsWith("15,") || record.StartsWith("\"15\",");
-
             Dictionary<string, int> fieldMappings = new Dictionary<string, int>
             {
                 { "USRN", 3 },
@@ -505,7 +624,8 @@ namespace LHDS.Core.Services.Orchestrations.Addresses
             List<StreetDescriptor> streetDescriptors = await LoadAndMapCsvAsync<StreetDescriptor>(
                 streetDescriptorCsvFile,
                 fieldMappings,
-                recordFilter);
+                batchSize,
+                skipCounter);
 
             List<Address> addresses = [];
 
@@ -525,40 +645,67 @@ namespace LHDS.Core.Services.Orchestrations.Addresses
             return addresses;
         }
 
-        virtual internal async ValueTask ProcessStreetDescriptorDataAsync(string streetDescriptorCsvFile)
+        virtual internal async ValueTask ProcessStreetDescriptorDataAsync(
+            string streetDescriptorCsvFile,
+            int batchSize = 120000)
         {
-            List<Address> streetDescriptorAddresses =
-                await MapStreetDescriptorDataToAddressesAsync(streetDescriptorCsvFile);
+            int skipCounter = 0;
+            var exceptions = new List<Exception>();
 
-            Dictionary<string, Address> streetDescriptorsDict =
-                streetDescriptorAddresses.ToDictionary(a => a.USRN, a => a);
-
-            IQueryable<Address> addresses = await this.addressProcessingService.RetrieveAllAddressesAsync();
-
-            IQueryable<Address> missingSreetDataAddresses = addresses
-                .Where(address => string.IsNullOrWhiteSpace(address.Thoroughfare)
-                    || string.IsNullOrWhiteSpace(address.PostTown));
-
-            List<Address> updatedAddresses = [];
-
-            foreach (Address address in missingSreetDataAddresses)
+            while ((await fileBroker.ReadLinesBatchAsync(streetDescriptorCsvFile, batchSize, skipCounter)).Any())
             {
-                if (address.USRN != null
-                    && streetDescriptorsDict.TryGetValue(address.USRN, out Address streetDescriptor))
+                try
                 {
-                    address.Thoroughfare = streetDescriptor.Thoroughfare;
-                    address.DependentLocality = streetDescriptor.DependentLocality;
-                    address.PostTown = streetDescriptor.PostTown;
-                    updatedAddresses.Add(address);
+                    List<Address> streetDescriptorAddresses =
+                    await MapStreetDescriptorDataToAddressesAsync(streetDescriptorCsvFile, batchSize, skipCounter);
+
+                    Dictionary<string, Address> streetDescriptorsDict =
+                        streetDescriptorAddresses.ToDictionary(a => a.USRN, a => a);
+
+                    IQueryable<Address> addresses = await this.addressProcessingService.RetrieveAllAddressesAsync();
+
+                    IQueryable<Address> missingSreetDataAddresses = addresses
+                        .Where(address => string.IsNullOrWhiteSpace(address.Thoroughfare)
+                            || string.IsNullOrWhiteSpace(address.PostTown));
+
+                    List<Address> updatedAddresses = [];
+
+                    foreach (Address address in missingSreetDataAddresses)
+                    {
+                        if (address.USRN != null
+                            && streetDescriptorsDict.TryGetValue(address.USRN, out Address streetDescriptor))
+                        {
+                            address.Thoroughfare = streetDescriptor.Thoroughfare;
+                            address.DependentLocality = streetDescriptor.DependentLocality;
+                            address.PostTown = streetDescriptor.PostTown;
+                            updatedAddresses.Add(address);
+                        }
+                    }
+
+                    await addressProcessingService.BulkModifyAddressesAsync(updatedAddresses, streetDescriptorCsvFile);
+                }
+                catch (Exception exception)
+                {
+                    ((Xeption)exception).AddData(
+                        $"StreetDescriptorsExtractionError in batch between " +
+                        $"lines {skipCounter} and {skipCounter + batchSize}.",
+                        streetDescriptorCsvFile);
+
+                    exceptions.Add(exception);
+                }
+                finally
+                {
+                    skipCounter = skipCounter + batchSize;
                 }
             }
 
-            await addressProcessingService.BulkModifyAddressesAsync(updatedAddresses, streetDescriptorCsvFile);
-        }
+            if (exceptions.Any())
+            {
+                throw new AggregateException(
+                    $"Errors occurred during loading of {exceptions.Count} batches.",
+                    exceptions);
 
-        public ValueTask SyncAddressesWithAssignAsync()
-        {
-            throw new NotImplementedException();
+            }
         }
     }
 }

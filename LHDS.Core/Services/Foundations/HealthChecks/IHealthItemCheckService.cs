@@ -5,9 +5,9 @@
 using System.Threading.Tasks;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
 
-namespace LHDS.Core.Services.Orchestrations.HealthChecks
+namespace LHDS.Core.Services.Foundations.HealthChecks
 {
-    public interface IHealthCheckItemService
+    public interface IHealthItemCheckService
     {
         ValueTask<HealthCheckResult> GetHealthStatusAsync();
     }

@@ -28,14 +28,14 @@ namespace LHDS.Core.Tests.Unit.Services.Coordinations.HealthChecks
             foreach (var entry in inputHealthReport.Entries)
             {
                 var eventTelemetry = new EventTelemetry(entry.Key);
-                eventTelemetry.Properties.Add("Status", inputHealthReport.Status.ToString());
+                eventTelemetry.Properties.Add("Status", entry.Value.Status.ToString());
 
-                eventTelemetry.Metrics.Add("StatusCode", inputHealthReport.Status switch
+                eventTelemetry.Metrics.Add("StatusCode", entry.Value.Status switch
                 {
-                    HealthStatus.Healthy => 0,
+                    HealthStatus.Healthy => 2,
                     HealthStatus.Degraded => 1,
-                    HealthStatus.Unhealthy => 2,
-                    _ => 3
+                    HealthStatus.Unhealthy => 0,
+                    _ => 0
                 });
 
                 foreach (var reading in entry.Value.Data)

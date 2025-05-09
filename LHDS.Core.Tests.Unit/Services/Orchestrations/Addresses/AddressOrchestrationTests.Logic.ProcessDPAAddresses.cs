@@ -2,6 +2,7 @@
 // Copyright (c) North East London ICB. All rights reserved.
 // ---------------------------------------------------------
 
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -32,6 +33,8 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Addresses
 
             string randomFile = GetRandomString();
             string inputDpaCsvFile = randomFile;
+            Guid randomGuid = Guid.NewGuid();
+            Guid inputCorrelationId = randomGuid;
             int inputBatchSize = GetRandomNumber();
             int numberOfBatches = GetRandomNumber();
             int numberOfRecords = inputBatchSize * numberOfBatches;
@@ -40,6 +43,10 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Addresses
             IQueryable<Address> existingAddresses = randomExistingAddresses.DeepClone();
             List<Address> randomAddressList = CreateRandomAddresses(numberOfRecords).ToList();
             List<Address> newAddresses = randomAddressList.DeepClone();
+
+            this.identifierBrokerMock.Setup(broker =>
+                broker.GetIdentifierAsync())
+                    .ReturnsAsync(inputCorrelationId);
 
             for (int i = 0; i < numberOfBatches; i++)
             {
@@ -75,6 +82,24 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Addresses
             await service.ProcessDPAAddressesAsync(inputDpaCsvFile, inputBatchSize);
 
             // Then
+            this.identifierBrokerMock.Verify(broker =>
+               broker.GetIdentifierAsync(),
+                   Times.Once);
+
+            this.auditBrokerMock.Verify(broker =>
+                broker.LogInformationAsync(
+                    "Address Import - DPA Processing",
+                    "Processing DPA File",
+                    $"Starting processing file {inputDpaCsvFile}.",
+                    inputDpaCsvFile,
+                    inputCorrelationId.ToString()),
+                        Times.Once);
+
+            this.loggingBrokerMock.Verify(broker =>
+                broker.LogInformationAsync(
+                    $"Starting processing file {inputDpaCsvFile}."),
+                        Times.Once);
+
             for (int i = 0; i < numberOfBatches; i++)
             {
                 int batchStartLine = i * inputBatchSize;
@@ -82,7 +107,6 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Addresses
                 List<Address> batchNewAddresses = [.. newAddresses.GetRange(batchStartLine, inputBatchSize)];
                 List<Address> batchExisitngAddresses = [.. existingAddresses.ToList().GetRange(batchStartLine, inputBatchSize)];
                 List<Address> dpaFileBatchAddresses = [.. batchNewAddresses, .. batchExisitngAddresses];
-
 
                 this.fileBrokerMock.Verify(broker =>
                     broker.ReadLinesBatchAsync(inputDpaCsvFile, inputBatchSize, i * inputBatchSize),
@@ -103,6 +127,22 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Addresses
                 this.addressProcessingServiceMock.Verify(service =>
                     service.BulkModifyAddressesAsync(It.Is(SameAddressesAs(batchExisitngAddresses)), inputDpaCsvFile),
                         Times.Once);
+
+                this.auditBrokerMock.Verify(broker =>
+                    broker.LogInformationAsync(
+                        "Address Import - DPA Processing",
+                        "Processing DPA File",
+                        $"Processing DPA File - Processing lines {batchStartLine} to " +
+                            $"{batchEndLine}. Correlation Id: {inputCorrelationId}.",
+                        inputDpaCsvFile,
+                        inputCorrelationId.ToString()),
+                            Times.Once);
+
+                this.loggingBrokerMock.Verify(broker =>
+                    broker.LogInformationAsync(
+                        $"Processing DPA File - Processing lines {batchStartLine} to " +
+                            $"{batchEndLine}. Correlation Id: {inputCorrelationId}."),
+                            Times.Once);
             }
 
             this.fileBrokerMock.Verify(broker =>
@@ -112,6 +152,20 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Addresses
             this.addressProcessingServiceMock.Verify(service =>
                 service.RetrieveAllAddressesAsync(),
                     Times.Exactly(numberOfBatches));
+
+            this.auditBrokerMock.Verify(broker =>
+               broker.LogInformationAsync(
+                   "Address Import - DPA Processing",
+                   "Processing DPA File",
+                   $"Finished processing file {inputDpaCsvFile}.",
+                   inputDpaCsvFile,
+                   inputCorrelationId.ToString()),
+                       Times.Once);
+
+            this.loggingBrokerMock.Verify(broker =>
+                broker.LogInformationAsync(
+                    $"Finished processing file {inputDpaCsvFile}."),
+                        Times.Once);
 
             this.fileBrokerMock.VerifyNoOtherCalls();
             this.csvHelperBrokerMock.VerifyNoOtherCalls();

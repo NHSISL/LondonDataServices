@@ -26,7 +26,11 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.PdsAudits
             PdsAudit actualPdsAudit = await this.apiBroker.PostPdsAuditAsync(inputPdsAudit);
 
             // Then
-            actualPdsAudit.Should().BeEquivalentTo(expectedPdsAudit);
+            actualPdsAudit.Should().BeEquivalentTo(expectedPdsAudit, options => options
+                .Excluding(property => property.CreatedBy)
+                .Excluding(property => property.CreatedDate)
+                .Excluding(property => property.UpdatedBy)
+                .Excluding(property => property.UpdatedDate));
 
             // Cleanup
             await this.apiBroker.DeletePdsAuditByIdAsync(inputPdsAudit.Id);
@@ -52,7 +56,13 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.PdsAudits
             foreach (PdsAudit expectedPdsAudit in expectedPdsAudits)
             {
                 PdsAudit actualPdsAudit = actualPdsAudits.Single(approval => approval.Id == expectedPdsAudit.Id);
-                actualPdsAudit.Should().BeEquivalentTo(expectedPdsAudit);
+
+                actualPdsAudit.Should().BeEquivalentTo(expectedPdsAudit, options => options
+                    .Excluding(property => property.CreatedBy)
+                    .Excluding(property => property.CreatedDate)
+                    .Excluding(property => property.UpdatedBy)
+                    .Excluding(property => property.UpdatedDate));
+
                 await this.apiBroker.DeletePdsAuditByIdAsync(expectedPdsAudit.Id);
             }
         }
@@ -71,7 +81,11 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.PdsAudits
                 await this.apiBroker.GetPdsAuditByIdAsync(inputPdsAudit.Id);
 
             // Then
-            actualPdsAudit.Should().BeEquivalentTo(expectedPdsAudit);
+            actualPdsAudit.Should().BeEquivalentTo(expectedPdsAudit, options => options
+                .Excluding(property => property.CreatedBy)
+                .Excluding(property => property.CreatedDate)
+                .Excluding(property => property.UpdatedBy)
+                .Excluding(property => property.UpdatedDate));
 
             // Cleanup
             await this.apiBroker.DeletePdsAuditByIdAsync(inputPdsAudit.Id);
@@ -94,7 +108,12 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.PdsAudits
                 this.apiBroker.GetPdsAuditByIdAsync(inputPdsAudit.Id);
 
             // then
-            deletedPdsAudit.Should().BeEquivalentTo(expectedPdsAudit);
+            deletedPdsAudit.Should().BeEquivalentTo(expectedPdsAudit, options => options
+                .Excluding(property => property.CreatedBy)
+                .Excluding(property => property.CreatedDate)
+                .Excluding(property => property.UpdatedBy)
+                .Excluding(property => property.UpdatedDate));
+
             await Assert.ThrowsAsync<HttpResponseNotFoundException>(getPdsAuditbyIdTask.AsTask);
         }
 
@@ -104,18 +123,19 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.PdsAudits
             // Given
             PdsAudit randomPdsAudit = CreateRandomPdsAudit();
             PdsAudit inputPdsAudit = randomPdsAudit;
-            await this.apiBroker.PostPdsAuditAsync(inputPdsAudit);
-            PdsAudit modifiedPdsAudit = UpdatePdsAuditWithRandomValues(inputPdsAudit);
+            PdsAudit storagePdsAudit = await this.apiBroker.PostPdsAuditAsync(inputPdsAudit);
+            PdsAudit modifiedPdsAudit = UpdatePdsAuditWithRandomValues(storagePdsAudit);
 
             // When
-            await this.apiBroker.PutPdsAuditAsync(modifiedPdsAudit);
-            PdsAudit actualPdsAudit = await this.apiBroker.GetPdsAuditByIdAsync(inputPdsAudit.Id);
+            PdsAudit actualPdsAudit =
+                await this.apiBroker.PutPdsAuditAsync(modifiedPdsAudit);
 
             // Then
-            actualPdsAudit.Should().BeEquivalentTo(modifiedPdsAudit);
-
-            // Cleanup
-            await this.apiBroker.DeletePdsAuditByIdAsync(inputPdsAudit.Id);
+            actualPdsAudit.Should().BeEquivalentTo(modifiedPdsAudit, options => options
+                .Excluding(property => property.CreatedBy)
+                .Excluding(property => property.CreatedDate)
+                .Excluding(property => property.UpdatedBy)
+                .Excluding(property => property.UpdatedDate));
         }
     }
 }

@@ -68,8 +68,6 @@ export const NavigationBar: FunctionComponent = () => {
             feature: FeatureDefinitions.Configuration,
             links: [
                 { icon: 'ingestion', to: '/configuration/suppliers', label: 'Suppliers' },
-                { icon: 'ingestion', to: '/configuration/dataTypes', label: 'Data Types'},
-                { icon: 'ingestion', to: '/configuration/dataSets', label: 'Data Sets'},
                 {
                     icon: 'subscriberAgreement', to: '/subscriberAgreements', label: 'Subscriber Agreements',
                     feature: FeatureDefinitions.SubscriberAgreement

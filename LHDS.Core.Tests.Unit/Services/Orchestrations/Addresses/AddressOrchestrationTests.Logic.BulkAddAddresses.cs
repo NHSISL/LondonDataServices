@@ -2,16 +2,10 @@
 // Copyright (c) North East London ICB. All rights reserved.
 // ---------------------------------------------------------
 
-using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using System.Reflection;
-using System.Text;
 using System.Threading.Tasks;
-using FluentAssertions;
-using Force.DeepCloner;
-using LHDS.Core.Models.Foundations.Addresses;
+using LHDS.Core.Services.Orchestrations.Addresses;
 using Moq;
 using Xunit;
 
@@ -23,9 +17,19 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Addresses
         public async Task ShouldImportOrdinanceAddressesAsync()
         {
             // Given
+            var addressOrchestrationServiceMock = new Mock<AddressOrchestrationService>
+               (this.addressProcessingServiceMock.Object,
+                this.assignProcessingServiceMock.Object,
+                this.fileBrokerMock.Object,
+                this.csvHelperBrokerMock.Object,
+                this.dateTimeBrokerMock.Object,
+                this.auditBrokerMock.Object,
+                this.loggingBrokerMock.Object,
+                this.identifierBrokerMock.Object)
+            { CallBase = true };
+
             string assembly = Assembly.GetExecutingAssembly().Location;
             string zipFileName = "ShouldProcessZipFileWithZippedCsvAddressesData.zip";
-            string csvFileName = "ShouldProcessZipFileWithOnlyCsvAddressesData.zip";
 
             string inputFilePath = Path.Combine(
                 Path.GetDirectoryName(assembly),
@@ -33,43 +37,10 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Addresses
 
             byte[] inputData = await File.ReadAllBytesAsync(inputFilePath);
             Stream inputStream = new MemoryStream(inputData);
-
-            string csvFilePath = Path.Combine(
-                Path.GetDirectoryName(assembly),
-                $"Resources/Services/Orchestrations/Addresses/{csvFileName}");
-
-            byte[] csvData = await File.ReadAllBytesAsync(csvFilePath);
-            string stringData = Encoding.UTF8.GetString(csvData);
-            List<string> records = stringData.Split(new[] { "\r\n", "\n" }, StringSplitOptions.None).ToList();
-
-            List<string> filteredRecords = records.Where(record =>
-               record.StartsWith("28,") || record.StartsWith("\"28\",")).ToList();
-
-            Dictionary<string, int> fieldMappings = new Dictionary<string, int>
-                {
-                    { "UPRN", 3 },
-                    { "UPSN", 4 },
-                    { "OrganisationName", 5 },
-                    { "DepartmentName", 6 },
-                    { "SubBuildingName", 7 },
-                    { "BuildingName", 8 },
-                    { "BuildingNumber", 9 },
-                    { "DependentThoroughfare", 10 },
-                    { "Thoroughfare", 11 },
-                    { "DoubleDependentLocality", 12 },
-                    { "DependentLocality", 13 },
-                    { "PostTown", 14 },
-                    { "PostCode", 15 }
-                };
-
-            Guid randomId = Guid.NewGuid();
-            List<Address> randomAddresses = CreateRandomAddresses(count: 1).ToList();
-            List<Address> outputAddresses = randomAddresses.DeepClone();
-            string stringRecords = string.Join(Environment.NewLine, filteredRecords);
-            bool hasHeaderRecord = false;
             string inputFileName = zipFileName;
             string randomTempPath = Path.GetTempPath();
             string ordinanceTempFolder = Path.Combine(randomTempPath, "OrdinanceData");
+            int batchSize = 120000;
 
             string ordinanceTempCsvFile =
                 Path.Combine(ordinanceTempFolder, "ShouldProcessZipFileWithOnlyCsvAddressesData.csv");
@@ -82,25 +53,18 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Addresses
                 service.CheckIfDirectoryExistsAsync(ordinanceTempFolder))
                     .ReturnsAsync(false);
 
-            this.fileBrokerMock.Setup(service =>
-                service.GetListOfFilesAsync(ordinanceTempFolder, "*.csv"))
-                    .ReturnsAsync(new List<string> { ordinanceTempCsvFile });
+            addressOrchestrationServiceMock.Setup(service =>
+                service.UnZipAndExtractAsync(inputStream, ordinanceTempFolder))
+                    .Returns(ValueTask.CompletedTask);
 
-            this.fileBrokerMock.Setup(service =>
-                service.ReadFileAsync(ordinanceTempCsvFile))
-                    .ReturnsAsync(csvData);
+            addressOrchestrationServiceMock.Setup(service =>
+                service.ReadCsvDataAndBulkAddAddressesAsync(ordinanceTempFolder, batchSize))
+                    .Returns(ValueTask.CompletedTask);
 
-            this.csvHelperBrokerMock.Setup(service =>
-                service.MapCsvToObjectAsync<Address>(stringRecords, hasHeaderRecord, fieldMappings, true))
-                    .ReturnsAsync(outputAddresses);
-
-            this.identifierBrokerMock.Setup(service =>
-                service.GetIdentifierAsync())
-                    .ReturnsAsync(randomId);
+            AddressOrchestrationService service = addressOrchestrationServiceMock.Object;
 
             // When
-            await this.addressOrchestrationService
-                .BulkAddAddressesAsync(input: inputStream, zipFileName);
+            await service.BulkAddAddressesAsync(input: inputStream, zipFileName);
 
             // Then
             this.fileBrokerMock.Verify(service =>
@@ -115,20 +79,12 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Addresses
                 service.CreateDirectoryAsync(ordinanceTempFolder),
                     Times.Once);
 
-            this.fileBrokerMock.Verify(service =>
-                service.GetListOfFilesAsync(ordinanceTempFolder, "*.csv"),
+            addressOrchestrationServiceMock.Verify(service =>
+                service.UnZipAndExtractAsync(inputStream, ordinanceTempFolder),
                     Times.Once);
 
-            this.fileBrokerMock.Verify(service =>
-                service.ReadFileAsync(ordinanceTempCsvFile),
-                    Times.Once);
-
-            this.csvHelperBrokerMock.Verify(service =>
-                service.MapCsvToObjectAsync<Address>(stringRecords, hasHeaderRecord, fieldMappings, true),
-                    Times.Once());
-
-            this.addressProcessingServiceMock.Verify(service =>
-                service.BulkAddAddressesAsync(outputAddresses, ordinanceTempCsvFile),
+            addressOrchestrationServiceMock.Verify(service =>
+                service.ReadCsvDataAndBulkAddAddressesAsync(ordinanceTempFolder, batchSize),
                     Times.Once);
 
             this.fileBrokerMock.Verify(service =>

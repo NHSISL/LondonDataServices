@@ -44,9 +44,11 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.TerminologyPolls
         private async ValueTask<TerminologyPoll> PostRandomTerminologyPollAsync()
         {
             TerminologyPoll randomTerminologyPoll = CreateRandomTerminologyPoll();
-            await this.apiBroker.PostTerminologyPollAsync(randomTerminologyPoll);
 
-            return randomTerminologyPoll;
+            TerminologyPoll storageTerminologyPoll = 
+                await this.apiBroker.PostTerminologyPollAsync(randomTerminologyPoll);
+
+            return storageTerminologyPoll;
         }
 
         private async ValueTask<List<TerminologyPoll>> PostRandomTerminologyPollsAsync()

@@ -1,10 +1,15 @@
-# ASP.NET
-# Build and test ASP.NET projects.
-# Add steps that publish symbols, save build artifacts, deploy, and more:
-# https://docs.microsoft.com/azure/devops/pipelines/apps/aspnet/build-aspnet-4
+## Pipeline to support tagging of assets that have been built for release
+## 4 part version numbering format vN.N.N.N
 
 trigger:
-- main
+  branches:
+    include:
+    - main
+  tags:
+    include:
+    - 'v*'
+
+pr: none
 
 variables:
   - group: global-variables-lds
@@ -19,10 +24,22 @@ variables:
 
 pool: selfhosted-vmss-linux-lds-dev
 
+
 workspace:
   clean: all
 
 steps:  
+  - bash: |
+      echo "Build $(Build.SourceBranch)"
+      RELEASE_REGEX="v[0-9]+(.[0-9]+){3}"
+      tagName=${BUILD_SOURCEBRANCH#refs/tags/}
+      if [[ "$(Build.SourceBranch)" =~ $RELEASE_REGEX ]] 
+      then
+      echo "##vso[build.updatebuildnumber]$tagName"
+      echo "##vso[build.addbuildtag]$tagName"
+      echo "##vso[build.addbuildtag]Release"
+      fi
+    displayName: Tag Releases
   - task: FileTransform@1
     displayName: "Transform AppSettings for CI"
     inputs:
@@ -32,7 +49,6 @@ steps:
         LHDS.AdminPortal.Api/appsettings.ContinuousIntegration.json
         LHDS.Core.Tests.Acceptance/appsettings.ContinuousIntegration.json
         LHDS.ConfigImportExportTool.Tests.Acceptance/appsettings.ContinuousIntegration.json
-
   - task: Bash@3
     displayName: "Show AppSettings for CI"
     inputs:
@@ -41,7 +57,6 @@ steps:
         cat LHDS.AdminPortal.Api/appsettings.ContinuousIntegration.json
         cat LHDS.Core.Tests.Acceptance/appsettings.ContinuousIntegration.json
         cat LHDS.ConfigImportExportTool.Tests.Acceptance/appsettings.ContinuousIntegration.json
-
   - task: AzureCLI@2
     displayName: "Add Service Connection to Environment"
     inputs:
@@ -91,13 +106,13 @@ steps:
       command: "build"
       projects: "**/*.csproj"
       arguments: "--warnaserror"
-
+ 
   - task: DotNetCoreCLI@2
     displayName: C# Unit Tests
     inputs:
       command: 'test'
       projects: '**/*.Tests.Unit.csproj'
-
+ 
   - task: Bash@3
     enabled: true
     displayName: Install Docker
@@ -122,7 +137,7 @@ steps:
         sudo apt install docker-ce -y
         
         sudo systemctl start docker
-
+ 
   - task: Bash@3
     enabled: true
     displayName: Pulling Required Docker Images for SQL Server
@@ -130,9 +145,9 @@ steps:
       targetType: inline
       script: |-
         sudo docker stop sql1
-
+ 
         sudo docker rm sql1
-
+ 
         sudo docker run -e "ACCEPT_EULA=Y" -e "MSSQL_SA_PASSWORD=1Password" \
             -p 1433:1433 --name sql1 --hostname sql1 \
             -d \
@@ -213,41 +228,41 @@ steps:
         ONTOLOGYSETTINGS__TERMINOLOGYSERVERRESOURCERELATIVEURL=$(ONTOLOGYSETTINGS__TERMINOLOGYSERVERRESOURCERELATIVEURL)
         ONTOLOGYSETTINGS__CLIENTID=$(ONTOLOGYSETTINGS__CLIENTID)
         ONTOLOGYSETTINGS__CLIENTSECRET=$(ONTOLOGYSETTINGS__CLIENTSECRET)
-
+ 
   - task: Npm@1
     displayName: NPM Install
     inputs:
       workingDir: '$(webProjectName)/ClientApp'
       command: 'install'
-
+ 
   - task: DotNetCoreCLI@2
     displayName: "Dotnet Build (API)"
     inputs:
       command: 'build'
       projects: '**/LHDS.AdminPortal.Api.csproj'
       arguments: --output $(System.DefaultWorkingDirectory)/publish_output_website_api --configuration Release
-
+ 
   - task: DotNetCoreCLI@2
     displayName: "Dotnet Build (Frontend)"
     inputs:
       command: 'build'
       projects: '**/LHDS.AdminPortal.Web.csproj'
       arguments: --output $(System.DefaultWorkingDirectory)/publish_output_website_frontend --configuration Release
-
+ 
   - task: DotNetCoreCLI@2
     displayName: "Dotnet Build (EMIS Landing Function)"
     inputs:
       command: 'build'
       projects: '**/LHDS.Functions.Landings.Emis.csproj'
       arguments: --output $(System.DefaultWorkingDirectory)/publish_output_emis_func --configuration Release
-
+ 
   - task: DotNetCoreCLI@2
     displayName: "Dotnet Build (Opt-Out Function)"
     inputs:
       command: 'build'
       projects: '**/LHDS.Functions.OptOut.csproj'
       arguments: --output $(System.DefaultWorkingDirectory)/publish_output_optout_func --configuration Release
-
+ 
   - task: DotNetCoreCLI@2
     displayName: "Dotnet Build (PDS Function)"
     inputs:
@@ -261,21 +276,21 @@ steps:
       command: 'build'
       projects: '**/LHDS.Functions.Landings.Tpp.csproj'
       arguments: --output $(System.DefaultWorkingDirectory)/publish_output_tpp_func --configuration Release
-
+ 
   - task: DotNetCoreCLI@2
     displayName: "Dotnet Build (Addresses Function)"
     inputs:
       command: 'build'
       projects: '**/LHDS.Functions.Addresses.csproj'
       arguments: --output $(System.DefaultWorkingDirectory)/publish_output_addresses_func --configuration Release
-
+ 
   - task: DotNetCoreCLI@2
     displayName: "Dotnet Build (Terminology Function)"
     inputs:
       command: 'build'
       projects: '**/LHDS.Functions.Terminology.csproj'
       arguments: --output $(System.DefaultWorkingDirectory)/publish_output_terminology_func --configuration Release
-      
+     
   - task: Npm@1 
     displayName: Run Code linting
     inputs:
@@ -331,6 +346,17 @@ steps:
       publishWebProjects: false
       projects: "**/LHDS.AdminPortal.Web.csproj"
       arguments: "-o $(Build.ArtifactStagingDirectory)/$(Build.BuildId)_test_frontend_website --configuration Test"
+      zipAfterPublish: true
+      modifyOutputPath: false
+
+  - task: DotNetCoreCLI@2
+    displayName: "Dotnet Publish Frontend (PreProduction)"
+    condition: and(succeeded(), ne(variables['Build.Reason'], 'PullRequest'))
+    inputs:
+      command: "publish"
+      publishWebProjects: false
+      projects: "**/LHDS.AdminPortal.Web.csproj"
+      arguments: "-o $(Build.ArtifactStagingDirectory)/$(Build.BuildId)_preproduction_frontend_website --configuration PreProduction"
       zipAfterPublish: true
       modifyOutputPath: false
 
@@ -440,6 +466,11 @@ steps:
     condition: and(succeeded(), ne(variables['Build.Reason'], 'PullRequest'))  
     displayName: 'Publish Artifact - Frontend (Test)'
     artifact: drop-frontend-test
+
+  - publish: $(Build.ArtifactStagingDirectory)/$(Build.BuildId)_preproduction_frontend_website
+    condition: and(succeeded(), ne(variables['Build.Reason'], 'PullRequest'))  
+    displayName: 'Publish Artifact - Frontend (PreProduction)'
+    artifact: drop-frontend-preproduction
 
   - publish: $(Build.ArtifactStagingDirectory)/$(Build.BuildId)_production_frontend_website
     condition: and(succeeded(), ne(variables['Build.Reason'], 'PullRequest'))  

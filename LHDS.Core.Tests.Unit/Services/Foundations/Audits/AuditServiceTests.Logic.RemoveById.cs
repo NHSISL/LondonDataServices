@@ -6,6 +6,7 @@ using System;
 using System.Threading.Tasks;
 using FluentAssertions;
 using Force.DeepCloner;
+using LHDS.Core.Models.Brokers.Securities;
 using LHDS.Core.Models.Foundations.Audits;
 using Moq;
 using Xunit;
@@ -18,20 +19,36 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Audits
         public async Task ShouldRemoveAuditByIdAsync()
         {
             // given
-            Guid randomId = Guid.NewGuid();
-            Guid inputAuditId = randomId;
-            Audit randomAudit = CreateRandomAudit();
+            DateTimeOffset randomDateTimeOffset = GetRandomDateTimeOffset();
+            EntraUser randomEntraUser = CreateRandomEntraUser();
+            Audit randomAudit = CreateRandomAudit(randomDateTimeOffset, randomEntraUser.EntraUserId);
+            Guid inputAuditId = randomAudit.Id;
             Audit storageAudit = randomAudit;
-            Audit expectedInputAudit = storageAudit;
-            Audit deletedAudit = expectedInputAudit;
+            Audit ingestionTrackingWithDeleteAuditApplied = storageAudit.DeepClone();
+            ingestionTrackingWithDeleteAuditApplied.UpdatedBy = randomEntraUser.EntraUserId.ToString();
+            ingestionTrackingWithDeleteAuditApplied.UpdatedDate = randomDateTimeOffset;
+            Audit updatedAudit = storageAudit;
+            Audit deletedAudit = updatedAudit;
             Audit expectedAudit = deletedAudit.DeepClone();
+
+            this.dateTimeBrokerMock.Setup(broker =>
+                broker.GetCurrentDateTimeOffsetAsync())
+                    .ReturnsAsync(randomDateTimeOffset);
+
+            this.securityBrokerMock.Setup(broker =>
+                broker.GetCurrentUserAsync())
+                    .ReturnsAsync(randomEntraUser);
 
             this.storageBrokerMock.Setup(broker =>
                 broker.SelectAuditByIdAsync(inputAuditId))
                     .ReturnsAsync(storageAudit);
 
             this.storageBrokerMock.Setup(broker =>
-                broker.DeleteAuditAsync(expectedInputAudit))
+                broker.UpdateAuditAsync(randomAudit))
+                    .ReturnsAsync(updatedAudit);
+
+            this.storageBrokerMock.Setup(broker =>
+                broker.DeleteAuditAsync(updatedAudit))
                     .ReturnsAsync(deletedAudit);
 
             // when
@@ -45,14 +62,26 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Audits
                 broker.SelectAuditByIdAsync(inputAuditId),
                     Times.Once);
 
+            this.dateTimeBrokerMock.Verify(broker =>
+                broker.GetCurrentDateTimeOffsetAsync(),
+                    Times.Once);
+
+            this.securityBrokerMock.Verify(broker =>
+                broker.GetCurrentUserAsync(),
+                    Times.Exactly(2));
+
             this.storageBrokerMock.Verify(broker =>
-                broker.DeleteAuditAsync(expectedInputAudit),
+                broker.UpdateAuditAsync(randomAudit),
+                    Times.Once);
+
+            this.storageBrokerMock.Verify(broker =>
+                broker.DeleteAuditAsync(updatedAudit),
                     Times.Once);
 
             this.storageBrokerMock.VerifyNoOtherCalls();
-            this.loggingBrokerMock.VerifyNoOtherCalls();
             this.dateTimeBrokerMock.VerifyNoOtherCalls();
-            this.identifierBrokerMock.VerifyNoOtherCalls();
+            this.securityBrokerMock.VerifyNoOtherCalls();
+            this.loggingBrokerMock.VerifyNoOtherCalls();
         }
     }
 }

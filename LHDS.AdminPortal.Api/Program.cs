@@ -18,6 +18,7 @@ using LHDS.Core.Brokers.Loggings;
 using LHDS.Core.Brokers.Securities;
 using LHDS.Core.Brokers.Storages.Blobs;
 using LHDS.Core.Brokers.Storages.Sql;
+using LHDS.Core.Brokers.Telemetries;
 using LHDS.Core.Clients;
 using LHDS.Core.Clients.Extensions;
 using LHDS.Core.Models.Brokers.Storages.Blobs;
@@ -44,6 +45,8 @@ using LHDS.Core.Services.Foundations.DataSets;
 using LHDS.Core.Services.Foundations.DataSetSpecifications;
 using LHDS.Core.Services.Foundations.DataTypes;
 using LHDS.Core.Services.Foundations.Documents;
+using LHDS.Core.Services.Foundations.HealthChecks;
+using LHDS.Core.Services.Foundations.HealthChecks.Checks.IngestionTracking;
 using LHDS.Core.Services.Foundations.IngestionTrackingAudits;
 using LHDS.Core.Services.Foundations.IngestionTrackings;
 using LHDS.Core.Services.Foundations.ObjectColumns;
@@ -63,11 +66,13 @@ using LHDS.Core.Services.Processings.OptOuts;
 using LHDS.Core.Services.Processings.SecureDatas;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.AspNetCore.OData;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Diagnostics.HealthChecks;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Identity.Web;
 using Microsoft.IdentityModel.Logging;
@@ -144,6 +149,7 @@ namespace LHDS.AdminPortal.Api
 
             builder.Services.AddSingleton(invisibleApiKey);
             builder.Services.AddDbContext<StorageBroker>();
+            AddHealthApi(builder.Services, builder.Configuration);
             AddProviders(builder.Services, builder.Configuration);
             AddBrokers(builder.Services, builder.Configuration);
             AddFoundationServices(builder.Services, builder.Configuration);
@@ -191,6 +197,11 @@ namespace LHDS.AdminPortal.Api
                 app.UseODataRouteDebug();
             }
 
+            app.MapHealthChecks("/health", new HealthCheckOptions
+            {
+                ResponseWriter = HealthCheckResponseWriter.WriteResponse
+            });
+
             app.UseHttpsRedirection();
             app.UseCors("AllowFrontendOrigin");
             app.UseRouting();
@@ -201,6 +212,29 @@ namespace LHDS.AdminPortal.Api
             app.MapControllers().WithOpenApi();
         }
 
+        private static void AddHealthApi(IServiceCollection services, IConfiguration configuration)
+        {
+            services.AddHealthChecks().AddCheck<IngestionTrackingDecryptionHealthCheckService>(
+                "ingestionTrackingDecryptionHealthCheckService");
+
+            services.AddHealthChecks().AddCheck<IngestionTrackingProcessingHealthCheckService>(
+                "ingestionTrackingProcessingHealthCheckService");
+
+            services.AddSingleton<IHealthCheckPublisher, HealthCheckPublisherService>();
+
+            int startupDelaySeconds = configuration.GetValue<int>(
+                "HealthChecks:StartupDelaySeconds", 10);
+
+            int publishIntervalSeconds = configuration.GetValue<int>(
+                "HealthChecks:PublishIntervalSeconds", 60);
+
+            services.Configure<HealthCheckPublisherOptions>(options =>
+            {
+                options.Delay = TimeSpan.FromSeconds(startupDelaySeconds);
+                options.Period = TimeSpan.FromSeconds(publishIntervalSeconds);
+            });
+        }
+
         private static void AddProviders(IServiceCollection services, IConfiguration configuration)
         {
             services.AddTransient<IDownloadAbstractionProvider, DownloadAbstractionProvider>();
@@ -209,6 +243,7 @@ namespace LHDS.AdminPortal.Api
 
         private static void AddBrokers(IServiceCollection services, IConfiguration configuration)
         {
+            ValidateAppInsightsCinfiguration(configuration);
             services.AddSingleton<IConfiguration>(_ => configuration);
             services.AddTransient<IDateTimeBroker, DateTimeBroker>();
             services.AddTransient<IIdentifierBroker, IdentifierBroker>();
@@ -218,6 +253,7 @@ namespace LHDS.AdminPortal.Api
             services.AddTransient<IHashBroker, HashBroker>();
             services.AddTransient<IAzureBlobClient, AzureBlobClient>();
             services.AddTransient<ISecurityBroker, SecurityBroker>();
+            services.AddTransient<ITelemetryBroker, TelemetryBroker>();
         }
 
         private static void AddFoundationServices(IServiceCollection services, IConfiguration configuration)
@@ -272,6 +308,12 @@ namespace LHDS.AdminPortal.Api
 
                 (Rule: IsInvalid(blobStorageSettings.AzureTenantId),
                     Parameter: "blobStorage__azureTenantId"));
+        }
+
+        private static void ValidateAppInsightsCinfiguration(IConfiguration configuration)
+        {
+            string connectionString = configuration["ApplicationInsights:ConnectionString"] ?? string.Empty;
+            Validate((Rule: IsInvalid(connectionString), Parameter: "applicationInsights__connectionString"));
         }
 
         private static void ValidateBlobContainers(BlobContainers blobContainers)

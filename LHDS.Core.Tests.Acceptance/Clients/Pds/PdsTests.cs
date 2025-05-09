@@ -2,9 +2,12 @@
 // Copyright (c) North East London ICB. All rights reserved.
 // ---------------------------------------------------------
 
+using System;
 using System.Collections.Generic;
+using System.Security.Claims;
 using LHDS.Core.Brokers.Identifiers;
 using LHDS.Core.Brokers.Mesh;
+using LHDS.Core.Brokers.Securities;
 using LHDS.Core.Brokers.Storages.Blobs;
 using LHDS.Core.Clients;
 using LHDS.Core.Clients.Extensions;
@@ -29,6 +32,7 @@ namespace LHDS.Core.Tests.Acceptance.Clients.Pds
         private readonly Mock<IMeshBroker> meshBrokerMock;
         private readonly Mock<IBlobStorageBroker> blobStorageBrokerMock;
         private readonly IdentifierBroker identifierBroker;
+        private readonly ISecurityBroker securityBroker;
         private readonly IPdsClient pdsClient;
         private readonly PdsConfiguration pdsConfiguration;
         private readonly IPdsAuditService pdsAuditService;
@@ -40,6 +44,20 @@ namespace LHDS.Core.Tests.Acceptance.Clients.Pds
             this.blobStorageBrokerMock = new Mock<IBlobStorageBroker>();
             this.identifierBroker = new IdentifierBroker();
             var serviceCollection = new ServiceCollection();
+            var claimsPrincipal = new ClaimsPrincipal();
+
+            claimsPrincipal.AddIdentity(new ClaimsIdentity(new List<Claim>
+            {
+                new Claim("oid", Guid.NewGuid().ToString()),
+                new Claim(ClaimTypes.GivenName, "GivenName"),
+                new Claim(ClaimTypes.Surname, "Surname"),
+                new Claim("displayName", "DisplayName"),
+                new Claim(ClaimTypes.Email, "some@email.com"),
+                new Claim("jobTitle", "job title"),
+                new Claim(ClaimTypes.Name, "TestUser"),
+                new Claim(ClaimTypes.Role, "ISL.LDS.AdminApi.Administrators"),
+                new Claim(ClaimTypes.Role, "ISL.LDS.AdminApi.Configurations")
+            }));
 
             serviceCollection.AddLogging(builder =>
             {
@@ -55,10 +73,11 @@ namespace LHDS.Core.Tests.Acceptance.Clients.Pds
                 .AddTransient<IMeshBroker>(serviceProvider => meshBrokerMock.Object)
                 .AddTransient<IBlobStorageBroker>(serviceProvider => blobStorageBrokerMock.Object);
 
-            serviceCollection.AddPdsClientForAcceptance(this.dependencyBroker.Configuration);
+            serviceCollection.AddPdsClientForAcceptance(this.dependencyBroker.Configuration, claimsPrincipal);
             var serviceProvider = serviceCollection.BuildServiceProvider();
             this.pdsConfiguration = serviceProvider.GetService<PdsConfiguration>();
             this.pdsClient = serviceProvider.GetService<IPdsClient>();
+            this.securityBroker = serviceProvider.GetService<ISecurityBroker>();
             this.pdsAuditService = serviceProvider.GetService<IPdsAuditService>();
         }
 

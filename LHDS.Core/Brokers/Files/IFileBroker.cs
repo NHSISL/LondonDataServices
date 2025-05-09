@@ -12,6 +12,7 @@ namespace LHDS.Core.Brokers.Files
         ValueTask<bool> CheckIfFileExistsAsync(string path);
         ValueTask<bool> WriteToFileAsync(string path, string content);
         ValueTask<byte[]> ReadFileAsync(string path);
+        ValueTask<List<string>> ReadLinesBatchAsync(string path, int batchSize, int skipCounter);
         ValueTask<bool> DeleteFileAsync(string path);
         ValueTask<List<string>> GetListOfFilesAsync(string path, string searchPattern = "*");
         ValueTask<bool> CheckIfDirectoryExistsAsync(string path);

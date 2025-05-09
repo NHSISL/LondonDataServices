@@ -1,0 +1,7 @@
+{
+  "dependencies": {
+    "-": "^0.0.1",
+    "sass": "^1.87.0",
+    "save-dev": "^0.0.1-security"
+  }
+}

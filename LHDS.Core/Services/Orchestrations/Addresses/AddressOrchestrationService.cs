@@ -492,9 +492,11 @@ namespace LHDS.Core.Services.Orchestrations.Addresses
                     await this.auditBroker.LogInformationAsync(
                         auditType: "Address Import - LPI Processing",
                         title: "Processing LPI File",
+                        
                         message:
                             $"Processing LPI File - Processing lines {skipCounter} to " +
                             $"{skipCounter + batchSize}. Correlation Id: {correlationId}.",
+                        
                         fileName: lpiCsvFile,
                         correlationId: correlationId.ToString());
 

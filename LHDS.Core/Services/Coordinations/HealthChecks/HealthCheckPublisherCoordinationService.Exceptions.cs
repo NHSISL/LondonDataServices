@@ -5,12 +5,11 @@
 using System;
 using System.Threading.Tasks;
 using LHDS.Core.Models.Coordinations.HealthChecks.Exceptions;
-using Microsoft.Extensions.Diagnostics.HealthChecks;
 using Xeptions;
 
 namespace LHDS.Core.Services.Foundations.HealthChecks
 {
-    public partial class HealthCheckPublisherCoordinationService : IHealthCheckPublisher
+    public partial class HealthCheckPublisherCoordinationService
     {
         private delegate Task ReturningNothingFunction();
 

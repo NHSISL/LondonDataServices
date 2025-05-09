@@ -474,11 +474,36 @@ namespace LHDS.Core.Services.Orchestrations.Addresses
         {
             int skipCounter = 0;
             var exceptions = new List<Exception>();
+            Guid correlationId = await this.identifierBroker.GetIdentifierAsync();
+
+            await this.auditBroker.LogInformationAsync(
+                auditType: "Address Import - LPI Processing",
+                title: "Processing LPI File",
+                message: $"Starting processing file {lpiCsvFile}.",
+                fileName: lpiCsvFile,
+                correlationId: correlationId.ToString());
+
+            await this.loggingBroker.LogInformationAsync(message: $"Starting processing file {lpiCsvFile}.");
 
             while ((await fileBroker.ReadLinesBatchAsync(lpiCsvFile, batchSize, skipCounter)).Any())
             {
                 try
                 {
+                    await this.auditBroker.LogInformationAsync(
+                        auditType: "Address Import - LPI Processing",
+                        title: "Processing LPI File",
+                        
+                        message:
+                            $"Processing LPI File - Processing lines {skipCounter} to " +
+                            $"{skipCounter + batchSize}. Correlation Id: {correlationId}.",
+                        
+                        fileName: lpiCsvFile,
+                        correlationId: correlationId.ToString());
+
+                    await this.loggingBroker.LogInformationAsync(
+                        message: $"Processing LPI File - Processing lines {skipCounter} to " +
+                            $"{skipCounter + batchSize}. Correlation Id: {correlationId}.");
+
                     List<Address> lpiAddresses = await MapLPIDataToAddressesAsync(lpiCsvFile, batchSize, skipCounter);
                     Dictionary<string, Address> lpiAddressesDict = lpiAddresses.ToDictionary(a => a.UPRN, a => a);
                     IQueryable<Address> addresses = await addressProcessingService.RetrieveAllAddressesAsync();
@@ -508,6 +533,15 @@ namespace LHDS.Core.Services.Orchestrations.Addresses
                     skipCounter = skipCounter + batchSize;
                 }
             }
+
+            await this.auditBroker.LogInformationAsync(
+                auditType: "Address Import - LPI Processing",
+                title: "Processing LPI File",
+                message: $"Finished processing file {lpiCsvFile}.",
+                fileName: lpiCsvFile,
+                correlationId: correlationId.ToString());
+
+            await this.loggingBroker.LogInformationAsync(message: $"Finished processing file {lpiCsvFile}.");
 
             if (exceptions.Any())
             {

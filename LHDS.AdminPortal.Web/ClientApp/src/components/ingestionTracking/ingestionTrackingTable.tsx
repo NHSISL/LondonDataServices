@@ -66,16 +66,6 @@ const IngestionTrackingTable: FunctionComponent<IngestionTrackingTableProps> = (
         []
     );
 
-    const downloadEncryptedDocument = ingestionTrackingHomeViewService.useDownloadEncryptedDocument();
-    const handleEncryptedDownload = (ingestionTracking: IngestionTracking) => {
-        return downloadEncryptedDocument.mutateAsync(ingestionTracking, {
-            onSuccess: () => {
-            },
-            onError: (error: any) => {
-            }
-        });
-    };
-
     const updateEmisLanding = emisLandingService.useModifyEmisLanding();
     const handleReDecrypt = (ingestionTracking: IngestionTracking) => {
         updateEmisLanding.updateIngestionTracking(ingestionTracking)
@@ -187,7 +177,6 @@ const IngestionTrackingTable: FunctionComponent<IngestionTrackingTableProps> = (
                                                     <IngestionTrackingRow
                                                         key={ingestionTrackingHomeView.id}
                                                         ingestionTracking={ingestionTrackingHomeView}
-                                                        onEncryptedDownload={handleEncryptedDownload}
                                                         onReDecrypted={handleReDecrypt}
                                                     />
                                                 )

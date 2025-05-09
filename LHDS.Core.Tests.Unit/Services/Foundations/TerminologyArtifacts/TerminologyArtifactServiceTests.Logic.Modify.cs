@@ -8,6 +8,7 @@ using FluentAssertions;
 using Force.DeepCloner;
 using LHDS.Core.Models.Brokers.Securities;
 using LHDS.Core.Models.Foundations.TerminologyArtifacts;
+using LHDS.Core.Services.Foundations.TerminologyArtifacts;
 using Moq;
 using Xunit;
 
@@ -25,10 +26,14 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.TerminologyArtifacts
             TerminologyArtifact randomTerminologyArtifact =
                 CreateRandomModifyTerminologyArtifact(randomDateTimeOffset, randomEntraUser.EntraUserId);
 
-            TerminologyArtifact inputTerminologyArtifact = randomTerminologyArtifact;
-            TerminologyArtifact storageTerminologyArtifact = inputTerminologyArtifact.DeepClone();
-            storageTerminologyArtifact.UpdatedDate = randomTerminologyArtifact.CreatedDate;
-            TerminologyArtifact updatedTerminologyArtifact = inputTerminologyArtifact;
+            TerminologyArtifact inputTerminologyArtifact = randomTerminologyArtifact.DeepClone();
+            inputTerminologyArtifact.CreatedBy = Guid.NewGuid().ToString();
+            inputTerminologyArtifact.CreatedDate = randomDateTimeOffset.AddDays(1); 
+            TerminologyArtifact storageTerminologyArtifact = randomTerminologyArtifact.DeepClone();
+            storageTerminologyArtifact.UpdatedDate = storageTerminologyArtifact.CreatedDate;
+            TerminologyArtifact updatedTerminologyArtifact = inputTerminologyArtifact.DeepClone();
+            updatedTerminologyArtifact.CreatedBy = storageTerminologyArtifact.CreatedBy;
+            updatedTerminologyArtifact.CreatedDate = storageTerminologyArtifact.CreatedDate;
             TerminologyArtifact expectedTerminologyArtifact = updatedTerminologyArtifact.DeepClone();
             Guid objectColumnId = inputTerminologyArtifact.Id;
 

@@ -132,26 +132,6 @@ const SupplierRowEdit: FunctionComponent<SupplierRowEditProps> = (props) => {
                     error={errors.canDecryptIngestionTracking}
                     onChange={handleChange} />
 
-                <br />
-
-                <CheckboxBase
-                    id="canDownloadIngestionTracking"
-                    name="canDownloadIngestionTracking"
-                    label="Can Download Ingestion Tracking"
-                    checked={editSupplier.canDownloadIngestionTracking === true ? true : false}
-                    error={errors.canDownloadIngestionTracking}
-                    onChange={handleChange} />
-
-                <br />
-
-                <CheckboxBase
-                    id="canRelandIngestionTracking"
-                    name="canRelandIngestionTracking"
-                    label="Can Reland Ingestion Tracking"
-                    checked={editSupplier.canRelandIngestionTracking === true ? true : false}
-                    error={errors.canRelandIngestionTracking}
-                    onChange={handleChange} />
-
             </TableBaseData>
 
             <TableBaseData classes="text-end">

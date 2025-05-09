@@ -2,7 +2,6 @@
 // Copyright (c) North East London ICB. All rights reserved.
 // ---------------------------------------------------------
 
-using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using FluentAssertions;
@@ -28,13 +27,13 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Addresses
                 this.csvHelperBrokerMock.Object,
                 this.dateTimeBrokerMock.Object,
                 this.auditBrokerMock.Object,
-                this.loggingBrokerMock.Object)
+                this.loggingBrokerMock.Object,
+                this.identifierBrokerMock.Object)
             { CallBase = true };
 
             string inputCsvFileName = GetRandomString();
-
-            Func<string, bool> inputRecordFilter = record =>
-                record.StartsWith("15,") || record.StartsWith("\"15\",");
+            int inputBatchSize = GetRandomNumber();
+            int inputSkipCounter = GetRandomNumber();
 
             Dictionary<string, int> inputFieldMappings = new Dictionary<string, int>
             {
@@ -65,13 +64,15 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Addresses
                 service.LoadAndMapCsvAsync<StreetDescriptor>(
                     inputCsvFileName,
                     inputFieldMappings,
-                    It.IsAny<Func<string, bool>>()))
+                    inputBatchSize,
+                    inputSkipCounter))
                         .ReturnsAsync(outputStreetDescriptors);
 
             AddressOrchestrationService service = addressOrchestrationServiceMock.Object;
 
             // When
-            List<Address> actualAddresses = await service.MapStreetDescriptorDataToAddressesAsync(inputCsvFileName);
+            List<Address> actualAddresses = await service
+                .MapStreetDescriptorDataToAddressesAsync(inputCsvFileName, inputBatchSize, inputSkipCounter);
 
             // Then
             actualAddresses.Should().BeEquivalentTo(expectedAddresses);
@@ -80,7 +81,8 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Addresses
                 service.LoadAndMapCsvAsync<StreetDescriptor>(
                     inputCsvFileName,
                     inputFieldMappings,
-                    It.IsAny<Func<string, bool>>()),
+                    inputBatchSize,
+                    inputSkipCounter),
                         Times.Once);
 
             this.fileBrokerMock.VerifyNoOtherCalls();

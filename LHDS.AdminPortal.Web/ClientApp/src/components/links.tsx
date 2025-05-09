@@ -5,7 +5,6 @@ import { faHome, faDatabase, faCog, faMapMarker, faUserLock, faSitemap } from '@
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import React, { ReactElement } from 'react';
 import { NavItem, NavLink } from 'react-bootstrap';
-import { LinkContainer } from 'react-router-bootstrap'
 import { Link } from 'react-router-dom';
 
 const iconMapping: Record<string, IconProp | undefined> = {
@@ -42,11 +41,9 @@ export const PublicLink = ({ to, children, className }: PublicLinkParameters): R
 
     return (
         <NavItem>
-            <LinkContainer to={to} >
-                <NavLink className={className}>
-                    {children}
-                </NavLink>
-            </LinkContainer>
+            <NavLink as={Link} to={to} className={className}>
+                {children}
+            </NavLink>
         </NavItem>
     )
 }
@@ -59,7 +56,7 @@ export const SecuredLink = ({ to, children, icon, allowedRoles = [], deniedRoles
 
     const userRoles = (): Array<string> => {
         if (accounts.length && accounts[0].idTokenClaims && accounts[0].idTokenClaims.roles) {
-             return accounts[0].idTokenClaims.roles;
+            return accounts[0].idTokenClaims.roles;
         }
 
         return []

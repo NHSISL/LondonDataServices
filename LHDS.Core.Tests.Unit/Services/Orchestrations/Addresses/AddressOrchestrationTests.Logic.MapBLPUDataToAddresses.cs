@@ -27,13 +27,13 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Addresses
                 this.csvHelperBrokerMock.Object,
                 this.dateTimeBrokerMock.Object,
                 this.auditBrokerMock.Object,
-                this.loggingBrokerMock.Object)
+                this.loggingBrokerMock.Object,
+                this.identifierBrokerMock.Object)
             { CallBase = true };
 
             string inputCsvFileName = GetRandomString();
-
-            Func<string, bool> inputRecordFilter = record =>
-                record.StartsWith("21,") || record.StartsWith("\"21\",");
+            int inputBatchSize = GetRandomNumber();
+            int inputSkipCounter = GetRandomNumber();
 
             Dictionary<string, int> inputFieldMappings = new Dictionary<string, int>
             {
@@ -134,13 +134,15 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Addresses
                 service.LoadAndMapCsvAsync<BLPUAddress>(
                     inputCsvFileName,
                     inputFieldMappings,
-                    It.IsAny<Func<string, bool>>()))
+                    inputBatchSize,
+                    inputSkipCounter))
                         .ReturnsAsync(outputBlpuAddresses);
 
             AddressOrchestrationService service = addressOrchestrationServiceMock.Object;
 
             // When
-            List<Address> actualAddresses = await service.MapBLPUDataToAddressesAsync(inputCsvFileName);
+            List<Address> actualAddresses = await service
+                .MapBLPUDataToAddressesAsync(inputCsvFileName, inputBatchSize, inputSkipCounter);
 
             // Then
             actualAddresses.Should().BeEquivalentTo(expectedAddresses);
@@ -149,7 +151,8 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Addresses
                 service.LoadAndMapCsvAsync<BLPUAddress>(
                     inputCsvFileName,
                     inputFieldMappings,
-                    It.IsAny<Func<string, bool>>()),
+                    inputBatchSize,
+                    inputSkipCounter),
                         Times.Once);
 
             this.fileBrokerMock.VerifyNoOtherCalls();

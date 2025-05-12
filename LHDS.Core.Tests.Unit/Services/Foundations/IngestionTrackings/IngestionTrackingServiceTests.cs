@@ -84,17 +84,6 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.IngestionTrackings
         private static DateTimeOffset GetRandomDateTimeOffset() =>
             new DateTimeRange(earliestDate: new DateTime()).GetValue();
 
-        private static IngestionTracking CreateRandomModifyIngestionTracking(DateTimeOffset dateTimeOffset)
-        {
-            int randomDaysInPast = GetRandomNegativeNumber();
-            IngestionTracking randomIngestionTracking = CreateRandomIngestionTracking(dateTimeOffset);
-
-            randomIngestionTracking.CreatedDate =
-                randomIngestionTracking.CreatedDate.AddDays(randomDaysInPast);
-
-            return randomIngestionTracking;
-        }
-
         private static IngestionTracking CreateRandomModifyIngestionTracking(
             DateTimeOffset dateTimeOffset,
             string userId)

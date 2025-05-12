@@ -152,5 +152,73 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.HealthChecks.IngestionTracki
             this.storageBrokerMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
         }
+
+        [Fact]
+        public async Task ShouldGetHealthStatusAsUnHealtyAsync()
+        {
+            // given
+            string CheckName = "decryption";
+            DateTimeOffset randomDateTimeOffset = DateTimeOffset.UtcNow;
+            int randomNumber = GetRandomNumber();
+
+            int degradedThresholdMinutes = this.inMemoryConfiguration
+                .GetValue("HealthChecks:IngestionTracking:Decryption:DegradedThreshold", 1440);
+
+            int unHealthyThresholdMinutes = this.inMemoryConfiguration
+                .GetValue("HealthChecks:IngestionTracking:Decryption:UnHealthyThreshold", 2880);
+
+            List<IngestionTracking> healtyRecords = CreateRandomIngestionTrackings(
+                dateTimeOffset: randomDateTimeOffset.AddMinutes(-unHealthyThresholdMinutes).AddSeconds(-1),
+                isDecrypted: true,
+                isProcessing: false,
+                count: randomNumber);
+
+            this.dateTimeBrokerMock.Setup(broker =>
+                broker.GetCurrentDateTimeOffsetAsync())
+                    .ReturnsAsync(randomDateTimeOffset);
+
+            this.storageBrokerMock.Setup(broker =>
+                broker.SelectAllIngestionTrackingsAsync())
+                    .ReturnsAsync(healtyRecords.AsQueryable());
+
+            string message = $"{randomNumber} files have not been decrypted. Please check logs and function status.";
+
+            var vals = new Dictionary<string, object>
+            {
+                { "description", "Decryption Queue" },
+                { "unDecryptedItems", randomNumber},
+                { "degradedItems", 0},
+                { "unHealthyItems", randomNumber},
+                { "degradedThresholdMinutes", degradedThresholdMinutes.ToString() },
+                { "unHealthyThresholdMinutes", unHealthyThresholdMinutes.ToString() },
+                { "checkedAt", randomDateTimeOffset.ToString("o") },
+                { "message", message },
+                { "status", HealthStatus.Unhealthy.ToString() }
+            };
+
+            HealthCheckResult expectedHealthCheckResult = HealthCheckResult.Unhealthy(
+                description: CheckName,
+                data: vals);
+
+            // when
+            HealthCheckResult actualHealthCheckResult =
+                await this.ingestionTrackingHealthItemService.GetHealthStatusAsync();
+
+            // then
+            bool areEqual = compareLogic.Compare(expectedHealthCheckResult, actualHealthCheckResult).AreEqual;
+            areEqual.Should().BeTrue();
+
+            this.dateTimeBrokerMock.Verify(broker =>
+                broker.GetCurrentDateTimeOffsetAsync(),
+                    Times.Once);
+
+            this.storageBrokerMock.Verify(broker =>
+                broker.SelectAllIngestionTrackingsAsync(),
+                    Times.Once);
+
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
+            this.storageBrokerMock.VerifyNoOtherCalls();
+            this.loggingBrokerMock.VerifyNoOtherCalls();
+        }
     }
 }

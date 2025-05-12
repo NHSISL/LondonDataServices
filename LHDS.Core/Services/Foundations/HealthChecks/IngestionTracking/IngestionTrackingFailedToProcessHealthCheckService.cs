@@ -51,14 +51,14 @@ namespace LHDS.Core.Services.Foundations.HealthChecks.IngestionTracking
             var ingestionTrackingQuery = await storageBroker.SelectAllIngestionTrackingsAsync();
             var filteredQuery = ingestionTrackingQuery.Where(i => i.RetryCount > retryCount);
 
-            int baseCount = ingestionTrackingQuery.Count(ingestionTracking =>
+            int baseCount = filteredQuery.Count(ingestionTracking =>
                 ingestionTracking.UpdatedDate > degradedThresholdDateTime);
 
-            int degradedCount = ingestionTrackingQuery.Count(ingestionTracking =>
+            int degradedCount = filteredQuery.Count(ingestionTracking =>
                 ingestionTracking.UpdatedDate <= degradedThresholdDateTime &&
                 ingestionTracking.UpdatedDate > unHealthyThresholdDateTime);
 
-            int unHealthyCount = ingestionTrackingQuery
+            int unHealthyCount = filteredQuery
                 .Count(ingestionTracking => ingestionTracking.UpdatedDate <= unHealthyThresholdDateTime);
 
             int totalCount = baseCount + degradedCount + unHealthyCount;

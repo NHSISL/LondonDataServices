@@ -22,7 +22,7 @@ namespace LHDS.Core.Models.Foundations.AssignAddresses
         {
             get
             {
-                if (BestMatch.MatchPattern != null)
+                if (BestMatch?.MatchPattern != null)
                 {
                     return
                         (!String.IsNullOrWhiteSpace(BestMatch.MatchPattern.Flat)

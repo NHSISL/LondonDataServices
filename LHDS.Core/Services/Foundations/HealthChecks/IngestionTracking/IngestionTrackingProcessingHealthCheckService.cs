@@ -37,10 +37,10 @@ namespace LHDS.Core.Services.Foundations.HealthChecks.IngestionTracking
         public async ValueTask<HealthCheckResult> GetHealthStatusAsync()
         {
             int degradedThresholdMinutes = configuration
-                .GetValue("HealthChecks:IngestionTracking:Decryption:DegradedThreshold", 1440);
+                .GetValue("HealthChecks:IngestionTracking:Processing:DegradedThreshold", 1440);
 
             int unHealthyThresholdMinutes = configuration
-                .GetValue("HealthChecks:IngestionTracking:Decryption:UnHealthyThreshold", 2880);
+                .GetValue("HealthChecks:IngestionTracking:Processing:UnHealthyThreshold", 2880);
 
             DateTimeOffset currentDateTime = await dateTimeBroker.GetCurrentDateTimeOffsetAsync();
             DateTimeOffset degradedThresholdDateTime = currentDateTime.AddMinutes(-1 * degradedThresholdMinutes);

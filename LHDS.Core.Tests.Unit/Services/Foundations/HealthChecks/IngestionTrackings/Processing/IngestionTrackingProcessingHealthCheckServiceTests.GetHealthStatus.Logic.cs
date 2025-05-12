@@ -15,26 +15,26 @@ using Xunit;
 
 namespace LHDS.Core.Tests.Unit.Services.Foundations.HealthChecks.IngestionTrackings
 {
-    public partial class IngestionTrackingDecryptionHealthCheckServiceTests
+    public partial class IngestionTrackingProcessingHealthCheckServiceTests
     {
         [Fact]
         public async Task ShouldGetHealthStatusAsHealtyAsync()
         {
             // given
-            string CheckName = "decryption";
+            string CheckName = "processingQueue";
             DateTimeOffset randomDateTimeOffset = DateTimeOffset.UtcNow;
             int randomNumber = GetRandomNumber();
 
             int degradedThresholdMinutes = this.inMemoryConfiguration
-                .GetValue("HealthChecks:IngestionTracking:Decryption:DegradedThreshold", 1440);
+                .GetValue("HealthChecks:IngestionTracking:Processing:DegradedThreshold", 1440);
 
             int unHealthyThresholdMinutes = this.inMemoryConfiguration
-                .GetValue("HealthChecks:IngestionTracking:Decryption:UnHealthyThreshold", 2880);
+                .GetValue("HealthChecks:IngestionTracking:Processing:UnHealthyThreshold", 2880);
 
             List<IngestionTracking> healtyRecords = CreateRandomIngestionTrackings(
                 dateTimeOffset: randomDateTimeOffset,
-                isDecrypted: true,
-                isProcessing: false,
+                isDecrypted: false,
+                isProcessing: true,
                 count: randomNumber);
 
             this.dateTimeBrokerMock.Setup(broker =>
@@ -45,12 +45,12 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.HealthChecks.IngestionTracki
                 broker.SelectAllIngestionTrackingsAsync())
                     .ReturnsAsync(healtyRecords.AsQueryable());
 
-            string message = "Nothing to decrypt. All up to date.";
+            string message = "Nothing to process. All up to date.";
 
             var vals = new Dictionary<string, object>
             {
-                { "description", "Decryption Queue" },
-                { "unDecryptedItems", 0},
+                { "description", "Processing Queue" },
+                { "stuckInProcessing", 0},
                 { "degradedItems", 0},
                 { "unHealthyItems", 0},
                 { "degradedThresholdMinutes", degradedThresholdMinutes.ToString() },
@@ -69,8 +69,12 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.HealthChecks.IngestionTracki
                 await this.ingestionTrackingHealthItemService.GetHealthStatusAsync();
 
             // then
-            bool areEqual = compareLogic.Compare(expectedHealthCheckResult, actualHealthCheckResult).AreEqual;
-            areEqual.Should().BeTrue();
+            actualHealthCheckResult.Should().BeEquivalentTo(expectedHealthCheckResult, options =>
+                options.Using<DateTimeOffset>(ctx =>
+                    ctx.Subject.Should().BeCloseTo(ctx.Expectation, TimeSpan.FromSeconds(1)))
+                    .WhenTypeIs<DateTimeOffset>()
+                    .WithStrictOrdering()
+                    .ComparingByMembers<HealthCheckResult>());
 
             this.dateTimeBrokerMock.Verify(broker =>
                 broker.GetCurrentDateTimeOffsetAsync(),
@@ -89,20 +93,20 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.HealthChecks.IngestionTracki
         public async Task ShouldGetHealthStatusAsDegradedAsync()
         {
             // given
-            string CheckName = "decryption";
+            string CheckName = "processingQueue";
             DateTimeOffset randomDateTimeOffset = DateTimeOffset.UtcNow;
             int randomNumber = GetRandomNumber();
 
             int degradedThresholdMinutes = this.inMemoryConfiguration
-                .GetValue("HealthChecks:IngestionTracking:Decryption:DegradedThreshold", 1440);
+                .GetValue("HealthChecks:IngestionTracking:Processing:DegradedThreshold", 1440);
 
             int unHealthyThresholdMinutes = this.inMemoryConfiguration
-                .GetValue("HealthChecks:IngestionTracking:Decryption:UnHealthyThreshold", 2880);
+                .GetValue("HealthChecks:IngestionTracking:Processing:UnHealthyThreshold", 2880);
 
             List<IngestionTracking> degradedRecords = CreateRandomIngestionTrackings(
                 dateTimeOffset: randomDateTimeOffset.AddMinutes(-degradedThresholdMinutes).AddSeconds(-1),
-                isDecrypted: true,
-                isProcessing: false,
+                isDecrypted: false,
+                isProcessing: true,
                 count: randomNumber);
 
             this.dateTimeBrokerMock.Setup(broker =>
@@ -113,12 +117,12 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.HealthChecks.IngestionTracki
                 broker.SelectAllIngestionTrackingsAsync())
                     .ReturnsAsync(degradedRecords.AsQueryable());
 
-            string message = $"{randomNumber} files have not been decrypted. Please check logs and function status.";
+            string message = $"{randomNumber} files have not been processed. Please check logs and function status.";
 
             var vals = new Dictionary<string, object>
             {
-                { "description", "Decryption Queue" },
-                { "unDecryptedItems", randomNumber},
+                { "description", "Processing Queue" },
+                { "stuckInProcessing", randomNumber},
                 { "degradedItems", randomNumber},
                 { "unHealthyItems", 0},
                 { "degradedThresholdMinutes", degradedThresholdMinutes.ToString() },
@@ -137,8 +141,12 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.HealthChecks.IngestionTracki
                 await this.ingestionTrackingHealthItemService.GetHealthStatusAsync();
 
             // then
-            bool areEqual = compareLogic.Compare(expectedHealthCheckResult, actualHealthCheckResult).AreEqual;
-            areEqual.Should().BeTrue();
+            actualHealthCheckResult.Should().BeEquivalentTo(expectedHealthCheckResult, options =>
+                options.Using<DateTimeOffset>(ctx =>
+                    ctx.Subject.Should().BeCloseTo(ctx.Expectation, TimeSpan.FromSeconds(1)))
+                    .WhenTypeIs<DateTimeOffset>()
+                    .WithStrictOrdering()
+                    .ComparingByMembers<HealthCheckResult>());
 
             this.dateTimeBrokerMock.Verify(broker =>
                 broker.GetCurrentDateTimeOffsetAsync(),
@@ -157,20 +165,20 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.HealthChecks.IngestionTracki
         public async Task ShouldGetHealthStatusAsUnHealtyAsync()
         {
             // given
-            string CheckName = "decryption";
+            string CheckName = "processingQueue";
             DateTimeOffset randomDateTimeOffset = DateTimeOffset.UtcNow;
             int randomNumber = GetRandomNumber();
 
             int degradedThresholdMinutes = this.inMemoryConfiguration
-                .GetValue("HealthChecks:IngestionTracking:Decryption:DegradedThreshold", 1440);
+                .GetValue("HealthChecks:IngestionTracking:Processing:DegradedThreshold", 1440);
 
             int unHealthyThresholdMinutes = this.inMemoryConfiguration
-                .GetValue("HealthChecks:IngestionTracking:Decryption:UnHealthyThreshold", 2880);
+                .GetValue("HealthChecks:IngestionTracking:Processing:UnHealthyThreshold", 2880);
 
             List<IngestionTracking> unHealthyRecords = CreateRandomIngestionTrackings(
                 dateTimeOffset: randomDateTimeOffset.AddMinutes(-unHealthyThresholdMinutes).AddSeconds(-1),
-                isDecrypted: true,
-                isProcessing: false,
+                isDecrypted: false,
+                isProcessing: true,
                 count: randomNumber);
 
             this.dateTimeBrokerMock.Setup(broker =>
@@ -181,12 +189,12 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.HealthChecks.IngestionTracki
                 broker.SelectAllIngestionTrackingsAsync())
                     .ReturnsAsync(unHealthyRecords.AsQueryable());
 
-            string message = $"{randomNumber} files have not been decrypted. Please check logs and function status.";
+            string message = $"{randomNumber} files have not been processed. Please check logs and function status.";
 
             var vals = new Dictionary<string, object>
             {
-                { "description", "Decryption Queue" },
-                { "unDecryptedItems", randomNumber},
+                { "description", "Processing Queue" },
+                { "stuckInProcessing", randomNumber},
                 { "degradedItems", 0},
                 { "unHealthyItems", randomNumber},
                 { "degradedThresholdMinutes", degradedThresholdMinutes.ToString() },
@@ -205,8 +213,12 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.HealthChecks.IngestionTracki
                 await this.ingestionTrackingHealthItemService.GetHealthStatusAsync();
 
             // then
-            bool areEqual = compareLogic.Compare(expectedHealthCheckResult, actualHealthCheckResult).AreEqual;
-            areEqual.Should().BeTrue();
+            actualHealthCheckResult.Should().BeEquivalentTo(expectedHealthCheckResult, options =>
+                options.Using<DateTimeOffset>(ctx =>
+                    ctx.Subject.Should().BeCloseTo(ctx.Expectation, TimeSpan.FromSeconds(1)))
+                    .WhenTypeIs<DateTimeOffset>()
+                    .WithStrictOrdering()
+                    .ComparingByMembers<HealthCheckResult>());
 
             this.dateTimeBrokerMock.Verify(broker =>
                 broker.GetCurrentDateTimeOffsetAsync(),
@@ -226,31 +238,31 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.HealthChecks.IngestionTracki
         public async Task ShouldGetHealthStatusAsUnHealtyWithMixedItemsAsync()
         {
             // given
-            string CheckName = "decryption";
+            string CheckName = "processingQueue";
             DateTimeOffset randomDateTimeOffset = DateTimeOffset.UtcNow;
 
             int degradedThresholdMinutes = this.inMemoryConfiguration
-                .GetValue("HealthChecks:IngestionTracking:Decryption:DegradedThreshold", 1440);
+                .GetValue("HealthChecks:IngestionTracking:Processing:DegradedThreshold", 1440);
 
             int unHealthyThresholdMinutes = this.inMemoryConfiguration
-                .GetValue("HealthChecks:IngestionTracking:Decryption:UnHealthyThreshold", 2880);
+                .GetValue("HealthChecks:IngestionTracking:Processing:UnHealthyThreshold", 2880);
 
             List<IngestionTracking> healthyRecords = CreateRandomIngestionTrackings(
                 dateTimeOffset: randomDateTimeOffset,
-                isDecrypted: true,
-                isProcessing: false,
+                isDecrypted: false,
+                isProcessing: true,
                 count: GetRandomNumber());
 
             List<IngestionTracking> degradedRecords = CreateRandomIngestionTrackings(
                 dateTimeOffset: randomDateTimeOffset.AddMinutes(-degradedThresholdMinutes).AddSeconds(-1),
-                isDecrypted: true,
-                isProcessing: false,
+                isDecrypted: false,
+                isProcessing: true,
                 count: GetRandomNumber());
 
             List<IngestionTracking> unhealthyRecords = CreateRandomIngestionTrackings(
                 dateTimeOffset: randomDateTimeOffset.AddMinutes(-unHealthyThresholdMinutes).AddSeconds(-1),
-                isDecrypted: true,
-                isProcessing: false,
+                isDecrypted: false,
+                isProcessing: true,
                 count: GetRandomNumber());
 
             List<IngestionTracking> allRecords = [.. healthyRecords, .. degradedRecords, .. unhealthyRecords];
@@ -264,12 +276,12 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.HealthChecks.IngestionTracki
                 broker.SelectAllIngestionTrackingsAsync())
                     .ReturnsAsync(allRecords.AsQueryable());
 
-            string message = $"{unDecryptedCount} files have not been decrypted. Please check logs and function status.";
+            string message = $"{unDecryptedCount} files have not been processed. Please check logs and function status.";
 
             var vals = new Dictionary<string, object>
             {
-                { "description", "Decryption Queue" },
-                { "unDecryptedItems", unDecryptedCount},
+                { "description", "Processing Queue" },
+                { "stuckInProcessing", unDecryptedCount},
                 { "degradedItems", degradedRecords.Count},
                 { "unHealthyItems", unhealthyRecords.Count},
                 { "degradedThresholdMinutes", degradedThresholdMinutes.ToString() },
@@ -288,8 +300,12 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.HealthChecks.IngestionTracki
                 await this.ingestionTrackingHealthItemService.GetHealthStatusAsync();
 
             // then
-            bool areEqual = compareLogic.Compare(expectedHealthCheckResult, actualHealthCheckResult).AreEqual;
-            areEqual.Should().BeTrue();
+            actualHealthCheckResult.Should().BeEquivalentTo(expectedHealthCheckResult, options =>
+                options.Using<DateTimeOffset>(ctx =>
+                    ctx.Subject.Should().BeCloseTo(ctx.Expectation, TimeSpan.FromSeconds(1)))
+                    .WhenTypeIs<DateTimeOffset>()
+                    .WithStrictOrdering()
+                    .ComparingByMembers<HealthCheckResult>());
 
             this.dateTimeBrokerMock.Verify(broker =>
                 broker.GetCurrentDateTimeOffsetAsync(),

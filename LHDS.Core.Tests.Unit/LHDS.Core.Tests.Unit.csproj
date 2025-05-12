@@ -67,4 +67,8 @@
 	  <ProjectReference Include="..\LHDS.Core\LHDS.Core.csproj" />
 	</ItemGroup>
 
+	<ItemGroup>
+	  <Folder Include="Services\Orchestrations\HealthChecks\" />
+	</ItemGroup>
+
 </Project>

@@ -68,7 +68,6 @@
 	</ItemGroup>
 
 	<ItemGroup>
-	  <Folder Include="Services\Foundations\HealthChecks\" />
 	  <Folder Include="Services\Orchestrations\HealthChecks\" />
 	</ItemGroup>
 

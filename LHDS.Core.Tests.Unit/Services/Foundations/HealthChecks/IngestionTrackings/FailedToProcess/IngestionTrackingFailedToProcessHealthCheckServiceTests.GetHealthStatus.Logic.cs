@@ -239,12 +239,11 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.HealthChecks.IngestionTracki
             this.loggingBrokerMock.VerifyNoOtherCalls();
         }
 
-
         [Fact]
         public async Task ShouldGetHealthStatusAsUnHealtyWithMixedItemsAsync()
         {
             // given
-            string CheckName = "processingQueue";
+            string CheckName = "failedToProcess";
             DateTimeOffset randomDateTimeOffset = DateTimeOffset.UtcNow;
 
             int retryCount = this.inMemoryConfiguration
@@ -282,12 +281,12 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.HealthChecks.IngestionTracki
                 broker.SelectAllIngestionTrackingsAsync())
                     .ReturnsAsync(allRecords.AsQueryable());
 
-            string message = $"{unDecryptedCount} files have not been processed. Please check logs and function status.";
+            string message = $"{allRecords.Count} files have not been processed. Please check logs and function status.";
 
             var vals = new Dictionary<string, object>
             {
                 { "description", "Failed To Process" },
-                { "failedToProcess", unDecryptedCount},
+                { "failedToProcess", allRecords.Count},
                 { "degradedItems", degradedRecords.Count},
                 { "unHealthyItems", unhealthyRecords.Count},
                 { "degradedThresholdMinutes", degradedThresholdMinutes.ToString() },

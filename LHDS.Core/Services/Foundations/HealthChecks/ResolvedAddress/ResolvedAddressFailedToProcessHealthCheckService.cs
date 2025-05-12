@@ -49,7 +49,7 @@ namespace LHDS.Core.Services.Foundations.HealthChecks.ResolvedAddress
             DateTimeOffset degradedThresholdDateTime = currentDateTime.AddMinutes(-1 * degradedThresholdMinutes);
             DateTimeOffset unHealthyThresholdDateTime = currentDateTime.AddMinutes(-1 * unHealthyThresholdMinutes);
             var ingestionTrackingQuery = await storageBroker.SelectAllResolvedAddressesAsync();
-            var filteredQuery = ingestionTrackingQuery.Where(i => i.RetryCount > retryCount);
+            var filteredQuery = ingestionTrackingQuery.Where(i => i.RetryCount >= retryCount);
 
             int baseCount = filteredQuery.Count(ingestionTracking =>
                 ingestionTracking.UpdatedDate > degradedThresholdDateTime);

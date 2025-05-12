@@ -26,7 +26,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.HealthChecks.ResolvedAddress
             int randomNumber = GetRandomNumber();
 
             int retryCount = this.inMemoryConfiguration
-                .GetValue("HealthChecks:ResolvedAddress:FailedToProcess:RetryCount", 3);
+                .GetValue("HealthChecks:ResolvedAddress:FailedToProcess:RetryCount", 4);
 
             int degradedThresholdMinutes = this.inMemoryConfiguration
                 .GetValue("HealthChecks:ResolvedAddress:FailedToProcess:DegradedThreshold", 1440);
@@ -36,7 +36,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.HealthChecks.ResolvedAddress
 
             List<ResolvedAddress> healtyRecords = CreateRandomResolvedAddresses(
                 dateTimeOffset: randomDateTimeOffset,
-                retryCount: 4,
+                retryCount: retryCount,
                 count: randomNumber);
 
             this.dateTimeBrokerMock.Setup(broker =>
@@ -100,7 +100,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.HealthChecks.ResolvedAddress
             int randomNumber = GetRandomNumber();
 
             int retryCount = this.inMemoryConfiguration
-                 .GetValue("HealthChecks:ResolvedAddress:FailedToProcess:RetryCount", 3);
+                 .GetValue("HealthChecks:ResolvedAddress:FailedToProcess:RetryCount", 4);
 
             int degradedThresholdMinutes = this.inMemoryConfiguration
                 .GetValue("HealthChecks:ResolvedAddress:FailedToProcess:DegradedThreshold", 1440);
@@ -110,7 +110,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.HealthChecks.ResolvedAddress
 
             List<ResolvedAddress> degradedRecords = CreateRandomResolvedAddresses(
                 dateTimeOffset: randomDateTimeOffset.AddMinutes(-degradedThresholdMinutes).AddSeconds(-1),
-                retryCount: 4,
+                retryCount: retryCount,
                 count: randomNumber);
 
             this.dateTimeBrokerMock.Setup(broker =>
@@ -174,7 +174,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.HealthChecks.ResolvedAddress
             int randomNumber = GetRandomNumber();
 
             int retryCount = this.inMemoryConfiguration
-                 .GetValue("HealthChecks:ResolvedAddress:FailedToProcess:RetryCount", 3);
+                 .GetValue("HealthChecks:ResolvedAddress:FailedToProcess:RetryCount", 4);
 
             int degradedThresholdMinutes = this.inMemoryConfiguration
                 .GetValue("HealthChecks:ResolvedAddress:FailedToProcess:DegradedThreshold", 1440);
@@ -184,7 +184,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.HealthChecks.ResolvedAddress
 
             List<ResolvedAddress> unHealthyRecords = CreateRandomResolvedAddresses(
                 dateTimeOffset: randomDateTimeOffset.AddMinutes(-unHealthyThresholdMinutes).AddSeconds(-1),
-                retryCount: 4,
+                retryCount: retryCount,
                 count: randomNumber);
 
             this.dateTimeBrokerMock.Setup(broker =>
@@ -247,7 +247,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.HealthChecks.ResolvedAddress
             DateTimeOffset randomDateTimeOffset = DateTimeOffset.UtcNow;
 
             int retryCount = this.inMemoryConfiguration
-                 .GetValue("HealthChecks:ResolvedAddress:FailedToProcess:RetryCount", 3);
+                 .GetValue("HealthChecks:ResolvedAddress:FailedToProcess:RetryCount", 4);
 
             int degradedThresholdMinutes = this.inMemoryConfiguration
                 .GetValue("HealthChecks:ResolvedAddress:FailedToProcess:DegradedThreshold", 1440);
@@ -257,17 +257,17 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.HealthChecks.ResolvedAddress
 
             List<ResolvedAddress> healthyRecords = CreateRandomResolvedAddresses(
                 dateTimeOffset: randomDateTimeOffset,
-                retryCount: 4,
+                retryCount: retryCount,
                 count: GetRandomNumber());
 
             List<ResolvedAddress> degradedRecords = CreateRandomResolvedAddresses(
                 dateTimeOffset: randomDateTimeOffset.AddMinutes(-degradedThresholdMinutes).AddSeconds(-1),
-                retryCount: 4,
+                retryCount: retryCount,
                 count: GetRandomNumber());
 
             List<ResolvedAddress> unhealthyRecords = CreateRandomResolvedAddresses(
                 dateTimeOffset: randomDateTimeOffset.AddMinutes(-unHealthyThresholdMinutes).AddSeconds(-1),
-                retryCount: 4,
+                retryCount: retryCount,
                 count: GetRandomNumber());
 
             List<ResolvedAddress> allRecords = [.. healthyRecords, .. degradedRecords, .. unhealthyRecords];

@@ -247,7 +247,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.HealthChecks.IngestionTracki
             DateTimeOffset randomDateTimeOffset = DateTimeOffset.UtcNow;
 
             int retryCount = this.inMemoryConfiguration
-                 .GetValue("HealthChecks:IngestionTracking:FailedToProcess:RetryCount", 3);
+                 .GetValue("HealthChecks:IngestionTracking:FailedToProcess:RetryCount", 4);
 
             int degradedThresholdMinutes = this.inMemoryConfiguration
                 .GetValue("HealthChecks:IngestionTracking:FailedToProcess:DegradedThreshold", 1440);
@@ -257,7 +257,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.HealthChecks.IngestionTracki
 
             List<IngestionTracking> healthyRecords = CreateRandomIngestionTrackings(
                 dateTimeOffset: randomDateTimeOffset,
-                retryCount: 4,
+                retryCount: retryCount,
                 count: GetRandomNumber());
 
             List<IngestionTracking> degradedRecords = CreateRandomIngestionTrackings(

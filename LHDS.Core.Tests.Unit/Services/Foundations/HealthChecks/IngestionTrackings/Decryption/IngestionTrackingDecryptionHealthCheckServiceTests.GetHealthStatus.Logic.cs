@@ -105,7 +105,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.HealthChecks.IngestionTracki
 
             List<IngestionTracking> degradedRecords = CreateRandomIngestionTrackings(
                 dateTimeOffset: randomDateTimeOffset.AddMinutes(-degradedThresholdMinutes).AddSeconds(-1),
-                isDecrypted: true,
+                isDecrypted: false,
                 isProcessing: false,
                 count: randomNumber);
 
@@ -177,7 +177,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.HealthChecks.IngestionTracki
 
             List<IngestionTracking> unHealthyRecords = CreateRandomIngestionTrackings(
                 dateTimeOffset: randomDateTimeOffset.AddMinutes(-unHealthyThresholdMinutes).AddSeconds(-1),
-                isDecrypted: true,
+                isDecrypted: false,
                 isProcessing: false,
                 count: randomNumber);
 
@@ -249,19 +249,19 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.HealthChecks.IngestionTracki
 
             List<IngestionTracking> healthyRecords = CreateRandomIngestionTrackings(
                 dateTimeOffset: randomDateTimeOffset,
-                isDecrypted: true,
+                isDecrypted: false,
                 isProcessing: false,
                 count: GetRandomNumber());
 
             List<IngestionTracking> degradedRecords = CreateRandomIngestionTrackings(
                 dateTimeOffset: randomDateTimeOffset.AddMinutes(-degradedThresholdMinutes).AddSeconds(-1),
-                isDecrypted: true,
+                isDecrypted: false,
                 isProcessing: false,
                 count: GetRandomNumber());
 
             List<IngestionTracking> unhealthyRecords = CreateRandomIngestionTrackings(
                 dateTimeOffset: randomDateTimeOffset.AddMinutes(-unHealthyThresholdMinutes).AddSeconds(-1),
-                isDecrypted: true,
+                isDecrypted: false,
                 isProcessing: false,
                 count: GetRandomNumber());
 

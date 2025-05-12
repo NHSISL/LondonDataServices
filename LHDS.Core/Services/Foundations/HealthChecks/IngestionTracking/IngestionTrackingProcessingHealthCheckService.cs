@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using LHDS.Core.Brokers.DateTimes;
+using LHDS.Core.Brokers.Loggings;
 using LHDS.Core.Brokers.Storages.Sql;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
@@ -18,21 +19,23 @@ namespace LHDS.Core.Services.Foundations.HealthChecks.IngestionTracking
         private readonly IStorageBroker storageBroker;
         private readonly IConfiguration configuration;
         private readonly IDateTimeBroker dateTimeBroker;
+        private readonly ILoggingBroker loggingBroker;
         private const string CheckName = "processingQueue";
 
         public IngestionTrackingProcessingHealthCheckService(
             IStorageBroker storageBroker,
             IConfiguration configuration,
-            IDateTimeBroker dateTimeBroker)
+            IDateTimeBroker dateTimeBroker,
+            ILoggingBroker loggingBroker)
         {
             this.storageBroker = storageBroker;
             this.configuration = configuration;
             this.dateTimeBroker = dateTimeBroker;
+            this.loggingBroker = loggingBroker;
         }
 
         public async ValueTask<HealthCheckResult> GetHealthStatusAsync()
         {
-
             int degradedThresholdMinutes = configuration
                 .GetValue("HealthChecks:IngestionTracking:Decryption:DegradedThreshold", 1440);
 

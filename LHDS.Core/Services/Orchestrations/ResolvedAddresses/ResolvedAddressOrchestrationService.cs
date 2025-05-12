@@ -193,10 +193,10 @@ namespace LHDS.Core.Services.Orchestrations.ResolvedAddresses
             updatedResolovedAddress.AddressFormatQuality = foundAssignAddress?.AddressFormat;
             updatedResolovedAddress.PostCodeQuality = foundAssignAddress?.PostcodeQuality;
             updatedResolovedAddress.MatchedWithAssign = foundAssignAddress?.Matched ?? false;
-            updatedResolovedAddress.Qualifier = foundAssignAddress?.BestMatch.Qualifier;
-            updatedResolovedAddress.Classification = foundAssignAddress?.BestMatch.Classification;
-            updatedResolovedAddress.Algorithm = foundAssignAddress?.BestMatch.Algorithm;
-            updatedResolovedAddress.MatchPattern = foundAssignAddress?.Pattern;
+            updatedResolovedAddress.Qualifier = foundAssignAddress?.BestMatch?.Qualifier;
+            updatedResolovedAddress.Classification = foundAssignAddress?.BestMatch?.Classification;
+            updatedResolovedAddress.Algorithm = foundAssignAddress?.BestMatch?.Algorithm;
+            updatedResolovedAddress.MatchPattern = foundAssignAddress?.Pattern ?? null;
             updatedResolovedAddress.IsProcessing = false;
             updatedResolovedAddress.IsExported = false;
             updatedResolovedAddress.RetryCount = 0;

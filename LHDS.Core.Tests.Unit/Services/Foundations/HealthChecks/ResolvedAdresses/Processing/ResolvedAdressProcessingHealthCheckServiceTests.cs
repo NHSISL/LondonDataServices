@@ -11,37 +11,35 @@ using KellermanSoftware.CompareNetObjects;
 using LHDS.Core.Brokers.DateTimes;
 using LHDS.Core.Brokers.Loggings;
 using LHDS.Core.Brokers.Storages.Sql;
-using LHDS.Core.Models.Foundations.IngestionTrackings;
-using LHDS.Core.Services.Foundations.HealthChecks.IngestionTracking;
+using LHDS.Core.Models.Foundations.ResolvedAddresses;
+using LHDS.Core.Services.Foundations.HealthChecks.ResolvedAddress;
 using Microsoft.Data.SqlClient;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
 using Moq;
 using Tynamix.ObjectFiller;
 using Xeptions;
-using Xunit;
 
-namespace LHDS.Core.Tests.Unit.Services.Foundations.HealthChecks.IngestionTrackings
+namespace LHDS.Core.Tests.Unit.Services.Foundations.HealthChecks.ResolvedAddresses
 {
-    public partial class IngestionTrackingFailedToProcessHealthCheckServiceTests
+    public partial class ResolvedAdressProcessingHealthCheckServiceTests
     {
         private readonly Mock<IStorageBroker> storageBrokerMock;
         private readonly IConfiguration inMemoryConfiguration;
         private readonly Mock<IDateTimeBroker> dateTimeBrokerMock;
         private readonly Mock<ILoggingBroker> loggingBrokerMock;
-        private readonly IIngestionTrackingHealthItemService ingestionTrackingHealthItemService;
+        private readonly IResolvedAddressHealthItemService resolvedAddressHealthItemService;
         private readonly ICompareLogic compareLogic;
 
-        public IngestionTrackingFailedToProcessHealthCheckServiceTests()
+        public ResolvedAdressProcessingHealthCheckServiceTests()
         {
             storageBrokerMock = new Mock<IStorageBroker>();
             dateTimeBrokerMock = new Mock<IDateTimeBroker>();
             loggingBrokerMock = new Mock<ILoggingBroker>();
 
             var appSettingsStub = new Dictionary<string, string> {
-                {"HealthChecks:IngestionTracking:Processing:DegradedThreshold", "1440"},
-                {"HealthChecks:IngestionTracking:Processing:UnHealthyThreshold", "2880"},
-                {"HealthChecks:IngestionTracking:Processing:RetryCount", "3"},
+                {"HealthChecks:ResolvedAddress:Processing:DegradedThreshold", "1440"},
+                {"HealthChecks:ResolvedAddress:Processing:UnHealthyThreshold", "2880"},
             };
 
             this.inMemoryConfiguration = new ConfigurationBuilder()
@@ -50,7 +48,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.HealthChecks.IngestionTracki
 
             compareLogic = new CompareLogic();
 
-            this.ingestionTrackingHealthItemService = new IngestionTrackingFailedToProcessHealthCheckService(
+            this.resolvedAddressHealthItemService = new ResolvedAddressProcessingHealthCheckService(
                 storageBroker: storageBrokerMock.Object,
                 configuration: inMemoryConfiguration,
                 dateTimeBroker: dateTimeBrokerMock.Object,
@@ -65,70 +63,37 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.HealthChecks.IngestionTracki
                 actualHealthCheckResult => compareLogic.Compare(expectedHealthCheckResult, actualHealthCheckResult)
                     .AreEqual;
 
-        private static string GetRandomString() =>
-            new MnemonicString(wordCount: GetRandomNumber()).GetValue();
-
-        private static string GetRandomStringWithLengthOf(int length)
-        {
-            string result = new MnemonicString(wordCount: 1, wordMinLength: length, wordMaxLength: length).GetValue();
-
-            return result.Length > length ? result.Substring(0, length) : result;
-        }
-
-        public static TheoryData<int> MinutesBeforeOrAfter()
-        {
-            int randomNumber = GetRandomNumber();
-            int randomNegativeNumber = GetRandomNegativeNumber();
-
-            return new TheoryData<int>
-            {
-                randomNumber,
-                randomNegativeNumber
-            };
-        }
-
         private static SqlException GetSqlException() =>
             (SqlException)RuntimeHelpers.GetUninitializedObject(typeof(SqlException));
 
         private static int GetRandomNumber() =>
             new IntRange(min: 2, max: 10).GetValue();
 
-        private static int GetRandomNegativeNumber() =>
-            -1 * new IntRange(min: 2, max: 10).GetValue();
-
         private static DateTimeOffset GetRandomDateTimeOffset() =>
             new DateTimeRange(earliestDate: new DateTime()).GetValue();
 
-        private static List<IngestionTracking> CreateRandomIngestionTrackings(
+        private static List<ResolvedAddress> CreateRandomResolvedAddresses(
             DateTimeOffset dateTimeOffset,
-            int retryCount,
+            bool isProcessing,
             int count)
         {
-            return Enumerable.Range(0, count)
-                .Select(_ => CreateRandomIngestionTracking(dateTimeOffset, retryCount))
+            return CreateResolvedAddressFiller(dateTimeOffset, isProcessing)
+                .Create(count)
                     .ToList();
         }
 
-        private static IngestionTracking CreateRandomIngestionTracking(
+        private static Filler<ResolvedAddress> CreateResolvedAddressFiller(
             DateTimeOffset dateTimeOffset,
-            int retryCount) =>
-                CreateIngestionTrackingFiller(dateTimeOffset, retryCount).Create();
-
-        private static Filler<IngestionTracking> CreateIngestionTrackingFiller(
-            DateTimeOffset dateTimeOffset,
-            int retryCount)
+            bool isProcessing)
         {
             string user = Guid.NewGuid().ToString();
-            var filler = new Filler<IngestionTracking>();
+            var filler = new Filler<ResolvedAddress>();
 
             filler.Setup()
                 .OnType<DateTimeOffset>().Use(dateTimeOffset)
-                .OnType<DateTimeOffset?>().Use(dateTimeOffset)
-                .OnProperty(ingestionTracking => ingestionTracking.RetryCount).Use(retryCount)
-                .OnProperty(ingestionTracking => ingestionTracking.CreatedBy).Use(user)
-                .OnProperty(ingestionTracking => ingestionTracking.UpdatedBy).Use(user)
-                .OnProperty(ingestionTracking => ingestionTracking.IngestionTrackingAudits).IgnoreIt()
-                .OnProperty(ingestionTracking => ingestionTracking.Supplier).IgnoreIt();
+                .OnProperty(resolvedAddress => resolvedAddress.IsProcessing).Use(isProcessing)
+                .OnProperty(resolvedAddress => resolvedAddress.CreatedBy).Use(user)
+                .OnProperty(resolvedAddress => resolvedAddress.UpdatedBy).Use(user);
 
             return filler;
         }

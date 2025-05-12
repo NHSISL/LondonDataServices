@@ -23,7 +23,7 @@ using Xunit;
 
 namespace LHDS.Core.Tests.Unit.Services.Foundations.HealthChecks.IngestionTrackings
 {
-    public partial class IngestionTrackingDecryptionHealthCheckServiceTests
+    public partial class IngestionTrackingProcessingHealthCheckServiceTests
     {
         private readonly Mock<IStorageBroker> storageBrokerMock;
         private readonly IConfiguration inMemoryConfiguration;
@@ -32,15 +32,15 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.HealthChecks.IngestionTracki
         private readonly IIngestionTrackingHealthItemService ingestionTrackingHealthItemService;
         private readonly ICompareLogic compareLogic;
 
-        public IngestionTrackingDecryptionHealthCheckServiceTests()
+        public IngestionTrackingProcessingHealthCheckServiceTests()
         {
             storageBrokerMock = new Mock<IStorageBroker>();
             dateTimeBrokerMock = new Mock<IDateTimeBroker>();
             loggingBrokerMock = new Mock<ILoggingBroker>();
 
             var appSettingsStub = new Dictionary<string, string> {
-                {"blobStorage:encryptedBlobContainerName", GetRandomString()},
-                {"blobStorage:decryptedBlobContainerName", GetRandomString()},
+                {"HealthChecks:IngestionTracking:Processing:DegradedThreshold", "1440"},
+                {"HealthChecks:IngestionTracking:Processing:UnHealthyThreshold", "2880"},
             };
 
             this.inMemoryConfiguration = new ConfigurationBuilder()
@@ -49,7 +49,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.HealthChecks.IngestionTracki
 
             compareLogic = new CompareLogic();
 
-            this.ingestionTrackingHealthItemService = new IngestionTrackingDecryptionHealthCheckService(
+            this.ingestionTrackingHealthItemService = new IngestionTrackingProcessingHealthCheckService(
                 storageBroker: storageBrokerMock.Object,
                 configuration: inMemoryConfiguration,
                 dateTimeBroker: dateTimeBrokerMock.Object,

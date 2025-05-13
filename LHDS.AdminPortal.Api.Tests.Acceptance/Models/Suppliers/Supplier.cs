@@ -14,6 +14,8 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Models.Suppliers
         public string Name { get; set; } = string.Empty;
         public string FriendlyName { get; set; } = string.Empty;
         public string Description { get; set; } = string.Empty;
+        public bool IsIngestionTracked { get; set; } = false;
+        public bool CanDecryptIngestionTracking { get; set; } = false;
         public string UpdatedBy { get; set; } = string.Empty;
         public string CreatedBy { get; set; } = string.Empty;
 

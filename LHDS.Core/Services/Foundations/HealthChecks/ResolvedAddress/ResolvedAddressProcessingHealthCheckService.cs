@@ -12,17 +12,17 @@ using LHDS.Core.Brokers.Storages.Sql;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
 
-namespace LHDS.Core.Services.Foundations.HealthChecks.IngestionTracking
+namespace LHDS.Core.Services.Foundations.HealthChecks.ResolvedAddress
 {
-    public class IngestionTrackingFailedToProcessHealthCheckService : IIngestionTrackingHealthItemService
+    public class ResolvedAddressProcessingHealthCheckService : IResolvedAddressHealthItemService
     {
         private readonly IStorageBroker storageBroker;
         private readonly IConfiguration configuration;
         private readonly IDateTimeBroker dateTimeBroker;
         private readonly ILoggingBroker loggingBroker;
-        private const string CheckName = "failedToProcess";
+        private const string CheckName = "processingQueue";
 
-        public IngestionTrackingFailedToProcessHealthCheckService(
+        public ResolvedAddressProcessingHealthCheckService(
             IStorageBroker storageBroker,
             IConfiguration configuration,
             IDateTimeBroker dateTimeBroker,
@@ -36,23 +36,17 @@ namespace LHDS.Core.Services.Foundations.HealthChecks.IngestionTracking
 
         public async ValueTask<HealthCheckResult> GetHealthStatusAsync()
         {
-            int retryCount = configuration
-                .GetValue("HealthChecks:IngestionTracking:FailedToProcess:RetryCount", 3);
-
             int degradedThresholdMinutes = configuration
-                .GetValue("HealthChecks:IngestionTracking:FailedToProcess:DegradedThreshold", 1440);
+                .GetValue("HealthChecks:ResolvedAddress:Processing:DegradedThreshold", 1440);
 
             int unHealthyThresholdMinutes = configuration
-                .GetValue("HealthChecks:IngestionTracking:FailedToProcess:UnHealthyThreshold", 2880);
+                .GetValue("HealthChecks:ResolvedAddress:Processing:UnHealthyThreshold", 2880);
 
             DateTimeOffset currentDateTime = await dateTimeBroker.GetCurrentDateTimeOffsetAsync();
             DateTimeOffset degradedThresholdDateTime = currentDateTime.AddMinutes(-1 * degradedThresholdMinutes);
             DateTimeOffset unHealthyThresholdDateTime = currentDateTime.AddMinutes(-1 * unHealthyThresholdMinutes);
-            var ingestionTrackingQuery = await storageBroker.SelectAllIngestionTrackingsAsync();
-            var filteredQuery = ingestionTrackingQuery.Where(i => i.RetryCount >= retryCount);
-
-            int baseCount = filteredQuery.Count(ingestionTracking =>
-                ingestionTracking.UpdatedDate > degradedThresholdDateTime);
+            var ingestionTrackingQuery = await storageBroker.SelectAllResolvedAddressesAsync();
+            var filteredQuery = ingestionTrackingQuery.Where(i => i.IsProcessing);
 
             int degradedCount = filteredQuery.Count(ingestionTracking =>
                 ingestionTracking.UpdatedDate <= degradedThresholdDateTime &&
@@ -61,7 +55,7 @@ namespace LHDS.Core.Services.Foundations.HealthChecks.IngestionTracking
             int unHealthyCount = filteredQuery
                 .Count(ingestionTracking => ingestionTracking.UpdatedDate <= unHealthyThresholdDateTime);
 
-            int totalCount = baseCount + degradedCount + unHealthyCount;
+            int totalCount = degradedCount + unHealthyCount;
 
             string message = totalCount == 0
                 ? $"Nothing to process. All up to date."
@@ -69,8 +63,8 @@ namespace LHDS.Core.Services.Foundations.HealthChecks.IngestionTracking
 
             var vals = new Dictionary<string, object>
             {
-                { "description", "Failed To Process" },
-                { "failedToProcess", totalCount },
+                { "description", "Processing Queue" },
+                { "stuckInProcessing", totalCount },
                 { "degradedItems", degradedCount},
                 { "unHealthyItems", unHealthyCount},
                 { "degradedThresholdMinutes", degradedThresholdMinutes.ToString() },

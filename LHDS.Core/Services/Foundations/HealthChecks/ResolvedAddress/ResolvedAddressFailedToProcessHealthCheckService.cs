@@ -12,9 +12,9 @@ using LHDS.Core.Brokers.Storages.Sql;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
 
-namespace LHDS.Core.Services.Foundations.HealthChecks.IngestionTracking
+namespace LHDS.Core.Services.Foundations.HealthChecks.ResolvedAddress
 {
-    public class IngestionTrackingFailedToProcessHealthCheckService : IIngestionTrackingHealthItemService
+    public class ResolvedAddressFailedToProcessHealthCheckService : IResolvedAddressHealthItemService
     {
         private readonly IStorageBroker storageBroker;
         private readonly IConfiguration configuration;
@@ -22,7 +22,7 @@ namespace LHDS.Core.Services.Foundations.HealthChecks.IngestionTracking
         private readonly ILoggingBroker loggingBroker;
         private const string CheckName = "failedToProcess";
 
-        public IngestionTrackingFailedToProcessHealthCheckService(
+        public ResolvedAddressFailedToProcessHealthCheckService(
             IStorageBroker storageBroker,
             IConfiguration configuration,
             IDateTimeBroker dateTimeBroker,
@@ -37,18 +37,18 @@ namespace LHDS.Core.Services.Foundations.HealthChecks.IngestionTracking
         public async ValueTask<HealthCheckResult> GetHealthStatusAsync()
         {
             int retryCount = configuration
-                .GetValue("HealthChecks:IngestionTracking:FailedToProcess:RetryCount", 3);
+                .GetValue("HealthChecks:ResolvedAddress:FailedToProcess:RetryCount", 3);
 
             int degradedThresholdMinutes = configuration
-                .GetValue("HealthChecks:IngestionTracking:FailedToProcess:DegradedThreshold", 1440);
+                .GetValue("HealthChecks:ResolvedAddress:FailedToProcess:DegradedThreshold", 1440);
 
             int unHealthyThresholdMinutes = configuration
-                .GetValue("HealthChecks:IngestionTracking:FailedToProcess:UnHealthyThreshold", 2880);
+                .GetValue("HealthChecks:ResolvedAddress:FailedToProcess:UnHealthyThreshold", 2880);
 
             DateTimeOffset currentDateTime = await dateTimeBroker.GetCurrentDateTimeOffsetAsync();
             DateTimeOffset degradedThresholdDateTime = currentDateTime.AddMinutes(-1 * degradedThresholdMinutes);
             DateTimeOffset unHealthyThresholdDateTime = currentDateTime.AddMinutes(-1 * unHealthyThresholdMinutes);
-            var ingestionTrackingQuery = await storageBroker.SelectAllIngestionTrackingsAsync();
+            var ingestionTrackingQuery = await storageBroker.SelectAllResolvedAddressesAsync();
             var filteredQuery = ingestionTrackingQuery.Where(i => i.RetryCount >= retryCount);
 
             int baseCount = filteredQuery.Count(ingestionTracking =>

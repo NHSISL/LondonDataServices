@@ -715,11 +715,36 @@ namespace LHDS.Core.Services.Orchestrations.Addresses
         {
             int skipCounter = 0;
             var exceptions = new List<Exception>();
+            Guid correlationId = await this.identifierBroker.GetIdentifierAsync();
+
+            await this.auditBroker.LogInformationAsync(
+                auditType: "Address Import - Street Descriptors Processing",
+                title: "Processing Street Descriptors File",
+                message: $"Starting processing file {streetDescriptorCsvFile}.",
+                fileName: streetDescriptorCsvFile,
+                correlationId: correlationId.ToString());
+
+            await this.loggingBroker.LogInformationAsync(message: $"Starting processing file {streetDescriptorCsvFile}.");
 
             while ((await fileBroker.ReadLinesBatchAsync(streetDescriptorCsvFile, batchSize, skipCounter)).Any())
             {
                 try
                 {
+                    await this.auditBroker.LogInformationAsync(
+                        auditType: "Address Import - Street Descriptors Processing",
+                        title: "Processing Street Descriptors File",
+
+                        message:
+                            $"Processing Street Descriptors File - Processing lines {skipCounter} to " +
+                            $"{skipCounter + batchSize}. Correlation Id: {correlationId}.",
+
+                        fileName: streetDescriptorCsvFile,
+                        correlationId: correlationId.ToString());
+
+                    await this.loggingBroker.LogInformationAsync(
+                        message: $"Processing Street Descriptors File - Processing lines {skipCounter} to " +
+                            $"{skipCounter + batchSize}. Correlation Id: {correlationId}.");
+
                     List<Address> streetDescriptorAddresses =
                     await MapStreetDescriptorDataToAddressesAsync(streetDescriptorCsvFile, batchSize, skipCounter);
 
@@ -762,6 +787,15 @@ namespace LHDS.Core.Services.Orchestrations.Addresses
                     skipCounter = skipCounter + batchSize;
                 }
             }
+
+            await this.auditBroker.LogInformationAsync(
+                auditType: "Address Import - Street Descriptors Processing",
+                title: "Processing Street Descriptors File",
+                message: $"Finished processing file {streetDescriptorCsvFile}.",
+                fileName: streetDescriptorCsvFile,
+                correlationId: correlationId.ToString());
+
+            await this.loggingBroker.LogInformationAsync(message: $"Finished processing file {streetDescriptorCsvFile}.");
 
             if (exceptions.Any())
             {

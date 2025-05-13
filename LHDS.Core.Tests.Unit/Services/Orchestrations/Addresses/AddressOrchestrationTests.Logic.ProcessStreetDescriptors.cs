@@ -2,6 +2,7 @@
 // Copyright (c) North East London ICB. All rights reserved.
 // ---------------------------------------------------------
 
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -32,6 +33,8 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Addresses
 
             string randomFile = GetRandomString();
             string inputStreetDescriptorFile = randomFile;
+            Guid randomGuid = Guid.NewGuid();
+            Guid inputCorrelationId = randomGuid;
             int inputBatchSize = GetRandomNumber();
             int numberOfBatches = GetRandomNumber();
             int numberOfRecords = inputBatchSize * numberOfBatches;
@@ -39,6 +42,10 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Addresses
             IQueryable<Address> randomAddresses = CreateRandomAddresses(numberOfRecords);
             IQueryable<Address> retrievedAddresses = randomAddresses.DeepClone();
             List<Address> streetDescriptorAddresses = randomAddresses.DeepClone().ToList();
+
+            this.identifierBrokerMock.Setup(broker =>
+                broker.GetIdentifierAsync())
+                    .ReturnsAsync(inputCorrelationId);
 
             foreach (Address retrievedAddress in retrievedAddresses)
             {
@@ -83,6 +90,24 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Addresses
             await service.ProcessStreetDescriptorDataAsync(inputStreetDescriptorFile, inputBatchSize);
 
             // Then
+            this.identifierBrokerMock.Verify(broker =>
+               broker.GetIdentifierAsync(),
+                   Times.Once);
+
+            this.auditBrokerMock.Verify(broker =>
+                broker.LogInformationAsync(
+                    "Address Import - Street Descriptors Processing",
+                    "Processing Street Descriptors File",
+                    $"Starting processing file {inputStreetDescriptorFile}.",
+                    inputStreetDescriptorFile,
+                    inputCorrelationId.ToString()),
+                        Times.Once);
+
+            this.loggingBrokerMock.Verify(broker =>
+                broker.LogInformationAsync(
+                    $"Starting processing file {inputStreetDescriptorFile}."),
+                        Times.Once);
+
             for (int i = 0; i < numberOfBatches; i++)
             {
                 int batchStartLine = i * inputBatchSize;
@@ -113,6 +138,24 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Addresses
                         It.Is(SameAddressesAs(batchExisitngAddresses)),
                         inputStreetDescriptorFile),
                             Times.Once);
+
+                this.auditBrokerMock.Verify(broker =>
+                    broker.LogInformationAsync(
+                        "Address Import - Street Descriptors Processing",
+                        "Processing Street Descriptors File",
+
+                        $"Processing Street Descriptors File - Processing lines {batchStartLine} to " +
+                            $"{batchEndLine}. Correlation Id: {inputCorrelationId}.",
+
+                        inputStreetDescriptorFile,
+                        inputCorrelationId.ToString()),
+                            Times.Once);
+
+                this.loggingBrokerMock.Verify(broker =>
+                    broker.LogInformationAsync(
+                        $"Processing Street Descriptors File - Processing lines {batchStartLine} to " +
+                            $"{batchEndLine}. Correlation Id: {inputCorrelationId}."),
+                            Times.Once);
             }
 
             this.fileBrokerMock.Verify(broker =>
@@ -122,6 +165,20 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Addresses
             this.addressProcessingServiceMock.Verify(service =>
                 service.RetrieveAllAddressesAsync(),
                     Times.Exactly(numberOfBatches));
+
+            this.auditBrokerMock.Verify(broker =>
+               broker.LogInformationAsync(
+                   "Address Import - Street Descriptors Processing",
+                   "Processing Street Descriptors File",
+                   $"Finished processing file {inputStreetDescriptorFile}.",
+                   inputStreetDescriptorFile,
+                   inputCorrelationId.ToString()),
+                       Times.Once);
+
+            this.loggingBrokerMock.Verify(broker =>
+                broker.LogInformationAsync(
+                    $"Finished processing file {inputStreetDescriptorFile}."),
+                        Times.Once);
 
             this.fileBrokerMock.VerifyNoOtherCalls();
             this.csvHelperBrokerMock.VerifyNoOtherCalls();

@@ -8,7 +8,6 @@ using System.Threading.Tasks;
 using FluentAssertions;
 using LHDS.Core.Services.Orchestrations.Addresses;
 using Moq;
-using Xeptions;
 using Xunit;
 
 namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Addresses
@@ -47,10 +46,10 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Addresses
             string inputSearchPattern = "*.csv";
             Guid randomGuid = Guid.NewGuid();
             Guid inputCorrelationId = randomGuid;
-            Xeption dpaException = new Xeption();
-            Xeption lpiException = new Xeption();
-            Xeption blpuException = new Xeption();
-            Xeption streetDescriptorException = new Xeption();
+            Exception dpaException = new Exception();
+            Exception lpiException = new Exception();
+            Exception blpuException = new Exception();
+            Exception streetDescriptorException = new Exception();
 
             this.fileBrokerMock.Setup(service =>
                 service.GetListOfFilesAsync(inputTempPath, inputSearchPattern))
@@ -73,16 +72,10 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Addresses
                 service.ReadLinesBatchAsync(streetDescriptorCsvFilePath, inputBatchSize, initialSkipCounter))
                     .ThrowsAsync(streetDescriptorException);
 
-            Xeption expectedDpaException = new Xeption();
-            Xeption expectedLpiException = new Xeption();
-            Xeption expectedBlpuException = new Xeption();
-            Xeption expectedStreetDescriptorException = new Xeption();
-            expectedDpaException.AddData("DpaExtractionError", dpaCsvFilePath);
-            expectedLpiException.AddData("LpiExtractionError", lpiCsvFilePath);
-            expectedBlpuException.AddData("BlpuExtractionError", blpuCsvFilePath);
-
-            expectedStreetDescriptorException
-                .AddData("StreetDescriptorExtractionError", streetDescriptorCsvFilePath);
+            Exception expectedDpaException = new Exception();
+            Exception expectedLpiException = new Exception();
+            Exception expectedBlpuException = new Exception();
+            Exception expectedStreetDescriptorException = new Exception();
 
             List<Exception> expectedExceptions = [
                 expectedDpaException,

@@ -106,8 +106,10 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Addresses
                 broker.LogInformationAsync(
                     "Address Import - BLPU Processing",
                     "Processing BLPU File",
+
                     $"Processing BLPU File - Processing lines {inputSkipCounter} to " +
                         $"{inputSkipCounter + inputBatchSize}. Correlation Id: {inputCorrelationId}.",
+
                     blpuCsvFilePath,
                     inputCorrelationId.ToString()),
                         Times.Once);

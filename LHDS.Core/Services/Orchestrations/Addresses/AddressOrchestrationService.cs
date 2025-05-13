@@ -331,11 +331,36 @@ namespace LHDS.Core.Services.Orchestrations.Addresses
         {
             int skipCounter = 0;
             var exceptions = new List<Exception>();
+            Guid correlationId = await this.identifierBroker.GetIdentifierAsync();
+
+            await this.auditBroker.LogInformationAsync(
+                auditType: "Address Import - DPA Processing",
+                title: "Processing DPA File",
+                message: $"Starting processing file {dpaCsvFile}.",
+                fileName: dpaCsvFile,
+                correlationId: correlationId.ToString());
+
+            await this.loggingBroker.LogInformationAsync(message: $"Starting processing file {dpaCsvFile}.");
 
             while ((await fileBroker.ReadLinesBatchAsync(dpaCsvFile, batchSize, skipCounter)).Any())
             {
                 try
                 {
+                    await this.auditBroker.LogInformationAsync(
+                        auditType: "Address Import - DPA Processing",
+                        title: "Processing DPA File",
+
+                        message:
+                            $"Processing DPA File - Processing lines {skipCounter} to " +
+                            $"{skipCounter + batchSize}. Correlation Id: {correlationId}.",
+
+                        fileName: dpaCsvFile,
+                        correlationId: correlationId.ToString());
+
+                    await this.loggingBroker.LogInformationAsync(
+                        message: $"Processing DPA File - Processing lines {skipCounter} to " +
+                            $"{skipCounter + batchSize}. Correlation Id: {correlationId}.");
+
                     List<Address> dpaAddresses = await MapDPADataToAddressesAsync(dpaCsvFile, batchSize, skipCounter);
                     Dictionary<string, Address> dpaAddressesDict = dpaAddresses.ToDictionary(a => a.UPRN, a => a);
                     IQueryable<Address> addresses = await addressProcessingService.RetrieveAllAddressesAsync();
@@ -383,6 +408,15 @@ namespace LHDS.Core.Services.Orchestrations.Addresses
                     skipCounter = skipCounter + batchSize;
                 }
             }
+
+            await this.auditBroker.LogInformationAsync(
+                auditType: "Address Import - DPA Processing",
+                title: "Processing DPA File",
+                message: $"Finished processing file {dpaCsvFile}.",
+                fileName: dpaCsvFile,
+                correlationId: correlationId.ToString());
+
+            await this.loggingBroker.LogInformationAsync(message: $"Finished processing file {dpaCsvFile}.");
 
             if (exceptions.Any())
             {

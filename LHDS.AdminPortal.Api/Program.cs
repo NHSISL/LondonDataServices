@@ -215,8 +215,14 @@ namespace LHDS.AdminPortal.Api
 
         private static void AddHealthApi(IServiceCollection services, IConfiguration configuration)
         {
-            services.AddSingleton<IIngestionTrackingHealthItemService, IngestionTrackingDecryptionHealthCheckService>();
-            services.AddSingleton<IIngestionTrackingHealthItemService, IngestionTrackingProcessingHealthCheckService>();
+            services.AddSingleton
+                <IIngestionTrackingHealthItemService, IngestionTrackingDecryptionHealthCheckService>();
+
+            services.AddSingleton
+                <IIngestionTrackingHealthItemService, IngestionTrackingProcessingHealthCheckService>();
+
+            services.AddSingleton
+                <IIngestionTrackingHealthItemService, IngestionTrackingFailedToProcessHealthCheckService>();
 
             services.AddHealthChecks().AddCheck<IngestionTrackingHealthCheckOrchestrationService>(
                 "ingestionTrackingHealthCheckOrchestrationService");

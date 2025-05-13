@@ -538,10 +538,19 @@ namespace LHDS.Core.Migrations
                         .HasColumnType("nvarchar(450)");
 
                     b.Property<bool>("IsDownloaded")
-                        .HasColumnType("bit");
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bit")
+                        .HasDefaultValue(false);
+
+                    b.Property<bool>("IsIngestionTracked")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bit")
+                        .HasDefaultValue(false);
 
                     b.Property<bool>("IsProcessing")
-                        .HasColumnType("bit");
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bit")
+                        .HasDefaultValue(false);
 
                     b.Property<DateTimeOffset>("LastAttempt")
                         .HasColumnType("datetimeoffset");

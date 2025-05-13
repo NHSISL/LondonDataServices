@@ -25,6 +25,7 @@ namespace LHDS.Core.Models.Foundations.IngestionTrackings
         public string EncryptedFileName { get; set; } = string.Empty;
         public string DecryptedFileName { get; set; } = string.Empty;
         public bool Decrypted { get; set; }
+        public bool IsIngestionTracked { get; set; } = false;
         public bool IsDownloaded { get; set; } = false;
         public bool IsProcessing { get; set; } = false;
         public int RetryCount { get; set; } = 0;

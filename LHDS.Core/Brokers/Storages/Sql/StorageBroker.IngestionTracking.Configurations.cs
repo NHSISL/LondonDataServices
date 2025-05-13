@@ -52,6 +52,21 @@ namespace LHDS.Core.Brokers.Storages.Sql
                 .IsRequired();
 
             modelBuilder.Entity<IngestionTracking>()
+                .Property(ingestionTracking => ingestionTracking.IsIngestionTracked)
+                .HasDefaultValue(false)
+                .IsRequired();
+
+            modelBuilder.Entity<IngestionTracking>()
+                .Property(ingestionTracking => ingestionTracking.IsDownloaded)
+                .HasDefaultValue(false)
+                .IsRequired();
+
+            modelBuilder.Entity<IngestionTracking>()
+                .Property(ingestionTracking => ingestionTracking.IsProcessing)
+                .HasDefaultValue(false)
+                .IsRequired();
+
+            modelBuilder.Entity<IngestionTracking>()
                 .Property(ingestionTracking => ingestionTracking.CreatedBy)
                 .HasMaxLength(255)
                 .IsRequired();

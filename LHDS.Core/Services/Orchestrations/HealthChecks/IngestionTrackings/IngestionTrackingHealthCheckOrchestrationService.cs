@@ -12,7 +12,7 @@ using LHDS.Core.Services.Foundations.HealthChecks.IngestionTracking;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
 
-namespace LHDS.Core.Services.Orchestrations.HealthChecks.IngestionTracking
+namespace LHDS.Core.Services.Orchestrations.HealthChecks.IngestionTrackings
 {
     public class IngestionTrackingHealthCheckOrchestrationService : IHealthCheck
     {

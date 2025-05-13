@@ -11,8 +11,8 @@ using KellermanSoftware.CompareNetObjects;
 using LHDS.Core.Brokers.DateTimes;
 using LHDS.Core.Brokers.Loggings;
 using LHDS.Core.Brokers.Storages.Sql;
-using LHDS.Core.Models.Foundations.IngestionTrackings;
-using LHDS.Core.Services.Foundations.HealthChecks.IngestionTracking;
+using LHDS.Core.Models.Foundations.ResolvedAddresses;
+using LHDS.Core.Services.Foundations.HealthChecks.ResolvedAddress;
 using Microsoft.Data.SqlClient;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
@@ -21,27 +21,27 @@ using Tynamix.ObjectFiller;
 using Xeptions;
 using Xunit;
 
-namespace LHDS.Core.Tests.Unit.Services.Foundations.HealthChecks.IngestionTrackings
+namespace LHDS.Core.Tests.Unit.Services.Foundations.HealthChecks.ResolvedAddresses
 {
-    public partial class IngestionTrackingFailedToProcessHealthCheckServiceTests
+    public partial class ResolvedAdressFailedToProcessHealthCheckServiceTests
     {
         private readonly Mock<IStorageBroker> storageBrokerMock;
         private readonly IConfiguration inMemoryConfiguration;
         private readonly Mock<IDateTimeBroker> dateTimeBrokerMock;
         private readonly Mock<ILoggingBroker> loggingBrokerMock;
-        private readonly IIngestionTrackingHealthItemService ingestionTrackingHealthItemService;
+        private readonly IResolvedAddressHealthItemService resolvedAddressHealthItemService;
         private readonly ICompareLogic compareLogic;
 
-        public IngestionTrackingFailedToProcessHealthCheckServiceTests()
+        public ResolvedAdressFailedToProcessHealthCheckServiceTests()
         {
             storageBrokerMock = new Mock<IStorageBroker>();
             dateTimeBrokerMock = new Mock<IDateTimeBroker>();
             loggingBrokerMock = new Mock<ILoggingBroker>();
 
             var appSettingsStub = new Dictionary<string, string> {
-                {"HealthChecks:IngestionTracking:Processing:DegradedThreshold", "1440"},
-                {"HealthChecks:IngestionTracking:Processing:UnHealthyThreshold", "2880"},
-                {"HealthChecks:IngestionTracking:Processing:RetryCount", "3"},
+                {"HealthChecks:ResolvedAddress:Processing:DegradedThreshold", "1440"},
+                {"HealthChecks:ResolvedAddress:Processing:UnHealthyThreshold", "2880"},
+                {"HealthChecks:ResolvedAddress:Processing:RetryCount", "3"},
             };
 
             this.inMemoryConfiguration = new ConfigurationBuilder()
@@ -50,7 +50,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.HealthChecks.IngestionTracki
 
             compareLogic = new CompareLogic();
 
-            this.ingestionTrackingHealthItemService = new IngestionTrackingFailedToProcessHealthCheckService(
+            this.resolvedAddressHealthItemService = new ResolvedAddressFailedToProcessHealthCheckService(
                 storageBroker: storageBrokerMock.Object,
                 configuration: inMemoryConfiguration,
                 dateTimeBroker: dateTimeBrokerMock.Object,
@@ -99,36 +99,28 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.HealthChecks.IngestionTracki
         private static DateTimeOffset GetRandomDateTimeOffset() =>
             new DateTimeRange(earliestDate: new DateTime()).GetValue();
 
-        private static List<IngestionTracking> CreateRandomIngestionTrackings(
+        private static List<ResolvedAddress> CreateRandomResolvedAddresses(
             DateTimeOffset dateTimeOffset,
             int retryCount,
             int count)
         {
-            return Enumerable.Range(0, count)
-                .Select(_ => CreateRandomIngestionTracking(dateTimeOffset, retryCount))
+            return CreateResolvedAddressFiller(dateTimeOffset, retryCount)
+                .Create(count)
                     .ToList();
         }
 
-        private static IngestionTracking CreateRandomIngestionTracking(
-            DateTimeOffset dateTimeOffset,
-            int retryCount) =>
-                CreateIngestionTrackingFiller(dateTimeOffset, retryCount).Create();
-
-        private static Filler<IngestionTracking> CreateIngestionTrackingFiller(
+        private static Filler<ResolvedAddress> CreateResolvedAddressFiller(
             DateTimeOffset dateTimeOffset,
             int retryCount)
         {
             string user = Guid.NewGuid().ToString();
-            var filler = new Filler<IngestionTracking>();
+            var filler = new Filler<ResolvedAddress>();
 
             filler.Setup()
                 .OnType<DateTimeOffset>().Use(dateTimeOffset)
-                .OnType<DateTimeOffset?>().Use(dateTimeOffset)
-                .OnProperty(ingestionTracking => ingestionTracking.RetryCount).Use(retryCount)
-                .OnProperty(ingestionTracking => ingestionTracking.CreatedBy).Use(user)
-                .OnProperty(ingestionTracking => ingestionTracking.UpdatedBy).Use(user)
-                .OnProperty(ingestionTracking => ingestionTracking.IngestionTrackingAudits).IgnoreIt()
-                .OnProperty(ingestionTracking => ingestionTracking.Supplier).IgnoreIt();
+                .OnProperty(resolvedAddress => resolvedAddress.RetryCount).Use(retryCount)
+                .OnProperty(resolvedAddress => resolvedAddress.CreatedBy).Use(user)
+                .OnProperty(resolvedAddress => resolvedAddress.UpdatedBy).Use(user);
 
             return filler;
         }

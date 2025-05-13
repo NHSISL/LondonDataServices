@@ -1,0 +1,55 @@
+# ASP.NET
+# Build and test ASP.NET projects.
+# Add steps that publish symbols, save build artifacts, deploy, and more:
+# https://docs.microsoft.com/azure/devops/pipelines/apps/aspnet/build-aspnet-4
+
+trigger:
+- main
+
+variables:
+  - name: solution
+    value: '**/*.sln'
+
+pool:
+  vmImage: ubuntu-latest
+
+workspace:
+  clean: all
+
+steps:   
+  - task: UseDotNet@2
+    displayName: "Install .NET Core SDK"
+    inputs:
+      version: 9.x
+      performMultiLevelLookup: true
+      includePreviewVersions: true # Required for preview versions
+
+  - task: DotNetCoreCLI@2
+    displayName: "Dotnet Restore"
+    inputs:
+      command: "restore"
+      feedsToUse: "select"
+      projects: "**/*.csproj"
+      includeNuGetOrg: true
+ 
+  - task: DotNetCoreCLI@2
+    displayName: "Dotnet Build (Terminology Function)"
+    inputs:
+      command: 'build'
+      projects: '**/LHDS.Functions.Terminology.csproj'
+      arguments: --output $(System.DefaultWorkingDirectory)/publish_output_terminology_func --configuration Release
+  
+  - task: ArchiveFiles@2
+    condition: and(succeeded(), ne(variables['Build.Reason'], 'PullRequest'))  
+    displayName: 'Archive files - Terminology Function'
+    inputs:
+      rootFolderOrFile: '$(System.DefaultWorkingDirectory)/publish_output_terminology_func'
+      includeRootFolder: false
+      archiveType: zip
+      archiveFile: $(Build.ArtifactStagingDirectory)/$(Build.BuildId)_terminology_func.zip
+      replaceExistingArchive: true
+
+  - publish: $(Build.ArtifactStagingDirectory)/$(Build.BuildId)_terminology_func.zip
+    condition: and(succeeded(), ne(variables['Build.Reason'], 'PullRequest'))  
+    displayName: 'Publish Artifact - Terminology Function'
+    artifact: drop-terminology-func

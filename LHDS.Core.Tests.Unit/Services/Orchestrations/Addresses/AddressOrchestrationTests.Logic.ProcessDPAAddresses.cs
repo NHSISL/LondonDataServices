@@ -132,8 +132,10 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Addresses
                     broker.LogInformationAsync(
                         "Address Import - DPA Processing",
                         "Processing DPA File",
+                        
                         $"Processing DPA File - Processing lines {batchStartLine} to " +
                             $"{batchEndLine}. Correlation Id: {inputCorrelationId}.",
+                        
                         inputDpaCsvFile,
                         inputCorrelationId.ToString()),
                             Times.Once);

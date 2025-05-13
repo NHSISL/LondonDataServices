@@ -25,6 +25,11 @@ namespace LHDS.Core.Brokers.Storages.Sql
                 .IsRequired();
 
             modelBuilder.Entity<Supplier>()
+                .Property(ingestionTracking => ingestionTracking.IsIngestionTracked)
+                .HasDefaultValue(false)
+                .IsRequired();
+
+            modelBuilder.Entity<Supplier>()
                 .Property(supplier => supplier.CanDecryptIngestionTracking)
                 .HasDefaultValue(false)
                 .IsRequired();

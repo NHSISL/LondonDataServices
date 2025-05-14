@@ -31,10 +31,16 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Addresses
             { CallBase = true };
 
             string streetDescriptorsCsvFilePath = "ID15.csv";
+            Guid randomGuid = Guid.NewGuid();
+            Guid inputCorrelationId = randomGuid;
             int inputSkipCounter = 0;
             int inputBatchSize = this.batchSize;
             List<string> returnedStringList = CreateRandomStringList();
             Xeption streetDescriptorsException = new Xeption();
+
+            this.identifierBrokerMock.Setup(broker =>
+                broker.GetIdentifierAsync())
+                    .ReturnsAsync(inputCorrelationId);
 
             this.fileBrokerMock.Setup(broker =>
                 broker.ReadLinesBatchAsync(
@@ -57,14 +63,14 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Addresses
                     inputSkipCounter + inputBatchSize))
                         .ReturnsAsync([]);
 
-            Xeption expectedBlpuException = new Xeption();
+            Xeption expectedStreetDescriptorsException = new Xeption();
 
-            expectedBlpuException.AddData(
+            expectedStreetDescriptorsException.AddData(
                 $"StreetDescriptorsExtractionError in batch between lines {inputSkipCounter} " +
                 $"and {inputSkipCounter + inputBatchSize}.",
                 streetDescriptorsCsvFilePath);
 
-            List<Exception> expectedExceptions = [expectedBlpuException];
+            List<Exception> expectedExceptions = [expectedStreetDescriptorsException];
 
             var expectedAggregateException =
                 new AggregateException(
@@ -83,11 +89,47 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Addresses
             // Then
             actualAggregateException.Should().BeEquivalentTo(expectedAggregateException);
 
+            this.identifierBrokerMock.Verify(broker =>
+                broker.GetIdentifierAsync(),
+                    Times.Once);
+
+            this.auditBrokerMock.Verify(broker =>
+                broker.LogInformationAsync(
+                    "Address Import - Street Descriptors Processing",
+                    "Processing Street Descriptors File",
+                    $"Starting processing file {streetDescriptorsCsvFilePath}.",
+                    streetDescriptorsCsvFilePath,
+                    inputCorrelationId.ToString()),
+                        Times.Once);
+
+            this.loggingBrokerMock.Verify(broker =>
+                broker.LogInformationAsync(
+                    $"Starting processing file {streetDescriptorsCsvFilePath}."),
+                        Times.Once);
+
             this.fileBrokerMock.Verify(broker =>
                 broker.ReadLinesBatchAsync(
                     streetDescriptorsCsvFilePath,
                     inputBatchSize,
                     inputSkipCounter),
+                        Times.Once);
+
+            this.auditBrokerMock.Verify(broker =>
+                broker.LogInformationAsync(
+                    "Address Import - Street Descriptors Processing",
+                    "Processing Street Descriptors File",
+
+                    $"Processing Street Descriptors File - Processing lines {inputSkipCounter} to " +
+                        $"{inputSkipCounter + inputBatchSize}. Correlation Id: {inputCorrelationId}.",
+
+                    streetDescriptorsCsvFilePath,
+                    inputCorrelationId.ToString()),
+                        Times.Once);
+
+            this.loggingBrokerMock.Verify(broker =>
+                broker.LogInformationAsync(
+                    $"Processing Street Descriptors File - Processing lines {inputSkipCounter} to " +
+                        $"{inputSkipCounter + inputBatchSize}. Correlation Id: {inputCorrelationId}."),
                         Times.Once);
 
             addressOrchestrationServiceMock.Verify(service =>
@@ -102,6 +144,20 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Addresses
                     streetDescriptorsCsvFilePath,
                     inputBatchSize,
                     inputSkipCounter + inputBatchSize),
+                        Times.Once);
+
+            this.auditBrokerMock.Verify(broker =>
+                broker.LogInformationAsync(
+                    "Address Import - Street Descriptors Processing",
+                    "Processing Street Descriptors File",
+                    $"Finished processing file {streetDescriptorsCsvFilePath}.",
+                    streetDescriptorsCsvFilePath,
+                    inputCorrelationId.ToString()),
+                        Times.Once);
+
+            this.loggingBrokerMock.Verify(broker =>
+                broker.LogInformationAsync(
+                    $"Finished processing file {streetDescriptorsCsvFilePath}."),
                         Times.Once);
 
             this.fileBrokerMock.VerifyNoOtherCalls();

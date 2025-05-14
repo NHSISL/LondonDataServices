@@ -18,7 +18,7 @@ namespace LHDS.Core.Services.Orchestrations.HealthChecks.IngestionTrackings
     {
         private readonly IEnumerable<IIngestionTrackingHealthItemService> healthItems;
         private readonly IDateTimeBroker dateTimeBroker;
-        private const string healthCheckName = "Ingestion Tracking";
+        private const string healthCheckName = "Ingestion Tracking Health Checks";
 
         public IngestionTrackingHealthCheckOrchestrationService(
             IEnumerable<IIngestionTrackingHealthItemService> healthItems,

@@ -2,6 +2,7 @@
 // Copyright (c) North East London ICB. All rights reserved.
 // ---------------------------------------------------------
 
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -32,6 +33,8 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Addresses
 
             string randomFile = GetRandomString();
             string inputBlpuCsvFile = randomFile;
+            Guid randomGuid = Guid.NewGuid();
+            Guid inputCorrelationId = randomGuid;
             int inputBatchSize = GetRandomNumber();
             int numberOfBatches = GetRandomNumber();
             int numberOfRecords = inputBatchSize * numberOfBatches;
@@ -40,6 +43,10 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Addresses
             IQueryable<Address> existingAddresses = randomExistingAddresses.DeepClone();
             IQueryable<Address> existingAddressesNoPostcodeDb = CreateRandomAddresses(numberOfRecords);
             List<Address> randomAddresses = CreateRandomAddresses(numberOfRecords).ToList();
+
+            this.identifierBrokerMock.Setup(broker =>
+                broker.GetIdentifierAsync())
+                    .ReturnsAsync(inputCorrelationId);
 
             foreach (Address address in existingAddressesNoPostcodeDb)
             {
@@ -84,6 +91,24 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Addresses
             await service.ProcessBLPUAddressesAsync(inputBlpuCsvFile, inputBatchSize);
 
             // Then
+            this.identifierBrokerMock.Verify(broker =>
+               broker.GetIdentifierAsync(),
+                   Times.Once);
+
+            this.auditBrokerMock.Verify(broker =>
+                broker.LogInformationAsync(
+                    "Address Import - BLPU Processing",
+                    "Processing BLPU File",
+                    $"Starting processing file {inputBlpuCsvFile}.",
+                    inputBlpuCsvFile,
+                    inputCorrelationId.ToString()),
+                        Times.Once);
+
+            this.loggingBrokerMock.Verify(broker =>
+                broker.LogInformationAsync(
+                    $"Starting processing file {inputBlpuCsvFile}."),
+                        Times.Once);
+
             for (int i = 0; i < numberOfBatches; i++)
             {
                 int batchStartLine = i * inputBatchSize;
@@ -109,6 +134,24 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Addresses
                 this.addressProcessingServiceMock.Verify(service =>
                     service.BulkModifyAddressesAsync(It.Is(SameAddressesAs(batchExisitngAddresses)), inputBlpuCsvFile),
                         Times.Once);
+
+                this.auditBrokerMock.Verify(broker =>
+                    broker.LogInformationAsync(
+                        "Address Import - BLPU Processing",
+                        "Processing BLPU File",
+
+                        $"Processing BLPU File - Processing lines {batchStartLine} to " +
+                            $"{batchEndLine}. Correlation Id: {inputCorrelationId}.",
+
+                        inputBlpuCsvFile,
+                        inputCorrelationId.ToString()),
+                            Times.Once);
+
+                this.loggingBrokerMock.Verify(broker =>
+                    broker.LogInformationAsync(
+                        $"Processing BLPU File - Processing lines {batchStartLine} to " +
+                            $"{batchEndLine}. Correlation Id: {inputCorrelationId}."),
+                            Times.Once);
             }
 
             this.fileBrokerMock.Verify(broker =>
@@ -118,6 +161,20 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Addresses
             this.addressProcessingServiceMock.Verify(service =>
                 service.RetrieveAllAddressesAsync(),
                     Times.Exactly(numberOfBatches));
+
+            this.auditBrokerMock.Verify(broker =>
+               broker.LogInformationAsync(
+                   "Address Import - BLPU Processing",
+                   "Processing BLPU File",
+                   $"Finished processing file {inputBlpuCsvFile}.",
+                   inputBlpuCsvFile,
+                   inputCorrelationId.ToString()),
+                       Times.Once);
+
+            this.loggingBrokerMock.Verify(broker =>
+                broker.LogInformationAsync(
+                    $"Finished processing file {inputBlpuCsvFile}."),
+                        Times.Once);
 
             this.fileBrokerMock.VerifyNoOtherCalls();
             this.csvHelperBrokerMock.VerifyNoOtherCalls();

@@ -20,7 +20,6 @@ namespace LHDS.Core.Brokers.Storages.Sql
         public StorageBroker(IConfiguration configuration)
         {
             this.configuration = configuration;
-            this.Database.Migrate();
             efCoreClient = new EFCoreClient(this);
         }
 

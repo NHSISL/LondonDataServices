@@ -5,6 +5,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
 using LHDS.AdminPortal.Api.Tests.Acceptance.Brokers;
@@ -171,25 +172,39 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.Landings
             return filler;
         }
 
-        private async ValueTask<Supplier> PostRandomSupplierAsync()
+        private async ValueTask<Supplier> PostRandomSupplierAsync(Guid supplierId = default)
         {
-            Supplier randomSupplier = CreateRandomSupplier();
+            if (supplierId == default)
+            {
+                supplierId = Guid.NewGuid();
+            }
+
+            Supplier existingSupplier = (await this.apiBroker.FindSupplierByIdAsync(supplierId)).FirstOrDefault();
+
+            if (existingSupplier != null)
+            {
+                return existingSupplier;
+            }
+
+            Supplier randomSupplier = CreateRandomSupplier(supplierId);
             await this.apiBroker.PostSupplierAsync(randomSupplier);
 
             return randomSupplier;
         }
 
-        private static Supplier CreateRandomSupplier() =>
-            CreateRandomSupplierFiller().Create();
+        private static Supplier CreateRandomSupplier(Guid supplierId) =>
+            CreateRandomSupplierFiller(supplierId).Create();
 
-        private static Filler<Supplier> CreateRandomSupplierFiller()
+        private static Filler<Supplier> CreateRandomSupplierFiller(Guid supplierId)
         {
+            Guid id = supplierId == default ? Guid.NewGuid() : supplierId;
             string userId = Guid.NewGuid().ToString();
             DateTime now = DateTime.UtcNow;
             var filler = new Filler<Supplier>();
 
             filler.Setup()
                 .OnType<DateTimeOffset>().Use(now)
+                .OnProperty(supplier => supplier.Id).Use(id)
                 .OnProperty(supplier => supplier.CreatedDate).Use(now)
                 .OnProperty(supplier => supplier.CreatedBy).Use(userId)
                 .OnProperty(supplier => supplier.UpdatedDate).Use(now)

@@ -73,6 +73,7 @@ using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.AspNetCore.OData;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
@@ -100,6 +101,13 @@ namespace LHDS.AdminPortal.Api
             var invisibleApiKey = new InvisibleApiKey();
             ConfigureServices(builder, invisibleApiKey);
             var app = builder.Build();
+
+            using (var scope = app.Services.CreateScope())
+            {
+                var storageBroker = scope.ServiceProvider.GetRequiredService<StorageBroker>();
+                storageBroker.Database.Migrate();
+            }
+
             ConfigurePipeline(app, invisibleApiKey);
             app.Run();
         }

@@ -18,7 +18,7 @@ namespace LHDS.Core.Services.Orchestrations.HealthChecks.ResolvedAddresses
     {
         private readonly IEnumerable<IResolvedAddressHealthItemService> healthItems;
         private readonly IDateTimeBroker dateTimeBroker;
-        private const string healthCheckName = "Resolved Addresses";
+        private const string healthCheckName = "Resolved Addresses Health Checks";
 
         public ResolvedAddressHealthCheckOrchestrationService(
             IEnumerable<IResolvedAddressHealthItemService> healthItems,

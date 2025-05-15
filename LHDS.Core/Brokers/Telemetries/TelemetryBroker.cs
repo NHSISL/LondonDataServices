@@ -9,6 +9,7 @@ using System.Threading.Tasks;
 using Microsoft.ApplicationInsights;
 using Microsoft.ApplicationInsights.DataContracts;
 using Microsoft.ApplicationInsights.Extensibility;
+using Microsoft.ApplicationInsights.Extensibility.Implementation;
 using Microsoft.ApplicationInsights.Metrics;
 using Microsoft.Extensions.Configuration;
 
@@ -21,11 +22,23 @@ namespace LHDS.Core.Brokers.Telemetries
         public TelemetryBroker(IConfiguration configuration)
         {
             string connectionString = configuration["ApplicationInsights:ConnectionString"];
+            bool.TryParse(configuration["ApplicationInsights:EnableAdaptiveSampling"], out bool enableAdaptiveSampling);
+            bool.TryParse(configuration["ApplicationInsights:EnableDebugLogger"], out bool enableDebugLogger);
+            var telemetryConfiguration = TelemetryConfiguration.CreateDefault();
+            telemetryConfiguration.ConnectionString = connectionString;
 
-            this.telemetryClient = new TelemetryClient(new TelemetryConfiguration()
+            if (!enableAdaptiveSampling)
             {
-                ConnectionString = connectionString
-            });
+                telemetryConfiguration.DefaultTelemetrySink.TelemetryProcessorChainBuilder
+                    .Use(next => new PassThroughProcessor(next));
+            }
+
+            if (enableDebugLogger)
+            {
+                TelemetryDebugWriter.IsTracingDisabled = false;
+            }
+
+            this.telemetryClient = new TelemetryClient(telemetryConfiguration);
         }
 
         /// <summary>

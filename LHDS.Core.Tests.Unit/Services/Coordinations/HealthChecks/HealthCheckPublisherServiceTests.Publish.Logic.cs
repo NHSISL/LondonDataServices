@@ -2,7 +2,6 @@
 // Copyright (c) North East London ICB. All rights reserved.
 // ---------------------------------------------------------
 
-using System;
 using System.Threading.Tasks;
 using Microsoft.ApplicationInsights.DataContracts;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
@@ -40,28 +39,8 @@ namespace LHDS.Core.Tests.Unit.Services.Coordinations.HealthChecks
 
                 foreach (var reading in entry.Value.Data)
                 {
-                    if (reading.Value is int or long or float or double or decimal)
-                    {
-                        double metricValue = Convert.ToDouble(reading.Value);
-                        var metric = new MetricTelemetry(reading.Key, metricValue);
-                        eventTelemetry.Metrics.Add(reading.Key, metricValue);
-
-                        this.telemetryBrokerMock.Verify(broker =>
-                            broker.TrackMetricAsync(It.Is(SameMetricTelemetryAs(metric))),
-                                Times.Once());
-                    }
-                    else if (reading.Value is DateTime dateTime)
-                    {
-                        eventTelemetry.Properties.Add(reading.Key, dateTime.ToString("o"));
-                    }
-                    else if (reading.Value is DateTimeOffset dateTimeOffset)
-                    {
-                        eventTelemetry.Properties.Add(reading.Key, dateTimeOffset.ToString("o"));
-                    }
-                    else
-                    {
-                        eventTelemetry.Properties.Add(reading.Key, reading.Value?.ToString());
-                    }
+                    string key = $"{entry.Key}{KeyDelimiter}{reading.Key}";
+                    await AddMetricOrPropertyAsync(eventTelemetry, key, reading.Value);
                 }
 
                 this.telemetryBrokerMock.Verify(broker =>

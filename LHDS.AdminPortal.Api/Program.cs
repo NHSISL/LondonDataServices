@@ -235,16 +235,19 @@ namespace LHDS.AdminPortal.Api
                 <IIngestionTrackingHealthItemService, IngestionTrackingFailedToProcessHealthCheckService>();
 
             services.AddSingleton
+                <IIngestionTrackingHealthItemService, IngestionTrackingFilesReceivedHealthCheckService>();
+
+            services.AddSingleton
                 <IResolvedAddressHealthItemService, ResolvedAddressProcessingHealthCheckService>();
 
             services.AddSingleton
                 <IResolvedAddressHealthItemService, ResolvedAddressFailedToProcessHealthCheckService>();
 
             services.AddHealthChecks().AddCheck<IngestionTrackingHealthCheckOrchestrationService>(
-                "ingestionTrackingHealthCheckOrchestrationService");
+                "ingestionTrackingHealthChecks");
 
             services.AddHealthChecks().AddCheck<ResolvedAddressHealthCheckOrchestrationService>(
-                "resolvedAddressHealthCheckOrchestrationService");
+                "resolvedAddressHealthChecks");
 
             services.AddSingleton<IHealthCheckPublisher, HealthCheckPublisherCoordinationService>();
 

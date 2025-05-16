@@ -18,7 +18,6 @@ namespace LHDS.Core.Tests.Acceptance.Clients.Addresses
         public async Task ShouldLoadAddressDataAsyncWithFolderPath()
         {
             // Given
-            string inputFilename = GetRandomString();
             string assembly = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
             char separator = Path.DirectorySeparatorChar;
 

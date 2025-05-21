@@ -10,6 +10,7 @@ using LHDS.Core.Models.Brokers.Securities;
 using LHDS.Core.Models.Foundations.SubscriberAgreements;
 using LHDS.Core.Models.Foundations.SubscriberAgreements.Exceptions;
 using LHDS.Core.Services.Foundations.SubscriberAgreements;
+using Microsoft.Identity.Client.Extensions.Msal;
 using Moq;
 using Xunit;
 
@@ -567,6 +568,11 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.SubscriberAgreements
                 broker.SelectSubscriberAgreementByIdAsync(invalidSubscriberAgreement.Id))
                     .ReturnsAsync(storageSubscriberAgreement);
 
+            subscriberAgreementServiceMock.Setup(service =>
+                service.EnsureCreatedAuditPropertiesIsSameAsStorageAsync(
+                    invalidSubscriberAgreement, storageSubscriberAgreement))
+                        .ReturnsAsync(invalidSubscriberAgreement);
+
             // when
             ValueTask<SubscriberAgreement> modifySubscriberAgreementTask =
                 subscriberAgreementServiceMock.Object.ModifySubscriberAgreementAsync(invalidSubscriberAgreement);
@@ -578,6 +584,10 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.SubscriberAgreements
             // then
             actualSubscriberAgreementValidationException.Should()
                 .BeEquivalentTo(expectedSubscriberAgreementValidationException);
+
+            subscriberAgreementServiceMock.Verify(service =>
+                service.ApplyModifyAuditAsync(invalidSubscriberAgreement),
+                    Times.Once());
 
             this.dateTimeBrokerMock.Verify(broker =>
                 broker.GetCurrentDateTimeOffsetAsync(),
@@ -591,11 +601,17 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.SubscriberAgreements
                 broker.SelectSubscriberAgreementByIdAsync(invalidSubscriberAgreement.Id),
                     Times.Once);
 
+            subscriberAgreementServiceMock.Verify(service =>
+                service.EnsureCreatedAuditPropertiesIsSameAsStorageAsync(
+                    invalidSubscriberAgreement, storageSubscriberAgreement),
+                        Times.Once());
+
             this.loggingBrokerMock.Verify(broker =>
                broker.LogErrorAsync(It.Is(SameExceptionAs(
                    expectedSubscriberAgreementValidationException))),
                        Times.Once);
 
+            subscriberAgreementServiceMock.VerifyNoOtherCalls();
             this.dateTimeBrokerMock.VerifyNoOtherCalls();
             this.securityBrokerMock.VerifyNoOtherCalls();
             this.storageBrokerMock.VerifyNoOtherCalls();
@@ -655,6 +671,11 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.SubscriberAgreements
                 broker.SelectSubscriberAgreementByIdAsync(invalidSubscriberAgreement.Id))
                     .ReturnsAsync(storageSubscriberAgreement);
 
+            subscriberAgreementServiceMock.Setup(service =>
+               service.EnsureCreatedAuditPropertiesIsSameAsStorageAsync(
+                   invalidSubscriberAgreement, storageSubscriberAgreement))
+                       .ReturnsAsync(invalidSubscriberAgreement);
+
             // when
             ValueTask<SubscriberAgreement> modifySubscriberAgreementTask =
                 subscriberAgreementServiceMock.Object.ModifySubscriberAgreementAsync(invalidSubscriberAgreement);
@@ -665,6 +686,10 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.SubscriberAgreements
 
             // then
             actualSubscriberAgreementValidationException.Should().BeEquivalentTo(expectedSubscriberAgreementValidationException);
+
+            subscriberAgreementServiceMock.Verify(service =>
+               service.ApplyModifyAuditAsync(invalidSubscriberAgreement),
+                   Times.Once());
 
             this.dateTimeBrokerMock.Verify(broker =>
                 broker.GetCurrentDateTimeOffsetAsync(),
@@ -678,11 +703,17 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.SubscriberAgreements
                 broker.SelectSubscriberAgreementByIdAsync(invalidSubscriberAgreement.Id),
                     Times.Once);
 
+            subscriberAgreementServiceMock.Verify(service =>
+                service.EnsureCreatedAuditPropertiesIsSameAsStorageAsync(
+                    invalidSubscriberAgreement, storageSubscriberAgreement),
+                        Times.Once());
+
             this.loggingBrokerMock.Verify(broker =>
                broker.LogErrorAsync(It.Is(SameExceptionAs(
                    expectedSubscriberAgreementValidationException))),
                        Times.Once);
 
+            subscriberAgreementServiceMock.VerifyNoOtherCalls();
             this.dateTimeBrokerMock.VerifyNoOtherCalls();
             this.securityBrokerMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();

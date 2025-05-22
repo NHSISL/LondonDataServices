@@ -94,15 +94,15 @@ const SubscriberAgreementDetailCardView: FunctionComponent<SubscriberAgreementDe
                     <SummaryListBaseValue>
                         {ftpKeyCopied ?
                             <FontAwesomeIcon icon={faCheck} className="text-secondary" />
-                            : <FontAwesomeIcon icon={faCopy}
+                            : <FontAwesomeIcon icon={faCopy} title="Copy Public Key" style={{ cursor: "pointer"}}
                                 onClick={() => {
                                     const publicKey = decodeBase64(subscriberCredential.ftpPublicKey ?? "");
                                     navigator.clipboard.writeText(publicKey);
                                     setFtpKeyCopied(true);
                                 }}
                             />
-                        } &nbsp;
-                        {decodeBase64(subscriberCredential.ftpPublicKey ?? "")}
+                        }  <span className="d-none">&nbsp;
+                            {decodeBase64(subscriberCredential.ftpPublicKey ?? "")}</span>
                     </SummaryListBaseValue>
                 </SummaryListBaseRow>
 
@@ -112,22 +112,22 @@ const SubscriberAgreementDetailCardView: FunctionComponent<SubscriberAgreementDe
                     <SummaryListBaseValue>
                         {gpgKeyCopied ?
                             <FontAwesomeIcon icon={faCheck} className="text-secondary" />
-                            : <FontAwesomeIcon icon={faCopy}
+                            : <FontAwesomeIcon icon={faCopy} title="Copy GPG Key" style={{ cursor: "pointer" }}
                                 onClick={() => {
                                     const gpgPublicKey = decodeBase64(subscriberCredential.gpgPublicKey ?? ""); 
                                     navigator.clipboard.writeText(gpgPublicKey);
                                     setGpgKeyCopied(true);
                                 }}
                             />
-                        } &nbsp;
-                        {decodeBase64(subscriberCredential.gpgPublicKey ?? "")}
+                        } <span className="d-none"> &nbsp;
+                            {decodeBase64(subscriberCredential.gpgPublicKey ?? "")}</span>
                     </SummaryListBaseValue>
                 </SummaryListBaseRow>
 
                 <SummaryListBaseRow>
                     <SummaryListBaseKey>Keys to send Emis Zip</SummaryListBaseKey>
                     <SummaryListBaseValue>
-                        <ButtonBase 
+                        <ButtonBase
                             onClick={async () => {
                                 const zip = new JSZip();
                                 const ftpPublicKey = decodeBase64(subscriberCredential.ftpPublicKey ?? "");
@@ -203,7 +203,7 @@ const SubscriberAgreementDetailCardView: FunctionComponent<SubscriberAgreementDe
                 }
 
                 {mode === 'VIEW' &&
-                    <span className="float-end">
+                    <span className="float-end d-none">
                         <SecuredComponents allowedRoles={securityPoints.subscriberAgreement.edit}>
                             <ButtonBase onClick={() => onModeChange('CONFIRMREGEN')} info title={"Re-Generate Keys"}>
                                 Re-Generate Keys &nbsp;
@@ -216,7 +216,7 @@ const SubscriberAgreementDetailCardView: FunctionComponent<SubscriberAgreementDe
                 {mode === 'CONFIRMREGEN' &&
                     <SecuredComponents allowedRoles={securityPoints.subscriberAgreement.delete}>
                         <>
-                            <span className="text-danger">
+                            <span className="text-danger dnone">
                                 <strong>NOTE: Continuing to regenerate will lose the current keys forever.</strong></span>
                             <br /> <br />
                             <ButtonBase onClick={() => onModeChange('VIEW')} cancel>Cancel</ButtonBase>

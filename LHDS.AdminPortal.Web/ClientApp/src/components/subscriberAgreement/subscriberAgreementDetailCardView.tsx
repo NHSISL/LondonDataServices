@@ -1,4 +1,4 @@
-import React, { FunctionComponent } from "react";
+import React, { FunctionComponent, useState } from "react";
 import SummaryListBase from "../bases/components/SummaryList/SummaryListBase";
 import SummaryListBaseRow from "../bases/components/SummaryList/SummaryListBase.Row";
 import SummaryListBaseKey from "../bases/components/SummaryList/SummaryListBase.Key";
@@ -11,6 +11,7 @@ import { faCheck, faCopy, faKey, faTimes } from "@fortawesome/free-solid-svg-ico
 import moment from "moment";
 import { SubscriberCredentialView } from "../../models/views/components/subscriberCredentials/subscriberCredentialView";
 import JSZip from "jszip";
+import { Alert } from "react-bootstrap";
 interface SubscriberAgreementDetailCardViewProps {
     subscriberCredential: SubscriberCredentialView;
     onDelete: (subscriberCredential: SubscriberCredentialView) => void;
@@ -30,6 +31,7 @@ const SubscriberAgreementDetailCardView: FunctionComponent<SubscriberAgreementDe
 
     const [ftpKeyCopied, setFtpKeyCopied] = React.useState<boolean>(false);
     const [gpgKeyCopied, setGpgKeyCopied] = React.useState<boolean>(false);
+    const [confirmed, setConfirmed] = useState(false);
 
     const decodeBase64 = (base64String: string) => {
         try 
@@ -203,7 +205,7 @@ const SubscriberAgreementDetailCardView: FunctionComponent<SubscriberAgreementDe
                 }
 
                 {mode === 'VIEW' &&
-                    <span className="float-end d-none">
+                    <span className="float-end">
                         <SecuredComponents allowedRoles={securityPoints.subscriberAgreement.edit}>
                             <ButtonBase onClick={() => onModeChange('CONFIRMREGEN')} info title={"Re-Generate Keys"}>
                                 Re-Generate Keys &nbsp;
@@ -216,11 +218,26 @@ const SubscriberAgreementDetailCardView: FunctionComponent<SubscriberAgreementDe
                 {mode === 'CONFIRMREGEN' &&
                     <SecuredComponents allowedRoles={securityPoints.subscriberAgreement.delete}>
                         <>
-                            <span className="text-danger dnone">
-                                <strong>NOTE: Continuing to regenerate will lose the current keys forever.</strong></span>
-                            <br /> <br />
+                            <Alert variant="danger">
+                                <strong>
+                                    WARNING: If you proceed with Re-Generation, ALL current keys will be
+                                    permanently lost and cannot be recovered.
+                                </strong>
+                                <br /><br />
+                            <label>
+                                <input
+                                    type="checkbox"
+                                    onChange={(e) => setConfirmed(e.target.checked)}
+                                />
+                                &nbsp;I confirm that I understand and accept this outcome.
+                                </label>
+                            </Alert>
                             <ButtonBase onClick={() => onModeChange('VIEW')} cancel>Cancel</ButtonBase>
-                            <ButtonBase onClick={() => onRegenerate(subscriberCredential)} view>Yes, Re-Generate</ButtonBase>
+
+                            {confirmed && (
+                                <ButtonBase onClick={() => onRegenerate(subscriberCredential)} view>Yes, Re-Generate</ButtonBase>
+                            )}
+                           
                         </>
                     </SecuredComponents>
                 }

@@ -84,7 +84,8 @@ namespace LHDS.Core.Services.Processings.IngestionTrackings
             }
             catch (IngestionTrackingDependencyValidationException ingestionTrackingDependencyValidationException)
             {
-                throw await CreateAndLogDependencyValidationExceptionAsync(ingestionTrackingDependencyValidationException);
+                throw await CreateAndLogDependencyValidationExceptionAsync(
+                    ingestionTrackingDependencyValidationException);
             }
             catch (IngestionTrackingDependencyException ingestionTrackingDependencyException)
             {
@@ -127,7 +128,8 @@ namespace LHDS.Core.Services.Processings.IngestionTrackings
             }
             catch (IngestionTrackingDependencyValidationException ingestionTrackingDependencyValidationException)
             {
-                throw await CreateAndLogDependencyValidationExceptionAsync(ingestionTrackingDependencyValidationException);
+                throw await CreateAndLogDependencyValidationExceptionAsync(
+                    ingestionTrackingDependencyValidationException);
             }
             catch (IngestionTrackingDependencyException ingestionTrackingDependencyException)
             {
@@ -161,7 +163,8 @@ namespace LHDS.Core.Services.Processings.IngestionTrackings
             }
             catch (IngestionTrackingDependencyValidationException ingestionTrackingDependencyValidationException)
             {
-                throw await CreateAndLogDependencyValidationExceptionAsync(ingestionTrackingDependencyValidationException);
+                throw await CreateAndLogDependencyValidationExceptionAsync(
+                    ingestionTrackingDependencyValidationException);
             }
             catch (IngestionTrackingDependencyException ingestionTrackingDependencyException)
             {

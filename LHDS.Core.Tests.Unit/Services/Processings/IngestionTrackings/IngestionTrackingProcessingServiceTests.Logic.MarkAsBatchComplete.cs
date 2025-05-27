@@ -25,6 +25,11 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.IngestionTrackings
             List<IngestionTracking> randomIngestionTrackingsFirstBatch = CreateRandomIngestionTrackings();
             List<IngestionTracking> randomIngestionTrackingsSecondBatch = CreateRandomIngestionTrackings();
             Guid inputIngestionTrackingId = randomIngestionTrackingsFirstBatch.First().Id;
+            IngestionTracking batchCompleteIngestionTrackingItem = randomIngestionTrackingsFirstBatch.First();
+
+            this.ingestionTrackingServiceMock.Setup(service =>
+                service.RetrieveIngestionTrackingByIdAsync(inputIngestionTrackingId))
+                    .ReturnsAsync(batchCompleteIngestionTrackingItem);
 
             randomIngestionTrackingsFirstBatch.ForEach(ingestionTracking =>
             {
@@ -43,8 +48,9 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.IngestionTrackings
                 batchCompleteIngestionTracking.IsBatchComplete = isBatchComplete;
 
                 this.ingestionTrackingServiceMock.Setup(service =>
-                    service.ModifyIngestionTrackingAsync(It.Is(SameIngestionTrackingAs(batchCompleteIngestionTracking))))
-                        .ReturnsAsync(batchCompleteIngestionTracking);
+                    service.ModifyIngestionTrackingAsync(
+                        It.Is(SameIngestionTrackingAs(batchCompleteIngestionTracking))))
+                            .ReturnsAsync(batchCompleteIngestionTracking);
             });
 
             // When
@@ -52,6 +58,10 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.IngestionTrackings
                 .MarkAsBatchCompleteAsync(inputIngestionTrackingId, isBatchComplete);
 
             // Then
+            this.ingestionTrackingServiceMock.Verify(service =>
+                service.RetrieveIngestionTrackingByIdAsync(inputIngestionTrackingId),
+                    Times.Once);
+
             this.ingestionTrackingServiceMock.Verify(service =>
                 service.RetrieveAllIngestionTrackingsAsync(),
                     Times.Once);

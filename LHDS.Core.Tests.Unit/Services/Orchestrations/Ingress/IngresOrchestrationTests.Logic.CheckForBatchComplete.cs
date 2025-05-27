@@ -88,6 +88,10 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Ingress
                     blobContainers.Ingress),
                         Times.Once);
 
+            this.ingestionTrackingProcessingServiceMock.Verify(service =>
+                service.MarkAsBatchCompleteAsync(ingestionTrackingId, false),
+                    Times.Once);
+
             this.auditBrokerMock.Verify(service => service.LogInformationAsync(
                 "BatchComplete",
                 "Unable to generate BatchReady.txt",
@@ -189,6 +193,10 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Ingress
                     batchIncompleteFileName,
                     blobContainers.Ingress),
                         Times.Once);
+
+            this.ingestionTrackingProcessingServiceMock.Verify(service =>
+                service.MarkAsBatchCompleteAsync(ingestionTrackingId, true),
+                    Times.Once);
 
             this.auditBrokerMock.Verify(service => service.LogInformationAsync(
                 "BatchComplete",

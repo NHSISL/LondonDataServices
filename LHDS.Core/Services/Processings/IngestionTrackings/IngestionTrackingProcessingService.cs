@@ -153,5 +153,8 @@ namespace LHDS.Core.Services.Processings.IngestionTrackings
 
             return objectNames;
         });
+
+        public async ValueTask MarkAsBatchCompleteAsync(Guid ingestionTrackingId, bool isBatchComplete) =>
+            throw new NotImplementedException("MarkAsBatchCompleteAsync is not implemented yet.");
     }
 }

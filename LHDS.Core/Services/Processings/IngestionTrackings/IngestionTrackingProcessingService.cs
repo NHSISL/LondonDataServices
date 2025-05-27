@@ -157,6 +157,8 @@ namespace LHDS.Core.Services.Processings.IngestionTrackings
         public ValueTask MarkAsBatchCompleteAsync(Guid ingestionTrackingId, bool isBatchComplete) =>
         TryCatch(async () =>
         {
+            ValidateIngestionTrackingId(ingestionTrackingId);
+
             IngestionTracking ingestionTrackingItem =
                 await this.ingestionTrackingService.RetrieveIngestionTrackingByIdAsync(ingestionTrackingId);
 

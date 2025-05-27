@@ -66,7 +66,6 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.IngestionTrackings
                 service.RetrieveAllIngestionTrackingsAsync(),
                     Times.Once);
 
-
             setAsBatchCompleteItems.ForEach(batchCompleteIngestionTracking =>
             {
                 this.ingestionTrackingServiceMock.Setup(service =>

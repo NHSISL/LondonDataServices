@@ -16,6 +16,7 @@ namespace LHDS.Core.Services.Processings.IngestionTrackings
     public partial class IngestionTrackingProcessingService : IIngestionTrackingProcessingService
     {
         private delegate ValueTask<IngestionTracking> ReturningIngestionTrackingProcessingFunction();
+        private delegate ValueTask ReturningNothingFunction();
         private delegate ValueTask<List<string>> ReturningStringListProcessingFunction();
         private delegate ValueTask<IQueryable<IngestionTracking>> ReturningIngestionTrackingsFunction();
 
@@ -25,6 +26,48 @@ namespace LHDS.Core.Services.Processings.IngestionTrackings
             try
             {
                 return await returningIngestionTrackingProcessingFunction();
+            }
+            catch (NullIngestionTrackingProcessingException nullIngestionTrackingException)
+            {
+                throw await CreateAndLogValidationExceptionAsync(nullIngestionTrackingException);
+            }
+            catch (InvalidArgumentIngestionTrackingProcessingException
+                invalidArgumentIngestionTrackingProcessingException)
+            {
+                throw await CreateAndLogValidationExceptionAsync(invalidArgumentIngestionTrackingProcessingException);
+            }
+            catch (IngestionTrackingValidationException ingestionTrackingValidationException)
+            {
+                throw await CreateAndLogDependencyValidationExceptionAsync(ingestionTrackingValidationException);
+            }
+            catch (IngestionTrackingDependencyValidationException ingestionTrackingDependencyValidationException)
+            {
+                throw await CreateAndLogDependencyValidationExceptionAsync(ingestionTrackingDependencyValidationException);
+            }
+            catch (IngestionTrackingDependencyException ingestionTrackingDependencyException)
+            {
+                throw await CreateAndLogDependencyExceptionAsync(ingestionTrackingDependencyException);
+            }
+            catch (IngestionTrackingServiceException ingestionTrackingServiceException)
+            {
+                throw await CreateAndLogDependencyExceptionAsync(ingestionTrackingServiceException);
+            }
+            catch (Exception exception)
+            {
+                var failedIngestionTrackingProcessingServiceException =
+                    new FailedIngestionTrackingProcessingServiceException(
+                        message: "Failed IngestionTracking processing service error occurred, please contact support.",
+                        innerException: exception);
+
+                throw await CreateAndLogServiceExceptionAsync(failedIngestionTrackingProcessingServiceException);
+            }
+        }
+
+        private async ValueTask TryCatch(ReturningNothingFunction returningNothingFunction)
+        {
+            try
+            {
+                await returningNothingFunction();
             }
             catch (NullIngestionTrackingProcessingException nullIngestionTrackingException)
             {

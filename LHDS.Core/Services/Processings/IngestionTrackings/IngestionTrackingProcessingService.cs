@@ -154,7 +154,23 @@ namespace LHDS.Core.Services.Processings.IngestionTrackings
             return objectNames;
         });
 
-        public async ValueTask MarkAsBatchCompleteAsync(Guid ingestionTrackingId, bool isBatchComplete) =>
-            throw new NotImplementedException("MarkAsBatchCompleteAsync is not implemented yet.");
+        public ValueTask MarkAsBatchCompleteAsync(Guid ingestionTrackingId, bool isBatchComplete) =>
+        TryCatch(async () =>
+        {
+            IngestionTracking ingestionTrackingItem =
+                await this.ingestionTrackingService.RetrieveIngestionTrackingByIdAsync(ingestionTrackingId);
+
+            IQueryable<IngestionTracking> allIngestionTrackings =
+                await this.ingestionTrackingService.RetrieveAllIngestionTrackingsAsync();
+
+            List<IngestionTracking> batchIngestionTrackings = allIngestionTrackings
+                .Where(ingestionTracking => ingestionTracking.Batch == ingestionTrackingItem.Batch).ToList();
+
+            foreach (IngestionTracking batchIngestionTracking in batchIngestionTrackings)
+            {
+                batchIngestionTracking.IsBatchComplete = isBatchComplete;
+                await this.ingestionTrackingService.ModifyIngestionTrackingAsync(batchIngestionTracking);
+            }
+        });
     }
 }

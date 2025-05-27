@@ -89,7 +89,7 @@ namespace LHDS.Core.Clients.Extensions
                 {
                     MailboxId = meshConfigurationSettings.MailboxId,
                     Password = meshConfigurationSettings.Password,
-                    Key = meshConfigurationSettings.Key,
+                    SharedKey = meshConfigurationSettings.SharedKey,
                     Url = meshConfigurationSettings.Url,
                     MexClientVersion = meshConfigurationSettings.MexClientVersion,
                     MexOSName = meshConfigurationSettings.MexOSName,
@@ -99,14 +99,14 @@ namespace LHDS.Core.Clients.Extensions
 
                 if (!acceptanceTest)
                 {
-                    meshConfig.RootCertificate =
-                        GetCertificate(value: meshConfigurationSettings.RootCertificate);
+                    meshConfig.TlsRootCertificates =
+                        GetCertificates(values: meshConfigurationSettings.TlsRootCertificates);
 
-                    meshConfig.IntermediateCertificates =
-                        GetCertificates(values: meshConfigurationSettings.IntermediateCertificates);
+                    meshConfig.TlsIntermediateCertificates =
+                        GetCertificates(values: meshConfigurationSettings.TlsIntermediateCertificates);
 
-                    meshConfig.ClientCertificate =
-                        GetCertificate(value: meshConfigurationSettings.ClientCertificate);
+                    meshConfig.ClientSigningCertificate =
+                        GetCertificate(value: meshConfigurationSettings.ClientSigningCertificate);
                 }
 
                 services.AddSingleton(meshConfig);
@@ -139,7 +139,7 @@ namespace LHDS.Core.Clients.Extensions
                 {
                     MailboxId = meshConfigurationSettings.MailboxId,
                     Password = meshConfigurationSettings.Password,
-                    Key = meshConfigurationSettings.Key,
+                    SharedKey = meshConfigurationSettings.SharedKey,
                     Url = meshConfigurationSettings.Url,
                     MexClientVersion = meshConfigurationSettings.MexClientVersion,
                     MexOSName = meshConfigurationSettings.MexOSName,
@@ -149,14 +149,14 @@ namespace LHDS.Core.Clients.Extensions
 
                 if (!acceptanceTest)
                 {
-                    meshConfig.RootCertificate =
-                        GetCertificate(value: meshConfigurationSettings.RootCertificate);
+                    meshConfig.TlsRootCertificates =
+                        GetCertificates(values: meshConfigurationSettings.TlsRootCertificates);
 
-                    meshConfig.IntermediateCertificates =
-                        GetCertificates(values: meshConfigurationSettings.IntermediateCertificates);
+                    meshConfig.TlsIntermediateCertificates =
+                        GetCertificates(values: meshConfigurationSettings.TlsIntermediateCertificates);
 
-                    meshConfig.ClientCertificate =
-                        GetCertificate(value: meshConfigurationSettings.ClientCertificate);
+                    meshConfig.ClientSigningCertificate =
+                        GetCertificate(value: meshConfigurationSettings.ClientSigningCertificate);
                 }
 
                 services.AddSingleton(meshConfig);
@@ -321,7 +321,7 @@ namespace LHDS.Core.Clients.Extensions
                 (Rule: IsInvalid(meshConfigurationSettings.Password),
                     Parameter: "meshConfiguration__password"),
 
-                (Rule: IsInvalid(meshConfigurationSettings.Key),
+                (Rule: IsInvalid(meshConfigurationSettings.SharedKey),
                     Parameter: "meshConfiguration__key"),
 
                 (Rule: IsInvalid(meshConfigurationSettings.Url),
@@ -339,14 +339,14 @@ namespace LHDS.Core.Clients.Extensions
             if (acceptanceTest)
             {
                 Validate(
-                    (Rule: IsInvalid(meshConfigurationSettings.RootCertificate),
-                        Parameter: "meshConfiguration__rootCertificate"),
+                    (Rule: IsInvalid(meshConfigurationSettings.TlsRootCertificates),
+                        Parameter: "meshConfiguration__tlsRootCertificates__0"),
 
-                    (Rule: IsInvalid(meshConfigurationSettings.Password),
-                        Parameter: "meshConfiguration__intermediateCertificates"),
+                    (Rule: IsInvalid(meshConfigurationSettings.TlsIntermediateCertificates),
+                        Parameter: "meshConfiguration__tlsIntermediateCertificates__0"),
 
-                    (Rule: IsInvalid(meshConfigurationSettings.MexOSVersion),
-                        Parameter: "meshConfiguration__clientCertificate"));
+                    (Rule: IsInvalid(meshConfigurationSettings.ClientSigningCertificate),
+                        Parameter: "meshConfiguration__clientSigningCertificate"));
             }
         }
 
@@ -398,6 +398,12 @@ namespace LHDS.Core.Clients.Extensions
         {
             Condition = string.IsNullOrWhiteSpace(text),
             Message = "Configuration value does not exist"
+        };
+
+        private static dynamic IsInvalid(List<string> stringList) => new
+        {
+            Condition = stringList == null,
+            Message = "String list is required"
         };
 
         private static dynamic IsInvalid(bool? value) => new

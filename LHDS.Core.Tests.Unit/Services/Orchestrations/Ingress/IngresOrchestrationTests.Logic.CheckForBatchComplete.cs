@@ -39,13 +39,13 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Ingress
                 $"{randomIngestionTracking.BatchReadyFolderPath}/BatchNotReady.txt";
 
             string message =
-                    $"Unable to generate '{batchReadyFileName}' for batch: {randomIngestionTracking.Batch}.  " +
-                    Environment.NewLine +
-                    $"We are missing {missingSpecificationObjectIds.Count}/{dataSetSpecificationObjects.Count} files.  " +
-                    Environment.NewLine +
-                    $"Missing specification object Id's: {string.Join(", ", missingSpecificationObjectIds)} " +
-                    Environment.NewLine +
-                    $"as defined by Dataset Specification Id: {randomIngestionTracking.DataSetSpecificationId}"; ;
+                $"Unable to generate '{batchReadyFileName}' for batch: {randomIngestionTracking.Batch}.  " +
+                Environment.NewLine +
+                $"We are missing {missingSpecificationObjectIds.Count}/{dataSetSpecificationObjects.Count} files.  " +
+                Environment.NewLine +
+                $"Missing specification object Id's: {string.Join(", ", missingSpecificationObjectIds)} " +
+                Environment.NewLine +
+                $"as defined by Dataset Specification Id: {randomIngestionTracking.DataSetSpecificationId}";
 
             this.ingestionTrackingProcessingServiceMock
                 .Setup(service => service.RetrieveIngestionTrackingByIdAsync(ingestionTrackingId))

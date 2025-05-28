@@ -18,7 +18,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.HealthChecks.IngestionTracki
     public partial class IngestionTrackingFailedToProcessHealthCheckServiceTests
     {
         [Fact]
-        public async Task ShouldGetHealthStatusAsHealtyAsync()
+        public async Task ShouldGetHealthStatusAsHealthyAsync()
         {
             // given
             string CheckName = "failedToProcess";
@@ -34,7 +34,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.HealthChecks.IngestionTracki
             int unHealthyThresholdMinutes = this.inMemoryConfiguration
                 .GetValue("HealthChecks:IngestionTracking:FailedToProcess:UnHealthyThreshold", 2880);
 
-            List<IngestionTracking> healtyRecords = CreateRandomIngestionTrackings(
+            List<IngestionTracking> healthyRecords = CreateRandomIngestionTrackings(
                 dateTimeOffset: randomDateTimeOffset,
                 retryCount: 4,
                 count: randomNumber);
@@ -45,14 +45,14 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.HealthChecks.IngestionTracki
 
             this.storageBrokerMock.Setup(broker =>
                 broker.SelectAllIngestionTrackingsAsync())
-                    .ReturnsAsync(healtyRecords.AsQueryable());
+                    .ReturnsAsync(healthyRecords.AsQueryable());
 
-            string message = $"{healtyRecords.Count} files have not been processed. Please check logs and function status.";
+            string message = $"{healthyRecords.Count} files have not been processed. Please check logs and function status.";
 
             var vals = new Dictionary<string, object>
             {
                 { "description", "Failed To Process" },
-                { "failedToProcess", healtyRecords.Count},
+                { "failedToProcess", healthyRecords.Count},
                 { "degradedItems", 0},
                 { "unHealthyItems", 0},
                 { "degradedThresholdMinutes", degradedThresholdMinutes.ToString() },
@@ -166,7 +166,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.HealthChecks.IngestionTracki
         }
 
         [Fact]
-        public async Task ShouldGetHealthStatusAsUnHealtyAsync()
+        public async Task ShouldGetHealthStatusAsUnHealthyAsync()
         {
             // given
             string CheckName = "failedToProcess";
@@ -240,7 +240,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.HealthChecks.IngestionTracki
         }
 
         [Fact]
-        public async Task ShouldGetHealthStatusAsUnHealtyWithMixedItemsAsync()
+        public async Task ShouldGetHealthStatusAsUnHealthyWithMixedItemsAsync()
         {
             // given
             string CheckName = "failedToProcess";

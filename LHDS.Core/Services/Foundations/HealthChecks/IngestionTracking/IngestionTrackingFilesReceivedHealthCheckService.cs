@@ -22,7 +22,8 @@ namespace LHDS.Core.Services.Foundations.HealthChecks.IngestionTracking
         private readonly IDateTimeBroker dateTimeBroker;
         private readonly ILoggingBroker loggingBroker;
         private const string CheckName = "filesReceived";
-        private const string healthCheckName = "Files Received";
+        private const string CheckDescriptionName = "Files Received";
+        private const string ConfigSectionName = "HealthChecks:IngestionTracking:FilesReceived";
 
         public IngestionTrackingFilesReceivedHealthCheckService(
             IStorageBroker storageBroker,
@@ -39,10 +40,10 @@ namespace LHDS.Core.Services.Foundations.HealthChecks.IngestionTracking
         public async ValueTask<HealthCheckResult> GetHealthStatusAsync()
         {
             int degradedThresholdMinutes = configuration
-                .GetValue("HealthChecks:IngestionTracking:FilesReceived:DegradedThreshold", 1440);
+                .GetValue($"{ConfigSectionName}:DegradedThreshold", 1440);
 
             int unHealthyThresholdMinutes = configuration
-                .GetValue("HealthChecks:IngestionTracking:FilesReceived:UnHealthyThreshold", 2880);
+                .GetValue($"{ConfigSectionName}:UnHealthyThreshold", 2880);
 
             DateTimeOffset currentDateTime = await dateTimeBroker.GetCurrentDateTimeOffsetAsync();
             DateTimeOffset degradedThresholdDateTime = currentDateTime.AddMinutes(-1 * degradedThresholdMinutes);
@@ -56,7 +57,7 @@ namespace LHDS.Core.Services.Foundations.HealthChecks.IngestionTracking
 
             var dataDictionary = new Dictionary<string, object>
             {
-                { "description", $"{healthCheckName}" },
+                { "description", CheckDescriptionName },
                 { "checkedAt", currentDateTime.ToString("o") },
             };
 

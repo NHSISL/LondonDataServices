@@ -43,6 +43,13 @@ namespace LHDS.Core.Services.Coordinations.AddressCoordinations
                 await this.addressOrchestrationService.BulkAddAddressesAsync(input: input, filename);
             });
 
+        public ValueTask LoadAddressDataAsync(string folderPath) =>
+            TryCatch(async () =>
+            {
+                ValidateFolderPathOnProcessData(folderPath);
+                await this.addressOrchestrationService.BulkAddAddressesAsync(folderPath);
+            });
+
         public ValueTask LoadAddressesToResolveAsync(Stream data, string filename) =>
             TryCatch(async () =>
             {

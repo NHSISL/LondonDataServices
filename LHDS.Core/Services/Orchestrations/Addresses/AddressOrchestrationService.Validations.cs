@@ -22,6 +22,14 @@ namespace LHDS.Core.Services.Orchestrations.Addresses
                     (Rule: IsInvalid(fileName), Parameter: nameof(fileName)));
         }
 
+        private void ValidateFolderPathOnBulkAddAddresses(string folderPath)
+        {
+            Validate<InvalidArgumentAddressOrchestrationException>(
+                message: "Invalid argument address orchestration exception, " +
+                        "please correct the errors and try again.",
+                    (Rule: IsInvalid(folderPath), Parameter: nameof(folderPath)));
+        }
+
         private void ValidateCsvFiles(List<string> csvFiles)
         {
             List<string> validFiles = csvFiles

@@ -10,11 +10,11 @@ namespace LHDS.Core.Models.Brokers.Mesh
     {
         public string MailboxId { get; set; } = string.Empty;
         public string Password { get; set; } = string.Empty;
-        public string Key { get; set; } = string.Empty;
+        public string SharedKey { get; set; } = string.Empty;
         public string Url { get; set; } = string.Empty;
-        public string RootCertificate { get; set; } = string.Empty;
-        public List<string> IntermediateCertificates { get; set; } = new List<string>();
-        public string ClientCertificate { get; set; } = string.Empty;
+        public List<string> TlsRootCertificates { get; set; } = new List<string>();
+        public List<string> TlsIntermediateCertificates { get; set; } = new List<string>();
+        public string ClientSigningCertificate { get; set; } = string.Empty;
         public string MexClientVersion { get; set; } = string.Empty;
         public string MexOSName { get; set; } = string.Empty;
         public string MexOSVersion { get; set; } = string.Empty;

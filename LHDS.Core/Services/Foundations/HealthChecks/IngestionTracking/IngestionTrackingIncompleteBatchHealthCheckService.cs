@@ -14,17 +14,17 @@ using Microsoft.Extensions.Diagnostics.HealthChecks;
 
 namespace LHDS.Core.Services.Foundations.HealthChecks.IngestionTracking
 {
-    public class IngestionTrackingFailedToProcessHealthCheckService : IIngestionTrackingHealthItemService
+    public class IngestionTrackingIncompleteBatchHealthCheckService : IIngestionTrackingHealthItemService
     {
         private readonly IStorageBroker storageBroker;
         private readonly IConfiguration configuration;
         private readonly IDateTimeBroker dateTimeBroker;
         private readonly ILoggingBroker loggingBroker;
-        private const string CheckName = "failedToProcess";
-        private const string CheckDescriptionName = "Failed To Process";
-        private const string ConfigSectionName = "HealthChecks:IngestionTracking:FailedToProcess";
+        private const string CheckName = "incompleteBatchesQueue";
+        private const string CheckDescriptionName = "Incomplete Batches";
+        private const string ConfigSectionName = "HealthChecks:IngestionTracking:IncompleteBatches";
 
-        public IngestionTrackingFailedToProcessHealthCheckService(
+        public IngestionTrackingIncompleteBatchHealthCheckService(
             IStorageBroker storageBroker,
             IConfiguration configuration,
             IDateTimeBroker dateTimeBroker,
@@ -38,9 +38,6 @@ namespace LHDS.Core.Services.Foundations.HealthChecks.IngestionTracking
 
         public async ValueTask<HealthCheckResult> GetHealthStatusAsync()
         {
-            int retryCount = configuration
-                .GetValue($"{ConfigSectionName}:RetryCount", 3);
-
             int degradedThresholdMinutes = configuration
                 .GetValue($"{ConfigSectionName}:DegradedThreshold", 1440);
 
@@ -51,30 +48,36 @@ namespace LHDS.Core.Services.Foundations.HealthChecks.IngestionTracking
             DateTimeOffset degradedThresholdDateTime = currentDateTime.AddMinutes(-1 * degradedThresholdMinutes);
             DateTimeOffset unHealthyThresholdDateTime = currentDateTime.AddMinutes(-1 * unHealthyThresholdMinutes);
             var ingestionTrackingQuery = await storageBroker.SelectAllIngestionTrackingsAsync();
+            var filteredQuery = ingestionTrackingQuery.Where(ingestionTracking => !ingestionTracking.IsBatchComplete);
 
-            var filteredQuery = ingestionTrackingQuery.Where(ingestionTracking =>
-                ingestionTracking.RetryCount >= retryCount);
+            var unHealthyBatches = filteredQuery
+                .Where(ingestionTracking => ingestionTracking.UpdatedDate <= unHealthyThresholdDateTime)
+                .Select(ingestionTracking => ingestionTracking.Batch)
+                .Distinct()
+                .ToList();
 
-            int baseCount = filteredQuery.Count(ingestionTracking =>
-                ingestionTracking.UpdatedDate > degradedThresholdDateTime);
+            var degradedBatches = filteredQuery
+                .Where(ingestionTracking =>
+                    ingestionTracking.UpdatedDate <= degradedThresholdDateTime &&
+                    ingestionTracking.UpdatedDate > unHealthyThresholdDateTime)
 
-            int degradedCount = filteredQuery.Count(ingestionTracking =>
-                ingestionTracking.UpdatedDate <= degradedThresholdDateTime &&
-                ingestionTracking.UpdatedDate > unHealthyThresholdDateTime);
+                .Select(ingestionTracking => ingestionTracking.Batch)
+                .Distinct()
+                .Where(batch => !unHealthyBatches.Contains(batch))
+                .ToList();
 
-            int unHealthyCount = filteredQuery
-                .Count(ingestionTracking => ingestionTracking.UpdatedDate <= unHealthyThresholdDateTime);
-
-            int totalCount = baseCount + degradedCount + unHealthyCount;
+            int unHealthyCount = unHealthyBatches.Count;
+            int degradedCount = degradedBatches.Count;
+            int totalCount = unHealthyCount + degradedCount;
 
             string message = totalCount == 0
-                ? $"Nothing to process. All up to date."
-                : $"{totalCount} files have not been processed. Please check logs and function status.";
+                ? $"No incomplete batches. All up to date."
+                : $"{totalCount} batches incomplete. Please check logs and source locations.";
 
             var values = new Dictionary<string, object>
             {
                 { "description", CheckDescriptionName },
-                { "failedToProcess", totalCount },
+                { "incompleteBatches", totalCount },
                 { "degradedItems", degradedCount},
                 { "unHealthyItems", unHealthyCount},
                 { "degradedThresholdMinutes", degradedThresholdMinutes.ToString() },

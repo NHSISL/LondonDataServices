@@ -73,6 +73,13 @@ namespace LHDS.Core.Services.Orchestrations.Addresses
                 await this.fileBroker.DeleteDirectoryAsync(ordinanceTempFolder, true);
             });
 
+        public ValueTask BulkAddAddressesAsync(string folderPath) =>
+            TryCatch(async () =>
+            {
+                ValidateFolderPathOnBulkAddAddresses(folderPath);
+                await ReadCsvDataAndBulkAddAddressesAsync(folderPath);
+            });
+
         virtual internal async ValueTask UnZipAndExtractAsync(Stream data, string extractPath)
         {
             using (ZipArchive archive = new ZipArchive(data, ZipArchiveMode.Read))

@@ -10,5 +10,6 @@ namespace LHDS.Core.Services.Orchestrations.Addresses
     public interface IAddressOrchestrationService
     {
         ValueTask BulkAddAddressesAsync(Stream input, string fileName);
+        ValueTask BulkAddAddressesAsync(string folderPath);
     }
 }

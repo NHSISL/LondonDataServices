@@ -49,7 +49,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.HealthChecks.ResolvedAddress
 
             string message = $"{healtyRecords.Count} files have not been processed. Please check logs and function status.";
 
-            var vals = new Dictionary<string, object>
+            var values = new Dictionary<string, object>
             {
                 { "description", "Failed To Process" },
                 { "failedToProcess", healtyRecords.Count},
@@ -64,7 +64,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.HealthChecks.ResolvedAddress
 
             HealthCheckResult expectedHealthCheckResult = HealthCheckResult.Healthy(
                 description: CheckName,
-                data: vals);
+                data: values);
 
             // when
             HealthCheckResult actualHealthCheckResult =
@@ -123,7 +123,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.HealthChecks.ResolvedAddress
 
             string message = $"{randomNumber} files have not been processed. Please check logs and function status.";
 
-            var vals = new Dictionary<string, object>
+            var values = new Dictionary<string, object>
             {
                 { "description", "Failed To Process" },
                 { "failedToProcess", randomNumber},
@@ -138,7 +138,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.HealthChecks.ResolvedAddress
 
             HealthCheckResult expectedHealthCheckResult = HealthCheckResult.Degraded(
                 description: CheckName,
-                data: vals);
+                data: values);
 
             // when
             HealthCheckResult actualHealthCheckResult =
@@ -197,7 +197,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.HealthChecks.ResolvedAddress
 
             string message = $"{randomNumber} files have not been processed. Please check logs and function status.";
 
-            var vals = new Dictionary<string, object>
+            var values = new Dictionary<string, object>
             {
                 { "description", "Failed To Process" },
                 { "failedToProcess", randomNumber},
@@ -212,7 +212,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.HealthChecks.ResolvedAddress
 
             HealthCheckResult expectedHealthCheckResult = HealthCheckResult.Unhealthy(
                 description: CheckName,
-                data: vals);
+                data: values);
 
             // when
             HealthCheckResult actualHealthCheckResult =
@@ -283,7 +283,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.HealthChecks.ResolvedAddress
 
             string message = $"{allRecords.Count} files have not been processed. Please check logs and function status.";
 
-            var vals = new Dictionary<string, object>
+            var values = new Dictionary<string, object>
             {
                 { "description", "Failed To Process" },
                 { "failedToProcess", allRecords.Count},
@@ -298,7 +298,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.HealthChecks.ResolvedAddress
 
             HealthCheckResult expectedHealthCheckResult = HealthCheckResult.Unhealthy(
                 description: CheckName,
-                data: vals);
+                data: values);
 
             // when
             HealthCheckResult actualHealthCheckResult =

@@ -61,7 +61,7 @@ namespace LHDS.Core.Services.Foundations.HealthChecks.ResolvedAddress
                 ? $"Nothing to process. All up to date."
                 : $"{totalCount} files have not been processed. Please check logs and function status.";
 
-            var vals = new Dictionary<string, object>
+            var values = new Dictionary<string, object>
             {
                 { "description", "Processing Queue" },
                 { "stuckInProcessing", totalCount },
@@ -75,27 +75,27 @@ namespace LHDS.Core.Services.Foundations.HealthChecks.ResolvedAddress
 
             if (unHealthyCount > 0)
             {
-                vals.Add("status", HealthStatus.Unhealthy.ToString());
+                values.Add("status", HealthStatus.Unhealthy.ToString());
 
                 return HealthCheckResult.Unhealthy(
                     description: CheckName,
-                    data: vals);
+                    data: values);
             }
             else if (degradedCount > 0)
             {
-                vals.Add("status", HealthStatus.Degraded.ToString());
+                values.Add("status", HealthStatus.Degraded.ToString());
 
                 return HealthCheckResult.Degraded(
                     description: CheckName,
-                    data: vals);
+                    data: values);
             }
             else
             {
-                vals.Add("status", HealthStatus.Healthy.ToString());
+                values.Add("status", HealthStatus.Healthy.ToString());
 
                 return HealthCheckResult.Healthy(
                     description: CheckName,
-                    data: vals);
+                    data: values);
             }
         }
     }

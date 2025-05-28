@@ -47,7 +47,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.HealthChecks.IngestionTracki
 
             string message = "Nothing to process. All up to date.";
 
-            var vals = new Dictionary<string, object>
+            var values = new Dictionary<string, object>
             {
                 { "description", "Processing Queue" },
                 { "stuckInProcessing", 0},
@@ -62,7 +62,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.HealthChecks.IngestionTracki
 
             HealthCheckResult expectedHealthCheckResult = HealthCheckResult.Healthy(
                 description: CheckName,
-                data: vals);
+                data: values);
 
             // when
             HealthCheckResult actualHealthCheckResult =
@@ -119,7 +119,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.HealthChecks.IngestionTracki
 
             string message = $"{randomNumber} files have not been processed. Please check logs and function status.";
 
-            var vals = new Dictionary<string, object>
+            var values = new Dictionary<string, object>
             {
                 { "description", "Processing Queue" },
                 { "stuckInProcessing", randomNumber},
@@ -134,7 +134,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.HealthChecks.IngestionTracki
 
             HealthCheckResult expectedHealthCheckResult = HealthCheckResult.Degraded(
                 description: CheckName,
-                data: vals);
+                data: values);
 
             // when
             HealthCheckResult actualHealthCheckResult =
@@ -191,7 +191,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.HealthChecks.IngestionTracki
 
             string message = $"{randomNumber} files have not been processed. Please check logs and function status.";
 
-            var vals = new Dictionary<string, object>
+            var values = new Dictionary<string, object>
             {
                 { "description", "Processing Queue" },
                 { "stuckInProcessing", randomNumber},
@@ -206,7 +206,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.HealthChecks.IngestionTracki
 
             HealthCheckResult expectedHealthCheckResult = HealthCheckResult.Unhealthy(
                 description: CheckName,
-                data: vals);
+                data: values);
 
             // when
             HealthCheckResult actualHealthCheckResult =
@@ -278,7 +278,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.HealthChecks.IngestionTracki
 
             string message = $"{unDecryptedCount} files have not been processed. Please check logs and function status.";
 
-            var vals = new Dictionary<string, object>
+            var values = new Dictionary<string, object>
             {
                 { "description", "Processing Queue" },
                 { "stuckInProcessing", unDecryptedCount},
@@ -293,7 +293,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.HealthChecks.IngestionTracki
 
             HealthCheckResult expectedHealthCheckResult = HealthCheckResult.Unhealthy(
                 description: CheckName,
-                data: vals);
+                data: values);
 
             // when
             HealthCheckResult actualHealthCheckResult =

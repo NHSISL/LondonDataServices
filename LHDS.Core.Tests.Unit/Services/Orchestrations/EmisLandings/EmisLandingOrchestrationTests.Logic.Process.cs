@@ -205,6 +205,14 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.EmisLandings
                 this.ingestionTrackingProcessingServiceMock.InSequence(mockSequence).Setup(service =>
                     service.ModifyIngestionTrackingAsync(It.Is(SameIngestionTrackingAs(modifiedIngestionTracking))))
                         .ReturnsAsync(downloadedIngestionTracking);
+
+                string batchCompleteFileName =
+                    $"{modifiedIngestionTracking.BatchReadyFolderPath}/{landingConfiguration.BatchReadyFile}".Replace("\\", "/");
+
+                this.documentProcessingServiceMock.Setup(service => service.RemoveDocumentByFileNameAsync(
+                    batchCompleteFileName,
+                    this.blobContainers.Ingress))
+                        .Returns(ValueTask.CompletedTask);
             }
 
             // when
@@ -360,6 +368,14 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.EmisLandings
 
                 this.ingestionTrackingProcessingServiceMock.Verify(service =>
                     service.ModifyIngestionTrackingAsync(It.Is(SameIngestionTrackingAs(modifiedIngestionTracking))),
+                        Times.Once);
+
+                string batchCompleteFileName =
+                    $"{modifiedIngestionTracking.BatchReadyFolderPath}/{landingConfiguration.BatchReadyFile}".Replace("\\", "/");
+
+                this.documentProcessingServiceMock.Verify(service => service.RemoveDocumentByFileNameAsync(
+                    batchCompleteFileName,
+                    this.blobContainers.Ingress),
                         Times.Once);
             }
 

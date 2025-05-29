@@ -127,6 +127,11 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Decryptions
                 service.RetrieveIngestionTrackingByEncryptedFileNameAsync(randomFileName),
                 Times.Once);
 
+            this.documentServiceMock.Verify(service => service.RemoveDocumentByFileNameAsync(
+                batchCompleteFileName,
+                this.blobContainers.Ingress),
+                    Times.Once);
+
             this.documentServiceMock
                 .Verify(service =>
                     service.RetrieveDocumentByFileNameAsync(

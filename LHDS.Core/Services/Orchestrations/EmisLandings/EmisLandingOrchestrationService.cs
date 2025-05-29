@@ -252,20 +252,20 @@ namespace LHDS.Core.Services.Orchestrations.Downloads
                 maybeIngestionTracking = await this.ingestionTrackingProcessingService
                     .AddIngestionTrackingAsync(newIngestionTracking);
 
-                try
-                {
-                    string batchCompleteFileName =
-                        $"{baseFolder}/{landingConfiguration.BatchReadyFile}".Replace("\\", "/");
-
-                    await this.documentProcessingService.RemoveDocumentByFileNameAsync(
-                        batchCompleteFileName,
-                        this.blobContainers.Ingress);
-                }
-                catch (Exception)
-                { }
-
                 await LogAudit(maybeIngestionTracking, $"New file found - {fileName}");
             }
+
+            try
+            {
+                string batchCompleteFileName =
+                    $"{maybeIngestionTracking.BatchReadyFolderPath}/{landingConfiguration.BatchReadyFile}".Replace("\\", "/");
+
+                await this.documentProcessingService.RemoveDocumentByFileNameAsync(
+                    batchCompleteFileName,
+                    this.blobContainers.Ingress);
+            }
+            catch (Exception)
+            { }
 
             if (maybeIngestionTracking.IsDownloaded == false && maybeIngestionTracking.RetryCount <= 3)
             {

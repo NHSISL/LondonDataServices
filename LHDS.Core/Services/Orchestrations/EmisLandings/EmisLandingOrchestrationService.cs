@@ -223,11 +223,11 @@ namespace LHDS.Core.Services.Orchestrations.Downloads
                   {
                       Id = await this.identifierBroker.GetIdentifierAsync(),
                       SupplierId = supplierId,
-                      //Container = blobContainers.Ingress,
                       FileName = filename,
                       SourceFolderPath = sourceFolderPath,
                       BatchReadyFolderPath = baseFolder,
                       Batch = batch,
+                      IsBatchComplete = false,
                       ObjectName = objectName,
                       DataSetSpecificationId = retrievedDataSetSpecification.Id,
                       EncryptedFileName = encryptedFileName,
@@ -260,6 +260,7 @@ namespace LHDS.Core.Services.Orchestrations.Downloads
                 var currentDateTime = await this.dateTimeBroker.GetCurrentDateTimeOffsetAsync();
                 maybeIngestionTracking.RetryCount += 1;
                 maybeIngestionTracking.IsDownloaded = false;
+                maybeIngestionTracking.IsBatchComplete = false;
                 maybeIngestionTracking.FileDeleted = false;
                 maybeIngestionTracking.EncryptedFileSize = 0;
                 maybeIngestionTracking.EncryptedFileSha256Hash = string.Empty;

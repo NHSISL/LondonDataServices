@@ -222,7 +222,7 @@ namespace LHDS.Core.Clients.Extensions
                     Parameter: "landingSettings:batchDownloadedFile"),
 
                 (Rule: IsInvalid(landingConfiguration.BatchReadyFile),
-                    Parameter: "landingSettings:BatchReadyFile"));
+                    Parameter: "landingSettings:batchReadyFile"));
         }
 
         private static void ValidateBlobStorageSettings(BlobStorageSettings blobStorageSettings)

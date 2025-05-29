@@ -134,6 +134,14 @@ namespace LHDS.Core.Services.Orchestrations.Decryptions
                             container: blobContainers.Ingress);
                     }
                 }
+                catch (Exception ex)
+                {
+                    var errorDateTime = await this.dateTimeBroker.GetCurrentDateTimeOffsetAsync();
+                    await LogAudit(ingestionTracking, $"Error Decrypting {encryptedFileName};  " +
+                        $"Error: {ex.Message} {ex?.InnerException?.Message}", errorDateTime);
+
+                    throw;
+                }
                 finally
                 {
                     if (File.Exists(encryptedTempFile)) File.Delete(encryptedTempFile);

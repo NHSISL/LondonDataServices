@@ -268,7 +268,7 @@ namespace LHDS.Core.Services.Orchestrations.Downloads
                 maybeIngestionTracking.UpdatedDate = currentDateTime;
 
                 await LogAudit(maybeIngestionTracking, $"Downloading {fileName};  " +
-                    $"Attempt: {maybeIngestionTracking.RetryCount}");
+                    $"Attempt(s): {maybeIngestionTracking.RetryCount}");
 
                 IngestionTracking updatedIngestionTracking =
                     await this.ingestionTrackingProcessingService
@@ -322,7 +322,7 @@ namespace LHDS.Core.Services.Orchestrations.Downloads
                     .ModifyIngestionTrackingAsync(updatedIngestionTracking);
 
                 await LogAudit(updatedIngestionTracking, $"Downloaded {fileName};  " +
-                    $"Attempt: {updatedIngestionTracking.RetryCount}");
+                    $"Attempt(s): {maybeIngestionTracking.RetryCount}");
 
                 return updatedIngestionTracking.DecryptedFileName;
             }

@@ -7,6 +7,7 @@ using System.IO;
 using System.Threading.Tasks;
 using FluentAssertions;
 using LHDS.Core.Models.Brokers.Storages.Blobs;
+using LHDS.Core.Models.Foundations.IngestionTrackingAudits;
 using LHDS.Core.Models.Foundations.IngestionTrackings;
 using LHDS.Core.Models.Orchestrations.Decryptions.Exceptions;
 using LHDS.Core.Models.Processings.SubscriberCredentials;
@@ -231,6 +232,14 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Decryptions
                 broker.LogErrorAsync(It.Is(SameExceptionAs(
                     expectedDecryptionOrchestrationValidationException))),
                         Times.Once);
+
+            this.dateTimeBrokerMock.Verify(broker =>
+                broker.GetCurrentDateTimeOffsetAsync(),
+                Times.Once);
+
+            this.auditServiceMock.Verify(service =>
+                service.AddIngestionTrackingAuditAsync(It.IsAny<IngestionTrackingAudit>()),
+                Times.Once);
 
             this.loggingBrokerMock.VerifyNoOtherCalls();
             this.documentServiceMock.VerifyNoOtherCalls();

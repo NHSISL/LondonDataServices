@@ -157,11 +157,11 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Decryptions
 
             this.dateTimeBrokerMock.Verify(broker =>
                 broker.GetCurrentDateTimeOffsetAsync(),
-                Times.Once);
+                Times.Exactly(2));
 
             this.auditServiceMock.Verify(service =>
                 service.AddIngestionTrackingAuditAsync(It.IsAny<IngestionTrackingAudit>()),
-                Times.Once);
+                Times.Exactly(2));
 
             this.ingestionTrackingServiceMock.VerifyNoOtherCalls();
             this.documentServiceMock.VerifyNoOtherCalls();

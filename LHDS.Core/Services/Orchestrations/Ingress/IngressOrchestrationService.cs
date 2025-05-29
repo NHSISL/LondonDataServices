@@ -11,6 +11,7 @@ using LHDS.Core.Brokers.Audits;
 using LHDS.Core.Brokers.Loggings;
 using LHDS.Core.Models.Brokers.Storages.Blobs;
 using LHDS.Core.Models.Foundations.IngestionTrackings;
+using LHDS.Core.Models.Orchestrations.EmisLandings;
 using LHDS.Core.Models.Orchestrations.Ingres.Exceptions;
 using LHDS.Core.Services.Processings.Documents;
 using LHDS.Core.Services.Processings.IngestionTrackings;
@@ -23,6 +24,7 @@ namespace LHDS.Core.Services.Orchestrations.Ingress
         private readonly IIngestionTrackingProcessingService ingestionTrackingProcessingService;
         private readonly ISpecificationObjectProcessingService specificationObjectProcessingService;
         private readonly IDocumentProcessingService documentProcessingService;
+        private readonly LandingConfiguration landingConfiguration;
         private readonly BlobContainers blobContainers;
         private readonly ILoggingBroker loggingBroker;
         private readonly IAuditBroker auditBroker;
@@ -31,6 +33,7 @@ namespace LHDS.Core.Services.Orchestrations.Ingress
             IIngestionTrackingProcessingService ingestionTrackingProcessingService,
             ISpecificationObjectProcessingService specificationObjectProcessingService,
             IDocumentProcessingService documentProcessingService,
+            LandingConfiguration landingConfiguration,
             BlobContainers blobContainers,
             ILoggingBroker loggingBroker,
             IAuditBroker auditBroker)
@@ -38,6 +41,7 @@ namespace LHDS.Core.Services.Orchestrations.Ingress
             this.ingestionTrackingProcessingService = ingestionTrackingProcessingService;
             this.specificationObjectProcessingService = specificationObjectProcessingService;
             this.documentProcessingService = documentProcessingService;
+            this.landingConfiguration = landingConfiguration;
             this.blobContainers = blobContainers;
             this.loggingBroker = loggingBroker;
             this.auditBroker = auditBroker;
@@ -77,7 +81,7 @@ namespace LHDS.Core.Services.Orchestrations.Ingress
                 isBatchComplete = false;
             }
 
-            string batchReadyFileName = "_BatchReady.txt";
+            string batchReadyFileName = this.landingConfiguration.BatchReadyFile;
 
             string batchCompleteFileName =
                 $"{ingestionTracking.BatchReadyFolderPath}/{batchReadyFileName}"

@@ -91,14 +91,14 @@ namespace LHDS.Core.Services.Orchestrations.Downloads
                 {
                     try
                     {
-                        string decryptedFile = await TryCatch(async () =>
+                        string encryptedFile = await TryCatch(async () =>
                         {
                             return await ProcessFileAsync(subscriberCredential, supplierId, fileName);
                         });
 
-                        if (!string.IsNullOrWhiteSpace(decryptedFile))
+                        if (!string.IsNullOrWhiteSpace(encryptedFile))
                         {
-                            files.Add(decryptedFile);
+                            files.Add(encryptedFile);
                         }
                     }
                     catch (Exception ex)
@@ -251,6 +251,18 @@ namespace LHDS.Core.Services.Orchestrations.Downloads
 
                 maybeIngestionTracking = await this.ingestionTrackingProcessingService
                     .AddIngestionTrackingAsync(newIngestionTracking);
+
+                try
+                {
+                    string batchCompleteFileName =
+                        $"{baseFolder}/{landingConfiguration.BatchReadyFile}".Replace("\\", "/");
+
+                    await this.documentProcessingService.RemoveDocumentByFileNameAsync(
+                        batchCompleteFileName,
+                        this.blobContainers.Ingress);
+                }
+                catch (Exception)
+                { }
 
                 await LogAudit(maybeIngestionTracking, $"New file found - {fileName}");
             }

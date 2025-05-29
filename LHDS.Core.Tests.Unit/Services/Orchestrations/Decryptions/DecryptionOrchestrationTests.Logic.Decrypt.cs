@@ -42,6 +42,14 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Decryptions
                 service.RetrieveIngestionTrackingByEncryptedFileNameAsync(randomFileName))
                     .ReturnsAsync(storageIngestionTracking);
 
+            string batchCompleteFileName =
+                $"{storageIngestionTracking.BatchReadyFolderPath}/{landingConfiguration.BatchReadyFile}".Replace("\\", "/");
+
+            this.documentServiceMock.Setup(service => service.RemoveDocumentByFileNameAsync(
+                batchCompleteFileName,
+                this.blobContainers.Ingress))
+                    .Returns(ValueTask.CompletedTask);
+
             this.documentServiceMock
                 .Setup(service =>
                     service.RetrieveDocumentByFileNameAsync(

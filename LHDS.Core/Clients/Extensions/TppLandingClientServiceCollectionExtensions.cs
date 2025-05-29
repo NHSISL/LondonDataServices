@@ -216,7 +216,13 @@ namespace LHDS.Core.Clients.Extensions
                     Parameter: "landingSettings__landingSupplierId"),
 
                 (Rule: IsInvalid(landingConfiguration.DecryptedFolder),
-                    Parameter: "landingSettings:decryptedFolder"));
+                    Parameter: "landingSettings:decryptedFolder"),
+
+                (Rule: IsInvalid(landingConfiguration.BatchDownloadedFile),
+                    Parameter: "landingSettings:batchDownloadedFile"),
+
+                (Rule: IsInvalid(landingConfiguration.BatchReadyFile),
+                    Parameter: "landingSettings:BatchReadyFile"));
         }
 
         private static void ValidateBlobStorageSettings(BlobStorageSettings blobStorageSettings)

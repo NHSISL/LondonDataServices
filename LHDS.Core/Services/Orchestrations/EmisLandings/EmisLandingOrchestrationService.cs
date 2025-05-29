@@ -192,8 +192,8 @@ namespace LHDS.Core.Services.Orchestrations.Downloads
                 await this.ingestionTrackingProcessingService.RetrieveAllIngestionTrackingsAsync();
 
             IngestionTracking? maybeIngestionTracking = allIngestionTrackings
-                    .FirstOrDefault(ingestionTracking =>
-                        ingestionTracking.FileName == fileName);
+                .FirstOrDefault(ingestionTracking =>
+                    ingestionTracking.FileName == fileName);
 
             if (maybeIngestionTracking == null)
             {

@@ -15,9 +15,15 @@ namespace LHDS.Core.Tests.Unit.Services.Coordinations.HealthChecks.IngestionTrac
         {
             // given
             DateTimeOffset currentDateTime = DateTimeOffset.UtcNow;
-            IQueryable<Core.Models.Foundations.IngestionTrackings.IngestionTracking> randomUnhealthyTrackings = CreateRandomUnhealthyIngestionTrackings();
-            IQueryable<Core.Models.Foundations.IngestionTrackings.IngestionTracking> randomHealthyTrackings = CreateRandomHealthyIngestionTrackings();
-            IQueryable<Core.Models.Foundations.IngestionTrackings.IngestionTracking> randomTrackings = randomUnhealthyTrackings.Concat(randomHealthyTrackings);
+
+            IQueryable<Core.Models.Foundations.IngestionTrackings.IngestionTracking> randomUnhealthyTrackings = 
+                CreateRandomUnhealthyIngestionTrackings();
+
+            IQueryable<Core.Models.Foundations.IngestionTrackings.IngestionTracking> randomHealthyTrackings = 
+                CreateRandomHealthyIngestionTrackings();
+
+            IQueryable<Core.Models.Foundations.IngestionTrackings.IngestionTracking> randomTrackings = 
+                randomUnhealthyTrackings.Concat(randomHealthyTrackings);
 
             Dictionary<string, object> healthCheckResultValues = 
                 GetHealthCheckResultValues(currentDateTime, HealthStatus.Unhealthy, unhealthyItemsCount: randomUnhealthyTrackings.Count());
@@ -54,9 +60,15 @@ namespace LHDS.Core.Tests.Unit.Services.Coordinations.HealthChecks.IngestionTrac
         {
             // given
             DateTimeOffset currentDateTime = DateTimeOffset.UtcNow;
-            IQueryable<Core.Models.Foundations.IngestionTrackings.IngestionTracking> randomDegradedTrackings = CreateRandomDegradedIngestionTrackings();
-            IQueryable<Core.Models.Foundations.IngestionTrackings.IngestionTracking> randomHealthyTrackings = CreateRandomHealthyIngestionTrackings();
-            IQueryable<Core.Models.Foundations.IngestionTrackings.IngestionTracking> randomTrackings = randomDegradedTrackings.Concat(randomHealthyTrackings);
+
+            IQueryable<Core.Models.Foundations.IngestionTrackings.IngestionTracking> randomDegradedTrackings = 
+                CreateRandomDegradedIngestionTrackings();
+
+            IQueryable<Core.Models.Foundations.IngestionTrackings.IngestionTracking> randomHealthyTrackings =
+                CreateRandomHealthyIngestionTrackings();
+
+            IQueryable<Core.Models.Foundations.IngestionTrackings.IngestionTracking> randomTrackings =
+                randomDegradedTrackings.Concat(randomHealthyTrackings);
 
             Dictionary<string, object> healthCheckResultValues =
                 GetHealthCheckResultValues(currentDateTime, HealthStatus.Degraded, degradedItemsCount: randomDegradedTrackings.Count());
@@ -93,7 +105,9 @@ namespace LHDS.Core.Tests.Unit.Services.Coordinations.HealthChecks.IngestionTrac
         {
             // given
             DateTimeOffset currentDateTime = DateTimeOffset.UtcNow;
-            IQueryable<Core.Models.Foundations.IngestionTrackings.IngestionTracking> randomTrackings = CreateRandomHealthyIngestionTrackings();
+
+            IQueryable<Core.Models.Foundations.IngestionTrackings.IngestionTracking> randomTrackings =
+                CreateRandomHealthyIngestionTrackings();
 
            Dictionary<string, object> healthCheckResultValues =
                 GetHealthCheckResultValues(currentDateTime, HealthStatus.Healthy);

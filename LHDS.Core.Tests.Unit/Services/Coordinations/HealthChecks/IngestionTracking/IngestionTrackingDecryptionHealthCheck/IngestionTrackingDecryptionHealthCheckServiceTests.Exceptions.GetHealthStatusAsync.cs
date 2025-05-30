@@ -36,8 +36,10 @@ namespace LHDS.Core.Tests.Unit.Services.Coordinations.HealthChecks.IngestionTrac
             // when
             ValueTask<HealthCheckResult> getHealthStatusTask = this.ingestionTrackingDecryptionHealthCheckService.GetHealthStatusAsync();
 
-            IngestionTrackingDecryptionHealthCheckCooridinationServiceException actualIngestionTrackingDecryptionHealthCheckCooridinationServiceException =
-                await Assert.ThrowsAsync<IngestionTrackingDecryptionHealthCheckCooridinationServiceException>(getHealthStatusTask.AsTask);
+            IngestionTrackingDecryptionHealthCheckCooridinationServiceException 
+                actualIngestionTrackingDecryptionHealthCheckCooridinationServiceException =
+                    await Assert.ThrowsAsync<IngestionTrackingDecryptionHealthCheckCooridinationServiceException>(
+                        getHealthStatusTask.AsTask);
 
             // then
             actualIngestionTrackingDecryptionHealthCheckCooridinationServiceException.Should()

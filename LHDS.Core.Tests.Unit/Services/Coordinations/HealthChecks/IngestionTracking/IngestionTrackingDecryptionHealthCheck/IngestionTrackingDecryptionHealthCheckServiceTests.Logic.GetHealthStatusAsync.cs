@@ -56,5 +56,52 @@ namespace LHDS.Core.Tests.Unit.Services.Coordinations.HealthChecks.IngestionTrac
             this.dateTimeBrokerMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
         }
+
+        [Fact]
+        public async Task ShouldGetHealthStatusAsyncDegradedWhenAnyDegraded()
+        {
+            // given
+            DateTimeOffset currentDateTime = DateTimeOffset.UtcNow;
+            IQueryable<Core.Models.Foundations.IngestionTrackings.IngestionTracking> randomTrackings = CreateRandomDegradedIngestionTrackings();
+
+            var healthCheckResultValues = new Dictionary<string, object>
+            {
+                { "description", "Decryption Queue" },
+                { "unDecryptedItems", randomTrackings.Count()},
+                { "degradedItems", randomTrackings.Count()},
+                { "unHealthyItems", 0},
+                { "degradedThresholdMinutes", 1440 },
+                { "unHealthyThresholdMinutes", 2880 },
+                { "checkedAt", currentDateTime.ToString("o") },
+                { "message", $"{randomTrackings.Count()} files have not been decrypted. Please check logs and function status." },
+                { "status", HealthStatus.Degraded.ToString() }
+            };
+
+            var expectedHealthCheckResult = HealthCheckResult.Degraded(description: CheckName, data: healthCheckResultValues);
+
+            this.dateTimeBrokerMock.Setup(broker =>
+                broker.GetCurrentDateTimeOffsetAsync())
+                    .ReturnsAsync(currentDateTime);
+
+            this.storageBrokerMock.Setup(broker =>
+                broker.SelectAllIngestionTrackingsAsync())
+                    .ReturnsAsync(randomTrackings);
+
+            // when
+            var result = await this.ingestionTrackingDecryptionHealthCheckService.GetHealthStatusAsync();
+
+            // then
+            this.dateTimeBrokerMock.Verify(broker =>
+                broker.GetCurrentDateTimeOffsetAsync(),
+                    Times.Once);
+
+            this.storageBrokerMock.Verify(broker =>
+                broker.SelectAllIngestionTrackingsAsync(),
+                    Times.Once);
+
+            this.storageBrokerMock.VerifyNoOtherCalls();
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
+            this.loggingBrokerMock.VerifyNoOtherCalls();
+        }
     }
 }

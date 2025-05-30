@@ -22,6 +22,8 @@ namespace LHDS.Core.Tests.Unit.Services.Coordinations.HealthChecks.IngestionTrac
         private readonly Mock<ILoggingBroker> loggingBrokerMock;
         private readonly IngestionTrackingDecryptionHealthCheckService ingestionTrackingDecryptionHealthCheckService;
         private const string CheckName = "decryption";
+        private const int DegradedThresholdMinutes = 1440;
+        private const int UnHealthyThresholdMinutes = 2880;
 
         public IngestionTrackingDecryptionHealthCheckServiceTests()
         {
@@ -40,14 +42,14 @@ namespace LHDS.Core.Tests.Unit.Services.Coordinations.HealthChecks.IngestionTrac
         private static IQueryable<Core.Models.Foundations.IngestionTrackings.IngestionTracking> CreateRandomUnhealthyIngestionTrackings()
         {
             DateTimeOffset dateTimeOffset = DateTimeOffset.UtcNow;
-            DateTimeOffset unhealthyDateTime = dateTimeOffset.AddDays(-5);
+            DateTimeOffset unhealthyDateTime = dateTimeOffset.AddDays((UnHealthyThresholdMinutes + 1) * -1);
             return CreateIngestionTrackingFiller(unhealthyDateTime).Create(count: GetRandomNumber()).AsQueryable();
         }
 
         private static IQueryable<Core.Models.Foundations.IngestionTrackings.IngestionTracking> CreateRandomDegradedIngestionTrackings()
         {
             DateTimeOffset dateTimeOffset = DateTimeOffset.UtcNow;
-            DateTimeOffset degradedDateTime = dateTimeOffset.AddDays(-1);
+            DateTimeOffset degradedDateTime = dateTimeOffset.AddMinutes((DegradedThresholdMinutes + 1) * -1);
             return CreateIngestionTrackingFiller(degradedDateTime).Create(count: GetRandomNumber()).AsQueryable();
         }
 
@@ -103,8 +105,8 @@ namespace LHDS.Core.Tests.Unit.Services.Coordinations.HealthChecks.IngestionTrac
                 { "unDecryptedItems", totalItemsCount},
                 { "degradedItems", degradedItemsCount},
                 { "unHealthyItems", unhealthyItemsCount},
-                { "degradedThresholdMinutes", 1440 },
-                { "unHealthyThresholdMinutes", 2880 },
+                { "degradedThresholdMinutes", DegradedThresholdMinutes.ToString() },
+                { "unHealthyThresholdMinutes", UnHealthyThresholdMinutes.ToString() },
                 { "checkedAt", dateTime.ToString("o") },
                 { "message", message },
                 { "status", healthStatus.ToString() }

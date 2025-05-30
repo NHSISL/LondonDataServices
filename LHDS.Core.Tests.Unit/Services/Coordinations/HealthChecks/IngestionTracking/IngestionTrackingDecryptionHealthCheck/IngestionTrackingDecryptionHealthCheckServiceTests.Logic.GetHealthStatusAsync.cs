@@ -15,20 +15,12 @@ namespace LHDS.Core.Tests.Unit.Services.Coordinations.HealthChecks.IngestionTrac
         {
             // given
             DateTimeOffset currentDateTime = DateTimeOffset.UtcNow;
-            IQueryable<Core.Models.Foundations.IngestionTrackings.IngestionTracking> randomTrackings = CreateRandomUnhealthyIngestionTrackings();
-            
-            var healthCheckResultValues = new Dictionary<string, object>
-            {
-                { "description", "Decryption Queue" },
-                { "unDecryptedItems", randomTrackings.Count()},
-                { "degradedItems", 0},
-                { "unHealthyItems", randomTrackings.Count()},
-                { "degradedThresholdMinutes", 1440 },
-                { "unHealthyThresholdMinutes", 2880 },
-                { "checkedAt", currentDateTime.ToString("o") },
-                { "message", $"{randomTrackings.Count()} files have not been decrypted. Please check logs and function status." },
-                { "status", HealthStatus.Unhealthy.ToString() }
-            };
+            IQueryable<Core.Models.Foundations.IngestionTrackings.IngestionTracking> randomUnhealthyTrackings = CreateRandomUnhealthyIngestionTrackings();
+            IQueryable<Core.Models.Foundations.IngestionTrackings.IngestionTracking> randomHealthyTrackings = CreateRandomHealthyIngestionTrackings();
+            IQueryable<Core.Models.Foundations.IngestionTrackings.IngestionTracking> randomTrackings = randomUnhealthyTrackings.Concat(randomHealthyTrackings);
+
+            Dictionary<string, object> healthCheckResultValues = 
+                GetHealthCheckResultValues(currentDateTime, HealthStatus.Unhealthy, unhealthyItemsCount: randomUnhealthyTrackings.Count());
 
             var expectedHealthCheckResult = HealthCheckResult.Unhealthy(description: CheckName, data: healthCheckResultValues);
 
@@ -62,20 +54,12 @@ namespace LHDS.Core.Tests.Unit.Services.Coordinations.HealthChecks.IngestionTrac
         {
             // given
             DateTimeOffset currentDateTime = DateTimeOffset.UtcNow;
-            IQueryable<Core.Models.Foundations.IngestionTrackings.IngestionTracking> randomTrackings = CreateRandomHealthyIngestionTrackings();
+            IQueryable<Core.Models.Foundations.IngestionTrackings.IngestionTracking> randomDegradedTrackings = CreateRandomDegradedIngestionTrackings();
+            IQueryable<Core.Models.Foundations.IngestionTrackings.IngestionTracking> randomHealthyTrackings = CreateRandomHealthyIngestionTrackings();
+            IQueryable<Core.Models.Foundations.IngestionTrackings.IngestionTracking> randomTrackings = randomDegradedTrackings.Concat(randomHealthyTrackings);
 
-            var healthCheckResultValues = new Dictionary<string, object>
-            {
-                { "description", "Decryption Queue" },
-                { "unDecryptedItems", randomTrackings.Count()},
-                { "degradedItems", randomTrackings.Count()},
-                { "unHealthyItems", 0},
-                { "degradedThresholdMinutes", 1440 },
-                { "unHealthyThresholdMinutes", 2880 },
-                { "checkedAt", currentDateTime.ToString("o") },
-                { "message", $"{randomTrackings.Count()} files have not been decrypted. Please check logs and function status." },
-                { "status", HealthStatus.Degraded.ToString() }
-            };
+            Dictionary<string, object> healthCheckResultValues =
+                GetHealthCheckResultValues(currentDateTime, HealthStatus.Degraded, degradedItemsCount: randomDegradedTrackings.Count());
 
             var expectedHealthCheckResult = HealthCheckResult.Degraded(description: CheckName, data: healthCheckResultValues);
 
@@ -111,18 +95,8 @@ namespace LHDS.Core.Tests.Unit.Services.Coordinations.HealthChecks.IngestionTrac
             DateTimeOffset currentDateTime = DateTimeOffset.UtcNow;
             IQueryable<Core.Models.Foundations.IngestionTrackings.IngestionTracking> randomTrackings = CreateRandomHealthyIngestionTrackings();
 
-            var healthCheckResultValues = new Dictionary<string, object>
-            {
-                { "description", "Decryption Queue" },
-                { "unDecryptedItems", 0},
-                { "degradedItems", 0},
-                { "unHealthyItems", 0},
-                { "degradedThresholdMinutes", 1440 },
-                { "unHealthyThresholdMinutes", 2880 },
-                { "checkedAt", currentDateTime.ToString("o") },
-                { "message", "Nothing to decrypt. All up to date." },
-                { "status", HealthStatus.Healthy.ToString() }
-            };
+           Dictionary<string, object> healthCheckResultValues =
+                GetHealthCheckResultValues(currentDateTime, HealthStatus.Healthy);
 
             var expectedHealthCheckResult = HealthCheckResult.Healthy(description: CheckName, data: healthCheckResultValues);
 

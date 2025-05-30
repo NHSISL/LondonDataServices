@@ -1,12 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using Hl7.Fhir.Model;
 using LHDS.Core.Brokers.DateTimes;
 using LHDS.Core.Brokers.Loggings;
 using LHDS.Core.Brokers.Storages.Sql;
 using LHDS.Core.Services.Foundations.HealthChecks.IngestionTracking;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Diagnostics.HealthChecks;
 using Moq;
 using Tynamix.ObjectFiller;
 
@@ -73,10 +73,40 @@ namespace LHDS.Core.Tests.Unit.Services.Coordinations.HealthChecks.IngestionTrac
                 .OnProperty(ingestionTracking => ingestionTracking.CreatedBy).Use(user)
                 .OnProperty(ingestionTracking => ingestionTracking.UpdatedBy).Use(user)
                 .OnProperty(ingestionTracking => ingestionTracking.UpdatedDate).Use(updatedDate)
+                .OnProperty(ingestionTracking => ingestionTracking.Decrypted).Use(false)
+                .OnProperty(ingestionTracking => ingestionTracking.IsProcessing).Use(false)
                 .OnProperty(ingestionTracking => ingestionTracking.Supplier).IgnoreIt()
                 .OnProperty(ingestionTracking => ingestionTracking.IngestionTrackingAudits).IgnoreIt();
 
             return filler;
+        }
+
+        private static Dictionary<string, object> GetHealthCheckResultValues(
+            DateTimeOffset dateTime,
+            HealthStatus healthStatus,
+            int degradedItemsCount = 0,
+            int unhealthyItemsCount = 0)
+        {
+            var totalItemsCount = degradedItemsCount + unhealthyItemsCount;
+            var message = "Nothing to decrypt. All up to date.";
+
+            if (totalItemsCount > 0)
+            {
+                message = $"{totalItemsCount} files have not been decrypted. Please check logs and function status.";
+            }
+
+            return new Dictionary<string, object>
+            {
+                { "description", "Decryption Queue" },
+                { "unDecryptedItems", totalItemsCount},
+                { "degradedItems", degradedItemsCount},
+                { "unHealthyItems", unhealthyItemsCount},
+                { "degradedThresholdMinutes", 1440 },
+                { "unHealthyThresholdMinutes", 2880 },
+                { "checkedAt", dateTime.ToString("o") },
+                { "message", message },
+                { "status", healthStatus.ToString() }
+            };
         }
     }
 }

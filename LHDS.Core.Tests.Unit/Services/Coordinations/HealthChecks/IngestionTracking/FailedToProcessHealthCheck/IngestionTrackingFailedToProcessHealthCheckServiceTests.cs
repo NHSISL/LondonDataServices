@@ -42,6 +42,13 @@ namespace LHDS.Core.Tests.Unit.Services.Coordinations.HealthChecks.IngestionTrac
             return CreateIngestionTrackingFiller(unhealthyDateTime).Create(count: GetRandomNumber()).AsQueryable();
         }
 
+        private static IQueryable<Core.Models.Foundations.IngestionTrackings.IngestionTracking> CreateRandomDegradedIngestionTrackings()
+        {
+            DateTimeOffset dateTimeOffset = DateTimeOffset.UtcNow;
+            DateTimeOffset degradedDateTime = dateTimeOffset.AddDays(-1);
+            return CreateIngestionTrackingFiller(degradedDateTime).Create(count: GetRandomNumber()).AsQueryable();
+        }
+
         private static IQueryable<Core.Models.Foundations.IngestionTrackings.IngestionTracking> CreateRandomHealthyIngestionTrackings()
         {
             DateTimeOffset dateTimeOffset = DateTimeOffset.UtcNow;
@@ -76,11 +83,11 @@ namespace LHDS.Core.Tests.Unit.Services.Coordinations.HealthChecks.IngestionTrac
         private static Dictionary<string, object> GetHealthCheckResultValues(
             DateTimeOffset dateTime,
             HealthStatus healthStatus,
-            int healthyItems = 0,
+            int healthyItemsCount = 0,
             int degradedItemsCount = 0,
             int unhealthyItemsCount = 0)
         {
-            var totalItemsCount = healthyItems + degradedItemsCount + unhealthyItemsCount;
+            var totalItemsCount = healthyItemsCount + degradedItemsCount + unhealthyItemsCount;
             var message = "Nothing to process. All up to date.";
 
             if (totalItemsCount > 0)

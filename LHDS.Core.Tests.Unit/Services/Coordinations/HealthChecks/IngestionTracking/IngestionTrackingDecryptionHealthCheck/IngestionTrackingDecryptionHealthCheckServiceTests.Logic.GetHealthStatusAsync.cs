@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using FluentAssertions;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
 using Moq;
 using Xunit;
@@ -42,6 +43,11 @@ namespace LHDS.Core.Tests.Unit.Services.Coordinations.HealthChecks.IngestionTrac
             var result = await this.ingestionTrackingDecryptionHealthCheckService.GetHealthStatusAsync();
 
             // then
+            result.Data.Should().BeEquivalentTo(expectedHealthCheckResult.Data);
+            result.Description.Should().BeEquivalentTo(expectedHealthCheckResult.Description);
+            result.Exception.Should().BeEquivalentTo(expectedHealthCheckResult.Exception);
+            result.Status.Should().Be(expectedHealthCheckResult.Status);
+
             this.dateTimeBrokerMock.Verify(broker =>
                 broker.GetCurrentDateTimeOffsetAsync(),
                     Times.Once);
@@ -87,6 +93,11 @@ namespace LHDS.Core.Tests.Unit.Services.Coordinations.HealthChecks.IngestionTrac
             var result = await this.ingestionTrackingDecryptionHealthCheckService.GetHealthStatusAsync();
 
             // then
+            result.Data.Should().BeEquivalentTo(expectedHealthCheckResult.Data);
+            result.Description.Should().BeEquivalentTo(expectedHealthCheckResult.Description);
+            result.Exception.Should().BeEquivalentTo(expectedHealthCheckResult.Exception);
+            result.Status.Should().Be(expectedHealthCheckResult.Status);
+
             this.dateTimeBrokerMock.Verify(broker =>
                 broker.GetCurrentDateTimeOffsetAsync(),
                     Times.Once);
@@ -126,6 +137,11 @@ namespace LHDS.Core.Tests.Unit.Services.Coordinations.HealthChecks.IngestionTrac
             var result = await this.ingestionTrackingDecryptionHealthCheckService.GetHealthStatusAsync();
 
             // then
+            result.Data.Should().BeEquivalentTo(expectedHealthCheckResult.Data);
+            result.Description.Should().BeEquivalentTo(expectedHealthCheckResult.Description);
+            result.Exception.Should().BeEquivalentTo(expectedHealthCheckResult.Exception);
+            result.Status.Should().Be(expectedHealthCheckResult.Status);
+
             this.dateTimeBrokerMock.Verify(broker =>
                 broker.GetCurrentDateTimeOffsetAsync(),
                     Times.Once);

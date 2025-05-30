@@ -62,7 +62,7 @@ namespace LHDS.Core.Tests.Unit.Services.Coordinations.HealthChecks.IngestionTrac
         {
             // given
             DateTimeOffset currentDateTime = DateTimeOffset.UtcNow;
-            IQueryable<Core.Models.Foundations.IngestionTrackings.IngestionTracking> randomTrackings = CreateRandomDegradedIngestionTrackings();
+            IQueryable<Core.Models.Foundations.IngestionTrackings.IngestionTracking> randomTrackings = CreateRandomHealthyIngestionTrackings();
 
             var healthCheckResultValues = new Dictionary<string, object>
             {
@@ -78,6 +78,53 @@ namespace LHDS.Core.Tests.Unit.Services.Coordinations.HealthChecks.IngestionTrac
             };
 
             var expectedHealthCheckResult = HealthCheckResult.Degraded(description: CheckName, data: healthCheckResultValues);
+
+            this.dateTimeBrokerMock.Setup(broker =>
+                broker.GetCurrentDateTimeOffsetAsync())
+                    .ReturnsAsync(currentDateTime);
+
+            this.storageBrokerMock.Setup(broker =>
+                broker.SelectAllIngestionTrackingsAsync())
+                    .ReturnsAsync(randomTrackings);
+
+            // when
+            var result = await this.ingestionTrackingDecryptionHealthCheckService.GetHealthStatusAsync();
+
+            // then
+            this.dateTimeBrokerMock.Verify(broker =>
+                broker.GetCurrentDateTimeOffsetAsync(),
+                    Times.Once);
+
+            this.storageBrokerMock.Verify(broker =>
+                broker.SelectAllIngestionTrackingsAsync(),
+                    Times.Once);
+
+            this.storageBrokerMock.VerifyNoOtherCalls();
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
+            this.loggingBrokerMock.VerifyNoOtherCalls();
+        }
+
+        [Fact]
+        public async Task ShouldGetHealthStatusAsyncHealthyWhenNoUnhealthyOrDegraded()
+        {
+            // given
+            DateTimeOffset currentDateTime = DateTimeOffset.UtcNow;
+            IQueryable<Core.Models.Foundations.IngestionTrackings.IngestionTracking> randomTrackings = CreateRandomHealthyIngestionTrackings();
+
+            var healthCheckResultValues = new Dictionary<string, object>
+            {
+                { "description", "Decryption Queue" },
+                { "unDecryptedItems", 0},
+                { "degradedItems", 0},
+                { "unHealthyItems", 0},
+                { "degradedThresholdMinutes", 1440 },
+                { "unHealthyThresholdMinutes", 2880 },
+                { "checkedAt", currentDateTime.ToString("o") },
+                { "message", "Nothing to decrypt. All up to date." },
+                { "status", HealthStatus.Healthy.ToString() }
+            };
+
+            var expectedHealthCheckResult = HealthCheckResult.Healthy(description: CheckName, data: healthCheckResultValues);
 
             this.dateTimeBrokerMock.Setup(broker =>
                 broker.GetCurrentDateTimeOffsetAsync())

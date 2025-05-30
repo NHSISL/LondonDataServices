@@ -45,8 +45,15 @@ namespace LHDS.Core.Tests.Unit.Services.Coordinations.HealthChecks.IngestionTrac
         private static IQueryable<Core.Models.Foundations.IngestionTrackings.IngestionTracking> CreateRandomDegradedIngestionTrackings()
         {
             DateTimeOffset dateTimeOffset = DateTimeOffset.UtcNow;
-            DateTimeOffset unhealthyDateTime = dateTimeOffset.AddDays(-1);
-            return CreateIngestionTrackingFiller(unhealthyDateTime).Create(count: GetRandomNumber()).AsQueryable();
+            DateTimeOffset degradedDateTime = dateTimeOffset.AddDays(-1);
+            return CreateIngestionTrackingFiller(degradedDateTime).Create(count: GetRandomNumber()).AsQueryable();
+        }
+
+        private static IQueryable<Core.Models.Foundations.IngestionTrackings.IngestionTracking> CreateRandomHealthyIngestionTrackings()
+        {
+            DateTimeOffset dateTimeOffset = DateTimeOffset.UtcNow;
+            DateTimeOffset healthyDateTime = dateTimeOffset;
+            return CreateIngestionTrackingFiller(healthyDateTime).Create(count: GetRandomNumber()).AsQueryable();
         }
 
         private static int GetRandomNumber() =>

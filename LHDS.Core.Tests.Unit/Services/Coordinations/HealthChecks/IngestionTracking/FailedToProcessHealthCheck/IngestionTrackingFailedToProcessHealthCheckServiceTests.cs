@@ -1,0 +1,105 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using LHDS.Core.Brokers.DateTimes;
+using LHDS.Core.Brokers.Loggings;
+using LHDS.Core.Brokers.Storages.Sql;
+using LHDS.Core.Services.Foundations.HealthChecks.IngestionTracking;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Diagnostics.HealthChecks;
+using Moq;
+using Tynamix.ObjectFiller;
+
+namespace LHDS.Core.Tests.Unit.Services.Coordinations.HealthChecks.IngestionTracking.FailedToProcessHealthCheck
+{
+    public partial class IngestionTrackingFailedToProcessHealthCheckServiceTests
+    {
+        private readonly IConfiguration configuration;
+        private readonly Mock<IStorageBroker> storageBrokerMock;
+        private readonly Mock<IDateTimeBroker> dateTimeBrokerMock;
+        private readonly Mock<ILoggingBroker> loggingBrokerMock;
+        private readonly IngestionTrackingFailedToProcessHealthCheckService ingestionTrackingFailedToProcessHealthCheckService;
+        private const string CheckName = "failedToProcess";
+
+        public IngestionTrackingFailedToProcessHealthCheckServiceTests()
+        {
+            this.configuration = new ConfigurationBuilder().Build();
+            this.storageBrokerMock = new Mock<IStorageBroker>();
+            this.dateTimeBrokerMock = new Mock<IDateTimeBroker>();
+            this.loggingBrokerMock = new Mock<ILoggingBroker>();
+
+            this.ingestionTrackingFailedToProcessHealthCheckService = new IngestionTrackingFailedToProcessHealthCheckService(
+                storageBroker: this.storageBrokerMock.Object,
+                configuration: this.configuration,
+                dateTimeBroker: this.dateTimeBrokerMock.Object,
+                loggingBroker: this.loggingBrokerMock.Object);
+        }
+
+        private static IQueryable<Core.Models.Foundations.IngestionTrackings.IngestionTracking> CreateRandomUnhealthyIngestionTrackings()
+        {
+            DateTimeOffset dateTimeOffset = DateTimeOffset.UtcNow;
+            DateTimeOffset unhealthyDateTime = dateTimeOffset.AddDays(-5);
+            return CreateIngestionTrackingFiller(unhealthyDateTime).Create(count: GetRandomNumber()).AsQueryable();
+        }
+
+        private static IQueryable<Core.Models.Foundations.IngestionTrackings.IngestionTracking> CreateRandomHealthyIngestionTrackings()
+        {
+            DateTimeOffset dateTimeOffset = DateTimeOffset.UtcNow;
+            DateTimeOffset healthyDateTime = dateTimeOffset;
+            return CreateIngestionTrackingFiller(healthyDateTime).Create(count: GetRandomNumber()).AsQueryable();
+        }
+
+        private static int GetRandomNumber() =>
+           new IntRange(min: 2, max: 10).GetValue();
+
+        private static Filler<Core.Models.Foundations.IngestionTrackings.IngestionTracking> CreateIngestionTrackingFiller(
+            DateTimeOffset updatedDate
+        )
+        {
+            DateTimeOffset dateTimeOffset = DateTimeOffset.UtcNow;
+            string user = Guid.NewGuid().ToString();
+            var filler = new Filler<Core.Models.Foundations.IngestionTrackings.IngestionTracking>();
+
+            filler.Setup()
+                .OnType<DateTimeOffset>().Use(dateTimeOffset)
+                .OnType<DateTimeOffset?>().Use(dateTimeOffset)
+                .OnProperty(ingestionTracking => ingestionTracking.CreatedBy).Use(user)
+                .OnProperty(ingestionTracking => ingestionTracking.UpdatedBy).Use(user)
+                .OnProperty(ingestionTracking => ingestionTracking.UpdatedDate).Use(updatedDate)
+                .OnProperty(ingestionTracking => ingestionTracking.RetryCount).Use(3)
+                .OnProperty(ingestionTracking => ingestionTracking.Supplier).IgnoreIt()
+                .OnProperty(ingestionTracking => ingestionTracking.IngestionTrackingAudits).IgnoreIt();
+
+            return filler;
+        }
+
+        private static Dictionary<string, object> GetHealthCheckResultValues(
+            DateTimeOffset dateTime,
+            HealthStatus healthStatus,
+            int healthyItems = 0,
+            int degradedItemsCount = 0,
+            int unhealthyItemsCount = 0)
+        {
+            var totalItemsCount = healthyItems + degradedItemsCount + unhealthyItemsCount;
+            var message = "Nothing to process. All up to date.";
+
+            if (totalItemsCount > 0)
+            {
+                message = $"{totalItemsCount} files have not been processed. Please check logs and function status.";
+            }
+
+            return new Dictionary<string, object>
+            {
+                { "description", "Failed To Process" },
+                { "failedToProcess", totalItemsCount},
+                { "degradedItems", degradedItemsCount},
+                { "unHealthyItems", unhealthyItemsCount},
+                { "degradedThresholdMinutes", 1440 },
+                { "unHealthyThresholdMinutes", 2880 },
+                { "checkedAt", dateTime.ToString("o") },
+                { "message", message },
+                { "status", healthStatus.ToString() }
+            };
+        }
+    }
+}

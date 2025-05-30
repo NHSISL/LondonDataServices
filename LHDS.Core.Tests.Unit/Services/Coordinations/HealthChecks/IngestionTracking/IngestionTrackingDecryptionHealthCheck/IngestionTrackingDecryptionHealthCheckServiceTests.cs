@@ -42,14 +42,15 @@ namespace LHDS.Core.Tests.Unit.Services.Coordinations.HealthChecks.IngestionTrac
             return CreateIngestionTrackingFiller(unhealthyDateTime).Create(count: GetRandomNumber()).AsQueryable();
         }
 
-        private static string GetRandomString() =>
-            new MnemonicString(wordCount: GetRandomNumber()).GetValue();
+        private static IQueryable<Core.Models.Foundations.IngestionTrackings.IngestionTracking> CreateRandomDegradedIngestionTrackings()
+        {
+            DateTimeOffset dateTimeOffset = DateTimeOffset.UtcNow;
+            DateTimeOffset unhealthyDateTime = dateTimeOffset.AddDays(-1);
+            return CreateIngestionTrackingFiller(unhealthyDateTime).Create(count: GetRandomNumber()).AsQueryable();
+        }
 
         private static int GetRandomNumber() =>
            new IntRange(min: 2, max: 10).GetValue();
-
-        private static Core.Models.Foundations.IngestionTrackings.IngestionTracking CreateRandomIngestionTracking(DateTimeOffset updatedDate) =>
-            CreateIngestionTrackingFiller(updatedDate).Create();
 
         private static Filler<Core.Models.Foundations.IngestionTrackings.IngestionTracking> CreateIngestionTrackingFiller(
             DateTimeOffset updatedDate

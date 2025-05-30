@@ -2,14 +2,9 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using LHDS.Core.Brokers.DateTimes;
-using LHDS.Core.Brokers.Loggings;
-using LHDS.Core.Brokers.Storages.Sql;
-using LHDS.Core.Services.Foundations.HealthChecks.IngestionTracking;
-using Microsoft.Extensions.Configuration;
+using FluentAssertions;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
 using Moq;
-using Tynamix.ObjectFiller;
 using Xunit;
 
 namespace LHDS.Core.Tests.Unit.Services.Coordinations.HealthChecks.IngestionTracking.FailedToProcessHealthCheck
@@ -53,6 +48,11 @@ namespace LHDS.Core.Tests.Unit.Services.Coordinations.HealthChecks.IngestionTrac
             var result = await this.ingestionTrackingFailedToProcessHealthCheckService.GetHealthStatusAsync();
 
             // then
+            result.Data.Should().BeEquivalentTo(expectedHealthCheckResult.Data);
+            result.Description.Should().BeEquivalentTo(expectedHealthCheckResult.Description);
+            result.Exception.Should().BeEquivalentTo(expectedHealthCheckResult.Exception);
+            result.Status.Should().Be(expectedHealthCheckResult.Status);
+
             this.dateTimeBrokerMock.Verify(broker =>
                 broker.GetCurrentDateTimeOffsetAsync(),
                     Times.Once);
@@ -102,6 +102,11 @@ namespace LHDS.Core.Tests.Unit.Services.Coordinations.HealthChecks.IngestionTrac
             var result = await this.ingestionTrackingFailedToProcessHealthCheckService.GetHealthStatusAsync();
 
             // then
+            result.Data.Should().BeEquivalentTo(expectedHealthCheckResult.Data);
+            result.Description.Should().BeEquivalentTo(expectedHealthCheckResult.Description);
+            result.Exception.Should().BeEquivalentTo(expectedHealthCheckResult.Exception);
+            result.Status.Should().Be(expectedHealthCheckResult.Status);
+
             this.dateTimeBrokerMock.Verify(broker =>
                 broker.GetCurrentDateTimeOffsetAsync(),
                     Times.Once);
@@ -141,6 +146,11 @@ namespace LHDS.Core.Tests.Unit.Services.Coordinations.HealthChecks.IngestionTrac
             var result = await this.ingestionTrackingFailedToProcessHealthCheckService.GetHealthStatusAsync();
 
             // then
+            result.Data.Should().BeEquivalentTo(expectedHealthCheckResult.Data);
+            result.Description.Should().BeEquivalentTo(expectedHealthCheckResult.Description);
+            result.Exception.Should().BeEquivalentTo(expectedHealthCheckResult.Exception);
+            result.Status.Should().Be(expectedHealthCheckResult.Status);
+
             this.dateTimeBrokerMock.Verify(broker =>
                 broker.GetCurrentDateTimeOffsetAsync(),
                     Times.Once);

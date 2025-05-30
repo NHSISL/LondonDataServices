@@ -20,6 +20,8 @@ namespace LHDS.Core.Tests.Unit.Services.Coordinations.HealthChecks.IngestionTrac
         private readonly Mock<ILoggingBroker> loggingBrokerMock;
         private readonly IngestionTrackingFailedToProcessHealthCheckService ingestionTrackingFailedToProcessHealthCheckService;
         private const string CheckName = "failedToProcess";
+        private const int DegradedThresholdMinutes = 1440;
+        private const int UnHealthyThresholdMinutes = 2880;
 
         public IngestionTrackingFailedToProcessHealthCheckServiceTests()
         {
@@ -38,22 +40,22 @@ namespace LHDS.Core.Tests.Unit.Services.Coordinations.HealthChecks.IngestionTrac
         private static IQueryable<Core.Models.Foundations.IngestionTrackings.IngestionTracking> CreateRandomUnhealthyIngestionTrackings()
         {
             DateTimeOffset dateTimeOffset = DateTimeOffset.UtcNow;
-            DateTimeOffset unhealthyDateTime = dateTimeOffset.AddDays(-5);
-            return CreateIngestionTrackingFiller(unhealthyDateTime).Create(count: GetRandomNumber()).AsQueryable();
+            DateTimeOffset unhealthyDateTime = dateTimeOffset.AddMinutes((UnHealthyThresholdMinutes + 1) * -1);
+            return CreateIngestionTrackingFiller(unhealthyDateTime).Create(count: 1).AsQueryable();
         }
 
         private static IQueryable<Core.Models.Foundations.IngestionTrackings.IngestionTracking> CreateRandomDegradedIngestionTrackings()
         {
             DateTimeOffset dateTimeOffset = DateTimeOffset.UtcNow;
-            DateTimeOffset degradedDateTime = dateTimeOffset.AddDays(-1);
-            return CreateIngestionTrackingFiller(degradedDateTime).Create(count: GetRandomNumber()).AsQueryable();
+            DateTimeOffset degradedDateTime = dateTimeOffset.AddMinutes((DegradedThresholdMinutes + 1) * -1);
+            return CreateIngestionTrackingFiller(degradedDateTime).Create(count: 1).AsQueryable();
         }
 
         private static IQueryable<Core.Models.Foundations.IngestionTrackings.IngestionTracking> CreateRandomHealthyIngestionTrackings()
         {
             DateTimeOffset dateTimeOffset = DateTimeOffset.UtcNow;
             DateTimeOffset healthyDateTime = dateTimeOffset;
-            return CreateIngestionTrackingFiller(healthyDateTime).Create(count: GetRandomNumber()).AsQueryable();
+            return CreateIngestionTrackingFiller(healthyDateTime).Create(count: 1).AsQueryable();
         }
 
         private static int GetRandomNumber() =>
@@ -101,8 +103,8 @@ namespace LHDS.Core.Tests.Unit.Services.Coordinations.HealthChecks.IngestionTrac
                 { "failedToProcess", totalItemsCount},
                 { "degradedItems", degradedItemsCount},
                 { "unHealthyItems", unhealthyItemsCount},
-                { "degradedThresholdMinutes", 1440 },
-                { "unHealthyThresholdMinutes", 2880 },
+                { "degradedThresholdMinutes", DegradedThresholdMinutes.ToString() },
+                { "unHealthyThresholdMinutes", UnHealthyThresholdMinutes.ToString() },
                 { "checkedAt", dateTime.ToString("o") },
                 { "message", message },
                 { "status", healthStatus.ToString() }

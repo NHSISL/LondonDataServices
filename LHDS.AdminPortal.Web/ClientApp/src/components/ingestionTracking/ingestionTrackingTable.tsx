@@ -17,7 +17,7 @@ import { IngestionTracking } from "../../models/ingestionTrackings/ingestionTrac
 import { Row } from "react-bootstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faDatabase, faRefresh } from "@fortawesome/free-solid-svg-icons";
-import IngestionFilterModal from "./ingestionTrackingFilter"; 
+import IngestionFilterModal from "./ingestionTrackingFilter";
 import { SupplierView } from "../../models/views/components/suppliers/supplierView";
 import { emisLandingService } from "../../services/foundations/emisLandingService";
 import { toastError, toastSuccess } from "../../brokers/toastBroker";
@@ -31,7 +31,8 @@ const IngestionTrackingTable: FunctionComponent<IngestionTrackingTableProps> = (
     const [debouncedSupplierTerm, setDebouncedSupplierTerm] = useState<string>("");
     const [showSpinner, setShowSpinner] = useState(false);
     const [showModal, setShowModal] = useState(false);
-    let { mappedSuppliers: suppliersRetrieved } = lookupViewService.useGetSupplierList("");
+
+    let { mappedSuppliers: suppliersRetrieved } = lookupViewService.useGetTrackedSupplierList("");
 
     const {
         mappedIngestionTrackings: ingestionTrackingsRetrieved,
@@ -44,6 +45,8 @@ const IngestionTrackingTable: FunctionComponent<IngestionTrackingTableProps> = (
     } = ingestionTrackingHomeViewService.useGetAllIngestionTrackings(
         debouncedTerm, debouncedSupplierTerm
     );
+
+    const totalRecords = ingestionTrackingsRetrieved?.length || 0;
 
     const handleSearchChange = (value: string) => {
         setSearchTerm(value);
@@ -80,6 +83,11 @@ const IngestionTrackingTable: FunctionComponent<IngestionTrackingTableProps> = (
     const handleFilter = (supplier: SupplierView) => {
         setSearchTerm(debouncedTerm);
         handleSupplierDebounce(supplier.id.toString());
+    };
+
+    const handleBatchClick = (batch: string) => {
+        setSearchTerm(batch);
+        setDebouncedTerm(batch);
     };
 
     const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -119,49 +127,53 @@ const IngestionTrackingTable: FunctionComponent<IngestionTrackingTableProps> = (
                                     {showSpinner ? (
                                         <SpinnerBase />
                                     ) : (
-                                            <div className="input-group-append m-0 p-0">
-                                                <button className="btn btn-outline-secondary" id="refreshButton" onClick={refreshData}>
+                                        <div className="input-group-append m-0 p-0">
+                                            <button className="btn btn-outline-secondary" id="refreshButton" onClick={refreshData}>
                                                 <FontAwesomeIcon icon={faRefresh} /> Refresh
                                             </button>
                                         </div>
                                     )}
                                 </div>
                             </Row>
-                            <span className="d-flex align-items-center">
-                                {/* "All" Option */}
-                                <div key="all-suppliers" className="form-check me-3">
-                                    <input
-                                        className="form-check-input"
-                                        type="radio"
-                                        name="supplier"
-                                        id="supplier-all"
-                                        value=""
-                                        onChange={handleChange}
-                                    />
-                                    <label className="form-check-label" htmlFor="supplier-all">
-                                        All
-                                    </label>
-                                </div>
+                            <div className="d-flex justify-content-between align-items-center mb-2">
+                                <span className="d-flex align-items-center">
 
-                                {/* Filtered Suppliers: Only "EMIS" and "TPP" */}
-                                {suppliersRetrieved
-                                    .filter((supplier) => supplier.name === "EMIS" || supplier.name === "TPP")
-                                    .map((supplier) => (
-                                        <div key={supplier.id.toString()} className="form-check me-3">
-                                            <input
-                                                className="form-check-input"
-                                                type="radio"
-                                                name="supplier"
-                                                id={`supplier-${supplier.id}`}
-                                                value={supplier.id.toString()}
-                                                onChange={handleChange}
-                                            />
-                                            <label className="form-check-label" htmlFor={`supplier-${supplier.id}`}>
-                                                {supplier.name || ""}
-                                            </label>
-                                        </div>
-                                    ))}
-                            </span>
+                                    <div key="all-suppliers" className="form-check me-3">
+                                        <input
+                                            className="form-check-input"
+                                            type="radio"
+                                            name="supplier"
+                                            id="supplier-all"
+                                            value=""
+                                            onChange={handleChange}
+                                        />
+                                        <label className="form-check-label" htmlFor="supplier-all">
+                                            All
+                                        </label>
+                                    </div>
+
+                                    {suppliersRetrieved
+                                        .map((supplier) => (
+                                            <div key={supplier.id.toString()} className="form-check me-3">
+                                                <input
+                                                    className="form-check-input"
+                                                    type="radio"
+                                                    name="supplier"
+                                                    id={`supplier-${supplier.id}`}
+                                                    value={supplier.id.toString()}
+                                                    onChange={handleChange}
+                                                />
+                                                <label className="form-check-label" htmlFor={`supplier-${supplier.id}`}>
+                                                    {supplier.name || ""}
+                                                </label>
+                                            </div>
+                                        ))}
+                                </span>
+
+                                <span className="text-muted small">
+                                    Showing {totalRecords} record{totalRecords !== 1 ? "s" : ""}
+                                </span>
+                            </div>
                             <TableBase classes="table-bordered">
                                 <TableBaseTbody>
                                     {isLoading || showSpinner ? (
@@ -178,6 +190,7 @@ const IngestionTrackingTable: FunctionComponent<IngestionTrackingTableProps> = (
                                                         key={ingestionTrackingHomeView.id}
                                                         ingestionTracking={ingestionTrackingHomeView}
                                                         onReDecrypted={handleReDecrypt}
+                                                        onBatchClick={handleBatchClick}
                                                     />
                                                 )
                                             )}

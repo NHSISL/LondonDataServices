@@ -8,12 +8,13 @@ using System.Threading.Tasks;
 using FluentAssertions;
 using LHDS.Core.Models.Foundations.Suppliers;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Xunit;
 
 namespace LHDS.Core.Tests.Integration.EmisLandings
 {
     public partial class LandingTests
     {
-        [ReleaseCandidateFact]
+        [Fact]
         public async Task ShouldLandFilesAsync()
         {
             try
@@ -32,7 +33,7 @@ namespace LHDS.Core.Tests.Integration.EmisLandings
             {
                 await loggingBroker.LogErrorAsync(ex);
                 Console.WriteLine(ex.Message);
-                Assert.Fail($"{ex.Message}, {ex?.InnerException?.Message}");
+                Xunit.Assert.Fail($"{ex.Message}, {ex?.InnerException?.Message}");
             }
         }
     }

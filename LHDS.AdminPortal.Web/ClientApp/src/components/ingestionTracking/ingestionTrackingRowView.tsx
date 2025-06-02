@@ -7,10 +7,12 @@ import { IngestionTracking } from "../../models/ingestionTrackings/ingestionTrac
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faCheck, faTimes } from '@fortawesome/free-solid-svg-icons';
 import moment from "moment";
+import { Button } from "react-bootstrap";
 
 type IngestionTrackingRowProps = {
     onReDecrypted: (ingestionTracking: IngestionTracking) => void;
     ingestionTracking: IngestionTracking;
+    onBatchClick: (batch: string) => void
 }
 
 const IngestionTrackingRow: FunctionComponent<IngestionTrackingRowProps> = (props) => {
@@ -44,6 +46,17 @@ const IngestionTrackingRow: FunctionComponent<IngestionTrackingRowProps> = (prop
                 <span>
                     Record Count: {ingestionTracking.recordCount} &nbsp;
                 </span>
+            </TableBaseData>
+
+            <TableBaseData>
+                <strong>Batch:</strong><br />
+                <Button
+                    variant="link"
+                    onClick={() => props.onBatchClick(ingestionTracking.batch)}
+                    className="p-0"
+                >
+                    {ingestionTracking.batch}
+                </Button>
             </TableBaseData>
 
             <TableBaseData>

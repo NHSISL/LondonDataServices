@@ -85,24 +85,6 @@ const SupplierRowAdd: FunctionComponent<SupplierRowAddProps> = (props) => {
                     required={true}
                     error={errors.friendlyName}
                     onChange={handleChange} />
-                <TextInputBase
-                    id="landingManualTriggerUrl"
-                    name="landingManualTriggerUrl"
-                    label="landing Manual Trigger Url"
-                    placeholder="landing Manual Trigge Url"
-                    value={supplier.landingManualTriggerUrl}
-                    required={true}
-                    error={errors.landingManualTriggerUrl}
-                    onChange={handleChange} />
-                <TextInputBase
-                    id="decryptionManualTriggerUrl"
-                    name="decryptionManualTriggerUrl"
-                    label="Decryption Manual Trigger Url"
-                    placeholder="landing Manual Trigge Url"
-                    value={supplier.decryptionManualTriggerUrl}
-                    required={true}
-                    error={errors.landingManualTriggerUrl}
-                    onChange={handleChange} />
             </TableBaseData>
             
             <TableBaseData classes="text-end">

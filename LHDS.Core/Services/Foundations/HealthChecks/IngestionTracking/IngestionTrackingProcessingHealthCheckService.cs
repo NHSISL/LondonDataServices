@@ -21,6 +21,8 @@ namespace LHDS.Core.Services.Foundations.HealthChecks.IngestionTracking
         private readonly IDateTimeBroker dateTimeBroker;
         private readonly ILoggingBroker loggingBroker;
         private const string CheckName = "processingQueue";
+        private const string CheckDescriptionName = "Processing Queue";
+        private const string ConfigSectionName = "HealthChecks:IngestionTracking:FilesReceived";
 
         public IngestionTrackingProcessingHealthCheckService(
             IStorageBroker storageBroker,
@@ -37,16 +39,16 @@ namespace LHDS.Core.Services.Foundations.HealthChecks.IngestionTracking
         public async ValueTask<HealthCheckResult> GetHealthStatusAsync()
         {
             int degradedThresholdMinutes = configuration
-                .GetValue("HealthChecks:IngestionTracking:Processing:DegradedThreshold", 1440);
+                .GetValue($"{ConfigSectionName}:DegradedThreshold", 1440);
 
             int unHealthyThresholdMinutes = configuration
-                .GetValue("HealthChecks:IngestionTracking:Processing:UnHealthyThreshold", 2880);
+                .GetValue($"{ConfigSectionName}:UnHealthyThreshold", 2880);
 
             DateTimeOffset currentDateTime = await dateTimeBroker.GetCurrentDateTimeOffsetAsync();
             DateTimeOffset degradedThresholdDateTime = currentDateTime.AddMinutes(-1 * degradedThresholdMinutes);
             DateTimeOffset unHealthyThresholdDateTime = currentDateTime.AddMinutes(-1 * unHealthyThresholdMinutes);
             var ingestionTrackingQuery = await storageBroker.SelectAllIngestionTrackingsAsync();
-            var filteredQuery = ingestionTrackingQuery.Where(i => i.IsProcessing);
+            var filteredQuery = ingestionTrackingQuery.Where(ingestionTracking => ingestionTracking.IsProcessing);
 
             int degradedCount = filteredQuery.Count(ingestionTracking =>
                 ingestionTracking.UpdatedDate <= degradedThresholdDateTime &&
@@ -61,9 +63,9 @@ namespace LHDS.Core.Services.Foundations.HealthChecks.IngestionTracking
                 ? $"Nothing to process. All up to date."
                 : $"{totalCount} files have not been processed. Please check logs and function status.";
 
-            var vals = new Dictionary<string, object>
+            var values = new Dictionary<string, object>
             {
-                { "description", "Processing Queue" },
+                { "description", CheckDescriptionName },
                 { "stuckInProcessing", totalCount },
                 { "degradedItems", degradedCount},
                 { "unHealthyItems", unHealthyCount},
@@ -75,27 +77,27 @@ namespace LHDS.Core.Services.Foundations.HealthChecks.IngestionTracking
 
             if (unHealthyCount > 0)
             {
-                vals.Add("status", HealthStatus.Unhealthy.ToString());
+                values.Add("status", HealthStatus.Unhealthy.ToString());
 
                 return HealthCheckResult.Unhealthy(
                     description: CheckName,
-                    data: vals);
+                    data: values);
             }
             else if (degradedCount > 0)
             {
-                vals.Add("status", HealthStatus.Degraded.ToString());
+                values.Add("status", HealthStatus.Degraded.ToString());
 
                 return HealthCheckResult.Degraded(
                     description: CheckName,
-                    data: vals);
+                    data: values);
             }
             else
             {
-                vals.Add("status", HealthStatus.Healthy.ToString());
+                values.Add("status", HealthStatus.Healthy.ToString());
 
                 return HealthCheckResult.Healthy(
                     description: CheckName,
-                    data: vals);
+                    data: values);
             }
         }
     }

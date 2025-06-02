@@ -15,26 +15,27 @@ using Xunit;
 
 namespace LHDS.Core.Tests.Unit.Services.Foundations.HealthChecks.IngestionTrackings
 {
-    public partial class IngestionTrackingDecryptionHealthCheckServiceTests
+    public partial class IngestionTrackingIncompleteBatchesHealthCheckServiceTests
     {
         [Fact]
         public async Task ShouldGetHealthStatusAsHealthyAsync()
         {
             // given
-            string CheckName = "decryption";
+            string CheckName = "incompleteBatchesQueue";
             DateTimeOffset randomDateTimeOffset = DateTimeOffset.UtcNow;
+            string batchReference = GetRandomStringWithLengthOf(10);
             int randomNumber = GetRandomNumber();
 
             int degradedThresholdMinutes = this.inMemoryConfiguration
-                .GetValue("HealthChecks:IngestionTracking:Decryption:DegradedThreshold", 1440);
+                .GetValue("HealthChecks:IngestionTracking:IncompleteBatches:DegradedThreshold", 1440);
 
             int unHealthyThresholdMinutes = this.inMemoryConfiguration
-                .GetValue("HealthChecks:IngestionTracking:Decryption:UnHealthyThreshold", 2880);
+                .GetValue("HealthChecks:IngestionTracking:IncompleteBatches:UnHealthyThreshold", 2880);
 
             List<IngestionTracking> healthyRecords = CreateRandomIngestionTrackings(
                 dateTimeOffset: randomDateTimeOffset,
-                isDecrypted: true,
-                isProcessing: false,
+                batchReference: batchReference,
+                isCompletedBatch: true,
                 count: randomNumber);
 
             this.dateTimeBrokerMock.Setup(broker =>
@@ -45,12 +46,12 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.HealthChecks.IngestionTracki
                 broker.SelectAllIngestionTrackingsAsync())
                     .ReturnsAsync(healthyRecords.AsQueryable());
 
-            string message = "Nothing to decrypt. All up to date.";
+            string message = "No incomplete batches. All up to date.";
 
-            var vals = new Dictionary<string, object>
+            var values = new Dictionary<string, object>
             {
-                { "description", "Decryption Queue" },
-                { "unDecryptedItems", 0},
+                { "description", "Incomplete Batches" },
+                { "incompleteBatches", 0},
                 { "degradedItems", 0},
                 { "unHealthyItems", 0},
                 { "degradedThresholdMinutes", degradedThresholdMinutes.ToString() },
@@ -62,7 +63,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.HealthChecks.IngestionTracki
 
             HealthCheckResult expectedHealthCheckResult = HealthCheckResult.Healthy(
                 description: CheckName,
-                data: vals);
+                data: values);
 
             // when
             HealthCheckResult actualHealthCheckResult =
@@ -93,20 +94,22 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.HealthChecks.IngestionTracki
         public async Task ShouldGetHealthStatusAsDegradedAsync()
         {
             // given
-            string CheckName = "decryption";
+            string CheckName = "incompleteBatchesQueue";
             DateTimeOffset randomDateTimeOffset = DateTimeOffset.UtcNow;
+            string batchReference = GetRandomStringWithLengthOf(10);
             int randomNumber = GetRandomNumber();
+            int distinctBatchCount = 1;
 
             int degradedThresholdMinutes = this.inMemoryConfiguration
-                .GetValue("HealthChecks:IngestionTracking:Decryption:DegradedThreshold", 1440);
+                .GetValue("HealthChecks:IngestionTracking:Processing:DegradedThreshold", 1440);
 
             int unHealthyThresholdMinutes = this.inMemoryConfiguration
-                .GetValue("HealthChecks:IngestionTracking:Decryption:UnHealthyThreshold", 2880);
+                .GetValue("HealthChecks:IngestionTracking:Processing:UnHealthyThreshold", 2880);
 
             List<IngestionTracking> degradedRecords = CreateRandomIngestionTrackings(
                 dateTimeOffset: randomDateTimeOffset.AddMinutes(-degradedThresholdMinutes).AddSeconds(-1),
-                isDecrypted: false,
-                isProcessing: false,
+                batchReference: batchReference,
+                isCompletedBatch: false,
                 count: randomNumber);
 
             this.dateTimeBrokerMock.Setup(broker =>
@@ -117,13 +120,13 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.HealthChecks.IngestionTracki
                 broker.SelectAllIngestionTrackingsAsync())
                     .ReturnsAsync(degradedRecords.AsQueryable());
 
-            string message = $"{randomNumber} files have not been decrypted. Please check logs and function status.";
+            string message = $"{distinctBatchCount} batches incomplete. Please check logs and source locations.";
 
-            var vals = new Dictionary<string, object>
+            var values = new Dictionary<string, object>
             {
-                { "description", "Decryption Queue" },
-                { "unDecryptedItems", randomNumber},
-                { "degradedItems", randomNumber},
+                { "description", "Incomplete Batches" },
+                { "incompleteBatches", distinctBatchCount},
+                { "degradedItems", distinctBatchCount},
                 { "unHealthyItems", 0},
                 { "degradedThresholdMinutes", degradedThresholdMinutes.ToString() },
                 { "unHealthyThresholdMinutes", unHealthyThresholdMinutes.ToString() },
@@ -134,7 +137,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.HealthChecks.IngestionTracki
 
             HealthCheckResult expectedHealthCheckResult = HealthCheckResult.Degraded(
                 description: CheckName,
-                data: vals);
+                data: values);
 
             // when
             HealthCheckResult actualHealthCheckResult =
@@ -165,20 +168,22 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.HealthChecks.IngestionTracki
         public async Task ShouldGetHealthStatusAsUnHealthyAsync()
         {
             // given
-            string CheckName = "decryption";
+            string CheckName = "incompleteBatchesQueue";
             DateTimeOffset randomDateTimeOffset = DateTimeOffset.UtcNow;
+            string batchReference = GetRandomStringWithLengthOf(10);
             int randomNumber = GetRandomNumber();
+            int distinctBatchCount = 1;
 
             int degradedThresholdMinutes = this.inMemoryConfiguration
-                .GetValue("HealthChecks:IngestionTracking:Decryption:DegradedThreshold", 1440);
+                .GetValue("HealthChecks:IngestionTracking:Processing:DegradedThreshold", 1440);
 
             int unHealthyThresholdMinutes = this.inMemoryConfiguration
-                .GetValue("HealthChecks:IngestionTracking:Decryption:UnHealthyThreshold", 2880);
+                .GetValue("HealthChecks:IngestionTracking:Processing:UnHealthyThreshold", 2880);
 
             List<IngestionTracking> unHealthyRecords = CreateRandomIngestionTrackings(
                 dateTimeOffset: randomDateTimeOffset.AddMinutes(-unHealthyThresholdMinutes).AddSeconds(-1),
-                isDecrypted: false,
-                isProcessing: false,
+                batchReference: batchReference,
+                isCompletedBatch: false,
                 count: randomNumber);
 
             this.dateTimeBrokerMock.Setup(broker =>
@@ -189,14 +194,14 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.HealthChecks.IngestionTracki
                 broker.SelectAllIngestionTrackingsAsync())
                     .ReturnsAsync(unHealthyRecords.AsQueryable());
 
-            string message = $"{randomNumber} files have not been decrypted. Please check logs and function status.";
+            string message = $"{distinctBatchCount} batches incomplete. Please check logs and source locations.";
 
-            var vals = new Dictionary<string, object>
+            var values = new Dictionary<string, object>
             {
-                { "description", "Decryption Queue" },
-                { "unDecryptedItems", randomNumber},
+                { "description", "Incomplete Batches" },
+                { "incompleteBatches", distinctBatchCount},
                 { "degradedItems", 0},
-                { "unHealthyItems", randomNumber},
+                { "unHealthyItems", distinctBatchCount},
                 { "degradedThresholdMinutes", degradedThresholdMinutes.ToString() },
                 { "unHealthyThresholdMinutes", unHealthyThresholdMinutes.ToString() },
                 { "checkedAt", randomDateTimeOffset.ToString("o") },
@@ -206,7 +211,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.HealthChecks.IngestionTracki
 
             HealthCheckResult expectedHealthCheckResult = HealthCheckResult.Unhealthy(
                 description: CheckName,
-                data: vals);
+                data: values);
 
             // when
             HealthCheckResult actualHealthCheckResult =
@@ -233,40 +238,39 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.HealthChecks.IngestionTracki
             this.loggingBrokerMock.VerifyNoOtherCalls();
         }
 
-
         [Fact]
         public async Task ShouldGetHealthStatusAsUnHealthyWithMixedItemsAsync()
         {
             // given
-            string CheckName = "decryption";
+            string CheckName = "incompleteBatchesQueue";
             DateTimeOffset randomDateTimeOffset = DateTimeOffset.UtcNow;
+            int distinctBatchCount = 2;
 
             int degradedThresholdMinutes = this.inMemoryConfiguration
-                .GetValue("HealthChecks:IngestionTracking:Decryption:DegradedThreshold", 1440);
+                .GetValue("HealthChecks:IngestionTracking:Processing:DegradedThreshold", 1440);
 
             int unHealthyThresholdMinutes = this.inMemoryConfiguration
-                .GetValue("HealthChecks:IngestionTracking:Decryption:UnHealthyThreshold", 2880);
+                .GetValue("HealthChecks:IngestionTracking:Processing:UnHealthyThreshold", 2880);
 
             List<IngestionTracking> healthyRecords = CreateRandomIngestionTrackings(
                 dateTimeOffset: randomDateTimeOffset,
-                isDecrypted: false,
-                isProcessing: false,
+                batchReference: GetRandomStringWithLengthOf(10),
+                isCompletedBatch: true,
                 count: GetRandomNumber());
 
             List<IngestionTracking> degradedRecords = CreateRandomIngestionTrackings(
                 dateTimeOffset: randomDateTimeOffset.AddMinutes(-degradedThresholdMinutes).AddSeconds(-1),
-                isDecrypted: false,
-                isProcessing: false,
+                batchReference: GetRandomStringWithLengthOf(10),
+                isCompletedBatch: false,
                 count: GetRandomNumber());
 
             List<IngestionTracking> unhealthyRecords = CreateRandomIngestionTrackings(
                 dateTimeOffset: randomDateTimeOffset.AddMinutes(-unHealthyThresholdMinutes).AddSeconds(-1),
-                isDecrypted: false,
-                isProcessing: false,
+                batchReference: GetRandomStringWithLengthOf(10),
+                isCompletedBatch: false,
                 count: GetRandomNumber());
 
             List<IngestionTracking> allRecords = [.. healthyRecords, .. degradedRecords, .. unhealthyRecords];
-            int unDecryptedCount = degradedRecords.Count + unhealthyRecords.Count;
 
             this.dateTimeBrokerMock.Setup(broker =>
                 broker.GetCurrentDateTimeOffsetAsync())
@@ -276,14 +280,14 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.HealthChecks.IngestionTracki
                 broker.SelectAllIngestionTrackingsAsync())
                     .ReturnsAsync(allRecords.AsQueryable());
 
-            string message = $"{unDecryptedCount} files have not been decrypted. Please check logs and function status.";
+            string message = $"{distinctBatchCount} batches incomplete. Please check logs and source locations.";
 
-            var vals = new Dictionary<string, object>
+            var values = new Dictionary<string, object>
             {
-                { "description", "Decryption Queue" },
-                { "unDecryptedItems", unDecryptedCount},
-                { "degradedItems", degradedRecords.Count},
-                { "unHealthyItems", unhealthyRecords.Count},
+                { "description", "Incomplete Batches" },
+                { "incompleteBatches", distinctBatchCount},
+                { "degradedItems", 1},
+                { "unHealthyItems", 1},
                 { "degradedThresholdMinutes", degradedThresholdMinutes.ToString() },
                 { "unHealthyThresholdMinutes", unHealthyThresholdMinutes.ToString() },
                 { "checkedAt", randomDateTimeOffset.ToString("o") },
@@ -293,7 +297,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.HealthChecks.IngestionTracki
 
             HealthCheckResult expectedHealthCheckResult = HealthCheckResult.Unhealthy(
                 description: CheckName,
-                data: vals);
+                data: values);
 
             // when
             HealthCheckResult actualHealthCheckResult =

@@ -118,6 +118,10 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Ingress
                 })
                 .Returns(ValueTask.CompletedTask);
 
+            this.ingestionTrackingProcessingServiceMock.Setup(service =>
+                service.MarkAsBatchCompleteAsync(ingestionTrackingId, true))
+                    .Returns(ValueTask.CompletedTask);
+
             // when
             await this.ingressOrchestrationService.CheckForBatchCompleteAsync(ingestionTrackingId);
 
@@ -140,6 +144,10 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Ingress
                     batchReadyFilePath,
                     blobContainers.Ingress),
                         Times.Once);
+
+            this.ingestionTrackingProcessingServiceMock.Verify(service =>
+                service.MarkAsBatchCompleteAsync(ingestionTrackingId, true),
+                    Times.Once);
 
             this.auditBrokerMock.Verify(service => service.LogInformationAsync(
                 "BatchComplete",

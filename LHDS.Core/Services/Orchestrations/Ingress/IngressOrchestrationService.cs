@@ -100,6 +100,9 @@ namespace LHDS.Core.Services.Orchestrations.Ingress
                     fileName: batchCompleteFileName,
                     container: this.blobContainers.Ingress);
 
+                await this.ingestionTrackingProcessingService
+                    .MarkAsBatchCompleteAsync(ingestionTrackingId, isBatchComplete: true);
+
                 await this.auditBroker.LogInformationAsync(
                     auditType: "BatchComplete",
                     title: $"{batchReadyFileName} generated",

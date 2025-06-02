@@ -30,22 +30,6 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Ingress
             List<string> dataSetSpecificationObjects = GetRandomStringList();
             List<string> ingestionTrackingObjects = dataSetSpecificationObjects.DeepClone();
             ingestionTrackingObjects.Remove(dataSetSpecificationObjects.First());
-            List<string> missingSpecificationObjectIds = new List<string> { dataSetSpecificationObjects.First() };
-
-            string batchReadyFileName =
-                $"{randomIngestionTracking.BatchReadyFolderPath}/BatchReady.txt";
-
-            string batchIncompleteFileName =
-                $"{randomIngestionTracking.BatchReadyFolderPath}/BatchNotReady.txt";
-
-            string message =
-                $"Unable to generate '{batchReadyFileName}' for batch: {randomIngestionTracking.Batch}.  " +
-                Environment.NewLine +
-                $"We are missing {missingSpecificationObjectIds.Count}/{dataSetSpecificationObjects.Count} files.  " +
-                Environment.NewLine +
-                $"Missing specification object Id's: {string.Join(", ", missingSpecificationObjectIds)} " +
-                Environment.NewLine +
-                $"as defined by Dataset Specification Id: {randomIngestionTracking.DataSetSpecificationId}";
 
             this.ingestionTrackingProcessingServiceMock
                 .Setup(service => service.RetrieveIngestionTrackingByIdAsync(ingestionTrackingId))
@@ -75,31 +59,6 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Ingress
                 service.RetrieveObjectsInBatchByBatchReferenceAsync(batchReference, true),
                     Times.Once);
 
-            this.documentProcessingServiceMock.Verify(service =>
-                service.AddDocumentAsync(
-                    It.IsAny<Stream>(),
-                    batchIncompleteFileName,
-                    blobContainers.Ingress),
-                        Times.Once);
-
-            this.documentProcessingServiceMock.Verify(service =>
-                service.RemoveDocumentByFileNameAsync(
-                    batchReadyFileName,
-                    blobContainers.Ingress),
-                        Times.Once);
-
-            this.ingestionTrackingProcessingServiceMock.Verify(service =>
-                service.MarkAsBatchCompleteAsync(ingestionTrackingId, false),
-                    Times.Once);
-
-            this.auditBrokerMock.Verify(service => service.LogInformationAsync(
-                "BatchComplete",
-                "Unable to generate BatchReady.txt",
-                message,
-                batchReadyFileName,
-                randomIngestionTracking.Batch),
-                    Times.Once);
-
             this.ingestionTrackingProcessingServiceMock.VerifyNoOtherCalls();
             this.specificationObjectProcessingServiceMock.VerifyNoOtherCalls();
             this.documentProcessingServiceMock.VerifyNoOtherCalls();
@@ -113,12 +72,8 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Ingress
             // given
             IngestionTracking randomIngestionTracking = CreateRandomIngestionTracking();
             randomIngestionTracking.DecryptedFileName = CreateRandomDecryptedFilePath();
-
-            string batchReadyFileName =
-                $"{randomIngestionTracking.BatchReadyFolderPath}/BatchReady.txt";
-
-            string batchIncompleteFileName =
-                $"{randomIngestionTracking.BatchReadyFolderPath}/BatchNotReady.txt";
+            string batchReadyFileName = "_BatchReady.txt";
+            string batchReadyFilePath = $"{randomIngestionTracking.BatchReadyFolderPath}/{batchReadyFileName}";
 
             IngestionTracking storageIngestionTracking = randomIngestionTracking.DeepClone();
             Guid ingestionTrackingId = randomIngestionTracking.Id;
@@ -130,9 +85,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Ingress
 
             string message =
                 $"All specification object files present for batch '{randomIngestionTracking.Batch}' " +
-                $"as defined in Dataset Specification Id: '{randomIngestionTracking.DataSetSpecificationId}'." +
-                Environment.NewLine +
-                $"Generate batch complete file: '{batchReadyFileName}'";
+                $"as defined in Dataset Specification Id: '{randomIngestionTracking.DataSetSpecificationId}'.";
 
             Stream batchReadyStream =
                 new MemoryStream(Encoding.UTF8.GetBytes(message));
@@ -156,7 +109,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Ingress
             this.documentProcessingServiceMock
                 .Setup(service => service.AddDocumentAsync(
                     It.Is(SameStreamAs(batchReadyStream)),
-                    batchReadyFileName,
+                    batchReadyFilePath,
                     blobContainers.Ingress))
                 .Callback<Stream, string, string>((output, fileName, container) =>
                 {
@@ -184,25 +137,15 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Ingress
             this.documentProcessingServiceMock.Verify(service =>
                 service.AddDocumentAsync(
                     It.IsAny<Stream>(),
-                    batchReadyFileName,
+                    batchReadyFilePath,
                     blobContainers.Ingress),
                         Times.Once);
-
-            this.documentProcessingServiceMock.Verify(service =>
-                service.RemoveDocumentByFileNameAsync(
-                    batchIncompleteFileName,
-                    blobContainers.Ingress),
-                        Times.Once);
-
-            this.ingestionTrackingProcessingServiceMock.Verify(service =>
-                service.MarkAsBatchCompleteAsync(ingestionTrackingId, true),
-                    Times.Once);
 
             this.auditBrokerMock.Verify(service => service.LogInformationAsync(
                 "BatchComplete",
-                "BatchReady.txt generated",
+                $"{batchReadyFileName} generated",
                 message,
-                batchReadyFileName,
+                batchReadyFilePath,
                 randomIngestionTracking.Batch),
                     Times.Once);
 

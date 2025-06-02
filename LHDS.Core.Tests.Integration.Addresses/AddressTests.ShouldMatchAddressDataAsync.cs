@@ -6,12 +6,13 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using LHDS.Core.Models.Foundations.ResolvedAddresses;
+using Xunit;
 
 namespace LHDS.Core.Tests.Integration.Addresses
 {
     public partial class AddressTests
     {
-        [ReleaseCandidateFact]
+        [Fact]
         public async Task ShouldMatchAddressDataAsync()
         {
             //Given

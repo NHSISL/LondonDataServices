@@ -1,0 +1,74 @@
+import { Guid } from 'guid-typescript';
+
+export class ResolvedAddress {
+    public id: Guid;
+    public uprn?: string;
+    public upsn?: string;
+    public postCode?: string;
+    public retryCount?: number;
+    public isProcessing?: boolean;
+    public uniqueReference?: string;
+    public unstructuredPostalAddress?: string;
+    public alternateUnstructuredPostalAddress?: string;
+    public batchReference?: string;
+    public addressFormatQuality?: string;
+    public algorithm?: string;
+    public buildingName?: string;
+    public buildingNumber?: string;
+    public classification?: string;
+    public departmentName?: string;
+    public dependentLocality?: string;
+    public dependentThoroughfare?: string;
+    public doubleDependentLocality?: string;
+    public matchPattern?: string;
+    public matchedWithAssign?: string;
+    public organisationName?: string;
+    public postCodeQuality?: string;
+    public postTown?: string;
+    public qualifier?: string;
+    public subBuildingName?: string;
+    public thoroughfare?: string;
+    public isExported?: boolean;
+    public isProcessed?: boolean;
+    public createdBy?: string;
+    public createdDate?: Date;
+    public updatedBy?: string;
+    public updatedDate?: Date;
+
+    constructor(resolvedAddress: any) {
+        this.id = resolvedAddress.id ? Guid.parse(resolvedAddress.id) : Guid.parse(Guid.EMPTY);
+        this.uprn = resolvedAddress.uprn || "";
+        this.upsn = resolvedAddress.upsn || "";
+        this.postCode = resolvedAddress.postCode || "";
+        this.retryCount = resolvedAddress.retryCount;
+        this.isProcessing = resolvedAddress.isProcessing === true ? true : false;;
+        this.uniqueReference = resolvedAddress.uniqueReference || "";
+        this.unstructuredPostalAddress = resolvedAddress.unstructuredPostalAddress || "";
+        this.alternateUnstructuredPostalAddress = resolvedAddress.alternateUnstructuredPostalAddress || "";
+        this.batchReference = resolvedAddress.batchReference || "";
+        this.addressFormatQuality = resolvedAddress.addressFormatQuality || "";
+        this.algorithm = resolvedAddress.algorithm || "";
+        this.buildingName = resolvedAddress.buildingName || "";
+        this.buildingNumber = resolvedAddress.buildingNumber || "";
+        this.classification = resolvedAddress.classification || "";
+        this.departmentName = resolvedAddress.departmentName || "";
+        this.dependentLocality = resolvedAddress.dependentLocality || "";
+        this.dependentThoroughfare = resolvedAddress.dependentThoroughfare || "";
+        this.doubleDependentLocality = resolvedAddress.doubleDependentLocality || "";
+        this.matchPattern = resolvedAddress.matchPattern || "";
+        this.matchedWithAssign = resolvedAddress.matchedWithAssign || "";
+        this.organisationName = resolvedAddress.organisationName || "";
+        this.postCodeQuality = resolvedAddress.postCodeQuality || "";
+        this.postTown = resolvedAddress.postTown || "";
+        this.qualifier = resolvedAddress.qualifier || "";
+        this.subBuildingName = resolvedAddress.subBuildingName || "";
+        this.thoroughfare = resolvedAddress.thoroughfare || "";
+        this.isExported = resolvedAddress.isExported === true ? true : false;;
+        this.isProcessed = resolvedAddress.isProcessed === true ? true : false;;
+        this.createdDate = resolvedAddress.createdDate;
+        this.createdBy = resolvedAddress.createdBy;
+        this.createdDate = new Date(resolvedAddress.createdDate);
+        this.updatedBy = resolvedAddress.updatedBy;
+        this.updatedDate = new Date(resolvedAddress.updatedDate);
+    }
+}

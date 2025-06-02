@@ -57,14 +57,14 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Pds
                 { "pdsSettings:returnWorkflowId", GetRandomString() },
                 { "meshConfiguration:mailboxId", GetRandomString() },
                 { "meshConfiguration:password", GetRandomString() },
-                { "meshConfiguration:key", GetRandomString() },
+                { "meshConfiguration:sharedKey", GetRandomString() },
                 { "meshConfiguration:url", GetRandomString() },
                 { "meshConfiguration:mexClientVersion", GetRandomString() },
                 { "meshConfiguration:mexOSName", GetRandomString() },
                 { "meshConfiguration:mexOSVersion", GetRandomString() },
-                { "meshConfiguration:rootCertificate", null },
-                { "meshConfiguration:intermediateCertificates", null },
-                { "meshConfiguration:clientCertificate", null },
+                { "meshConfiguration:tlsRootCertificates", null },
+                { "meshConfiguration:tlsIntermediateCertificates", null },
+                { "meshConfiguration:clientSigningCertificate", null },
                 { "meshConfiguration:workflowId", GetRandomString() }
             };
 

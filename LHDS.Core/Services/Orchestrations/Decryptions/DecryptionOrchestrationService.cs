@@ -12,6 +12,7 @@ using LHDS.Core.Brokers.Loggings;
 using LHDS.Core.Models.Brokers.Storages.Blobs;
 using LHDS.Core.Models.Foundations.IngestionTrackingAudits;
 using LHDS.Core.Models.Foundations.IngestionTrackings;
+using LHDS.Core.Models.Orchestrations.EmisLandings;
 using LHDS.Core.Models.Processings.SubscriberCredentials;
 using LHDS.Core.Services.Foundations.Cryptographies;
 using LHDS.Core.Services.Foundations.Documents;
@@ -32,6 +33,7 @@ namespace LHDS.Core.Services.Orchestrations.Decryptions
         private readonly ILoggingBroker loggingBroker;
         private readonly IDateTimeBroker dateTimeBroker;
         private readonly IHashBroker hashBroker;
+        private readonly LandingConfiguration landingConfiguration;
 
         public DecryptionOrchestrationService(
             IDocumentService documentService,
@@ -42,7 +44,8 @@ namespace LHDS.Core.Services.Orchestrations.Decryptions
             BlobContainers blobContainers,
             ILoggingBroker loggingBroker,
             IDateTimeBroker dateTimeBroker,
-            IHashBroker hashBroker)
+            IHashBroker hashBroker,
+            LandingConfiguration landingConfiguration)
         {
             this.documentService = documentService;
             this.downloadService = downloadService;
@@ -53,6 +56,7 @@ namespace LHDS.Core.Services.Orchestrations.Decryptions
             this.loggingBroker = loggingBroker;
             this.dateTimeBroker = dateTimeBroker;
             this.hashBroker = hashBroker;
+            this.landingConfiguration = landingConfiguration;
         }
 
         public ValueTask<(string DecryptedFileName, Guid IngestionTrackingId)> DecryptAsync(
@@ -66,6 +70,18 @@ namespace LHDS.Core.Services.Orchestrations.Decryptions
 
                 var ingestionTracking = await this.ingestionTrackingService
                     .RetrieveIngestionTrackingByEncryptedFileNameAsync(encryptedFileName);
+
+                try
+                {
+                    string batchCompleteFileName =
+                        $"{ingestionTracking.BatchReadyFolderPath}/{landingConfiguration.BatchReadyFile}".Replace("\\", "/");
+
+                    await this.documentService.RemoveDocumentByFileNameAsync(
+                        batchCompleteFileName,
+                        this.blobContainers.Ingress);
+                }
+                catch (Exception)
+                { }
 
                 string decryptedFileSha256Hash = string.Empty;
                 long fileSize = 0;
@@ -139,6 +155,7 @@ namespace LHDS.Core.Services.Orchestrations.Decryptions
 
                 var currentDateTime = await this.dateTimeBroker.GetCurrentDateTimeOffsetAsync();
                 ingestionTracking.Decrypted = true;
+                ingestionTracking.IsBatchComplete = false;
                 ingestionTracking.RecordCount = 0;
                 ingestionTracking.DecryptedFileSize = fileSize;
                 ingestionTracking.DecryptedFileSha256Hash = decryptedFileSha256Hash;

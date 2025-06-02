@@ -18,6 +18,7 @@ using LHDS.Core.Models.Foundations.Downloads;
 using LHDS.Core.Models.Foundations.IngestionTrackingAudits.Exceptions;
 using LHDS.Core.Models.Foundations.IngestionTrackings;
 using LHDS.Core.Models.Foundations.IngestionTrackings.Exceptions;
+using LHDS.Core.Models.Orchestrations.EmisLandings;
 using LHDS.Core.Models.Processings.SubscriberCredentials;
 using LHDS.Core.Services.Foundations.Cryptographies;
 using LHDS.Core.Services.Foundations.Documents;
@@ -46,6 +47,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Decryptions
         private readonly IDecryptionOrchestrationService decryptionOrchestrationService;
         private readonly ICompareLogic compareLogic;
         private readonly BlobContainers blobContainers;
+        private readonly LandingConfiguration landingConfiguration;
         private readonly ITestOutputHelper output;
 
         public DecryptionOrchestrationTests(ITestOutputHelper output)
@@ -66,6 +68,8 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Decryptions
                 OptOut = "optout"
             };
 
+            this.landingConfiguration = new LandingConfiguration();
+
             this.decryptionOrchestrationService = new DecryptionOrchestrationService(
                 documentService: documentServiceMock.Object,
                 downloadService: downloadServiceMock.Object,
@@ -75,7 +79,8 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Decryptions
                 blobContainers,
                 loggingBroker: loggingBrokerMock.Object,
                 dateTimeBroker: dateTimeBrokerMock.Object,
-                hashBroker: hashBrokerMock.Object);
+                hashBroker: hashBrokerMock.Object,
+                landingConfiguration: this.landingConfiguration);
         }
 
         private Expression<Func<Stream, bool>> SameStreamAs(Stream expectedStream)

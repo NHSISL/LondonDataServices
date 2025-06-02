@@ -31,6 +31,8 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Decryptions
             byte[] randomDecryptedBytes = Encoding.UTF8.GetBytes(GetRandomMessage());
             IngestionTracking randomIngestionTracking = CreateRandomIngestionTracking(randomDateTimeOffset);
             randomIngestionTracking.FileName = randomFileName;
+            randomIngestionTracking.IsBatchComplete = false;
+            randomIngestionTracking.IS = false;
             IngestionTracking storageIngestionTracking = randomIngestionTracking;
             string randomHash = GetRandomString(64);
             using var storageStream = new MemoryStream(randomEncryptedBytes);
@@ -108,6 +110,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Decryptions
             updatedIngestionTracking.DecryptedFileSize = randomDecryptedBytes.Length;
             updatedIngestionTracking.DecryptedFileSha256Hash = randomHash;
             updatedIngestionTracking.IsProcessing = false;
+            updatedIngestionTracking.IsBatchComplete = false;
             updatedIngestionTracking.UpdatedDate = randomDateTimeOffset;
             var outputIngestionTracking = updatedIngestionTracking.DeepClone();
 
@@ -116,7 +119,8 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Decryptions
                     .ReturnsAsync(outputIngestionTracking);
 
             // when
-            var result = await this.decryptionOrchestrationService.DecryptAsync(randomFileName, inputSubscriberCredential);
+            var result = await this.decryptionOrchestrationService
+                .DecryptAsync(randomFileName, inputSubscriberCredential);
 
             // then
 

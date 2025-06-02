@@ -32,7 +32,6 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Decryptions
             IngestionTracking randomIngestionTracking = CreateRandomIngestionTracking(randomDateTimeOffset);
             randomIngestionTracking.FileName = randomFileName;
             randomIngestionTracking.IsBatchComplete = false;
-            randomIngestionTracking.IS = false;
             IngestionTracking storageIngestionTracking = randomIngestionTracking;
             string randomHash = GetRandomString(64);
             using var storageStream = new MemoryStream(randomEncryptedBytes);

@@ -7,12 +7,13 @@ using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
 using FluentAssertions;
+using Xunit;
 
 namespace LHDS.Core.Tests.Integration.Addresses
 {
     public partial class AddressTests
     {
-        [ReleaseCandidateFact]
+        [Fact]
         public async Task ShouldExportResolvedAddressesAsync()
         {
             //Given

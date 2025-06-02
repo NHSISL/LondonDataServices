@@ -124,6 +124,9 @@ namespace LHDS.Core.Services.Orchestrations.Decryptions
                         FileAccess.Write,
                         FileShare.None))
                     {
+                        var decryptionStartDateTime = await this.dateTimeBroker.GetCurrentDateTimeOffsetAsync();
+                        await LogAudit(ingestionTracking, $"Decrypting {encryptedFileName}", decryptionStartDateTime);
+
                         await this.cryptographyService.DecryptAsync(
                              input: encryptedDocument,
                              output: decryptedDocument,
@@ -147,6 +150,14 @@ namespace LHDS.Core.Services.Orchestrations.Decryptions
                             container: blobContainers.Ingress);
                     }
                 }
+                catch (Exception ex)
+                {
+                    var errorDateTime = await this.dateTimeBroker.GetCurrentDateTimeOffsetAsync();
+                    await LogAudit(ingestionTracking, $"Error Decrypting {encryptedFileName};  " +
+                        $"Error: {ex.Message} {ex?.InnerException?.Message}", errorDateTime);
+
+                    throw;
+                }
                 finally
                 {
                     if (File.Exists(encryptedTempFile)) File.Delete(encryptedTempFile);
@@ -165,7 +176,7 @@ namespace LHDS.Core.Services.Orchestrations.Decryptions
                 await this.ingestionTrackingService
                     .ModifyIngestionTrackingAsync(ingestionTracking);
 
-                await LogAudit(ingestionTracking, currentDateTime);
+                await LogAudit(ingestionTracking, "Decrypted document", currentDateTime);
 
                 return (ingestionTracking.DecryptedFileName, ingestionTracking.Id);
             });
@@ -208,6 +219,7 @@ namespace LHDS.Core.Services.Orchestrations.Decryptions
 
         private async ValueTask LogAudit(
             IngestionTracking ingestionTracking,
+            string message,
             DateTimeOffset currentDateTime)
         {
             IngestionTrackingAudit newAudit =
@@ -215,7 +227,7 @@ namespace LHDS.Core.Services.Orchestrations.Decryptions
                 {
                     Id = Guid.NewGuid(),
                     IngestionTrackingId = ingestionTracking.Id,
-                    Message = $"Decrypted document",
+                    Message = $"{message}",
                     CreatedDate = currentDateTime,
                     CreatedBy = "DecryptionOrchestrationService",
                     UpdatedDate = currentDateTime,

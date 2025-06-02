@@ -91,14 +91,14 @@ namespace LHDS.Core.Services.Orchestrations.Downloads
                 {
                     try
                     {
-                        string decryptedFile = await TryCatch(async () =>
+                        string encryptedFile = await TryCatch(async () =>
                         {
                             return await ProcessFileAsync(subscriberCredential, supplierId, fileName);
                         });
 
-                        if (!string.IsNullOrWhiteSpace(decryptedFile))
+                        if (!string.IsNullOrWhiteSpace(encryptedFile))
                         {
-                            files.Add(decryptedFile);
+                            files.Add(encryptedFile);
                         }
                     }
                     catch (Exception ex)
@@ -192,8 +192,8 @@ namespace LHDS.Core.Services.Orchestrations.Downloads
                 await this.ingestionTrackingProcessingService.RetrieveAllIngestionTrackingsAsync();
 
             IngestionTracking? maybeIngestionTracking = allIngestionTrackings
-                    .FirstOrDefault(ingestionTracking =>
-                        ingestionTracking.FileName == fileName);
+                .FirstOrDefault(ingestionTracking =>
+                    ingestionTracking.FileName == fileName);
 
             if (maybeIngestionTracking == null)
             {
@@ -223,11 +223,11 @@ namespace LHDS.Core.Services.Orchestrations.Downloads
                   {
                       Id = await this.identifierBroker.GetIdentifierAsync(),
                       SupplierId = supplierId,
-                      //Container = blobContainers.Ingress,
                       FileName = filename,
                       SourceFolderPath = sourceFolderPath,
                       BatchReadyFolderPath = baseFolder,
                       Batch = batch,
+                      IsBatchComplete = false,
                       ObjectName = objectName,
                       DataSetSpecificationId = retrievedDataSetSpecification.Id,
                       EncryptedFileName = encryptedFileName,
@@ -255,11 +255,24 @@ namespace LHDS.Core.Services.Orchestrations.Downloads
                 await LogAudit(maybeIngestionTracking, $"New file found - {fileName}");
             }
 
+            try
+            {
+                string batchCompleteFileName =
+                    $"{maybeIngestionTracking.BatchReadyFolderPath}/{landingConfiguration.BatchReadyFile}".Replace("\\", "/");
+
+                await this.documentProcessingService.RemoveDocumentByFileNameAsync(
+                    batchCompleteFileName,
+                    this.blobContainers.Ingress);
+            }
+            catch (Exception)
+            { }
+
             if (maybeIngestionTracking.IsDownloaded == false && maybeIngestionTracking.RetryCount <= 3)
             {
                 var currentDateTime = await this.dateTimeBroker.GetCurrentDateTimeOffsetAsync();
                 maybeIngestionTracking.RetryCount += 1;
                 maybeIngestionTracking.IsDownloaded = false;
+                maybeIngestionTracking.IsBatchComplete = false;
                 maybeIngestionTracking.FileDeleted = false;
                 maybeIngestionTracking.EncryptedFileSize = 0;
                 maybeIngestionTracking.EncryptedFileSha256Hash = string.Empty;
@@ -267,7 +280,7 @@ namespace LHDS.Core.Services.Orchestrations.Downloads
                 maybeIngestionTracking.UpdatedDate = currentDateTime;
 
                 await LogAudit(maybeIngestionTracking, $"Downloading {fileName};  " +
-                    $"Attempt: {maybeIngestionTracking.RetryCount}");
+                    $"Attempt(s): {maybeIngestionTracking.RetryCount}");
 
                 IngestionTracking updatedIngestionTracking =
                     await this.ingestionTrackingProcessingService
@@ -321,7 +334,7 @@ namespace LHDS.Core.Services.Orchestrations.Downloads
                     .ModifyIngestionTrackingAsync(updatedIngestionTracking);
 
                 await LogAudit(updatedIngestionTracking, $"Downloaded {fileName};  " +
-                    $"Attempt: {updatedIngestionTracking.RetryCount}");
+                    $"Attempt(s): {maybeIngestionTracking.RetryCount}");
 
                 return updatedIngestionTracking.DecryptedFileName;
             }

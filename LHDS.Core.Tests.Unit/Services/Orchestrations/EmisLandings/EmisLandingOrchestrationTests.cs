@@ -25,6 +25,7 @@ using LHDS.Core.Models.Foundations.IngestionTrackingAudits.Exceptions;
 using LHDS.Core.Models.Foundations.IngestionTrackings;
 using LHDS.Core.Models.Foundations.IngestionTrackings.Exceptions;
 using LHDS.Core.Models.Orchestrations.EmisLandings;
+using LHDS.Core.Models.Processings.Documents.Exceptions;
 using LHDS.Core.Models.Processings.SubscriberCredentials;
 using LHDS.Core.Services.Orchestrations.Downloads;
 using LHDS.Core.Services.Orchestrations.EmisLandings;
@@ -448,6 +449,51 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.EmisLandings
                 .OnProperty(subscriberCredential => subscriberCredential.UpdatedBy).Use(user);
 
             return filler;
+        }
+
+        private (string encryptedFileName, string decryptedFileName, string baseFolder) GetFileNames(
+            SubscriberCredential inputSubscriberCredential,
+            DataSet randomDataSet,
+            DataSetSpecification randomDataSetSpecification,
+            string externalFileName)
+        {
+            var filename = externalFileName.StartsWith('/')
+                ? externalFileName
+                : "/" + externalFileName;
+
+            string[] splitFileName = filename.Split('/');
+            string newFileName = "";
+
+            if (splitFileName.Length < 6)
+            {
+                throw new InvalidArgumentsDocumentProcessingException(filename);
+            }
+
+            string dataSetName = randomDataSetSpecification?.DataSet?.DataSetName ?? string.Empty;
+            string dataSetVersion = randomDataSetSpecification?.OurSpecificationVersion ?? string.Empty;
+            string extractGroup = inputSubscriberCredential.Id.ToString();
+            string extractTime = splitFileName[5];
+
+            string baseFolder =
+                $"/{landingConfiguration.DecryptedFolder}" +
+                $"/{dataSetName}" +
+                $"/{dataSetVersion}" +
+                $"/{extractGroup}" +
+                $"/{extractTime}";
+
+            newFileName = $"{splitFileName[6]}";
+
+            string encryptedFileName =
+                $"/{landingConfiguration.EncryptedFolder}" +
+                $"/{extractGroup}" +
+                $"/{extractTime}" +
+                $"/{newFileName}";
+
+            string decryptedFileName =
+                $"{baseFolder}" +
+                $"/{newFileName.Replace(".gpg", "", StringComparison.InvariantCultureIgnoreCase)}";
+
+            return (encryptedFileName, decryptedFileName, baseFolder);
         }
     }
 }

@@ -9,100 +9,88 @@ using FluentAssertions;
 using LHDS.Core.Models.Foundations.Downloads;
 using LHDS.Core.Models.Orchestrations.EmisLandings.Exceptions;
 using LHDS.Core.Models.Processings.SubscriberCredentials;
+using LHDS.Core.Services.Orchestrations.Downloads;
 using Moq;
-using Xeptions;
 using Xunit;
 
 namespace LHDS.Core.Tests.Unit.Services.Orchestrations.EmisLandings
 {
     public partial class EmisLandingOrchestrationTests
     {
-        [Theory]
-        [MemberData(nameof(DownloadDependencyValidationExceptions))]
-        public async Task ShouldThrowDependencyValidationOnProcessIfDependencyValidationOccursAndLogItAsync(
-            Xeption dependancyValidationException)
+        [Fact]
+        public async Task ShouldThrowAggregateExceptionIfErrorOccursAndLogItAsync()
         {
             // given
             SubscriberCredential someSubscriberCredential = CreateRandomSubscriberCredential();
-            Download someDownload = new Download { SubscriberCredential = someSubscriberCredential };
             Guid someSupplierId = Guid.NewGuid();
 
-            var expectedDependencyException =
-                new EmisLandingOrchestrationDependencyValidationException(
-                    message: "EMIS landing orchestration dependency validation error occurred, " +
-                        "fix the errors and try again.",
+            var emisLandingOrchestrationServiceMock = new Mock<EmisLandingOrchestrationService>(
+                documentProcessingServiceMock.Object,
+                downloadProcessingServiceMock.Object,
+                ingestionTrackingProcessingServiceMock.Object,
+                ingestionTrackingAuditProcessingServiceMock.Object,
+                dataSetSpecificationProcessingServiceMock.Object,
+                this.blobContainers,
+                loggingBrokerMock.Object,
+                dateTimeBrokerMock.Object,
+                identifierBrokerMock.Object,
+                hashBrokerMock.Object,
+                fileBrokerMock.Object,
+                landingConfiguration)
+            {
+                CallBase = true
+            };
 
-                    dependancyValidationException.InnerException as Xeption);
+            Exception someProcessException =
+                new Exception(message: "Failed to process subscriber files.");
 
-            this.downloadProcessingServiceMock.Setup(service =>
-                service.RetrieveListOfDownloadsToProcessAsync(It.IsAny<Download>()))
-                    .ThrowsAsync(dependancyValidationException);
+            Exception someDeletionException =
+                new Exception(message: "Failed to mark items as deleted.");
+
+            emisLandingOrchestrationServiceMock.Setup(service =>
+                service.ProcessSubscriberFiles(It.IsAny<SubscriberCredential>(), It.IsAny<Guid>()))
+                    .ThrowsAsync(someProcessException);
+
+            emisLandingOrchestrationServiceMock.Setup(service =>
+                service.MarkItemsAsDeleteThatHasNotBeenSeen())
+                    .ThrowsAsync(someDeletionException);
+
+            AggregateException aggregateException = new AggregateException(
+                $"Unable to process documents",
+                someProcessException,
+                someDeletionException);
+
+            var failedDownloadServiceException =
+                new FailedEmisLandingOrchestrationServiceException(
+                    message: "Failed EMIS landing orchestration service error occurred, please contact support.",
+                    aggregateException);
+
+            EmisLandingOrchestrationServiceException expectedException =
+                new EmisLandingOrchestrationServiceException(
+                    message: "EMIS landing orchestration service aggregate errors occurred, please contact support.",
+                    innerException: failedDownloadServiceException);
 
             // when
-            ValueTask<List<string>> processTask = this.emisLandingOrchestrationService
+            ValueTask<List<string>> processTask = emisLandingOrchestrationServiceMock.Object
                 .ProcessAsync(subscriberCredential: someSubscriberCredential, supplierId: someSupplierId);
 
-            EmisLandingOrchestrationDependencyValidationException actualException =
-                await Assert.ThrowsAsync<EmisLandingOrchestrationDependencyValidationException>(processTask.AsTask);
+            EmisLandingOrchestrationServiceException actualException =
+                await Assert.ThrowsAsync<EmisLandingOrchestrationServiceException>(processTask.AsTask);
 
             // then
-            actualException.Should().BeEquivalentTo(expectedDependencyException);
+            actualException.Should().BeEquivalentTo(expectedException);
 
-            this.downloadProcessingServiceMock.Verify(service =>
-                service.RetrieveListOfDownloadsToProcessAsync(It.IsAny<Download>()),
+            emisLandingOrchestrationServiceMock.Verify(service =>
+                service.ProcessSubscriberFiles(It.IsAny<SubscriberCredential>(), It.IsAny<Guid>()),
+                    Times.Once);
+
+            emisLandingOrchestrationServiceMock.Verify(service =>
+                service.MarkItemsAsDeleteThatHasNotBeenSeen(),
                     Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>
                 broker.LogErrorAsync(It.Is(SameExceptionAs(
-                    expectedDependencyException))),
-                        Times.Once);
-
-            this.downloadProcessingServiceMock.VerifyNoOtherCalls();
-            this.loggingBrokerMock.VerifyNoOtherCalls();
-            this.ingestionTrackingProcessingServiceMock.VerifyNoOtherCalls();
-            this.dateTimeBrokerMock.VerifyNoOtherCalls();
-            this.dataSetSpecificationProcessingServiceMock.VerifyNoOtherCalls();
-            this.documentProcessingServiceMock.VerifyNoOtherCalls();
-            this.hashBrokerMock.VerifyNoOtherCalls();
-            this.ingestionTrackingAuditProcessingServiceMock.VerifyNoOtherCalls();
-        }
-
-        [Theory]
-        [MemberData(nameof(DownloadDependencyExceptions))]
-        public async Task ShouldThrowDependencyExceptionOnProcessIfDependencyExceptionOccursAndLogItAsync(
-           Xeption dependancyException)
-        {
-            // given
-            SubscriberCredential someSubscriberCredential = CreateRandomSubscriberCredential();
-            Download someDownload = new Download { SubscriberCredential = someSubscriberCredential };
-            Guid someSupplierId = Guid.NewGuid();
-
-            var expectedDependencyException =
-                new EmisLandingOrchestrationDependencyException(
-                    message: "EMIS landing orchestration dependency error occurred, fix the errors and try again.",
-                    innerException: dependancyException.InnerException as Xeption);
-
-            this.downloadProcessingServiceMock.Setup(service =>
-                service.RetrieveListOfDownloadsToProcessAsync(It.IsAny<Download>()))
-                    .ThrowsAsync(dependancyException);
-
-            // when
-            ValueTask<List<string>> processTask = this.emisLandingOrchestrationService
-                .ProcessAsync(subscriberCredential: someSubscriberCredential, supplierId: someSupplierId);
-
-            EmisLandingOrchestrationDependencyException actualException =
-                await Assert.ThrowsAsync<EmisLandingOrchestrationDependencyException>(processTask.AsTask);
-
-            // then
-            actualException.Should().BeEquivalentTo(expectedDependencyException);
-
-            this.downloadProcessingServiceMock.Verify(service =>
-                service.RetrieveListOfDownloadsToProcessAsync(It.IsAny<Download>()),
-                    Times.Once);
-
-            this.loggingBrokerMock.Verify(broker =>
-                broker.LogErrorAsync(It.Is(SameExceptionAs(
-                    expectedDependencyException))),
+                    expectedException))),
                         Times.Once);
 
             this.downloadProcessingServiceMock.VerifyNoOtherCalls();

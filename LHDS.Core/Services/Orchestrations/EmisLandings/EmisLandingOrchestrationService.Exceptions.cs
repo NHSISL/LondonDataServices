@@ -110,6 +110,15 @@ namespace LHDS.Core.Services.Orchestrations.Downloads
             {
                 throw await CreateAndLogDependencyExceptionAsync(auditServiceException);
             }
+            catch (AggregateException aggregateException)
+            {
+                var failedDownloadServiceException =
+                    new FailedEmisLandingOrchestrationServiceException(
+                        message: "Failed EMIS landing orchestration service error occurred, please contact support.",
+                        aggregateException);
+
+                throw await CreateAndLogAggregateServiceExceptionAsync(failedDownloadServiceException);
+            }
             catch (Exception exception)
             {
                 var failedDownloadServiceException =
@@ -451,12 +460,25 @@ namespace LHDS.Core.Services.Orchestrations.Downloads
             return emisLandingOrchestrationDependencyException;
         }
 
-        private async ValueTask<EmisLandingOrchestrationServiceException>
-            CreateAndLogServiceExceptionAsync(Xeption exception)
+        private async ValueTask<EmisLandingOrchestrationServiceException> CreateAndLogServiceExceptionAsync(
+            Xeption exception)
         {
             var emisLandingOrchestrationServiceException =
                 new EmisLandingOrchestrationServiceException(
                     message: "EMIS landing orchestration service error occurred, please contact support.",
+                    exception);
+
+            await this.loggingBroker.LogErrorAsync(emisLandingOrchestrationServiceException);
+
+            return emisLandingOrchestrationServiceException;
+        }
+
+        private async ValueTask<EmisLandingOrchestrationServiceException> CreateAndLogAggregateServiceExceptionAsync(
+            Xeption exception)
+        {
+            var emisLandingOrchestrationServiceException =
+                new EmisLandingOrchestrationServiceException(
+                    message: "EMIS landing orchestration service aggregate errors occurred, please contact support.",
                     exception);
 
             await this.loggingBroker.LogErrorAsync(emisLandingOrchestrationServiceException);

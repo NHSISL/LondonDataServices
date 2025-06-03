@@ -285,6 +285,9 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.EmisLandings
                     .AsQueryable();
         }
 
+        private static DataSetSpecification CreateRandomDataSetSpecification(DataSet dataSet) =>
+            CreateDataSetSpecificationFiller(dataSet).Create();
+
         private static Filler<DataSetSpecification> CreateDataSetSpecificationFiller(DataSet dataSet)
         {
             string user = GetRandomString(255);

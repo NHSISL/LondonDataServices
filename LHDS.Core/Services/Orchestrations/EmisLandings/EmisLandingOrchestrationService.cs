@@ -250,13 +250,13 @@ namespace LHDS.Core.Services.Orchestrations.Downloads
 
             if (maybeIngestionTracking == null)
             {
-                var filename = fileName.StartsWith('/')
+                var externalFileName = fileName.StartsWith('/')
                     ? fileName
                     : "/" + fileName;
 
-                string sourceFolderPath = Path.GetDirectoryName(filename) ?? string.Empty;
+                string sourceFolderPath = Path.GetDirectoryName(externalFileName) ?? string.Empty;
                 sourceFolderPath = sourceFolderPath.Replace("\\", "/").Replace("\\", "/");
-                string file = Path.GetFileName(filename);
+                string file = Path.GetFileName(externalFileName);
                 string fileWithoutExtension = Path.GetFileNameWithoutExtension(file);
                 string[] segments = fileWithoutExtension.Split('_');
                 string batch = $"{segments[0]}_{segments[1]}";
@@ -267,14 +267,18 @@ namespace LHDS.Core.Services.Orchestrations.Downloads
                         supplierId);
 
                 (string encryptedFileName, string decryptedFileName, string baseFolder) =
-                        await GetFileNames(subscriberCredential, retrievedDataSetSpecification, filename, supplierId);
+                        await GetFileNames(
+                            subscriberCredential,
+                            retrievedDataSetSpecification,
+                            externalFileName,
+                            supplierId);
 
                 IngestionTracking newIngestionTracking =
                   new IngestionTracking
                   {
                       Id = await this.identifierBroker.GetIdentifierAsync(),
                       SupplierId = supplierId,
-                      FileName = filename,
+                      FileName = externalFileName,
                       SourceFolderPath = sourceFolderPath,
                       BatchReadyFolderPath = baseFolder,
                       Batch = batch,
@@ -286,24 +290,21 @@ namespace LHDS.Core.Services.Orchestrations.Downloads
                       Decrypted = false,
                       LastSeen = currentDateTime,
                       FileDeleted = false,
-                      RecordCount = 0,
                       RetryCount = 0,
                       LastAttempt = currentDateTime,
                       EncryptedFileSize = 0,
                       EncryptedFileSha256Hash = string.Empty,
                       DecryptedFileSize = 0,
                       DecryptedFileSha256Hash = string.Empty,
-                      IsDownloaded = false,
-                      CreatedBy = "System",
-                      CreatedDate = currentDateTime,
-                      UpdatedBy = "System",
-                      UpdatedDate = currentDateTime
+                      IsDownloaded = false
                   };
 
-                maybeIngestionTracking = await this.ingestionTrackingProcessingService
+                var storageIngestionTracking = await this.ingestionTrackingProcessingService
                     .AddIngestionTrackingAsync(newIngestionTracking);
 
-                await LogAudit(maybeIngestionTracking, $"New file found - {fileName}");
+                await LogAudit(storageIngestionTracking, $"New file found - {storageIngestionTracking.FileName}");
+
+                maybeIngestionTracking = storageIngestionTracking;
             }
 
             if (maybeIngestionTracking.IsDownloaded == false && maybeIngestionTracking.RetryCount <= 3)
@@ -327,9 +328,8 @@ namespace LHDS.Core.Services.Orchestrations.Downloads
                 maybeIngestionTracking.FileDeleted = false;
                 maybeIngestionTracking.EncryptedFileSize = 0;
                 maybeIngestionTracking.EncryptedFileSha256Hash = string.Empty;
-                maybeIngestionTracking.LastSeen = currentDateTime;
 
-                await LogAudit(maybeIngestionTracking, $"Downloading {fileName};  " +
+                await LogAudit(maybeIngestionTracking, $"Downloading {maybeIngestionTracking.FileName};  " +
                     $"Attempt(s): {maybeIngestionTracking.RetryCount}");
 
                 IngestionTracking updatedIngestionTracking =
@@ -343,19 +343,33 @@ namespace LHDS.Core.Services.Orchestrations.Downloads
                     using (FileStream writeFtpFileStream =
                         new FileStream(tempEncryptedFilePath, FileMode.Create, FileAccess.ReadWrite))
                     {
-                        await DownloadFile(output: writeFtpFileStream, fileName, subscriberCredential);
+                        Download fileToRetrieve = new Download
+                        {
+                            Document = new Document
+                            {
+                                FileName = updatedIngestionTracking.FileName,
+                                DocumentData = writeFtpFileStream
+                            },
+
+                            SubscriberCredential = subscriberCredential
+                        };
+
+                        await this.downloadProcessingService
+                            .RetrieveDownloadByFileNameAsync(fileToRetrieve);
                     }
 
                     using (FileStream readFtpFileStream =
                         new FileStream(tempEncryptedFilePath, FileMode.Open, FileAccess.ReadWrite))
                     {
-                        string encryptedFileSha256Hash = await this.hashBroker.GenerateSha256HashAsync(readFtpFileStream);
+                        string encryptedFileSha256Hash =
+                            await this.hashBroker.GenerateSha256HashAsync(readFtpFileStream);
+
                         updatedIngestionTracking.EncryptedFileSize = readFtpFileStream.Length;
                         updatedIngestionTracking.EncryptedFileSha256Hash = encryptedFileSha256Hash;
 
                         await this.documentProcessingService.AddDocumentAsync(
                             input: readFtpFileStream,
-                            fileName: maybeIngestionTracking.EncryptedFileName,
+                            fileName: updatedIngestionTracking.EncryptedFileName,
                             container: blobContainers.EmisLanding);
                     }
                 }
@@ -382,7 +396,7 @@ namespace LHDS.Core.Services.Orchestrations.Downloads
                 await this.ingestionTrackingProcessingService
                     .ModifyIngestionTrackingAsync(updatedIngestionTracking);
 
-                await LogAudit(updatedIngestionTracking, $"Downloaded {fileName};  " +
+                await LogAudit(updatedIngestionTracking, $"Downloaded {updatedIngestionTracking.FileName};  " +
                     $"Attempt(s): {maybeIngestionTracking.RetryCount}");
 
                 return updatedIngestionTracking.DecryptedFileName;
@@ -399,7 +413,7 @@ namespace LHDS.Core.Services.Orchestrations.Downloads
             return string.Empty;
         }
 
-        private async ValueTask LogAudit(
+        virtual internal async ValueTask LogAudit(
             IngestionTracking ingestionTracking,
             string message)
         {
@@ -466,21 +480,6 @@ namespace LHDS.Core.Services.Orchestrations.Downloads
                 $"/{newFileName.Replace(".gpg", "", StringComparison.InvariantCultureIgnoreCase)}";
 
             return (encryptedFileName, decryptedFileName, baseFolder);
-        }
-
-        private async ValueTask DownloadFile(
-            Stream output,
-            string fileName,
-            SubscriberCredential subscriberCredential)
-        {
-            Download fileToRetrieve = new Download
-            {
-                Document = new Document { FileName = fileName, DocumentData = output },
-                SubscriberCredential = subscriberCredential
-            };
-
-            await this.downloadProcessingService
-                .RetrieveDownloadByFileNameAsync(fileToRetrieve);
         }
     }
 }

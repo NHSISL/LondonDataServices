@@ -47,7 +47,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.EmisLandings
         private readonly Mock<IDocumentProcessingService> documentProcessingServiceMock;
         private readonly Mock<IDownloadProcessingService> downloadProcessingServiceMock;
         private readonly Mock<IIngestionTrackingProcessingService> ingestionTrackingProcessingServiceMock;
-        private readonly Mock<IIngestionTrackingAuditProcessingService> auditServiceMock;
+        private readonly Mock<IIngestionTrackingAuditProcessingService> ingestionTrackingAuditProcessingServiceMock;
         private readonly Mock<IDataSetSpecificationProcessingService> dataSetSpecificationProcessingServiceMock;
         private readonly Mock<ILoggingBroker> loggingBrokerMock;
         private readonly Mock<IDateTimeBroker> dateTimeBrokerMock;
@@ -66,7 +66,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.EmisLandings
             downloadProcessingServiceMock = new Mock<IDownloadProcessingService>();
             ingestionTrackingProcessingServiceMock = new Mock<IIngestionTrackingProcessingService>();
             dataSetSpecificationProcessingServiceMock = new Mock<IDataSetSpecificationProcessingService>();
-            auditServiceMock = new Mock<IIngestionTrackingAuditProcessingService>();
+            ingestionTrackingAuditProcessingServiceMock = new Mock<IIngestionTrackingAuditProcessingService>();
             loggingBrokerMock = new Mock<ILoggingBroker>();
             dateTimeBrokerMock = new Mock<IDateTimeBroker>();
             identifierBrokerMock = new Mock<IIdentifierBroker>();
@@ -94,7 +94,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.EmisLandings
                 documentProcessingService: documentProcessingServiceMock.Object,
                 downloadProcessingService: downloadProcessingServiceMock.Object,
                 ingestionTrackingProcessingService: ingestionTrackingProcessingServiceMock.Object,
-                auditService: auditServiceMock.Object,
+                auditService: ingestionTrackingAuditProcessingServiceMock.Object,
                 dataSetSpecificationProcessingService: dataSetSpecificationProcessingServiceMock.Object,
                 blobContainers,
                 loggingBroker: loggingBrokerMock.Object,

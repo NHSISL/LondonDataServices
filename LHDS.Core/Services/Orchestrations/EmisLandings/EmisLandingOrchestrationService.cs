@@ -80,59 +80,110 @@ namespace LHDS.Core.Services.Orchestrations.Downloads
                 ValidateSubscriberCredentials(subscriberCredential);
                 ValidateProcessArguments(supplierId);
                 var exceptions = new List<Exception>();
-                Download download = new Download { SubscriberCredential = subscriberCredential };
-
-                List<string> retrievedDownloadList =
-                    await this.downloadProcessingService.RetrieveListOfDownloadsToProcessAsync(download);
-
                 List<string> files = new List<string>();
 
-                foreach (var fileName in retrievedDownloadList)
+                try
                 {
-                    try
-                    {
-                        string encryptedFile = await TryCatch(async () =>
-                        {
-                            return await ProcessFileAsync(subscriberCredential, supplierId, fileName);
-                        });
-
-                        if (!string.IsNullOrWhiteSpace(encryptedFile))
-                        {
-                            files.Add(encryptedFile);
-                        }
-                    }
-                    catch (Exception ex)
-                    {
-                        await this.loggingBroker.LogErrorAsync(ex);
-                        Console.WriteLine($"Unable to download document: {fileName}");
-                        exceptions.Add(ex);
-                    }
+                    files.AddRange(await ProcessSubscriberFiles(subscriberCredential, supplierId));
+                }
+                catch (Exception ex)
+                {
+                    exceptions.Add(ex);
                 }
 
-                DateTimeOffset fifteenMinsAgo = await this.dateTimeBroker.GetCurrentDateTimeOffsetAsync();
-                fifteenMinsAgo.AddMinutes(-15);
-
-                IQueryable<IngestionTracking> allIngestionTrackings =
-                    await this.ingestionTrackingProcessingService.RetrieveAllIngestionTrackingsAsync();
-
-                List<IngestionTracking> unavailableIngestionTrackings = allIngestionTrackings
-                        .Where(ingestionTracking =>
-                            ingestionTracking.LastSeen <= fifteenMinsAgo).ToList();
-
-                foreach (var item in unavailableIngestionTrackings)
+                try
                 {
-                    item.FileDeleted = true;
-                    item.UpdatedDate = await this.dateTimeBroker.GetCurrentDateTimeOffsetAsync();
-                    await this.ingestionTrackingProcessingService.ModifyIngestionTrackingAsync(item);
+                    await MarkItemsAsDeleteThatHasNotBeenSeen();
+                }
+                catch (Exception ex)
+                {
+                    exceptions.Add(ex);
                 }
 
                 if (exceptions.Any())
                 {
-                    throw new AggregateException($"Unable to land {exceptions.Count} document(s)", exceptions);
+                    throw new AggregateException($"Unable to process documents", exceptions);
                 }
 
                 return files;
             });
+
+        virtual internal async ValueTask<List<string>> ProcessSubscriberFiles(
+            SubscriberCredential subscriberCredential,
+            Guid supplierId)
+        {
+            Download download = new Download { SubscriberCredential = subscriberCredential };
+            List<string> files = new List<string>();
+            var exceptions = new List<Exception>();
+
+            List<string> retrievedDownloadList =
+                await this.downloadProcessingService.RetrieveListOfDownloadsToProcessAsync(download);
+
+            foreach (var fileName in retrievedDownloadList)
+            {
+                try
+                {
+                    string encryptedFile = await TryCatch(async () =>
+                    {
+                        return await ProcessFileAsync(subscriberCredential, supplierId, fileName);
+                    });
+
+                    if (!string.IsNullOrWhiteSpace(encryptedFile))
+                    {
+                        files.Add(encryptedFile);
+                    }
+                }
+                catch (Exception ex)
+                {
+                    await this.loggingBroker.LogErrorAsync(ex);
+                    Console.WriteLine($"Unable to download document: {fileName}");
+                    exceptions.Add(ex);
+                }
+            }
+
+            if (exceptions.Any())
+            {
+                throw new AggregateException(
+                    $"Unable to process ingestion tracking items", exceptions);
+            }
+
+            return files;
+        }
+
+        virtual internal async ValueTask MarkItemsAsDeleteThatHasNotBeenSeen()
+        {
+            var exceptions = new List<Exception>();
+            DateTimeOffset lastSeenMinutes = await this.dateTimeBroker.GetCurrentDateTimeOffsetAsync();
+            lastSeenMinutes.AddMinutes(-this.landingConfiguration.LastSeenMinutes);
+
+            IQueryable<IngestionTracking> allIngestionTrackings =
+                await this.ingestionTrackingProcessingService.RetrieveAllIngestionTrackingsAsync();
+
+            List<IngestionTracking> unavailableIngestionTrackings = allIngestionTrackings
+                    .Where(ingestionTracking =>
+                        ingestionTracking.LastSeen <= lastSeenMinutes).ToList();
+
+            foreach (var item in unavailableIngestionTrackings)
+            {
+                try
+                {
+                    item.FileDeleted = true;
+                    await this.ingestionTrackingProcessingService.ModifyIngestionTrackingAsync(item);
+                }
+                catch (Exception ex)
+                {
+                    await this.loggingBroker.LogErrorAsync(ex);
+                    Console.WriteLine($"Unable to mark ingestion tracking item as deleted with id: {item.Id}");
+                    exceptions.Add(ex);
+                }
+            }
+
+            if (exceptions.Any())
+            {
+                throw new AggregateException(
+                    $"Unable to mark {exceptions.Count} ingestion tracking items as deleted", exceptions);
+            }
+        }
 
         public ValueTask<List<string>> RetrieveListOfDocumentsToProcessAsync(
             SubscriberCredential subscriberCredential) =>
@@ -195,10 +246,10 @@ namespace LHDS.Core.Services.Orchestrations.Downloads
                 .FirstOrDefault(ingestionTracking =>
                     ingestionTracking.FileName == fileName);
 
+            var currentDateTime = await this.dateTimeBroker.GetCurrentDateTimeOffsetAsync();
+
             if (maybeIngestionTracking == null)
             {
-                var currentDateTime = await this.dateTimeBroker.GetCurrentDateTimeOffsetAsync();
-
                 var filename = fileName.StartsWith('/')
                     ? fileName
                     : "/" + fileName;
@@ -255,21 +306,21 @@ namespace LHDS.Core.Services.Orchestrations.Downloads
                 await LogAudit(maybeIngestionTracking, $"New file found - {fileName}");
             }
 
-            try
-            {
-                string batchCompleteFileName =
-                    $"{maybeIngestionTracking.BatchReadyFolderPath}/{landingConfiguration.BatchReadyFile}".Replace("\\", "/");
-
-                await this.documentProcessingService.RemoveDocumentByFileNameAsync(
-                    batchCompleteFileName,
-                    this.blobContainers.Ingress);
-            }
-            catch (Exception)
-            { }
-
             if (maybeIngestionTracking.IsDownloaded == false && maybeIngestionTracking.RetryCount <= 3)
             {
-                var currentDateTime = await this.dateTimeBroker.GetCurrentDateTimeOffsetAsync();
+                try
+                {
+                    string batchCompleteFileName =
+                        $"{maybeIngestionTracking.BatchReadyFolderPath}/{landingConfiguration.BatchReadyFile}"
+                            .Replace("\\", "/");
+
+                    await this.documentProcessingService.RemoveDocumentByFileNameAsync(
+                        batchCompleteFileName,
+                        this.blobContainers.Ingress);
+                }
+                catch (Exception)
+                { }
+
                 maybeIngestionTracking.RetryCount += 1;
                 maybeIngestionTracking.IsDownloaded = false;
                 maybeIngestionTracking.IsBatchComplete = false;
@@ -277,7 +328,6 @@ namespace LHDS.Core.Services.Orchestrations.Downloads
                 maybeIngestionTracking.EncryptedFileSize = 0;
                 maybeIngestionTracking.EncryptedFileSha256Hash = string.Empty;
                 maybeIngestionTracking.LastSeen = currentDateTime;
-                maybeIngestionTracking.UpdatedDate = currentDateTime;
 
                 await LogAudit(maybeIngestionTracking, $"Downloading {fileName};  " +
                     $"Attempt(s): {maybeIngestionTracking.RetryCount}");
@@ -328,7 +378,6 @@ namespace LHDS.Core.Services.Orchestrations.Downloads
                 updatedIngestionTracking.RetryCount = 0;
                 updatedIngestionTracking.FileDeleted = false;
                 updatedIngestionTracking.LastSeen = currentDateTime;
-                updatedIngestionTracking.UpdatedDate = updatedDate;
 
                 await this.ingestionTrackingProcessingService
                     .ModifyIngestionTrackingAsync(updatedIngestionTracking);
@@ -338,6 +387,14 @@ namespace LHDS.Core.Services.Orchestrations.Downloads
 
                 return updatedIngestionTracking.DecryptedFileName;
             }
+
+            maybeIngestionTracking = await this.ingestionTrackingProcessingService
+                .RetrieveIngestionTrackingByIdAsync(maybeIngestionTracking.Id);
+
+            maybeIngestionTracking.LastSeen = currentDateTime;
+
+            await this.ingestionTrackingProcessingService
+                .ModifyIngestionTrackingAsync(maybeIngestionTracking);
 
             return string.Empty;
         }

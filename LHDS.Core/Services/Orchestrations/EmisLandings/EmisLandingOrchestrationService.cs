@@ -77,8 +77,8 @@ namespace LHDS.Core.Services.Orchestrations.Downloads
             TryCatch(async () =>
             {
                 ValidateConfigurationSettings();
-                ValidateSubscriberCredentials(subscriberCredential);
-                ValidateProcessArguments(supplierId);
+                ValidateOnProcess(subscriberCredential, supplierId);
+
                 var exceptions = new List<Exception>();
                 List<string> files = new List<string>();
 

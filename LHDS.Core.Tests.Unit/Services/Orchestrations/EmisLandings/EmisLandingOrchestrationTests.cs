@@ -192,20 +192,13 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.EmisLandings
         private static DateTimeOffset GetRandomDateTimeOffset() =>
             new DateTimeRange(earliestDate: new DateTime()).GetValue();
 
-        private static List<IngestionTracking> CreateRandomIngestionTrackings(
+        private static IngestionTracking CreateRandomIngestionTracking(
             DateTimeOffset dateTimeOffset,
-            List<string> fileNames,
+            string fileName,
             bool isDownloaded,
             int retryCount)
         {
-            List<IngestionTracking> items = new List<IngestionTracking>();
-
-            foreach (var fileName in fileNames)
-            {
-                items.Add(CreateIngestionTrackingFiller(dateTimeOffset, fileName, isDownloaded, retryCount).Create());
-            }
-
-            return items;
+            return CreateIngestionTrackingFiller(dateTimeOffset, fileName, isDownloaded, retryCount).Create();
         }
 
         private static IngestionTracking CreateRandomIngestionTracking(DateTimeOffset dateTimeOffset) =>
@@ -431,6 +424,8 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.EmisLandings
                 .OnProperty(ingestionTracking => ingestionTracking.FileName).Use(id)
                 .OnType<DateTimeOffset>().Use(dateTimeOffset)
                 .OnType<DateTimeOffset?>().Use(dateTimeOffset)
+                .OnProperty(ingestionTracking => ingestionTracking.IsDownloaded).Use(isDownloaded)
+                .OnProperty(ingestionTracking => ingestionTracking.RetryCount).Use(retryCount)
                 .OnProperty(ingestionTracking => ingestionTracking.Supplier).IgnoreIt()
                 .OnProperty(ingestionTracking => ingestionTracking.IngestionTrackingAudits).IgnoreIt();
 

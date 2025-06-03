@@ -80,51 +80,6 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.EmisLandings
         }
 
         [Fact]
-        public async Task ShouldThrowValidationExceptionOnProcessIfSubscriptionCredentialIsNullAndLogItAsync()
-        {
-            // given
-            SubscriberCredential inputSubscriberCredential = null;
-            string randomFileName = GetRandomString();
-            string inputFileName = randomFileName;
-            Guid inputSupplierId = Guid.NewGuid();
-
-            var nullSubscriberCredentialEmisLandingOrchestrationException =
-                new NullSubscriberCredentialEmisLandingOrchestrationException(
-                    message: "Null subscriber credential EMIS landing orchestration exception, " +
-                        "please correct the errors and try again.");
-
-            var expectedEmisLandingOrchestrationValidationException =
-                new EmisLandingOrchestrationValidationException(
-                    message: "EMIS landing orchestration validation errors occurred, please try again.",
-                    innerException: nullSubscriberCredentialEmisLandingOrchestrationException);
-
-            // when
-            ValueTask<List<string>> processTask =
-                this.emisLandingOrchestrationService
-                    .ProcessAsync(subscriberCredential: inputSubscriberCredential, supplierId: inputSupplierId);
-
-            EmisLandingOrchestrationValidationException actualEmisLandingOrchestrationValidationException =
-                await Assert.ThrowsAsync<EmisLandingOrchestrationValidationException>(processTask.AsTask);
-
-            // then
-            actualEmisLandingOrchestrationValidationException.Should()
-                .BeEquivalentTo(expectedEmisLandingOrchestrationValidationException);
-
-            this.loggingBrokerMock.Verify(broker =>
-                broker.LogErrorAsync(It.Is(SameExceptionAs(
-                    expectedEmisLandingOrchestrationValidationException))),
-                        Times.Once);
-
-            this.loggingBrokerMock.VerifyNoOtherCalls();
-            this.downloadProcessingServiceMock.VerifyNoOtherCalls();
-            this.dateTimeBrokerMock.VerifyNoOtherCalls();
-            this.ingestionTrackingProcessingServiceMock.VerifyNoOtherCalls();
-            this.dataSetSpecificationProcessingServiceMock.VerifyNoOtherCalls();
-            this.documentProcessingServiceMock.VerifyNoOtherCalls();
-            this.ingestionTrackingAuditProcessingServiceMock.VerifyNoOtherCalls();
-        }
-
-        [Fact]
         public async Task ShouldThrowValidationExceptionOnProcessIfBlobContainersIsNullAndLogItAsync()
         {
             // given
@@ -189,8 +144,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.EmisLandings
         public async Task ShouldThrowValidationExceptionOnProcessIfSupplierIdIsInvalidAndLogItAsync()
         {
             // given
-            SubscriberCredential randomSubscriberCredential = CreateRandomSubscriberCredential();
-            SubscriberCredential inputSubscriberCredential = randomSubscriberCredential;
+            SubscriberCredential invalidSubscriberCredential = null;
             string randomFileName = GetRandomString();
             string inputFileName = randomFileName;
             Guid invalidSupplierId = Guid.Empty;
@@ -198,6 +152,10 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.EmisLandings
             var invalidArgumentEmisLandingOrchestrationException =
                 new InvalidArgumentEmisLandingOrchestrationException(
                     message: "Invalid EMIS landing orchestration argument(s), please correct the errors and try again.");
+
+            invalidArgumentEmisLandingOrchestrationException.AddData(
+               key: "SubscriberCredential",
+               values: "SubscriberCredential is required");
 
             invalidArgumentEmisLandingOrchestrationException.AddData(
                key: "SupplierId",
@@ -211,7 +169,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.EmisLandings
             // when
             ValueTask<List<string>> processTask =
                 this.emisLandingOrchestrationService
-                    .ProcessAsync(subscriberCredential: inputSubscriberCredential, supplierId: invalidSupplierId);
+                    .ProcessAsync(subscriberCredential: invalidSubscriberCredential, supplierId: invalidSupplierId);
 
             EmisLandingOrchestrationValidationException actualEmisLandingOrchestrationValidationException =
                 await Assert.ThrowsAsync<EmisLandingOrchestrationValidationException>(processTask.AsTask);

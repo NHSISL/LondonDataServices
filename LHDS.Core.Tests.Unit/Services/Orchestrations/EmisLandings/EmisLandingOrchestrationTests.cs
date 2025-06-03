@@ -126,9 +126,10 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.EmisLandings
         }
 
         private static List<string> GetRandomStrings() =>
-            Enumerable.Range(1, GetRandomNumber())
-                .Select(i => GetRandomString())
-                .ToList();
+            Enumerable.Range(1, GetRandomNumber()).Select(i => GetRandomString()).ToList();
+
+        private static List<string> GetRandomStrings(int count) =>
+            Enumerable.Range(1, count).Select(i => GetRandomString()).ToList();
 
         private static int GetRandomNumber(int min = 2, int max = 10) =>
             new IntRange(min, max).GetValue();

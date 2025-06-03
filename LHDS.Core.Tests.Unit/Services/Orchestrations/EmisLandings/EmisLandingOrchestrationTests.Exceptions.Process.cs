@@ -6,7 +6,6 @@ using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using FluentAssertions;
-using LHDS.Core.Models.Foundations.Downloads;
 using LHDS.Core.Models.Orchestrations.EmisLandings.Exceptions;
 using LHDS.Core.Models.Processings.SubscriberCredentials;
 using LHDS.Core.Services.Orchestrations.Downloads;
@@ -18,7 +17,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.EmisLandings
     public partial class EmisLandingOrchestrationTests
     {
         [Fact]
-        public async Task ShouldThrowAggregateExceptionIfErrorOccursAndLogItAsync()
+        public async Task ShouldThrowServiceExceptionOnProcessIfServiceErrorOccursAndLogItAsync()
         {
             // given
             SubscriberCredential someSubscriberCredential = CreateRandomSubscriberCredential();
@@ -67,7 +66,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.EmisLandings
 
             EmisLandingOrchestrationServiceException expectedException =
                 new EmisLandingOrchestrationServiceException(
-                    message: "EMIS landing orchestration service aggregate errors occurred, please contact support.",
+                    message: "EMIS landing orchestration service error occurred, please contact support.",
                     innerException: failedDownloadServiceException);
 
             // when
@@ -91,58 +90,6 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.EmisLandings
             this.loggingBrokerMock.Verify(broker =>
                 broker.LogErrorAsync(It.Is(SameExceptionAs(
                     expectedException))),
-                        Times.Once);
-
-            this.downloadProcessingServiceMock.VerifyNoOtherCalls();
-            this.loggingBrokerMock.VerifyNoOtherCalls();
-            this.ingestionTrackingProcessingServiceMock.VerifyNoOtherCalls();
-            this.dateTimeBrokerMock.VerifyNoOtherCalls();
-            this.dataSetSpecificationProcessingServiceMock.VerifyNoOtherCalls();
-            this.documentProcessingServiceMock.VerifyNoOtherCalls();
-            this.hashBrokerMock.VerifyNoOtherCalls();
-            this.ingestionTrackingAuditProcessingServiceMock.VerifyNoOtherCalls();
-        }
-
-        [Fact]
-        public async Task ShouldThrowServiceExceptionOnProcessIfServiceErrorOccursAndLogItAsync()
-        {
-            //Given
-            SubscriberCredential someSubscriberCredential = CreateRandomSubscriberCredential();
-            Download someDownload = new Download { SubscriberCredential = someSubscriberCredential };
-            var serviceException = new Exception();
-            Guid someSupplierId = Guid.NewGuid();
-
-            var failedEmisLandingOrchestrationServiceException =
-                new FailedEmisLandingOrchestrationServiceException(
-                    message: "Failed EMIS landing orchestration service error occurred, please contact support.",
-                    serviceException);
-
-            var expectedEmisLandingOrchestrationServiceException =
-                new EmisLandingOrchestrationServiceException(
-                    message: "EMIS landing orchestration service error occurred, please contact support.",
-                    failedEmisLandingOrchestrationServiceException);
-
-            this.downloadProcessingServiceMock.Setup(service =>
-                service.RetrieveListOfDownloadsToProcessAsync(It.IsAny<Download>()))
-                    .ThrowsAsync(serviceException);
-
-            // when
-            ValueTask<List<string>> processTask = this.emisLandingOrchestrationService
-                .ProcessAsync(subscriberCredential: someSubscriberCredential, supplierId: someSupplierId);
-
-            EmisLandingOrchestrationServiceException actualException =
-                await Assert.ThrowsAsync<EmisLandingOrchestrationServiceException>(processTask.AsTask);
-
-            // then
-            actualException.Should().BeEquivalentTo(expectedEmisLandingOrchestrationServiceException);
-
-            this.downloadProcessingServiceMock.Verify(service =>
-                service.RetrieveListOfDownloadsToProcessAsync(It.IsAny<Download>()),
-                    Times.Once);
-
-            this.loggingBrokerMock.Verify(broker =>
-                broker.LogErrorAsync(It.Is(SameExceptionAs(
-                    expectedEmisLandingOrchestrationServiceException))),
                         Times.Once);
 
             this.downloadProcessingServiceMock.VerifyNoOtherCalls();

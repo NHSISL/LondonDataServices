@@ -390,94 +390,94 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.EmisLandings
             this.ingestionTrackingAuditProcessingServiceMock.VerifyNoOtherCalls();
         }
 
-        [Theory(Skip = "Rewrite test using the virtual internal methods")]
-        [InlineData(true, 0)]
-        [InlineData(false, 4)]
-        [InlineData(true, 4)]
-        public async Task ShouldNotProcessDownloadedDocumentsOrWhenRetryCountReachedAsync(
-            bool isDownloaded,
-            int retryCount)
-        {
-            // given
-            SubscriberCredential randomSubscriberCredential = CreateRandomSubscriberCredential();
-            SubscriberCredential inputSubscriberCredential = randomSubscriberCredential;
-            Download inputDownload = new Download { SubscriberCredential = inputSubscriberCredential };
-            DateTimeOffset randomDateTime = GetRandomDateTimeOffset();
-            List<string> randomFileNames = GetRandomStrings();
-            List<string> externalDownloadList = randomFileNames;
-            string randomHash = GetRandomString(64);
-            Guid inputSupplierId = landingConfiguration.LandingSupplierId;
+        //[Theory(Skip = "Rewrite test using the virtual internal methods")]
+        //[InlineData(true, 0)]
+        //[InlineData(false, 4)]
+        //[InlineData(true, 4)]
+        //public async Task ShouldNotProcessDownloadedDocumentsOrWhenRetryCountReachedAsync(
+        //    bool isDownloaded,
+        //    int retryCount)
+        //{
+        //    // given
+        //    SubscriberCredential randomSubscriberCredential = CreateRandomSubscriberCredential();
+        //    SubscriberCredential inputSubscriberCredential = randomSubscriberCredential;
+        //    Download inputDownload = new Download { SubscriberCredential = inputSubscriberCredential };
+        //    DateTimeOffset randomDateTime = GetRandomDateTimeOffset();
+        //    List<string> randomFileNames = GetRandomStrings();
+        //    List<string> externalDownloadList = randomFileNames;
+        //    string randomHash = GetRandomString(64);
+        //    Guid inputSupplierId = landingConfiguration.LandingSupplierId;
 
-            List<IngestionTracking> externalIngestionTrackingsFound =
-                CreateRandomIngestionTrackings(
-                    dateTimeOffset: randomDateTime,
-                    fileNames: externalDownloadList,
-                    isDownloaded,
-                    retryCount);
+        //    List<IngestionTracking> externalIngestionTrackingsFound =
+        //        CreateRandomIngestionTrackings(
+        //            dateTimeOffset: randomDateTime,
+        //            fileNames: externalDownloadList,
+        //            isDownloaded,
+        //            retryCount);
 
-            this.downloadProcessingServiceMock.Setup(service =>
-               service.RetrieveListOfDownloadsToProcessAsync(It.Is(SameDownloadAs(inputDownload))))
-                   .ReturnsAsync(externalDownloadList);
+        //    this.downloadProcessingServiceMock.Setup(service =>
+        //       service.RetrieveListOfDownloadsToProcessAsync(It.Is(SameDownloadAs(inputDownload))))
+        //           .ReturnsAsync(externalDownloadList);
 
-            this.ingestionTrackingProcessingServiceMock.Setup(service =>
-                service.RetrieveAllIngestionTrackingsAsync())
-                    .ReturnsAsync(externalIngestionTrackingsFound.AsQueryable());
+        //    this.ingestionTrackingProcessingServiceMock.Setup(service =>
+        //        service.RetrieveAllIngestionTrackingsAsync())
+        //            .ReturnsAsync(externalIngestionTrackingsFound.AsQueryable());
 
-            this.dateTimeBrokerMock.Setup(broker =>
-                broker.GetCurrentDateTimeOffsetAsync())
-                    .ReturnsAsync(randomDateTime);
+        //    this.dateTimeBrokerMock.Setup(broker =>
+        //        broker.GetCurrentDateTimeOffsetAsync())
+        //            .ReturnsAsync(randomDateTime);
 
-            foreach (IngestionTracking ingestionTracking in externalIngestionTrackingsFound)
-            {
-                this.ingestionTrackingProcessingServiceMock.Setup(service =>
-                    service.RetrieveIngestionTrackingByIdAsync(ingestionTracking.Id))
-                        .ReturnsAsync(ingestionTracking);
-            }
+        //    foreach (IngestionTracking ingestionTracking in externalIngestionTrackingsFound)
+        //    {
+        //        this.ingestionTrackingProcessingServiceMock.Setup(service =>
+        //            service.RetrieveIngestionTrackingByIdAsync(ingestionTracking.Id))
+        //                .ReturnsAsync(ingestionTracking);
+        //    }
 
-            // when
-            await this.emisLandingOrchestrationService.ProcessAsync(
-                subscriberCredential: inputSubscriberCredential,
-                supplierId: inputSupplierId);
+        //    // when
+        //    await this.emisLandingOrchestrationService.ProcessAsync(
+        //        subscriberCredential: inputSubscriberCredential,
+        //        supplierId: inputSupplierId);
 
-            // then
-            this.downloadProcessingServiceMock.Verify(service =>
-                service.RetrieveListOfDownloadsToProcessAsync(It.Is(SameDownloadAs(inputDownload))),
-                    Times.Once);
+        //    // then
+        //    this.downloadProcessingServiceMock.Verify(service =>
+        //        service.RetrieveListOfDownloadsToProcessAsync(It.Is(SameDownloadAs(inputDownload))),
+        //            Times.Once);
 
-            this.ingestionTrackingProcessingServiceMock.Verify(service =>
-                service.RetrieveAllIngestionTrackingsAsync(),
-                    Times.Exactly(randomFileNames.Count + 1));
+        //    this.ingestionTrackingProcessingServiceMock.Verify(service =>
+        //        service.RetrieveAllIngestionTrackingsAsync(),
+        //            Times.Exactly(randomFileNames.Count + 1));
 
-            this.dateTimeBrokerMock.Verify(broker =>
-                broker.GetCurrentDateTimeOffsetAsync(),
-                    Times.Exactly(externalDownloadList.Count + 1));
+        //    this.dateTimeBrokerMock.Verify(broker =>
+        //        broker.GetCurrentDateTimeOffsetAsync(),
+        //            Times.Exactly(externalDownloadList.Count + 1));
 
-            foreach (IngestionTracking ingestionTracking in externalIngestionTrackingsFound)
-            {
-                this.ingestionTrackingProcessingServiceMock.Verify(service =>
-                    service.RetrieveIngestionTrackingByIdAsync(ingestionTracking.Id),
-                        Times.Once);
+        //    foreach (IngestionTracking ingestionTracking in externalIngestionTrackingsFound)
+        //    {
+        //        this.ingestionTrackingProcessingServiceMock.Verify(service =>
+        //            service.RetrieveIngestionTrackingByIdAsync(ingestionTracking.Id),
+        //                Times.Once);
 
-                IngestionTracking lastSeenIngestionTrackingItem = ingestionTracking.DeepClone();
-                lastSeenIngestionTrackingItem.LastSeen = randomDateTime;
+        //        IngestionTracking lastSeenIngestionTrackingItem = ingestionTracking.DeepClone();
+        //        lastSeenIngestionTrackingItem.LastSeen = randomDateTime;
 
-                int count = isDownloaded ? 1 : 2;
+        //        int count = isDownloaded ? 1 : 2;
 
-                this.ingestionTrackingProcessingServiceMock.Verify(service =>
-                    service.ModifyIngestionTrackingAsync(
-                        It.Is(SameIngestionTrackingAs(lastSeenIngestionTrackingItem))),
-                           Times.Exactly(count));
-            }
+        //        this.ingestionTrackingProcessingServiceMock.Verify(service =>
+        //            service.ModifyIngestionTrackingAsync(
+        //                It.Is(SameIngestionTrackingAs(lastSeenIngestionTrackingItem))),
+        //                   Times.Exactly(count));
+        //    }
 
-            this.downloadProcessingServiceMock.VerifyNoOtherCalls();
-            this.dateTimeBrokerMock.VerifyNoOtherCalls();
-            this.hashBrokerMock.VerifyNoOtherCalls();
-            this.ingestionTrackingProcessingServiceMock.VerifyNoOtherCalls();
-            this.dataSetSpecificationProcessingServiceMock.VerifyNoOtherCalls();
-            this.documentProcessingServiceMock.VerifyNoOtherCalls();
-            this.loggingBrokerMock.VerifyNoOtherCalls();
-            this.ingestionTrackingAuditProcessingServiceMock.VerifyNoOtherCalls();
-        }
+        //    this.downloadProcessingServiceMock.VerifyNoOtherCalls();
+        //    this.dateTimeBrokerMock.VerifyNoOtherCalls();
+        //    this.hashBrokerMock.VerifyNoOtherCalls();
+        //    this.ingestionTrackingProcessingServiceMock.VerifyNoOtherCalls();
+        //    this.dataSetSpecificationProcessingServiceMock.VerifyNoOtherCalls();
+        //    this.documentProcessingServiceMock.VerifyNoOtherCalls();
+        //    this.loggingBrokerMock.VerifyNoOtherCalls();
+        //    this.ingestionTrackingAuditProcessingServiceMock.VerifyNoOtherCalls();
+        //}
 
         [Fact]
         public async Task ShouldMarkAsDeleteIfFileWereRemovedAsync()

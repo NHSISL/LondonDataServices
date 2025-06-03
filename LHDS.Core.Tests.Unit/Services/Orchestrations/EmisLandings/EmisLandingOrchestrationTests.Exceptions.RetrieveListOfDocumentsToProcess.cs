@@ -88,7 +88,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.EmisLandings
 
             // when
             ValueTask<List<string>> retrieveListOfDocumentsToProcessAsyncTask = this.emisLandingOrchestrationService
-                .ProcessAsync(subscriberCredential: someSubscriberCredential, supplierId: inputSupplierId);
+                .RetrieveListOfDocumentsToProcessAsync(subscriberCredential: someSubscriberCredential);
 
             EmisLandingOrchestrationDependencyException actualException =
                 await Assert.ThrowsAsync<EmisLandingOrchestrationDependencyException>(
@@ -141,7 +141,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.EmisLandings
 
             // when
             ValueTask<List<string>> retrieveListOfDocumentsToProcessAsyncTask = this.emisLandingOrchestrationService
-                .ProcessAsync(subscriberCredential: someSubscriberCredential, supplierId: inputSupplierId);
+                .RetrieveListOfDocumentsToProcessAsync(subscriberCredential: someSubscriberCredential);
 
             EmisLandingOrchestrationServiceException actualException =
                 await Assert.ThrowsAsync<EmisLandingOrchestrationServiceException>(

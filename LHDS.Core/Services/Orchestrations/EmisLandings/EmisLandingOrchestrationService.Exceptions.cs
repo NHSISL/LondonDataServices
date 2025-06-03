@@ -117,7 +117,7 @@ namespace LHDS.Core.Services.Orchestrations.Downloads
                         message: "Failed EMIS landing orchestration service error occurred, please contact support.",
                         aggregateException);
 
-                throw await CreateAndLogAggregateServiceExceptionAsync(failedDownloadServiceException);
+                throw await CreateAndLogServiceExceptionAsync(failedDownloadServiceException);
             }
             catch (Exception exception)
             {
@@ -466,19 +466,6 @@ namespace LHDS.Core.Services.Orchestrations.Downloads
             var emisLandingOrchestrationServiceException =
                 new EmisLandingOrchestrationServiceException(
                     message: "EMIS landing orchestration service error occurred, please contact support.",
-                    exception);
-
-            await this.loggingBroker.LogErrorAsync(emisLandingOrchestrationServiceException);
-
-            return emisLandingOrchestrationServiceException;
-        }
-
-        private async ValueTask<EmisLandingOrchestrationServiceException> CreateAndLogAggregateServiceExceptionAsync(
-            Xeption exception)
-        {
-            var emisLandingOrchestrationServiceException =
-                new EmisLandingOrchestrationServiceException(
-                    message: "EMIS landing orchestration service aggregate errors occurred, please contact support.",
                     exception);
 
             await this.loggingBroker.LogErrorAsync(emisLandingOrchestrationServiceException);

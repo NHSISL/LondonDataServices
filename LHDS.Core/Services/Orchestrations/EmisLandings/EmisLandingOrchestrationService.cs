@@ -234,7 +234,7 @@ namespace LHDS.Core.Services.Orchestrations.Downloads
                         retrievedIngestionTracking);
             });
 
-        private async ValueTask<string> ProcessFileAsync(
+        virtual internal async ValueTask<string> ProcessFileAsync(
             SubscriberCredential subscriberCredential,
             Guid supplierId,
             string fileName)

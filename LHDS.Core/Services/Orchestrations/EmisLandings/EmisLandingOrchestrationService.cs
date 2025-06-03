@@ -153,15 +153,15 @@ namespace LHDS.Core.Services.Orchestrations.Downloads
         virtual internal async ValueTask MarkItemsAsDeleteThatHasNotBeenSeen()
         {
             var exceptions = new List<Exception>();
-            DateTimeOffset lastSeenMinutes = await this.dateTimeBroker.GetCurrentDateTimeOffsetAsync();
-            lastSeenMinutes.AddMinutes(-this.landingConfiguration.LastSeenMinutes);
+            DateTimeOffset currentDateTime = await this.dateTimeBroker.GetCurrentDateTimeOffsetAsync();
+            DateTimeOffset lastSeenMinutes = currentDateTime.AddMinutes(-this.landingConfiguration.LastSeenMinutes);
 
             IQueryable<IngestionTracking> allIngestionTrackings =
                 await this.ingestionTrackingProcessingService.RetrieveAllIngestionTrackingsAsync();
 
             List<IngestionTracking> unavailableIngestionTrackings = allIngestionTrackings
-                    .Where(ingestionTracking =>
-                        ingestionTracking.LastSeen <= lastSeenMinutes).ToList();
+                .Where(ingestionTracking =>
+                    ingestionTracking.LastSeen <= lastSeenMinutes).ToList();
 
             foreach (var item in unavailableIngestionTrackings)
             {

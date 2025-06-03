@@ -531,6 +531,110 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.EmisLandings
             this.ingestionTrackingAuditProcessingServiceMock.VerifyNoOtherCalls();
         }
 
+        [Theory]
+        [InlineData(true, 0)]
+        [InlineData(false, 4)]
+        [InlineData(true, 4)]
+        public async Task ShouldOnlyUpdateLastSeenDateForFilesAlreadyProcessedOrWhereRetryCountExceededAsync(
+            bool isDownloaded,
+            int retryCount)
+        {
+            // given
+            SubscriberCredential randomSubscriberCredential = CreateRandomSubscriberCredential();
+            SubscriberCredential inputSubscriberCredential = randomSubscriberCredential;
+            Guid randomGuid = Guid.NewGuid();
+            Guid supplierId = randomGuid;
+            Download inputDownload = new Download { SubscriberCredential = inputSubscriberCredential };
+            int count = GetRandomNumber();
+
+            string randomFileName =
+                GetRandomFilePaths(count: 1, subscriberAgreementId: inputSubscriberCredential.Id).First();
+
+            string inputFileName = randomFileName;
+            DateTimeOffset randomDateTime = GetRandomDateTimeOffset();
+            string tempFileName = GetRandomString();
+            string randomHash = GetRandomString(64);
+            string container = blobContainers.EmisLanding;
+
+            IngestionTracking storageIngestionTracking =
+                CreateRandomIngestionTracking(
+                    dateTimeOffset: randomDateTime,
+                    fileName: inputFileName,
+                    isDownloaded: isDownloaded,
+                    retryCount: retryCount);
+
+            var emisLandingOrchestrationServiceMock = new Mock<EmisLandingOrchestrationService>(
+                documentProcessingServiceMock.Object,
+                downloadProcessingServiceMock.Object,
+                ingestionTrackingProcessingServiceMock.Object,
+                ingestionTrackingAuditProcessingServiceMock.Object,
+                dataSetSpecificationProcessingServiceMock.Object,
+                this.blobContainers,
+                loggingBrokerMock.Object,
+                dateTimeBrokerMock.Object,
+                identifierBrokerMock.Object,
+                hashBrokerMock.Object,
+                fileBrokerMock.Object,
+                landingConfiguration)
+            {
+                CallBase = true
+            };
+
+            this.ingestionTrackingProcessingServiceMock.Setup(service =>
+                service.RetrieveAllIngestionTrackingsAsync())
+                    .ReturnsAsync(new List<IngestionTracking> { storageIngestionTracking }.AsQueryable());
+
+            this.ingestionTrackingProcessingServiceMock.Setup(service =>
+                service.RetrieveIngestionTrackingByIdAsync(storageIngestionTracking.Id))
+                    .ReturnsAsync(storageIngestionTracking);
+
+            this.dateTimeBrokerMock.Setup(broker =>
+                broker.GetCurrentDateTimeOffsetAsync())
+                    .ReturnsAsync(randomDateTime);
+
+            IngestionTracking lastSeenIngestionTracking = storageIngestionTracking.DeepClone();
+            lastSeenIngestionTracking.LastSeen = randomDateTime;
+
+            this.ingestionTrackingProcessingServiceMock.Setup(service =>
+                service.ModifyIngestionTrackingAsync(It.Is(SameIngestionTrackingAs(lastSeenIngestionTracking))))
+                    .ReturnsAsync(lastSeenIngestionTracking);
+
+            string expectedFileName = string.Empty;
+
+            // when
+            string actualFileName = await emisLandingOrchestrationServiceMock.Object.ProcessFileAsync(
+                subscriberCredential: inputSubscriberCredential, supplierId, inputFileName);
+
+            // then
+            actualFileName.Should().BeEquivalentTo(expectedFileName);
+
+            this.ingestionTrackingProcessingServiceMock.Verify(service =>
+                service.RetrieveAllIngestionTrackingsAsync(),
+                    Times.Once);
+
+            this.ingestionTrackingProcessingServiceMock.Verify(service =>
+                service.RetrieveIngestionTrackingByIdAsync(storageIngestionTracking.Id),
+                    Times.Once);
+
+            this.dateTimeBrokerMock.Verify(broker =>
+                broker.GetCurrentDateTimeOffsetAsync(),
+                    Times.Once);
+
+            this.ingestionTrackingProcessingServiceMock.Verify(service =>
+                service.ModifyIngestionTrackingAsync(
+                    It.Is(SameIngestionTrackingAs(lastSeenIngestionTracking))),
+                        Times.Once);
+
+            this.downloadProcessingServiceMock.VerifyNoOtherCalls();
+            this.hashBrokerMock.VerifyNoOtherCalls();
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
+            this.ingestionTrackingProcessingServiceMock.VerifyNoOtherCalls();
+            this.dataSetSpecificationProcessingServiceMock.VerifyNoOtherCalls();
+            this.documentProcessingServiceMock.VerifyNoOtherCalls();
+            this.loggingBrokerMock.VerifyNoOtherCalls();
+            this.ingestionTrackingAuditProcessingServiceMock.VerifyNoOtherCalls();
+        }
+
 
     }
 }

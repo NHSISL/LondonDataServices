@@ -43,7 +43,7 @@ namespace LHDS.Core.Providers.Downloads.DiskDownloads
             string relativePath = docFileName
                 .Replace("/", $"{separator}")
                     .Replace("\\", $"{separator}")
-                        .TrimStart(separator); ;
+                        .TrimStart(separator);
 
             string filePath = Path.Combine(diskDownloadProviderSettings.LocalRootFolder, relativePath);
 

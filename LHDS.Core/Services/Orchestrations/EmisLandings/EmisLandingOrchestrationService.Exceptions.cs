@@ -110,6 +110,15 @@ namespace LHDS.Core.Services.Orchestrations.Downloads
             {
                 throw await CreateAndLogDependencyExceptionAsync(auditServiceException);
             }
+            catch (AggregateException aggregateException)
+            {
+                var failedDownloadServiceException =
+                    new FailedEmisLandingOrchestrationServiceException(
+                        message: "Failed EMIS landing orchestration service error occurred, please contact support.",
+                        aggregateException);
+
+                throw await CreateAndLogServiceExceptionAsync(failedDownloadServiceException);
+            }
             catch (Exception exception)
             {
                 var failedDownloadServiceException =
@@ -451,8 +460,8 @@ namespace LHDS.Core.Services.Orchestrations.Downloads
             return emisLandingOrchestrationDependencyException;
         }
 
-        private async ValueTask<EmisLandingOrchestrationServiceException>
-            CreateAndLogServiceExceptionAsync(Xeption exception)
+        private async ValueTask<EmisLandingOrchestrationServiceException> CreateAndLogServiceExceptionAsync(
+            Xeption exception)
         {
             var emisLandingOrchestrationServiceException =
                 new EmisLandingOrchestrationServiceException(

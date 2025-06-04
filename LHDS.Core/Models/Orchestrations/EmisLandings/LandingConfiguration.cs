@@ -14,5 +14,6 @@ namespace LHDS.Core.Models.Orchestrations.EmisLandings
         public string KeyVaultUrl { get; set; }
         public string BatchDownloadedFile { get; set; } = "_BatchDownloaded.txt";
         public string BatchReadyFile { get; set; } = "_BatchReady.txt";
+        public int LastSeenMinutes { get; set; } = 15;
     }
 }

@@ -5,7 +5,9 @@
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using FluentAssertions;
 using Force.DeepCloner;
+using LHDS.Core.Models.Foundations.Downloads;
 using LHDS.Core.Models.Processings.SubscriberCredentials;
 using LHDS.Core.Services.Orchestrations.Downloads;
 using Moq;
@@ -16,16 +18,18 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.EmisLandings
     public partial class EmisLandingOrchestrationTests
     {
         [Fact]
-        public async Task ShouldProcessDocumentsAsync()
+        public async Task ShouldProcessSubscriberFilesAsync()
         {
             // given
             SubscriberCredential randomSubscriberCredential = CreateRandomSubscriberCredential();
             SubscriberCredential inputSubscriberCredential = randomSubscriberCredential;
             Guid randomGuid = Guid.NewGuid();
             Guid supplierId = randomGuid;
-            List<string> randomFileNames = GetRandomStrings();
-            List<string> processedFileNames = randomFileNames.DeepClone();
-            List<string> expectedFileNames = processedFileNames.DeepClone();
+            Download download = new Download { SubscriberCredential = inputSubscriberCredential };
+            int count = GetRandomNumber();
+            List<string> randomExternalFileNames = GetRandomStrings(count);
+            List<string> randomProcessedFileNames = GetRandomStrings(count);
+            List<string> expectedOutput = randomProcessedFileNames.DeepClone();
 
             var emisLandingOrchestrationServiceMock = new Mock<EmisLandingOrchestrationService>(
                 documentProcessingServiceMock.Object,
@@ -44,27 +48,34 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.EmisLandings
                 CallBase = true
             };
 
-            emisLandingOrchestrationServiceMock.Setup(service =>
-                service.ProcessSubscriberFiles(inputSubscriberCredential, supplierId))
-                    .ReturnsAsync(processedFileNames);
+            downloadProcessingServiceMock.Setup(service =>
+                service.RetrieveListOfDownloadsToProcessAsync(It.Is(SameDownloadAs(download))))
+                    .ReturnsAsync(randomExternalFileNames);
 
-            emisLandingOrchestrationServiceMock.Setup(service =>
-                service.MarkItemsAsDeleteThatHasNotBeenSeen())
-                    .Returns(ValueTask.CompletedTask);
+            for (int i = 0; i < randomExternalFileNames.Count; i++)
+            {
+                emisLandingOrchestrationServiceMock.Setup(service =>
+                    service.ProcessFileAsync(inputSubscriberCredential, supplierId, randomExternalFileNames[i]))
+                        .ReturnsAsync(randomProcessedFileNames[i]);
+            }
 
             // when
-            await emisLandingOrchestrationServiceMock.Object.ProcessAsync(
+            List<string> actualOutput = await emisLandingOrchestrationServiceMock.Object.ProcessSubscriberFiles(
                 subscriberCredential: inputSubscriberCredential, supplierId);
 
             // then
+            actualOutput.Should().BeEquivalentTo(expectedOutput);
 
-            emisLandingOrchestrationServiceMock.Verify(service =>
-                service.ProcessSubscriberFiles(inputSubscriberCredential, supplierId),
+            downloadProcessingServiceMock.Verify(service =>
+                service.RetrieveListOfDownloadsToProcessAsync(It.Is(SameDownloadAs(download))),
                     Times.Once);
 
-            emisLandingOrchestrationServiceMock.Verify(service =>
-                service.MarkItemsAsDeleteThatHasNotBeenSeen(),
-                    Times.Once);
+            for (int i = 0; i < randomExternalFileNames.Count; i++)
+            {
+                emisLandingOrchestrationServiceMock.Verify(service =>
+                    service.ProcessFileAsync(inputSubscriberCredential, supplierId, randomExternalFileNames[i]),
+                        Times.Once);
+            }
 
             this.downloadProcessingServiceMock.VerifyNoOtherCalls();
             this.hashBrokerMock.VerifyNoOtherCalls();

@@ -105,7 +105,6 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Decryptions
 
             var updatedIngestionTracking = storageIngestionTracking.DeepClone();
             updatedIngestionTracking.Decrypted = true;
-            updatedIngestionTracking.RecordCount = 0;
             updatedIngestionTracking.DecryptedFileSize = randomDecryptedBytes.Length;
             updatedIngestionTracking.DecryptedFileSha256Hash = randomHash;
             updatedIngestionTracking.IsProcessing = false;

@@ -170,7 +170,6 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.TppLandings
                     Decrypted = true,
                     LastSeen = randomDateTime,
                     FileDeleted = false,
-                    RecordCount = 0,
                     EncryptedFileSize = 0,
                     EncryptedFileSha256Hash = string.Empty,
                     DecryptedFileSize = inputData.Length,

@@ -9,10 +9,9 @@ export class IngestionTrackingView {
     public decrypted: boolean;
     public lastSeen: Date;
     public fileDeleted: boolean;
-    public recordCount: number;
     public encryptedFileSize: number;
     public decryptedFileSize: number;
-    public isDownloading: boolean;
+    public isDownloaded: boolean;
     public isProcessing: boolean;
     public retryCount: number;
     public sourceFolderPath: string;
@@ -36,10 +35,9 @@ export class IngestionTrackingView {
         decrypted: boolean,
         lastSeen: Date,
         fileDeleted: boolean,
-        recordCount: number,
         encryptedFileSize: number,
         decryptedFileSize: number,
-        isDownloading: boolean,
+        isDownloaded: boolean,
         isProcessing: boolean,
         retryCount: number,
         sourceFolderPath: string,
@@ -62,10 +60,9 @@ export class IngestionTrackingView {
         this.decrypted = decrypted;
         this.lastSeen = lastSeen;
         this.fileDeleted = fileDeleted;
-        this.recordCount = recordCount;
         this.encryptedFileSize = encryptedFileSize;
         this.decryptedFileSize = decryptedFileSize;
-        this.isDownloading = isDownloading;
+        this.isDownloaded = isDownloaded;
         this.isProcessing = isProcessing;
         this.retryCount = retryCount;
         this.sourceFolderPath = sourceFolderPath || "";

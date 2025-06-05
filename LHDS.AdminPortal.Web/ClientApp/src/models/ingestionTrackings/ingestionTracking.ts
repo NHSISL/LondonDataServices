@@ -9,10 +9,9 @@ export class IngestionTracking {
     public decrypted: boolean;
     public lastSeen: Date;
     public fileDeleted: boolean;
-    public recordCount: number;
     public encryptedFileSize: number;
     public decryptedFileSize: number;
-    public isDownloading: boolean;
+    public isDownloaded: boolean;
     public isProcessing: boolean;
     public retryCount: number;
     public sourceFolderPath: string;
@@ -36,10 +35,9 @@ export class IngestionTracking {
         this.decrypted = ingestionTracking.decrypted;
         this.lastSeen = ingestionTracking.lastSeen ? new Date(ingestionTracking.lastSeen) : new Date();
         this.fileDeleted = ingestionTracking.fileDeleted;
-        this.recordCount = ingestionTracking.recordCount;
         this.encryptedFileSize = ingestionTracking.encryptedFileSize;
         this.decryptedFileSize = ingestionTracking.decryptedFileSize;
-        this.isDownloading = ingestionTracking.isDownloading;
+        this.isDownloaded = ingestionTracking.isDownloaded;
         this.isProcessing = ingestionTracking.isProcessing;
         this.retryCount = ingestionTracking.retryCount;
         this.sourceFolderPath = ingestionTracking.sourceFolderPath || "";

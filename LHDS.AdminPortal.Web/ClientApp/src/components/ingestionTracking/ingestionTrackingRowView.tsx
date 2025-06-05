@@ -41,10 +41,11 @@ const IngestionTrackingRow: FunctionComponent<IngestionTrackingRowProps> = (prop
                 <br />
                 <span>
                     Decrypted: {ingestionTracking.decrypted ? <FontAwesomeIcon icon={faCheck} className="text-success" />
-                        : <FontAwesomeIcon icon={faTimes} className="text-danger" />} &nbsp;
+                        : <FontAwesomeIcon icon={faTimes} className="text-danger" />} &nbsp; | &nbsp;
                 </span>
                 <span>
-                    Record Count: {ingestionTracking.recordCount} &nbsp;
+                    Downloaded: {ingestionTracking.isDownloaded ? <FontAwesomeIcon icon={faCheck} className="text-success" />
+                        : <FontAwesomeIcon icon={faTimes} className="text-danger" />} &nbsp; | &nbsp;
                 </span>
             </TableBaseData>
 

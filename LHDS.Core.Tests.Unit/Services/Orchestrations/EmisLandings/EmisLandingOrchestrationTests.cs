@@ -267,16 +267,11 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.EmisLandings
                 .OnProperty(dataSet => dataSet.ActiveTo).Use(now.AddDays(2))
                 .OnProperty(dataSet => dataSet.CreatedBy).Use(user)
                 .OnProperty(dataSet => dataSet.UpdatedBy).Use(user)
-                .OnProperty(dataSet => dataSet.ActiveTo).Use(now.AddDays(GetRandomNumber()));
+                .OnProperty(dataSet => dataSet.ActiveTo).Use(now.AddDays(GetRandomNumber()))
+                .OnProperty(dataSet => dataSet.DataSetSpecifications).IgnoreIt()
+                .OnProperty(dataSet => dataSet.Supplier).IgnoreIt();
 
             return filler;
-        }
-
-        private static IQueryable<DataSetSpecification> CreateRandomDataSetSpecifications(DataSet dataSet)
-        {
-            return CreateDataSetSpecificationFiller(dataSet)
-                .Create(count: 1)
-                    .AsQueryable();
         }
 
         private static DataSetSpecification CreateRandomDataSetSpecification(DataSet dataSet) =>
@@ -304,11 +299,12 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.EmisLandings
                 .OnProperty(dataSetSpecification =>
                     dataSetSpecification.SupplierSpecificationVersion).Use(GetRandomString(10))
 
-                .OnProperty(dataSetSpecification => dataSetSpecification.PresededById).IgnoreIt()
-                .OnProperty(dataSetSpecification => dataSetSpecification.SupersededById).IgnoreIt()
                 .OnProperty(dataSetSpecification => dataSetSpecification.CreatedBy).Use(user)
                 .OnProperty(dataSetSpecification => dataSetSpecification.CreatedBy).Use(user)
-                .OnProperty(dataSetSpecification => dataSetSpecification.UpdatedBy).Use(user);
+                .OnProperty(dataSetSpecification => dataSetSpecification.UpdatedBy).Use(user)
+                .OnProperty(dataSetSpecification => dataSetSpecification.PresededBy).IgnoreIt()
+                .OnProperty(dataSetSpecification => dataSetSpecification.SupersededBy).IgnoreIt()
+                .OnProperty(dataSetSpecification => dataSetSpecification.SpecificationObjects).IgnoreIt();
 
             return filler;
         }

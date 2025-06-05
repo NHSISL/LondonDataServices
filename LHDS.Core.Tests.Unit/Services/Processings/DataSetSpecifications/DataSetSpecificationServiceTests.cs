@@ -186,6 +186,8 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.DataSetSpecifications
 
                 .OnProperty(dataSetSpecification => dataSetSpecification.PresededById).IgnoreIt()
                 .OnProperty(dataSetSpecification => dataSetSpecification.SupersededById).IgnoreIt()
+                .OnProperty(dataSetSpecification => dataSetSpecification.PresededBy).IgnoreIt()
+                .OnProperty(dataSetSpecification => dataSetSpecification.SupersededBy).IgnoreIt()
                 .OnProperty(dataSetSpecification => dataSetSpecification.SpecificationObjects).IgnoreIt()
                 .OnProperty(dataSetSpecification => dataSetSpecification.CreatedBy).Use(user)
                 .OnProperty(dataSetSpecification => dataSetSpecification.CreatedBy).Use(user)

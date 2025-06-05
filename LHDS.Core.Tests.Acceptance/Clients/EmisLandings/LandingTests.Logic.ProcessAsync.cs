@@ -63,7 +63,7 @@ namespace LHDS.Core.Tests.Acceptance.Clients.EmisLandings
 
             foreach (var actualFile in actualStringList)
             {
-                IQueryable<IngestionTracking> allIngestionTrackings = 
+                IQueryable<IngestionTracking> allIngestionTrackings =
                     await this.ingestionTrackingService.RetrieveAllIngestionTrackingsAsync();
 
                 IngestionTracking ingestionTracking = allIngestionTrackings
@@ -75,7 +75,7 @@ namespace LHDS.Core.Tests.Acceptance.Clients.EmisLandings
                     filename: ingestionTracking.EncryptedFileName,
                     container: blobContainers.EmisLanding);
 
-                IQueryable<IngestionTrackingAudit> allIngestionTrackingAudits = 
+                IQueryable<IngestionTrackingAudit> allIngestionTrackingAudits =
                     await this.ingestionTrackingAuditService.RetrieveAllIngestionTrackingAuditsAsync();
 
                 var audits = allIngestionTrackingAudits
@@ -139,7 +139,8 @@ namespace LHDS.Core.Tests.Acceptance.Clients.EmisLandings
 
             List<IngestionTracking> ingestionTrackings = await CreateRandomIngestionTrackings(
                 documentSources,
-                supplierId: supplierId);
+                supplierId: supplierId,
+                subscriberAgreementId: inputSubscriberCredential.Id);
 
             //When
             var actualStringList = await this.landingClient.ProcessAsync(supplierId);

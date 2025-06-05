@@ -40,6 +40,7 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.IngestionTrackings
             filler.Setup()
                 .OnProperty(ingestionTracking => ingestionTracking.Id).Use(inputIngestionTracking.Id)
                 .OnProperty(ingestionTracking => ingestionTracking.SupplierId).Use(inputIngestionTracking.SupplierId)
+                .OnProperty(ingestionTracking => ingestionTracking.SubscriberAgreementId).IgnoreIt()
                 .OnProperty(ingestionTracking => ingestionTracking.FileName).Use(inputIngestionTracking.FileName)
                 .OnProperty(ingestionTracking => ingestionTracking.CreatedBy).Use(inputIngestionTracking.CreatedBy)
                 .OnProperty(ingestionTracking => ingestionTracking.CreatedDate).Use(inputIngestionTracking.CreatedDate)

@@ -16,7 +16,7 @@ import IngestionTrackingRow from "./ingestionTrackingRow";
 import { IngestionTracking } from "../../models/ingestionTrackings/ingestionTracking";
 import { Row } from "react-bootstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faDatabase, faRefresh } from "@fortawesome/free-solid-svg-icons";
+import { faDatabase, faFilter, faRefresh } from "@fortawesome/free-solid-svg-icons";
 import IngestionFilterModal from "./ingestionTrackingFilter";
 import { SupplierView } from "../../models/views/components/suppliers/supplierView";
 import { emisLandingService } from "../../services/foundations/emisLandingService";
@@ -29,10 +29,18 @@ const IngestionTrackingTable: FunctionComponent<IngestionTrackingTableProps> = (
     const [searchTerm, setSearchTerm] = useState<string>("");
     const [debouncedTerm, setDebouncedTerm] = useState<string>("");
     const [debouncedSupplierTerm, setDebouncedSupplierTerm] = useState<string>("");
+    const [selectedSupplierId, setSelectedSupplierId] = useState<string>("");
+    const [selectedDecryptedFilter, setSelectedDecryptedFilter] = useState<boolean | undefined>(undefined);
+    const [selectedDownloadedFilter, setSelectedDownloadedFilter] = useState<boolean | undefined>(undefined);
     const [showSpinner, setShowSpinner] = useState(false);
     const [showModal, setShowModal] = useState(false);
+    const decryptedFilterParam = selectedDecryptedFilter === undefined ? "" : selectedDecryptedFilter.toString();
+    const downloadedFilterParam = selectedDownloadedFilter === undefined ? "" : selectedDownloadedFilter.toString();
+    const isFilterActive =
+        selectedSupplierId !== "" ||
+        selectedDecryptedFilter !== undefined ||
+        selectedDownloadedFilter !== undefined;
 
-    let { mappedSuppliers: suppliersRetrieved } = lookupViewService.useGetTrackedSupplierList("");
 
     const {
         mappedIngestionTrackings: ingestionTrackingsRetrieved,
@@ -43,7 +51,10 @@ const IngestionTrackingTable: FunctionComponent<IngestionTrackingTableProps> = (
         data,
         refetch
     } = ingestionTrackingHomeViewService.useGetAllIngestionTrackings(
-        debouncedTerm, debouncedSupplierTerm
+        debouncedTerm,
+        debouncedSupplierTerm,
+        decryptedFilterParam,
+        downloadedFilterParam
     );
 
     const totalRecords = ingestionTrackingsRetrieved?.length || 0;
@@ -61,28 +72,31 @@ const IngestionTrackingTable: FunctionComponent<IngestionTrackingTableProps> = (
         []
     );
 
-    const handleSupplierDebounce = useMemo(
-        () =>
-            debounce((value: string) => {
-                setDebouncedSupplierTerm(value);
-            }, 500),
-        []
-    );
-
     const updateEmisLanding = emisLandingService.useModifyEmisLanding();
     const handleReDecrypt = (ingestionTracking: IngestionTracking) => {
         updateEmisLanding.updateIngestionTracking(ingestionTracking)
             .then(() => {
-                toastSuccess("Ingestion Tracking Queued for Decrypt")
+                toastSuccess("Ingestion Tracking Queued for Decrypt");
             })
             .catch(e => {
-                toastError("error")
+                toastError("error");
             });
     };
 
-    const handleFilter = (supplier: SupplierView) => {
-        setSearchTerm(debouncedTerm);
-        handleSupplierDebounce(supplier.id.toString());
+    const handleFilter = (
+        supplier: SupplierView | null,
+        decryptedFilter: boolean | undefined,
+        downloadedFilter: boolean | undefined
+    ) => {
+        if (supplier === null) {
+            setDebouncedSupplierTerm("");
+            setSelectedSupplierId("");
+        } else {
+            setDebouncedSupplierTerm(supplier.id.toString());
+            setSelectedSupplierId(supplier.id.toString());
+        }
+        setSelectedDecryptedFilter(decryptedFilter);
+        setSelectedDownloadedFilter(downloadedFilter);
     };
 
     const handleBatchClick = (batch: string) => {
@@ -90,10 +104,11 @@ const IngestionTrackingTable: FunctionComponent<IngestionTrackingTableProps> = (
         setDebouncedTerm(batch);
     };
 
-    const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-        const selectedSupplierId = event.target.value;
-        setDebouncedSupplierTerm(selectedSupplierId);
-    };
+    //const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    //    const selectedId = event.target.value;
+    //    setDebouncedSupplierTerm(selectedId);
+    //    setSelectedSupplierId(selectedId);
+    //};
 
     const hasNoMorePages = () => {
         return !isLoading && data?.pages.at(-1)?.nextPage === undefined;
@@ -113,7 +128,9 @@ const IngestionTrackingTable: FunctionComponent<IngestionTrackingTableProps> = (
         <div className="infiniteScrollContainer">
             <CardBase>
                 <CardBaseBody>
-                    <CardBaseTitle> <FontAwesomeIcon icon={faDatabase} className="me-2" /> Ingestion Tracking</CardBaseTitle>
+                    <CardBaseTitle>
+                        <FontAwesomeIcon icon={faDatabase} className="me-2" /> Ingestion Tracking
+                    </CardBaseTitle>
                     <CardBaseContent>
                         <InfiniteScroll loading={isLoading || showSpinner} hasNextPage={hasNextPage || false} loadMore={fetchNextPage}>
                             <Row className="m-0 p-0">
@@ -122,53 +139,39 @@ const IngestionTrackingTable: FunctionComponent<IngestionTrackingTableProps> = (
                                         id="search"
                                         value={searchTerm}
                                         placeholder="Search for ingestion data..."
-                                        onChange={(e) => { handleSearchChange(e.currentTarget.value) }} />
+                                        onChange={(e) => {
+                                            handleSearchChange(e.currentTarget.value);
+                                        }}
+                                    />
 
-                                    {showSpinner ? (
-                                        <SpinnerBase />
-                                    ) : (
-                                        <div className="input-group-append m-0 p-0">
-                                            <button className="btn btn-outline-secondary" id="refreshButton" onClick={refreshData}>
-                                                <FontAwesomeIcon icon={faRefresh} /> Refresh
+                                    <div className="btn-group" role="group" aria-label="Filter and Refresh buttons">
+                                        <button
+                                            className={`btn btn-outline-secondary ${isFilterActive ? "btn-outline-danger" : ""}`}
+                                            id="filterButton"
+                                            onClick={() => setShowModal(true)}
+                                        >
+                                            <FontAwesomeIcon icon={faFilter} />
+                                        </button>
+
+                                        {showSpinner ? (
+                                            <button className="btn btn-outline-secondary" disabled>
+                                                <SpinnerBase />
                                             </button>
-                                        </div>
-                                    )}
+                                        ) : (
+                                            <button
+                                                className="btn btn-outline-secondary"
+                                                id="refreshButton"
+                                                onClick={refreshData}
+                                            >
+                                                <FontAwesomeIcon icon={faRefresh} />
+                                            </button>
+                                        )}
+                                    </div>
+
                                 </div>
                             </Row>
                             <div className="d-flex justify-content-between align-items-center mb-2">
-                                <span className="d-flex align-items-center">
-
-                                    <div key="all-suppliers" className="form-check me-3">
-                                        <input
-                                            className="form-check-input"
-                                            type="radio"
-                                            name="supplier"
-                                            id="supplier-all"
-                                            value=""
-                                            onChange={handleChange}
-                                        />
-                                        <label className="form-check-label" htmlFor="supplier-all">
-                                            All
-                                        </label>
-                                    </div>
-
-                                    {suppliersRetrieved
-                                        .map((supplier) => (
-                                            <div key={supplier.id.toString()} className="form-check me-3">
-                                                <input
-                                                    className="form-check-input"
-                                                    type="radio"
-                                                    name="supplier"
-                                                    id={`supplier-${supplier.id}`}
-                                                    value={supplier.id.toString()}
-                                                    onChange={handleChange}
-                                                />
-                                                <label className="form-check-label" htmlFor={`supplier-${supplier.id}`}>
-                                                    {supplier.name || ""}
-                                                </label>
-                                            </div>
-                                        ))}
-                                </span>
+                                <span></span>
 
                                 <span className="text-muted small">
                                     Showing {totalRecords} record{totalRecords !== 1 ? "s" : ""}
@@ -212,11 +215,16 @@ const IngestionTrackingTable: FunctionComponent<IngestionTrackingTableProps> = (
                     </CardBaseContent>
                 </CardBaseBody>
             </CardBase>
-            {
-                showModal && (
-                    <IngestionFilterModal onClose={() => setShowModal(false)} onAddFilter={handleFilter} />
-                )}
-        </div >
+            {showModal && (
+                <IngestionFilterModal
+                    onClose={() => setShowModal(false)}
+                    onAddFilter={handleFilter}
+                    selectedSupplierId={selectedSupplierId}
+                    initialDecryptedFilter={selectedDecryptedFilter}
+                    initialDownloadedFilter={selectedDownloadedFilter}
+                />
+            )}
+        </div>
     );
 };
 

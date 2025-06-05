@@ -53,7 +53,7 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.IngestionTrackings
         {
             IngestionTracking randomIngestionTracking = CreateRandomIngestionTracking(supplierId);
 
-            IngestionTracking storageIngestionTracking = 
+            IngestionTracking storageIngestionTracking =
                 await this.apiBroker.PostIngestionTrackingAsync(randomIngestionTracking);
 
             return storageIngestionTracking;
@@ -85,6 +85,7 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.IngestionTrackings
                 .OnType<DateTimeOffset>().Use(now)
                 .OnType<DateTimeOffset?>().Use(now)
                 .OnProperty(ingestionTracking => ingestionTracking.SupplierId).Use(supplierId)
+                .OnProperty(ingestionTracking => ingestionTracking.SubscriberAgreementId).IgnoreIt()
                 .OnProperty(ingestionTracking => ingestionTracking.CreatedDate).Use(now)
                 .OnProperty(ingestionTracking => ingestionTracking.CreatedBy).Use(user)
                 .OnProperty(ingestionTracking => ingestionTracking.UpdatedDate).Use(now)

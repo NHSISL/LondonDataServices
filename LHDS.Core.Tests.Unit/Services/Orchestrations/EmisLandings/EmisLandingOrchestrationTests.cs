@@ -408,7 +408,8 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.EmisLandings
                 .OnType<DateTimeOffset>().Use(dateTimeOffset)
                 .OnType<DateTimeOffset?>().Use(dateTimeOffset)
                 .OnProperty(ingestionTracking => ingestionTracking.Supplier).IgnoreIt()
-                .OnProperty(ingestionTracking => ingestionTracking.IngestionTrackingAudits).IgnoreIt();
+                .OnProperty(ingestionTracking => ingestionTracking.IngestionTrackingAudits).IgnoreIt()
+                .OnProperty(ingestionTracking => ingestionTracking.SubscriberAgreement).IgnoreIt();
 
             return filler;
         }
@@ -428,7 +429,8 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.EmisLandings
                 .OnProperty(ingestionTracking => ingestionTracking.IsDownloaded).Use(isDownloaded)
                 .OnProperty(ingestionTracking => ingestionTracking.RetryCount).Use(retryCount)
                 .OnProperty(ingestionTracking => ingestionTracking.Supplier).IgnoreIt()
-                .OnProperty(ingestionTracking => ingestionTracking.IngestionTrackingAudits).IgnoreIt();
+                .OnProperty(ingestionTracking => ingestionTracking.IngestionTrackingAudits).IgnoreIt()
+                .OnProperty(ingestionTracking => ingestionTracking.SubscriberAgreement).IgnoreIt();
 
             return filler;
         }

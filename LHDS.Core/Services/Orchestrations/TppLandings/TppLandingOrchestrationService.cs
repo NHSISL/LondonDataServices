@@ -139,7 +139,6 @@ namespace LHDS.Core.Services.Orchestrations.Tpp
                             DecryptedFileSha256Hash = decryptedFileSha256Hash,
                             LastSeen = currentDateTime,
                             FileDeleted = false,
-                            RecordCount = 0,
                             CreatedBy = "System",
                             CreatedDate = currentDateTime,
                             UpdatedBy = "System",

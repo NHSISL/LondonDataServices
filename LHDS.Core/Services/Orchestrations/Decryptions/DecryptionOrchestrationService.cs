@@ -167,7 +167,6 @@ namespace LHDS.Core.Services.Orchestrations.Decryptions
                 var currentDateTime = await this.dateTimeBroker.GetCurrentDateTimeOffsetAsync();
                 ingestionTracking.Decrypted = true;
                 ingestionTracking.IsBatchComplete = false;
-                ingestionTracking.RecordCount = 0;
                 ingestionTracking.DecryptedFileSize = fileSize;
                 ingestionTracking.DecryptedFileSha256Hash = decryptedFileSha256Hash;
                 ingestionTracking.IsProcessing = false;

@@ -21,7 +21,6 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Models.IngestionTrackings
         public DateTimeOffset LastSeen { get; set; }
 
         public bool FileDeleted { get; set; }
-        public int RecordCount { get; set; }
         public int EncryptedFileSize { get; set; }
         public int DecryptedFileSize { get; set; }
         public string CreatedBy { get; set; } = string.Empty;

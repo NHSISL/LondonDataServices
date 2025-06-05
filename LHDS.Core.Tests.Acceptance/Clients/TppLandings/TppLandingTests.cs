@@ -67,7 +67,7 @@ namespace LHDS.Core.Tests.Acceptance.Clients.TppLandings
             });
 
             var claimsPrincipal = new ClaimsPrincipal();
-            
+
             claimsPrincipal.AddIdentity(new ClaimsIdentity(new List<Claim>
             {
                 new Claim("oid", Guid.NewGuid().ToString()),
@@ -255,6 +255,8 @@ namespace LHDS.Core.Tests.Acceptance.Clients.TppLandings
 
                 .OnProperty(dataSetSpecification => dataSetSpecification.PresededById).IgnoreIt()
                 .OnProperty(dataSetSpecification => dataSetSpecification.SupersededById).IgnoreIt()
+                .OnProperty(dataSetSpecification => dataSetSpecification.PresededBy).IgnoreIt()
+                .OnProperty(dataSetSpecification => dataSetSpecification.SupersededBy).IgnoreIt()
                 .OnProperty(dataSetSpecification => dataSetSpecification.CreatedBy).Use(user)
                 .OnProperty(dataSetSpecification => dataSetSpecification.CreatedBy).Use(user)
                 .OnProperty(dataSetSpecification => dataSetSpecification.UpdatedBy).Use(user);

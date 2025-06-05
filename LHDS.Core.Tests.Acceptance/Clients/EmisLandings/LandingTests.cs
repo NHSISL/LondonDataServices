@@ -79,7 +79,7 @@ namespace LHDS.Core.Tests.Acceptance.Clients.EmisLandings
             });
 
             var claimsPrincipal = new ClaimsPrincipal();
-            
+
             claimsPrincipal.AddIdentity(new ClaimsIdentity(new List<Claim>
             {
                 new Claim("oid", Guid.NewGuid().ToString()),
@@ -180,9 +180,9 @@ namespace LHDS.Core.Tests.Acceptance.Clients.EmisLandings
                     : "/" + relativeSourcePath;
 
                 string[] splitFileName = filename.Split('/');
-                string newFileName = $"{subscriberAgreementId}/{splitFileName[5]}/{splitFileName[6]}"; ;
+                string newFileName = $"{subscriberAgreementId}/{splitFileName[5]}/{splitFileName[6]}";
 
-                var encryptedFilePath = $"/{landingConfiguration.EncryptedFolder}/{newFileName}"; ;
+                var encryptedFilePath = $"/{landingConfiguration.EncryptedFolder}/{newFileName}";
 
                 var relativeDecryptedPath =
                     $"/{landingConfiguration.DecryptedFolder}" +

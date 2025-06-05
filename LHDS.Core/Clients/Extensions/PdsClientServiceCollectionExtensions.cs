@@ -322,7 +322,7 @@ namespace LHDS.Core.Clients.Extensions
                     Parameter: "meshConfiguration__password"),
 
                 (Rule: IsInvalid(meshConfigurationSettings.SharedKey),
-                    Parameter: "meshConfiguration__key"),
+                    Parameter: "meshConfiguration__sharedKey"),
 
                 (Rule: IsInvalid(meshConfigurationSettings.Url),
                     Parameter: "meshConfiguration__url"),

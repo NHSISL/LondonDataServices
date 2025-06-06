@@ -53,9 +53,14 @@ const IngestionTrackingRow: FunctionComponent<IngestionTrackingRowProps> = (prop
                 </span>
                 <span>
                     Batch Complete: {ingestionTracking.isBatchComplete ? <FontAwesomeIcon icon={faCheck} className="text-success" />
-                        : <FontAwesomeIcon icon={faTimes} className="text-danger" />} &nbsp;
+                        : <FontAwesomeIcon icon={faTimes} className="text-danger" />} &nbsp; | &nbsp;
+                </span>
+
+                <span>
+                    SubId: {ingestionTracking.subscriberAgreementId}
                 </span>
             </TableBaseData>
+
 
             <TableBaseData>
                 <strong>Batch:</strong><br />

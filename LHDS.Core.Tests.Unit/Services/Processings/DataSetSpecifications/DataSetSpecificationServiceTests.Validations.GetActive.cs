@@ -62,6 +62,16 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.DataSetSpecifications
             IQueryable<DataSetSpecification> items, Guid supplierId)
         {
             // given
+            DateTimeOffset randomDateTimeOffset = GetRandomDateTimeOffset();
+
+            this.dateTimeBrokerMock.Setup(setup =>
+                setup.GetCurrentDateTimeOffsetAsync())
+                    .ReturnsAsync(randomDateTimeOffset);
+
+            this.dataSetSpecificationServiceMock.Setup(broker =>
+                broker.RetrieveAllDataSetSpecificationsAsync())
+                    .ReturnsAsync(items);
+
             this.dataSetSpecificationServiceMock.Setup(broker =>
                 broker.RetrieveAllDataSetSpecificationsAsync())
                     .ReturnsAsync(items);
@@ -86,6 +96,10 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.DataSetSpecifications
             //then
             actualDataSetSpecificationProcessingValidationException.Should()
                 .BeEquivalentTo(expectedDataSetSpecificationProcessingValidationException);
+
+            this.dateTimeBrokerMock.Verify(setup =>
+                setup.GetCurrentDateTimeOffsetAsync(),
+                    Times.Once);
 
             this.dataSetSpecificationServiceMock.Verify(broker =>
                 broker.RetrieveAllDataSetSpecificationsAsync(),

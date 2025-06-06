@@ -157,6 +157,7 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.Landings
             filler.Setup()
                 .OnType<DateTimeOffset>().Use(now)
                 .OnProperty(ingestionTracking => ingestionTracking.SupplierId).Use(supplierId)
+                .OnProperty(ingestionTracking => ingestionTracking.SubscriberAgreementId).IgnoreIt()
                 .OnProperty(ingestionTracking => ingestionTracking.FileName).Use($"{fileName}")
 
                 .OnProperty(ingestionTracking =>

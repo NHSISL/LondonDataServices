@@ -296,7 +296,8 @@ namespace LHDS.Core.Services.Orchestrations.Downloads
                       EncryptedFileSha256Hash = string.Empty,
                       DecryptedFileSize = 0,
                       DecryptedFileSha256Hash = string.Empty,
-                      IsDownloaded = false
+                      IsDownloaded = false,
+                      SubscriberAgreementId = subscriberCredential.Id,
                   };
 
                 var storageIngestionTracking = await this.ingestionTrackingProcessingService

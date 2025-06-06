@@ -28,8 +28,8 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.DataSetSpecifications
                     message: "DataSetSpecification processing dependency validation error occurred, please try again.",
                     innerException: dependencyValidationException.InnerException as Xeption);
 
-            this.dataSetSpecificationServiceMock.Setup(service =>
-                service.RetrieveAllDataSetSpecificationsAsync())
+            this.dateTimeBrokerMock.Setup(service =>
+                service.GetCurrentDateTimeOffsetAsync())
                     .ThrowsAsync(dependencyValidationException);
 
             // when
@@ -44,8 +44,8 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.DataSetSpecifications
             actualException.Should()
                 .BeEquivalentTo(expectedDataSetSpecificationProcessingDependencyValidationException);
 
-            this.dataSetSpecificationServiceMock.Verify(service =>
-                service.RetrieveAllDataSetSpecificationsAsync(),
+            this.dateTimeBrokerMock.Verify(service =>
+                service.GetCurrentDateTimeOffsetAsync(),
                     Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>
@@ -55,6 +55,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.DataSetSpecifications
 
             this.dataSetSpecificationServiceMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
         }
 
         [Theory]
@@ -70,8 +71,8 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.DataSetSpecifications
                     message: "DataSetSpecification processing dependency error occurred, please try again.",
                     innerException: dependencyException.InnerException as Xeption);
 
-            this.dataSetSpecificationServiceMock.Setup(service =>
-                service.RetrieveAllDataSetSpecificationsAsync())
+            this.dateTimeBrokerMock.Setup(service =>
+                service.GetCurrentDateTimeOffsetAsync())
                     .ThrowsAsync(dependencyException);
 
             // when
@@ -85,8 +86,8 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.DataSetSpecifications
             // then
             actualException.Should().BeEquivalentTo(expectedDataSetSpecificationProcessingDependencyException);
 
-            this.dataSetSpecificationServiceMock.Verify(service =>
-                service.RetrieveAllDataSetSpecificationsAsync(),
+            this.dateTimeBrokerMock.Verify(service =>
+                service.GetCurrentDateTimeOffsetAsync(),
                     Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>
@@ -96,6 +97,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.DataSetSpecifications
 
             this.dataSetSpecificationServiceMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
         }
 
         [Fact]
@@ -115,8 +117,8 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.DataSetSpecifications
                     message: "DataSetSpecification processing service error occurred, please contact support.",
                     innerException: failedDataSetSpecificationProcessingServiceException);
 
-            this.dataSetSpecificationServiceMock.Setup(service =>
-                service.RetrieveAllDataSetSpecificationsAsync())
+            this.dateTimeBrokerMock.Setup(service =>
+                service.GetCurrentDateTimeOffsetAsync())
                     .ThrowsAsync(serviceException);
 
             // when
@@ -130,8 +132,8 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.DataSetSpecifications
             // then
             actualException.Should().BeEquivalentTo(expectedDataSetSpecificationProcessingServiveException);
 
-            this.dataSetSpecificationServiceMock.Verify(service =>
-                service.RetrieveAllDataSetSpecificationsAsync(),
+            this.dateTimeBrokerMock.Verify(service =>
+                service.GetCurrentDateTimeOffsetAsync(),
                     Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>
@@ -141,6 +143,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.DataSetSpecifications
 
             this.dataSetSpecificationServiceMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
         }
     }
 }

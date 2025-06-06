@@ -16,6 +16,6 @@ namespace LHDS.Core.Brokers.KeyVaults
             await ValueTask.FromResult(new KeyVaultSecret(name: secretName, value: "mock value"));
 
         public async ValueTask DeleteKeyVaultSecretAsync(string secretName) =>
-            await Task.FromResult(true);
+            await ValueTask.CompletedTask;
     }
 }

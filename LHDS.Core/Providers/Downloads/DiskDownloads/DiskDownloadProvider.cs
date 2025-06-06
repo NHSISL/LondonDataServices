@@ -56,8 +56,6 @@ namespace LHDS.Core.Providers.Downloads.DiskDownloads
             {
                 await fileStream.CopyToAsync(download.Document.DocumentData);
             }
-
-            await Task.FromResult(true);
         }
 
         public async ValueTask<List<string>> GetListOfDocumentsToProcessAsync(Download download)

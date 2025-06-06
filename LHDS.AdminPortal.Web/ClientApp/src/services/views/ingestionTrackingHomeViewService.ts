@@ -34,8 +34,6 @@ export const ingestionTrackingHomeViewService = {
 
                 const filters: string[] = [];
 
-
-
                 if (searchTerm) {
                     filters.push(`(contains(fileName,'${searchTerm}') or contains(decryptedFileName,'${searchTerm}'))`);
                 }

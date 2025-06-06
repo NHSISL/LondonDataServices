@@ -143,6 +143,12 @@ const IngestionTrackingDetailCardView: FunctionComponent<IngestionTrackingDetail
                                     </SummaryListBaseValue>
                                 </SummaryListBaseRow>
                                 <SummaryListBaseRow>
+                                    <SummaryListBaseKey>Subscriber Agreement Id</SummaryListBaseKey>
+                                    <SummaryListBaseValue>
+                                        {ingestionTracking.subscriberAgreementId}
+                                    </SummaryListBaseValue>
+                                </SummaryListBaseRow>
+                                <SummaryListBaseRow>
                                     <SummaryListBaseKey>Created Date</SummaryListBaseKey>
                                     <SummaryListBaseValue>
                                         {moment(ingestionTracking.createdDate?.toString()).format("Do-MMM-yyyy HH:mm")}

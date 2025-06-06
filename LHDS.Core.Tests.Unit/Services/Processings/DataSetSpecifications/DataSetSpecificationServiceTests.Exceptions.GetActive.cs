@@ -117,8 +117,8 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.DataSetSpecifications
                     message: "DataSetSpecification processing service error occurred, please contact support.",
                     innerException: failedDataSetSpecificationProcessingServiceException);
 
-            this.dataSetSpecificationServiceMock.Setup(service =>
-                service.RetrieveAllDataSetSpecificationsAsync())
+            this.dateTimeBrokerMock.Setup(service =>
+                service.GetCurrentDateTimeOffsetAsync())
                     .ThrowsAsync(serviceException);
 
             // when
@@ -132,8 +132,8 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.DataSetSpecifications
             // then
             actualException.Should().BeEquivalentTo(expectedDataSetSpecificationProcessingServiveException);
 
-            this.dataSetSpecificationServiceMock.Verify(service =>
-                service.RetrieveAllDataSetSpecificationsAsync(),
+            this.dateTimeBrokerMock.Verify(service =>
+                service.GetCurrentDateTimeOffsetAsync(),
                     Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>

@@ -71,8 +71,8 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.DataSetSpecifications
                     message: "DataSetSpecification processing dependency error occurred, please try again.",
                     innerException: dependencyException.InnerException as Xeption);
 
-            this.dataSetSpecificationServiceMock.Setup(service =>
-                service.RetrieveAllDataSetSpecificationsAsync())
+            this.dateTimeBrokerMock.Setup(service =>
+                service.GetCurrentDateTimeOffsetAsync())
                     .ThrowsAsync(dependencyException);
 
             // when
@@ -86,8 +86,8 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.DataSetSpecifications
             // then
             actualException.Should().BeEquivalentTo(expectedDataSetSpecificationProcessingDependencyException);
 
-            this.dataSetSpecificationServiceMock.Verify(service =>
-                service.RetrieveAllDataSetSpecificationsAsync(),
+            this.dateTimeBrokerMock.Verify(service =>
+                service.GetCurrentDateTimeOffsetAsync(),
                     Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>

@@ -1,4 +1,4 @@
-import { debounce } from "lodash";
+﻿import { debounce } from "lodash";
 import React, { FunctionComponent, useMemo, useState } from "react";
 import { IngestionTrackingHomeView } from "../../models/ingestionTrackings/ingestionTrackingHomeView";
 import { ingestionTrackingHomeViewService } from "../../services/views/ingestionTrackingHomeViewService";
@@ -21,7 +21,6 @@ import IngestionFilterModal from "./ingestionTrackingFilter";
 import { SupplierView } from "../../models/views/components/suppliers/supplierView";
 import { emisLandingService } from "../../services/foundations/emisLandingService";
 import { toastError, toastSuccess } from "../../brokers/toastBroker";
-import { lookupViewService } from "../../services/views/lookups/lookupViewService";
 
 type IngestionTrackingTableProps = {};
 
@@ -34,13 +33,15 @@ const IngestionTrackingTable: FunctionComponent<IngestionTrackingTableProps> = (
     const [selectedDownloadedFilter, setSelectedDownloadedFilter] = useState<boolean | undefined>(undefined);
     const [showSpinner, setShowSpinner] = useState(false);
     const [showModal, setShowModal] = useState(false);
+    const [showSidePanel, setShowSidePanel] = useState(false); // 👈 Side panel toggle state
+
     const decryptedFilterParam = selectedDecryptedFilter === undefined ? "" : selectedDecryptedFilter.toString();
     const downloadedFilterParam = selectedDownloadedFilter === undefined ? "" : selectedDownloadedFilter.toString();
+
     const isFilterActive =
         selectedSupplierId !== "" ||
         selectedDecryptedFilter !== undefined ||
         selectedDownloadedFilter !== undefined;
-
 
     const {
         mappedIngestionTrackings: ingestionTrackingsRetrieved,
@@ -78,7 +79,7 @@ const IngestionTrackingTable: FunctionComponent<IngestionTrackingTableProps> = (
             .then(() => {
                 toastSuccess("Ingestion Tracking Queued for Decrypt");
             })
-            .catch(e => {
+            .catch(() => {
                 toastError("error");
             });
     };
@@ -104,12 +105,6 @@ const IngestionTrackingTable: FunctionComponent<IngestionTrackingTableProps> = (
         setDebouncedTerm(batch);
     };
 
-    //const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    //    const selectedId = event.target.value;
-    //    setDebouncedSupplierTerm(selectedId);
-    //    setSelectedSupplierId(selectedId);
-    //};
-
     const hasNoMorePages = () => {
         return !isLoading && data?.pages.at(-1)?.nextPage === undefined;
     };
@@ -125,7 +120,7 @@ const IngestionTrackingTable: FunctionComponent<IngestionTrackingTableProps> = (
     };
 
     return (
-        <div className="infiniteScrollContainer">
+        <div className="infiniteScrollContainer position-relative">
             <CardBase>
                 <CardBaseBody>
                     <CardBaseTitle>
@@ -143,12 +138,11 @@ const IngestionTrackingTable: FunctionComponent<IngestionTrackingTableProps> = (
                                             handleSearchChange(e.currentTarget.value);
                                         }}
                                     />
-
                                     <div className="btn-group" role="group" aria-label="Filter and Refresh buttons">
                                         <button
                                             className={`btn btn-outline-secondary ${isFilterActive ? "btn-outline-danger" : ""}`}
                                             id="filterButton"
-                                            onClick={() => setShowModal(true)}
+                                            onClick={() => setShowSidePanel((prev) => !prev)}
                                         >
                                             <FontAwesomeIcon icon={faFilter} />
                                         </button>
@@ -167,12 +161,11 @@ const IngestionTrackingTable: FunctionComponent<IngestionTrackingTableProps> = (
                                             </button>
                                         )}
                                     </div>
-
                                 </div>
                             </Row>
                             <div className="d-flex justify-content-between align-items-center mb-2">
-                                <span></span>
-
+                                <span>
+                                </span>
                                 <span className="text-muted small">
                                     Showing {totalRecords} record{totalRecords !== 1 ? "s" : ""}
                                 </span>
@@ -215,15 +208,22 @@ const IngestionTrackingTable: FunctionComponent<IngestionTrackingTableProps> = (
                     </CardBaseContent>
                 </CardBaseBody>
             </CardBase>
-            {showModal && (
-                <IngestionFilterModal
-                    onClose={() => setShowModal(false)}
-                    onAddFilter={handleFilter}
-                    selectedSupplierId={selectedSupplierId}
-                    initialDecryptedFilter={selectedDecryptedFilter}
-                    initialDownloadedFilter={selectedDownloadedFilter}
-                />
-            )}
+
+            <div className={`filter-side-panel ${showSidePanel ? "open" : ""}`}>
+                <div className="filter-side-panel-header">
+                    <h5> <FontAwesomeIcon icon={faFilter} /> Filters</h5>
+                    <button className="close-button" onClick={() => setShowSidePanel(false)}>×</button>
+                </div>
+                <div className="filter-side-panel-body">
+
+                    <IngestionFilterModal
+                        onAddFilter={handleFilter}
+                        selectedSupplierId={selectedSupplierId}
+                        initialDecryptedFilter={selectedDecryptedFilter}
+                        initialDownloadedFilter={selectedDownloadedFilter}
+                    />
+                </div>
+            </div>
         </div>
     );
 };

@@ -84,6 +84,7 @@ export const ingestionTrackingHomeViewService = {
                                 ingestionTracking.lastAttemptedDate,
                                 ingestionTracking.dataSetSpecificationId,
                                 ingestionTracking.batch,
+                                ingestionTracking.isBatchComplete,
                                 ingestionTracking.objectName,
                                 ingestionTracking.batchReadyFolderPath,
                                 ingestionTracking.createdBy,

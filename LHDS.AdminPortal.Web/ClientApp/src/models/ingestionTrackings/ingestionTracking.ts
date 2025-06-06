@@ -18,6 +18,7 @@ export class IngestionTracking {
     public lastAttemptedDate: Date;
     public dataSetSpecificationId: string;
     public batch: string;
+    public isBatchComplete: boolean;
     public objectName: string;
     public batchReadyFolderPath: string;
     public createdBy?: string;
@@ -44,6 +45,7 @@ export class IngestionTracking {
         this.lastAttemptedDate = ingestionTracking.lastAttemptedDate ? new Date(ingestionTracking.lastAttemptedDate) : new Date();
         this.dataSetSpecificationId = ingestionTracking.dataSetSpecificationId || "";
         this.batch = ingestionTracking.batch || "";
+        this.isBatchComplete = ingestionTracking.isBatchComplete || "";
         this.objectName = ingestionTracking.objectName || "";
         this.batchReadyFolderPath = ingestionTracking.batchReadyFolderPath || "";
 

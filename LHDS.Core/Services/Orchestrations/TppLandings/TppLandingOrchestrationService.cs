@@ -138,11 +138,7 @@ namespace LHDS.Core.Services.Orchestrations.Tpp
                             DecryptedFileSize = input.Length,
                             DecryptedFileSha256Hash = decryptedFileSha256Hash,
                             LastSeen = currentDateTime,
-                            FileDeleted = false,
-                            CreatedBy = "System",
-                            CreatedDate = currentDateTime,
-                            UpdatedBy = "System",
-                            UpdatedDate = currentDateTime,
+                            FileDeleted = false
                         };
 
                     await this.ingestionTrackingProcessingService.AddIngestionTrackingAsync(newIngestionTracking);

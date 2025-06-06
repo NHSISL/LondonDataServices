@@ -5,7 +5,6 @@
 using System;
 using System.Collections.Generic;
 using System.Security.Claims;
-using System.Threading.Tasks;
 using LHDS.Core.Brokers.DateTimes;
 using LHDS.Core.Brokers.Storages.Blobs;
 using LHDS.Core.Brokers.Storages.Sql;
@@ -67,7 +66,7 @@ namespace LHDS.Core.Tests.Acceptance.Clients.TppLandings
             });
 
             var claimsPrincipal = new ClaimsPrincipal();
-            
+
             claimsPrincipal.AddIdentity(new ClaimsIdentity(new List<Claim>
             {
                 new Claim("oid", Guid.NewGuid().ToString()),
@@ -136,7 +135,8 @@ namespace LHDS.Core.Tests.Acceptance.Clients.TppLandings
         private static IngestionTracking CreateRandomIngestionTracking(
            DateTimeOffset dateTimeOffset,
            string fileName,
-           Guid supplierId)
+           Guid supplierId,
+           Guid? subscriberAgreementId = null)
         {
             IngestionTracking ingestionTracking = CreateIngestionTrackingFiller(
                 dateTimeOffset,
@@ -147,30 +147,8 @@ namespace LHDS.Core.Tests.Acceptance.Clients.TppLandings
             return ingestionTracking;
         }
 
-        private async ValueTask<List<IngestionTracking>> CreateRandomIngestionTrackings(
-            DateTimeOffset dateTimeOffset,
-            List<Document> documents,
-            Guid supplierId)
-        {
-            List<IngestionTracking> items = new List<IngestionTracking>();
-
-            foreach (var document in documents)
-            {
-                var item = CreateIngestionTrackingFiller(
-                    dateTimeOffset,
-                    fileName: document.FileName,
-                    supplierId)
-                        .Create();
-
-                await this.ingestionTrackingService.AddIngestionTrackingAsync(item);
-                items.Add(item);
-            }
-
-            return items;
-        }
-
         private static Filler<IngestionTracking> CreateIngestionTrackingFiller(
-            DateTimeOffset dateTimeOffset, string fileName, Guid supplierId)
+            DateTimeOffset dateTimeOffset, string fileName, Guid supplierId, Guid? subscriberAgreementId = null)
         {
             string user = "System";
             var filler = new Filler<IngestionTracking>();
@@ -180,8 +158,12 @@ namespace LHDS.Core.Tests.Acceptance.Clients.TppLandings
                 .OnProperty(ingestionTracking => ingestionTracking.CreatedBy).Use(user)
                 .OnProperty(ingestionTracking => ingestionTracking.UpdatedBy).Use(user)
                 .OnProperty(ingestionTracking => ingestionTracking.SupplierId).Use(supplierId)
+                .OnProperty(ingestionTracking => ingestionTracking.SubscriberAgreementId).Use(subscriberAgreementId)
                 .OnType<DateTimeOffset>().Use(dateTimeOffset)
-                .OnType<DateTimeOffset?>().Use(dateTimeOffset);
+                .OnType<DateTimeOffset?>().Use(dateTimeOffset)
+                .OnProperty(ingestionTracking => ingestionTracking.Supplier).IgnoreIt()
+                .OnProperty(ingestionTracking => ingestionTracking.IngestionTrackingAudits).IgnoreIt()
+                .OnProperty(ingestionTracking => ingestionTracking.SubscriberAgreement).IgnoreIt();
 
             return filler;
         }
@@ -224,7 +206,9 @@ namespace LHDS.Core.Tests.Acceptance.Clients.TppLandings
                 .OnProperty(dataSet => dataSet.ActiveTo).Use(now.AddDays(2))
                 .OnProperty(dataSet => dataSet.CreatedBy).Use(user)
                 .OnProperty(dataSet => dataSet.UpdatedBy).Use(user)
-                .OnProperty(dataSet => dataSet.ActiveTo).Use(now.AddDays(GetRandomNumber()));
+                .OnProperty(dataSet => dataSet.ActiveTo).Use(now.AddDays(GetRandomNumber()))
+                .OnProperty(supplier => supplier.Supplier).IgnoreIt()
+                .OnProperty(supplier => supplier.DataSetSpecifications).IgnoreIt();
 
             return filler;
         }
@@ -255,6 +239,9 @@ namespace LHDS.Core.Tests.Acceptance.Clients.TppLandings
 
                 .OnProperty(dataSetSpecification => dataSetSpecification.PresededById).IgnoreIt()
                 .OnProperty(dataSetSpecification => dataSetSpecification.SupersededById).IgnoreIt()
+                .OnProperty(dataSetSpecification => dataSetSpecification.PresededBy).IgnoreIt()
+                .OnProperty(dataSetSpecification => dataSetSpecification.SupersededBy).IgnoreIt()
+                .OnProperty(dataSetSpecification => dataSetSpecification.SpecificationObjects).IgnoreIt()
                 .OnProperty(dataSetSpecification => dataSetSpecification.CreatedBy).Use(user)
                 .OnProperty(dataSetSpecification => dataSetSpecification.CreatedBy).Use(user)
                 .OnProperty(dataSetSpecification => dataSetSpecification.UpdatedBy).Use(user);
@@ -280,6 +267,8 @@ namespace LHDS.Core.Tests.Acceptance.Clients.TppLandings
                 .OnProperty(specificationObject => specificationObject.DataSetSpecificationId)
                     .Use(dataSetSpecification.Id)
 
+                .OnProperty(specificationObject => specificationObject.ObjectColumns).IgnoreIt()
+                .OnProperty(specificationObject => specificationObject.DataSetSpecification).IgnoreIt()
                 .OnProperty(specificationObject => specificationObject.CreatedBy).Use(user)
                 .OnProperty(specificationObject => specificationObject.UpdatedBy).Use(user);
 
@@ -299,6 +288,7 @@ namespace LHDS.Core.Tests.Acceptance.Clients.TppLandings
                 .OnType<DateTimeOffset>().Use(now)
                 .OnType<DateTimeOffset?>().Use(now)
                 .OnProperty(objectColumn => objectColumn.SpecificationObjectId).Use(specificationObject.Id)
+                .OnProperty(objectColumn => objectColumn.SpecificationObject).IgnoreIt()
                 .OnProperty(objectColumn => objectColumn.CreatedBy).Use(user)
                 .OnProperty(objectColumn => objectColumn.UpdatedBy).Use(user);
 

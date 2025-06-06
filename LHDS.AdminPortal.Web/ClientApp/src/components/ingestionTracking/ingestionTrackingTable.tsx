@@ -1,4 +1,4 @@
-﻿import { debounce } from "lodash";
+import { debounce } from "lodash";
 import React, { FunctionComponent, useMemo, useState } from "react";
 import { IngestionTrackingHomeView } from "../../models/ingestionTrackings/ingestionTrackingHomeView";
 import { ingestionTrackingHomeViewService } from "../../services/views/ingestionTrackingHomeViewService";
@@ -34,9 +34,7 @@ const IngestionTrackingTable: FunctionComponent<IngestionTrackingTableProps> = (
     const [selectedProcessingFilter, setSelectedProcessingFilter] = useState<boolean | undefined>(undefined);
     const [selectedDownloadedFilter, setSelectedDownloadedFilter] = useState<boolean | undefined>(undefined);
     const [showSpinner, setShowSpinner] = useState(false);
-    const [showModal, setShowModal] = useState(false);
-    const [showSidePanel, setShowSidePanel] = useState(false); // 👈 Side panel toggle state
-
+    const [showSidePanel, setShowSidePanel] = useState(false);
     const decryptedFilterParam = selectedDecryptedFilter === undefined ? "" : selectedDecryptedFilter.toString();
     const downloadedFilterParam = selectedDownloadedFilter === undefined ? "" : selectedDownloadedFilter.toString();
     const batchCompleteFilterParam = selectedBatchCompleteFilter === undefined ? "" : selectedBatchCompleteFilter.toString();

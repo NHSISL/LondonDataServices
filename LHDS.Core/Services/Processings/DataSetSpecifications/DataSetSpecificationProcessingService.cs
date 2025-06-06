@@ -6,6 +6,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using LHDS.Core.Brokers.DateTimes;
 using LHDS.Core.Brokers.Loggings;
 using LHDS.Core.Models.Foundations.DataSetSpecifications;
 using LHDS.Core.Services.Foundations.DataSetSpecifications;
@@ -16,13 +17,16 @@ namespace LHDS.Core.Services.Processings.DataSetSpecifications
     public partial class DataSetSpecificationProcessingService : IDataSetSpecificationProcessingService
     {
         private readonly IDataSetSpecificationService dataSetSpecificationService;
+        private readonly IDateTimeBroker dateTimeBroker;
         private readonly ILoggingBroker loggingBroker;
 
         public DataSetSpecificationProcessingService(
             IDataSetSpecificationService dataSetSpecificationService,
+            IDateTimeBroker dateTimeBroker,
             ILoggingBroker loggingBroker)
         {
             this.dataSetSpecificationService = dataSetSpecificationService;
+            this.dateTimeBroker = dateTimeBroker;
             this.loggingBroker = loggingBroker;
         }
 
@@ -36,7 +40,7 @@ namespace LHDS.Core.Services.Processings.DataSetSpecifications
                 });
 
         public ValueTask<IQueryable<DataSetSpecification>> RetrieveAllDataSetSpecificationsAsync() =>
-            TryCatch(async() => await this.dataSetSpecificationService.RetrieveAllDataSetSpecificationsAsync());
+            TryCatch(async () => await this.dataSetSpecificationService.RetrieveAllDataSetSpecificationsAsync());
 
         public ValueTask<DataSetSpecification> RetrieveDataSetSpecificationByIdAsync(Guid dataSetSpecificationId) =>
             TryCatch(async () =>
@@ -97,19 +101,33 @@ namespace LHDS.Core.Services.Processings.DataSetSpecifications
             TryCatch(async () =>
             {
                 ValidateSupplierId(supplierId);
+                DateTimeOffset now = await this.dateTimeBroker.GetCurrentDateTimeOffsetAsync();
 
                 IQueryable<DataSetSpecification> allDataSetSpecifications =
                     await this.dataSetSpecificationService.RetrieveAllDataSetSpecificationsAsync();
 
                 List<DataSetSpecification> result = allDataSetSpecifications
-                    .Include(specification => specification.DataSet)
-                    .Where(specification => specification.DataSet.SupplierId == supplierId
-                        && specification.DataSet.IsActive == true
-                        && specification.IsActive == true).ToList();
+                    .Include(dataSetSpecification => dataSetSpecification.DataSet)
+                    .Where(dataSetSpecification =>
+                        dataSetSpecification.IsActive &&
+                        dataSetSpecification.DataSet.SupplierId == supplierId &&
+                        dataSetSpecification.DataSet.IsActive &&
+
+                        (dataSetSpecification.ActiveFrom == null
+                            || dataSetSpecification.ActiveFrom <= now) &&
+
+                        (dataSetSpecification.ActiveTo == null
+                            || dataSetSpecification.ActiveTo > now)
+                    )
+                    .OrderByDescending(dataSetSpecification =>
+                        dataSetSpecification.ActiveFrom ?? DateTimeOffset.MinValue)
+
+                    .ThenBy(dataSetSpecification => dataSetSpecification.ActiveTo ?? DateTimeOffset.MaxValue)
+                    .ToList();
 
                 ValidateDataSetSpecificationCount(count: result.Count());
 
-                return await Task.FromResult(result.FirstOrDefault());
+                return result.FirstOrDefault();
             });
     }
 }

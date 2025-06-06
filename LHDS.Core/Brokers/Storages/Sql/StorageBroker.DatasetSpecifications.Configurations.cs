@@ -79,6 +79,14 @@ namespace LHDS.Core.Brokers.Storages.Sql
                 .IsRequired();
 
             modelBuilder.Entity<DataSetSpecification>()
+                .Property(dataSet => dataSet.ActiveFrom)
+                .IsRequired(false);
+
+            modelBuilder.Entity<DataSetSpecification>()
+                .Property(dataSet => dataSet.ActiveTo)
+                .IsRequired(false);
+
+            modelBuilder.Entity<DataSetSpecification>()
                 .Property(dataSetSpecification => dataSetSpecification.CreatedDate)
                 .IsRequired();
 

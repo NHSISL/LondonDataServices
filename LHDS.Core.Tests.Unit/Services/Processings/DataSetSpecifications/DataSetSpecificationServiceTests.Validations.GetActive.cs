@@ -53,6 +53,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.DataSetSpecifications
 
             this.dataSetSpecificationServiceMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
         }
 
         [Theory]
@@ -61,6 +62,16 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.DataSetSpecifications
             IQueryable<DataSetSpecification> items, Guid supplierId)
         {
             // given
+            DateTimeOffset randomDateTimeOffset = GetRandomDateTimeOffset();
+
+            this.dateTimeBrokerMock.Setup(setup =>
+                setup.GetCurrentDateTimeOffsetAsync())
+                    .ReturnsAsync(randomDateTimeOffset);
+
+            this.dataSetSpecificationServiceMock.Setup(broker =>
+                broker.RetrieveAllDataSetSpecificationsAsync())
+                    .ReturnsAsync(items);
+
             this.dataSetSpecificationServiceMock.Setup(broker =>
                 broker.RetrieveAllDataSetSpecificationsAsync())
                     .ReturnsAsync(items);
@@ -86,6 +97,10 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.DataSetSpecifications
             actualDataSetSpecificationProcessingValidationException.Should()
                 .BeEquivalentTo(expectedDataSetSpecificationProcessingValidationException);
 
+            this.dateTimeBrokerMock.Verify(setup =>
+                setup.GetCurrentDateTimeOffsetAsync(),
+                    Times.Once);
+
             this.dataSetSpecificationServiceMock.Verify(broker =>
                 broker.RetrieveAllDataSetSpecificationsAsync(),
                     Times.Once);
@@ -97,6 +112,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.DataSetSpecifications
 
             this.dataSetSpecificationServiceMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
         }
     }
 }

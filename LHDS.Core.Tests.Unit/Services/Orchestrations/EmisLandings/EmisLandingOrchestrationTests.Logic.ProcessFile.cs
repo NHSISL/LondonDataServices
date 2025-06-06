@@ -129,7 +129,8 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.EmisLandings
                     EncryptedFileSha256Hash = string.Empty,
                     DecryptedFileSize = 0,
                     DecryptedFileSha256Hash = string.Empty,
-                    IsDownloaded = false
+                    IsDownloaded = false,
+                    SubscriberAgreementId = inputSubscriberCredential.Id
                 };
 
             IngestionTracking storageIngestionTracking = newIngestionTrackingItem.DeepClone();

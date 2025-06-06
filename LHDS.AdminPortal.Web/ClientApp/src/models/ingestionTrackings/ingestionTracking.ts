@@ -21,6 +21,7 @@ export class IngestionTracking {
     public isBatchComplete: boolean;
     public objectName: string;
     public batchReadyFolderPath: string;
+    public subscriberAgreementId?: string;
     public createdBy?: string;
     public createdDate?: Date;
     public updatedBy?: string;
@@ -48,6 +49,7 @@ export class IngestionTracking {
         this.isBatchComplete = ingestionTracking.isBatchComplete || "";
         this.objectName = ingestionTracking.objectName || "";
         this.batchReadyFolderPath = ingestionTracking.batchReadyFolderPath || "";
+        this.subscriberAgreementId = ingestionTracking.subscriberAgreementId || "";
 
         this.createdBy = ingestionTracking.createdBy !== undefined ? ingestionTracking.createdBy : '';
         this.createdDate = ingestionTracking.createdDate;

@@ -19,6 +19,7 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Models.IngestionTrackings
 
         [JsonConverter(typeof(IsoDateTimeConverter))]
         public DateTimeOffset LastSeen { get; set; }
+        public Guid? SubscriberAgreementId { get; set; }
 
         public bool FileDeleted { get; set; }
         public int EncryptedFileSize { get; set; }

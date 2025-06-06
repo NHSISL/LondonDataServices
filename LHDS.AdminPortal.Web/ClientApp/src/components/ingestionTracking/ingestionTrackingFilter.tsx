@@ -1,7 +1,6 @@
 import React, { ChangeEvent, FunctionComponent, useState } from "react";
-import { Modal, Form, Button } from "react-bootstrap";
+import { Form, Button, Card } from "react-bootstrap";
 import '../../styles/base.scss';
-import ButtonBase from "./../bases/buttons/ButtonBase";
 import { faFilter, faTimes } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { lookupViewService } from "../../services/views/lookups/lookupViewService";
@@ -9,7 +8,6 @@ import { SupplierView } from "../../models/views/components/suppliers/supplierVi
 import { Guid } from "guid-typescript";
 
 interface FilterModalProps {
-    onClose: () => void;
     onAddFilter: (supplier: SupplierView | null, decryptedFilter?: boolean, downloadedFilter?: boolean) => void;
     selectedSupplierId: string;
     initialDecryptedFilter?: boolean | null;
@@ -17,7 +15,6 @@ interface FilterModalProps {
 }
 
 const IngestionFilterModal: FunctionComponent<FilterModalProps> = ({
-    onClose,
     onAddFilter,
     selectedSupplierId: initialSelectedSupplierId,
     initialDecryptedFilter = null,
@@ -47,33 +44,12 @@ const IngestionFilterModal: FunctionComponent<FilterModalProps> = ({
     };
 
     const handleClearFilters = () => {
-        const clearedSupplierId = "";
-        const clearedDecryptedFilter = null;
-        const clearedDownloadedFilter = null;
+        setSelectedSupplierId("");
+        setSelectedDecryptedFilter(null);
+        setSelectedDownloadedFilter(null);
 
-        setSelectedSupplierId(clearedSupplierId);
-        setSelectedDecryptedFilter(clearedDecryptedFilter);
-        setSelectedDownloadedFilter(clearedDownloadedFilter);
-
-        // Call onAddFilter directly with cleared values
-        let supplier: SupplierView | null = null;
-        if (clearedSupplierId !== "") {
-            const selectedLookup = suppliersRetrieved.find(s => s.id === clearedSupplierId);
-            if (selectedLookup) {
-                supplier = new SupplierView(Guid.parse(selectedLookup.id));
-                supplier.name = selectedLookup.name;
-            }
-        }
-
-        onAddFilter(
-            supplier,
-            clearedDecryptedFilter === null ? undefined : clearedDecryptedFilter,
-            clearedDownloadedFilter === null ? undefined : clearedDownloadedFilter
-        );
-
-        onClose();
+        onAddFilter(null, undefined, undefined);
     };
-
 
     const handleFilterClick = () => {
         let supplier: SupplierView | null = null;
@@ -90,21 +66,17 @@ const IngestionFilterModal: FunctionComponent<FilterModalProps> = ({
             selectedDecryptedFilter === null ? undefined : selectedDecryptedFilter,
             selectedDownloadedFilter === null ? undefined : selectedDownloadedFilter
         );
-
-        onClose();
     };
 
     return (
-        <Modal show onHide={onClose}  centered>
-            <Modal.Header closeButton className="bg-primary text-white">
-                <Modal.Title>Ingestion Filter</Modal.Title>
-            </Modal.Header>
+        <div className="d-flex flex-column h-100 shadow-md" style={{ maxWidth: 500 }}>
+            <h5 className="mb-4 fw-bold text-left">Filter Ingestions</h5>
 
-            <Modal.Body>
-                <Form>
-                    <Form.Group className="mb-4">
-                        <Form.Label><strong>Supplier Filter</strong></Form.Label>
-                        <div>
+            <Card className="mb-4">
+                <Card.Body>
+                    <Form.Group>
+                        <Form.Label className="fw-semibold">Supplier Filter</Form.Label>
+                        <div className="d-flex flex-wrap gap-2 mt-2">
                             <Form.Check
                                 inline
                                 label="All"
@@ -114,6 +86,7 @@ const IngestionFilterModal: FunctionComponent<FilterModalProps> = ({
                                 value=""
                                 checked={selectedSupplierId === ""}
                                 onChange={handleSupplierChange}
+                                className="cursor-pointer"
                             />
                             {suppliersRetrieved.map((supplier) => (
                                 <Form.Check
@@ -126,14 +99,17 @@ const IngestionFilterModal: FunctionComponent<FilterModalProps> = ({
                                     value={supplier.id}
                                     checked={selectedSupplierId === supplier.id}
                                     onChange={handleSupplierChange}
+                                    className="cursor-pointer"
                                 />
                             ))}
                         </div>
                     </Form.Group>
-
-                    <Form.Group className="mb-4">
-                        <Form.Label><strong>Decrypted Filter</strong></Form.Label>
-                        <div>
+                </Card.Body>
+          
+                <Card.Body>
+                    <Form.Group>
+                        <Form.Label className="fw-semibold">Decrypted Filter</Form.Label>
+                        <div className="d-flex gap-3 mt-2">
                             <Form.Check
                                 inline
                                 label="All"
@@ -143,6 +119,7 @@ const IngestionFilterModal: FunctionComponent<FilterModalProps> = ({
                                 value="all"
                                 checked={selectedDecryptedFilter === null}
                                 onChange={handleDecryptedChange}
+                                className="cursor-pointer"
                             />
                             <Form.Check
                                 inline
@@ -153,6 +130,7 @@ const IngestionFilterModal: FunctionComponent<FilterModalProps> = ({
                                 value="true"
                                 checked={selectedDecryptedFilter === true}
                                 onChange={handleDecryptedChange}
+                                className="cursor-pointer"
                             />
                             <Form.Check
                                 inline
@@ -163,13 +141,16 @@ const IngestionFilterModal: FunctionComponent<FilterModalProps> = ({
                                 value="false"
                                 checked={selectedDecryptedFilter === false}
                                 onChange={handleDecryptedChange}
+                                className="cursor-pointer"
                             />
                         </div>
                     </Form.Group>
-
+                </Card.Body>
+          
+                <Card.Body>
                     <Form.Group>
-                        <Form.Label><strong>Downloaded Filter</strong></Form.Label>
-                        <div>
+                        <Form.Label className="fw-semibold">Downloaded Filter</Form.Label>
+                        <div className="d-flex gap-3 mt-2">
                             <Form.Check
                                 inline
                                 label="All"
@@ -179,6 +160,7 @@ const IngestionFilterModal: FunctionComponent<FilterModalProps> = ({
                                 value="all"
                                 checked={selectedDownloadedFilter === null}
                                 onChange={handleDownloadedChange}
+                                className="cursor-pointer"
                             />
                             <Form.Check
                                 inline
@@ -189,6 +171,7 @@ const IngestionFilterModal: FunctionComponent<FilterModalProps> = ({
                                 value="true"
                                 checked={selectedDownloadedFilter === true}
                                 onChange={handleDownloadedChange}
+                                className="cursor-pointer"
                             />
                             <Form.Check
                                 inline
@@ -199,24 +182,32 @@ const IngestionFilterModal: FunctionComponent<FilterModalProps> = ({
                                 value="false"
                                 checked={selectedDownloadedFilter === false}
                                 onChange={handleDownloadedChange}
+                                className="cursor-pointer"
                             />
                         </div>
                     </Form.Group>
-                </Form>
-            </Modal.Body>
+                </Card.Body>
+            </Card>
 
-            <Modal.Footer>
-                <Button variant="warning" onClick={handleClearFilters} className="me-auto">
-                    Clear Filters
+            <div className="d-flex justify-content-between align-items-center mt-auto">
+                <Button
+                    variant="outline-secondary"
+                    onClick={handleClearFilters}
+                    className="fw-semibold"
+                    style={{ minWidth: 110 }}
+                >
+                    <FontAwesomeIcon icon={faTimes} /> Clear
                 </Button>
-                <Button variant="primary" onClick={handleFilterClick}>
-                    <FontAwesomeIcon icon={faFilter} />&nbsp;Filter
+                <Button
+                    variant="primary"
+                    onClick={handleFilterClick}
+                    className="fw-semibold d-flex align-items-center justify-content-center"
+                    style={{ minWidth: 110 }}
+                >
+                    <FontAwesomeIcon icon={faFilter} /> <span className="ms-2">Apply</span>
                 </Button>
-                <Button variant="secondary" onClick={onClose}>
-                    <FontAwesomeIcon icon={faTimes} />&nbsp;Close
-                </Button>
-            </Modal.Footer>
-        </Modal>
+            </div>
+        </div>
     );
 };
 

@@ -47,6 +47,14 @@ const IngestionTrackingRow: FunctionComponent<IngestionTrackingRowProps> = (prop
                     Downloaded: {ingestionTracking.isDownloaded ? <FontAwesomeIcon icon={faCheck} className="text-success" />
                         : <FontAwesomeIcon icon={faTimes} className="text-danger" />} &nbsp; | &nbsp;
                 </span>
+                <span>
+                    Processing: {ingestionTracking.isProcessing ? <FontAwesomeIcon icon={faCheck} className="text-success" />
+                        : <FontAwesomeIcon icon={faTimes} className="text-danger" />} &nbsp; | &nbsp;
+                </span>
+                <span>
+                    Batch Complete: {ingestionTracking.isBatchComplete ? <FontAwesomeIcon icon={faCheck} className="text-success" />
+                        : <FontAwesomeIcon icon={faTimes} className="text-danger" />} &nbsp;
+                </span>
             </TableBaseData>
 
             <TableBaseData>

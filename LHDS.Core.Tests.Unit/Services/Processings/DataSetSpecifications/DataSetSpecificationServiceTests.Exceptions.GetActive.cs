@@ -28,8 +28,8 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.DataSetSpecifications
                     message: "DataSetSpecification processing dependency validation error occurred, please try again.",
                     innerException: dependencyValidationException.InnerException as Xeption);
 
-            this.dataSetSpecificationServiceMock.Setup(service =>
-                service.RetrieveAllDataSetSpecificationsAsync())
+            this.dateTimeBrokerMock.Setup(service =>
+                service.GetCurrentDateTimeOffsetAsync())
                     .ThrowsAsync(dependencyValidationException);
 
             // when
@@ -44,8 +44,8 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.DataSetSpecifications
             actualException.Should()
                 .BeEquivalentTo(expectedDataSetSpecificationProcessingDependencyValidationException);
 
-            this.dataSetSpecificationServiceMock.Verify(service =>
-                service.RetrieveAllDataSetSpecificationsAsync(),
+            this.dateTimeBrokerMock.Verify(service =>
+                service.GetCurrentDateTimeOffsetAsync(),
                     Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>

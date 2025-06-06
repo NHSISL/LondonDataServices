@@ -8,22 +8,34 @@ import { SupplierView } from "../../models/views/components/suppliers/supplierVi
 import { Guid } from "guid-typescript";
 
 interface FilterModalProps {
-    onAddFilter: (supplier: SupplierView | null, decryptedFilter?: boolean, downloadedFilter?: boolean) => void;
+    onAddFilter: (
+        supplier: SupplierView | null,
+        decryptedFilter?: boolean,
+        downloadedFilter?: boolean,
+        batchCompleteFilter?: boolean,
+        processingFilter?: boolean) => void;
+
     selectedSupplierId: string;
     initialDecryptedFilter?: boolean | null;
     initialDownloadedFilter?: boolean | null;
+    initialBatchCompleteFilter?: boolean | null;
+    initialProcessingFilter?: boolean | null;
 }
 
 const IngestionFilterModal: FunctionComponent<FilterModalProps> = ({
     onAddFilter,
     selectedSupplierId: initialSelectedSupplierId,
     initialDecryptedFilter = null,
-    initialDownloadedFilter = null
+    initialDownloadedFilter = null,
+    initialBatchCompleteFilter = null,
+    initialProcessingFilter = null
 }) => {
     const { mappedSuppliers: suppliersRetrieved } = lookupViewService.useGetTrackedSupplierList("");
     const [selectedSupplierId, setSelectedSupplierId] = useState<string>(initialSelectedSupplierId);
     const [selectedDecryptedFilter, setSelectedDecryptedFilter] = useState<boolean | null>(initialDecryptedFilter);
     const [selectedDownloadedFilter, setSelectedDownloadedFilter] = useState<boolean | null>(initialDownloadedFilter);
+    const [selectedBatchCompleteFilter, setSelectedBatchCompleteFilter] = useState<boolean | null>(initialBatchCompleteFilter);
+    const [selectedProcessingFilter, setSelectedProcessingFilter] = useState<boolean | null>(initialProcessingFilter);
 
     const handleSupplierChange = (event: ChangeEvent<HTMLInputElement>) => {
         setSelectedSupplierId(event.target.value);
@@ -42,13 +54,29 @@ const IngestionFilterModal: FunctionComponent<FilterModalProps> = ({
         else if (value === "true") setSelectedDownloadedFilter(true);
         else if (value === "false") setSelectedDownloadedFilter(false);
     };
+    const handleBatchCompleteChange = (event: ChangeEvent<HTMLInputElement>) => {
+        const value = event.target.value;
+        if (value === "all") setSelectedBatchCompleteFilter(null);
+        else if (value === "true") setSelectedBatchCompleteFilter(true);
+        else if (value === "false") setSelectedBatchCompleteFilter(false);
+    };
+
+    const handleProcessingChange = (event: ChangeEvent<HTMLInputElement>) => {
+        const value = event.target.value;
+        if (value === "all") setSelectedProcessingFilter(null);
+        else if (value === "true") setSelectedProcessingFilter(true);
+        else if (value === "false") setSelectedProcessingFilter(false);
+    };
+
 
     const handleClearFilters = () => {
         setSelectedSupplierId("");
         setSelectedDecryptedFilter(null);
         setSelectedDownloadedFilter(null);
+        setSelectedBatchCompleteFilter(null);
+        setSelectedProcessingFilter(null);
 
-        onAddFilter(null, undefined, undefined);
+        onAddFilter(null, undefined, undefined, undefined, undefined);
     };
 
     const handleFilterClick = () => {
@@ -64,7 +92,9 @@ const IngestionFilterModal: FunctionComponent<FilterModalProps> = ({
         onAddFilter(
             supplier,
             selectedDecryptedFilter === null ? undefined : selectedDecryptedFilter,
-            selectedDownloadedFilter === null ? undefined : selectedDownloadedFilter
+            selectedDownloadedFilter === null ? undefined : selectedDownloadedFilter,
+            selectedBatchCompleteFilter === null ? undefined : selectedBatchCompleteFilter,
+            selectedProcessingFilter === null ? undefined : selectedProcessingFilter
         );
     };
 
@@ -182,6 +212,88 @@ const IngestionFilterModal: FunctionComponent<FilterModalProps> = ({
                                 value="false"
                                 checked={selectedDownloadedFilter === false}
                                 onChange={handleDownloadedChange}
+                                className="cursor-pointer"
+                            />
+                        </div>
+                    </Form.Group>
+                </Card.Body>
+
+                <Card.Body>
+                    <Form.Group>
+                        <Form.Label className="fw-semibold">Batch Complete Filter</Form.Label>
+                        <div className="d-flex gap-3 mt-2">
+                            <Form.Check
+                                inline
+                                label="All"
+                                name="batchCompleteFilter"
+                                type="radio"
+                                id="batchComplete-all"
+                                value="all"
+                                checked={selectedBatchCompleteFilter === null}
+                                onChange={handleBatchCompleteChange}
+                                className="cursor-pointer"
+                            />
+                            <Form.Check
+                                inline
+                                label="BatchComplete"
+                                name="batchCompleteFilter"
+                                type="radio"
+                                id="batchComplete-yes"
+                                value="true"
+                                checked={selectedBatchCompleteFilter === true}
+                                onChange={handleBatchCompleteChange}
+                                className="cursor-pointer"
+                            />
+                            <Form.Check
+                                inline
+                                label="Not Batch Complete"
+                                name="batchCompleteFilter"
+                                type="radio"
+                                id="batchComplete-no"
+                                value="false"
+                                checked={selectedBatchCompleteFilter === false}
+                                onChange={handleBatchCompleteChange}
+                                className="cursor-pointer"
+                            />
+                        </div>
+                    </Form.Group>
+                </Card.Body>
+
+                <Card.Body>
+                    <Form.Group>
+                        <Form.Label className="fw-semibold">Processing Filter</Form.Label>
+                        <div className="d-flex gap-3 mt-2">
+                            <Form.Check
+                                inline
+                                label="All"
+                                name="processingFilter"
+                                type="radio"
+                                id="processing-all"
+                                value="all"
+                                checked={selectedProcessingFilter === null}
+                                onChange={handleProcessingChange}
+                                className="cursor-pointer"
+                            />
+                            <Form.Check
+                                inline
+                                label="Processing"
+                                name="processingFilter"
+                                type="radio"
+                                id="processing-yes"
+                                value="true"
+                                checked={selectedProcessingFilter === true}
+                                onChange={handleProcessingChange}
+                                className="cursor-pointer"
+                            />
+                            <Form.Check
+                                inline
+                                label="Not Processing"
+                                name="processingFilter"
+                                type="radio"
+                                id="processing-no"
+                                value="false"
+                                checked={selectedProcessingFilter === false}
+                                onChange={handleProcessingChange}
                                 className="cursor-pointer"
                             />
                         </div>

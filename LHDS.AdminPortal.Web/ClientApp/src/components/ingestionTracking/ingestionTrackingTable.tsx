@@ -30,6 +30,8 @@ const IngestionTrackingTable: FunctionComponent<IngestionTrackingTableProps> = (
     const [debouncedSupplierTerm, setDebouncedSupplierTerm] = useState<string>("");
     const [selectedSupplierId, setSelectedSupplierId] = useState<string>("");
     const [selectedDecryptedFilter, setSelectedDecryptedFilter] = useState<boolean | undefined>(undefined);
+    const [selectedBatchCompleteFilter, setSelectedBatchCompleteFilter] = useState<boolean | undefined>(undefined);
+    const [selectedProcessingFilter, setSelectedProcessingFilter] = useState<boolean | undefined>(undefined);
     const [selectedDownloadedFilter, setSelectedDownloadedFilter] = useState<boolean | undefined>(undefined);
     const [showSpinner, setShowSpinner] = useState(false);
     const [showModal, setShowModal] = useState(false);
@@ -37,11 +39,15 @@ const IngestionTrackingTable: FunctionComponent<IngestionTrackingTableProps> = (
 
     const decryptedFilterParam = selectedDecryptedFilter === undefined ? "" : selectedDecryptedFilter.toString();
     const downloadedFilterParam = selectedDownloadedFilter === undefined ? "" : selectedDownloadedFilter.toString();
+    const batchCompleteFilterParam = selectedBatchCompleteFilter === undefined ? "" : selectedBatchCompleteFilter.toString();
+    const processingFilterParam = selectedProcessingFilter === undefined ? "" : selectedProcessingFilter.toString();
 
     const isFilterActive =
         selectedSupplierId !== "" ||
         selectedDecryptedFilter !== undefined ||
-        selectedDownloadedFilter !== undefined;
+        selectedDownloadedFilter !== undefined ||
+        selectedBatchCompleteFilter !== undefined ||
+        selectedProcessingFilter !== undefined;
 
     const {
         mappedIngestionTrackings: ingestionTrackingsRetrieved,
@@ -55,7 +61,9 @@ const IngestionTrackingTable: FunctionComponent<IngestionTrackingTableProps> = (
         debouncedTerm,
         debouncedSupplierTerm,
         decryptedFilterParam,
-        downloadedFilterParam
+        downloadedFilterParam,
+        batchCompleteFilterParam,
+        processingFilterParam
     );
 
     const totalRecords = ingestionTrackingsRetrieved?.length || 0;
@@ -87,7 +95,9 @@ const IngestionTrackingTable: FunctionComponent<IngestionTrackingTableProps> = (
     const handleFilter = (
         supplier: SupplierView | null,
         decryptedFilter: boolean | undefined,
-        downloadedFilter: boolean | undefined
+        downloadedFilter: boolean | undefined,
+        batchCompleteFilter: boolean | undefined,
+        processingFilter: boolean | undefined
     ) => {
         if (supplier === null) {
             setDebouncedSupplierTerm("");
@@ -98,6 +108,8 @@ const IngestionTrackingTable: FunctionComponent<IngestionTrackingTableProps> = (
         }
         setSelectedDecryptedFilter(decryptedFilter);
         setSelectedDownloadedFilter(downloadedFilter);
+        setSelectedBatchCompleteFilter(batchCompleteFilter);
+        setSelectedProcessingFilter(processingFilter);
     };
 
     const handleBatchClick = (batch: string) => {
@@ -221,6 +233,8 @@ const IngestionTrackingTable: FunctionComponent<IngestionTrackingTableProps> = (
                         selectedSupplierId={selectedSupplierId}
                         initialDecryptedFilter={selectedDecryptedFilter}
                         initialDownloadedFilter={selectedDownloadedFilter}
+                        initialBatchCompleteFilter={selectedBatchCompleteFilter}
+                        initialProcessingFilter={selectedProcessingFilter}
                     />
                 </div>
             </div>

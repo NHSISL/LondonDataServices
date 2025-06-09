@@ -5,8 +5,7 @@ export class Supplier {
     public name?: string;
     public friendlyName?: string;
     public description?: string;
-    public landingManualTriggerUrl?: string;
-    public decryptionManualTriggerUrl?: string;
+    public isIngestionTracked?: boolean;
     public canDecryptIngestionTracking?: boolean;
     public createdBy?: string;
     public createdDate?: Date;
@@ -18,8 +17,7 @@ export class Supplier {
         this.name = supplier.name;
         this.friendlyName = supplier.friendlyName;
         this.description = supplier.description;
-        this.landingManualTriggerUrl = supplier.landingManualTriggerUrl;
-        this.decryptionManualTriggerUrl = supplier.decryptionManualTriggerUrl;
+        this.isIngestionTracked = supplier.isIngestionTracked;
         this.canDecryptIngestionTracking = supplier.canDecryptIngestionTracking === true ? true : false;
         this.createdBy = supplier.createdBy;
         this.createdDate = new Date(supplier.createdDate);

@@ -14,6 +14,7 @@ using LHDS.Core.Brokers.Securities;
 using LHDS.Core.Brokers.Storages.Sql;
 using LHDS.Core.Models.Foundations.ResolvedAddresses;
 using LHDS.Core.Models.Foundations.ResolvedAddresses.Exceptions;
+using LHDS.Core.Models.Foundations.SubscriberAgreements;
 
 namespace LHDS.Core.Services.Foundations.ResolvedAddresses
 {
@@ -80,7 +81,9 @@ namespace LHDS.Core.Services.Foundations.ResolvedAddresses
         public ValueTask<ResolvedAddress> ModifyResolvedAddressAsync(ResolvedAddress resolvedAddress) =>
             TryCatch(async () =>
             {
-                ResolvedAddress resolvedAddressWithModifyAuditApplied = await ApplyModifyAuditAsync(resolvedAddress);
+                ResolvedAddress resolvedAddressWithModifyAuditApplied = 
+                    await ApplyModifyAuditAsync(resolvedAddress);
+
                 await ValidateResolvedAddressOnModifyAsync(resolvedAddressWithModifyAuditApplied);
 
                 ResolvedAddress maybeResolvedAddress =
@@ -88,8 +91,13 @@ namespace LHDS.Core.Services.Foundations.ResolvedAddresses
 
                 ValidateStorageResolvedAddress(maybeResolvedAddress, resolvedAddress.Id);
 
+                ResolvedAddress ResolvedAddressWithModifyAuditAppliedEnsured =
+                   await EnsureCreatedAuditPropertiesIsSameAsStorageAsync(
+                       resolvedAddress,
+                       maybeResolvedAddress);
+
                 ValidateAgainstStorageResolvedAddressOnModify(
-                    inputResolvedAddress: resolvedAddressWithModifyAuditApplied, 
+                    inputResolvedAddress: ResolvedAddressWithModifyAuditAppliedEnsured, 
                     storageResolvedAddress: maybeResolvedAddress);
 
                 return await this.storageBroker.UpdateResolvedAddressAsync(resolvedAddressWithModifyAuditApplied);
@@ -349,6 +357,16 @@ namespace LHDS.Core.Services.Foundations.ResolvedAddresses
             var auditUser = await this.securityBroker.GetCurrentUserAsync();
             resolvedAddress.UpdatedBy = auditUser?.EntraUserId.ToString() ?? string.Empty;
             resolvedAddress.UpdatedDate = auditDateTimeOffset;
+
+            return resolvedAddress;
+        }
+
+        virtual internal async ValueTask<ResolvedAddress> EnsureCreatedAuditPropertiesIsSameAsStorageAsync(
+           ResolvedAddress resolvedAddress,
+           ResolvedAddress maybeResolvedAddress)
+        {
+            resolvedAddress.CreatedDate = maybeResolvedAddress.CreatedDate;
+            resolvedAddress.CreatedBy = maybeResolvedAddress.CreatedBy;
 
             return resolvedAddress;
         }

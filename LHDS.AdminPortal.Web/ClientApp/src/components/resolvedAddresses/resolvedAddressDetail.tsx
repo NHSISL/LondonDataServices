@@ -24,7 +24,7 @@ const ResolvedAddressDetail: FunctionComponent<ResolvedAddressDetailProps> = (pr
          resolvedAddressViewService.useGetResolvedAddressById(Guid.parse(resolvedAddressId))
 
     const handleRefresh = async (resolvedAddressView: ResolvedAddressView) => {
-        const alternateAddress = resolvedAddressView.alternateUnstructuredPostalAddress ?? ""; // Fallback to empty string
+        const alternateAddress = resolvedAddressView.alternateUnstructuredPostalAddress ?? "";
         onPickAlternateAddress(alternateAddress);
     }
 
@@ -51,8 +51,7 @@ const ResolvedAddressDetail: FunctionComponent<ResolvedAddressDetailProps> = (pr
                         resolvedAddress={resolvedAddressRetrieved}
                         mode={mode}
                         onRefresh={handleRefresh}
-                        onUpdate={handleUpdate}
-                        onPickAlternateAddress={onPickAlternateAddress}>                   
+                        onUpdate={handleUpdate}>                   
                         {children}
                     </ResolvedAddressDetailCard>
                 </div>

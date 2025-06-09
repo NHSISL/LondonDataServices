@@ -10,24 +10,18 @@ interface AddressDetailCardProps {
     address: AddressView;
     children?: React.ReactNode;
     onRefresh: (address: AddressView) => void;
-    onUpdate: (terminoaddresslogyArtifact: AddressView,) => void;
 }
 
 const AddressDetailCard: FunctionComponent<AddressDetailCardProps> = (props) => {
     const {
         address,
         children,
-        onRefresh,
-        onUpdate
+        onRefresh
     } = props;
 
     const handlRefresh = async (address: AddressView) => {
         await onRefresh(address);
     }
-
-    const handleUpdate = async (address: AddressView) => {
-        await onUpdate(address);
-    };
 
     return (
         <div>
@@ -39,10 +33,7 @@ const AddressDetailCard: FunctionComponent<AddressDetailCardProps> = (props) => 
                     <CardBaseContent>
                         <AddressDetailCardView
                             address={address}
-                            onRefresh={handlRefresh}
-                            onUpdate={handleUpdate}
-                        />
-
+                            onRefresh={handlRefresh} />
                         {children !== undefined && (
                             <>
                                 <br />

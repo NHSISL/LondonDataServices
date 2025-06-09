@@ -19,8 +19,6 @@ interface ResolvedAddressDetailCardEditProps {
     onCancel: () => void;
     mode: string;
     onModeChange: (value: string) => void;
-    apiError?: any;
-    onPickAlternateAddress: (alternateAddress: string) => void;
 }
 
 const ResolvedAddressDetailCardEdit: FunctionComponent<ResolvedAddressDetailCardEditProps> = (props) => {
@@ -29,29 +27,10 @@ const ResolvedAddressDetailCardEdit: FunctionComponent<ResolvedAddressDetailCard
         onUpdate,
         onCancel,
         mode,
-        onModeChange,
-        apiError,
-        onPickAlternateAddress
+        onModeChange
     } = props;
 
     const [editResolvedAddress, setEditResolvedAddress] = useState<ResolvedAddressView>({ ...resolvedAddress });
-
-    const { errors, enableValidationMessages, processApiErrors, validate } =
-        useValidation(resolvedAddressErrors,
-            resolvedAddressValidation,
-            editResolvedAddress)
-
-    const handleChange = (
-        event: ChangeEvent<HTMLInputElement>
-            | ChangeEvent<HTMLTextAreaElement>
-            | ChangeEvent<HTMLSelectElement>
-    ) => {
-        const { name, value } = event.target;
-        setEditResolvedAddress(prevState => ({
-            ...prevState,
-            [name]: value,
-        }));
-    };
 
     const handleCancel = () => {
         setEditResolvedAddress({ ...resolvedAddress });
@@ -59,20 +38,12 @@ const ResolvedAddressDetailCardEdit: FunctionComponent<ResolvedAddressDetailCard
         onCancel();
     };
     const handleUpdate = () => {
-        if (!validate(editResolvedAddress)) {
-            onUpdate(editResolvedAddress)
-        } else {
-            enableValidationMessages();
-        }
+        onUpdate(editResolvedAddress)
     }
 
     useEffect(() => {
         setEditResolvedAddress({ ...resolvedAddress });
     }, [resolvedAddress]);
-
-    useEffect(() => {
-        processApiErrors(apiError)
-    }, [apiError, processApiErrors])
 
     return (
         <>
@@ -87,23 +58,23 @@ const ResolvedAddressDetailCardEdit: FunctionComponent<ResolvedAddressDetailCard
                 <SummaryListBaseRow>
                     <SummaryListBaseKey>Alternate Unstructured Address</SummaryListBaseKey>
                     <SummaryListBaseValue>
-                        <SummaryListBaseValue>
-                            {resolvedAddress.alternateUnstructuredPostalAddress ? resolvedAddress.alternateUnstructuredPostalAddress : "Not Specified"}</SummaryListBaseValue>
+                        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                            <span>
+                                {editResolvedAddress.alternateUnstructuredPostalAddress ?? "Not Specified"}
+                            </span>
+                            <ButtonBase
+                                onClick={() => setEditResolvedAddress(prev => ({
+                                    ...prev,
+                                    alternateUnstructuredPostalAddress: null
+                                }))}
+                                style={{ marginLeft: '1rem' }}
+                            >
+                                Clear
+                            </ButtonBase>
+                        </div>
                     </SummaryListBaseValue>
                 </SummaryListBaseRow>
-                {/*<SummaryListBaseRow>*/}
-                {/*    <SummaryListBaseKey>Alternate Unstructured Address</SummaryListBaseKey>*/}
-                {/*    <SummaryListBaseValue>*/}
-                {/*        <TextInputBase*/}
-                {/*            id="alternateUnstructuredAddress"*/}
-                {/*            name="alternateUnstructuredAddress"*/}
-                {/*            placeholder="Alternate Unstructured Address"*/}
-                {/*            required={false}*/}
-                {/*            value={editResolvedAddress.alternateUnstructuredPostalAddress}*/}
-                {/*            error={errors.alternateUnstructuredPostalAddress}*/}
-                {/*            onChange={handleChange}/>*/}
-                {/*    </SummaryListBaseValue>*/}
-                {/*</SummaryListBaseRow>*/}
+
             </SummaryListBase>
 
             {mode === "ADD" && (

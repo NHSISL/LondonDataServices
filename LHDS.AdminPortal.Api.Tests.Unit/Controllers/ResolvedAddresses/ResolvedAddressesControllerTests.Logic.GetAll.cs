@@ -36,7 +36,7 @@ namespace LHDS.AdminPortal.Api.Tests.Unit.Controllers.ResolvedAddresses
 
             // when
             ActionResult<IQueryable<ResolvedAddress>> actualActionResult =
-                await this.resolvedAddressesController.GetAllResolvedAddressesAsync();
+                await this.resolvedAddressesController.Get();
 
             // then
             actualActionResult.Should().BeEquivalentTo(expectedActionResult);

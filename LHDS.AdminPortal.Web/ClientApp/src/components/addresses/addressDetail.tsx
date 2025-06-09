@@ -20,12 +20,6 @@ const AddressDetail: FunctionComponent<AddressDetailProps> = (props) => {
 
     const handleRefresh = async (addressView: AddressView) => { }
 
-    const updateAddress = addressViewService.useUpdateAddress();
-
-    const handleUpdate = async (address: AddressView) => {
-        return updateAddress.mutateAsync(address);
-    };
-
     return (
         <div>
             {addressRetrieved !== undefined && (
@@ -33,8 +27,7 @@ const AddressDetail: FunctionComponent<AddressDetailProps> = (props) => {
                     <AddressDetailCard
                         key={addressRetrieved.id.toString()}
                         address={addressRetrieved}
-                        onRefresh={handleRefresh}
-                        onUpdate={handleUpdate}>                   
+                        onRefresh={handleRefresh}>                   
                         {children}
                     </AddressDetailCard>
                 </div>

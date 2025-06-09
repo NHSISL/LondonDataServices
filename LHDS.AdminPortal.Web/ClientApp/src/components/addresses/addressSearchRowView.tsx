@@ -40,14 +40,10 @@ const AddressSearchRowView: FunctionComponent<AddressSearchRowProps> = (props) =
                 <span style={{ fontSize: '14px' }}>{address.uprn}</span>
             </TableBaseData>
             <TableBaseData>
-                <span style={{ fontSize: '14px' }}>{address.upsn}</span>
-            </TableBaseData>
-            <TableBaseData>
                 <span style={{ fontSize: '14px' }}>{concateAddresses(address)}</span>
             </TableBaseData>
             <TableBaseData classes="text-center">
                 <ButtonBase onClick={() => onPick(concateAddresses(address))} remove>Pick</ButtonBase>
-                {/*<ButtonBase onClick={() => { }} view title="test against assign Api" disabled={true}> Test </ButtonBase>*/}
             </TableBaseData>
         </TableBaseRow>
     );

@@ -14,7 +14,6 @@ interface ResolvedAddressDetailCardProps {
     children?: React.ReactNode;
     onRefresh: (resolvedAddress: ResolvedAddressView) => void;
     onUpdate: (resolvedAddress: ResolvedAddressView) => void;
-    onPickAlternateAddress: (alternateAddress: string) => void;
 }
 
 const ResolvedAddressDetailCard: FunctionComponent<ResolvedAddressDetailCardProps> = (props) => {
@@ -23,12 +22,10 @@ const ResolvedAddressDetailCard: FunctionComponent<ResolvedAddressDetailCardProp
         mode,
         children,
         onRefresh,
-        onUpdate,
-        onPickAlternateAddress
+        onUpdate
     } = props;
 
     const [displayMode, setDisplayMode] = useState<string>(mode);
-    const [apiError, setApiError] = useState<any>({});
     const [currentResolvedAddress, setCurrentResolvedAddress] = useState<ResolvedAddressView>({ ...resolvedAddress });
 
     const handleModeChange = (value: string) => {
@@ -44,7 +41,7 @@ const ResolvedAddressDetailCard: FunctionComponent<ResolvedAddressDetailCardProp
     };
 
     const handleCancel = () => {
-        setApiError({});
+        
     }
 
     const handlePick = (address: string) => {
@@ -78,16 +75,11 @@ const ResolvedAddressDetailCard: FunctionComponent<ResolvedAddressDetailCardProp
                                     onUpdate={handleUpdate}
                                     onCancel={handleCancel}
                                     resolvedAddress={currentResolvedAddress}
-                                    mode={displayMode}
-                                    apiError={apiError}
-                                    onPickAlternateAddress={onPickAlternateAddress}
-                                />
-
+                                    mode={displayMode}/>
 
                                 <AddressSearchTable
                                     onPick={handlePick}
                                 ></AddressSearchTable>
-
                             </>
                         )}
 

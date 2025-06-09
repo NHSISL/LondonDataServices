@@ -453,9 +453,9 @@ namespace LHDS.Core.Services.Orchestrations.Downloads
                     Id = Guid.NewGuid(),
                     IngestionTrackingId = ingestionTracking.Id,
                     Message = $"{message}",
-                    CreatedBy = "DownloadOrchestrationService",
+                    CreatedBy = "EmisLandingOrchestrationService",
                     CreatedDate = currentDateTime,
-                    UpdatedBy = "DownloadOrchestrationService",
+                    UpdatedBy = "EmisLandingOrchestrationService",
                     UpdatedDate = currentDateTime
                 };
 

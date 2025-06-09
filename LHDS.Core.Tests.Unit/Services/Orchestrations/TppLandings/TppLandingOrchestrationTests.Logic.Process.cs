@@ -13,6 +13,7 @@ using LHDS.Core.Models.Foundations.DataSets;
 using LHDS.Core.Models.Foundations.DataSetSpecifications;
 using LHDS.Core.Models.Foundations.IngestionTrackingAudits;
 using LHDS.Core.Models.Foundations.IngestionTrackings;
+using LHDS.Core.Services.Orchestrations.Tpp;
 using Moq;
 using Xunit;
 
@@ -102,6 +103,26 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.TppLandings
             string objectName = GetRandomString();
             string inputFileName = $"/{resourceGroup}/{batch}/{objectName}.csv";
             string sourceFolderPath = $"/{resourceGroup}/{batch}";
+
+            var tppOrchestrationServiceMock = new Mock<TppLandingOrchestrationService>(
+                documentProcessingServiceMock.Object,
+                ingestionTrackingProcessingServiceMock.Object,
+                ingestionTrackingProcessingAuditServiceMock.Object,
+                dataSetSpecificationProcessingServiceMock.Object,
+                blobContainers,
+                loggingBrokerMock.Object,
+                dateTimeBrokerMock.Object,
+                identifierBrokerMock.Object,
+                hashBrokerMock.Object,
+                landingConfiguration)
+            {
+                CallBase = true
+            };
+
+            tppOrchestrationServiceMock.Setup(service =>
+                service.LogAudit(
+                    It.IsAny<IngestionTracking>(), It.IsAny<string>()))
+                        .Returns(ValueTask.CompletedTask);
 
             List<string> randomFileNames =
                 GetRandomTppFileNames(resourceGroup, batch, count: randomNumber);
@@ -195,7 +216,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.TppLandings
                     .ReturnsAsync(value: ingestionTrackingAudit);
 
             // when
-            Guid returnedGuid = await this.tppOrchestrationService.ProcessAsync(
+            Guid returnedGuid = await tppOrchestrationServiceMock.Object.ProcessAsync(
                 input: inputDataStream,
                 fileName: inputFileName,
                 supplierId: inputSupplierId);
@@ -226,6 +247,13 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.TppLandings
                 service.AddIngestionTrackingAsync(It.Is(SameIngestionTrackingAs(newIngestionTracking))),
                     Times.Once);
 
+            tppOrchestrationServiceMock.Verify(service =>
+                service.LogAudit(
+                    It.Is(SameIngestionTrackingAs(newIngestionTracking)),
+                    $"New file found '{newIngestionTracking.FileName}',  " +
+                        $"created item with Id: {newIngestionTracking.Id}"),
+                            Times.Once);
+
             this.documentProcessingServiceMock.Verify(service =>
                 service.AddDocumentAsync(
                     inputDataStream,
@@ -233,9 +261,12 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.TppLandings
                     blobContainers.Ingress),
                         Times.Once);
 
-            this.ingestionTrackingProcessingAuditServiceMock.Verify(service =>
-                service.AddIngestionTrackingAuditAsync(It.IsAny<IngestionTrackingAudit>()),
-                    Times.Once);
+            tppOrchestrationServiceMock.Verify(service =>
+                service.LogAudit(
+                    It.Is(SameIngestionTrackingAs(newIngestionTracking)),
+                    $"Downloaded file '{newIngestionTracking.FileName}' and successfully uploaded " +
+                        $"to blob storage '{newIngestionTracking.DecryptedFileName}'"),
+                            Times.Once);
 
             this.ingestionTrackingProcessingServiceMock.VerifyNoOtherCalls();
             this.hashBrokerMock.VerifyNoOtherCalls();
@@ -260,6 +291,26 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.TppLandings
             string inputFileName = randomFileName;
             byte[] inputBytes = Encoding.UTF8.GetBytes(inputFileName);
             Stream inputStream = new MemoryStream(inputBytes);
+
+            var tppOrchestrationServiceMock = new Mock<TppLandingOrchestrationService>(
+                documentProcessingServiceMock.Object,
+                ingestionTrackingProcessingServiceMock.Object,
+                ingestionTrackingProcessingAuditServiceMock.Object,
+                dataSetSpecificationProcessingServiceMock.Object,
+                blobContainers,
+                loggingBrokerMock.Object,
+                dateTimeBrokerMock.Object,
+                identifierBrokerMock.Object,
+                hashBrokerMock.Object,
+                landingConfiguration)
+            {
+                CallBase = true
+            };
+
+            tppOrchestrationServiceMock.Setup(service =>
+                service.LogAudit(
+                    It.IsAny<IngestionTracking>(), It.IsAny<string>()))
+                        .Returns(ValueTask.CompletedTask);
 
             List<IngestionTracking> randomIngestionTrackings =
                 CreateRandomIngestionTrackings(
@@ -304,7 +355,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.TppLandings
                     .ReturnsAsync(value: ingestionTrackingAudit);
 
             // when
-            ValueTask<Guid> returnedGuid = this.tppOrchestrationService
+            ValueTask<Guid> returnedGuid = tppOrchestrationServiceMock.Object
                 .ProcessAsync(input: inputStream, fileName: inputFileName, supplierId: randomSupplierId);
 
             // then
@@ -316,10 +367,6 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.TppLandings
                 broker.GenerateSha256HashAsync(inputStream),
                     Times.Once);
 
-            this.dateTimeBrokerMock.Verify(broker =>
-                broker.GetCurrentDateTimeOffsetAsync(),
-                    Times.Once);
-
             this.documentProcessingServiceMock.Verify(service =>
                 service.AddDocumentAsync(inputStream, randomIngestionTracking.DecryptedFileName, inputContainer),
                     Times.Once);
@@ -328,9 +375,12 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.TppLandings
                 service.ModifyIngestionTrackingAsync(It.Is(SameIngestionTrackingAs(updatedIngestionTracking))),
                     Times.Once);
 
-            this.ingestionTrackingProcessingAuditServiceMock.Verify(service =>
-                service.AddIngestionTrackingAuditAsync(It.IsAny<IngestionTrackingAudit>()),
-                    Times.Once);
+            tppOrchestrationServiceMock.Verify(service =>
+                service.LogAudit(
+                    It.Is(SameIngestionTrackingAs(updatedIngestionTracking)),
+                    $"Received and updated file from TPP which has now been uploaded " +
+                        $"to the blob storage '{updatedIngestionTracking.DecryptedFileName}'"),
+                            Times.Once);
 
             this.ingestionTrackingProcessingServiceMock.VerifyNoOtherCalls();
             this.hashBrokerMock.VerifyNoOtherCalls();

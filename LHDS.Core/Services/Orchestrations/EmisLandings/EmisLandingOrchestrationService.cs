@@ -303,35 +303,56 @@ namespace LHDS.Core.Services.Orchestrations.Downloads
                 var storageIngestionTracking = await this.ingestionTrackingProcessingService
                     .AddIngestionTrackingAsync(newIngestionTracking);
 
-                await LogAudit(storageIngestionTracking, $"New file found - {storageIngestionTracking.FileName}");
+                await LogAudit(
+                    ingestionTracking: storageIngestionTracking,
+                    message:
+                        $"New file found '{storageIngestionTracking.FileName}',  " +
+                        $"created item with Id: {storageIngestionTracking.Id}");
 
                 maybeIngestionTracking = storageIngestionTracking;
             }
 
             if (maybeIngestionTracking.IsDownloaded == false && maybeIngestionTracking.RetryCount <= 3)
             {
+                maybeIngestionTracking.RetryCount += 1;
+
+                await LogAudit(
+                    ingestionTracking: maybeIngestionTracking,
+                    message:
+                        $"Processing file '{maybeIngestionTracking.FileName}' " +
+                        $"associated with Id: {maybeIngestionTracking.Id}." + Environment.NewLine +
+                        $"Downloading: {maybeIngestionTracking.FileName} " + Environment.NewLine +
+                        $"RetryCount: {maybeIngestionTracking.RetryCount}");
+
                 try
                 {
-                    string batchCompleteFileName =
+                    string batchReadyFileName =
                         $"{maybeIngestionTracking.BatchReadyFolderPath}/{landingConfiguration.BatchReadyFile}"
                             .Replace("\\", "/");
 
+                    await LogAudit(
+                        ingestionTracking: maybeIngestionTracking,
+                        message:
+                            $"Removing batch ready file '{batchReadyFileName}' as this file will invalidate the " +
+                            $"ready status for batch: {maybeIngestionTracking.Batch}.");
+
                     await this.documentProcessingService.RemoveDocumentByFileNameAsync(
-                        batchCompleteFileName,
+                        batchReadyFileName,
                         this.blobContainers.Ingress);
                 }
                 catch (Exception)
                 { }
 
-                maybeIngestionTracking.RetryCount += 1;
                 maybeIngestionTracking.IsDownloaded = false;
                 maybeIngestionTracking.IsBatchComplete = false;
                 maybeIngestionTracking.FileDeleted = false;
                 maybeIngestionTracking.EncryptedFileSize = 0;
                 maybeIngestionTracking.EncryptedFileSha256Hash = string.Empty;
 
-                await LogAudit(maybeIngestionTracking, $"Downloading {maybeIngestionTracking.FileName};  " +
-                    $"Attempt(s): {maybeIngestionTracking.RetryCount}");
+                await LogAudit(
+                    maybeIngestionTracking,
+                    $"Downloading {maybeIngestionTracking.FileName};  " +
+                        $"RetryCount: {maybeIngestionTracking.RetryCount}");
 
                 IngestionTracking updatedIngestionTracking =
                     await this.ingestionTrackingProcessingService
@@ -373,6 +394,12 @@ namespace LHDS.Core.Services.Orchestrations.Downloads
                             fileName: updatedIngestionTracking.EncryptedFileName,
                             container: blobContainers.EmisLanding);
                     }
+
+                    await LogAudit(
+                        ingestionTracking: maybeIngestionTracking,
+                        message:
+                            $"Downloaded file '{maybeIngestionTracking.FileName}' " +
+                            $"and successfully uploaded to blob storage '{maybeIngestionTracking.EncryptedFileName}'");
                 }
                 catch (Exception ex)
                 {
@@ -397,8 +424,8 @@ namespace LHDS.Core.Services.Orchestrations.Downloads
                 await this.ingestionTrackingProcessingService
                     .ModifyIngestionTrackingAsync(updatedIngestionTracking);
 
-                await LogAudit(updatedIngestionTracking, $"Downloaded {updatedIngestionTracking.FileName};  " +
-                    $"Attempt(s): {maybeIngestionTracking.RetryCount}");
+                await LogAudit(updatedIngestionTracking, $"Updated ingestion tracking info to " +
+                    $"reflect successful processing of {updatedIngestionTracking.FileName}");
 
                 return updatedIngestionTracking.DecryptedFileName;
             }
@@ -426,9 +453,9 @@ namespace LHDS.Core.Services.Orchestrations.Downloads
                     Id = Guid.NewGuid(),
                     IngestionTrackingId = ingestionTracking.Id,
                     Message = $"{message}",
-                    CreatedBy = "DownloadOrchestrationService",
+                    CreatedBy = "EmisLandingOrchestrationService",
                     CreatedDate = currentDateTime,
-                    UpdatedBy = "DownloadOrchestrationService",
+                    UpdatedBy = "EmisLandingOrchestrationService",
                     UpdatedDate = currentDateTime
                 };
 
@@ -484,3 +511,5 @@ namespace LHDS.Core.Services.Orchestrations.Downloads
         }
     }
 }
+
+

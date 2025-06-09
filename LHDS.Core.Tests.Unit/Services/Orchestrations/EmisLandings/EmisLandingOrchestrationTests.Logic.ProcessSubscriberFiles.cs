@@ -27,9 +27,10 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.EmisLandings
             Guid supplierId = randomGuid;
             Download download = new Download { SubscriberCredential = inputSubscriberCredential };
             int count = GetRandomNumber();
-            List<string> randomExternalFileNames = GetRandomStrings(count);
-            List<string> randomProcessedFileNames = GetRandomStrings(count);
-            List<string> expectedOutput = randomProcessedFileNames.DeepClone();
+            List<string> randomExternalFileNames = GetRandomStrings(count, length: 10);
+            List<string> randomProcessedFileNames = GetRandomStrings(count, length: 10);
+            List<string> processedOutput = randomProcessedFileNames.DeepClone();
+            List<string> expectedOutput = processedOutput.DeepClone();
 
             var emisLandingOrchestrationServiceMock = new Mock<EmisLandingOrchestrationService>(
                 documentProcessingServiceMock.Object,
@@ -56,7 +57,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.EmisLandings
             {
                 emisLandingOrchestrationServiceMock.Setup(service =>
                     service.ProcessFileAsync(inputSubscriberCredential, supplierId, randomExternalFileNames[i]))
-                        .ReturnsAsync(randomProcessedFileNames[i]);
+                        .ReturnsAsync(processedOutput[i]);
             }
 
             // when

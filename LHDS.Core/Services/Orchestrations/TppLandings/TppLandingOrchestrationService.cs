@@ -143,12 +143,22 @@ namespace LHDS.Core.Services.Orchestrations.Tpp
 
                     await this.ingestionTrackingProcessingService.AddIngestionTrackingAsync(newIngestionTracking);
 
+                    await LogAudit(
+                        ingestionTracking: newIngestionTracking,
+                        message:
+                            $"New file found '{newIngestionTracking.FileName}',  " +
+                            $"created item with Id: {newIngestionTracking.Id}");
+
                     await this.documentProcessingService.AddDocumentAsync(
                         input,
                         fileName: newIngestionTracking.DecryptedFileName,
                         container: blobContainers.Ingress);
 
-                    await LogAudit(newIngestionTracking, "Landed", currentDateTime);
+                    await LogAudit(
+                        ingestionTracking: newIngestionTracking,
+                        message:
+                            $"Downloaded file '{newIngestionTracking.FileName}' and successfully uploaded " +
+                                $"to blob storage '{newIngestionTracking.DecryptedFileName}'");
 
                     return newIngestionTracking.Id;
                 }
@@ -160,34 +170,32 @@ namespace LHDS.Core.Services.Orchestrations.Tpp
                     }
                     else
                     {
-                        var currentDateTime = await this.dateTimeBroker.GetCurrentDateTimeOffsetAsync();
-
                         await this.documentProcessingService.AddDocumentAsync(
                             input,
                             fileName: maybeIngestionTracking.DecryptedFileName,
                             container: blobContainers.Ingress);
 
                         maybeIngestionTracking.DecryptedFileSha256Hash = decryptedFileSha256Hash;
-                        maybeIngestionTracking.UpdatedDate = currentDateTime;
 
                         await this.ingestionTrackingProcessingService.ModifyIngestionTrackingAsync(
                             maybeIngestionTracking);
 
                         await LogAudit(
                             maybeIngestionTracking,
-                            "Received and updated file from TPP which has now been uploaded to the blob store",
-                            currentDateTime);
+                            $"Received and updated file from TPP which has now been uploaded " +
+                                $"to the blob storage '{maybeIngestionTracking.DecryptedFileName}'");
 
                         return maybeIngestionTracking.Id;
                     }
                 }
             });
 
-        private async ValueTask LogAudit(
+        virtual internal async ValueTask LogAudit(
            IngestionTracking ingestionTracking,
-           string message,
-           DateTimeOffset currentDateTime)
+           string message)
         {
+            var currentDateTime = await this.dateTimeBroker.GetCurrentDateTimeOffsetAsync();
+
             IngestionTrackingAudit newAudit =
                 new IngestionTrackingAudit
                 {

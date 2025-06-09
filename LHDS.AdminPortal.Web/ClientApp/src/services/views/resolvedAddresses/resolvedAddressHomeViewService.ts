@@ -19,7 +19,7 @@ export const ResolvedAddressHomeViewService = {
         try 
         {
             let query = ``;
-            query = `?$orderby=createdDate desc`;
+            query = `?$filter=matchedWithAssign eq false&$orderby=createdDate desc`;
 
             if (searchTerm) {
                 const fields = [

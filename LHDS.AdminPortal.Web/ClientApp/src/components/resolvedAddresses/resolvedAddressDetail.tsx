@@ -31,6 +31,11 @@ const ResolvedAddressDetail: FunctionComponent<ResolvedAddressDetailProps> = (pr
     const updateResolvedAddress = resolvedAddressViewService.useUpdateResolvedAddress();
 
     const handleUpdate = async (resolvedAddress: ResolvedAddressView) => {
+        resolvedAddress.matchedWithAssign = false;
+        resolvedAddress.isExported = false;
+        resolvedAddress.isProcessed = false;
+        resolvedAddress.isProcessing = false;
+        resolvedAddress.retryCount = 0;
         return updateResolvedAddress.mutateAsync(resolvedAddress);
     };
 

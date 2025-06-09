@@ -21,7 +21,7 @@ export class ResolvedAddressHomeView {
     public dependentThoroughfare?: string;
     public doubleDependentLocality?: string;
     public matchPattern?: string;
-    public matchedWithAssign?: string;
+    public matchedWithAssign?: boolean;
     public organisationName?: string;
     public postCodeQuality?: string;
     public postTown?: string;
@@ -56,7 +56,7 @@ export class ResolvedAddressHomeView {
         dependentThoroughfare?: string,
         doubleDependentLocality?: string,
         matchPattern?: string,
-        matchedWithAssign?: string,
+        matchedWithAssign?: boolean,
         organisationName?: string,
         postCodeQuality?: string,
         postTown?: string,

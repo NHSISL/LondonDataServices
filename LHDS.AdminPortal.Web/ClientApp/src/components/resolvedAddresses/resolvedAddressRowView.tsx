@@ -73,13 +73,6 @@ const ResolvedAddressRowView: FunctionComponent<ResolvedAddressRowProps> = (prop
 
             <TableBaseData classes="text-center">
                 <span>
-                    {resolvedAddress.isExported ?
-                        <FontAwesomeIcon icon={faCheck} className="text-success" title="processing" /> :
-                        <FontAwesomeIcon icon={faTimes} className="text-danger" title="not processing" />}
-                </span>
-            </TableBaseData>
-            <TableBaseData classes="text-center">
-                <span>
                     {resolvedAddress.matchedWithAssign ?
                         <FontAwesomeIcon icon={faCheck} className="text-success" title="matched" /> :
                         <FontAwesomeIcon icon={faTimes} className="text-danger" title="not Matched" />}

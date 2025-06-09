@@ -21,7 +21,7 @@ export class ResolvedAddress {
     public dependentThoroughfare?: string;
     public doubleDependentLocality?: string;
     public matchPattern?: string;
-    public matchedWithAssign?: string;
+    public matchedWithAssign?: boolean;
     public organisationName?: string;
     public postCodeQuality?: string;
     public postTown?: string;
@@ -56,7 +56,7 @@ export class ResolvedAddress {
         this.dependentThoroughfare = resolvedAddress.dependentThoroughfare || "";
         this.doubleDependentLocality = resolvedAddress.doubleDependentLocality || "";
         this.matchPattern = resolvedAddress.matchPattern || "";
-        this.matchedWithAssign = resolvedAddress.matchedWithAssign || "";
+        this.matchedWithAssign = resolvedAddress.matchedWithAssign === true ? true : false;
         this.organisationName = resolvedAddress.organisationName || "";
         this.postCodeQuality = resolvedAddress.postCodeQuality || "";
         this.postTown = resolvedAddress.postTown || "";

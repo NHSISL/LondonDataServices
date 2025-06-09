@@ -9,7 +9,7 @@ export class ResolvedAddressView {
     public isProcessing: boolean;
     public uniqueReference?: string;
     public unstructuredPostalAddress?: string;
-    public alternateUnstructuredPostalAddress?: string  | null;
+    public alternateUnstructuredPostalAddress?: string | null;
     public batchReference?: string;
     public addressFormatQuality?: string;
     public algorithm?: string;
@@ -21,7 +21,7 @@ export class ResolvedAddressView {
     public dependentThoroughfare?: string;
     public doubleDependentLocality?: string;
     public matchPattern?: string;
-    public matchedWithAssign?: string;
+    public matchedWithAssign?: boolean;
     public organisationName?: string;
     public postCodeQuality?: string;
     public postTown?: string;
@@ -56,7 +56,7 @@ export class ResolvedAddressView {
         dependentThoroughfare?: string,
         doubleDependentLocality?: string,
         matchPattern?: string,
-        matchedWithAssign?: string,
+        matchedWithAssign?: boolean,
         organisationName?: string,
         postCodeQuality?: string,
         postTown?: string,
@@ -68,40 +68,39 @@ export class ResolvedAddressView {
         createdBy?: string,
         createdDate?: Date,
         updatedBy?: string,
-        updatedDate?: Date) 
-    {
-    this.id = id;
-    this.uprn = uprn || "";
-    this.upsn = upsn || "";
-    this.postCode = postCode || "";
-    this.retryCount = retryCount;
-    this.isProcessing = isProcessing === true ? true : false;;
-    this.uniqueReference = uniqueReference || "";
-    this.unstructuredPostalAddress = unstructuredPostalAddress || "";
-    this.alternateUnstructuredPostalAddress = alternateUnstructuredPostalAddress ?? null;
-    this.batchReference = batchReference || "";
-    this.addressFormatQuality = addressFormatQuality || "";
-    this.algorithm = algorithm || "";
-    this.buildingName = buildingName || "";
-    this.buildingNumber = buildingNumber || "";
-    this.classification = classification || "";
-    this.departmentName = departmentName || "";
-    this.dependentLocality = dependentLocality || "";
-    this.dependentThoroughfare = dependentThoroughfare || "";
-    this.doubleDependentLocality = doubleDependentLocality || "";
-    this.matchPattern = matchPattern || "";
-    this.matchedWithAssign = matchedWithAssign || "";
-    this.organisationName = organisationName || "";
-    this.postCodeQuality = postCodeQuality || "";
-    this.postTown = postTown || "";
-    this.qualifier = qualifier || "";
-    this.subBuildingName = subBuildingName || "";
-    this.thoroughfare = thoroughfare || "";
-    this.isExported = isExported === true ? true : false;;
-    this.isProcessed = isProcessed === true ? true : false;;
-    this.createdBy = createdBy !== undefined ? createdBy : '';
-    this.createdDate = createdDate;
-    this.updatedBy = updatedBy !== undefined ? updatedBy : '';
-    this.updatedDate = updatedDate;
+        updatedDate?: Date) {
+        this.id = id;
+        this.uprn = uprn || "";
+        this.upsn = upsn || "";
+        this.postCode = postCode || "";
+        this.retryCount = retryCount;
+        this.isProcessing = isProcessing === true ? true : false;;
+        this.uniqueReference = uniqueReference || "";
+        this.unstructuredPostalAddress = unstructuredPostalAddress || "";
+        this.alternateUnstructuredPostalAddress = alternateUnstructuredPostalAddress ?? null;
+        this.batchReference = batchReference || "";
+        this.addressFormatQuality = addressFormatQuality || "";
+        this.algorithm = algorithm || "";
+        this.buildingName = buildingName || "";
+        this.buildingNumber = buildingNumber || "";
+        this.classification = classification || "";
+        this.departmentName = departmentName || "";
+        this.dependentLocality = dependentLocality || "";
+        this.dependentThoroughfare = dependentThoroughfare || "";
+        this.doubleDependentLocality = doubleDependentLocality || "";
+        this.matchPattern = matchPattern || "";
+        this.matchedWithAssign = matchedWithAssign === true ? true : false;
+        this.organisationName = organisationName || "";
+        this.postCodeQuality = postCodeQuality || "";
+        this.postTown = postTown || "";
+        this.qualifier = qualifier || "";
+        this.subBuildingName = subBuildingName || "";
+        this.thoroughfare = thoroughfare || "";
+        this.isExported = isExported === true ? true : false;;
+        this.isProcessed = isProcessed === true ? true : false;;
+        this.createdBy = createdBy !== undefined ? createdBy : '';
+        this.createdDate = createdDate;
+        this.updatedBy = updatedBy !== undefined ? updatedBy : '';
+        this.updatedDate = updatedDate;
     }
 }

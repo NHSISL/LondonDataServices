@@ -19,6 +19,13 @@ namespace LHDS.Core.Services.Coordinations.AddressCoordinations
                     (Rule: IsInvalid(filename), Parameter: nameof(filename)));
         }
 
+        private void ValidateFolderPathOnProcessData(string folderPath)
+        {
+            Validate<InvalidArgumentAddressCoordinationException>(
+                message: "Invalid address coordination argument, please correct the errors and try again.",
+                    (Rule: IsInvalid(folderPath), Parameter: nameof(folderPath)));
+        }
+
         private static dynamic IsInvalid(string? text) => new
         {
             Condition = String.IsNullOrWhiteSpace(text),

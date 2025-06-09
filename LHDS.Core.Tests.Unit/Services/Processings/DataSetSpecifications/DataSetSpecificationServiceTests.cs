@@ -6,6 +6,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
+using LHDS.Core.Brokers.DateTimes;
 using LHDS.Core.Brokers.Loggings;
 using LHDS.Core.Models.Foundations.DataSets;
 using LHDS.Core.Models.Foundations.DataSetSpecifications;
@@ -24,6 +25,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.DataSetSpecifications
         private readonly Mock<IDataSetSpecificationService> dataSetSpecificationServiceMock =
             new Mock<IDataSetSpecificationService>();
 
+        private readonly Mock<IDateTimeBroker> dateTimeBrokerMock = new Mock<IDateTimeBroker>();
         private readonly Mock<ILoggingBroker> loggingBrokerMock = new Mock<ILoggingBroker>();
         private readonly IDataSetSpecificationProcessingService dataSetSpecificationProcessingService;
 
@@ -31,6 +33,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.DataSetSpecifications
         {
             dataSetSpecificationProcessingService = new DataSetSpecificationProcessingService(
                 dataSetSpecificationService: dataSetSpecificationServiceMock.Object,
+                dateTimeBroker: dateTimeBrokerMock.Object,
                 loggingBroker: loggingBrokerMock.Object);
         }
 
@@ -47,7 +50,11 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.DataSetSpecifications
                 },
 
                 {
-                    CreateRandomDataSetSpecifications(dataSet: randomDataSet, dataSetId: randomDataSet.Id, count: 2),
+                    CreateRandomDataSetSpecifications(
+                        dataSet: randomDataSet,
+                        dataSetId: randomDataSet.Id,
+                        count: 2).AsQueryable(),
+
                     randomSupplierId
                 }
             };
@@ -149,17 +156,23 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.DataSetSpecifications
             return filler;
         }
 
-        private static IQueryable<DataSetSpecification> CreateRandomDataSetSpecifications(
+        private static List<DataSetSpecification> CreateRandomDataSetSpecifications(
             DataSet dataSet,
             Guid dataSetId,
-            int count)
+            int count,
+            DateTimeOffset? activeFrom = null,
+            DateTimeOffset? activeTo = null)
         {
-            return CreateDataSetSpecificationFiller(dataSet, dataSetId)
+            return CreateDataSetSpecificationFiller(dataSet, dataSetId, activeFrom, activeTo)
                 .Create(count)
-                    .AsQueryable();
+                    .ToList();
         }
 
-        private static Filler<DataSetSpecification> CreateDataSetSpecificationFiller(DataSet dataSet, Guid dataSetId)
+        private static Filler<DataSetSpecification> CreateDataSetSpecificationFiller(
+            DataSet dataSet,
+            Guid dataSetId,
+            DateTimeOffset? activeFrom = null,
+            DateTimeOffset? activeTo = null)
         {
             string user = GetRandomString(255);
             var filler = new Filler<DataSetSpecification>();
@@ -184,8 +197,12 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.DataSetSpecifications
                 .OnProperty(dataSetSpecification =>
                     dataSetSpecification.SupplierSpecificationVersion).Use(GetRandomString(10))
 
+                .OnProperty(dataSetSpecification => dataSetSpecification.ActiveFrom).Use(activeFrom)
+                .OnProperty(dataSetSpecification => dataSetSpecification.ActiveTo).Use(activeTo)
                 .OnProperty(dataSetSpecification => dataSetSpecification.PresededById).IgnoreIt()
                 .OnProperty(dataSetSpecification => dataSetSpecification.SupersededById).IgnoreIt()
+                .OnProperty(dataSetSpecification => dataSetSpecification.PresededBy).IgnoreIt()
+                .OnProperty(dataSetSpecification => dataSetSpecification.SupersededBy).IgnoreIt()
                 .OnProperty(dataSetSpecification => dataSetSpecification.SpecificationObjects).IgnoreIt()
                 .OnProperty(dataSetSpecification => dataSetSpecification.CreatedBy).Use(user)
                 .OnProperty(dataSetSpecification => dataSetSpecification.CreatedBy).Use(user)

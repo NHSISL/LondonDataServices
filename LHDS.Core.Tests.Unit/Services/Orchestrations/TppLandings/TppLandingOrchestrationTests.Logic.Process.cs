@@ -131,6 +131,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.TppLandings
             randomIngestionTracking.DataSetSpecificationId = randomDataSetSpecification.Id;
             randomIngestionTracking.ObjectName = objectName;
             randomIngestionTracking.BatchReadyFolderPath = basePath;
+            randomIngestionTracking.SubscriberAgreementId = null;
             IngestionTracking storageIngestionTracking = randomIngestionTracking;
             IngestionTracking updatedIngestionTracking = storageIngestionTracking.DeepClone();
 
@@ -166,25 +167,20 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.TppLandings
                     ObjectName = objectName,
                     DataSetSpecificationId = randomDataSetSpecification.Id,
                     EncryptedFileName = "Not Encrypted",
-                    DecryptedFileName = decryptedFileName,
-                    Decrypted = true,
-                    LastSeen = randomDateTime,
-                    FileDeleted = false,
-                    RecordCount = 0,
                     EncryptedFileSize = 0,
                     EncryptedFileSha256Hash = string.Empty,
+                    DecryptedFileName = decryptedFileName,
+                    Decrypted = true,
                     DecryptedFileSize = inputData.Length,
                     DecryptedFileSha256Hash = randomHash,
-                    CreatedBy = "System",
-                    CreatedDate = randomDateTime,
-                    UpdatedBy = "System",
-                    UpdatedDate = randomDateTime
+                    LastSeen = randomDateTime,
+                    FileDeleted = false
                 };
 
             IngestionTracking savedIngestionTracking = newIngestionTracking.DeepClone();
 
             this.ingestionTrackingProcessingServiceMock.Setup(service =>
-                    service.AddIngestionTrackingAsync(newIngestionTracking))
+                    service.AddIngestionTrackingAsync(It.Is(SameIngestionTrackingAs(newIngestionTracking))))
                        .ReturnsAsync(storageIngestionTracking);
 
             IngestionTrackingAudit ingestionTrackingAudit = new IngestionTrackingAudit();

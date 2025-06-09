@@ -55,7 +55,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.EmisLandings
             this.downloadProcessingServiceMock.VerifyNoOtherCalls();
             this.dataSetSpecificationProcessingServiceMock.VerifyNoOtherCalls();
             this.documentProcessingServiceMock.VerifyNoOtherCalls();
-            this.auditServiceMock.VerifyNoOtherCalls();
+            this.ingestionTrackingAuditProcessingServiceMock.VerifyNoOtherCalls();
         }
     }
 }

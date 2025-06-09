@@ -31,6 +31,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Decryptions
             byte[] randomDecryptedBytes = Encoding.UTF8.GetBytes(GetRandomMessage());
             IngestionTracking randomIngestionTracking = CreateRandomIngestionTracking(randomDateTimeOffset);
             randomIngestionTracking.FileName = randomFileName;
+            randomIngestionTracking.IsBatchComplete = false;
             IngestionTracking storageIngestionTracking = randomIngestionTracking;
             string randomHash = GetRandomString(64);
             using var storageStream = new MemoryStream(randomEncryptedBytes);
@@ -41,6 +42,14 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Decryptions
             this.ingestionTrackingServiceMock.Setup(service =>
                 service.RetrieveIngestionTrackingByEncryptedFileNameAsync(randomFileName))
                     .ReturnsAsync(storageIngestionTracking);
+
+            string batchCompleteFileName =
+                $"{storageIngestionTracking.BatchReadyFolderPath}/{landingConfiguration.BatchReadyFile}".Replace("\\", "/");
+
+            this.documentServiceMock.Setup(service => service.RemoveDocumentByFileNameAsync(
+                batchCompleteFileName,
+                this.blobContainers.Ingress))
+                    .Returns(ValueTask.CompletedTask);
 
             this.documentServiceMock
                 .Setup(service =>
@@ -96,10 +105,10 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Decryptions
 
             var updatedIngestionTracking = storageIngestionTracking.DeepClone();
             updatedIngestionTracking.Decrypted = true;
-            updatedIngestionTracking.RecordCount = 0;
             updatedIngestionTracking.DecryptedFileSize = randomDecryptedBytes.Length;
             updatedIngestionTracking.DecryptedFileSha256Hash = randomHash;
             updatedIngestionTracking.IsProcessing = false;
+            updatedIngestionTracking.IsBatchComplete = false;
             updatedIngestionTracking.UpdatedDate = randomDateTimeOffset;
             var outputIngestionTracking = updatedIngestionTracking.DeepClone();
 
@@ -108,7 +117,8 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Decryptions
                     .ReturnsAsync(outputIngestionTracking);
 
             // when
-            var result = await this.decryptionOrchestrationService.DecryptAsync(randomFileName, inputSubscriberCredential);
+            var result = await this.decryptionOrchestrationService
+                .DecryptAsync(randomFileName, inputSubscriberCredential);
 
             // then
 
@@ -118,6 +128,11 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Decryptions
             this.ingestionTrackingServiceMock.Verify(service =>
                 service.RetrieveIngestionTrackingByEncryptedFileNameAsync(randomFileName),
                 Times.Once);
+
+            this.documentServiceMock.Verify(service => service.RemoveDocumentByFileNameAsync(
+                batchCompleteFileName,
+                this.blobContainers.Ingress),
+                    Times.Once);
 
             this.documentServiceMock
                 .Verify(service =>
@@ -157,11 +172,11 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Decryptions
 
             this.dateTimeBrokerMock.Verify(broker =>
                 broker.GetCurrentDateTimeOffsetAsync(),
-                Times.Once);
+                Times.Exactly(2));
 
             this.auditServiceMock.Verify(service =>
                 service.AddIngestionTrackingAuditAsync(It.IsAny<IngestionTrackingAudit>()),
-                Times.Once);
+                Times.Exactly(2));
 
             this.ingestionTrackingServiceMock.VerifyNoOtherCalls();
             this.documentServiceMock.VerifyNoOtherCalls();

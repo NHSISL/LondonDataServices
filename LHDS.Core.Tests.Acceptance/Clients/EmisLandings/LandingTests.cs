@@ -79,7 +79,7 @@ namespace LHDS.Core.Tests.Acceptance.Clients.EmisLandings
             });
 
             var claimsPrincipal = new ClaimsPrincipal();
-            
+
             claimsPrincipal.AddIdentity(new ClaimsIdentity(new List<Claim>
             {
                 new Claim("oid", Guid.NewGuid().ToString()),
@@ -180,9 +180,9 @@ namespace LHDS.Core.Tests.Acceptance.Clients.EmisLandings
                     : "/" + relativeSourcePath;
 
                 string[] splitFileName = filename.Split('/');
-                string newFileName = $"{subscriberAgreementId}/{splitFileName[5]}/{splitFileName[6]}"; ;
+                string newFileName = $"{subscriberAgreementId}/{splitFileName[5]}/{splitFileName[6]}";
 
-                var encryptedFilePath = $"/{landingConfiguration.EncryptedFolder}/{newFileName}"; ;
+                var encryptedFilePath = $"/{landingConfiguration.EncryptedFolder}/{newFileName}";
 
                 var relativeDecryptedPath =
                     $"/{landingConfiguration.DecryptedFolder}" +
@@ -242,7 +242,8 @@ namespace LHDS.Core.Tests.Acceptance.Clients.EmisLandings
 
         private async ValueTask<List<IngestionTracking>> CreateRandomIngestionTrackings(
             List<DocumentSource> documentSources,
-            Guid supplierId)
+            Guid supplierId,
+            Guid subscriberAgreementId)
         {
             List<IngestionTracking> items = new List<IngestionTracking>();
 
@@ -251,7 +252,8 @@ namespace LHDS.Core.Tests.Acceptance.Clients.EmisLandings
                 var item = CreateIngestionTrackingFiller(
                     await this.dateTimeBroker.GetCurrentDateTimeOffsetAsync(),
                     documentSource,
-                    supplierId)
+                    supplierId,
+                    subscriberAgreementId)
                         .Create();
 
                 await this.ingestionTrackingService.AddIngestionTrackingAsync(item);
@@ -262,7 +264,7 @@ namespace LHDS.Core.Tests.Acceptance.Clients.EmisLandings
         }
 
         private static Filler<IngestionTracking> CreateIngestionTrackingFiller(
-            DateTimeOffset dateTimeOffset, DocumentSource documentSource, Guid supplierId)
+            DateTimeOffset dateTimeOffset, DocumentSource documentSource, Guid supplierId, Guid subscriberAgreementId)
         {
             string user = "System";
             var filler = new Filler<IngestionTracking>();
@@ -279,8 +281,12 @@ namespace LHDS.Core.Tests.Acceptance.Clients.EmisLandings
                 .OnProperty(ingestionTracking => ingestionTracking.CreatedBy).Use(user)
                 .OnProperty(ingestionTracking => ingestionTracking.UpdatedBy).Use(user)
                 .OnProperty(ingestionTracking => ingestionTracking.SupplierId).Use(supplierId)
+                .OnProperty(ingestionTracking => ingestionTracking.SubscriberAgreementId).Use(subscriberAgreementId)
                 .OnType<DateTimeOffset>().Use(dateTimeOffset)
-                .OnType<DateTimeOffset?>().Use(dateTimeOffset);
+                .OnType<DateTimeOffset?>().Use(dateTimeOffset)
+                .OnProperty(ingestionTracking => ingestionTracking.Supplier).IgnoreIt()
+                .OnProperty(ingestionTracking => ingestionTracking.SubscriberAgreement).IgnoreIt()
+                .OnProperty(ingestionTracking => ingestionTracking.IngestionTrackingAudits).IgnoreIt();
 
             return filler;
         }
@@ -355,6 +361,8 @@ namespace LHDS.Core.Tests.Acceptance.Clients.EmisLandings
 
                 .OnProperty(dataSetSpecification => dataSetSpecification.PresededById).IgnoreIt()
                 .OnProperty(dataSetSpecification => dataSetSpecification.SupersededById).IgnoreIt()
+                .OnProperty(dataSetSpecification => dataSetSpecification.PresededBy).IgnoreIt()
+                .OnProperty(dataSetSpecification => dataSetSpecification.SupersededBy).IgnoreIt()
                 .OnProperty(dataSetSpecification => dataSetSpecification.CreatedBy).Use(user)
                 .OnProperty(dataSetSpecification => dataSetSpecification.CreatedBy).Use(user)
                 .OnProperty(dataSetSpecification => dataSetSpecification.UpdatedBy).Use(user);

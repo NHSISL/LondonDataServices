@@ -121,7 +121,8 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.IngestionTrackings
                 .OnProperty(ingestionTracking => ingestionTracking.CreatedBy).Use(user)
                 .OnProperty(ingestionTracking => ingestionTracking.UpdatedBy).Use(user)
                 .OnProperty(ingestionTracking => ingestionTracking.IngestionTrackingAudits).IgnoreIt()
-                .OnProperty(ingestionTracking => ingestionTracking.Supplier).IgnoreIt();
+                .OnProperty(ingestionTracking => ingestionTracking.Supplier).IgnoreIt()
+                .OnProperty(ingestionTracking => ingestionTracking.SubscriberAgreement).IgnoreIt();
 
             return filler;
         }
@@ -143,7 +144,8 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.IngestionTrackings
                 .OnProperty(ingestionTracking => ingestionTracking.CreatedBy).Use(userId)
                 .OnProperty(ingestionTracking => ingestionTracking.UpdatedBy).Use(userId)
                 .OnProperty(ingestionTracking => ingestionTracking.IngestionTrackingAudits).IgnoreIt()
-                .OnProperty(ingestionTracking => ingestionTracking.Supplier).IgnoreIt();
+                .OnProperty(ingestionTracking => ingestionTracking.Supplier).IgnoreIt()
+                .OnProperty(ingestionTracking => ingestionTracking.SubscriberAgreement).IgnoreIt();
 
             return filler;
         }

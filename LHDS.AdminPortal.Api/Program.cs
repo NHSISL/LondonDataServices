@@ -244,16 +244,19 @@ namespace LHDS.AdminPortal.Api
                 <IIngestionTrackingHealthItemService, IngestionTrackingFilesReceivedHealthCheckService>();
 
             services.AddSingleton
+                <IIngestionTrackingHealthItemService, IngestionTrackingIncompleteBatchHealthCheckService>();
+
+            services.AddSingleton
                 <IResolvedAddressHealthItemService, ResolvedAddressProcessingHealthCheckService>();
 
             services.AddSingleton
                 <IResolvedAddressHealthItemService, ResolvedAddressFailedToProcessHealthCheckService>();
 
-            services.AddHealthChecks().AddCheck<IngestionTrackingHealthCheckOrchestrationService>(
-                "ingestionTrackingHealthChecks");
+            services.AddHealthChecks()
+                .AddCheck<IngestionTrackingHealthCheckOrchestrationService>("ingestionTrackingHealthChecks");
 
-            services.AddHealthChecks().AddCheck<ResolvedAddressHealthCheckOrchestrationService>(
-                "resolvedAddressHealthChecks");
+            services.AddHealthChecks()
+                .AddCheck<ResolvedAddressHealthCheckOrchestrationService>("resolvedAddressHealthChecks");
 
             services.AddSingleton<IHealthCheckPublisher, HealthCheckPublisherCoordinationService>();
 

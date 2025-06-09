@@ -19,7 +19,6 @@ export const AddressHomeViewService = {
         try 
         {
             let query = ``;
-            //let query = `?$orderby=createdDate desc`;
 
             if (searchTerm) {
                 const fields = [
@@ -42,7 +41,7 @@ export const AddressHomeViewService = {
                     .map(field => `contains(${field},'${searchTerm}')`)
                     .join(' or ');
 
-                query = query + `&$filter=${filterConditions}`;
+                query = query + `?filter=${filterConditions}`;
             }
 
             const response = addressService.useRetrieveAllAddressPages(query);

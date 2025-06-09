@@ -9,7 +9,7 @@ export class ResolvedAddressHomeView {
     public isProcessing?: boolean;
     public uniqueReference?: string;
     public unstructuredPostalAddress?: string;
-    public alternateUnstructuredPostalAddress?: string;
+    public alternateUnstructuredPostalAddress?: string | null;
     public batchReference?: string;
     public addressFormatQuality?: string;
     public algorithm?: string;

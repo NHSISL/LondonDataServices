@@ -60,7 +60,6 @@ const AddressSearchTable: FunctionComponent<AddressSearchTableProps> = (props) =
         onPick(ordinanceAddress);
     };
 
-
     const refreshData = () => {
         setShowSpinner(true);
         setTimeout(() => {
@@ -76,7 +75,7 @@ const AddressSearchTable: FunctionComponent<AddressSearchTableProps> = (props) =
             <CardBase classes="mt-4">
                 <CardBaseBody>
                     <CardBaseTitle>
-                        <FontAwesomeIcon icon={faSearch} className="me-2" /> Search (Ordinance Database)
+                        <FontAwesomeIcon icon={faSearch} className="me-2" /> Post Office Address Search
                     </CardBaseTitle>
                     <CardBaseContent>
                         <InfiniteScroll loading={isLoading || showSpinner} hasNextPage={hasNextPage || false} loadMore={fetchNextPage}>
@@ -103,7 +102,6 @@ const AddressSearchTable: FunctionComponent<AddressSearchTableProps> = (props) =
                                 <TableBaseThead>
                                     <TableBaseRow>
                                         <TableBaseHeader>UPRN</TableBaseHeader>
-                                        <TableBaseHeader>UPSN</TableBaseHeader>
                                         <TableBaseHeader classes="text-center">Address</TableBaseHeader>
                                         <TableBaseHeader classes="text-center">Actions</TableBaseHeader>
                                     </TableBaseRow>

@@ -9,7 +9,7 @@ export class ResolvedAddressView {
     public isProcessing: boolean;
     public uniqueReference?: string;
     public unstructuredPostalAddress?: string;
-    public alternateUnstructuredPostalAddress?: string;
+    public alternateUnstructuredPostalAddress?: string  | null;
     public batchReference?: string;
     public addressFormatQuality?: string;
     public algorithm?: string;
@@ -78,7 +78,7 @@ export class ResolvedAddressView {
     this.isProcessing = isProcessing === true ? true : false;;
     this.uniqueReference = uniqueReference || "";
     this.unstructuredPostalAddress = unstructuredPostalAddress || "";
-    this.alternateUnstructuredPostalAddress = alternateUnstructuredPostalAddress || "";
+    this.alternateUnstructuredPostalAddress = alternateUnstructuredPostalAddress ?? null;
     this.batchReference = batchReference || "";
     this.addressFormatQuality = addressFormatQuality || "";
     this.algorithm = algorithm || "";

@@ -49,7 +49,23 @@ const ResolvedAddressRowView: FunctionComponent<ResolvedAddressRowProps> = (prop
                 </span>
             </TableBaseData>
             <TableBaseData>
-                <span style={{ fontSize: '14px' }}>{resolvedAddress.unstructuredPostalAddress}</span>
+                <span
+                    style={{
+                        fontSize: '14px',
+                        color: resolvedAddress.matchedWithAssign ? undefined : 'red',
+                    }}
+                >
+                    {resolvedAddress.unstructuredPostalAddress}
+                </span>
+
+                {resolvedAddress.alternateUnstructuredPostalAddress && (
+                    <>
+                        <br />
+                        <small style={{ color: 'yellow' }}>
+                            alternate: {resolvedAddress.alternateUnstructuredPostalAddress}
+                        </small>
+                    </>
+                )}
             </TableBaseData>
             <TableBaseData>
                 <span style={{ fontSize: '14px' }}>{concateAddresses(resolvedAddress)}</span>

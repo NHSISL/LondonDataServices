@@ -19,30 +19,12 @@ export const ResolvedAddressHomeViewService = {
         try 
         {
             let query = ``;
-            //let query = `?$orderby=createdDate desc`;
+            query = `?$orderby=createdDate desc`;
 
             if (searchTerm) {
                 const fields = [
                     'uprn',
-                    'upsn',
-                    'unstructuredPostalAddress',
-                    'alternateUnstructuredPostalAddress',
-                    'addressFormatQuality',
-                    'algorithm',
-                    'buildingName',
-                    'buildingNumber',
-                    'classification',
-                    'departmentName',
-                    'dependentLocality',
-                    'dependentThoroughfare',
-                    'doubleDependentLocality',
-                    'matchPattern',
-                    'organisationName',
-                    'postCodeQuality',
-                    'postTown',
-                    'qualifier',
-                    'subBuildingName',
-                    'thoroughfare'
+                    'unstructuredPostalAddress'
                 ];
 
                 const filterConditions = fields
@@ -74,7 +56,7 @@ export const ResolvedAddressHomeViewService = {
                                 resolvedAddress.isProcessing,
                                 resolvedAddress.uniqueReference,
                                 resolvedAddress.unstructuredPostalAddress,
-                                resolvedAddress.alternateUnstructuredPostalAddress,
+                                resolvedAddress.alternateUnstructuredPostalAddress ?? undefined,
                                 resolvedAddress.batchReference,
                                 resolvedAddress.addressFormatQuality,
                                 resolvedAddress.algorithm,

@@ -273,7 +273,6 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.EmisLandings
                 service.RemoveDocumentByFileNameAsync(batchCompleteFileName, this.blobContainers.Ingress),
                     Times.Once);
 
-
             emisLandingOrchestrationServiceMock.Verify(service =>
                 service.LogAudit(
                     It.Is(SameIngestionTrackingAs(storageIngestionTracking)),
@@ -338,7 +337,6 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.EmisLandings
             this.loggingBrokerMock.VerifyNoOtherCalls();
             this.ingestionTrackingAuditProcessingServiceMock.VerifyNoOtherCalls();
         }
-
 
         [Fact]
         public async Task ShouldProcessExistingFilesNotDownloadedAndWhereRetryNotExceededAsync()
@@ -501,6 +499,27 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.EmisLandings
                 service.RetrieveAllIngestionTrackingsAsync(),
                     Times.Once);
 
+            emisLandingOrchestrationServiceMock.Verify(service =>
+                service.LogAudit(
+                    It.Is(SameIngestionTrackingAs(modifiedIngestionTracking)),
+                    $"Processing file '{modifiedIngestionTracking.FileName}' " +
+                        $"associated with Id: {modifiedIngestionTracking.Id}." + Environment.NewLine +
+                            $"Downloading: {modifiedIngestionTracking.FileName} " + Environment.NewLine +
+                                $"RetryCount: {modifiedIngestionTracking.RetryCount}"),
+                                    Times.Once);
+
+            string batchReadyFileName =
+                $"{storageIngestionTracking.BatchReadyFolderPath}/{landingConfiguration.BatchReadyFile}"
+                    .Replace("\\", "/");
+
+            emisLandingOrchestrationServiceMock.Verify(service =>
+                service.LogAudit(
+                    It.Is(
+                        SameIngestionTrackingAs(modifiedIngestionTracking)),
+                        $"Removing batch ready file '{batchReadyFileName}' as this file will invalidate the " +
+                            $"ready status for batch: {storageIngestionTracking.Batch}."),
+                                Times.Once);
+
             this.documentProcessingServiceMock.Verify(service =>
                 service.RemoveDocumentByFileNameAsync(batchCompleteFileName, this.blobContainers.Ingress),
                     Times.Once);
@@ -510,7 +529,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.EmisLandings
                     It.Is(
                         SameIngestionTrackingAs(modifiedIngestionTracking)),
                         $"Downloading {modifiedIngestionTracking.FileName};  " +
-                            $"Attempt(s): {modifiedIngestionTracking.RetryCount}"),
+                            $"RetryCount: {modifiedIngestionTracking.RetryCount}"),
                                 Times.Once);
 
             this.ingestionTrackingProcessingServiceMock.Verify(service =>
@@ -538,17 +557,24 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.EmisLandings
                     container),
                         Times.Once);
 
+            emisLandingOrchestrationServiceMock.Verify(service =>
+                service.LogAudit(
+                    It.Is(SameIngestionTrackingAs(modifiedIngestionTracking)),
+                    $"Downloaded file '{downloadingIngestionTracking.FileName}' " +
+                        $"and successfully uploaded to blob storage " +
+                            $"'{downloadingIngestionTracking.EncryptedFileName}'"),
+                                Times.Once);
+
             this.ingestionTrackingProcessingServiceMock.Verify(service =>
                 service.ModifyIngestionTrackingAsync(It.Is(SameIngestionTrackingAs(downloadingIngestionTracking))),
                     Times.Once);
 
             emisLandingOrchestrationServiceMock.Verify(service =>
                 service.LogAudit(
-                    It.Is(
-                        SameIngestionTrackingAs(uploadedIngestionTracking)),
-                        $"Downloaded {uploadedIngestionTracking.FileName};  " +
-                            $"Attempt(s): {modifiedIngestionTracking.RetryCount}"),
-                                Times.Once);
+                    It.Is(SameIngestionTrackingAs(uploadedIngestionTracking)),
+                    $"Updated ingestion tracking info to " +
+                        $"reflect successful processing of {uploadedIngestionTracking.FileName}"),
+                            Times.Once);
 
             this.dateTimeBrokerMock.Verify(broker =>
                 broker.GetCurrentDateTimeOffsetAsync(),

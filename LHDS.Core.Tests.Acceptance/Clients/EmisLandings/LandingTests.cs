@@ -291,17 +291,18 @@ namespace LHDS.Core.Tests.Acceptance.Clients.EmisLandings
             return filler;
         }
 
-        private static Supplier CreateRandomSupplier(Guid supplierId, DateTimeOffset dateTimeOffset) =>
-            CreateSupplierFiller(supplierId, dateTimeOffset).Create();
+        private static Supplier CreateRandomSupplier(Guid supplierId) =>
+            CreateSupplierFiller(supplierId).Create();
 
-        private static Filler<Supplier> CreateSupplierFiller(Guid supplierId, DateTimeOffset dateTimeOffset)
+        private static Filler<Supplier> CreateSupplierFiller(Guid supplierId)
         {
             string user = Guid.NewGuid().ToString();
             var filler = new Filler<Supplier>();
+            var now = DateTimeOffset.UtcNow;
 
             filler.Setup()
-                .OnType<DateTimeOffset>().Use(dateTimeOffset)
-                .OnType<DateTimeOffset?>().Use(dateTimeOffset)
+                .OnType<DateTimeOffset>().Use(now)
+                .OnType<DateTimeOffset?>().Use(now)
                 .OnProperty(supplier => supplier.Id).Use(supplierId)
                 .OnProperty(supplier => supplier.CreatedBy).Use(user)
                 .OnProperty(supplier => supplier.UpdatedBy).Use(user)

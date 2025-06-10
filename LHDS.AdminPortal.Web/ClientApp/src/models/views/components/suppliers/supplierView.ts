@@ -5,8 +5,7 @@ export class SupplierView {
     public name?: string;
     public friendlyName?: string;
     public description?: string;
-    public landingManualTriggerUrl?: string;
-    public decryptionManualTriggerUrl?: string;
+    public isIngestionTracked?: boolean;
     public canDecryptIngestionTracking?: boolean;
     public createdBy?: string;
     public createdDate?: Date;
@@ -18,8 +17,7 @@ export class SupplierView {
         name?: string,
         friendlyName?: string,
         description?: string,
-        landingManualTriggerUrl?: string,
-        decryptionManualTriggerUrl?: string,
+        isIngestionTracked?: boolean,
         canDecryptIngestionTracking?: boolean,
         createdBy?: string,
         createdDate?: Date,
@@ -30,8 +28,7 @@ export class SupplierView {
         this.name = name || "";
         this.friendlyName = friendlyName || "";
         this.description = description || "";
-        this.landingManualTriggerUrl = landingManualTriggerUrl || "";
-        this.decryptionManualTriggerUrl = decryptionManualTriggerUrl || "";
+        this.isIngestionTracked = isIngestionTracked === true ? true : false;
         this.canDecryptIngestionTracking = canDecryptIngestionTracking === true ? true : false;
         this.createdBy = createdBy !== undefined ? createdBy : '';
         this.createdDate = createdDate ;

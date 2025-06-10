@@ -5,12 +5,14 @@ import IngestionTrackingRowView from "./ingestionTrackingRowView";
 type IngestionTrackingRowProps = {
     onReDecrypted: (ingestionTracking: IngestionTracking) => void;
     ingestionTracking: IngestionTracking;
+    onBatchClick: (batch: string) => void;
 };
 
 const IngestionTrackingRow: FunctionComponent<IngestionTrackingRowProps> = (props) => {
     const {
         onReDecrypted,
-        ingestionTracking
+        ingestionTracking,
+        onBatchClick
     } = props;
 
     const handleReDecrypt = async (ingestionTracking: IngestionTracking) => {
@@ -22,6 +24,7 @@ const IngestionTrackingRow: FunctionComponent<IngestionTrackingRowProps> = (prop
             key={ingestionTracking.id.toString()}
             ingestionTracking={ingestionTracking}
             onReDecrypted={handleReDecrypt}
+            onBatchClick={onBatchClick}
         />
     );
 };

@@ -160,10 +160,12 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.DataSetSpecifications
             DataSet dataSet,
             Guid dataSetId,
             int count,
+            bool isPublished = true,
+            bool isActive = true,
             DateTimeOffset? activeFrom = null,
             DateTimeOffset? activeTo = null)
         {
-            return CreateDataSetSpecificationFiller(dataSet, dataSetId, activeFrom, activeTo)
+            return CreateDataSetSpecificationFiller(dataSet, dataSetId, isPublished, isActive, activeFrom, activeTo)
                 .Create(count)
                     .ToList();
         }
@@ -171,6 +173,8 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.DataSetSpecifications
         private static Filler<DataSetSpecification> CreateDataSetSpecificationFiller(
             DataSet dataSet,
             Guid dataSetId,
+            bool isPublished = true,
+            bool isActive = true,
             DateTimeOffset? activeFrom = null,
             DateTimeOffset? activeTo = null)
         {
@@ -189,7 +193,10 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.DataSetSpecifications
                     dataSetSpecification.DataSet).Use(dataSet)
 
                 .OnProperty(dataSetSpecification =>
-                    dataSetSpecification.IsActive).Use(true)
+                    dataSetSpecification.IsPublished).Use(isPublished)
+
+                .OnProperty(dataSetSpecification =>
+                    dataSetSpecification.IsActive).Use(isActive)
 
                 .OnProperty(dataSetSpecification =>
                     dataSetSpecification.OurSpecificationVersion).Use(GetRandomString(10))

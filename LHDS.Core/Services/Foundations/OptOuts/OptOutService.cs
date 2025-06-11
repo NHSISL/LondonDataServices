@@ -85,7 +85,6 @@ namespace LHDS.Core.Services.Foundations.OptOuts
                 return await this.storageBroker.DeleteOptOutAsync(maybeOptOut);
             });
 
-
         virtual internal async ValueTask<OptOut> ApplyAddOptOutAsync(OptOut optOut)
         {
             ValidateOptOutIsNotNull(optOut);

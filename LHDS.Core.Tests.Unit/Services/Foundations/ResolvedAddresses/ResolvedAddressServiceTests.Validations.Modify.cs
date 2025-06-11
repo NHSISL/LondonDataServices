@@ -487,6 +487,12 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.ResolvedAddresses
                 broker.GetCurrentUserAsync())
                     .ReturnsAsync(randomEntraUser);
 
+            resolvedAddressServiceMock.Setup(service =>
+                service.EnsureCreatedAuditPropertiesIsSameAsStorageAsync(
+                    invalidResolvedAddress, 
+                    storageResolvedAddress))
+                        .ReturnsAsync(invalidResolvedAddress);
+
             var invalidResolvedAddressException =
                 new InvalidResolvedAddressException(
                     message: "Invalid resolved address. Please correct the errors and try again.");
@@ -527,6 +533,12 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.ResolvedAddresses
             this.securityBrokerMock.Verify(broker =>
                 broker.GetCurrentUserAsync(),
                     Times.Once);
+
+            resolvedAddressServiceMock.Verify(service =>
+                service.EnsureCreatedAuditPropertiesIsSameAsStorageAsync(
+                    invalidResolvedAddress, 
+                    storageResolvedAddress),
+                    Times.Once());
 
             this.storageBrokerMock.Verify(broker =>
                 broker.SelectResolvedAddressByIdAsync(invalidResolvedAddress.Id),
@@ -595,6 +607,12 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.ResolvedAddresses
                 broker.GetCurrentUserAsync())
                     .ReturnsAsync(randomEntraUser);
 
+            resolvedAddressServiceMock.Setup(service =>
+                service.EnsureCreatedAuditPropertiesIsSameAsStorageAsync(
+                    invalidResolvedAddress, 
+                    storageResolvedAddress))
+                        .ReturnsAsync(invalidResolvedAddress);
+
             this.storageBrokerMock.Setup(broker =>
                 broker.SelectResolvedAddressByIdAsync(invalidResolvedAddress.Id))
                     .ReturnsAsync(storageResolvedAddress);
@@ -625,6 +643,12 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.ResolvedAddresses
             this.storageBrokerMock.Verify(broker =>
                 broker.SelectResolvedAddressByIdAsync(invalidResolvedAddress.Id),
                     Times.Once);
+
+            resolvedAddressServiceMock.Verify(service =>
+                service.EnsureCreatedAuditPropertiesIsSameAsStorageAsync(
+                    invalidResolvedAddress,
+                    storageResolvedAddress),
+                        Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>
                broker.LogErrorAsync(It.Is(SameExceptionAs(
@@ -688,6 +712,12 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.ResolvedAddresses
                 broker.GetCurrentUserAsync())
                     .ReturnsAsync(randomEntraUser);
 
+            resolvedAddressServiceMock.Setup(service =>
+                service.EnsureCreatedAuditPropertiesIsSameAsStorageAsync(
+                    invalidResolvedAddress,
+                    storageResolvedAddress))
+                        .ReturnsAsync(invalidResolvedAddress);
+
             this.storageBrokerMock.Setup(broker =>
                 broker.SelectResolvedAddressByIdAsync(invalidResolvedAddress.Id))
                     .ReturnsAsync(storageResolvedAddress);
@@ -711,6 +741,12 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.ResolvedAddresses
             this.securityBrokerMock.Verify(broker =>
                 broker.GetCurrentUserAsync(),
                     Times.Once);
+
+            resolvedAddressServiceMock.Verify(service =>
+                service.EnsureCreatedAuditPropertiesIsSameAsStorageAsync(
+                    invalidResolvedAddress,
+                    storageResolvedAddress),
+                        Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>
                 broker.LogErrorAsync(It.Is(SameExceptionAs(

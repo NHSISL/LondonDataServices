@@ -2,9 +2,12 @@ import React, { FunctionComponent} from "react";
 import { IngestionTrackingView } from "../../models/views/components/ingestionTracking/ingestionTrackingView";
 import { ingestionTrackingViewService } from "../../services/views/ingestionTrackingViewService";
 import IngestionTrackingDetailCard from "./ingestionTrackingDetailCard";
+import { emisLandingService } from "../../services/foundations/emisLandingService";
+import { toastSuccess } from "../../brokers/toastBroker.success";
+import { toastError } from "../../brokers/toastBroker.error";
 
 interface IngestionTrackingDetailProps {
-    ingestionTrackingId?: string;
+    ingestionTrackingId: string;
     children?: React.ReactNode;
 }
 
@@ -15,36 +18,35 @@ const IngestionTrackingDetail: FunctionComponent<IngestionTrackingDetailProps> =
     } = props;
 
     const { mappedIngestionTracking: ingestionTrackingRetrieved } =
-        ingestionTrackingViewService.useGetIngestionTrackingById(ingestionTrackingId)
+        ingestionTrackingViewService.useGetIngestionTrackingById(ingestionTrackingId);
 
-    const handleDownload = async (ingestionTrackingView: IngestionTrackingView) => {
-        console.log(ingestionTrackingView);
-    }
+    const updateEmisLanding = emisLandingService.useModifyEmisLanding();
 
-    const handleReDecrypt = async () => {
-        console.log("TODO: Hanle ReDecrypt");
+    const handleReDecrypt = async (ingestionTrackingView: IngestionTrackingView) => {
+        updateEmisLanding.updateIngestionTracking(ingestionTrackingView)
+            .then(() => {
+                toastSuccess("Ingestion Tracking Queued for Decrypt")
+            })
+            .catch(e => {
+            toastError("error")
+        });
     };
 
-    const handleRefresh = async () => {
-        console.log("TODO: Refresh");
-    }
+    const handleRefresh = async (ingestionTrackingView: IngestionTrackingView) => {}
 
     return (
-        <div>
+        <>
             {ingestionTrackingRetrieved !== undefined && (
-                <div>
                     <IngestionTrackingDetailCard
                         key={ingestionTrackingRetrieved.id.toString()}
                         ingestionTracking={ingestionTrackingRetrieved}
-                        onDownload={handleDownload}
                         onReDecrypt={handleReDecrypt}
                         onRefresh={handleRefresh}>
 
                         {children}
                     </IngestionTrackingDetailCard>
-                </div>
             )}
-        </div>
+        </>
     );
 }
 export default IngestionTrackingDetail;

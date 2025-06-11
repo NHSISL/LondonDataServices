@@ -67,8 +67,11 @@ namespace LHDS.Core.Services.Orchestrations.TerminologyDetails
                                 .RetrieveArtifactDetailsAsync(relativeUrl);
 
                             byte[] artifactDetailData = Encoding.UTF8.GetBytes(artifactDetail);
-                            string fileName = 
-                                $"{ontologyConfiguration.LandingFolder}/{artifact.ResourceType}/{artifact.Name}.json";
+                            
+                            string fileName = Path.Combine(
+                                ontologyConfiguration.LandingFolder,
+                                artifact.ResourceType,
+                                artifact.Name + ".json");
 
                             using (Stream input = new MemoryStream(artifactDetailData))
                             {

@@ -70,11 +70,6 @@ const ResolvedAddressTable: FunctionComponent = () => {
         }, 200);
     };
 
-    const handleFilterClick = () => {
-        setShowSidePanel(false);
-        refetch();
-    };
-
     const handleClearFilters = () => {
         setSelectedMatchedFilter(null);
         setShowSidePanel(false);

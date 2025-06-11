@@ -63,8 +63,6 @@ const ResolvedAddressDetailCard: FunctionComponent<ResolvedAddressDetailCardProp
                             <ResolvedAddressDetailCardView
                                 resolvedAddress={currentResolvedAddress}
                                 onRefresh={handlRefresh}
-                                onUpdate={handleUpdate}
-                                mode={displayMode}
                                 onModeChange={handleModeChange}
                             />
                         )}

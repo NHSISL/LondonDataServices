@@ -1,4 +1,4 @@
-import React, { FunctionComponent, ChangeEvent, useState, useEffect } from "react";
+import React, { FunctionComponent, useState, useEffect } from "react";
 import ButtonBase from "../bases/buttons/ButtonBase";
 import SummaryListBase from "../bases/components/SummaryList/SummaryListBase";
 import SummaryListBaseRow from "../bases/components/SummaryList/SummaryListBase.Row";
@@ -6,12 +6,8 @@ import SummaryListBaseKey from "../bases/components/SummaryList/SummaryListBase.
 import SummaryListBaseValue from "../bases/components/SummaryList/SummaryListBase.Value";
 import { SecuredComponents } from "../links";
 import securityPoints from "../../securityMatrix";
-import { useValidation } from "../../hooks/useValidation";
 import { Link } from "react-router-dom";
-import TextInputBase from "../bases/inputs/TextInputBase";
 import { ResolvedAddressView } from "../../models/views/components/resolvedAddresses/resolvedAddressView";
-import { resolvedAddressErrors } from "./resolvedAddressSetErrors";
-import { resolvedAddressValidation } from "./resolvedAddressValidation";
 
 interface ResolvedAddressDetailCardEditProps {
     resolvedAddress: ResolvedAddressView;

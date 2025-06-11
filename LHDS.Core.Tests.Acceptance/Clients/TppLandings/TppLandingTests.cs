@@ -228,6 +228,7 @@ namespace LHDS.Core.Tests.Acceptance.Clients.TppLandings
                 .OnProperty(dataSetSpecification => dataSetSpecification.DataSetId).Use(dataSet.Id)
                 .OnProperty(dataSetSpecification => dataSetSpecification.DataSet).Use(dataSet)
                 .OnProperty(dataSetSpecification => dataSetSpecification.IsActive).Use(true)
+                .OnProperty(dataSetSpecification => dataSetSpecification.IsPublished).Use(true)
                 .OnProperty(dataSetSpecification => dataSetSpecification.ActiveFrom).Use(now.AddDays(-2))
                 .OnProperty(dataSetSpecification => dataSetSpecification.ActiveTo).Use(now.AddDays(2))
 

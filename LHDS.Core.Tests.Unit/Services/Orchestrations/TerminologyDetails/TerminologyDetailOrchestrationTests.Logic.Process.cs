@@ -39,11 +39,12 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.TerminologyDetails
             Stream expectedStream = inputStream;
             Stream actualStream = new MemoryStream();
 
-            string inputFileName =
-                $"{ontologyConfiguration.LandingFolder}/{undownloadedTerminologyArtifact.ResourceType}/" +
-                    $"{undownloadedTerminologyArtifact.Name}.json";
-
-            this.documentProcessingServiceMock
+            string inputFileName = Path.Combine(
+                 ontologyConfiguration.LandingFolder,
+                 undownloadedTerminologyArtifact.ResourceType,
+                 undownloadedTerminologyArtifact.Name + ".json");
+ 
+             this.documentProcessingServiceMock
                 .Setup(service => service.AddDocumentAsync(It.Is(SameStreamAs(inputStream)), inputFileName, inputContainer))
                 .Callback<Stream, string, string>((input, fileName, container) =>
                 {

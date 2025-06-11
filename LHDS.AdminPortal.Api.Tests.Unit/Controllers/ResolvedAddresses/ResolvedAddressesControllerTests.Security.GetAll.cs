@@ -22,7 +22,7 @@ namespace LHDS.AdminPortal.Api.Tests.Unit.Controllers.ResolvedAddresses
         {
             // given
             var controllerType = typeof(ResolvedAddressesController);
-            var methodInfo = controllerType.GetMethod("GetAllResolvedAddressesAsync");
+            var methodInfo = controllerType.GetMethod("Get");
             Type attributeType = typeof(AuthorizeAttribute);
             string attributeProperty = "Roles";
 
@@ -65,7 +65,7 @@ namespace LHDS.AdminPortal.Api.Tests.Unit.Controllers.ResolvedAddresses
         {
             // given
             var controllerType = typeof(ResolvedAddressesController);
-            var methodInfo = controllerType.GetMethod("GetAllResolvedAddressesAsync");
+            var methodInfo = controllerType.GetMethod("Get");
             Type attributeType = typeof(InvisibleApiAttribute);
 
             // when

@@ -53,16 +53,15 @@ const ResolvedAddressRowView: FunctionComponent<ResolvedAddressRowProps> = (prop
                     style={{
                         fontSize: '14px',
                         color: resolvedAddress.matchedWithAssign ? undefined : 'red',
-                    }}
-                >
+                    }} >
                     {resolvedAddress.unstructuredPostalAddress}
                 </span>
 
                 {resolvedAddress.alternateUnstructuredPostalAddress && (
                     <>
                         <br />
-                        <small style={{ color: 'yellow' }}>
-                            alternate: {resolvedAddress.alternateUnstructuredPostalAddress}
+                        <small className="text-success" style={{ fontWeight: "bold" }}>
+                            Alternate: {resolvedAddress.alternateUnstructuredPostalAddress}
                         </small>
                     </>
                 )}

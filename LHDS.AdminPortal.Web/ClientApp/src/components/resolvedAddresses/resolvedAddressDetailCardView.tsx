@@ -19,16 +19,12 @@ import securityPoints from "../../securityMatrix";
 interface ResolvedAddressDetailCardViewProps {
     resolvedAddress: ResolvedAddressView;
     onRefresh: (resolvedAddress: ResolvedAddressView) => void;
-    onUpdate: (resolvedAddress: ResolvedAddressView) => void;
-    mode: string;
     onModeChange: (value: string) => void;
 }
 
 const ResolvedAddressDetailCardView: FunctionComponent<ResolvedAddressDetailCardViewProps> = (props) => {
     const {
         resolvedAddress,
-        onUpdate,
-        mode,
         onModeChange
     } = props;
 

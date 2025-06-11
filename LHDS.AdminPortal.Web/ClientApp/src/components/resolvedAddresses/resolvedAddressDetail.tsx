@@ -17,7 +17,7 @@ const ResolvedAddressDetail: FunctionComponent<ResolvedAddressDetailProps> = (pr
         children
     } = props;
 
-    const [resolvedAddress, setResolvedAddress] = useState<ResolvedAddressView>();
+    //const [resolvedAddress, setResolvedAddress] = useState<ResolvedAddressView>();
     const [mode, setMode] = useState<string>('VIEW');
 
      const { mappedResolvedAddress: resolvedAddressRetrieved } =
@@ -41,7 +41,7 @@ const ResolvedAddressDetail: FunctionComponent<ResolvedAddressDetailProps> = (pr
 
     useEffect(() => {
         if (resolvedAddressId !== "" && resolvedAddressRetrieved !== undefined) {
-            setResolvedAddress(resolvedAddressRetrieved);
+            //setResolvedAddress(resolvedAddressRetrieved);
             setMode('VIEW');
         }
     }, [resolvedAddressId, resolvedAddressRetrieved]);

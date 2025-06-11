@@ -92,15 +92,16 @@ namespace LHDS.Core.Services.Foundations.ResolvedAddresses
                 ValidateStorageResolvedAddress(maybeResolvedAddress, resolvedAddress.Id);
 
                 ResolvedAddress ResolvedAddressWithModifyAuditAppliedEnsured =
-                   await EnsureCreatedAuditPropertiesIsSameAsStorageAsync(
-                       resolvedAddress,
-                       maybeResolvedAddress);
+                  await EnsureCreatedAuditPropertiesIsSameAsStorageAsync(
+                      resolvedAddress,
+                      maybeResolvedAddress);
 
                 ValidateAgainstStorageResolvedAddressOnModify(
                     inputResolvedAddress: ResolvedAddressWithModifyAuditAppliedEnsured, 
                     storageResolvedAddress: maybeResolvedAddress);
 
-                return await this.storageBroker.UpdateResolvedAddressAsync(resolvedAddressWithModifyAuditApplied);
+                return await this.storageBroker.UpdateResolvedAddressAsync(
+                    ResolvedAddressWithModifyAuditAppliedEnsured);
             });
 
         public ValueTask BulkModifyResolvedAddressesAsync(List<ResolvedAddress> resolvedAddresses) =>

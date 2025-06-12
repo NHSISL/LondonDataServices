@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
+using System.Text.Json;
 using System.Threading.Tasks;
 using LHDS.Core.Brokers.DateTimes;
 using LHDS.Core.Brokers.Loggings;
@@ -58,10 +59,15 @@ namespace LHDS.Core.Services.Orchestrations.TerminologyDetails
                         {
                             string relativeUrl = artifact.FullUrl;
 
-                            string artifactDetail = await this.ontologyProcessingService
-                                .RetrieveArtifactDetailsAsync(relativeUrl);
+                            string artifactDetail = await this.ontologyProcessingService.RetrieveArtifactDetailsAsync(relativeUrl);
 
-                            byte[] artifactDetailData = Encoding.UTF8.GetBytes(artifactDetail);
+                            using var jsonDoc = JsonDocument.Parse(artifactDetail);
+                            string formattedJson = JsonSerializer.Serialize(jsonDoc, new JsonSerializerOptions
+                            {
+                                WriteIndented = true
+                            });
+
+                            byte[] artifactDetailData = Encoding.UTF8.GetBytes(formattedJson);
                             string fileName = $"{artifact.ResourceType}/{artifact.Name}.json";
 
                             using (Stream input = new MemoryStream(artifactDetailData))

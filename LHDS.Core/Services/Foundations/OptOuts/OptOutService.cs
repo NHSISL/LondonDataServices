@@ -75,24 +75,14 @@ namespace LHDS.Core.Services.Foundations.OptOuts
         public ValueTask<OptOut> RemoveOptOutByIdAsync(Guid optOutId) =>
             TryCatch(async () =>
             {
-                ValidateOptOutId(optOutId: optOutId);
+                ValidateOptOutId(optOutId);
 
                 OptOut maybeOptOut = await this.storageBroker
                     .SelectOptOutByIdAsync(optOutId);
 
                 ValidateStorageOptOut(maybeOptOut, optOutId);
 
-                OptOut optOutWithDeleteAuditApplied =
-                    await ApplyDeleteAuditAsync(maybeOptOut);
-
-                OptOut updatedOptOut =
-                    await this.storageBroker.UpdateOptOutAsync(optOutWithDeleteAuditApplied);
-
-                await ValidateAgainstStorageOptOutOnDeleteAsync(
-                    optOut: updatedOptOut,
-                    maybeOptOut: optOutWithDeleteAuditApplied);
-
-                return await this.storageBroker.DeleteOptOutAsync(updatedOptOut);
+                return await this.storageBroker.DeleteOptOutAsync(maybeOptOut);
             });
 
         virtual internal async ValueTask<OptOut> ApplyAddOptOutAsync(OptOut optOut)
@@ -109,17 +99,6 @@ namespace LHDS.Core.Services.Foundations.OptOuts
         }
 
         virtual internal async ValueTask<OptOut> ApplyModifyAuditAsync(OptOut optOut)
-        {
-            ValidateOptOutIsNotNull(optOut);
-            var auditDateTimeOffset = await this.dateTimeBroker.GetCurrentDateTimeOffsetAsync();
-            var auditUser = await this.securityBroker.GetCurrentUserAsync();
-            optOut.UpdatedBy = auditUser?.EntraUserId.ToString() ?? string.Empty;
-            optOut.UpdatedDate = auditDateTimeOffset;
-
-            return optOut;
-        }
-
-        virtual internal async ValueTask<OptOut> ApplyDeleteAuditAsync(OptOut optOut)
         {
             ValidateOptOutIsNotNull(optOut);
             var auditDateTimeOffset = await this.dateTimeBroker.GetCurrentDateTimeOffsetAsync();

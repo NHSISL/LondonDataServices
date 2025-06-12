@@ -35,12 +35,7 @@ const SupplierRowView: FunctionComponent<SupplierRowViewProps> = (props) => {
                 }
 
             </TableBaseData>
-            <TableBaseData>
-                {
-                    supplier.landingManualTriggerUrl &&
-                    <><br />{supplier.landingManualTriggerUrl}</>
-                }
-            </TableBaseData>
+            <TableBaseData></TableBaseData>
             <TableBaseData classes="text-end">
                 {allowedToEdit && (
                     <SecuredComponents>

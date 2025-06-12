@@ -17,29 +17,48 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.DataSetSpecifications
 {
     public partial class DataSetSpecificationProcessingServiceTests
     {
-        [Fact]
-        public async Task ShouldRetrieveActiveDataSetSpecificationsAsync()
+        [Theory]
+        [InlineData(false, true)]
+        [InlineData(true, false)]
+        public async Task ShouldRetrieveActiveDataSetSpecificationsAsync(bool isActive, bool isPublished)
         {
             // given
             Guid randomSupplierId = Guid.NewGuid();
             DateTimeOffset randomDateTimeOffset = DateTimeOffset.UtcNow;
             DataSet randomDataSet = CreateRandomDataSet(randomSupplierId);
 
-            List<DataSetSpecification> randomDataSetSpecifications =
+            List<DataSetSpecification> invalidDatesDataSetSpecifications =
                 CreateRandomDataSetSpecifications(
                     dataSet: randomDataSet,
                     dataSetId: randomDataSet.Id,
-                    count: GetRandomNumber(),
+                    count: 1,
+                    isActive: true,
+                    isPublished: true,
                     activeFrom: randomDateTimeOffset,
                     activeTo: randomDateTimeOffset);
+
+            List<DataSetSpecification> invalidIsActiveIsPublishedDataSetSpecifications =
+                CreateRandomDataSetSpecifications(
+                    dataSet: randomDataSet,
+                    dataSetId: randomDataSet.Id,
+                    count: 1,
+                    isActive: isActive,
+                    isPublished: isPublished,
+                    activeFrom: randomDateTimeOffset,
+                    activeTo: randomDateTimeOffset.AddDays(1));
 
             DataSetSpecification activeDataSetSpecification =
                 CreateRandomDataSetSpecifications(
                     dataSet: randomDataSet,
                     dataSetId: randomDataSet.Id,
                     count: 1,
+                    isActive: true,
+                    isPublished: true,
                     activeFrom: randomDateTimeOffset,
                     activeTo: randomDateTimeOffset.AddDays(1)).First();
+
+            List<DataSetSpecification> randomDataSetSpecifications =
+                [.. invalidDatesDataSetSpecifications, .. invalidIsActiveIsPublishedDataSetSpecifications];
 
             randomDataSetSpecifications.Add(activeDataSetSpecification);
 

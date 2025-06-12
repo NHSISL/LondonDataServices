@@ -67,7 +67,7 @@ namespace LHDS.AdminPortal.Api.Controllers
         [EnableQuery(PageSize = 50)]
 #endif
 #if DEBUG
-        [EnableQuery(PageSize = 50)]
+        [EnableQuery(PageSize = 5000)]
 #endif
         [Authorize(Roles = "ISL.LDS.AdminApi.Administrators, ISL.LDS.AdminApi.ResolvedAddress, ISL.LDS.AdminApi.ReadOnly")]
 

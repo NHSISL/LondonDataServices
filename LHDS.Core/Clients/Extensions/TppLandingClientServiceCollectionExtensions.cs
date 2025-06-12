@@ -114,10 +114,10 @@ namespace LHDS.Core.Clients.Extensions
             services.AddTransient<ILoggingBroker, LoggingBroker>();
             services.AddTransient<IDateTimeBroker, DateTimeBroker>();
             services.AddTransient<IIdentifierBroker, IdentifierBroker>();
-            services.AddTransient<IStorageBroker, StorageBroker>();
             services.AddTransient<ISecurityBroker, SecurityBroker>();
             services.AddTransient<IHashBroker, HashBroker>();
             services.AddTransient<IAuditBroker, AuditBroker>();
+            services.AddSingleton<IStorageBroker, StorageBroker>();
 
             LandingConfiguration landingConfiguration =
                 configuration.GetSection("landingSettings").Get<LandingConfiguration>();

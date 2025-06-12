@@ -25,10 +25,14 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.SubscriberAgreements
             SubscriberAgreement randomSubscriberAgreement =
                 CreateRandomModifySubscriberAgreement(randomDateTimeOffset, randomEntraUser.EntraUserId);
 
-            SubscriberAgreement inputSubscriberAgreement = randomSubscriberAgreement;
-            SubscriberAgreement storageSubscriberAgreement = inputSubscriberAgreement.DeepClone();
-            storageSubscriberAgreement.UpdatedDate = randomSubscriberAgreement.CreatedDate;
-            SubscriberAgreement updatedSubscriberAgreement = inputSubscriberAgreement;
+            SubscriberAgreement inputSubscriberAgreement = randomSubscriberAgreement.DeepClone();
+            inputSubscriberAgreement.CreatedBy = Guid.NewGuid().ToString();
+            inputSubscriberAgreement.CreatedDate = randomDateTimeOffset.AddDays(1);
+            SubscriberAgreement storageSubscriberAgreement = randomSubscriberAgreement.DeepClone();
+            storageSubscriberAgreement.UpdatedDate = storageSubscriberAgreement.CreatedDate;
+            SubscriberAgreement updatedSubscriberAgreement = inputSubscriberAgreement.DeepClone();
+            updatedSubscriberAgreement.CreatedBy = storageSubscriberAgreement.CreatedBy;
+            updatedSubscriberAgreement.CreatedDate = storageSubscriberAgreement.CreatedDate;
             SubscriberAgreement expectedSubscriberAgreement = updatedSubscriberAgreement.DeepClone();
             Guid subscriberAgreementId = inputSubscriberAgreement.Id;
 

@@ -2,7 +2,6 @@ import React from 'react';
 import { MsalProvider } from '@azure/msal-react';
 import { ReactQueryDevtools } from 'react-query/devtools'
 import 'bootstrap/dist/css/bootstrap.min.css';
-
 import { Route, Routes } from 'react-router-dom';
 import { Home } from './pages/home';
 import { QueryClientProvider } from 'react-query';

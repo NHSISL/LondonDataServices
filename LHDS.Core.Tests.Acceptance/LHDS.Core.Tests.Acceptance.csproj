@@ -71,6 +71,18 @@
     <None Update="Resource\Clients\Address\ShouldProcessCsvAddressesZippedSetup.zip">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
+    <None Update="Resource\Clients\Address\ShouldProcessWithAddressCsvFiles\ID15_StreetDesc_Records.csv">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Resource\Clients\Address\ShouldProcessWithAddressCsvFiles\ID21_BLPU_Records.csv">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Resource\Clients\Address\ShouldProcessWithAddressCsvFiles\ID24_LPI_Records.csv">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Resource\Clients\Address\ShouldProcessWithAddressCsvFiles\ID28_DPA_Records.csv">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Update="Resource\Clients\Address\ShouldProcessZipFileWithAddressCsvFiles.zip">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>

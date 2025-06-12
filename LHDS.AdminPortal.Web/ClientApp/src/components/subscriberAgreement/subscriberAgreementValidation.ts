@@ -1,7 +1,7 @@
 import { Validation } from "../../models/validations/validation";
 
 export const subscriberAgreementValidation: Array<Validation> = [{
-    property: "SupplierSharingAgreementShortName",
+    property: "supplierSharingAgreementShortName",
     friendlyName: "Name",
     isRequired: true,
     minLength: 3,
@@ -9,7 +9,7 @@ export const subscriberAgreementValidation: Array<Validation> = [{
 },
 {
     property: "ftpUserName",
-    friendlyName: "Ftp User NAme",
+    friendlyName: "Ftp User Name",
     isRequired: true,
     minLength: 3,
     maxLength: 150

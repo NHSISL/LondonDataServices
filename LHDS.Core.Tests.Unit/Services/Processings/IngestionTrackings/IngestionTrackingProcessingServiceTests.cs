@@ -6,6 +6,8 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
+using FluentAssertions;
+using KellermanSoftware.CompareNetObjects;
 using LHDS.Core.Brokers.Loggings;
 using LHDS.Core.Models.Foundations.IngestionTrackings;
 using LHDS.Core.Models.Foundations.IngestionTrackings.Exceptions;
@@ -15,6 +17,7 @@ using Moq;
 using Tynamix.ObjectFiller;
 using Xeptions;
 using Xunit;
+using Xunit.Abstractions;
 
 namespace LHDS.Core.Tests.Unit.Services.Processings.IngestionTrackings
 {
@@ -25,9 +28,12 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.IngestionTrackings
 
         private readonly Mock<ILoggingBroker> loggingBrokerMock = new Mock<ILoggingBroker>();
         private readonly IIngestionTrackingProcessingService ingestionTrackingProcessingService;
+        private readonly ITestOutputHelper output;
 
-        public IngestionTrackingProcessingServiceTests()
+        public IngestionTrackingProcessingServiceTests(ITestOutputHelper output)
         {
+            this.output = output;
+
             ingestionTrackingProcessingService = new IngestionTrackingProcessingService(
                 ingestionTrackingService: ingestionTrackingServiceMock.Object,
                 loggingBroker: loggingBrokerMock.Object);
@@ -80,6 +86,29 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.IngestionTrackings
         private static DateTimeOffset GetRandomDateTimeOffset() =>
             new DateTimeRange(earliestDate: new DateTime()).GetValue();
 
+        private Expression<Func<IngestionTracking, bool>> SameIngestionTrackingAs(
+            IngestionTracking exprectedIngestionTracking)
+        {
+            return actualIngestionTracking =>
+                IsSameIngestionTracking(exprectedIngestionTracking, actualIngestionTracking);
+        }
+
+        private bool IsSameIngestionTracking(
+            IngestionTracking expectedIngestionTracking,
+            IngestionTracking actualIngestionTracking)
+        {
+            try
+            {
+                actualIngestionTracking.Should().BeEquivalentTo(expectedIngestionTracking);
+            }
+            catch (Exception exception)
+            {
+                output.WriteLine(exception.Message);
+            }
+
+            return new CompareLogic().Compare(expectedIngestionTracking, actualIngestionTracking).AreEqual;
+        }
+
         private static IngestionTracking CreateRandomIngestionTracking() =>
             CreateIngestionTrackingFiller(dateTimeOffset: GetRandomDateTimeOffset()).Create();
 
@@ -101,7 +130,8 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.IngestionTrackings
                 .OnProperty(ingestionTracking => ingestionTracking.CreatedBy).Use(user)
                 .OnProperty(ingestionTracking => ingestionTracking.UpdatedBy).Use(user)
                 .OnProperty(ingestionTracking => ingestionTracking.Supplier).IgnoreIt()
-                .OnProperty(ingestionTracking => ingestionTracking.IngestionTrackingAudits).IgnoreIt();
+                .OnProperty(ingestionTracking => ingestionTracking.IngestionTrackingAudits).IgnoreIt()
+                .OnProperty(ingestionTracking => ingestionTracking.SubscriberAgreement).IgnoreIt();
 
             return filler;
         }

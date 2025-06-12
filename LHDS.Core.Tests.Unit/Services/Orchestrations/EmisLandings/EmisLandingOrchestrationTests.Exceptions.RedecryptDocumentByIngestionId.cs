@@ -61,7 +61,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.EmisLandings
             this.dataSetSpecificationProcessingServiceMock.VerifyNoOtherCalls();
             this.documentProcessingServiceMock.VerifyNoOtherCalls();
             this.hashBrokerMock.VerifyNoOtherCalls();
-            this.auditServiceMock.VerifyNoOtherCalls();
+            this.ingestionTrackingAuditProcessingServiceMock.VerifyNoOtherCalls();
         }
 
         [Theory]
@@ -111,7 +111,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.EmisLandings
             this.dataSetSpecificationProcessingServiceMock.VerifyNoOtherCalls();
             this.documentProcessingServiceMock.VerifyNoOtherCalls();
             this.hashBrokerMock.VerifyNoOtherCalls();
-            this.auditServiceMock.VerifyNoOtherCalls();
+            this.ingestionTrackingAuditProcessingServiceMock.VerifyNoOtherCalls();
         }
 
         [Fact]
@@ -162,7 +162,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.EmisLandings
             this.dataSetSpecificationProcessingServiceMock.VerifyNoOtherCalls();
             this.documentProcessingServiceMock.VerifyNoOtherCalls();
             this.hashBrokerMock.VerifyNoOtherCalls();
-            this.auditServiceMock.VerifyNoOtherCalls();
+            this.ingestionTrackingAuditProcessingServiceMock.VerifyNoOtherCalls();
         }
     }
 }

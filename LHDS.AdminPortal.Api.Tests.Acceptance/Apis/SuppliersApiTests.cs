@@ -45,7 +45,7 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.Suppliers
         private async ValueTask<Supplier> PostRandomSupplierAsync()
         {
             Supplier randomSupplier = CreateRandomSupplier();
-            Supplier storageSupplier =  await this.apiBroker.PostSupplierAsync(randomSupplier);
+            Supplier storageSupplier = await this.apiBroker.PostSupplierAsync(randomSupplier);
 
             return storageSupplier;
         }
@@ -117,6 +117,7 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.Suppliers
                 .OnType<DateTimeOffset>().Use(now)
                 .OnType<DateTimeOffset?>().Use(now)
                 .OnProperty(ingestionTracking => ingestionTracking.SupplierId).Use(supplierId)
+                .OnProperty(ingestionTracking => ingestionTracking.SubscriberAgreementId).IgnoreIt()
                 .OnProperty(ingestionTracking => ingestionTracking.CreatedDate).Use(now)
                 .OnProperty(ingestionTracking => ingestionTracking.CreatedBy).Use(user)
                 .OnProperty(ingestionTracking => ingestionTracking.UpdatedDate).Use(now)

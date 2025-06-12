@@ -14,6 +14,7 @@ using LHDS.Core.Brokers.Securities;
 using LHDS.Core.Brokers.Storages.Sql;
 using LHDS.Core.Models.Foundations.ResolvedAddresses;
 using LHDS.Core.Models.Foundations.ResolvedAddresses.Exceptions;
+using LHDS.Core.Models.Foundations.SubscriberAgreements;
 
 namespace LHDS.Core.Services.Foundations.ResolvedAddresses
 {
@@ -80,7 +81,9 @@ namespace LHDS.Core.Services.Foundations.ResolvedAddresses
         public ValueTask<ResolvedAddress> ModifyResolvedAddressAsync(ResolvedAddress resolvedAddress) =>
             TryCatch(async () =>
             {
-                ResolvedAddress resolvedAddressWithModifyAuditApplied = await ApplyModifyAuditAsync(resolvedAddress);
+                ResolvedAddress resolvedAddressWithModifyAuditApplied = 
+                    await ApplyModifyAuditAsync(resolvedAddress);
+
                 await ValidateResolvedAddressOnModifyAsync(resolvedAddressWithModifyAuditApplied);
 
                 ResolvedAddress maybeResolvedAddress =

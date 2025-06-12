@@ -126,11 +126,34 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.EmisLandings
             return Encoding.UTF8.GetBytes(randomMessage);
         }
 
-        private static List<string> GetRandomStrings() =>
-            Enumerable.Range(1, GetRandomNumber()).Select(i => GetRandomString()).ToList();
+        private static List<string> GetRandomStrings()
+        {
+            var uniqueStrings = new HashSet<string>();
+            int count = GetRandomNumber();
 
-        private static List<string> GetRandomStrings(int count) =>
-            Enumerable.Range(1, count).Select(i => GetRandomString()).ToList();
+            while (uniqueStrings.Count < count)
+            {
+                uniqueStrings.Add(GetRandomString());
+            }
+
+            return uniqueStrings.ToList();
+        }
+
+        private static List<string> GetRandomStrings(int count, int? length = 0)
+        {
+            var uniqueStrings = new HashSet<string>();
+
+            while (uniqueStrings.Count < count)
+            {
+                string randomString = length.HasValue && length > 0
+                    ? GetRandomString(wordMinLength: length.Value, wordMaxLength: length.Value)
+                    : GetRandomString();
+
+                uniqueStrings.Add(randomString);
+            }
+
+            return uniqueStrings.ToList();
+        }
 
         private static int GetRandomNumber(int min = 2, int max = 10) =>
             new IntRange(min, max).GetValue();
@@ -184,8 +207,15 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.EmisLandings
                 $"/{GetRandomFileNames(count: 1, subscriberAgreementId)[0]}").ToList();
         }
 
-        private static string GetRandomString() =>
-            new MnemonicString(wordCount: 1, wordMinLength: 1, wordMaxLength: GetRandomNumber()).GetValue();
+        private static string GetRandomString(int wordMinLength = 2, int wordMaxLength = 0)
+        {
+            if (wordMaxLength == 0)
+            {
+                wordMaxLength = GetRandomNumber();
+            }
+
+            return new MnemonicString(wordCount: 1, wordMinLength: 2, wordMaxLength: GetRandomNumber()).GetValue();
+        }
 
         private static string GetRandomString(int length) =>
             new MnemonicString(wordCount: 1, wordMinLength: length, wordMaxLength: length).GetValue();

@@ -10,9 +10,11 @@ using System.Linq.Expressions;
 using KellermanSoftware.CompareNetObjects;
 using LHDS.Core.Brokers.DateTimes;
 using LHDS.Core.Brokers.Loggings;
+using LHDS.Core.Models.Brokers.Ontologies;
 using LHDS.Core.Models.Brokers.Storages.Blobs;
 using LHDS.Core.Models.Foundations.Documents;
 using LHDS.Core.Models.Foundations.TerminologyArtifacts;
+using LHDS.Core.Models.Orchestrations.EmisLandings;
 using LHDS.Core.Models.Processings.Documents.Exceptions;
 using LHDS.Core.Models.Processings.Ontologies.Exceptions;
 using LHDS.Core.Models.Processings.TerminologyArtifacts.Exceptions;
@@ -35,6 +37,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.TerminologyDetails
         private readonly Mock<ILoggingBroker> loggingBrokerMock;
         private readonly Mock<IDateTimeBroker> dateTimeBrokerMock;
         private readonly BlobContainers blobContainers;
+        private readonly OntologyConfiguration ontologyConfiguration;
         private readonly ITerminologyDetailOrchestrationService terminologyDetailOrchestrationService;
         private readonly ICompareLogic compareLogic;
 
@@ -57,11 +60,17 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.TerminologyDetails
                 Terminology = "terminology",
             };
 
+            ontologyConfiguration = new OntologyConfiguration
+            {
+                LandingFolder= "inbox/terminology"
+            };
+
             terminologyDetailOrchestrationService = new TerminologyDetailOrchestrationService(
                 terminologyArtifactProcessingService: terminologyArtifactProcessingServiceMock.Object,
                 ontologyProcessingService: ontologyProcessingServiceMock.Object,
                 documentProcessingService: documentProcessingServiceMock.Object,
                 blobContainers: this.blobContainers,
+                ontologyConfiguration: this.ontologyConfiguration,
                 loggingBroker: loggingBrokerMock.Object,
                 dateTimeBroker: dateTimeBrokerMock.Object);
         }

@@ -174,10 +174,10 @@ namespace LHDS.Core.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<DateTimeOffset>("ActiveFrom")
+                    b.Property<DateTimeOffset?>("ActiveFrom")
                         .HasColumnType("datetimeoffset");
 
-                    b.Property<DateTimeOffset>("ActiveTo")
+                    b.Property<DateTimeOffset?>("ActiveTo")
                         .HasColumnType("datetimeoffset");
 
                     b.Property<string>("CreatedBy")
@@ -561,14 +561,14 @@ namespace LHDS.Core.Migrations
                     b.Property<string>("ObjectName")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<long>("RecordCount")
-                        .HasColumnType("bigint");
-
                     b.Property<int>("RetryCount")
                         .HasColumnType("int");
 
                     b.Property<string>("SourceFolderPath")
                         .HasColumnType("nvarchar(max)");
+
+                    b.Property<Guid?>("SubscriberAgreementId")
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<Guid>("SupplierId")
                         .HasColumnType("uniqueidentifier");
@@ -585,6 +585,8 @@ namespace LHDS.Core.Migrations
 
                     b.HasIndex("FileName")
                         .IsUnique();
+
+                    b.HasIndex("SubscriberAgreementId");
 
                     b.HasIndex("SupplierId");
 
@@ -1394,11 +1396,18 @@ namespace LHDS.Core.Migrations
 
             modelBuilder.Entity("LHDS.Core.Models.Foundations.IngestionTrackings.IngestionTracking", b =>
                 {
+                    b.HasOne("LHDS.Core.Models.Foundations.SubscriberAgreements.SubscriberAgreement", "SubscriberAgreement")
+                        .WithMany("IngestionTrackings")
+                        .HasForeignKey("SubscriberAgreementId")
+                        .OnDelete(DeleteBehavior.NoAction);
+
                     b.HasOne("LHDS.Core.Models.Foundations.Suppliers.Supplier", "Supplier")
                         .WithMany("IngestionTrackings")
                         .HasForeignKey("SupplierId")
                         .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
+
+                    b.Navigation("SubscriberAgreement");
 
                     b.Navigation("Supplier");
                 });
@@ -1447,6 +1456,11 @@ namespace LHDS.Core.Migrations
             modelBuilder.Entity("LHDS.Core.Models.Foundations.SpecificationObjects.SpecificationObject", b =>
                 {
                     b.Navigation("ObjectColumns");
+                });
+
+            modelBuilder.Entity("LHDS.Core.Models.Foundations.SubscriberAgreements.SubscriberAgreement", b =>
+                {
+                    b.Navigation("IngestionTrackings");
                 });
 
             modelBuilder.Entity("LHDS.Core.Models.Foundations.Suppliers.Supplier", b =>

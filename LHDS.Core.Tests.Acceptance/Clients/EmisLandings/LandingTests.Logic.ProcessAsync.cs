@@ -28,12 +28,11 @@ namespace LHDS.Core.Tests.Acceptance.Clients.EmisLandings
         {
             //Given
             CleanupDownloadFolder();
-            DateTimeOffset randomDateTime = await this.dateTimeBroker.GetCurrentDateTimeOffsetAsync();
             Guid supplierId = Guid.NewGuid();
             SubscriberCredential randomSubscriberCredential = CreateRandomSubscriberCredential();
             DataSet randomDataSet = CreateRandomDataSet(supplierId);
             DataSetSpecification activeDataSetSpecifications = CreateRandomDataSetSpecification(randomDataSet);
-            Supplier randomSupplier = CreateRandomSupplier(supplierId, randomDateTime);
+            Supplier randomSupplier = CreateRandomSupplier(supplierId);
             await this.supplierService.AddSupplierAsync(randomSupplier);
             await this.dataSetService.AddDataSetAsync(randomDataSet);
             await this.dataSetSpecificationProcessingService.AddDataSetSpecificationAsync(activeDataSetSpecifications);
@@ -63,7 +62,7 @@ namespace LHDS.Core.Tests.Acceptance.Clients.EmisLandings
 
             foreach (var actualFile in actualStringList)
             {
-                IQueryable<IngestionTracking> allIngestionTrackings = 
+                IQueryable<IngestionTracking> allIngestionTrackings =
                     await this.ingestionTrackingService.RetrieveAllIngestionTrackingsAsync();
 
                 IngestionTracking ingestionTracking = allIngestionTrackings
@@ -75,7 +74,7 @@ namespace LHDS.Core.Tests.Acceptance.Clients.EmisLandings
                     filename: ingestionTracking.EncryptedFileName,
                     container: blobContainers.EmisLanding);
 
-                IQueryable<IngestionTrackingAudit> allIngestionTrackingAudits = 
+                IQueryable<IngestionTrackingAudit> allIngestionTrackingAudits =
                     await this.ingestionTrackingAuditService.RetrieveAllIngestionTrackingAuditsAsync();
 
                 var audits = allIngestionTrackingAudits
@@ -107,13 +106,12 @@ namespace LHDS.Core.Tests.Acceptance.Clients.EmisLandings
         {
             //Given
             CleanupDownloadFolder();
-            DateTimeOffset randomDateTime = await this.dateTimeBroker.GetCurrentDateTimeOffsetAsync();
             Guid supplierId = Guid.NewGuid();
             byte[] documentData = Encoding.UTF8.GetBytes(GetRandomString());
             SubscriberCredential randomSubscriberCredential = CreateRandomSubscriberCredential();
             DataSet randomDataSet = CreateRandomDataSet(supplierId);
             DataSetSpecification activeDataSetSpecification = CreateRandomDataSetSpecification(randomDataSet);
-            Supplier randomSupplier = CreateRandomSupplier(supplierId, randomDateTime);
+            Supplier randomSupplier = CreateRandomSupplier(supplierId);
             SpecificationObject specificationObject = CreateRandomSpecificationObjects(activeDataSetSpecification);
             ObjectColumn objectColumn = CreateRandomObjectColumns(specificationObject);
             await this.supplierService.AddSupplierAsync(randomSupplier);
@@ -139,7 +137,8 @@ namespace LHDS.Core.Tests.Acceptance.Clients.EmisLandings
 
             List<IngestionTracking> ingestionTrackings = await CreateRandomIngestionTrackings(
                 documentSources,
-                supplierId: supplierId);
+                supplierId: supplierId,
+                subscriberAgreementId: inputSubscriberCredential.Id);
 
             //When
             var actualStringList = await this.landingClient.ProcessAsync(supplierId);

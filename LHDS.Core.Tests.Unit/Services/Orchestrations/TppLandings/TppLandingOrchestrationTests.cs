@@ -134,7 +134,9 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.TppLandings
                 .OnProperty(dataSet => dataSet.ActiveTo).Use(now.AddDays(2))
                 .OnProperty(dataSet => dataSet.CreatedBy).Use(user)
                 .OnProperty(dataSet => dataSet.UpdatedBy).Use(user)
-                .OnProperty(dataSet => dataSet.ActiveTo).Use(now.AddDays(GetRandomNumber()));
+                .OnProperty(dataSet => dataSet.ActiveTo).Use(now.AddDays(GetRandomNumber()))
+                .OnProperty(dataSetSpecification => dataSetSpecification.Supplier).IgnoreIt()
+                .OnProperty(dataSetSpecification => dataSetSpecification.DataSetSpecifications).IgnoreIt();
 
             return filler;
         }
@@ -151,9 +153,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.TppLandings
             filler.Setup()
                 .OnType<DateTimeOffset>().Use(now)
                 .OnType<DateTimeOffset?>().Use(now)
-
                 .OnProperty(dataSetSpecification => dataSetSpecification.DataSetId).Use(dataSet.Id)
-                .OnProperty(dataSetSpecification => dataSetSpecification.DataSet).Use(dataSet)
                 .OnProperty(dataSetSpecification => dataSetSpecification.IsActive).Use(true)
                 .OnProperty(dataSetSpecification => dataSetSpecification.ActiveFrom).Use(now.AddDays(-2))
                 .OnProperty(dataSetSpecification => dataSetSpecification.ActiveTo).Use(now.AddDays(2))
@@ -166,9 +166,13 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.TppLandings
 
                 .OnProperty(dataSetSpecification => dataSetSpecification.PresededById).IgnoreIt()
                 .OnProperty(dataSetSpecification => dataSetSpecification.SupersededById).IgnoreIt()
+                .OnProperty(dataSetSpecification => dataSetSpecification.PresededBy).IgnoreIt()
+                .OnProperty(dataSetSpecification => dataSetSpecification.SupersededBy).IgnoreIt()
                 .OnProperty(dataSetSpecification => dataSetSpecification.CreatedBy).Use(user)
                 .OnProperty(dataSetSpecification => dataSetSpecification.CreatedBy).Use(user)
-                .OnProperty(dataSetSpecification => dataSetSpecification.UpdatedBy).Use(user);
+                .OnProperty(dataSetSpecification => dataSetSpecification.UpdatedBy).Use(user)
+                .OnProperty(dataSetSpecification => dataSetSpecification.DataSet).Use(dataSet)
+                .OnProperty(dataSetSpecification => dataSetSpecification.SpecificationObjects).IgnoreIt();
 
             return filler;
         }
@@ -284,7 +288,8 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.TppLandings
                 .OnType<DateTimeOffset>().Use(dateTimeOffset)
                 .OnType<DateTimeOffset?>().Use(dateTimeOffset)
                 .OnProperty(ingestionTracking => ingestionTracking.Supplier).IgnoreIt()
-                .OnProperty(ingestionTracking => ingestionTracking.IngestionTrackingAudits).IgnoreIt();
+                .OnProperty(ingestionTracking => ingestionTracking.IngestionTrackingAudits).IgnoreIt()
+                .OnProperty(ingestionTracking => ingestionTracking.SubscriberAgreement).IgnoreIt();
 
             return filler;
         }
@@ -320,7 +325,8 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.TppLandings
                 .OnType<DateTimeOffset>().Use(dateTimeOffset)
                 .OnType<DateTimeOffset?>().Use(dateTimeOffset)
                 .OnProperty(ingestionTracking => ingestionTracking.Supplier).IgnoreIt()
-                .OnProperty(ingestionTracking => ingestionTracking.IngestionTrackingAudits).IgnoreIt();
+                .OnProperty(ingestionTracking => ingestionTracking.IngestionTrackingAudits).IgnoreIt()
+                .OnProperty(ingestionTracking => ingestionTracking.SubscriberAgreement).IgnoreIt();
 
             return filler;
         }

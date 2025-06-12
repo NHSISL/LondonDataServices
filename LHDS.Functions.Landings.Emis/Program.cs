@@ -24,10 +24,6 @@ var host = new HostBuilder()
         .AddJsonFile(
             path: $"appsettings.{env}.json",
             optional: true)
-        .AddJsonFile(
-            path: "appsettings.local.json",
-            optional: true,
-            reloadOnChange: true)
         .AddEnvironmentVariables();
     })
     .ConfigureServices((context, services) =>

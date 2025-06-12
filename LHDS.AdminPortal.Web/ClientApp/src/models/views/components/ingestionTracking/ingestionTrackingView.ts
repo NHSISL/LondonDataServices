@@ -9,18 +9,19 @@ export class IngestionTrackingView {
     public decrypted: boolean;
     public lastSeen: Date;
     public fileDeleted: boolean;
-    public recordCount: number;
     public encryptedFileSize: number;
     public decryptedFileSize: number;
-    public isDownloading: boolean;
+    public isDownloaded: boolean;
     public isProcessing: boolean;
     public retryCount: number;
     public sourceFolderPath: string;
     public lastAttemptedDate: Date;
     public dataSetSpecificationId: string;
     public batch: string;
+    public isBatchComplete: boolean;
     public objectName: string;
     public batchReadyFolderPath: string;
+    public subscriberAgreementId?: string;
     public createdBy?: string;
     public createdDate?: Date;
     public updatedBy?: string;
@@ -36,18 +37,19 @@ export class IngestionTrackingView {
         decrypted: boolean,
         lastSeen: Date,
         fileDeleted: boolean,
-        recordCount: number,
         encryptedFileSize: number,
         decryptedFileSize: number,
-        isDownloading: boolean,
+        isDownloaded: boolean,
         isProcessing: boolean,
         retryCount: number,
         sourceFolderPath: string,
         lastAttemptedDate: Date,
         dataSetSpecificationId: string,
         batch: string,
+        isBatchComplete: boolean,
         objectName: string,
         batchReadyFolderPath: string,
+        subscriberAgreementId?: string,
         createdBy?: string,
         createdDate?: Date,
         updatedBy?: string,
@@ -62,18 +64,20 @@ export class IngestionTrackingView {
         this.decrypted = decrypted;
         this.lastSeen = lastSeen;
         this.fileDeleted = fileDeleted;
-        this.recordCount = recordCount;
         this.encryptedFileSize = encryptedFileSize;
         this.decryptedFileSize = decryptedFileSize;
-        this.isDownloading = isDownloading;
+        this.isDownloaded = isDownloaded;
         this.isProcessing = isProcessing;
         this.retryCount = retryCount;
         this.sourceFolderPath = sourceFolderPath || "";
         this.lastAttemptedDate = lastAttemptedDate;
         this.dataSetSpecificationId = dataSetSpecificationId || "";
         this.batch = batch || "";
+        this.isBatchComplete = isBatchComplete === true ? true : false;
         this.objectName = objectName || "";
         this.batchReadyFolderPath = batchReadyFolderPath || "";
+        this.subscriberAgreementId = subscriberAgreementId || "";
+
         this.createdBy = createdBy;
         this.createdDate = createdDate;
         this.updatedBy = updatedBy;

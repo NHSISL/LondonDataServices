@@ -73,6 +73,13 @@ namespace LHDS.Core.Services.Orchestrations.Addresses
                 await this.fileBroker.DeleteDirectoryAsync(ordinanceTempFolder, true);
             });
 
+        public ValueTask BulkAddAddressesAsync(string folderPath) =>
+            TryCatch(async () =>
+            {
+                ValidateFolderPathOnBulkAddAddresses(folderPath);
+                await ReadCsvDataAndBulkAddAddressesAsync(folderPath);
+            });
+
         virtual internal async ValueTask UnZipAndExtractAsync(Stream data, string extractPath)
         {
             using (ZipArchive archive = new ZipArchive(data, ZipArchiveMode.Read))
@@ -152,7 +159,6 @@ namespace LHDS.Core.Services.Orchestrations.Addresses
             }
             catch (Exception exception)
             {
-                ((Xeption)exception).AddData("DpaExtractionError", dpaCsvFile);
                 exceptions.Add(exception);
             }
 
@@ -162,7 +168,6 @@ namespace LHDS.Core.Services.Orchestrations.Addresses
             }
             catch (Exception exception)
             {
-                ((Xeption)exception).AddData("LpiExtractionError", lpiCsvFile);
                 exceptions.Add(exception);
             }
 
@@ -172,7 +177,6 @@ namespace LHDS.Core.Services.Orchestrations.Addresses
             }
             catch (Exception exception)
             {
-                ((Xeption)exception).AddData("BlpuExtractionError", blpuCsvFile);
                 exceptions.Add(exception);
             }
 
@@ -182,7 +186,6 @@ namespace LHDS.Core.Services.Orchestrations.Addresses
             }
             catch (Exception exception)
             {
-                ((Xeption)exception).AddData("StreetDescriptorExtractionError", streetDescriptorCsvFile);
                 exceptions.Add(exception);
             }
 
@@ -335,11 +338,36 @@ namespace LHDS.Core.Services.Orchestrations.Addresses
         {
             int skipCounter = 0;
             var exceptions = new List<Exception>();
+            Guid correlationId = await this.identifierBroker.GetIdentifierAsync();
+
+            await this.auditBroker.LogInformationAsync(
+                auditType: "Address Import - DPA Processing",
+                title: "Processing DPA File",
+                message: $"Starting processing file {dpaCsvFile}.",
+                fileName: dpaCsvFile,
+                correlationId: correlationId.ToString());
+
+            await this.loggingBroker.LogInformationAsync(message: $"Starting processing file {dpaCsvFile}.");
 
             while ((await fileBroker.ReadLinesBatchAsync(dpaCsvFile, batchSize, skipCounter)).Any())
             {
                 try
                 {
+                    await this.auditBroker.LogInformationAsync(
+                        auditType: "Address Import - DPA Processing",
+                        title: "Processing DPA File",
+
+                        message:
+                            $"Processing DPA File - Processing lines {skipCounter} to " +
+                            $"{skipCounter + batchSize}. Correlation Id: {correlationId}.",
+
+                        fileName: dpaCsvFile,
+                        correlationId: correlationId.ToString());
+
+                    await this.loggingBroker.LogInformationAsync(
+                        message: $"Processing DPA File - Processing lines {skipCounter} to " +
+                            $"{skipCounter + batchSize}. Correlation Id: {correlationId}.");
+
                     List<Address> dpaAddresses = await MapDPADataToAddressesAsync(dpaCsvFile, batchSize, skipCounter);
                     Dictionary<string, Address> dpaAddressesDict = dpaAddresses.ToDictionary(a => a.UPRN, a => a);
                     IQueryable<Address> addresses = await addressProcessingService.RetrieveAllAddressesAsync();
@@ -387,6 +415,15 @@ namespace LHDS.Core.Services.Orchestrations.Addresses
                     skipCounter = skipCounter + batchSize;
                 }
             }
+
+            await this.auditBroker.LogInformationAsync(
+                auditType: "Address Import - DPA Processing",
+                title: "Processing DPA File",
+                message: $"Finished processing file {dpaCsvFile}.",
+                fileName: dpaCsvFile,
+                correlationId: correlationId.ToString());
+
+            await this.loggingBroker.LogInformationAsync(message: $"Finished processing file {dpaCsvFile}.");
 
             if (exceptions.Any())
             {
@@ -474,14 +511,40 @@ namespace LHDS.Core.Services.Orchestrations.Addresses
         {
             int skipCounter = 0;
             var exceptions = new List<Exception>();
+            Guid correlationId = await this.identifierBroker.GetIdentifierAsync();
+
+            await this.auditBroker.LogInformationAsync(
+                auditType: "Address Import - LPI Processing",
+                title: "Processing LPI File",
+                message: $"Starting processing file {lpiCsvFile}.",
+                fileName: lpiCsvFile,
+                correlationId: correlationId.ToString());
+
+            await this.loggingBroker.LogInformationAsync(message: $"Starting processing file {lpiCsvFile}.");
 
             while ((await fileBroker.ReadLinesBatchAsync(lpiCsvFile, batchSize, skipCounter)).Any())
             {
                 try
                 {
+                    await this.auditBroker.LogInformationAsync(
+                        auditType: "Address Import - LPI Processing",
+                        title: "Processing LPI File",
+
+                        message:
+                            $"Processing LPI File - Processing lines {skipCounter} to " +
+                            $"{skipCounter + batchSize}. Correlation Id: {correlationId}.",
+
+                        fileName: lpiCsvFile,
+                        correlationId: correlationId.ToString());
+
+                    await this.loggingBroker.LogInformationAsync(
+                        message: $"Processing LPI File - Processing lines {skipCounter} to " +
+                            $"{skipCounter + batchSize}. Correlation Id: {correlationId}.");
+
                     List<Address> lpiAddresses = await MapLPIDataToAddressesAsync(lpiCsvFile, batchSize, skipCounter);
                     Dictionary<string, Address> lpiAddressesDict = lpiAddresses.ToDictionary(a => a.UPRN, a => a);
                     IQueryable<Address> addresses = await addressProcessingService.RetrieveAllAddressesAsync();
+                    HashSet<string> existingDatabaseUprns = addresses.Select(a => a.UPRN).ToHashSet();
                     HashSet<string> lpiFileUprns = lpiAddresses.Select(a => a.UPRN).ToHashSet();
 
                     List<Address> existingLpiAddresses = addresses.Where(address =>
@@ -490,7 +553,8 @@ namespace LHDS.Core.Services.Orchestrations.Addresses
                     HashSet<string> existingLpiUprns = existingLpiAddresses.Select(a => a.UPRN).ToHashSet();
 
                     List<Address> newLpiAddresses = lpiAddresses.Where(lpiAddress =>
-                        !existingLpiUprns.Contains(lpiAddress.UPRN)).ToList();
+                        !existingLpiUprns.Contains(lpiAddress.UPRN) &&
+                        !existingDatabaseUprns.Contains(lpiAddress.UPRN)).ToList();
 
                     await addressProcessingService.BulkAddAddressesAsync(newLpiAddresses, lpiCsvFile);
                     await addressProcessingService.BulkModifyAddressesAsync(existingLpiAddresses, lpiCsvFile);
@@ -509,6 +573,15 @@ namespace LHDS.Core.Services.Orchestrations.Addresses
                 }
             }
 
+            await this.auditBroker.LogInformationAsync(
+                auditType: "Address Import - LPI Processing",
+                title: "Processing LPI File",
+                message: $"Finished processing file {lpiCsvFile}.",
+                fileName: lpiCsvFile,
+                correlationId: correlationId.ToString());
+
+            await this.loggingBroker.LogInformationAsync(message: $"Finished processing file {lpiCsvFile}.");
+
             if (exceptions.Any())
             {
                 throw new AggregateException(
@@ -521,11 +594,36 @@ namespace LHDS.Core.Services.Orchestrations.Addresses
         {
             int skipCounter = 0;
             var exceptions = new List<Exception>();
+            Guid correlationId = await this.identifierBroker.GetIdentifierAsync();
+
+            await this.auditBroker.LogInformationAsync(
+                auditType: "Address Import - BLPU Processing",
+                title: "Processing BLPU File",
+                message: $"Starting processing file {blpuCsvFile}.",
+                fileName: blpuCsvFile,
+                correlationId: correlationId.ToString());
+
+            await this.loggingBroker.LogInformationAsync(message: $"Starting processing file {blpuCsvFile}.");
 
             while ((await fileBroker.ReadLinesBatchAsync(blpuCsvFile, batchSize, skipCounter)).Any())
             {
                 try
                 {
+                    await this.auditBroker.LogInformationAsync(
+                        auditType: "Address Import - BLPU Processing",
+                        title: "Processing BLPU File",
+
+                        message:
+                            $"Processing BLPU File - Processing lines {skipCounter} to " +
+                            $"{skipCounter + batchSize}. Correlation Id: {correlationId}.",
+
+                        fileName: blpuCsvFile,
+                        correlationId: correlationId.ToString());
+
+                    await this.loggingBroker.LogInformationAsync(
+                        message: $"Processing BLPU File - Processing lines {skipCounter} to " +
+                            $"{skipCounter + batchSize}. Correlation Id: {correlationId}.");
+
                     List<Address> blpuAddresses = await MapBLPUDataToAddressesAsync(blpuCsvFile, batchSize, skipCounter);
                     Dictionary<string, Address> blpuAddressesDict = blpuAddresses.ToDictionary(a => a.UPRN, a => a);
                     IQueryable<Address> addresses = await addressProcessingService.RetrieveAllAddressesAsync();
@@ -535,10 +633,6 @@ namespace LHDS.Core.Services.Orchestrations.Addresses
                         blpuFileUprns.Contains(address.UPRN)).ToList();
 
                     HashSet<string> existingBlpuUprns = existingBlpuAddresses.Select(a => a.UPRN).ToHashSet();
-
-                    List<Address> newBlpuAddresses = blpuAddresses.Where(blpuAddress =>
-                        !existingBlpuUprns.Contains(blpuAddress.UPRN)).ToList();
-
                     List<Address> updatedBlpuAddress = [];
 
                     foreach (Address existingAddress in existingBlpuAddresses)
@@ -552,7 +646,6 @@ namespace LHDS.Core.Services.Orchestrations.Addresses
                         }
                     }
 
-                    await addressProcessingService.BulkAddAddressesAsync(newBlpuAddresses, blpuCsvFile);
                     await addressProcessingService.BulkModifyAddressesAsync(updatedBlpuAddress, blpuCsvFile);
                 }
                 catch (Exception exception)
@@ -568,6 +661,15 @@ namespace LHDS.Core.Services.Orchestrations.Addresses
                     skipCounter = skipCounter + batchSize;
                 }
             }
+
+            await this.auditBroker.LogInformationAsync(
+                auditType: "Address Import - BLPU Processing",
+                title: "Processing BLPU File",
+                message: $"Finished processing file {blpuCsvFile}.",
+                fileName: blpuCsvFile,
+                correlationId: correlationId.ToString());
+
+            await this.loggingBroker.LogInformationAsync(message: $"Finished processing file {blpuCsvFile}.");
 
             if (exceptions.Any())
             {
@@ -620,11 +722,36 @@ namespace LHDS.Core.Services.Orchestrations.Addresses
         {
             int skipCounter = 0;
             var exceptions = new List<Exception>();
+            Guid correlationId = await this.identifierBroker.GetIdentifierAsync();
+
+            await this.auditBroker.LogInformationAsync(
+                auditType: "Address Import - Street Descriptors Processing",
+                title: "Processing Street Descriptors File",
+                message: $"Starting processing file {streetDescriptorCsvFile}.",
+                fileName: streetDescriptorCsvFile,
+                correlationId: correlationId.ToString());
+
+            await this.loggingBroker.LogInformationAsync(message: $"Starting processing file {streetDescriptorCsvFile}.");
 
             while ((await fileBroker.ReadLinesBatchAsync(streetDescriptorCsvFile, batchSize, skipCounter)).Any())
             {
                 try
                 {
+                    await this.auditBroker.LogInformationAsync(
+                        auditType: "Address Import - Street Descriptors Processing",
+                        title: "Processing Street Descriptors File",
+
+                        message:
+                            $"Processing Street Descriptors File - Processing lines {skipCounter} to " +
+                            $"{skipCounter + batchSize}. Correlation Id: {correlationId}.",
+
+                        fileName: streetDescriptorCsvFile,
+                        correlationId: correlationId.ToString());
+
+                    await this.loggingBroker.LogInformationAsync(
+                        message: $"Processing Street Descriptors File - Processing lines {skipCounter} to " +
+                            $"{skipCounter + batchSize}. Correlation Id: {correlationId}.");
+
                     List<Address> streetDescriptorAddresses =
                     await MapStreetDescriptorDataToAddressesAsync(streetDescriptorCsvFile, batchSize, skipCounter);
 
@@ -667,6 +794,15 @@ namespace LHDS.Core.Services.Orchestrations.Addresses
                     skipCounter = skipCounter + batchSize;
                 }
             }
+
+            await this.auditBroker.LogInformationAsync(
+                auditType: "Address Import - Street Descriptors Processing",
+                title: "Processing Street Descriptors File",
+                message: $"Finished processing file {streetDescriptorCsvFile}.",
+                fileName: streetDescriptorCsvFile,
+                correlationId: correlationId.ToString());
+
+            await this.loggingBroker.LogInformationAsync(message: $"Finished processing file {streetDescriptorCsvFile}.");
 
             if (exceptions.Any())
             {

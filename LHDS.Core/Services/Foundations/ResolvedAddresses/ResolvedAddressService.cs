@@ -88,11 +88,17 @@ namespace LHDS.Core.Services.Foundations.ResolvedAddresses
 
                 ValidateStorageResolvedAddress(maybeResolvedAddress, resolvedAddress.Id);
 
+                ResolvedAddress ResolvedAddressWithModifyAuditAppliedEnsured =
+                  await EnsureCreatedAuditPropertiesIsSameAsStorageAsync(
+                      resolvedAddress,
+                      maybeResolvedAddress);
+
                 ValidateAgainstStorageResolvedAddressOnModify(
-                    inputResolvedAddress: resolvedAddressWithModifyAuditApplied, 
+                    inputResolvedAddress: ResolvedAddressWithModifyAuditAppliedEnsured, 
                     storageResolvedAddress: maybeResolvedAddress);
 
-                return await this.storageBroker.UpdateResolvedAddressAsync(resolvedAddressWithModifyAuditApplied);
+                return await this.storageBroker.UpdateResolvedAddressAsync(
+                    ResolvedAddressWithModifyAuditAppliedEnsured);
             });
 
         public ValueTask BulkModifyResolvedAddressesAsync(List<ResolvedAddress> resolvedAddresses) =>
@@ -349,6 +355,16 @@ namespace LHDS.Core.Services.Foundations.ResolvedAddresses
             var auditUser = await this.securityBroker.GetCurrentUserAsync();
             resolvedAddress.UpdatedBy = auditUser?.EntraUserId.ToString() ?? string.Empty;
             resolvedAddress.UpdatedDate = auditDateTimeOffset;
+
+            return resolvedAddress;
+        }
+
+        virtual internal async ValueTask<ResolvedAddress> EnsureCreatedAuditPropertiesIsSameAsStorageAsync(
+           ResolvedAddress resolvedAddress,
+           ResolvedAddress maybeResolvedAddress)
+        {
+            resolvedAddress.CreatedDate = maybeResolvedAddress.CreatedDate;
+            resolvedAddress.CreatedBy = maybeResolvedAddress.CreatedBy;
 
             return resolvedAddress;
         }

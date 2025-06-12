@@ -130,7 +130,8 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.SubscriberAgreements
                 .OnType<DateTimeOffset>().Use(dateTimeOffset)
                 .OnType<DateTimeOffset?>().Use(dateTimeOffset)
                 .OnProperty(subscriberAgreement => subscriberAgreement.CreatedBy).Use(user)
-                .OnProperty(subscriberAgreement => subscriberAgreement.UpdatedBy).Use(user);
+                .OnProperty(subscriberAgreement => subscriberAgreement.UpdatedBy).Use(user)
+                .OnProperty(subscriberAgreement => subscriberAgreement.IngestionTrackings).IgnoreIt();
 
             return filler;
         }
@@ -150,7 +151,8 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.SubscriberAgreements
                 .OnType<DateTimeOffset>().Use(dateTimeOffset)
                 .OnType<DateTimeOffset?>().Use(dateTimeOffset)
                 .OnProperty(subscriberAgreement => subscriberAgreement.CreatedBy).Use(userId)
-                .OnProperty(subscriberAgreement => subscriberAgreement.UpdatedBy).Use(userId);
+                .OnProperty(subscriberAgreement => subscriberAgreement.UpdatedBy).Use(userId)
+                .OnProperty(subscriberAgreement => subscriberAgreement.IngestionTrackings).IgnoreIt();
 
             return filler;
         }

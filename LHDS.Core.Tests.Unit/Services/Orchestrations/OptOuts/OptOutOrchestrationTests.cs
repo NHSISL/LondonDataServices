@@ -69,14 +69,14 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
                 { "optOutSettings:workflowId", GetRandomString() },
                 { "meshConfiguration:mailboxId", GetRandomString() },
                 { "meshConfiguration:password", GetRandomString() },
-                { "meshConfiguration:key", GetRandomString() },
+                { "meshConfiguration:sharedKey", GetRandomString() },
                 { "meshConfiguration:url", GetRandomString() },
                 { "meshConfiguration:mexClientVersion", GetRandomString() },
                 { "meshConfiguration:mexOSName", GetRandomString() },
                 { "meshConfiguration:mexOSVersion", GetRandomString() },
-                { "meshConfiguration:rootCertificate", null },
-                { "meshConfiguration:intermediateCertificates", null },
-                { "meshConfiguration:clientCertificate", null },
+                { "meshConfiguration:tlsRootCertificates", null },
+                { "meshConfiguration:tlsIntermediateCertificates", null },
+                { "meshConfiguration:clientSigningCertificate", null },
                 { "meshConfiguration:workflowId", GetRandomString() }
             };
 
@@ -107,19 +107,23 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
             {
                 MailboxId = inMemoryConfiguration["meshConfiguration:mailboxId"],
                 Password = inMemoryConfiguration["meshConfiguration:password"],
-                Key = inMemoryConfiguration["meshConfiguration:key"],
+                SharedKey = inMemoryConfiguration["meshConfiguration:sharedKey"],
                 Url = inMemoryConfiguration["meshConfiguration:url"],
                 MexClientVersion = inMemoryConfiguration["meshConfiguration:mexClientVersion"],
                 MexOSName = inMemoryConfiguration["meshConfiguration:mexOSName"],
                 MexOSVersion = inMemoryConfiguration["meshConfiguration:mexOSVersion"],
-                RootCertificate = GetCertificate(inMemoryConfiguration["meshConfiguration:rootCertificate"]),
 
-                IntermediateCertificates =
-                     GetCertificates(inMemoryConfiguration
-                        .GetSection("meshConfiguration:intermediateCertificates")
+                TlsRootCertificates = 
+                    GetCertificates(inMemoryConfiguration
+                        .GetSection("meshConfiguration:tlsRootCertificates")
                             .Get<List<string>>()),
 
-                ClientCertificate = GetCertificate(inMemoryConfiguration["meshConfiguration:clientCertificate"])
+                TlsIntermediateCertificates =
+                     GetCertificates(inMemoryConfiguration
+                        .GetSection("meshConfiguration:tlsIntermediateCertificates")
+                            .Get<List<string>>()),
+
+                ClientSigningCertificate = GetCertificate(inMemoryConfiguration["meshConfiguration:clientSigningCertificate"])
             };
 
             this.optOutProcessingServiceMock = new Mock<IOptOutProcessingService>();

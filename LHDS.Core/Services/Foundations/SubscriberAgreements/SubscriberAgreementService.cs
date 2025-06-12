@@ -10,6 +10,7 @@ using LHDS.Core.Brokers.Loggings;
 using LHDS.Core.Brokers.Securities;
 using LHDS.Core.Brokers.Storages.Sql;
 using LHDS.Core.Models.Foundations.SubscriberAgreements;
+using LHDS.Core.Models.Foundations.TerminologyArtifacts;
 
 namespace LHDS.Core.Services.Foundations.SubscriberAgreements
 {
@@ -68,12 +69,18 @@ namespace LHDS.Core.Services.Foundations.SubscriberAgreements
                 await ValidateSubscriberAgreementOnModifyAsync(osubscriberAgreementWithModifyAuditApplied);
 
                 SubscriberAgreement maybeSubscriberAgreement =
-                    await this.storageBroker.SelectSubscriberAgreementByIdAsync(subscriberAgreement.Id);
+                    await this.storageBroker.SelectSubscriberAgreementByIdAsync(
+                        subscriberAgreement.Id);
 
                 ValidateStorageSubscriberAgreement(maybeSubscriberAgreement, subscriberAgreement.Id);
 
+                SubscriberAgreement SubscriberAgreementWithModifyAuditAppliedEnsured =
+                   await EnsureCreatedAuditPropertiesIsSameAsStorageAsync(
+                       subscriberAgreement,
+                       maybeSubscriberAgreement);
+
                 ValidateAgainstStorageSubscriberAgreementOnModify(
-                    inputSubscriberAgreement: subscriberAgreement,
+                    inputSubscriberAgreement: SubscriberAgreementWithModifyAuditAppliedEnsured,
                     storageSubscriberAgreement: maybeSubscriberAgreement);
 
                 return await this.storageBroker.UpdateSubscriberAgreementAsync(subscriberAgreement);
@@ -133,6 +140,16 @@ namespace LHDS.Core.Services.Foundations.SubscriberAgreements
             var auditUser = await this.securityBroker.GetCurrentUserAsync();
             subscriberAgreement.UpdatedBy = auditUser?.EntraUserId.ToString() ?? string.Empty;
             subscriberAgreement.UpdatedDate = auditDateTimeOffset;
+
+            return subscriberAgreement;
+        }
+
+        virtual internal async ValueTask<SubscriberAgreement> EnsureCreatedAuditPropertiesIsSameAsStorageAsync(
+            SubscriberAgreement subscriberAgreement,
+            SubscriberAgreement maybeSubscriberAgreement)
+        {
+            subscriberAgreement.CreatedDate = maybeSubscriberAgreement.CreatedDate;
+            subscriberAgreement.CreatedBy = maybeSubscriberAgreement.CreatedBy;
 
             return subscriberAgreement;
         }

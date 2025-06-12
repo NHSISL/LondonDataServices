@@ -2,6 +2,7 @@
 // Copyright (c) North East London ICB. All rights reserved.
 // ---------------------------------------------------------
 
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -32,6 +33,8 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Addresses
 
             string randomFile = GetRandomString();
             string inputLpiCsvFile = randomFile;
+            Guid randomGuid = Guid.NewGuid();
+            Guid inputCorrelationId = randomGuid;
             int inputBatchSize = GetRandomNumber();
             int numberOfBatches = GetRandomNumber();
             int numberOfRecords = inputBatchSize * numberOfBatches;
@@ -41,6 +44,10 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Addresses
             IQueryable<Address> lpiFileExistingAddresses = randomExistingAddresses.DeepClone();
             List<Address> randomAddressList = CreateRandomAddresses(numberOfRecords).ToList();
             List<Address> newAddresses = randomAddressList.DeepClone();
+
+            this.identifierBrokerMock.Setup(broker =>
+                broker.GetIdentifierAsync())
+                    .ReturnsAsync(inputCorrelationId);
 
             for (int i = 0; i < numberOfBatches; i++)
             {
@@ -76,6 +83,24 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Addresses
             await service.ProcessLPIAddressesAsync(inputLpiCsvFile, inputBatchSize);
 
             // Then
+            this.identifierBrokerMock.Verify(broker =>
+                broker.GetIdentifierAsync(),
+                    Times.Once);
+
+            this.auditBrokerMock.Verify(broker =>
+                broker.LogInformationAsync(
+                    "Address Import - LPI Processing",
+                    "Processing LPI File",
+                    $"Starting processing file {inputLpiCsvFile}.",
+                    inputLpiCsvFile,
+                    inputCorrelationId.ToString()),
+                        Times.Once);
+
+            this.loggingBrokerMock.Verify(broker =>
+                broker.LogInformationAsync(
+                    $"Starting processing file {inputLpiCsvFile}."),
+                        Times.Once);
+
             for (int i = 0; i < numberOfBatches; i++)
             {
                 int batchStartLine = i * inputBatchSize;
@@ -86,6 +111,22 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Addresses
                     .. databaseExistingAddresses.ToList().GetRange(batchStartLine, inputBatchSize)];
 
                 List<Address> lpiFileBatchAddresses = [.. batchNewAddresses, .. batchExisitngAddresses];
+
+                this.auditBrokerMock.Verify(broker =>
+                    broker.LogInformationAsync(
+                        "Address Import - LPI Processing",
+                        "Processing LPI File",
+                        $"Processing LPI File - Processing lines {batchStartLine} to " +
+                            $"{batchEndLine}. Correlation Id: {inputCorrelationId}.",
+                        inputLpiCsvFile,
+                        inputCorrelationId.ToString()),
+                            Times.Once);
+
+                this.loggingBrokerMock.Verify(broker =>
+                    broker.LogInformationAsync(
+                        $"Processing LPI File - Processing lines {batchStartLine} to " +
+                            $"{batchEndLine}. Correlation Id: {inputCorrelationId}."),
+                            Times.Once);
 
                 this.fileBrokerMock.Verify(broker =>
                     broker.ReadLinesBatchAsync(inputLpiCsvFile, inputBatchSize, i * inputBatchSize),
@@ -115,6 +156,20 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Addresses
             this.addressProcessingServiceMock.Verify(service =>
                 service.RetrieveAllAddressesAsync(),
                     Times.Exactly(numberOfBatches));
+
+            this.auditBrokerMock.Verify(broker =>
+                broker.LogInformationAsync(
+                    "Address Import - LPI Processing",
+                    "Processing LPI File",
+                    $"Finished processing file {inputLpiCsvFile}.",
+                    inputLpiCsvFile,
+                    inputCorrelationId.ToString()),
+                        Times.Once);
+
+            this.loggingBrokerMock.Verify(broker =>
+                broker.LogInformationAsync(
+                    $"Finished processing file {inputLpiCsvFile}."),
+                        Times.Once);
 
             this.fileBrokerMock.VerifyNoOtherCalls();
             this.csvHelperBrokerMock.VerifyNoOtherCalls();

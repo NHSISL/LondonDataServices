@@ -46,7 +46,8 @@ using LHDS.Core.Services.Foundations.DataSetSpecifications;
 using LHDS.Core.Services.Foundations.DataTypes;
 using LHDS.Core.Services.Foundations.Documents;
 using LHDS.Core.Services.Foundations.HealthChecks;
-using LHDS.Core.Services.Foundations.HealthChecks.Checks.IngestionTracking;
+using LHDS.Core.Services.Foundations.HealthChecks.IngestionTracking;
+using LHDS.Core.Services.Foundations.HealthChecks.ResolvedAddress;
 using LHDS.Core.Services.Foundations.IngestionTrackingAudits;
 using LHDS.Core.Services.Foundations.IngestionTrackings;
 using LHDS.Core.Services.Foundations.ObjectColumns;
@@ -57,6 +58,8 @@ using LHDS.Core.Services.Foundations.SpecificationObjects;
 using LHDS.Core.Services.Foundations.Suppliers;
 using LHDS.Core.Services.Foundations.TerminologyArtifacts;
 using LHDS.Core.Services.Foundations.TerminologyPolls;
+using LHDS.Core.Services.Orchestrations.HealthChecks.IngestionTrackings;
+using LHDS.Core.Services.Orchestrations.HealthChecks.ResolvedAddresses;
 using LHDS.Core.Services.Processings.DataSetSpecifications;
 using LHDS.Core.Services.Processings.Documents;
 using LHDS.Core.Services.Processings.Downloads;
@@ -70,6 +73,7 @@ using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.AspNetCore.OData;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
@@ -97,6 +101,13 @@ namespace LHDS.AdminPortal.Api
             var invisibleApiKey = new InvisibleApiKey();
             ConfigureServices(builder, invisibleApiKey);
             var app = builder.Build();
+
+            using (var scope = app.Services.CreateScope())
+            {
+                var storageBroker = scope.ServiceProvider.GetRequiredService<StorageBroker>();
+                storageBroker.Database.Migrate();
+            }
+
             ConfigurePipeline(app, invisibleApiKey);
             app.Run();
         }
@@ -214,13 +225,34 @@ namespace LHDS.AdminPortal.Api
 
         private static void AddHealthApi(IServiceCollection services, IConfiguration configuration)
         {
-            services.AddHealthChecks().AddCheck<IngestionTrackingDecryptionHealthCheckService>(
-                "ingestionTrackingDecryptionHealthCheckService");
+            services.AddSingleton
+                <IIngestionTrackingHealthItemService, IngestionTrackingDecryptionHealthCheckService>();
 
-            services.AddHealthChecks().AddCheck<IngestionTrackingProcessingHealthCheckService>(
-                "ingestionTrackingProcessingHealthCheckService");
+            services.AddSingleton
+                <IIngestionTrackingHealthItemService, IngestionTrackingProcessingHealthCheckService>();
 
-            services.AddSingleton<IHealthCheckPublisher, HealthCheckPublisherService>();
+            services.AddSingleton
+                <IIngestionTrackingHealthItemService, IngestionTrackingFailedToProcessHealthCheckService>();
+
+            services.AddSingleton
+                <IIngestionTrackingHealthItemService, IngestionTrackingFilesReceivedHealthCheckService>();
+
+            services.AddSingleton
+                <IIngestionTrackingHealthItemService, IngestionTrackingIncompleteBatchHealthCheckService>();
+
+            services.AddSingleton
+                <IResolvedAddressHealthItemService, ResolvedAddressProcessingHealthCheckService>();
+
+            services.AddSingleton
+                <IResolvedAddressHealthItemService, ResolvedAddressFailedToProcessHealthCheckService>();
+
+            services.AddHealthChecks()
+                .AddCheck<IngestionTrackingHealthCheckOrchestrationService>("ingestionTrackingHealthChecks");
+
+            services.AddHealthChecks()
+                .AddCheck<ResolvedAddressHealthCheckOrchestrationService>("resolvedAddressHealthChecks");
+
+            services.AddSingleton<IHealthCheckPublisher, HealthCheckPublisherCoordinationService>();
 
             int startupDelaySeconds = configuration.GetValue<int>(
                 "HealthChecks:StartupDelaySeconds", 10);
@@ -248,7 +280,7 @@ namespace LHDS.AdminPortal.Api
             services.AddTransient<IDateTimeBroker, DateTimeBroker>();
             services.AddTransient<IIdentifierBroker, IdentifierBroker>();
             services.AddTransient<ILoggingBroker, LoggingBroker>();
-            services.AddTransient<IStorageBroker, StorageBroker>();
+            services.AddSingleton<IStorageBroker, StorageBroker>();
             services.AddTransient<IBlobStorageBroker, BlobStorageBroker>();
             services.AddTransient<IHashBroker, HashBroker>();
             services.AddTransient<IAzureBlobClient, AzureBlobClient>();

@@ -221,7 +221,10 @@ namespace LHDS.Core.Clients.Extensions
                     Parameter: "ontologySettings__clientId"),
 
                 (Rule: IsInvalid(ontologyConfiguration.ClientSecret),
-                    Parameter: "ontologySettings__clientSecret"));
+                    Parameter: "ontologySettings__clientSecret"),
+
+                (Rule: IsInvalid(ontologyConfiguration.LandingFolder),
+                       Parameter: "ontologySettings__landingFolder"));
         }
 
         private static dynamic IsInvalid(string? text) => new

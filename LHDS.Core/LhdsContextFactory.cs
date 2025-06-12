@@ -17,7 +17,7 @@ namespace LHDS.Core
             {
                 new KeyValuePair<string, string>(
                     key: "ConnectionStrings:DefaultConnection",
-                    value: "Server=(localdb)\\MSSQLLocalDB;Database=LHDS;" +
+                    value: "Server=(localdb)\\MSSQLLocalDB;Database=LondonDataServices;" +
                         "Trusted_Connection=True;MultipleActiveResultSets=true"),
             };
 

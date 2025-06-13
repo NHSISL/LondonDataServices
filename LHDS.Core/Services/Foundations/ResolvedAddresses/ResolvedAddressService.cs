@@ -12,6 +12,7 @@ using LHDS.Core.Brokers.Identifiers;
 using LHDS.Core.Brokers.Loggings;
 using LHDS.Core.Brokers.Securities;
 using LHDS.Core.Brokers.Storages.Sql;
+using LHDS.Core.Models.Foundations.ResolvedAddresss;
 using LHDS.Core.Models.Foundations.ResolvedAddresses;
 using LHDS.Core.Models.Foundations.ResolvedAddresses.Exceptions;
 using LHDS.Core.Models.Foundations.SubscriberAgreements;
@@ -115,24 +116,14 @@ namespace LHDS.Core.Services.Foundations.ResolvedAddresses
         public ValueTask<ResolvedAddress> RemoveResolvedAddressByIdAsync(Guid resolvedAddressId) =>
             TryCatch(async () =>
             {
-                ValidateResolvedAddressId(resolvedAddressId: resolvedAddressId);
+                ValidateResolvedAddressId(resolvedAddressId);
 
                 ResolvedAddress maybeResolvedAddress = await this.storageBroker
                     .SelectResolvedAddressByIdAsync(resolvedAddressId);
 
                 ValidateStorageResolvedAddress(maybeResolvedAddress, resolvedAddressId);
 
-                ResolvedAddress resolvedAddressWithDeleteAuditApplied =
-                    await ApplyDeleteAuditAsync(maybeResolvedAddress);
-
-                ResolvedAddress updatedResolvedAddress =
-                    await this.storageBroker.UpdateResolvedAddressAsync(resolvedAddressWithDeleteAuditApplied);
-
-                await ValidateAgainstStorageResolvedAddressOnDeleteAsync(
-                    resolvedAddress: updatedResolvedAddress,
-                    maybeResolvedAddress: resolvedAddressWithDeleteAuditApplied);
-
-                return await this.storageBroker.DeleteResolvedAddressAsync(updatedResolvedAddress);
+                return await this.storageBroker.DeleteResolvedAddressAsync(maybeResolvedAddress);
             });
 
         virtual internal async ValueTask BulkInsertBatch(
@@ -341,17 +332,6 @@ namespace LHDS.Core.Services.Foundations.ResolvedAddresses
         }
 
         virtual internal async ValueTask<ResolvedAddress> ApplyModifyAuditAsync(ResolvedAddress resolvedAddress)
-        {
-            ValidateResolvedAddressIsNotNull(resolvedAddress);
-            var auditDateTimeOffset = await this.dateTimeBroker.GetCurrentDateTimeOffsetAsync();
-            var auditUser = await this.securityBroker.GetCurrentUserAsync();
-            resolvedAddress.UpdatedBy = auditUser?.EntraUserId.ToString() ?? string.Empty;
-            resolvedAddress.UpdatedDate = auditDateTimeOffset;
-
-            return resolvedAddress;
-        }
-
-        virtual internal async ValueTask<ResolvedAddress> ApplyDeleteAuditAsync(ResolvedAddress resolvedAddress)
         {
             ValidateResolvedAddressIsNotNull(resolvedAddress);
             var auditDateTimeOffset = await this.dateTimeBroker.GetCurrentDateTimeOffsetAsync();

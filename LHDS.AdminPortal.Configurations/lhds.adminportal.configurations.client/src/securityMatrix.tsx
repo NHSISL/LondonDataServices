@@ -44,6 +44,9 @@ const securityPoints = {
         delete: ["ISL.LDS.AdminSpa.Administrators"],
         edit: ["ISL.LDS.AdminSpa.Administrators"],
     },
+    testFailSecurity: {
+        view: ["ISL.LDS.AdminSpa.Fail"]
+    }
 }
 
 export default securityPoints

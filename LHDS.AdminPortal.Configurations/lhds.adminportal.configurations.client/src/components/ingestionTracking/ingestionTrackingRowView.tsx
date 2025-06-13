@@ -48,16 +48,12 @@ const IngestionTrackingRow: FunctionComponent<IngestionTrackingRowProps> = (prop
                         : <FontAwesomeIcon icon={faTimes} className="text-danger" />} &nbsp; | &nbsp;
                 </span>
                 <span>
-                    Processing: {ingestionTracking.isProcessing ? <FontAwesomeIcon icon={faCheck} className="text-success" />
-                        : <FontAwesomeIcon icon={faTimes} className="text-danger" />} &nbsp; | &nbsp;
-                </span>
-                <span>
                     Batch Complete: {ingestionTracking.isBatchComplete ? <FontAwesomeIcon icon={faCheck} className="text-success" />
                         : <FontAwesomeIcon icon={faTimes} className="text-danger" />} &nbsp; | &nbsp;
                 </span>
 
                 <span>
-                    SubId: {ingestionTracking.subscriberAgreementId}
+                    SubAgreeId: {ingestionTracking.subscriberAgreementId}
                 </span>
             </TableBaseData>
 

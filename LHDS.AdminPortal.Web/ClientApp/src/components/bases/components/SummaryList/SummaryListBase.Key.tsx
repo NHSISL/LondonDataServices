@@ -8,11 +8,11 @@ interface SummaryListBaseKeyProps {
 
 const SummaryListBaseKey: FunctionComponent<SummaryListBaseKeyProps> = (props) => {
     return (
-        <dt className="summaryListKey">
+        <div className="summaryListKey">
             <span className={props.classes }>
                 {props.children}
             </span>
-        </dt>
+        </div>
     )
 }
 

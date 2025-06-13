@@ -1,30 +1,22 @@
-import { Guid } from 'guid-typescript';
-
 export class SupplierView {
-    public id: Guid;
+    public id: string;
     public name?: string;
     public friendlyName?: string;
     public description?: string;
-    public landingManualTriggerUrl?: string;
-    public decryptionManualTriggerUrl?: string;
+    public isIngestionTracked?: boolean;
     public canDecryptIngestionTracking?: boolean;
-    public canDownloadIngestionTracking?: boolean;
-    public canRelandIngestionTracking?: boolean;
     public createdBy?: string;
     public createdDate?: Date;
     public updatedBy?: string;
     public updatedDate?: Date;
 
     constructor(
-        id: Guid,
+        id: string,
         name?: string,
         friendlyName?: string,
         description?: string,
-        landingManualTriggerUrl?: string,
-        decryptionManualTriggerUrl?: string,
+        isIngestionTracked?: boolean,
         canDecryptIngestionTracking?: boolean,
-        canDownloadIngestionTracking?: boolean,
-        canRelandIngestionTracking?: boolean,
         createdBy?: string,
         createdDate?: Date,
         updatedBy?: string,
@@ -34,11 +26,8 @@ export class SupplierView {
         this.name = name || "";
         this.friendlyName = friendlyName || "";
         this.description = description || "";
-        this.landingManualTriggerUrl = landingManualTriggerUrl || "";
-        this.decryptionManualTriggerUrl = decryptionManualTriggerUrl || "";
+        this.isIngestionTracked = isIngestionTracked === true ? true : false;
         this.canDecryptIngestionTracking = canDecryptIngestionTracking === true ? true : false;
-        this.canDownloadIngestionTracking = canDownloadIngestionTracking === true ? true : false;
-        this.canRelandIngestionTracking = canRelandIngestionTracking === true ? true : false;
         this.createdBy = createdBy !== undefined ? createdBy : '';
         this.createdDate = createdDate ;
         this.updatedBy = updatedBy !== undefined ? updatedBy : ''

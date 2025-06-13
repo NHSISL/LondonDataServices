@@ -7,9 +7,9 @@ interface SummaryListBaseValueProps {
 
 const SummaryListBaseValue: FunctionComponent<SummaryListBaseValueProps> = (props) => {
     return (
-        <dd className="summaryListValue">
+        <div className="summaryListValue">
             {props.children}
-        </dd>
+        </div>
     )
 }
 

@@ -22,16 +22,43 @@ type IngestionTrackingHomeViewServiceResponse = {
 }
 
 export const ingestionTrackingHomeViewService = {
-    useGetAllIngestionTrackings: (searchTerm?: string, supplierId?: string): IngestionTrackingHomeViewServiceResponse => {
+    useGetAllIngestionTrackings: (searchTerm?: string,
+        supplierId?: string,
+        decryptedFilterParam?: string,
+        downloadedFilterParam?: string,
+        batchCompleteFilterParam?: string,
+        processingFilterParam?: string): IngestionTrackingHomeViewServiceResponse => {
 
         let query = `?$orderby=CreatedDate desc&$expand=supplier`;
 
+        const filters: string[] = [];
+
         if (searchTerm) {
-            query = query + `&$filter=contains(fileName,'${searchTerm}') or contains(decryptedFileName,'${searchTerm}')`;
+            filters.push(`(contains(fileName,'${searchTerm}') or contains(decryptedFileName,'${searchTerm}'))`);
         }
 
         if (supplierId) {
-            query = query + `&$filter=supplier/id eq ${supplierId}`;
+            filters.push(`supplier/id eq ${supplierId}`);
+        }
+
+        if (decryptedFilterParam) {
+            filters.push(`decrypted eq ${decryptedFilterParam}`);
+        }
+
+        if (downloadedFilterParam) {
+            filters.push(`isDownloaded eq ${downloadedFilterParam}`);
+        }
+
+        if (batchCompleteFilterParam) {
+            filters.push(`isBatchComplete eq ${batchCompleteFilterParam}`);
+        }
+
+        if (processingFilterParam) {
+            filters.push(`isProcessing eq ${processingFilterParam}`);
+        }
+
+        if (filters.length > 0) {
+            query += `&$filter=${filters.join(' and ')}`;
         }
 
         const response = ingestionTrackingService.useGetAllIngestionTrackingPages(query);
@@ -54,9 +81,19 @@ export const ingestionTrackingHomeViewService = {
                             ingestionTracking.decrypted,
                             ingestionTracking.lastSeen,
                             ingestionTracking.fileDeleted,
-                            ingestionTracking.recordCount,
                             ingestionTracking.encryptedFileSize,
                             ingestionTracking.decryptedFileSize,
+                            ingestionTracking.isDownloaded,
+                            ingestionTracking.isProcessing,
+                            ingestionTracking.retryCount,
+                            ingestionTracking.sourceFolderPath,
+                            ingestionTracking.lastAttemptedDate,
+                            ingestionTracking.dataSetSpecificationId,
+                            ingestionTracking.batch,
+                            ingestionTracking.isBatchComplete,
+                            ingestionTracking.objectName,
+                            ingestionTracking.batchReadyFolderPath,
+                            ingestionTracking.subscriberAgreementId,
                             ingestionTracking.createdBy,
                             ingestionTracking.createdDate,
                             ingestionTracking.updatedBy,

@@ -122,10 +122,10 @@ const MenuComponent: React.FC = () => {
             <FeatureSwitch feature={FeatureDefinitions.TerminologyArtifact}>
                 <SecuredComponent allowedRoles={securityPoints.terminologyArtifact.view}>
                     <ListGroup.Item
-                        className={`bg-dark text-white ${activePath === '/terminologyArtifact2' ? 'active' : ''}`}
-                        onClick={() => handleItemClick('/terminologyArtifact2')}>
+                        className={`bg-dark text-white ${activePath === '/address' ? 'active' : ''}`}
+                        onClick={() => handleItemClick('/address')}>
                         <FontAwesomeIcon icon={faMap} className="me-2 fa-icon" />
-                        <SecuredLink to="/terminologyArtifact2">Addresses</SecuredLink>
+                        <SecuredLink to="/address">Addresses</SecuredLink>
                     </ListGroup.Item>
                 </SecuredComponent>
             </FeatureSwitch>
@@ -133,10 +133,10 @@ const MenuComponent: React.FC = () => {
             <FeatureSwitch feature={FeatureDefinitions.TerminologyArtifact}>
                 <SecuredComponent allowedRoles={securityPoints.terminologyArtifact.view}>
                     <ListGroup.Item
-                        className={`bg-dark text-white ${activePath === '/terminologyArtifact1' ? 'active' : ''}`}
-                        onClick={() => handleItemClick('/terminologyArtifact1')}>
+                        className={`bg-dark text-white ${activePath === '/resolvedAddress' ? 'active' : ''}`}
+                        onClick={() => handleItemClick('/resolvedAddress')}>
                         <FontAwesomeIcon icon={faMapPin} className="me-2 fa-icon" />
-                        <SecuredLink to="/terminologyArtifact1">Resolved Address</SecuredLink>
+                        <SecuredLink to="/resolvedAddress">Resolved Address</SecuredLink>
                     </ListGroup.Item>
                 </SecuredComponent>
             </FeatureSwitch>

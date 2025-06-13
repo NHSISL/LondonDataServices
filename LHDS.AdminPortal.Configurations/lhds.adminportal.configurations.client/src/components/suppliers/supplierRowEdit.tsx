@@ -9,13 +9,12 @@ import { supplierErrors } from "./supplierErrors";
 import { supplierValidations } from "./supplierValidations";
 import TextAreaInputBase from "../bases/inputs/TextAreaInputBase";
 import CheckboxBase from "../bases/inputs/CheckboxBase";
-import { ApiError } from "../../types/apiError";
 
 interface SupplierRowEditProps {
     supplier: SupplierView;
     onCancel: () => void;
     onEdit: (supplier: SupplierView) => void;
-    apiError?: ApiError;
+    apiError?: any;
 }
 
 const SupplierRowEdit: FunctionComponent<SupplierRowEditProps> = (props) => {
@@ -99,28 +98,16 @@ const SupplierRowEdit: FunctionComponent<SupplierRowEditProps> = (props) => {
 
                 <br />
 
-                <TextInputBase
-                    id="landingManualTriggerUrl"
-                    name="landingManualTriggerUrl"
-                    label="landing Manual Trigger Url"
-                    placeholder="landing Manual Trigger Url"
-                    value={editSupplier.landingManualTriggerUrl}
-                    required={true}
-                    error={errors.name}
-                    onChange={handleChange} />
-
             </TableBaseData>
 
             <TableBaseData>
 
-                <TextInputBase
-                    id="decryptionManualTriggerUrl"
-                    name="decryptionManualTriggerUrl"
-                    label="decryption Manual Trigger Url"
-                    placeholder="Decryption Manual Trigger Url"
-                    value={editSupplier.landingManualTriggerUrl}
-                    required={true}
-                    error={errors.name}
+                <CheckboxBase
+                    id="isIngestionTracked"
+                    name="isIngestionTracked"
+                    label="is Ingestion Tracked"
+                    checked={editSupplier.isIngestionTracked === true ? true : false}
+                    error={errors.isIngestionTracked}
                     onChange={handleChange} />
 
                 <br />
@@ -131,26 +118,6 @@ const SupplierRowEdit: FunctionComponent<SupplierRowEditProps> = (props) => {
                     label="Can Decrypt Ingestion Tracking"
                     checked={editSupplier.canDecryptIngestionTracking === true ? true : false}
                     error={errors.canDecryptIngestionTracking}
-                    onChange={handleChange} />
-
-                <br />
-
-                <CheckboxBase
-                    id="canDownloadIngestionTracking"
-                    name="canDownloadIngestionTracking"
-                    label="Can Download Ingestion Tracking"
-                    checked={editSupplier.canDownloadIngestionTracking === true ? true : false}
-                    error={errors.canDownloadIngestionTracking}
-                    onChange={handleChange} />
-
-                <br />
-
-                <CheckboxBase
-                    id="canRelandIngestionTracking"
-                    name="canRelandIngestionTracking"
-                    label="Can Reland Ingestion Tracking"
-                    checked={editSupplier.canRelandIngestionTracking === true ? true : false}
-                    error={errors.canRelandIngestionTracking}
                     onChange={handleChange} />
 
             </TableBaseData>

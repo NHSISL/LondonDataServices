@@ -7,9 +7,9 @@ interface CardBaseProps {
 
 const SummaryListBase: FunctionComponent<CardBaseProps> = (props) => {
     return (
-        <dl className="dlBase">
+        <div className="dlBase">
             {props.children}
-        </dl>
+        </div>
     )
 }
 

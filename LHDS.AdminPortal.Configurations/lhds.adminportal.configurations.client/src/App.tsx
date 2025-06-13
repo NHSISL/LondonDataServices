@@ -29,6 +29,12 @@ import { DataSetPage } from './pages/configuration/dataSetPage';
 import { DataSetSpecificationPage } from './pages/configuration/dataSetSpecificationPage';
 import { SpecificationObjectPage } from './pages/configuration/specificationObjectPage';
 import { ObjectColumnPage } from './pages/configuration/objectColumnPage';
+import { AddressPage } from './pages/addressPage';
+import { AddressDetailPage } from './pages/addressDetailPage';
+import { ResolvedAddressPage } from './pages/resolvedAddressPage';
+import { ResolvedAddressDetailPage } from './pages/resolvedAddressDetailPage';
+import { SecuredRoute } from './components/securitys/securedRoutes';
+import securityPoints from './securityMatrix';
 
 
 function App({ instance }: any) {
@@ -45,7 +51,7 @@ function App({ instance }: any) {
                 },
                 {
                     path: "/ingestionTracking",
-                    element: <IngestionTrackingHomepage />
+                    element: (<SecuredRoute allowedRoles={securityPoints.address.view}><IngestionTrackingHomepage/></SecuredRoute>)
                 },
                 {
                     path: "/ingestionTracking",
@@ -78,6 +84,22 @@ function App({ instance }: any) {
                 {
                     path: "/terminologyArtifactDetail/:terminologyArtifactId",
                     element: <TerminologyArtifactDetailPage />
+                },
+                {
+                    path: "/address",
+                    element: <AddressPage />
+                },
+                {
+                    path: "/addressDetail/:addressId",
+                    element: <AddressDetailPage />
+                },
+                {
+                    path: "/resolvedAddress",
+                    element: <ResolvedAddressPage />
+                },
+                {
+                    path: "/resolvedAddressDetail/:resolvedAddressId",
+                    element: <ResolvedAddressDetailPage />
                 },
                 {
                     path: "/configuration",

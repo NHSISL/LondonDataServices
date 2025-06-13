@@ -18,10 +18,12 @@ using LHDS.Core.Brokers.Loggings;
 using LHDS.Core.Brokers.Securities;
 using LHDS.Core.Brokers.Storages.Blobs;
 using LHDS.Core.Brokers.Storages.Sql;
+using LHDS.Core.Brokers.Telemetries;
 using LHDS.Core.Clients;
 using LHDS.Core.Clients.Extensions;
 using LHDS.Core.Models.Brokers.Storages.Blobs;
 using LHDS.Core.Models.Configurations;
+using LHDS.Core.Models.Foundations.Addresses;
 using LHDS.Core.Models.Foundations.DataSets;
 using LHDS.Core.Models.Foundations.DataSetSpecifications;
 using LHDS.Core.Models.Foundations.DataTypes;
@@ -30,6 +32,7 @@ using LHDS.Core.Models.Foundations.IngestionTrackings;
 using LHDS.Core.Models.Foundations.ObjectColumns;
 using LHDS.Core.Models.Foundations.OptOuts;
 using LHDS.Core.Models.Foundations.PdsAudits;
+using LHDS.Core.Models.Foundations.ResolvedAddresses;
 using LHDS.Core.Models.Foundations.SpecificationObjects;
 using LHDS.Core.Models.Foundations.SubscriberAgreements;
 using LHDS.Core.Models.Foundations.Suppliers;
@@ -39,6 +42,7 @@ using LHDS.Core.Providers.Downloads;
 using LHDS.Core.Providers.Downloads.Extensions;
 using LHDS.Core.Providers.Downloads.MockDownloads;
 using LHDS.Core.Services.Coordinations.Decryptions;
+using LHDS.Core.Services.Foundations.Addresses;
 using LHDS.Core.Services.Foundations.Cryptographies;
 using LHDS.Core.Services.Foundations.DataSets;
 using LHDS.Core.Services.Foundations.DataSetSpecifications;
@@ -49,17 +53,20 @@ using LHDS.Core.Services.Foundations.IngestionTrackings;
 using LHDS.Core.Services.Foundations.ObjectColumns;
 using LHDS.Core.Services.Foundations.OptOuts;
 using LHDS.Core.Services.Foundations.PdsAudits;
+using LHDS.Core.Services.Foundations.ResolvedAddresses;
 using LHDS.Core.Services.Foundations.SecureDatas;
 using LHDS.Core.Services.Foundations.SpecificationObjects;
 using LHDS.Core.Services.Foundations.Suppliers;
 using LHDS.Core.Services.Foundations.TerminologyArtifacts;
 using LHDS.Core.Services.Foundations.TerminologyPolls;
+using LHDS.Core.Services.Processings.Addresses;
 using LHDS.Core.Services.Processings.DataSetSpecifications;
 using LHDS.Core.Services.Processings.Documents;
 using LHDS.Core.Services.Processings.Downloads;
 using LHDS.Core.Services.Processings.IngestionTrackingAudits;
 using LHDS.Core.Services.Processings.IngestionTrackings;
 using LHDS.Core.Services.Processings.OptOuts;
+using LHDS.Core.Services.Processings.ResolvedAddresses;
 using LHDS.Core.Services.Processings.SecureDatas;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
@@ -233,15 +240,17 @@ namespace LHDS.AdminPortal.Configurations.Server
 
         private static void AddBrokers(IServiceCollection services, IConfiguration configuration)
         {
+            ValidateAppInsightsConfiguration(configuration);
             services.AddSingleton<IConfiguration>(_ => configuration);
             services.AddTransient<IDateTimeBroker, DateTimeBroker>();
             services.AddTransient<IIdentifierBroker, IdentifierBroker>();
             services.AddTransient<ILoggingBroker, LoggingBroker>();
-            services.AddTransient<IStorageBroker, StorageBroker>();
+            services.AddSingleton<IStorageBroker, StorageBroker>();
             services.AddTransient<IBlobStorageBroker, BlobStorageBroker>();
             services.AddTransient<IHashBroker, HashBroker>();
             services.AddTransient<IAzureBlobClient, AzureBlobClient>();
             services.AddTransient<ISecurityBroker, SecurityBroker>();
+            services.AddTransient<ITelemetryBroker, TelemetryBroker>();
         }
 
         private static void AddFoundationServices(IServiceCollection services, IConfiguration configuration)
@@ -262,6 +271,8 @@ namespace LHDS.AdminPortal.Configurations.Server
             services.AddTransient<ITerminologyArtifactService, TerminologyArtifactService>();
             services.AddTransient<ITerminologyPollService, TerminologyPollService>();
             services.AddTransient<ISecureDataService, SecureDataService>();
+            services.AddTransient<IAddressService, AddressService>();
+            services.AddTransient<IResolvedAddressService, ResolvedAddressService>();
 
             var blobStorageSettings = configuration.GetSection("blobStorage")
                 .Get<BlobStorageSettings>();
@@ -286,6 +297,12 @@ namespace LHDS.AdminPortal.Configurations.Server
                             VisualStudioTenantId = blobStorageSettings.AzureTenantId,
                         }),
                     options: blobServiceClientOptions));
+        }
+
+        private static void ValidateAppInsightsConfiguration(IConfiguration configuration)
+        {
+            string connectionString = configuration["ApplicationInsights:ConnectionString"] ?? string.Empty;
+            Validate((Rule: IsInvalid(connectionString), Parameter: "applicationInsights__connectionString"));
         }
 
         private static void ValidateBlobStorageSettings(BlobStorageSettings blobStorageSettings)
@@ -350,6 +367,8 @@ namespace LHDS.AdminPortal.Configurations.Server
             services.AddTransient<IIngestionTrackingProcessingService, IngestionTrackingProcessingService>();
             services.AddTransient<IIngestionTrackingAuditProcessingService, IngestionTrackingAuditProcessingService>();
             services.AddTransient<ISecureDataProcessingService, SecureDataProcessingService>();
+            services.AddTransient<IAddressProcessingService, AddressProcessingService>();
+            services.AddTransient<IResolvedAddressProcessingService, ResolvedAddressProcessingService>();
         }
 
         private static void AddCoordinationServices(IServiceCollection services, IConfiguration configuration)
@@ -362,6 +381,7 @@ namespace LHDS.AdminPortal.Configurations.Server
             ODataConventionModelBuilder builder =
                new ODataConventionModelBuilder();
 
+            builder.EntitySet<Address>("Addresses");
             builder.EntitySet<IngestionTrackingAudit>("IngestionTrackingAudits");
             builder.EntitySet<DataSet>("DataSets");
             builder.EntitySet<DataSetSpecification>("DataSetSpecifications");
@@ -372,6 +392,7 @@ namespace LHDS.AdminPortal.Configurations.Server
             builder.EntitySet<OptOut>("OptOuts");
             builder.EntitySet<PdsAudit>("PdsAudits");
             builder.EntitySet<Supplier>("Suppliers");
+            builder.EntitySet<ResolvedAddress>("ResolvedAddresses");
             builder.EntitySet<TerminologyArtifact>("TerminologyArtifacts");
             builder.EntitySet<SubscriberCredential>("SubscriberCredentials");
             builder.EntitySet<SubscriberAgreement>("SubscriberAgreements");

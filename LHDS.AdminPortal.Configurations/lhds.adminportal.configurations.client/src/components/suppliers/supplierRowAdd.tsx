@@ -8,12 +8,12 @@ import { useValidation } from "../../hooks/useValidation";
 import { supplierValidations } from "./supplierValidations";
 import { supplierErrors } from "./supplierErrors";
 import TextAreaInputBase from "../bases/inputs/TextAreaInputBase";
-import { ApiError } from "../../types/apiError";
+import CheckboxBase from "../bases/inputs/CheckboxBase";
 
 interface SupplierRowAddProps {
     onCancel: () => void;
     onAdd: (supplier: SupplierView) => void;
-    apiError?: ApiError;
+    apiError?: any;
 }
 
 const SupplierRowAdd: FunctionComponent<SupplierRowAddProps> = (props) => {
@@ -85,25 +85,27 @@ const SupplierRowAdd: FunctionComponent<SupplierRowAddProps> = (props) => {
                     required={true}
                     error={errors.friendlyName}
                     onChange={handleChange} />
-                <TextInputBase
-                    id="landingManualTriggerUrl"
-                    name="landingManualTriggerUrl"
-                    label="landing Manual Trigger Url"
-                    placeholder="landing Manual Trigge Url"
-                    value={supplier.landingManualTriggerUrl}
-                    required={true}
-                    error={errors.landingManualTriggerUrl}
+
+                <CheckboxBase
+                    id="isIngestionTracked"
+                    name="isIngestionTracked"
+                    label="is Ingestion Tracked"
+                    checked={supplier.isIngestionTracked === true ? true : false}
+                    error={errors.isIngestionTracked}
                     onChange={handleChange} />
-                <TextInputBase
-                    id="decryptionManualTriggerUrl"
-                    name="decryptionManualTriggerUrl"
-                    label="Decryption Manual Trigger Url"
-                    placeholder="landing Manual Trigge Url"
-                    value={supplier.decryptionManualTriggerUrl}
-                    required={true}
-                    error={errors.landingManualTriggerUrl}
+
+                <CheckboxBase
+                    id="canDecryptIngestionTracking"
+                    name="canDecryptIngestionTracking"
+                    label="Can Decrypt Ingestion Tracking"
+                    checked={supplier.canDecryptIngestionTracking === true ? true : false}
+                    error={errors.canDecryptIngestionTracking}
                     onChange={handleChange} />
+
+                <br />
             </TableBaseData>
+
+
             
             <TableBaseData classes="text-end">
                 <ButtonBase onClick={() => onCancel()} cancel>Cancel</ButtonBase>&nbsp;

@@ -22,6 +22,7 @@
     "lhds.adminportal.configuration.client": "file:",
     "lhds.adminportal.frontend.client": "file:",
     "jquery": "3.7.1",
+    "jszip": "^3.10.1",
     "lodash": "^4.17.21",
     "merge": "^2.1.1",
     "moment": "2.30.1",

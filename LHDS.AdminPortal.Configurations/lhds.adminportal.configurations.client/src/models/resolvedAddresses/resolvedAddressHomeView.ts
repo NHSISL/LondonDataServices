@@ -1,0 +1,105 @@
+export class ResolvedAddressHomeView {
+    public id: string;
+    public uprn?: string;
+    public upsn?: string;
+    public postCode?: string;
+    public retryCount?: number;
+    public isProcessing?: boolean;
+    public uniqueReference?: string;
+    public unstructuredPostalAddress?: string;
+    public alternateUnstructuredPostalAddress?: string | null;
+    public batchReference?: string;
+    public addressFormatQuality?: string;
+    public algorithm?: string;
+    public buildingName?: string;
+    public buildingNumber?: string;
+    public classification?: string;
+    public departmentName?: string;
+    public dependentLocality?: string;
+    public dependentThoroughfare?: string;
+    public doubleDependentLocality?: string;
+    public matchPattern?: string;
+    public matchedWithAssign?: boolean;
+    public organisationName?: string;
+    public postCodeQuality?: string;
+    public postTown?: string;
+    public qualifier?: string;
+    public subBuildingName?: string;
+    public thoroughfare?: string;
+    public isExported?: boolean;
+    public isProcessed?: boolean;
+    public createdBy?: string;
+    public createdDate?: Date;
+    public updatedBy?: string;
+    public updatedDate?: Date;
+
+    constructor(
+        id: string,
+        uprn?: string,
+        upsn?: string,
+        postCode?: string,
+        retryCount?: number,
+        isProcessing?: boolean,
+        uniqueReference?: string,
+        unstructuredPostalAddress?: string,
+        alternateUnstructuredPostalAddress?: string,
+        batchReference?: string,
+        addressFormatQuality?: string,
+        algorithm?: string,
+        buildingName?: string,
+        buildingNumber?: string,
+        classification?: string,
+        departmentName?: string,
+        dependentLocality?: string,
+        dependentThoroughfare?: string,
+        doubleDependentLocality?: string,
+        matchPattern?: string,
+        matchedWithAssign?: boolean,
+        organisationName?: string,
+        postCodeQuality?: string,
+        postTown?: string,
+        qualifier?: string,
+        subBuildingName?: string,
+        thoroughfare?: string,
+        isExported?: boolean,
+        isProcessed?: boolean,
+        createdBy?: string,
+        createdDate?: Date,
+        updatedBy?: string,
+        updatedDate?: Date) 
+    {
+        this.id = id;
+        this.uprn = uprn;
+        this.upsn = upsn;
+        this.postCode = postCode;
+        this.retryCount = retryCount;
+        this.isProcessing = isProcessing;
+        this.uniqueReference = uniqueReference;
+        this.unstructuredPostalAddress = unstructuredPostalAddress;
+        this.alternateUnstructuredPostalAddress = alternateUnstructuredPostalAddress;
+        this.batchReference = batchReference;
+        this.addressFormatQuality = addressFormatQuality;
+        this.algorithm = algorithm;
+        this.buildingName = buildingName;
+        this.buildingNumber = buildingNumber;
+        this.classification = classification;
+        this.departmentName = departmentName;
+        this.dependentLocality = dependentLocality;
+        this.dependentThoroughfare = dependentThoroughfare;
+        this.doubleDependentLocality = doubleDependentLocality;
+        this.matchPattern = matchPattern;
+        this.matchedWithAssign = matchedWithAssign;
+        this.organisationName = organisationName;
+        this.postCodeQuality = postCodeQuality;
+        this.postTown = postTown;
+        this.qualifier = qualifier;
+        this.subBuildingName = subBuildingName;
+        this.thoroughfare = thoroughfare;
+        this.isExported = isExported;
+        this.isProcessed = isProcessed;
+        this.createdBy = createdBy;
+        this.createdDate = createdDate;
+        this.updatedBy = updatedBy;
+        this.updatedDate = updatedDate;
+    }
+}

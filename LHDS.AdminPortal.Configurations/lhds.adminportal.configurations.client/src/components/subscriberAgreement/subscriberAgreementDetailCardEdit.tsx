@@ -13,7 +13,6 @@ import { Link } from "react-router-dom";
 import { SubscriberCredentialView } from "../../models/views/components/subscriberCredentials/subscriberCredentialView";
 import { subscriberAgreementErrors } from "./subscriberAgreementErrors";
 import { subscriberAgreementValidation } from "./subscriberAgreementValidation";
-import { ApiError } from "../../types/apiError";
 
 interface SubscriberAgreementDetailCardEditProps {
     subscriberCredential: SubscriberCredentialView;
@@ -22,7 +21,7 @@ interface SubscriberAgreementDetailCardEditProps {
     onCancel: () => void;
     mode: string;
     onModeChange: (value: string) => void;
-    apiError?: ApiError;
+    apiError?: any;
 }
 
 const SubscriberAgreementDetailCardEdit: FunctionComponent<SubscriberAgreementDetailCardEditProps> = (props) => {

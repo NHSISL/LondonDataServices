@@ -51,127 +51,127 @@ function App({ instance }: any) {
                 },
                 {
                     path: "/ingestionTracking",
-                    element: (<SecuredRoute allowedRoles={securityPoints.address.view}><IngestionTrackingHomepage/></SecuredRoute>)
+                    element: (<SecuredRoute allowedRoles={securityPoints.ingestionTracking.view}><IngestionTrackingHomepage /></SecuredRoute>)
                 },
                 {
                     path: "/ingestionTracking",
-                    element: <IngestionTrackingPage />
+                    element: (<SecuredRoute allowedRoles={securityPoints.ingestionTracking.view}><IngestionTrackingPage /></SecuredRoute>)
                 },
                 {
                     path: "/ingestionTrackingDetail/:ingestionTrackingId",
-                    element: <IngestionTrackingPage />
+                    element: (<SecuredRoute allowedRoles={securityPoints.ingestionTracking.view}><IngestionTrackingPage /></SecuredRoute>)
                 },
                 {
                     path: "/optOutSearch",
-                    element: <OptOutSearchPage />
+                    element: (<SecuredRoute allowedRoles={securityPoints.optOut.view}><OptOutSearchPage /></SecuredRoute>)
                 },
                 {
                     path: "/optOutUpload",
-                    element: <OptOutUploadPage />
+                    element: (<SecuredRoute allowedRoles={securityPoints.optOut.view}><OptOutUploadPage /></SecuredRoute>)
                 },
                 {
                     path: "/pds",
-                    element: <PdsSearchPage />
+                    element: (<SecuredRoute allowedRoles={securityPoints.pds.view}><PdsSearchPage /></SecuredRoute>)
                 },
                 {
                     path: "/pdsUpload",
-                    element: <PdsUploadPage />
+                    element: (<SecuredRoute allowedRoles={securityPoints.pds.view}><PdsUploadPage /></SecuredRoute>)
                 },
                 {
                     path: "/terminologyArtifact",
-                    element: <TerminologyArtifactPage />
+                    element: (<SecuredRoute allowedRoles={securityPoints.terminologyArtifact.view}><TerminologyArtifactPage /></SecuredRoute>)
                 },
                 {
                     path: "/terminologyArtifactDetail/:terminologyArtifactId",
-                    element: <TerminologyArtifactDetailPage />
+                    element: (<SecuredRoute allowedRoles={securityPoints.terminologyArtifact.view}><TerminologyArtifactDetailPage /></SecuredRoute>)
                 },
                 {
                     path: "/address",
-                    element: <AddressPage />
+                    element: (<SecuredRoute allowedRoles={securityPoints.address.view}><AddressPage /></SecuredRoute>)
                 },
                 {
                     path: "/addressDetail/:addressId",
-                    element: <AddressDetailPage />
+                    element: (<SecuredRoute allowedRoles={securityPoints.address.view}><AddressDetailPage /></SecuredRoute>)
                 },
                 {
                     path: "/resolvedAddress",
-                    element: <ResolvedAddressPage />
+                    element: (<SecuredRoute allowedRoles={securityPoints.resolvedAddress.view}><ResolvedAddressPage /></SecuredRoute>)
                 },
                 {
                     path: "/resolvedAddressDetail/:resolvedAddressId",
-                    element: <ResolvedAddressDetailPage />
+                    element: (<SecuredRoute allowedRoles={securityPoints.resolvedAddress.view}><ResolvedAddressDetailPage /></SecuredRoute>)
                 },
                 {
                     path: "/configuration",
-                    element: <ConfigHomePage />
+                    element: (<SecuredRoute allowedRoles={securityPoints.configuration.view}><ConfigHomePage /></SecuredRoute>)
                 },
                 {
                     path: "/configuration/suppliers",
-                    element: <SuppliersPage />
+                    element: (<SecuredRoute allowedRoles={securityPoints.suppliers.view}><SuppliersPage /></SecuredRoute>)
                 },
                 {
                     path: "/subscriberAgreements",
-                    element: <SubscriberAgreementPage />
+                    element: (<SecuredRoute allowedRoles={securityPoints.subscriberAgreement.view}><SubscriberAgreementPage /></SecuredRoute>)
                 },
                 {
                     path: "/subscriberAgreement/new",
-                    element: <SubscriberAgreementAddPage />
+                    element: (<SecuredRoute allowedRoles={securityPoints.subscriberAgreement.view}><SubscriberAgreementAddPage /></SecuredRoute>)
                 },
                 {
                     path: "/subscriberAgreementDetail/:subscriberAgreementId",
-                    element: <SubscriberAgreementDetailPage />
+                    element: (<SecuredRoute allowedRoles={securityPoints.subscriberAgreement.view}><SubscriberAgreementDetailPage /></SecuredRoute>)
                 },
                 {
                     path: "/configuration/dataTypes",
-                    element: <DataTypesPage />
+                    element: (<SecuredRoute allowedRoles={securityPoints.configuration.view}><DataTypesPage /></SecuredRoute>)
                 },
                 {
                     path: "/configuration/dataSets",
-                    element: <DataSetsListPage />
+                    element: (<SecuredRoute allowedRoles={securityPoints.configuration.view}><DataSetsListPage /></SecuredRoute>)
                 },
                 {
                     path: "/configuration/dataSet",
-                    element: <DataSetPage />
+                    element: (<SecuredRoute allowedRoles={securityPoints.configuration.view}><DataSetPage /></SecuredRoute>)
                 },
                 {
                     path: "/configuration/dataSet/:dataSetId",
-                    element: <DataSetPage />
+                    element: (<SecuredRoute allowedRoles={securityPoints.configuration.view}><DataSetPage /></SecuredRoute>)
                 },
                 {
                     path: "/configuration/dataSetSpecification",
-                    element: <DataSetSpecificationPage />
+                    element: (<SecuredRoute allowedRoles={securityPoints.configuration.view}><DataSetSpecificationPage /></SecuredRoute>)
                 },
                 {
                     path: "/configuration/dataSetSpecification/:dataSetId",
-                    element: <DataSetSpecificationPage />
+                    element: (<SecuredRoute allowedRoles={securityPoints.configuration.view}><DataSetSpecificationPage /></SecuredRoute>)
                 },
                 {
                     path: "/configuration/dataSetSpecification/:dataSetId/:dataSetSpecificationId",
-                    element: <DataSetSpecificationPage />
+                    element: (<SecuredRoute allowedRoles={securityPoints.configuration.view}><DataSetSpecificationPage /></SecuredRoute>)
                 },
                 {
                     path: "/configuration/specificationObjectAdd/:dataSetSpecificationId/:dataSetId",
-                    element: <SpecificationObjectPage />
+                    element: (<SecuredRoute allowedRoles={securityPoints.configuration.view}><SpecificationObjectPage /></SecuredRoute>)
                 },
                 {
                     path: "/configuration/specificationObject/:specificationObjectId/:dataSetSpecificationId/",
-                    element: <SpecificationObjectPage />
+                    element: (<SecuredRoute allowedRoles={securityPoints.configuration.view}><SpecificationObjectPage /></SecuredRoute>)
                 },
                 {
                     path: "configuration/objectColumn/:dataSetSpecificationId/:specificationObjectId",
-                    element: <ObjectColumnPage />
+                    element: (<SecuredRoute allowedRoles={securityPoints.configuration.view}><ObjectColumnPage /></SecuredRoute>)
                 },
                 {
                     path: "configuration/objectColumn/:specificationObjectId",
-                    element: <ObjectColumnPage />
+                    element: (<SecuredRoute allowedRoles={securityPoints.configuration.view}><ObjectColumnPage /></SecuredRoute>)
                 },
                 {
                     path: "configuration/objectColumn/:dataSetSpecificationId/:objectColumnId/:specificationObjectId/",
-                    element: <ObjectColumnPage />
+                    element: (<SecuredRoute allowedRoles={securityPoints.configuration.view}><ObjectColumnPage /></SecuredRoute>)
                 },
                 {
                     index: true,
-                    element: <Navigate to="/home" />
+                    element:<Navigate to="/home" />
                 }
             ]
         }

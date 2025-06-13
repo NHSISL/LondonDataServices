@@ -14,7 +14,7 @@ import InfiniteScrollLoader from "../bases/pagers/InfiniteScroll.Loader";
 import { SpinnerBase } from "../bases/spinner/SpinnerBase";
 import IngestionTrackingRow from "./ingestionTrackingRow";
 import { IngestionTracking } from "../../models/ingestionTrackings/ingestionTracking";
-import { Row } from "react-bootstrap";
+import { Button, CloseButton, Row } from "react-bootstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faDatabase, faFilter, faRefresh } from "@fortawesome/free-solid-svg-icons";
 import IngestionFilterModal from "./ingestionTrackingFilter";
@@ -221,9 +221,9 @@ const IngestionTrackingTable: FunctionComponent<IngestionTrackingTableProps> = (
             </CardBase>
 
             <div className={`filter-side-panel ${showSidePanel ? "open" : ""}`}>
-                <div className="filter-side-panel-header">
+                <div className="filter-side-panel-header mt-2">
                     <h5> <FontAwesomeIcon icon={faFilter} /> Filters</h5>
-                    <button className="close-button" onClick={() => setShowSidePanel(false)}>×</button>
+                    <CloseButton onClick={() => setShowSidePanel(false)}>×</CloseButton>
                 </div>
                 <div className="filter-side-panel-body">
 

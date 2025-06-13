@@ -2,7 +2,7 @@
 
 .text-hero {
     color: var( --hero-color);
-    font-weight:lighter;
+    font-weight: lighter;
 }
 
 .navBtn {
@@ -10,7 +10,9 @@
     padding: 10px;
 }
 
-.nav-link { padding: 0; }
+.nav-link {
+    padding: 0;
+}
 
 .submenu {
     display: none;
@@ -23,7 +25,9 @@
     display: block;
 }
 
-li{ list-style-type:none; }
+li {
+    list-style-type: none;
+}
 
 hr {
     color: #cccccc;
@@ -34,7 +38,7 @@ hr {
 
 a.linkVisited:visited {
     color: #fff !important;
-    text-decoration:none;
+    text-decoration: none;
 }
 
 .center {
@@ -43,14 +47,15 @@ a.linkVisited:visited {
     justify-content: center;
     align-items: center;
     height: calc(100vh - 50px);
-    
 }
 
 .max-width-400 {
     max-width: 500px;
 }
 
-.min-height-600{min-height: 600px;}
+.min-height-600 {
+    min-height: 600px;
+}
 
 
 /* Add this to your CSS file or styles section */
@@ -62,7 +67,7 @@ a.linkVisited:visited {
     background: white;
     padding: 20px;
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
-    min-width:500px;
+    min-width: 500px;
 }
 
 .form-control:focus,
@@ -133,4 +138,20 @@ a.linkVisited:visited {
         overflow-y: auto;
         flex-grow: 1;
     }
+}
+
+
+.environment-tagline {
+    height: 12px;
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: fixed;
+    top: 0;
+    left: 0;
+    z-index: 1051; // just above Bootstrap navbar (default is 1030)
+    font-size: 0.7rem;
+    font-weight: bold;
+    color: white
 }

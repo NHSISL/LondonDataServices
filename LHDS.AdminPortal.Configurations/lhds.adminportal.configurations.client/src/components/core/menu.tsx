@@ -125,7 +125,7 @@ const MenuComponent: React.FC = () => {
                         className={`bg-dark text-white ${activePath === '/address' ? 'active' : ''}`}
                         onClick={() => handleItemClick('/address')}>
                         <FontAwesomeIcon icon={faMap} className="me-2 fa-icon" />
-                        <SecuredLink to="/address">Addresses</SecuredLink>
+                        <SecuredLink to="/address">Post Office Addresses</SecuredLink>
                     </ListGroup.Item>
                 </SecuredComponent>
             </FeatureSwitch>
@@ -136,7 +136,7 @@ const MenuComponent: React.FC = () => {
                         className={`bg-dark text-white ${activePath === '/resolvedAddress' ? 'active' : ''}`}
                         onClick={() => handleItemClick('/resolvedAddress')}>
                         <FontAwesomeIcon icon={faMapPin} className="me-2 fa-icon" />
-                        <SecuredLink to="/resolvedAddress">Resolved Address</SecuredLink>
+                        <SecuredLink to="/resolvedAddress">Resolved Addresses</SecuredLink>
                     </ListGroup.Item>
                 </SecuredComponent>
             </FeatureSwitch>

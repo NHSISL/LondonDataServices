@@ -52,7 +52,7 @@ const SubscriberAgreementTable: FunctionComponent = () => {
     );
 
     const hasNoMorePages = () => {
-        return !isLoading && data?.pages.at(-1)?.nextPage === undefined;
+        return !isLoading && !hasNextPage;
     };
 
     const refreshData = () => {
@@ -122,7 +122,7 @@ const SubscriberAgreementTable: FunctionComponent = () => {
                                             <InfiniteScrollLoader
                                                 loading={isLoading || isFetchingNextPage}
                                                 spinner={<SpinnerBase />}
-                                                noMorePages={hasNoMorePages()}
+                                                noMorePages={!hasNoMorePages()}
                                                 noMorePagesMessage={<>---No more Subscriber Agreements---</>} />
                                         </td>
                                     </tr>

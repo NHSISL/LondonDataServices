@@ -82,7 +82,7 @@ const IngestionFilterModal: FunctionComponent<FilterModalProps> = ({
         if (selectedSupplierId !== "") {
             const selectedLookup = suppliersRetrieved.find(s => s.id === selectedSupplierId);
             if (selectedLookup) {
-                supplier = new SupplierView(Guid.parse(selectedLookup.id));
+                supplier = new SupplierView(selectedLookup.id);
                 supplier.name = selectedLookup.name;
             }
         }

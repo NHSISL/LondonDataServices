@@ -126,6 +126,21 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.IngestionTrackingAudits
             return filler;
         }
 
+        private static IngestionTrackingAudit CreateRandomModifyIngestionTrackingAudit(
+            DateTimeOffset dateTimeOffset,
+            string userId)
+        {
+            int randomDaysInPast = GetRandomNegativeNumber();
+
+            IngestionTrackingAudit randomIngestionTrackingAudit =
+                CreateRandomIngestionTrackingAudit(dateTimeOffset, userId);
+
+            randomIngestionTrackingAudit.CreatedDate =
+                randomIngestionTrackingAudit.CreatedDate.AddDays(randomDaysInPast);
+
+            return randomIngestionTrackingAudit;
+        }
+
         private static IngestionTrackingAudit CreateRandomIngestionTrackingAudit(
             DateTimeOffset dateTimeOffset,
             string userId) =>

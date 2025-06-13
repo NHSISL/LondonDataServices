@@ -20,7 +20,9 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.IngestionTrackingAudits
         {
             // given
             IngestionTrackingAudit nullIngestionTrackingAudit = null;
-            var nullIngestionTrackingAuditException = new NullIngestionTrackingAuditException(message: "IngestionTrackingAudit is null.");
+
+            var nullIngestionTrackingAuditException = 
+                new NullIngestionTrackingAuditException(message: "IngestionTrackingAudit is null.");
 
             var expectedIngestionTrackingAuditValidationException =
                 new IngestionTrackingAuditValidationException(

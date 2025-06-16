@@ -1,15 +1,12 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 using FluentAssertions;
 using LHDS.Core.Models.Coordinations.HealthChecks.Exceptions;
-using LHDS.Core.Models.Orchestrations.Decryptions.Exceptions;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
 using Moq;
 using Xunit;
 
-namespace LHDS.Core.Tests.Unit.Services.Coordinations.HealthChecks.IngestionTracking.IngestionTrackingDecryptionHealthCheck
+namespace LHDS.Core.Tests.Unit.Services.Coordinations.HealthChecks.IngestionTrackings.IngestionTrackingDecryptionHealthCheck
 {
     public partial class IngestionTrackingDecryptionHealthCheckServiceTests
     {
@@ -21,12 +18,20 @@ namespace LHDS.Core.Tests.Unit.Services.Coordinations.HealthChecks.IngestionTrac
 
             var failedIngestionTrackingDecryptionHealthCheckCooridinationServiceException =
                 new FailedIngestionTrackingDecryptionHealthCheckCooridinationServiceException(
-                    message: "Failed ingestion tracking decryption health check coordination service error occurred, please contact support.",
+
+                    message: 
+                        "Failed ingestion tracking decryption health check coordination service error occurred, "
+                        + "please contact support.",
+
                     innerException: serviceException);
 
             var expectedIngestionTrackingDecryptionHealthCheckCooridinationServiceException =
                 new IngestionTrackingDecryptionHealthCheckCooridinationServiceException(
-                    message: "Ingestion tracking decryption health check coordination service error occurred, please contact support.",
+                    
+                    message: 
+                        "Ingestion tracking decryption health check coordination service error occurred, "
+                        + "please contact support.",
+
                     innerException: failedIngestionTrackingDecryptionHealthCheckCooridinationServiceException);
 
             this.dateTimeBrokerMock.Setup(broker =>

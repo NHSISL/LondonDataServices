@@ -20,10 +20,15 @@ namespace LHDS.Core.Services.Foundations.HealthChecks.IngestionTracking
             {
                 var failedIngestionTrackingDecryptionHealthCheckCooridinationServiceException =
                     new FailedIngestionTrackingDecryptionHealthCheckCooridinationServiceException(
-                        message: "Failed ingestion tracking decryption health check coordination service error occurred, please contact support.",
+                        
+                        message: "Failed ingestion tracking decryption health check coordination service error occurred, "
+                        + "please contact support.",
+
                         innerException: exception);
 
-                throw await CreateAndLogServiceExceptionAsync(failedIngestionTrackingDecryptionHealthCheckCooridinationServiceException);
+                throw await CreateAndLogServiceExceptionAsync(
+                    failedIngestionTrackingDecryptionHealthCheckCooridinationServiceException
+                );
             }
         }
 
@@ -32,10 +37,15 @@ namespace LHDS.Core.Services.Foundations.HealthChecks.IngestionTracking
         {
             var ingestionTrackingDecryptionHealthCheckCooridinationServiceException =
                 new IngestionTrackingDecryptionHealthCheckCooridinationServiceException(
-                    message: "Ingestion tracking decryption health check coordination service error occurred, please contact support.",
+
+                    message: "Ingestion tracking decryption health check coordination service error occurred, " 
+                    + "please contact support.",
+
                     innerException: exception);
 
-            await this.loggingBroker.LogCriticalAsync(ingestionTrackingDecryptionHealthCheckCooridinationServiceException);
+            await this.loggingBroker.LogCriticalAsync(
+                ingestionTrackingDecryptionHealthCheckCooridinationServiceException
+            );
 
             return ingestionTrackingDecryptionHealthCheckCooridinationServiceException;
         }

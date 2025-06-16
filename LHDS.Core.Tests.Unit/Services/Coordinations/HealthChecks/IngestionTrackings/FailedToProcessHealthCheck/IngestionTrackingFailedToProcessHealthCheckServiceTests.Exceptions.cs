@@ -6,7 +6,7 @@ using Microsoft.Extensions.Diagnostics.HealthChecks;
 using Moq;
 using Xunit;
 
-namespace LHDS.Core.Tests.Unit.Services.Coordinations.HealthChecks.IngestionTracking.FailedToProcessHealthCheck
+namespace LHDS.Core.Tests.Unit.Services.Coordinations.HealthChecks.IngestionTrackings.FailedToProcessHealthCheck
 {
     public partial class IngestionTrackingFailedToProcessHealthCheckServiceTests
     {
@@ -18,12 +18,18 @@ namespace LHDS.Core.Tests.Unit.Services.Coordinations.HealthChecks.IngestionTrac
 
             var failedIngestionTrackingFailedToProcessHealthCheckServiceException =
                 new FailedIngestionTrackingFailedToProcessHealthCheckServiceException(
-                    message: "Failed ingestion tracking failed to process health check service error occurred, please contact support.",
+
+                    message: "Failed ingestion tracking failed to process health check service error occurred, " +
+                    "please contact support.",
+
                     innerException: serviceException);
 
             var expectedIngestionTrackingFailedToProcessHealthCheckServiceException =
                 new IngestionTrackingFailedToProcessHealthCheckServiceException(
-                    message: "Ingestion tracking failed to process health check service error occurred, please contact support.",
+
+                    message: "Ingestion tracking failed to process health check service error occurred, " + 
+                    "please contact support.",
+
                     innerException: failedIngestionTrackingFailedToProcessHealthCheckServiceException);
 
             this.dateTimeBrokerMock.Setup(broker =>
@@ -31,7 +37,8 @@ namespace LHDS.Core.Tests.Unit.Services.Coordinations.HealthChecks.IngestionTrac
                     .ThrowsAsync(serviceException);
 
             // when
-            ValueTask<HealthCheckResult> getHealthStatusTask = this.ingestionTrackingFailedToProcessHealthCheckService.GetHealthStatusAsync();
+            ValueTask<HealthCheckResult> getHealthStatusTask = 
+                this.ingestionTrackingFailedToProcessHealthCheckService.GetHealthStatusAsync();
 
             IngestionTrackingFailedToProcessHealthCheckServiceException
                 actualIngestionTrackingFailedToProcessHealthCheckServiceException =

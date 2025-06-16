@@ -25,6 +25,7 @@ using LHDS.Core.Models.Foundations.IngestionTrackingAudits.Exceptions;
 using LHDS.Core.Models.Foundations.IngestionTrackings;
 using LHDS.Core.Models.Foundations.IngestionTrackings.Exceptions;
 using LHDS.Core.Models.Orchestrations.EmisLandings;
+using LHDS.Core.Models.Processings.Documents.Exceptions;
 using LHDS.Core.Models.Processings.SubscriberCredentials;
 using LHDS.Core.Services.Orchestrations.Downloads;
 using LHDS.Core.Services.Orchestrations.EmisLandings;
@@ -47,7 +48,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.EmisLandings
         private readonly Mock<IDocumentProcessingService> documentProcessingServiceMock;
         private readonly Mock<IDownloadProcessingService> downloadProcessingServiceMock;
         private readonly Mock<IIngestionTrackingProcessingService> ingestionTrackingProcessingServiceMock;
-        private readonly Mock<IIngestionTrackingAuditProcessingService> auditServiceMock;
+        private readonly Mock<IIngestionTrackingAuditProcessingService> ingestionTrackingAuditProcessingServiceMock;
         private readonly Mock<IDataSetSpecificationProcessingService> dataSetSpecificationProcessingServiceMock;
         private readonly Mock<ILoggingBroker> loggingBrokerMock;
         private readonly Mock<IDateTimeBroker> dateTimeBrokerMock;
@@ -66,7 +67,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.EmisLandings
             downloadProcessingServiceMock = new Mock<IDownloadProcessingService>();
             ingestionTrackingProcessingServiceMock = new Mock<IIngestionTrackingProcessingService>();
             dataSetSpecificationProcessingServiceMock = new Mock<IDataSetSpecificationProcessingService>();
-            auditServiceMock = new Mock<IIngestionTrackingAuditProcessingService>();
+            ingestionTrackingAuditProcessingServiceMock = new Mock<IIngestionTrackingAuditProcessingService>();
             loggingBrokerMock = new Mock<ILoggingBroker>();
             dateTimeBrokerMock = new Mock<IDateTimeBroker>();
             identifierBrokerMock = new Mock<IIdentifierBroker>();
@@ -94,7 +95,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.EmisLandings
                 documentProcessingService: documentProcessingServiceMock.Object,
                 downloadProcessingService: downloadProcessingServiceMock.Object,
                 ingestionTrackingProcessingService: ingestionTrackingProcessingServiceMock.Object,
-                auditService: auditServiceMock.Object,
+                auditService: ingestionTrackingAuditProcessingServiceMock.Object,
                 dataSetSpecificationProcessingService: dataSetSpecificationProcessingServiceMock.Object,
                 blobContainers,
                 loggingBroker: loggingBrokerMock.Object,
@@ -125,10 +126,34 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.EmisLandings
             return Encoding.UTF8.GetBytes(randomMessage);
         }
 
-        private static List<string> GetRandomStrings() =>
-            Enumerable.Range(1, GetRandomNumber())
-                .Select(i => GetRandomString())
-                .ToList();
+        private static List<string> GetRandomStrings()
+        {
+            var uniqueStrings = new HashSet<string>();
+            int count = GetRandomNumber();
+
+            while (uniqueStrings.Count < count)
+            {
+                uniqueStrings.Add(GetRandomString());
+            }
+
+            return uniqueStrings.ToList();
+        }
+
+        private static List<string> GetRandomStrings(int count, int? length = 0)
+        {
+            var uniqueStrings = new HashSet<string>();
+
+            while (uniqueStrings.Count < count)
+            {
+                string randomString = length.HasValue && length > 0
+                    ? GetRandomString(wordMinLength: length.Value, wordMaxLength: length.Value)
+                    : GetRandomString();
+
+                uniqueStrings.Add(randomString);
+            }
+
+            return uniqueStrings.ToList();
+        }
 
         private static int GetRandomNumber(int min = 2, int max = 10) =>
             new IntRange(min, max).GetValue();
@@ -182,8 +207,15 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.EmisLandings
                 $"/{GetRandomFileNames(count: 1, subscriberAgreementId)[0]}").ToList();
         }
 
-        private static string GetRandomString() =>
-            new MnemonicString(wordCount: 1, wordMinLength: 1, wordMaxLength: GetRandomNumber()).GetValue();
+        private static string GetRandomString(int wordMinLength = 2, int wordMaxLength = 0)
+        {
+            if (wordMaxLength == 0)
+            {
+                wordMaxLength = GetRandomNumber();
+            }
+
+            return new MnemonicString(wordCount: 1, wordMinLength: 2, wordMaxLength: GetRandomNumber()).GetValue();
+        }
 
         private static string GetRandomString(int length) =>
             new MnemonicString(wordCount: 1, wordMinLength: length, wordMaxLength: length).GetValue();
@@ -191,20 +223,13 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.EmisLandings
         private static DateTimeOffset GetRandomDateTimeOffset() =>
             new DateTimeRange(earliestDate: new DateTime()).GetValue();
 
-        private static List<IngestionTracking> CreateRandomIngestionTrackings(
+        private static IngestionTracking CreateRandomIngestionTracking(
             DateTimeOffset dateTimeOffset,
-            List<string> fileNames,
+            string fileName,
             bool isDownloaded,
             int retryCount)
         {
-            List<IngestionTracking> items = new List<IngestionTracking>();
-
-            foreach (var fileName in fileNames)
-            {
-                items.Add(CreateIngestionTrackingFiller(dateTimeOffset, fileName, isDownloaded, retryCount).Create());
-            }
-
-            return items;
+            return CreateIngestionTrackingFiller(dateTimeOffset, fileName, isDownloaded, retryCount).Create();
         }
 
         private static IngestionTracking CreateRandomIngestionTracking(DateTimeOffset dateTimeOffset) =>
@@ -272,17 +297,15 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.EmisLandings
                 .OnProperty(dataSet => dataSet.ActiveTo).Use(now.AddDays(2))
                 .OnProperty(dataSet => dataSet.CreatedBy).Use(user)
                 .OnProperty(dataSet => dataSet.UpdatedBy).Use(user)
-                .OnProperty(dataSet => dataSet.ActiveTo).Use(now.AddDays(GetRandomNumber()));
+                .OnProperty(dataSet => dataSet.ActiveTo).Use(now.AddDays(GetRandomNumber()))
+                .OnProperty(dataSet => dataSet.DataSetSpecifications).IgnoreIt()
+                .OnProperty(dataSet => dataSet.Supplier).IgnoreIt();
 
             return filler;
         }
 
-        private static IQueryable<DataSetSpecification> CreateRandomDataSetSpecifications(DataSet dataSet)
-        {
-            return CreateDataSetSpecificationFiller(dataSet)
-                .Create(count: 1)
-                    .AsQueryable();
-        }
+        private static DataSetSpecification CreateRandomDataSetSpecification(DataSet dataSet) =>
+            CreateDataSetSpecificationFiller(dataSet).Create();
 
         private static Filler<DataSetSpecification> CreateDataSetSpecificationFiller(DataSet dataSet)
         {
@@ -306,11 +329,12 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.EmisLandings
                 .OnProperty(dataSetSpecification =>
                     dataSetSpecification.SupplierSpecificationVersion).Use(GetRandomString(10))
 
-                .OnProperty(dataSetSpecification => dataSetSpecification.PresededById).IgnoreIt()
-                .OnProperty(dataSetSpecification => dataSetSpecification.SupersededById).IgnoreIt()
                 .OnProperty(dataSetSpecification => dataSetSpecification.CreatedBy).Use(user)
                 .OnProperty(dataSetSpecification => dataSetSpecification.CreatedBy).Use(user)
-                .OnProperty(dataSetSpecification => dataSetSpecification.UpdatedBy).Use(user);
+                .OnProperty(dataSetSpecification => dataSetSpecification.UpdatedBy).Use(user)
+                .OnProperty(dataSetSpecification => dataSetSpecification.PresededBy).IgnoreIt()
+                .OnProperty(dataSetSpecification => dataSetSpecification.SupersededBy).IgnoreIt()
+                .OnProperty(dataSetSpecification => dataSetSpecification.SpecificationObjects).IgnoreIt();
 
             return filler;
         }
@@ -410,7 +434,8 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.EmisLandings
                 .OnType<DateTimeOffset>().Use(dateTimeOffset)
                 .OnType<DateTimeOffset?>().Use(dateTimeOffset)
                 .OnProperty(ingestionTracking => ingestionTracking.Supplier).IgnoreIt()
-                .OnProperty(ingestionTracking => ingestionTracking.IngestionTrackingAudits).IgnoreIt();
+                .OnProperty(ingestionTracking => ingestionTracking.IngestionTrackingAudits).IgnoreIt()
+                .OnProperty(ingestionTracking => ingestionTracking.SubscriberAgreement).IgnoreIt();
 
             return filler;
         }
@@ -427,8 +452,11 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.EmisLandings
                 .OnProperty(ingestionTracking => ingestionTracking.FileName).Use(id)
                 .OnType<DateTimeOffset>().Use(dateTimeOffset)
                 .OnType<DateTimeOffset?>().Use(dateTimeOffset)
+                .OnProperty(ingestionTracking => ingestionTracking.IsDownloaded).Use(isDownloaded)
+                .OnProperty(ingestionTracking => ingestionTracking.RetryCount).Use(retryCount)
                 .OnProperty(ingestionTracking => ingestionTracking.Supplier).IgnoreIt()
-                .OnProperty(ingestionTracking => ingestionTracking.IngestionTrackingAudits).IgnoreIt();
+                .OnProperty(ingestionTracking => ingestionTracking.IngestionTrackingAudits).IgnoreIt()
+                .OnProperty(ingestionTracking => ingestionTracking.SubscriberAgreement).IgnoreIt();
 
             return filler;
         }
@@ -449,6 +477,51 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.EmisLandings
                 .OnProperty(subscriberCredential => subscriberCredential.UpdatedBy).Use(user);
 
             return filler;
+        }
+
+        private (string encryptedFileName, string decryptedFileName, string baseFolder) GetFileNames(
+            SubscriberCredential inputSubscriberCredential,
+            DataSet randomDataSet,
+            DataSetSpecification randomDataSetSpecification,
+            string externalFileName)
+        {
+            var filename = externalFileName.StartsWith('/')
+                ? externalFileName
+                : "/" + externalFileName;
+
+            string[] splitFileName = filename.Split('/');
+            string newFileName = "";
+
+            if (splitFileName.Length < 6)
+            {
+                throw new InvalidArgumentsDocumentProcessingException(filename);
+            }
+
+            string dataSetName = randomDataSetSpecification?.DataSet?.DataSetName ?? string.Empty;
+            string dataSetVersion = randomDataSetSpecification?.OurSpecificationVersion ?? string.Empty;
+            string extractGroup = inputSubscriberCredential.Id.ToString();
+            string extractTime = splitFileName[5];
+
+            string baseFolder =
+                $"/{landingConfiguration.DecryptedFolder}" +
+                $"/{dataSetName}" +
+                $"/{dataSetVersion}" +
+                $"/{extractGroup}" +
+                $"/{extractTime}";
+
+            newFileName = $"{splitFileName[6]}";
+
+            string encryptedFileName =
+                $"/{landingConfiguration.EncryptedFolder}" +
+                $"/{extractGroup}" +
+                $"/{extractTime}" +
+                $"/{newFileName}";
+
+            string decryptedFileName =
+                $"{baseFolder}" +
+                $"/{newFileName.Replace(".gpg", "", StringComparison.InvariantCultureIgnoreCase)}";
+
+            return (encryptedFileName, decryptedFileName, baseFolder);
         }
     }
 }

@@ -353,7 +353,7 @@ namespace LHDS.Core.Clients.Extensions
                         Parameter: "meshConfiguration__tlsRootCertificates__0"),
 
                     (Rule: IsInvalid(meshConfigurationSettings.TlsIntermediateCertificates),
-                        Parameter: "meshConfiguration__tlIntermediateCertificates__0"),
+                        Parameter: "meshConfiguration__tlsIntermediateCertificates__0"),
 
                     (Rule: IsInvalid(meshConfigurationSettings.ClientSigningCertificate),
                         Parameter: "meshConfiguration__clientSigningCertificate"));

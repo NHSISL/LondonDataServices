@@ -73,6 +73,7 @@ namespace LHDS.Core.Tests.Acceptance.Clients.Decryptions
                 randomDataSetSpecification.Id,
                 blobContainers.Ingress);
 
+            ingestionTracking.SubscriberAgreementId = subscriberCredential.Id;
             await this.ingestionTrackingService.AddIngestionTrackingAsync(ingestionTracking);
 
             //When

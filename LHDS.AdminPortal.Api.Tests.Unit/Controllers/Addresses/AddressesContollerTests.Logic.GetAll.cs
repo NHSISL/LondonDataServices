@@ -33,7 +33,7 @@ namespace LHDS.AdminPortal.Api.Tests.Unit.Controllers.Addresses
 
             // when
             ActionResult<IQueryable<Address>> actualActionResult =
-                await this.addressesController.GetAllAddressesAsync();
+                await this.addressesController.Get();
 
             // then
             actualActionResult.Should().BeEquivalentTo(expectedActionResult);

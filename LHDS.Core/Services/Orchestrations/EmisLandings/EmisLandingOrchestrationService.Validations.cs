@@ -20,6 +20,14 @@ namespace LHDS.Core.Services.Orchestrations.Downloads
                 Parameter: "LandingConfiguration.SupplierId"));
         }
 
+        private void ValidateOnProcess(SubscriberCredential subscriberCredential, Guid supplierId)
+        {
+
+            Validate(
+                (Rule: IsInvalid(subscriberCredential), Parameter: "SubscriberCredential"),
+                (Rule: IsInvalid(supplierId), Parameter: "SupplierId"));
+        }
+
         private void ValidateSubscriberCredentials(SubscriberCredential subscriberCredential)
         {
             if (subscriberCredential is null)

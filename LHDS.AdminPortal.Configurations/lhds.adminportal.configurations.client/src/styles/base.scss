@@ -157,3 +157,10 @@ custom-card-title{font-size:12px;}
     font-weight: bold;
     color: white
 }
+
+
+@media (max-width: 480px) {
+    body {
+        font-size: 13px;
+    }
+}

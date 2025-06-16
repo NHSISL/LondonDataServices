@@ -25,7 +25,7 @@
     padding: 8px 24px;
     position: relative;
     top: -8px;
-    font-size: 1rem;
+    font-size: 1rem !important;
     line-height: 1.33333
 }
 

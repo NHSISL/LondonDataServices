@@ -14,7 +14,9 @@ namespace LHDS.Core.Services.Foundations.HealthChecks.IngestionTracking
     {
         private delegate Task<HealthCheckResult> ReturningHealthCheckResultFunction();
 
-        private async ValueTask<HealthCheckResult> TryCatch(ReturningHealthCheckResultFunction returningHealthCheckResultFunction)
+        private async ValueTask<HealthCheckResult> TryCatch(
+            ReturningHealthCheckResultFunction returningHealthCheckResultFunction
+        )
         {
             try
             {
@@ -24,10 +26,15 @@ namespace LHDS.Core.Services.Foundations.HealthChecks.IngestionTracking
             {
                 var failedIngestionTrackingFailedToProcessHealthCheckServiceException =
                     new FailedIngestionTrackingFailedToProcessHealthCheckServiceException(
-                        message: "Failed ingestion tracking failed to process health check service error occurred, please contact support.",
+
+                        message: "Failed ingestion tracking failed to process health check service error occurred, " + 
+                        "please contact support.",
+
                         innerException: exception);
 
-                throw await CreateAndLogServiceExceptionAsync(failedIngestionTrackingFailedToProcessHealthCheckServiceException);
+                throw await CreateAndLogServiceExceptionAsync(
+                    failedIngestionTrackingFailedToProcessHealthCheckServiceException
+                );
             }
         }
 
@@ -36,7 +43,10 @@ namespace LHDS.Core.Services.Foundations.HealthChecks.IngestionTracking
         {
             var ingestionTrackingFailedToProcessHealthCheckServiceException =
                 new IngestionTrackingFailedToProcessHealthCheckServiceException(
-                    message: "Ingestion tracking failed to process health check service error occurred, please contact support.",
+
+                    message: "Ingestion tracking failed to process health check service error occurred, " + 
+                    "please contact support.",
+
                     innerException: exception);
 
             await this.loggingBroker.LogCriticalAsync(ingestionTrackingFailedToProcessHealthCheckServiceException);

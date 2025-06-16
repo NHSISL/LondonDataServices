@@ -7,7 +7,7 @@ using Microsoft.Extensions.Diagnostics.HealthChecks;
 using Moq;
 using Xunit;
 
-namespace LHDS.Core.Tests.Unit.Services.Coordinations.HealthChecks.IngestionTracking.FailedToProcessHealthCheck
+namespace LHDS.Core.Tests.Unit.Services.Coordinations.HealthChecks.IngestionTrackings.FailedToProcessHealthCheck
 {
     public partial class IngestionTrackingFailedToProcessHealthCheckServiceTests
     {
@@ -34,7 +34,10 @@ namespace LHDS.Core.Tests.Unit.Services.Coordinations.HealthChecks.IngestionTrac
                     healthyItemsCount: randomHealthyTrackings.Count()
                 );
 
-            var expectedHealthCheckResult = HealthCheckResult.Unhealthy(description: CheckName, data: healthCheckResultValues);
+            var expectedHealthCheckResult = HealthCheckResult.Unhealthy(
+                description: CheckName, 
+                data: healthCheckResultValues
+            );
 
             this.dateTimeBrokerMock.Setup(broker =>
                 broker.GetCurrentDateTimeOffsetAsync())
@@ -88,7 +91,10 @@ namespace LHDS.Core.Tests.Unit.Services.Coordinations.HealthChecks.IngestionTrac
                     degradedItemsCount: randomDegradedTrackings.Count(),
                     healthyItemsCount: randomHealthyTrackings.Count());
 
-            var expectedHealthCheckResult = HealthCheckResult.Degraded(description: CheckName, data: healthCheckResultValues);
+            var expectedHealthCheckResult = HealthCheckResult.Degraded(
+                description: CheckName, 
+                data: healthCheckResultValues
+            );
 
             this.dateTimeBrokerMock.Setup(broker =>
                 broker.GetCurrentDateTimeOffsetAsync())
@@ -130,9 +136,16 @@ namespace LHDS.Core.Tests.Unit.Services.Coordinations.HealthChecks.IngestionTrac
                 CreateRandomHealthyIngestionTrackings();
 
             Dictionary<string, object> healthCheckResultValues =
-                 GetHealthCheckResultValues(currentDateTime, HealthStatus.Healthy, healthyItemsCount: randomTrackings.Count());
+                 GetHealthCheckResultValues(
+                     currentDateTime, 
+                     HealthStatus.Healthy, 
+                     healthyItemsCount: randomTrackings.Count()
+                    );
 
-            var expectedHealthCheckResult = HealthCheckResult.Healthy(description: CheckName, data: healthCheckResultValues);
+            var expectedHealthCheckResult = HealthCheckResult.Healthy(
+                description: CheckName, 
+                data: healthCheckResultValues
+            );
 
             this.dateTimeBrokerMock.Setup(broker =>
                 broker.GetCurrentDateTimeOffsetAsync())

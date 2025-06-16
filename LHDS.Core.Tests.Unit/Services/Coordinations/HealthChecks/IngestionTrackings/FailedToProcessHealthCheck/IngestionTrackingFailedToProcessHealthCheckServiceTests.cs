@@ -5,6 +5,7 @@ using System.Linq.Expressions;
 using LHDS.Core.Brokers.DateTimes;
 using LHDS.Core.Brokers.Loggings;
 using LHDS.Core.Brokers.Storages.Sql;
+using LHDS.Core.Models.Foundations.IngestionTrackings;
 using LHDS.Core.Services.Foundations.HealthChecks.IngestionTracking;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
@@ -12,7 +13,7 @@ using Moq;
 using Tynamix.ObjectFiller;
 using Xeptions;
 
-namespace LHDS.Core.Tests.Unit.Services.Coordinations.HealthChecks.IngestionTracking.FailedToProcessHealthCheck
+namespace LHDS.Core.Tests.Unit.Services.Coordinations.HealthChecks.IngestionTrackings.FailedToProcessHealthCheck
 {
     public partial class IngestionTrackingFailedToProcessHealthCheckServiceTests
     {
@@ -20,7 +21,10 @@ namespace LHDS.Core.Tests.Unit.Services.Coordinations.HealthChecks.IngestionTrac
         private readonly Mock<IStorageBroker> storageBrokerMock;
         private readonly Mock<IDateTimeBroker> dateTimeBrokerMock;
         private readonly Mock<ILoggingBroker> loggingBrokerMock;
-        private readonly IngestionTrackingFailedToProcessHealthCheckService ingestionTrackingFailedToProcessHealthCheckService;
+
+        private readonly IngestionTrackingFailedToProcessHealthCheckService 
+            ingestionTrackingFailedToProcessHealthCheckService;
+
         private const string CheckName = "failedToProcess";
         private const int DegradedThresholdMinutes = 1440;
         private const int UnHealthyThresholdMinutes = 2880;
@@ -32,44 +36,43 @@ namespace LHDS.Core.Tests.Unit.Services.Coordinations.HealthChecks.IngestionTrac
             this.dateTimeBrokerMock = new Mock<IDateTimeBroker>();
             this.loggingBrokerMock = new Mock<ILoggingBroker>();
 
-            this.ingestionTrackingFailedToProcessHealthCheckService = new IngestionTrackingFailedToProcessHealthCheckService(
-                storageBroker: this.storageBrokerMock.Object,
-                configuration: this.configuration,
-                dateTimeBroker: this.dateTimeBrokerMock.Object,
-                loggingBroker: this.loggingBrokerMock.Object);
+            this.ingestionTrackingFailedToProcessHealthCheckService = 
+                new IngestionTrackingFailedToProcessHealthCheckService(
+                    storageBroker: this.storageBrokerMock.Object,
+                    configuration: this.configuration,
+                    dateTimeBroker: this.dateTimeBrokerMock.Object,
+                    loggingBroker: this.loggingBrokerMock.Object
+                );
         }
 
-        private static IQueryable<Core.Models.Foundations.IngestionTrackings.IngestionTracking> CreateRandomUnhealthyIngestionTrackings()
+        private static IQueryable<IngestionTracking> CreateRandomUnhealthyIngestionTrackings()
         {
             DateTimeOffset dateTimeOffset = DateTimeOffset.UtcNow;
             DateTimeOffset unhealthyDateTime = dateTimeOffset.AddMinutes((UnHealthyThresholdMinutes + 1) * -1);
             return CreateIngestionTrackingFiller(unhealthyDateTime).Create(count: 1).AsQueryable();
         }
 
-        private static IQueryable<Core.Models.Foundations.IngestionTrackings.IngestionTracking> CreateRandomDegradedIngestionTrackings()
+        private static IQueryable<IngestionTracking> CreateRandomDegradedIngestionTrackings()
         {
             DateTimeOffset dateTimeOffset = DateTimeOffset.UtcNow;
             DateTimeOffset degradedDateTime = dateTimeOffset.AddMinutes((DegradedThresholdMinutes + 1) * -1);
             return CreateIngestionTrackingFiller(degradedDateTime).Create(count: 1).AsQueryable();
         }
 
-        private static IQueryable<Core.Models.Foundations.IngestionTrackings.IngestionTracking> CreateRandomHealthyIngestionTrackings()
+        private static IQueryable<IngestionTracking> CreateRandomHealthyIngestionTrackings()
         {
             DateTimeOffset dateTimeOffset = DateTimeOffset.UtcNow;
             DateTimeOffset healthyDateTime = dateTimeOffset;
             return CreateIngestionTrackingFiller(healthyDateTime).Create(count: 1).AsQueryable();
         }
 
-        private static int GetRandomNumber() =>
-           new IntRange(min: 2, max: 10).GetValue();
-
-        private static Filler<Core.Models.Foundations.IngestionTrackings.IngestionTracking> CreateIngestionTrackingFiller(
+        private static Filler<IngestionTracking> CreateIngestionTrackingFiller(
             DateTimeOffset updatedDate
         )
         {
             DateTimeOffset dateTimeOffset = DateTimeOffset.UtcNow;
             string user = Guid.NewGuid().ToString();
-            var filler = new Filler<Core.Models.Foundations.IngestionTrackings.IngestionTracking>();
+            var filler = new Filler<IngestionTracking>();
 
             filler.Setup()
                 .OnType<DateTimeOffset>().Use(dateTimeOffset)

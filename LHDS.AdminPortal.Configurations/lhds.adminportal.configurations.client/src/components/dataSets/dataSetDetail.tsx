@@ -47,7 +47,7 @@ const DataSetDetail: FunctionComponent<DataSetDetailProps> = (props) => {
             setMode('VIEW');
         }
         if (dataSetId === "" || dataSetId === undefined) {
-            setDataSet(new DataSetView(Guid.create(), "", "", "", "", "", false, "", false, "", true, new Date(), new Date()))
+            setDataSet(new DataSetView(crypto.randomUUID(), "", "", "", "", "", false, "", false, "", true, new Date(), new Date()))
             setMode('ADD');
         }
     }, [dataSetId, dataSetRetrieved]);

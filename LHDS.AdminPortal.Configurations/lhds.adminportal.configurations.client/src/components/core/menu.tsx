@@ -28,8 +28,8 @@ const MenuComponent: React.FC = () => {
             </ListGroup.Item>
 
             <hr className="p-0 m-2" style={{ color: 'gray' }} />
+            <small className="ms-2" style={{ color: 'gray' }}>Landing Tools</small>
 
-            <small className="ms-2">Landing Tools</small>
             <FeatureSwitch feature={FeatureDefinitions.Configuration}>
                 <SecuredComponent allowedRoles={securityPoints.configuration.view}>
                     <ListGroup.Item

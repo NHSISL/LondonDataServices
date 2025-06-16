@@ -64,7 +64,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.EmisLandings
             this.dataSetSpecificationProcessingServiceMock.VerifyNoOtherCalls();
             this.documentProcessingServiceMock.VerifyNoOtherCalls();
             this.hashBrokerMock.VerifyNoOtherCalls();
-            this.auditServiceMock.VerifyNoOtherCalls();
+            this.ingestionTrackingAuditProcessingServiceMock.VerifyNoOtherCalls();
         }
 
         [Theory]
@@ -88,7 +88,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.EmisLandings
 
             // when
             ValueTask<List<string>> retrieveListOfDocumentsToProcessAsyncTask = this.emisLandingOrchestrationService
-                .ProcessAsync(subscriberCredential: someSubscriberCredential, supplierId: inputSupplierId);
+                .RetrieveListOfDocumentsToProcessAsync(subscriberCredential: someSubscriberCredential);
 
             EmisLandingOrchestrationDependencyException actualException =
                 await Assert.ThrowsAsync<EmisLandingOrchestrationDependencyException>(
@@ -113,7 +113,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.EmisLandings
             this.dataSetSpecificationProcessingServiceMock.VerifyNoOtherCalls();
             this.documentProcessingServiceMock.VerifyNoOtherCalls();
             this.hashBrokerMock.VerifyNoOtherCalls();
-            this.auditServiceMock.VerifyNoOtherCalls();
+            this.ingestionTrackingAuditProcessingServiceMock.VerifyNoOtherCalls();
         }
 
         [Fact]
@@ -141,7 +141,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.EmisLandings
 
             // when
             ValueTask<List<string>> retrieveListOfDocumentsToProcessAsyncTask = this.emisLandingOrchestrationService
-                .ProcessAsync(subscriberCredential: someSubscriberCredential, supplierId: inputSupplierId);
+                .RetrieveListOfDocumentsToProcessAsync(subscriberCredential: someSubscriberCredential);
 
             EmisLandingOrchestrationServiceException actualException =
                 await Assert.ThrowsAsync<EmisLandingOrchestrationServiceException>(
@@ -166,7 +166,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.EmisLandings
             this.dataSetSpecificationProcessingServiceMock.VerifyNoOtherCalls();
             this.documentProcessingServiceMock.VerifyNoOtherCalls();
             this.hashBrokerMock.VerifyNoOtherCalls();
-            this.auditServiceMock.VerifyNoOtherCalls();
+            this.ingestionTrackingAuditProcessingServiceMock.VerifyNoOtherCalls();
         }
     }
 }

@@ -18,7 +18,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.HealthChecks.ResolvedAddress
     public partial class ResolvedAdressProcessingHealthCheckServiceTests
     {
         [Fact]
-        public async Task ShouldGetHealthStatusAsHealtyAsync()
+        public async Task ShouldGetHealthStatusAsHealthyAsync()
         {
             // given
             string CheckName = "processingQueue";
@@ -31,7 +31,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.HealthChecks.ResolvedAddress
             int unHealthyThresholdMinutes = this.inMemoryConfiguration
                 .GetValue("HealthChecks:ResolvedAddress:Processing:UnHealthyThreshold", 2880);
 
-            List<ResolvedAddress> healtyRecords = CreateRandomResolvedAddresses(
+            List<ResolvedAddress> healthyRecords = CreateRandomResolvedAddresses(
                 dateTimeOffset: randomDateTimeOffset,
                 isProcessing: true,
                 count: randomNumber);
@@ -42,7 +42,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.HealthChecks.ResolvedAddress
 
             this.storageBrokerMock.Setup(broker =>
                 broker.SelectAllResolvedAddressesAsync())
-                    .ReturnsAsync(healtyRecords.AsQueryable());
+                    .ReturnsAsync(healthyRecords.AsQueryable());
 
             string message = "Nothing to process. All up to date.";
 
@@ -160,7 +160,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.HealthChecks.ResolvedAddress
         }
 
         [Fact]
-        public async Task ShouldGetHealthStatusAsUnHealtyAsync()
+        public async Task ShouldGetHealthStatusAsUnHealthyAsync()
         {
             // given
             string CheckName = "processingQueue";
@@ -232,7 +232,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.HealthChecks.ResolvedAddress
 
 
         [Fact]
-        public async Task ShouldGetHealthStatusAsUnHealtyWithMixedItemsAsync()
+        public async Task ShouldGetHealthStatusAsUnHealthyWithMixedItemsAsync()
         {
             // given
             string CheckName = "processingQueue";

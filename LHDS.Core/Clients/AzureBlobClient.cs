@@ -98,7 +98,7 @@ namespace LHDS.Core.Clients
                 Sas = sasBuilder.ToSasQueryParameters(userDelegationKey, blobServiceClient.AccountName)
             };
 
-            return await Task.FromResult(blobUriBuilder.ToUri());
+            return blobUriBuilder.ToUri();
         }
     }
 }

@@ -114,10 +114,10 @@ namespace LHDS.Core.Clients.Extensions
             services.AddTransient<ILoggingBroker, LoggingBroker>();
             services.AddTransient<IDateTimeBroker, DateTimeBroker>();
             services.AddTransient<IIdentifierBroker, IdentifierBroker>();
-            services.AddTransient<IStorageBroker, StorageBroker>();
             services.AddTransient<ISecurityBroker, SecurityBroker>();
             services.AddTransient<IHashBroker, HashBroker>();
             services.AddTransient<IAuditBroker, AuditBroker>();
+            services.AddSingleton<IStorageBroker, StorageBroker>();
 
             LandingConfiguration landingConfiguration =
                 configuration.GetSection("landingSettings").Get<LandingConfiguration>();
@@ -216,7 +216,13 @@ namespace LHDS.Core.Clients.Extensions
                     Parameter: "landingSettings__landingSupplierId"),
 
                 (Rule: IsInvalid(landingConfiguration.DecryptedFolder),
-                    Parameter: "landingSettings:decryptedFolder"));
+                    Parameter: "landingSettings:decryptedFolder"),
+
+                (Rule: IsInvalid(landingConfiguration.BatchDownloadedFile),
+                    Parameter: "landingSettings:batchDownloadedFile"),
+
+                (Rule: IsInvalid(landingConfiguration.BatchReadyFile),
+                    Parameter: "landingSettings:batchReadyFile"));
         }
 
         private static void ValidateBlobStorageSettings(BlobStorageSettings blobStorageSettings)

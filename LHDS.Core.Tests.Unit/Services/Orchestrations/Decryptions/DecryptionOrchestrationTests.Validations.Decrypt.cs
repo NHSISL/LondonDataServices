@@ -7,6 +7,7 @@ using System.IO;
 using System.Threading.Tasks;
 using FluentAssertions;
 using LHDS.Core.Models.Brokers.Storages.Blobs;
+using LHDS.Core.Models.Foundations.IngestionTrackingAudits;
 using LHDS.Core.Models.Foundations.IngestionTrackings;
 using LHDS.Core.Models.Orchestrations.Decryptions.Exceptions;
 using LHDS.Core.Models.Processings.SubscriberCredentials;
@@ -47,8 +48,8 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Decryptions
                 blobContainers: invalidBlobContainers,
                 loggingBroker: loggingBrokerMock.Object,
                 dateTimeBroker: dateTimeBrokerMock.Object,
-                hashBroker: hashBrokerMock.Object
-                );
+                hashBroker: hashBrokerMock.Object,
+                landingConfiguration: this.landingConfiguration);
 
             // when
             ValueTask<(string, Guid)> decryptTask =
@@ -180,6 +181,9 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Decryptions
             Stream outputStream = new MemoryStream();
             Stream storageStream = new MemoryStream();
 
+            string batchCompleteFileName =
+                $"{storageIngestionTracking.BatchReadyFolderPath}/{landingConfiguration.BatchReadyFile}".Replace("\\", "/");
+
             var notFoundDecryptionOrchestrationException =
                 new NotFoundDecryptionOrchestrationException(
                 message: $"Couldn't find document with file name: {inputFileName}.");
@@ -192,6 +196,11 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Decryptions
             this.ingestionTrackingServiceMock.Setup(service =>
                service.RetrieveIngestionTrackingByEncryptedFileNameAsync(randomFileName))
                    .ReturnsAsync(storageIngestionTracking);
+
+            this.documentServiceMock.Setup(service => service.RemoveDocumentByFileNameAsync(
+                batchCompleteFileName,
+                this.blobContainers.Ingress))
+                    .Returns(ValueTask.CompletedTask);
 
             this.documentServiceMock
                 .Setup(service => service.RetrieveDocumentByFileNameAsync(
@@ -220,6 +229,11 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Decryptions
                 service.RetrieveIngestionTrackingByEncryptedFileNameAsync(It.IsAny<string>()),
                     Times.Once);
 
+            this.documentServiceMock.Verify(service => service.RemoveDocumentByFileNameAsync(
+                batchCompleteFileName,
+                this.blobContainers.Ingress),
+                    Times.Once);
+
             this.documentServiceMock.Verify(service =>
                 service.RetrieveDocumentByFileNameAsync(
                     It.IsAny<Stream>(),
@@ -231,6 +245,14 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Decryptions
                 broker.LogErrorAsync(It.Is(SameExceptionAs(
                     expectedDecryptionOrchestrationValidationException))),
                         Times.Once);
+
+            this.dateTimeBrokerMock.Verify(broker =>
+                broker.GetCurrentDateTimeOffsetAsync(),
+                Times.Once);
+
+            this.auditServiceMock.Verify(service =>
+                service.AddIngestionTrackingAuditAsync(It.IsAny<IngestionTrackingAudit>()),
+                Times.Once);
 
             this.loggingBrokerMock.VerifyNoOtherCalls();
             this.documentServiceMock.VerifyNoOtherCalls();

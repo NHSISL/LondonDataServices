@@ -27,8 +27,8 @@ namespace LHDS.Core.Models.Foundations.DataSetSpecifications
         public Guid? PresededById { get; set; }
         public bool IsPublished { get; set; }
         public bool IsActive { get; set; }
-        public DateTimeOffset ActiveFrom { get; set; }
-        public DateTimeOffset ActiveTo { get; set; }
+        public DateTimeOffset? ActiveFrom { get; set; }
+        public DateTimeOffset? ActiveTo { get; set; }
         public string CreatedBy { get; set; } = string.Empty;
         public string UpdatedBy { get; set; } = string.Empty;
         public DateTimeOffset UpdatedDate { get; set; }

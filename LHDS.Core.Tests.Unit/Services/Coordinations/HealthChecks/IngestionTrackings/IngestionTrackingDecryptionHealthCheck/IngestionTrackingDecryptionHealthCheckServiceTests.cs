@@ -5,6 +5,7 @@ using System.Linq.Expressions;
 using LHDS.Core.Brokers.DateTimes;
 using LHDS.Core.Brokers.Loggings;
 using LHDS.Core.Brokers.Storages.Sql;
+using LHDS.Core.Models.Foundations.IngestionTrackings;
 using LHDS.Core.Services.Foundations.HealthChecks.IngestionTracking;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
@@ -12,7 +13,7 @@ using Moq;
 using Tynamix.ObjectFiller;
 using Xeptions;
 
-namespace LHDS.Core.Tests.Unit.Services.Coordinations.HealthChecks.IngestionTracking.IngestionTrackingDecryptionHealthCheck
+namespace LHDS.Core.Tests.Unit.Services.Coordinations.HealthChecks.IngestionTrackings.IngestionTrackingDecryptionHealthCheck
 {
     public partial class IngestionTrackingDecryptionHealthCheckServiceTests
     {
@@ -39,21 +40,21 @@ namespace LHDS.Core.Tests.Unit.Services.Coordinations.HealthChecks.IngestionTrac
                 loggingBroker: this.loggingBrokerMock.Object);
         }
 
-        private static IQueryable<Core.Models.Foundations.IngestionTrackings.IngestionTracking> CreateRandomUnhealthyIngestionTrackings()
+        private static IQueryable<IngestionTracking> CreateRandomUnhealthyIngestionTrackings()
         {
             DateTimeOffset dateTimeOffset = DateTimeOffset.UtcNow;
             DateTimeOffset unhealthyDateTime = dateTimeOffset.AddDays((UnHealthyThresholdMinutes + 1) * -1);
             return CreateIngestionTrackingFiller(unhealthyDateTime).Create(count: GetRandomNumber()).AsQueryable();
         }
 
-        private static IQueryable<Core.Models.Foundations.IngestionTrackings.IngestionTracking> CreateRandomDegradedIngestionTrackings()
+        private static IQueryable<IngestionTracking> CreateRandomDegradedIngestionTrackings()
         {
             DateTimeOffset dateTimeOffset = DateTimeOffset.UtcNow;
             DateTimeOffset degradedDateTime = dateTimeOffset.AddMinutes((DegradedThresholdMinutes + 1) * -1);
             return CreateIngestionTrackingFiller(degradedDateTime).Create(count: GetRandomNumber()).AsQueryable();
         }
 
-        private static IQueryable<Core.Models.Foundations.IngestionTrackings.IngestionTracking> CreateRandomHealthyIngestionTrackings()
+        private static IQueryable<IngestionTracking> CreateRandomHealthyIngestionTrackings()
         {
             DateTimeOffset dateTimeOffset = DateTimeOffset.UtcNow;
             DateTimeOffset healthyDateTime = dateTimeOffset;
@@ -63,13 +64,13 @@ namespace LHDS.Core.Tests.Unit.Services.Coordinations.HealthChecks.IngestionTrac
         private static int GetRandomNumber() =>
            new IntRange(min: 2, max: 10).GetValue();
 
-        private static Filler<Core.Models.Foundations.IngestionTrackings.IngestionTracking> CreateIngestionTrackingFiller(
+        private static Filler<IngestionTracking> CreateIngestionTrackingFiller(
             DateTimeOffset updatedDate
         )
         {
             DateTimeOffset dateTimeOffset = DateTimeOffset.UtcNow;
             string user = Guid.NewGuid().ToString();
-            var filler = new Filler<Core.Models.Foundations.IngestionTrackings.IngestionTracking>();
+            var filler = new Filler<IngestionTracking>();
 
             filler.Setup()
                 .OnType<DateTimeOffset>().Use(dateTimeOffset)

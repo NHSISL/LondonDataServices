@@ -73,7 +73,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.TppLandings
 
             this.hashBrokerMock.Verify(broker =>
                 broker.GenerateSha256HashAsync(inputData),
-                    Times.Once);
+                    Times.Never);
 
             this.ingestionTrackingProcessingServiceMock.VerifyNoOtherCalls();
             this.hashBrokerMock.VerifyNoOtherCalls();

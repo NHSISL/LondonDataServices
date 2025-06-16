@@ -114,6 +114,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.TppLandings
                 dateTimeBrokerMock.Object,
                 identifierBrokerMock.Object,
                 hashBrokerMock.Object,
+                fileBrokerMock.Object,
                 landingConfiguration)
             {
                 CallBase = true
@@ -153,8 +154,6 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.TppLandings
             randomIngestionTracking.ObjectName = objectName;
             randomIngestionTracking.BatchReadyFolderPath = basePath;
             randomIngestionTracking.SubscriberAgreementId = null;
-            IngestionTracking storageIngestionTracking = randomIngestionTracking;
-            IngestionTracking updatedIngestionTracking = storageIngestionTracking.DeepClone();
 
             this.ingestionTrackingProcessingServiceMock.Setup(service =>
                 service.RetrieveAllIngestionTrackingsAsync())
@@ -185,6 +184,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.TppLandings
                     SourceFolderPath = sourceFolderPath,
                     BatchReadyFolderPath = basePath,
                     Batch = batch,
+                    IsBatchComplete = false,
                     ObjectName = objectName,
                     DataSetSpecificationId = randomDataSetSpecification.Id,
                     EncryptedFileName = "Not Encrypted",
@@ -193,27 +193,67 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.TppLandings
                     DecryptedFileName = decryptedFileName,
                     Decrypted = true,
                     DecryptedFileSize = inputData.Length,
-                    DecryptedFileSha256Hash = randomHash,
+                    DecryptedFileSha256Hash = string.Empty,
                     LastSeen = randomDateTime,
-                    FileDeleted = false
+                    LastAttempt = randomDateTime,
+                    FileDeleted = false,
+                    IsDownloaded = false,
+                    RetryCount = 0,
                 };
 
-            IngestionTracking savedIngestionTracking = newIngestionTracking.DeepClone();
+            IngestionTracking storageIngestionTracking = newIngestionTracking.DeepClone();
 
             this.ingestionTrackingProcessingServiceMock.Setup(service =>
                     service.AddIngestionTrackingAsync(It.Is(SameIngestionTrackingAs(newIngestionTracking))))
                        .ReturnsAsync(storageIngestionTracking);
 
-            IngestionTrackingAudit ingestionTrackingAudit = new IngestionTrackingAudit();
-            ingestionTrackingAudit.Id = Guid.NewGuid();
-            ingestionTrackingAudit.IngestionTrackingId = updatedIngestionTracking.Id;
+            IngestionTracking modifiedIngestionTracking = storageIngestionTracking.DeepClone();
+            modifiedIngestionTracking.RetryCount += 1;
 
-            ingestionTrackingAudit.Message =
-                "Received and updated file from TPP which has now been uploaded to the blob store";
+            string batchReadyFileName =
+                $"{modifiedIngestionTracking.BatchReadyFolderPath}/{landingConfiguration.BatchReadyFile}"
+                    .Replace("\\", "/");
 
-            this.ingestionTrackingProcessingAuditServiceMock.Setup(service =>
-                service.AddIngestionTrackingAuditAsync(ingestionTrackingAudit))
-                    .ReturnsAsync(value: ingestionTrackingAudit);
+            this.documentProcessingServiceMock.Setup(service =>
+                service.RemoveDocumentByFileNameAsync(batchReadyFileName, this.blobContainers.Ingress))
+                   .Returns(ValueTask.CompletedTask);
+
+            modifiedIngestionTracking.IsDownloaded = false;
+            modifiedIngestionTracking.IsBatchComplete = false;
+            modifiedIngestionTracking.FileDeleted = false;
+            modifiedIngestionTracking.LastSeen = randomDateTime;
+            string tempFilePath = GetRandomString();
+
+            this.fileBrokerMock.Setup(broker =>
+                broker.GetTempFileName())
+                    .ReturnsAsync(tempFilePath);
+
+            documentProcessingServiceMock.Setup(service =>
+                service.RetrieveDocumentByFileNameAsync(
+                    It.IsAny<Stream>(),
+                    modifiedIngestionTracking.FileName,
+                    blobContainers.TppLanding))
+                        .Returns(ValueTask.CompletedTask);
+
+            string randomDecryptedFileSha256Hash = GetRandomString(64);
+            modifiedIngestionTracking.DecryptedFileSha256Hash = randomDecryptedFileSha256Hash;
+
+            hashBrokerMock.Setup(broker =>
+                broker.GenerateSha256HashAsync(It.IsAny<Stream>()))
+                    .ReturnsAsync(randomDecryptedFileSha256Hash);
+
+            documentProcessingServiceMock.Setup(service =>
+                service.AddDocumentAsync(
+                    It.IsAny<Stream>(),
+                    modifiedIngestionTracking.DecryptedFileName,
+                    blobContainers.Ingress))
+                        .Returns(ValueTask.CompletedTask);
+
+            modifiedIngestionTracking.IsDownloaded = true;
+
+            this.fileBrokerMock.Setup(broker =>
+                broker.DeleteFileAsync(tempFilePath))
+                    .ReturnsAsync(true);
 
             // when
             Guid returnedGuid = await tppOrchestrationServiceMock.Object.ProcessAsync(
@@ -227,21 +267,24 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.TppLandings
                service.RetrieveAllIngestionTrackingsAsync(),
                    Times.Once);
 
-            this.hashBrokerMock.Verify(broker =>
-                broker.GenerateSha256HashAsync(inputDataStream),
-                    Times.Once);
-
             this.dateTimeBrokerMock.Verify(broker =>
                 broker.GetCurrentDateTimeOffsetAsync(),
+                    Times.Exactly(2));
+
+            this.dataSetSpecificationProcessingServiceMock.Verify(service =>
+                service.GetActiveDataSetSpecification(randomSupplierId),
                     Times.Once);
 
             this.identifierBrokerMock.Verify(broker =>
                 broker.GetIdentifierAsync(),
                     Times.Once);
 
-            this.dataSetSpecificationProcessingServiceMock.Verify(service =>
-                service.GetActiveDataSetSpecification(randomSupplierId),
-                    Times.Once);
+            tppOrchestrationServiceMock.Verify(service =>
+                service.LogAudit(
+                    It.IsAny<IngestionTracking>(),
+                    $"New file found '{storageIngestionTracking.FileName}',  " +
+                        $"created item with Id: {storageIngestionTracking.Id}"),
+                            Times.Once);
 
             this.ingestionTrackingProcessingServiceMock.Verify(service =>
                 service.AddIngestionTrackingAsync(It.Is(SameIngestionTrackingAs(newIngestionTracking))),
@@ -249,24 +292,68 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.TppLandings
 
             tppOrchestrationServiceMock.Verify(service =>
                 service.LogAudit(
-                    It.Is(SameIngestionTrackingAs(newIngestionTracking)),
-                    $"New file found '{newIngestionTracking.FileName}',  " +
-                        $"created item with Id: {newIngestionTracking.Id}"),
+                    It.Is(SameIngestionTrackingAs(modifiedIngestionTracking)),
+                    $"Processing file '{modifiedIngestionTracking.FileName}' " +
+                        $"associated with Id: {modifiedIngestionTracking.Id}." + Environment.NewLine +
+                            $"Downloading: {modifiedIngestionTracking.FileName} " + Environment.NewLine +
+                                $"RetryCount: {modifiedIngestionTracking.RetryCount}"),
+                                    Times.Once);
+
+            tppOrchestrationServiceMock.Verify(service =>
+                service.LogAudit(
+                    It.Is(SameIngestionTrackingAs(modifiedIngestionTracking)),
+                    $"Removing batch ready file '{batchReadyFileName}' as this file will invalidate the " +
+                        $"ready status for batch: {modifiedIngestionTracking.Batch}."),
                             Times.Once);
 
             this.documentProcessingServiceMock.Verify(service =>
+                service.RemoveDocumentByFileNameAsync(batchReadyFileName, this.blobContainers.Ingress),
+                   Times.Once);
+
+            tppOrchestrationServiceMock.Verify(service =>
+                service.LogAudit(
+                    It.Is(SameIngestionTrackingAs(modifiedIngestionTracking)),
+                    $"Moving file '{modifiedIngestionTracking.FileName}' to " +
+                        $"'{modifiedIngestionTracking.DecryptedFileName}'." +
+                            Environment.NewLine + $"RetryCount: {modifiedIngestionTracking.RetryCount}"),
+                                Times.Once);
+
+            this.fileBrokerMock.Verify(broker =>
+                broker.GetTempFileName(),
+                    Times.Once);
+
+            documentProcessingServiceMock.Verify(service =>
+                service.RetrieveDocumentByFileNameAsync(
+                    It.IsAny<Stream>(),
+                    modifiedIngestionTracking.FileName,
+                    blobContainers.TppLanding),
+                        Times.Once);
+
+            this.hashBrokerMock.Verify(broker =>
+                broker.GenerateSha256HashAsync(It.IsAny<Stream>()),
+                    Times.Once);
+
+            documentProcessingServiceMock.Verify(service =>
                 service.AddDocumentAsync(
-                    inputDataStream,
-                    newIngestionTracking.DecryptedFileName,
+                    It.IsAny<Stream>(),
+                    modifiedIngestionTracking.DecryptedFileName,
                     blobContainers.Ingress),
                         Times.Once);
 
             tppOrchestrationServiceMock.Verify(service =>
                 service.LogAudit(
-                    It.Is(SameIngestionTrackingAs(newIngestionTracking)),
-                    $"Downloaded file '{newIngestionTracking.FileName}' and successfully uploaded " +
-                        $"to blob storage '{newIngestionTracking.DecryptedFileName}'"),
+                    It.Is(SameIngestionTrackingAs(modifiedIngestionTracking)),
+                    $"Received and updated file from TPP which has now been uploaded " +
+                        $"to the blob storage '{modifiedIngestionTracking.DecryptedFileName}'"),
                             Times.Once);
+
+            this.ingestionTrackingProcessingServiceMock.Verify(service =>
+                service.ModifyIngestionTrackingAsync(It.Is(SameIngestionTrackingAs(modifiedIngestionTracking))),
+                    Times.Once);
+
+            this.fileBrokerMock.Verify(broker =>
+                broker.DeleteFileAsync(tempFilePath),
+                    Times.Once);
 
             this.ingestionTrackingProcessingServiceMock.VerifyNoOtherCalls();
             this.hashBrokerMock.VerifyNoOtherCalls();
@@ -302,6 +389,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.TppLandings
                 dateTimeBrokerMock.Object,
                 identifierBrokerMock.Object,
                 hashBrokerMock.Object,
+                fileBrokerMock.Object,
                 landingConfiguration)
             {
                 CallBase = true

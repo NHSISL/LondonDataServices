@@ -6,6 +6,7 @@ using System;
 using System.Collections.Generic;
 using LHDS.Core.Models.Bases;
 using LHDS.Core.Models.Foundations.IngestionTrackingAudits;
+using LHDS.Core.Models.Foundations.SubscriberAgreements;
 using LHDS.Core.Models.Foundations.Suppliers;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 
@@ -31,18 +32,21 @@ namespace LHDS.Core.Models.Foundations.IngestionTrackings
         public DateTimeOffset LastAttempt { get; set; }
         public DateTimeOffset LastSeen { get; set; }
         public bool FileDeleted { get; set; }
-        public long RecordCount { get; set; }
         public long EncryptedFileSize { get; set; }
         public string EncryptedFileSha256Hash { get; set; } = string.Empty;
         public long DecryptedFileSize { get; set; }
         public string DecryptedFileSha256Hash { get; set; } = string.Empty;
+        public Guid? SubscriberAgreementId { get; set; }
         public DateTimeOffset CreatedDate { get; set; }
         public string CreatedBy { get; set; } = string.Empty;
         public DateTimeOffset UpdatedDate { get; set; }
         public string UpdatedBy { get; set; } = string.Empty;
 
         [BindNever]
-        public Supplier? Supplier { get; set; } = null!;
+        public Supplier? Supplier { get; set; }
+
+        [BindNever]
+        public SubscriberAgreement? SubscriberAgreement { get; set; }
 
         [BindNever]
         public List<IngestionTrackingAudit> IngestionTrackingAudits { get; set; } = new List<IngestionTrackingAudit>();

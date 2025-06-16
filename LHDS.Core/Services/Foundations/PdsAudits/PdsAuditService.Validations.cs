@@ -129,39 +129,6 @@ namespace LHDS.Core.Services.Foundations.PdsAudits
                 Parameter: nameof(PdsAudit.UpdatedDate)));
         }
 
-        private async ValueTask ValidateAgainstStoragePdsAuditOnDeleteAsync(
-            PdsAudit pdsAudit,
-            PdsAudit maybePdsAudit)
-        {
-            EntraUser auditUser = await this.securityBroker.GetCurrentUserAsync();
-
-            Validate(
-                (Rule: IsNotSame(
-                    pdsAudit.CreatedDate,
-                    maybePdsAudit.CreatedDate,
-                    nameof(maybePdsAudit.CreatedDate)),
-                 Parameter: nameof(PdsAudit.CreatedDate)),
-
-                (Rule: IsNotSame(
-                    pdsAudit.CreatedBy,
-                    maybePdsAudit.CreatedBy,
-                    nameof(maybePdsAudit.CreatedBy)),
-                 Parameter: nameof(PdsAudit.CreatedBy)),
-
-                (Rule: IsNotSame(
-                    maybePdsAudit.UpdatedDate,
-                    pdsAudit.UpdatedDate,
-                    nameof(PdsAudit.UpdatedDate)),
-                 Parameter: nameof(PdsAudit.UpdatedDate)),
-
-                (Rule: IsNotSame(
-                    auditUser.EntraUserId.ToString(),
-                    pdsAudit.UpdatedBy,
-                    nameof(PdsAudit.UpdatedBy)),
-                 Parameter: nameof(PdsAudit.UpdatedBy))
-            );
-        }
-
         private static dynamic IsInvalid(Guid id) => new
         {
             Condition = id == Guid.Empty,

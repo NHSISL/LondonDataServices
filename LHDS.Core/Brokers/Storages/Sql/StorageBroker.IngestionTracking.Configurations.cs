@@ -67,6 +67,10 @@ namespace LHDS.Core.Brokers.Storages.Sql
                 .IsRequired();
 
             modelBuilder.Entity<IngestionTracking>()
+                .Property(ingestionTracking => ingestionTracking.SubscriberAgreementId)
+                .IsRequired(false);
+
+            modelBuilder.Entity<IngestionTracking>()
                 .Property(ingestionTracking => ingestionTracking.CreatedBy)
                 .HasMaxLength(255)
                 .IsRequired();
@@ -88,6 +92,12 @@ namespace LHDS.Core.Brokers.Storages.Sql
                 .HasOne(ingestionTracking => ingestionTracking.Supplier)
                 .WithMany(supplier => supplier.IngestionTrackings)
                 .HasForeignKey(ingestionTracking => ingestionTracking.SupplierId)
+                .OnDelete(DeleteBehavior.NoAction);
+
+            modelBuilder.Entity<IngestionTracking>()
+                .HasOne(ingestionTracking => ingestionTracking.SubscriberAgreement)
+                .WithMany(subscriberAgreement => subscriberAgreement.IngestionTrackings)
+                .HasForeignKey(ingestionTracking => ingestionTracking.SubscriberAgreementId)
                 .OnDelete(DeleteBehavior.NoAction);
         }
     }

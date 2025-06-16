@@ -7,10 +7,12 @@ import { IngestionTracking } from "../../models/ingestionTrackings/ingestionTrac
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faCheck, faTimes } from '@fortawesome/free-solid-svg-icons';
 import moment from "moment";
+import { Button } from "react-bootstrap";
 
 type IngestionTrackingRowProps = {
     onReDecrypted: (ingestionTracking: IngestionTracking) => void;
     ingestionTracking: IngestionTracking;
+    onBatchClick: (batch: string) => void
 }
 
 const IngestionTrackingRow: FunctionComponent<IngestionTrackingRowProps> = (props) => {
@@ -39,11 +41,36 @@ const IngestionTrackingRow: FunctionComponent<IngestionTrackingRowProps> = (prop
                 <br />
                 <span>
                     Decrypted: {ingestionTracking.decrypted ? <FontAwesomeIcon icon={faCheck} className="text-success" />
-                        : <FontAwesomeIcon icon={faTimes} className="text-danger" />} &nbsp;
+                        : <FontAwesomeIcon icon={faTimes} className="text-danger" />} &nbsp; | &nbsp;
                 </span>
                 <span>
-                    Record Count: {ingestionTracking.recordCount} &nbsp;
+                    Downloaded: {ingestionTracking.isDownloaded ? <FontAwesomeIcon icon={faCheck} className="text-success" />
+                        : <FontAwesomeIcon icon={faTimes} className="text-danger" />} &nbsp; | &nbsp;
                 </span>
+                <span>
+                    Processing: {ingestionTracking.isProcessing ? <FontAwesomeIcon icon={faCheck} className="text-success" />
+                        : <FontAwesomeIcon icon={faTimes} className="text-danger" />} &nbsp; | &nbsp;
+                </span>
+                <span>
+                    Batch Complete: {ingestionTracking.isBatchComplete ? <FontAwesomeIcon icon={faCheck} className="text-success" />
+                        : <FontAwesomeIcon icon={faTimes} className="text-danger" />} &nbsp; | &nbsp;
+                </span>
+
+                <span>
+                    SubId: {ingestionTracking.subscriberAgreementId}
+                </span>
+            </TableBaseData>
+
+
+            <TableBaseData>
+                <strong>Batch:</strong><br />
+                <Button
+                    variant="link"
+                    onClick={() => props.onBatchClick(ingestionTracking.batch)}
+                    className="p-0"
+                >
+                    {ingestionTracking.batch}
+                </Button>
             </TableBaseData>
 
             <TableBaseData>

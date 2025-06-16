@@ -249,8 +249,9 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.SubscriberCredentials
             filler.Setup()
                 .OnType<DateTimeOffset>().Use(dateTimeOffset)
                 .OnType<DateTimeOffset?>().Use(dateTimeOffset)
-                .OnProperty(address => address.CreatedBy).Use(user)
-                .OnProperty(address => address.UpdatedBy).Use(user);
+                .OnProperty(subscriberAgreement => subscriberAgreement.CreatedBy).Use(user)
+                .OnProperty(subscriberAgreement => subscriberAgreement.UpdatedBy).Use(user)
+                .OnProperty(subscriberAgreement => subscriberAgreement.IngestionTrackings).IgnoreIt();
 
             return filler;
         }

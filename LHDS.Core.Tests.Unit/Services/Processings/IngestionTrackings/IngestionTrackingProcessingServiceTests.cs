@@ -130,7 +130,8 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.IngestionTrackings
                 .OnProperty(ingestionTracking => ingestionTracking.CreatedBy).Use(user)
                 .OnProperty(ingestionTracking => ingestionTracking.UpdatedBy).Use(user)
                 .OnProperty(ingestionTracking => ingestionTracking.Supplier).IgnoreIt()
-                .OnProperty(ingestionTracking => ingestionTracking.IngestionTrackingAudits).IgnoreIt();
+                .OnProperty(ingestionTracking => ingestionTracking.IngestionTrackingAudits).IgnoreIt()
+                .OnProperty(ingestionTracking => ingestionTracking.SubscriberAgreement).IgnoreIt();
 
             return filler;
         }

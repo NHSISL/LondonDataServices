@@ -43,6 +43,7 @@
 	<ItemGroup>
 		<TypeScriptCompile Remove="ClientApp\cypress.config.ts" />
 		<TypeScriptCompile Remove="ClientApp\src\App.test.tsx" />
+		<TypeScriptCompile Remove="ClientApp\src\brokers\apiBroker.addresses.ts" />
 		<TypeScriptCompile Remove="ClientApp\src\brokers\apiBroker.documents.ts" />
 		<TypeScriptCompile Remove="ClientApp\src\brokers\apiBroker.emislandings.ts" />
 		<TypeScriptCompile Remove="ClientApp\src\brokers\apiBroker.features.ts" />
@@ -50,6 +51,7 @@
 		<TypeScriptCompile Remove="ClientApp\src\brokers\apiBroker.ingestionTrackings.ts" />
 		<TypeScriptCompile Remove="ClientApp\src\brokers\apiBroker.optout.ts" />
 		<TypeScriptCompile Remove="ClientApp\src\brokers\apiBroker.pds.ts" />
+		<TypeScriptCompile Remove="ClientApp\src\brokers\apiBroker.resolvedAddresses.ts" />
 		<TypeScriptCompile Remove="ClientApp\src\brokers\apiBroker.subscriberagreement.ts" />
 		<TypeScriptCompile Remove="ClientApp\src\brokers\apiBroker.subscriberCredentials.ts" />
 		<TypeScriptCompile Remove="ClientApp\src\brokers\apiBroker.suppliers.ts" />
@@ -127,6 +129,7 @@
 		<TypeScriptCompile Remove="ClientApp\src\components\pds\upload\pdsUploadDetail.tsx" />
 		<TypeScriptCompile Remove="ClientApp\src\components\pds\upload\pdsUploadDetailCard.tsx" />
 		<TypeScriptCompile Remove="ClientApp\src\components\pds\upload\pdsUploadDetailCardView.tsx" />
+		<TypeScriptCompile Remove="ClientApp\src\components\resolvedAddresses\resolvedAddressTable - Copy.tsx" />
 		<TypeScriptCompile Remove="ClientApp\src\components\specificationObjects\specificationObjectDetail.tsx" />
 		<TypeScriptCompile Remove="ClientApp\src\components\specificationObjects\specificationObjectDetailCard.tsx" />
 		<TypeScriptCompile Remove="ClientApp\src\components\specificationObjects\specificationObjectDetailCardEdit.tsx" />
@@ -201,6 +204,8 @@
 		<TypeScriptCompile Remove="ClientApp\src\models\views\components\subscriberCredentials\subscriberCredentialView.ts" />
 		<TypeScriptCompile Remove="ClientApp\src\models\views\components\suppliers\supplierView.ts" />
 		<TypeScriptCompile Remove="ClientApp\src\models\views\components\terminologyArtifacts\terminologyArtifactsView.ts" />
+		<TypeScriptCompile Remove="ClientApp\src\pages\addressDetailPage.tsx" />
+		<TypeScriptCompile Remove="ClientApp\src\pages\addressPage.tsx" />
 		<TypeScriptCompile Remove="ClientApp\src\pages\configuration\configHomePage.tsx" />
 		<TypeScriptCompile Remove="ClientApp\src\pages\configuration\dataSetPage.tsx" />
 		<TypeScriptCompile Remove="ClientApp\src\pages\configuration\dataSetsListPage.tsx" />
@@ -216,10 +221,13 @@
 		<TypeScriptCompile Remove="ClientApp\src\pages\ownershipsPage.tsx" />
 		<TypeScriptCompile Remove="ClientApp\src\pages\PdsSearch.tsx" />
 		<TypeScriptCompile Remove="ClientApp\src\pages\PdsUpload.tsx" />
+		<TypeScriptCompile Remove="ClientApp\src\pages\resolvedAddressDetailPage.tsx" />
+		<TypeScriptCompile Remove="ClientApp\src\pages\resolvedAddressPage.tsx" />
 		<TypeScriptCompile Remove="ClientApp\src\pages\subscriberAgreementDetailPage.tsx" />
 		<TypeScriptCompile Remove="ClientApp\src\pages\subscriberAgreementPage.tsx" />
 		<TypeScriptCompile Remove="ClientApp\src\pages\terminologyArtifactDetailPage.tsx" />
 		<TypeScriptCompile Remove="ClientApp\src\pages\terminologyArtifactPage.tsx" />
+		<TypeScriptCompile Remove="ClientApp\src\services\foundations\addressService.ts" />
 		<TypeScriptCompile Remove="ClientApp\src\services\foundations\documentService.ts" />
 		<TypeScriptCompile Remove="ClientApp\src\services\foundations\emisLandingService.ts" />
 		<TypeScriptCompile Remove="ClientApp\src\services\foundations\featureService.ts" />
@@ -227,6 +235,7 @@
 		<TypeScriptCompile Remove="ClientApp\src\services\foundations\ingestionTrackingService.ts" />
 		<TypeScriptCompile Remove="ClientApp\src\services\foundations\optoutService.ts" />
 		<TypeScriptCompile Remove="ClientApp\src\services\foundations\pdsService.ts" />
+		<TypeScriptCompile Remove="ClientApp\src\services\foundations\resolvedAddressService.ts" />
 		<TypeScriptCompile Remove="ClientApp\src\services\foundations\subscriberAgreementService.ts" />
 		<TypeScriptCompile Remove="ClientApp\src\services\foundations\subscriberCredentialService.ts" />
 		<TypeScriptCompile Remove="ClientApp\src\services\foundations\supplierService.ts" />

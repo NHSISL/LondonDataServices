@@ -75,24 +75,14 @@ namespace LHDS.Core.Services.Foundations.PdsAudits
         public ValueTask<PdsAudit> RemovePdsAuditByIdAsync(Guid pdsAuditId) =>
             TryCatch(async () =>
             {
-                ValidatePdsAuditId(pdsAuditId: pdsAuditId);
+                ValidatePdsAuditId(pdsAuditId);
 
                 PdsAudit maybePdsAudit = await this.storageBroker
                     .SelectPdsAuditByIdAsync(pdsAuditId);
 
                 ValidateStoragePdsAudit(maybePdsAudit, pdsAuditId);
 
-                PdsAudit pdsAuditWithDeleteAuditApplied =
-                    await ApplyDeleteAuditAsync(maybePdsAudit);
-
-                PdsAudit updatedPdsAudit =
-                    await this.storageBroker.UpdatePdsAuditAsync(pdsAuditWithDeleteAuditApplied);
-
-                await ValidateAgainstStoragePdsAuditOnDeleteAsync(
-                    pdsAudit: updatedPdsAudit,
-                    maybePdsAudit: pdsAuditWithDeleteAuditApplied);
-
-                return await this.storageBroker.DeletePdsAuditAsync(updatedPdsAudit);
+                return await this.storageBroker.DeletePdsAuditAsync(maybePdsAudit);
             });
 
         virtual internal async ValueTask<PdsAudit> ApplyAddPdsAuditAsync(PdsAudit pdsAudit)
@@ -109,17 +99,6 @@ namespace LHDS.Core.Services.Foundations.PdsAudits
         }
 
         virtual internal async ValueTask<PdsAudit> ApplyModifyAuditAsync(PdsAudit pdsAudit)
-        {
-            ValidatePdsAuditIsNotNull(pdsAudit);
-            var auditDateTimeOffset = await this.dateTimeBroker.GetCurrentDateTimeOffsetAsync();
-            var auditUser = await this.securityBroker.GetCurrentUserAsync();
-            pdsAudit.UpdatedBy = auditUser?.EntraUserId.ToString() ?? string.Empty;
-            pdsAudit.UpdatedDate = auditDateTimeOffset;
-
-            return pdsAudit;
-        }
-
-        virtual internal async ValueTask<PdsAudit> ApplyDeleteAuditAsync(PdsAudit pdsAudit)
         {
             ValidatePdsAuditIsNotNull(pdsAudit);
             var auditDateTimeOffset = await this.dateTimeBroker.GetCurrentDateTimeOffsetAsync();

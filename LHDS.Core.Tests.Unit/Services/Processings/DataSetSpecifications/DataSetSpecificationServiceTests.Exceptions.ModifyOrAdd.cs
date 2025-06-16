@@ -57,6 +57,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.DataSetSpecifications
 
             this.dataSetSpecificationServiceMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
         }
 
         [Theory]
@@ -100,6 +101,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.DataSetSpecifications
 
             this.dataSetSpecificationServiceMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
         }
 
         [Fact]
@@ -147,6 +149,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.DataSetSpecifications
 
             this.dataSetSpecificationServiceMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
         }
     }
 }

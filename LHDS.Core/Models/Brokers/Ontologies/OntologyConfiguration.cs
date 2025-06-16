@@ -13,5 +13,6 @@ namespace LHDS.Core.Models.Brokers.Ontologies
         public string ClientSecret { get; set; } = string.Empty;
         public int MaxResponseContentBufferSizeInMegaBytes { get; set; } = 400;
         public int TimeoutInSeconds { get; set; } = 600;
+        public string LandingFolder { get; set; } = string.Empty;
     }
 }

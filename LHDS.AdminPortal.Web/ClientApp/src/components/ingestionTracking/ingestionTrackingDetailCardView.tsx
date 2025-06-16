@@ -71,10 +71,6 @@ const IngestionTrackingDetailCardView: FunctionComponent<IngestionTrackingDetail
                                     </SummaryListBaseValue>
                                 </SummaryListBaseRow>
                                 <SummaryListBaseRow>
-                                    <SummaryListBaseKey>Record Count</SummaryListBaseKey>
-                                    <SummaryListBaseValue>{ingestionTracking.recordCount}</SummaryListBaseValue>
-                                </SummaryListBaseRow>
-                                <SummaryListBaseRow>
                                     <SummaryListBaseKey>Encrypted File Size</SummaryListBaseKey>
                                     <SummaryListBaseValue>
                                         {ingestionTracking.encryptedFileSize}
@@ -87,9 +83,9 @@ const IngestionTrackingDetailCardView: FunctionComponent<IngestionTrackingDetail
                                     </SummaryListBaseValue>
                                 </SummaryListBaseRow>
                                 <SummaryListBaseRow>
-                                    <SummaryListBaseKey>Is Downloading</SummaryListBaseKey>
+                                    <SummaryListBaseKey>Is Downloaded</SummaryListBaseKey>
                                     <SummaryListBaseValue>
-                                        <SummaryListBaseValue>{ingestionTracking.isDownloading ?
+                                        <SummaryListBaseValue>{ingestionTracking.isDownloaded ?
                                             <FontAwesomeIcon icon={faCheck} className="text-success" /> :
                                             <FontAwesomeIcon icon={faTimes} className="text-danger" />}
                                         </SummaryListBaseValue>
@@ -144,6 +140,12 @@ const IngestionTrackingDetailCardView: FunctionComponent<IngestionTrackingDetail
                                     <SummaryListBaseKey>Batch Ready Folder Path</SummaryListBaseKey>
                                     <SummaryListBaseValue>
                                         {ingestionTracking.batchReadyFolderPath}
+                                    </SummaryListBaseValue>
+                                </SummaryListBaseRow>
+                                <SummaryListBaseRow>
+                                    <SummaryListBaseKey>Subscriber Agreement Id</SummaryListBaseKey>
+                                    <SummaryListBaseValue>
+                                        {ingestionTracking.subscriberAgreementId}
                                     </SummaryListBaseValue>
                                 </SummaryListBaseRow>
                                 <SummaryListBaseRow>

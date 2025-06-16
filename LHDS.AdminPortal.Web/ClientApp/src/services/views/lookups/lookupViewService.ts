@@ -32,4 +32,29 @@ export const lookupViewService = {
             throw err;
         }
     },
+
+    useGetTrackedSupplierList: (searchTerm?: string) => {
+        try {
+            let query = `?$select=id,Name&$filter=isIngestionTracked eq true&$orderby=Name`;
+
+            const response = supplierService.useGetAllSuppliers(query);
+            const [mappedSuppliers, setMappedSuppliers] = useState<Array<LookupView>>([]);
+
+            useEffect(() => {
+                if (response.data) {
+                    const suppliers = response.data.map((supplier: Supplier) =>
+                        new LookupView(supplier.id.toString(), supplier.name || "")
+                    );
+                    setMappedSuppliers(suppliers);
+                }
+            }, [response.data]);
+
+            return {
+                mappedSuppliers,
+                ...response
+            }
+        } catch (err) {
+            throw err;
+        }
+    },
 };

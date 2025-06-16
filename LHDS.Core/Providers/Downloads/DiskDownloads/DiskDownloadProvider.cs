@@ -39,7 +39,12 @@ namespace LHDS.Core.Providers.Downloads.DiskDownloads
         {
             char separator = Path.DirectorySeparatorChar;
             string docFileName = download?.Document?.FileName ?? "";
-            string relativePath = docFileName.Replace("/", $"{separator}").Replace("\\", $"{separator}");
+
+            string relativePath = docFileName
+                .Replace("/", $"{separator}")
+                    .Replace("\\", $"{separator}")
+                        .TrimStart(separator);
+
             string filePath = Path.Combine(diskDownloadProviderSettings.LocalRootFolder, relativePath);
 
             if (!File.Exists(filePath))
@@ -51,8 +56,6 @@ namespace LHDS.Core.Providers.Downloads.DiskDownloads
             {
                 await fileStream.CopyToAsync(download.Document.DocumentData);
             }
-
-            await Task.FromResult(true);
         }
 
         public async ValueTask<List<string>> GetListOfDocumentsToProcessAsync(Download download)

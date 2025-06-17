@@ -146,14 +146,14 @@ namespace LHDS.Core.Services.Orchestrations.Tpp
                             RetryCount = 0,
                         };
 
+                    maybeIngestionTracking = await this.ingestionTrackingProcessingService
+                        .AddIngestionTrackingAsync(newIngestionTracking);
+
                     await LogAudit(
                         ingestionTracking: newIngestionTracking,
                         message:
                             $"New file found '{newIngestionTracking.FileName}',  " +
                             $"created item with Id: {newIngestionTracking.Id}");
-
-                    maybeIngestionTracking = await this.ingestionTrackingProcessingService
-                        .AddIngestionTrackingAsync(newIngestionTracking);
                 }
 
                 if (maybeIngestionTracking.IsDownloaded == false && maybeIngestionTracking.RetryCount <= 3)
@@ -203,21 +203,25 @@ namespace LHDS.Core.Services.Orchestrations.Tpp
 
                     try
                     {
-                        using (FileStream tempFileStream =
+                        using (FileStream writeFileStream =
                             new FileStream(tempFilePath, FileMode.Create, FileAccess.ReadWrite))
                         {
                             await this.documentProcessingService.RetrieveDocumentByFileNameAsync(
-                                output: tempFileStream,
+                                output: writeFileStream,
                                 fileName: maybeIngestionTracking.FileName,
                                 container: blobContainers.TppLanding);
+                        }
 
+                        using (FileStream readFileStream =
+                            new FileStream(tempFilePath, FileMode.Open, FileAccess.ReadWrite))
+                        {
                             string decryptedFileSha256Hash =
-                                await this.hashBroker.GenerateSha256HashAsync(data: tempFileStream);
+                                await this.hashBroker.GenerateSha256HashAsync(data: readFileStream);
 
                             maybeIngestionTracking.DecryptedFileSha256Hash = decryptedFileSha256Hash;
 
                             await this.documentProcessingService.AddDocumentAsync(
-                                input: tempFileStream,
+                                input: readFileStream,
                                 fileName: maybeIngestionTracking.DecryptedFileName,
                                 container: blobContainers.Ingress);
                         }
@@ -232,7 +236,7 @@ namespace LHDS.Core.Services.Orchestrations.Tpp
                         await this.ingestionTrackingProcessingService.ModifyIngestionTrackingAsync(
                             maybeIngestionTracking);
                     }
-                    catch (Exception)
+                    catch (Exception exception)
                     {
                         await LogAudit(
                             maybeIngestionTracking,

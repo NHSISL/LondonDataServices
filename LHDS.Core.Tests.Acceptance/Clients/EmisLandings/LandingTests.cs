@@ -205,7 +205,7 @@ namespace LHDS.Core.Tests.Acceptance.Clients.EmisLandings
         }
 
         private static string GetRandomString() =>
-            new MnemonicString().GetValue();
+            new MnemonicString(wordCount: 1).GetValue();
 
         private static string GetRandomFileName(Guid subscriberAgreementId)
         {

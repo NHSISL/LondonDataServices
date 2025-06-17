@@ -67,7 +67,7 @@ namespace LHDS.Core.Tests.Unit.Services.Coordinations.Decryptions
                         Times.Once);
 
             this.tppLandingOrchestrationServiceMock.Verify(service =>
-                service.ProcessAsync(inputStream, inputFileName, inputSupplierId),
+                service.ProcessAsync(inputFileName, inputSupplierId),
                 Times.Never);
 
             this.ingressOrchestrationServiceMock.Verify(service =>

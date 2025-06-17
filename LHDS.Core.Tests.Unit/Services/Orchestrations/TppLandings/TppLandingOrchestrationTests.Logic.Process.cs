@@ -58,7 +58,6 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.TppLandings
 
             // when
             ValueTask<Guid> returnedGuid = this.tppOrchestrationService.ProcessAsync(
-                input: inputData,
                 fileName: inputFileName,
                 supplierId: inputSupplierId);
 
@@ -256,7 +255,6 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.TppLandings
 
             // when
             Guid returnedGuid = await tppOrchestrationServiceMock.Object.ProcessAsync(
-                input: inputDataStream,
                 fileName: inputFileName,
                 supplierId: inputSupplierId);
 
@@ -393,10 +391,6 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.TppLandings
                 CallBase = true
             };
 
-            //this.hashBrokerMock.Setup(broker =>
-            //    broker.GenerateSha256HashAsync(inputDataStream))
-            //        .ReturnsAsync(randomHash);
-
             this.dateTimeBrokerMock.Setup(broker =>
                 broker.GetCurrentDateTimeOffsetAsync())
                     .ReturnsAsync(randomDateTime);
@@ -472,7 +466,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.TppLandings
 
             // when
             ValueTask<Guid> returnedGuid = tppOrchestrationServiceMock.Object
-                .ProcessAsync(input: inputStream, fileName: inputFileName, supplierId: randomSupplierId);
+                .ProcessAsync(fileName: inputFileName, supplierId: randomSupplierId);
 
             // then
             this.ingestionTrackingProcessingServiceMock.Verify(service =>

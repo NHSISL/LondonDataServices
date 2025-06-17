@@ -10,10 +10,9 @@ namespace LHDS.Core.Services.Orchestrations.Tpp
 {
     public partial class TppLandingOrchestrationService
     {
-        private static void ValidateArgumentsOnProcess(Stream input, string fileName, Guid supplierId)
+        private static void ValidateArgumentsOnProcess(string fileName, Guid supplierId)
         {
             Validate(
-                (Rule: IsInvalidInputStream(input), Parameter: "Input"),
                 (Rule: IsInvalid(fileName), Parameter: "FileName"),
                 (Rule: IsInvalid(supplierId), Parameter: "SupplierId"));
         }

@@ -26,7 +26,7 @@ namespace LHDS.Core.Tests.Unit.Services.Coordinations.Decryptions
             Guid expectedIngestionTrackingId = ingestionTrackingId;
 
             this.tppLandingOrchestrationServiceMock.Setup(service =>
-                service.ProcessAsync(inputData, inputFileName, inputSupplierId))
+                service.ProcessAsync(inputFileName, inputSupplierId))
                     .ReturnsAsync(ingestionTrackingId);
 
             // when
@@ -39,7 +39,7 @@ namespace LHDS.Core.Tests.Unit.Services.Coordinations.Decryptions
             actualIngestionTrackingId.ToString().Should().BeEquivalentTo(expectedIngestionTrackingId.ToString());
 
             this.tppLandingOrchestrationServiceMock.Verify(service =>
-                service.ProcessAsync(inputData, inputFileName, inputSupplierId),
+                service.ProcessAsync(inputFileName, inputSupplierId),
                 Times.Once);
 
             this.ingressOrchestrationServiceMock.Verify(service =>

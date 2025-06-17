@@ -10,6 +10,7 @@ using System.Text;
 using FluentAssertions;
 using KellermanSoftware.CompareNetObjects;
 using LHDS.Core.Brokers.DateTimes;
+using LHDS.Core.Brokers.Files;
 using LHDS.Core.Brokers.Hashing;
 using LHDS.Core.Brokers.Identifiers;
 using LHDS.Core.Brokers.Loggings;
@@ -45,6 +46,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.TppLandings
         private readonly Mock<ILoggingBroker> loggingBrokerMock;
         private readonly Mock<IDateTimeBroker> dateTimeBrokerMock;
         private readonly Mock<IIdentifierBroker> identifierBrokerMock;
+        private readonly Mock<IFileBroker> fileBrokerMock;
         private readonly Mock<IHashBroker> hashBrokerMock;
         private readonly LandingConfiguration landingConfiguration;
         private readonly BlobContainers blobContainers;
@@ -61,6 +63,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.TppLandings
             loggingBrokerMock = new Mock<ILoggingBroker>();
             dateTimeBrokerMock = new Mock<IDateTimeBroker>();
             identifierBrokerMock = new Mock<IIdentifierBroker>();
+            fileBrokerMock = new Mock<IFileBroker>();
             hashBrokerMock = new Mock<IHashBroker>();
             compareLogic = new CompareLogic();
 
@@ -90,6 +93,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.TppLandings
                 dateTimeBroker: dateTimeBrokerMock.Object,
                 identifierBroker: identifierBrokerMock.Object,
                 hashBroker: hashBrokerMock.Object,
+                fileBroker: fileBrokerMock.Object,
                 landingConfiguration: landingConfiguration);
         }
 

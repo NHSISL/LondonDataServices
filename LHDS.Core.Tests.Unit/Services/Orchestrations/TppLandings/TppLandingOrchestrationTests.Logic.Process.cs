@@ -58,7 +58,6 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.TppLandings
 
             // when
             ValueTask<Guid> returnedGuid = this.tppOrchestrationService.ProcessAsync(
-                input: inputData,
                 fileName: inputFileName,
                 supplierId: inputSupplierId);
 
@@ -191,7 +190,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.TppLandings
                     EncryptedFileSha256Hash = string.Empty,
                     DecryptedFileName = decryptedFileName,
                     Decrypted = true,
-                    DecryptedFileSize = inputData.Length,
+                    DecryptedFileSize = 0,
                     DecryptedFileSha256Hash = string.Empty,
                     LastSeen = randomDateTime,
                     LastAttempt = randomDateTime,
@@ -256,7 +255,6 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.TppLandings
 
             // when
             Guid returnedGuid = await tppOrchestrationServiceMock.Object.ProcessAsync(
-                input: inputDataStream,
                 fileName: inputFileName,
                 supplierId: inputSupplierId);
 
@@ -393,10 +391,6 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.TppLandings
                 CallBase = true
             };
 
-            //this.hashBrokerMock.Setup(broker =>
-            //    broker.GenerateSha256HashAsync(inputDataStream))
-            //        .ReturnsAsync(randomHash);
-
             this.dateTimeBrokerMock.Setup(broker =>
                 broker.GetCurrentDateTimeOffsetAsync())
                     .ReturnsAsync(randomDateTime);
@@ -416,6 +410,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.TppLandings
             randomIngestionTracking.FileName = inputFileName;
             randomIngestionTracking.RetryCount = 1;
             randomIngestionTracking.IsDownloaded = false;
+            randomIngestionTracking.DecryptedFileSize = inputBytes.Length;
             IngestionTracking storageIngestionTracking = randomIngestionTracking;
             IngestionTracking modifiedIngestionTracking = storageIngestionTracking.DeepClone();
             modifiedIngestionTracking.RetryCount += 1;
@@ -423,7 +418,6 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.TppLandings
             this.ingestionTrackingProcessingServiceMock.Setup(service =>
                 service.RetrieveAllIngestionTrackingsAsync())
                     .ReturnsAsync(randomIngestionTrackings.AsQueryable());
-
 
             string batchReadyFileName =
                 $"{modifiedIngestionTracking.BatchReadyFolderPath}/{landingConfiguration.BatchReadyFile}"
@@ -443,15 +437,22 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.TppLandings
                 broker.GetTempFileName())
                     .ReturnsAsync(tempFilePath);
 
-            documentProcessingServiceMock.Setup(service =>
-                service.RetrieveDocumentByFileNameAsync(
+            documentProcessingServiceMock
+                .Setup(service => service.RetrieveDocumentByFileNameAsync(
                     It.IsAny<Stream>(),
                     modifiedIngestionTracking.FileName,
                     blobContainers.TppLanding))
-                        .Returns(ValueTask.CompletedTask);
+                .Callback<Stream, string, string>((output, fileName, container) =>
+                {
+                    inputStream.Position = 0;
+                    inputStream.CopyTo(output);
+                    output.Position = 0; // reset if your test will read from it
+                })
+                .Returns(ValueTask.CompletedTask);
 
             string randomDecryptedFileSha256Hash = GetRandomString(64);
             modifiedIngestionTracking.DecryptedFileSha256Hash = randomDecryptedFileSha256Hash;
+            modifiedIngestionTracking.DecryptedFileSize = inputBytes.Length;
 
             hashBrokerMock.Setup(broker =>
                 broker.GenerateSha256HashAsync(It.IsAny<Stream>()))
@@ -472,7 +473,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.TppLandings
 
             // when
             ValueTask<Guid> returnedGuid = tppOrchestrationServiceMock.Object
-                .ProcessAsync(input: inputStream, fileName: inputFileName, supplierId: randomSupplierId);
+                .ProcessAsync(fileName: inputFileName, supplierId: randomSupplierId);
 
             // then
             this.ingestionTrackingProcessingServiceMock.Verify(service =>

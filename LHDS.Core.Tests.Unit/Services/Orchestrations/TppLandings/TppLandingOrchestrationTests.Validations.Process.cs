@@ -32,10 +32,6 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.TppLandings
                         "please correct the errors and try again.");
 
             invalidArgumentException.AddData(
-               key: "Input",
-               values: "Stream is required");
-
-            invalidArgumentException.AddData(
                key: "FileName",
                values: "Text is required");
 
@@ -50,7 +46,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.TppLandings
 
             // when
             ValueTask<Guid> returnedGuidTask = this.tppOrchestrationService
-                .ProcessAsync(input: inputStream, fileName: inputFileName, supplierId);
+                .ProcessAsync(fileName: inputFileName, supplierId);
 
             TppLandingOrchestrationValidationException actualException =
                 await Assert.ThrowsAsync<TppLandingOrchestrationValidationException>(returnedGuidTask.AsTask);

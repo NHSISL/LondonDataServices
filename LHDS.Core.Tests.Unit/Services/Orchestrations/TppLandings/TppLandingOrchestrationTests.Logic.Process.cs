@@ -190,7 +190,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.TppLandings
                     EncryptedFileSha256Hash = string.Empty,
                     DecryptedFileName = decryptedFileName,
                     Decrypted = true,
-                    DecryptedFileSize = inputData.Length,
+                    DecryptedFileSize = 0,
                     DecryptedFileSha256Hash = string.Empty,
                     LastSeen = randomDateTime,
                     LastAttempt = randomDateTime,

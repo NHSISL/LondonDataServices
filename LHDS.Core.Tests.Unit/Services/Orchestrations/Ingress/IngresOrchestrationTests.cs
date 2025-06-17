@@ -65,6 +65,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Ingress
             };
 
             this.landingConfiguration = new LandingConfiguration();
+            this.landingConfiguration.BatchReadyFile = "LDSBatchReady.txt";
 
             this.ingressOrchestrationService = new IngressOrchestrationService(
                 ingestionTrackingProcessingService: this.ingestionTrackingProcessingServiceMock.Object,

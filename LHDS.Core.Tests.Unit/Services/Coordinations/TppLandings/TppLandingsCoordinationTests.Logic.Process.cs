@@ -10,7 +10,7 @@ using FluentAssertions;
 using Moq;
 using Xunit;
 
-namespace LHDS.Core.Tests.Unit.Services.Coordinations.Decryptions
+namespace LHDS.Core.Tests.Unit.Services.Coordinations.TppLandings
 {
     public partial class TppLandingsCoordinationTests
     {
@@ -31,7 +31,6 @@ namespace LHDS.Core.Tests.Unit.Services.Coordinations.Decryptions
 
             // when
             Guid actualIngestionTrackingId = await this.tppLandingCoordinationService.ProcessAsync(
-                input: inputData,
                 fileName: inputFileName,
                 supplierId: inputSupplierId);
 

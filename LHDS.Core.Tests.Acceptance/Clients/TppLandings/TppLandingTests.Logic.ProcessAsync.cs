@@ -50,7 +50,6 @@ namespace LHDS.Core.Tests.Acceptance.Clients.TppLandings
 
             //When
             Guid actualGuid = await this.tppLandingClient.ProcessAsync(
-                input: inputStream,
                 fileName: inputFileName,
                 supplierId);
 
@@ -120,7 +119,6 @@ namespace LHDS.Core.Tests.Acceptance.Clients.TppLandings
 
             //When
             Guid actualGuid = await this.tppLandingClient.ProcessAsync(
-                input: inputStream,
                 fileName,
                 supplierId);
 
@@ -185,7 +183,6 @@ namespace LHDS.Core.Tests.Acceptance.Clients.TppLandings
 
             //When
             Guid actualGuid = await this.tppLandingClient.ProcessAsync(
-                input: inputStream,
                 fileName,
                 supplierId);
 

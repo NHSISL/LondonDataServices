@@ -12,7 +12,7 @@ using Moq;
 using Xeptions;
 using Xunit;
 
-namespace LHDS.Core.Tests.Unit.Services.Coordinations.Decryptions
+namespace LHDS.Core.Tests.Unit.Services.Coordinations.TppLandings
 {
     public partial class TppLandingsCoordinationTests
     {
@@ -42,7 +42,7 @@ namespace LHDS.Core.Tests.Unit.Services.Coordinations.Decryptions
 
             // when
             ValueTask<Guid> processTask = this.tppLandingCoordinationService
-                .ProcessAsync(input: inputStream, fileName: inputFileName, supplierId: inputSupplierId);
+                .ProcessAsync(fileName: inputFileName, supplierId: inputSupplierId);
 
             TppLandingCoordinationDependencyValidationException actualException =
                 await Assert.ThrowsAsync<TppLandingCoordinationDependencyValidationException>(processTask.AsTask);
@@ -87,7 +87,7 @@ namespace LHDS.Core.Tests.Unit.Services.Coordinations.Decryptions
 
             // when
             ValueTask<Guid> processTask = this.tppLandingCoordinationService
-                .ProcessAsync(input: inputStream, fileName: inputFileName, supplierId: inputSupplierId);
+                .ProcessAsync(fileName: inputFileName, supplierId: inputSupplierId);
 
             TppLandingCoordinationDependencyException actualException =
                 await Assert.ThrowsAsync<TppLandingCoordinationDependencyException>(processTask.AsTask);
@@ -136,7 +136,7 @@ namespace LHDS.Core.Tests.Unit.Services.Coordinations.Decryptions
 
             // when
             ValueTask<Guid> processTask = this.tppLandingCoordinationService
-                .ProcessAsync(input: inputStream, fileName: inputFileName, supplierId: inputSupplierId);
+                .ProcessAsync(fileName: inputFileName, supplierId: inputSupplierId);
 
             TppLandingCoordinationServiceException actualException =
                 await Assert.ThrowsAsync<TppLandingCoordinationServiceException>(processTask.AsTask);

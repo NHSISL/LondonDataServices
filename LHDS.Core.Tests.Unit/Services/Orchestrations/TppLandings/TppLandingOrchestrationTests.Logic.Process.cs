@@ -369,7 +369,6 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.TppLandings
             // given
             DateTimeOffset randomDateTime = GetRandomDateTimeOffset();
             string randomHash = GetRandomString(64);
-            string inputContainer = "ingress";
             int randomNumber = GetRandomNumber();
             Guid randomSupplierId = Guid.NewGuid();
             List<string> randomFileNames = GetRandomStrings();

@@ -236,7 +236,7 @@ namespace LHDS.Core.Services.Orchestrations.Tpp
                         await this.ingestionTrackingProcessingService.ModifyIngestionTrackingAsync(
                             maybeIngestionTracking);
                     }
-                    catch (Exception exception)
+                    catch (Exception)
                     {
                         await LogAudit(
                             maybeIngestionTracking,

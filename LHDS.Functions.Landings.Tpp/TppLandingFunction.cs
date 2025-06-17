@@ -40,7 +40,6 @@ namespace LHDS.Functions.Landings.Tpp
                           $"Name: FileName: {name}");
 
                 await tppLandingClient.ProcessAsync(
-                    input: myBlob,
                     fileName: name,
                     supplierId: landingConfiguration.LandingSupplierId);
             }

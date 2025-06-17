@@ -43,9 +43,13 @@ namespace LHDS.Core.Tests.Acceptance.Clients.TppLandings
             await this.specificationObjectService.AddSpecificationObjectAsync(specificationObject);
             await this.objectColumnService.AddObjectColumnAsync(objectColumn);
 
+            await this.documentProcessingService.AddDocumentAsync(
+                input: inputStream,
+                fileName: inputFileName,
+                container: this.blobContainers.TppLanding);
+
             //When
             Guid actualGuid = await this.tppLandingClient.ProcessAsync(
-                input: inputStream,
                 fileName: inputFileName,
                 supplierId);
 
@@ -74,6 +78,10 @@ namespace LHDS.Core.Tests.Acceptance.Clients.TppLandings
             await this.documentProcessingService.RemoveDocumentByFileNameAsync(
                 ingestionTracking.DecryptedFileName,
                 blobContainers.Ingress);
+
+            await this.documentProcessingService.RemoveDocumentByFileNameAsync(
+                fileName: inputFileName,
+                container: this.blobContainers.TppLanding);
         }
 
         [Fact]
@@ -103,13 +111,14 @@ namespace LHDS.Core.Tests.Acceptance.Clients.TppLandings
                 CreateRandomIngestionTracking(randomDateTime, fileName, supplierId);
 
             randomIngestionTracking.FileName = randomFileName;
+            randomIngestionTracking.IsDownloaded = true;
+            randomIngestionTracking.RetryCount = 1;
             randomIngestionTracking.DecryptedFileSha256Hash = randomHash;
             randomIngestionTracking.DataSetSpecificationId = activeDataSetSpecification.Id;
             await this.ingestionTrackingService.AddIngestionTrackingAsync(randomIngestionTracking);
 
             //When
             Guid actualGuid = await this.tppLandingClient.ProcessAsync(
-                input: inputStream,
                 fileName,
                 supplierId);
 
@@ -167,12 +176,13 @@ namespace LHDS.Core.Tests.Acceptance.Clients.TppLandings
                 CreateRandomIngestionTracking(randomDateTime, fileName, supplierId);
 
             randomIngestionTracking.FileName = randomFileName;
+            randomIngestionTracking.IsDownloaded = true;
+            randomIngestionTracking.RetryCount = 1;
             randomIngestionTracking.DataSetSpecificationId = activeDataSetSpecification.Id;
             await this.ingestionTrackingService.AddIngestionTrackingAsync(randomIngestionTracking);
 
             //When
             Guid actualGuid = await this.tppLandingClient.ProcessAsync(
-                input: inputStream,
                 fileName,
                 supplierId);
 

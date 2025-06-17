@@ -9,19 +9,13 @@ import AddressDetailCardView from "./addressDetailCardView";
 interface AddressDetailCardProps {
     address: AddressView;
     children?: React.ReactNode;
-    onRefresh: (address: AddressView) => void;
 }
 
 const AddressDetailCard: FunctionComponent<AddressDetailCardProps> = (props) => {
     const {
         address,
-        children,
-        onRefresh
+        children
     } = props;
-
-    const handlRefresh = async (address: AddressView) => {
-        await onRefresh(address);
-    }
 
     return (
         <div>
@@ -32,8 +26,7 @@ const AddressDetailCard: FunctionComponent<AddressDetailCardProps> = (props) => 
                     </CardBaseTitle>
                     <CardBaseContent>
                         <AddressDetailCardView
-                            address={address}
-                            onRefresh={handlRefresh} />
+                            address={address} />
                         {children !== undefined && (
                             <>
                                 <br />

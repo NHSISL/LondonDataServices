@@ -14,7 +14,7 @@ import InfiniteScrollLoader from "../bases/pagers/InfiniteScroll.Loader";
 import { SpinnerBase } from "../bases/spinner/SpinnerBase";
 import IngestionTrackingRow from "./ingestionTrackingRow";
 import { IngestionTracking } from "../../models/ingestionTrackings/ingestionTracking";
-import { Button, CloseButton, Row } from "react-bootstrap";
+import { CloseButton, Row } from "react-bootstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faDatabase, faFilter, faRefresh } from "@fortawesome/free-solid-svg-icons";
 import IngestionFilterModal from "./ingestionTrackingFilter";
@@ -23,9 +23,7 @@ import { emisLandingService } from "../../services/foundations/emisLandingServic
 import { toastSuccess } from "../../brokers/toastBroker.success";
 import { toastError } from "../../brokers/toastBroker.error";
 
-type IngestionTrackingTableProps = {};
-
-const IngestionTrackingTable: FunctionComponent<IngestionTrackingTableProps> = (props) => {
+const IngestionTrackingTable: FunctionComponent = () => {
     const [searchTerm, setSearchTerm] = useState<string>("");
     const [debouncedTerm, setDebouncedTerm] = useState<string>("");
     const [debouncedSupplierTerm, setDebouncedSupplierTerm] = useState<string>("");
@@ -86,8 +84,9 @@ const IngestionTrackingTable: FunctionComponent<IngestionTrackingTableProps> = (
             .then(() => {
                 toastSuccess("Ingestion Tracking Queued for Decrypt");
             })
-            .catch(() => {
-                toastError("error");
+            .catch(e => {
+                const message = e?.message || JSON.stringify(e);
+                toastError(`Error updating ingestion tracking: ${message}`);
             });
     };
 

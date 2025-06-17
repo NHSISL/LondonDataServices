@@ -1,4 +1,3 @@
-import { Guid } from "guid-typescript";
 import ApiBroker from "./apiBroker";
 import { AxiosResponse } from "axios";
 import { Address } from "../models/addresses/address";
@@ -10,7 +9,7 @@ class AddressBroker {
     private apiBroker: ApiBroker = new ApiBroker();
 
     private processOdataResult = (result: AxiosResponse) => {
-        const data = result.data.value.map((address: any) => new Address(address));
+        const data = result.data.value.map((address: Address) => new Address(address));
 
         const nextPage = result.data['@odata.nextLink'];
         return { data, nextPage }
@@ -29,11 +28,11 @@ class AddressBroker {
         }
         
         return await this.apiBroker.GetAsync(url)
-            .then(result => result.data.map((address: any) => new Address(address)));
+            .then(result => result.data.map((address: Address) => new Address(address)));
     }
 
     async GetAddressFirstPagesAsync(query: string) {
-        var url = this.relativeAddressOdataUrl + query;
+        const url = this.relativeAddressOdataUrl + query;
         return this.processOdataResult(await this.apiBroker.GetAsync(url));
     }
 
@@ -41,7 +40,7 @@ class AddressBroker {
         return this.processOdataResult(await this.apiBroker.GetAsyncAbsolute(absoluteUri));
     }
 
-    async GetAddressByIdAsync(id: Guid) {
+    async GetAddressByIdAsync(id: string) {
         const url = `${this.relativeAddressUrl}/${id}`;
 
         return await this.apiBroker.GetAsync(url)
@@ -53,7 +52,7 @@ class AddressBroker {
             .then(result => new Address(result.data));
     }
 
-    async DeleteAddressByIdAsync(id: Guid) {
+    async DeleteAddressByIdAsync(id: string) {
         const url = `${this.relativeAddressUrl}/${id}`;
 
         return await this.apiBroker.DeleteAsync(url)

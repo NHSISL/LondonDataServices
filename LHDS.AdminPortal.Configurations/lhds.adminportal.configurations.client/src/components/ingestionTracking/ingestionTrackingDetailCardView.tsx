@@ -17,7 +17,6 @@ import GridBase from "../bases/layouts/Grid/GridBase";
 interface IngestionTrackingDetailCardViewProps {
     ingestionTracking: IngestionTrackingView;
     onReDecrypt: (ingestionTracking: IngestionTrackingView) => void;
-    onRefresh: (ingestionTracking: IngestionTrackingView) => void;
 }
 
 const IngestionTrackingDetailCardView: FunctionComponent<IngestionTrackingDetailCardViewProps> = (props) => {

@@ -9,12 +9,13 @@ import { supplierErrors } from "./supplierErrors";
 import { supplierValidations } from "./supplierValidations";
 import TextAreaInputBase from "../bases/inputs/TextAreaInputBase";
 import CheckboxBase from "../bases/inputs/CheckboxBase";
+import { ApiError } from "../../types/apiError";
 
 interface SupplierRowEditProps {
     supplier: SupplierView;
     onCancel: () => void;
     onEdit: (supplier: SupplierView) => void;
-    apiError?: any;
+    apiError?: ApiError;
 }
 
 const SupplierRowEdit: FunctionComponent<SupplierRowEditProps> = (props) => {

@@ -42,7 +42,8 @@ const ResolvedAddressDetail: FunctionComponent<ResolvedAddressDetailProps> = (pr
                 toastSuccess("Alternate Address Saved")
             })
             .catch(e => {
-                toastError("error")
+                const message = e?.message || JSON.stringify(e);
+                toastError(`Error updating Resoled Address: ${message}`);
             });
     };
 

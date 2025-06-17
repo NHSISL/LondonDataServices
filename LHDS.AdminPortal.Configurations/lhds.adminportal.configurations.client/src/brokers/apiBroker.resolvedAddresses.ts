@@ -1,4 +1,3 @@
-import { Guid } from "guid-typescript";
 import ApiBroker from "./apiBroker";
 import { AxiosResponse } from "axios";
 import { ResolvedAddress } from "../models/resolvedAddresses/resolvedAddress";
@@ -10,7 +9,7 @@ class ResolvedAddressBroker {
     private apiBroker: ApiBroker = new ApiBroker();
 
     private processOdataResult = (result: AxiosResponse) => {
-        const data = result.data.value.map((resolvedAddress: any) => new ResolvedAddress(resolvedAddress));
+        const data = result.data.value.map((resolvedAddress: ResolvedAddress) => new ResolvedAddress(resolvedAddress));
 
         const nextPage = result.data['@odata.nextLink'];
         return { data, nextPage }
@@ -29,11 +28,11 @@ class ResolvedAddressBroker {
         }
         
         return await this.apiBroker.GetAsync(url)
-            .then(result => result.data.map((resolvedAddress: any) => new ResolvedAddress(resolvedAddress)));
+            .then(result => result.data.map((resolvedAddress: ResolvedAddress) => new ResolvedAddress(resolvedAddress)));
     }
 
     async GetResolvedAddressFirstPagesAsync(query: string) {
-        var url = this.relativeResolvedAddressOdataUrl + query;
+        const url = this.relativeResolvedAddressOdataUrl + query;
         return this.processOdataResult(await this.apiBroker.GetAsync(url));
     }
 
@@ -41,7 +40,7 @@ class ResolvedAddressBroker {
         return this.processOdataResult(await this.apiBroker.GetAsyncAbsolute(absoluteUri));
     }
 
-    async GetResolvedAddressByIdAsync(id: Guid) {
+    async GetResolvedAddressByIdAsync(id: string) {
         const url = `${this.relativeResolvedAddressUrl}/${id}`;
 
         return await this.apiBroker.GetAsync(url)
@@ -53,7 +52,7 @@ class ResolvedAddressBroker {
             .then(result => new ResolvedAddress(result.data));
     }
 
-    async DeleteResolvedAddressByIdAsync(id: Guid) {
+    async DeleteResolvedAddressByIdAsync(id: string) {
         const url = `${this.relativeResolvedAddressUrl}/${id}`;
 
         return await this.apiBroker.DeleteAsync(url)

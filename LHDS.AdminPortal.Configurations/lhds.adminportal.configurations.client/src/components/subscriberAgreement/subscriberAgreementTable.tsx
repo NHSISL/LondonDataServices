@@ -101,32 +101,33 @@ const SubscriberAgreementTable: FunctionComponent = () => {
                             </Row>
 
                             {!showSpinner && (
-                            <TableBase>
-                                <TableBaseThead>
-                                    <TableBaseRow>
-                                        <TableBaseHeader>Supplier Agreement Id</TableBaseHeader>
-                                        <TableBaseHeader>Supplier Sharing Agreement ShortName</TableBaseHeader>
-                                        <TableBaseHeader>Supplier Sharing Agreement Guid</TableBaseHeader>
-                                        <TableBaseHeader></TableBaseHeader>
-                                    </TableBaseRow>
-                                </TableBaseThead>
-                                <TableBaseTbody>
-                                    {subscriberCredentialRetrieved?.map(
-                                        (subscriberCredentialHomeView: SubscriberCredentialView) => (
-                                            <SubscriberAgreementRow
-                                                key={subscriberCredentialHomeView.id.toString()}
-                                                subscriberCredential={subscriberCredentialHomeView} />)
-                                    )}
-                                    <tr>
-                                        <td colSpan={4} className="text-center">
-                                            <InfiniteScrollLoader
-                                                loading={isLoading || isFetchingNextPage}
-                                                spinner={<SpinnerBase />}
-                                                noMorePages={!hasNoMorePages()}
-                                                noMorePagesMessage={<>---No more Subscriber Agreements---</>} />
-                                        </td>
-                                    </tr>
-                                </TableBaseTbody>
+                                <TableBase>
+                                    <TableBaseThead>
+                                        <TableBaseRow>
+                                            <TableBaseHeader>Supplier Agreement Id</TableBaseHeader>
+                                            <TableBaseHeader>Supplier Sharing Agreement ShortName</TableBaseHeader>
+                                            <TableBaseHeader>Supplier Sharing Agreement Guid</TableBaseHeader>
+                                            <TableBaseHeader></TableBaseHeader>
+                                        </TableBaseRow>
+                                    </TableBaseThead>
+                                    <TableBaseTbody>
+                                        {subscriberCredentialRetrieved?.map(
+                                            (subscriberCredentialHomeView: SubscriberCredentialView) => (
+                                                <SubscriberAgreementRow
+                                                    key={subscriberCredentialHomeView.id.toString()}
+                                                    subscriberCredential={subscriberCredentialHomeView} />)
+                                        )}
+                                        <tr>
+                                            <td colSpan={4} className="text-center">
+                                                <InfiniteScrollLoader
+                                                    loading={isLoading || isFetchingNextPage}
+                                                    spinner={<SpinnerBase />}
+                                                    noMorePages={!hasNoMorePages()}
+                                                    noMorePagesMessage={<>---No more Subscriber Agreements---</>}
+                                                    totalPages={data?.pages.length} />
+                                            </td>
+                                        </tr>
+                                    </TableBaseTbody>
                                 </TableBase>
                             )}
                         </InfiniteScroll>

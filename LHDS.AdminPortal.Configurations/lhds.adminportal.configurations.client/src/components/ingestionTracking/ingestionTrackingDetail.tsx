@@ -28,11 +28,10 @@ const IngestionTrackingDetail: FunctionComponent<IngestionTrackingDetailProps> =
                 toastSuccess("Ingestion Tracking Queued for Decrypt")
             })
             .catch(e => {
-            toastError("error")
+                const message = e?.message || JSON.stringify(e);
+                toastError(`Error queuing ingestion tracking: ${message}`);
         });
     };
-
-    const handleRefresh = async (ingestionTrackingView: IngestionTrackingView) => {}
 
     return (
         <>
@@ -40,8 +39,7 @@ const IngestionTrackingDetail: FunctionComponent<IngestionTrackingDetailProps> =
                     <IngestionTrackingDetailCard
                         key={ingestionTrackingRetrieved.id.toString()}
                         ingestionTracking={ingestionTrackingRetrieved}
-                        onReDecrypt={handleReDecrypt}
-                        onRefresh={handleRefresh}>
+                        onReDecrypt={handleReDecrypt}>
 
                         {children}
                     </IngestionTrackingDetailCard>

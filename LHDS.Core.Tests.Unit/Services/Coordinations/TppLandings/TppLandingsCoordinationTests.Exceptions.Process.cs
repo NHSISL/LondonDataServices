@@ -37,7 +37,7 @@ namespace LHDS.Core.Tests.Unit.Services.Coordinations.Decryptions
                     dependancyValidationException.InnerException as Xeption);
 
             this.tppLandingOrchestrationServiceMock.Setup(service =>
-                service.ProcessAsync(It.IsAny<Stream>(), It.IsAny<string>(), It.IsAny<Guid>()))
+                service.ProcessAsync(It.IsAny<string>(), It.IsAny<Guid>()))
                     .ThrowsAsync(dependancyValidationException);
 
             // when
@@ -51,7 +51,7 @@ namespace LHDS.Core.Tests.Unit.Services.Coordinations.Decryptions
             actualException.Should().BeEquivalentTo(expectedDependencyException);
 
             this.tppLandingOrchestrationServiceMock.Verify(service =>
-                service.ProcessAsync(It.IsAny<Stream>(), It.IsAny<string>(), It.IsAny<Guid>()),
+                service.ProcessAsync(It.IsAny<string>(), It.IsAny<Guid>()),
                     Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>
@@ -82,7 +82,7 @@ namespace LHDS.Core.Tests.Unit.Services.Coordinations.Decryptions
                     innerException: dependancyException.InnerException as Xeption);
 
             this.tppLandingOrchestrationServiceMock.Setup(service =>
-                service.ProcessAsync(It.IsAny<Stream>(), It.IsAny<string>(), It.IsAny<Guid>()))
+                service.ProcessAsync(It.IsAny<string>(), It.IsAny<Guid>()))
                     .ThrowsAsync(dependancyException);
 
             // when
@@ -96,7 +96,7 @@ namespace LHDS.Core.Tests.Unit.Services.Coordinations.Decryptions
             actualException.Should().BeEquivalentTo(expectedDependencyException);
 
             this.tppLandingOrchestrationServiceMock.Verify(service =>
-                service.ProcessAsync(It.IsAny<Stream>(), It.IsAny<string>(), It.IsAny<Guid>()),
+                service.ProcessAsync(It.IsAny<string>(), It.IsAny<Guid>()),
                     Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>
@@ -131,7 +131,7 @@ namespace LHDS.Core.Tests.Unit.Services.Coordinations.Decryptions
                     failedTppCoordinationServiceException);
 
             this.tppLandingOrchestrationServiceMock.Setup(service =>
-                service.ProcessAsync(It.IsAny<Stream>(), It.IsAny<string>(), It.IsAny<Guid>()))
+                service.ProcessAsync(It.IsAny<string>(), It.IsAny<Guid>()))
                     .ThrowsAsync(serviceException);
 
             // when
@@ -145,7 +145,7 @@ namespace LHDS.Core.Tests.Unit.Services.Coordinations.Decryptions
             actualException.Should().BeEquivalentTo(expectedTppCoordinationServiceException);
 
             this.tppLandingOrchestrationServiceMock.Verify(service =>
-                service.ProcessAsync(It.IsAny<Stream>(), It.IsAny<string>(), It.IsAny<Guid>()),
+                service.ProcessAsync(It.IsAny<string>(), It.IsAny<Guid>()),
                     Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>

@@ -33,7 +33,6 @@ namespace LHDS.Core.Services.Coordinations.TppLandings
                 ValidateArgumentsOnProcess(input, fileName, supplierId);
 
                 Guid ingestionTrackingId = await this.tppOrchestrationService.ProcessAsync(
-                    input: input,
                     fileName: fileName,
                     supplierId: supplierId);
 

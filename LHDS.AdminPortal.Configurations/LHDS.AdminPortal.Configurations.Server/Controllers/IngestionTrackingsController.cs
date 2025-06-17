@@ -132,7 +132,7 @@ namespace LHDS.AdminPortal.Api.Controllers
             {
                 string decodedFileName = HttpUtility.UrlDecode(fileName);
 
-                IngestionTracking ingestionTracking =
+                IngestionTracking? ingestionTracking =
                     await this.ingestionTrackingService.RetrieveIngestionTrackingByFileNameAsync(decodedFileName);
 
                 return Ok(ingestionTracking);

@@ -99,7 +99,7 @@ namespace LHDS.AdminPortal.Api.Controllers
         {
             try
             {
-                OptOut getOptOutByNhs =
+                OptOut? getOptOutByNhs =
                     await this.optOutProcessingService.RetrieveOptOutByNhsNumberAsync(nhsNumber);
 
                 return Ok(getOptOutByNhs);

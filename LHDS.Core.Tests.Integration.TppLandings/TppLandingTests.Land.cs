@@ -3,7 +3,6 @@
 // ---------------------------------------------------------
 
 using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
@@ -31,7 +30,6 @@ namespace LHDS.Core.Tests.Integration.TppLandings
 
             // when
             Guid actualGuid = await this.tppLandingClient.ProcessAsync(
-                input: fileStream,
                 fileName: fileNameWithoutExtension,
                 supplierId: supplier.Id);
 

@@ -410,6 +410,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.TppLandings
             randomIngestionTracking.FileName = inputFileName;
             randomIngestionTracking.RetryCount = 1;
             randomIngestionTracking.IsDownloaded = false;
+            randomIngestionTracking.DecryptedFileSize = inputBytes.Length;
             IngestionTracking storageIngestionTracking = randomIngestionTracking;
             IngestionTracking modifiedIngestionTracking = storageIngestionTracking.DeepClone();
             modifiedIngestionTracking.RetryCount += 1;
@@ -417,7 +418,6 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.TppLandings
             this.ingestionTrackingProcessingServiceMock.Setup(service =>
                 service.RetrieveAllIngestionTrackingsAsync())
                     .ReturnsAsync(randomIngestionTrackings.AsQueryable());
-
 
             string batchReadyFileName =
                 $"{modifiedIngestionTracking.BatchReadyFolderPath}/{landingConfiguration.BatchReadyFile}"
@@ -437,15 +437,22 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.TppLandings
                 broker.GetTempFileName())
                     .ReturnsAsync(tempFilePath);
 
-            documentProcessingServiceMock.Setup(service =>
-                service.RetrieveDocumentByFileNameAsync(
+            documentProcessingServiceMock
+                .Setup(service => service.RetrieveDocumentByFileNameAsync(
                     It.IsAny<Stream>(),
                     modifiedIngestionTracking.FileName,
                     blobContainers.TppLanding))
-                        .Returns(ValueTask.CompletedTask);
+                .Callback<Stream, string, string>((output, fileName, container) =>
+                {
+                    inputStream.Position = 0;
+                    inputStream.CopyTo(output);
+                    output.Position = 0; // reset if your test will read from it
+                })
+                .Returns(ValueTask.CompletedTask);
 
             string randomDecryptedFileSha256Hash = GetRandomString(64);
             modifiedIngestionTracking.DecryptedFileSha256Hash = randomDecryptedFileSha256Hash;
+            modifiedIngestionTracking.DecryptedFileSize = inputBytes.Length;
 
             hashBrokerMock.Setup(broker =>
                 broker.GenerateSha256HashAsync(It.IsAny<Stream>()))

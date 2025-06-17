@@ -15,7 +15,6 @@ import { faCheck, faTimes } from "@fortawesome/free-solid-svg-icons";
 
 interface AddressDetailCardViewProps {
     address: AddressView;
-    onRefresh: (address: AddressView) => void;
 }
 
 const AddressDetailCardView: FunctionComponent<AddressDetailCardViewProps> = (props) => {

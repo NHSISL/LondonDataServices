@@ -33,7 +33,7 @@ export class ResolvedAddress {
     public updatedBy?: string;
     public updatedDate?: Date;
 
-    constructor(resolvedAddress: any) {
+    constructor(resolvedAddress: ResolvedAddress) {
         this.id = resolvedAddress.id ? resolvedAddress.id : "";
         this.uprn = resolvedAddress.uprn || "";
         this.upsn = resolvedAddress.upsn || "";

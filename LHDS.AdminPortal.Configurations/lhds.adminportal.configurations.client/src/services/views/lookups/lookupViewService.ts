@@ -31,9 +31,9 @@ export const lookupViewService = {
             ...response
         }
     },
-    useGetTrackedSupplierList: (searchTerm?: string) => {
+    useGetTrackedSupplierList: () => {
 
-        let query = `?$select=id,Name&$filter=isIngestionTracked eq true&$orderby=Name`;
+        const query = `?$select=id,Name&$filter=isIngestionTracked eq true&$orderby=Name`;
 
         const response = supplierService.useGetAllSuppliers(query);
         const [mappedSuppliers, setMappedSuppliers] = useState<Array<LookupView>>([]);

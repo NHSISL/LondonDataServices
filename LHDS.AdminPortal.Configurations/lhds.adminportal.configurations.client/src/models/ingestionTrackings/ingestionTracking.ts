@@ -28,7 +28,7 @@ export class IngestionTracking {
     public updatedDate?: Date;
     public supplier?: Supplier;
 
-    constructor(ingestionTracking: any) {
+    constructor(ingestionTracking: IngestionTracking) {
         this.id = ingestionTracking.id;
         this.fileName = ingestionTracking.fileName || "";
         this.supplierId = ingestionTracking.supplierId || "";

@@ -72,7 +72,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Ingress
             // given
             IngestionTracking randomIngestionTracking = CreateRandomIngestionTracking();
             randomIngestionTracking.DecryptedFileName = CreateRandomDecryptedFilePath();
-            string batchReadyFileName = "_BatchReady.txt";
+            string batchReadyFileName = this.landingConfiguration.BatchReadyFile;
             string batchReadyFilePath = $"{randomIngestionTracking.BatchReadyFolderPath}/{batchReadyFileName}";
 
             IngestionTracking storageIngestionTracking = randomIngestionTracking.DeepClone();

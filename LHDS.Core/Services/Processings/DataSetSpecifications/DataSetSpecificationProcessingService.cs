@@ -109,9 +109,10 @@ namespace LHDS.Core.Services.Processings.DataSetSpecifications
                 List<DataSetSpecification> result = allDataSetSpecifications
                     .Include(dataSetSpecification => dataSetSpecification.DataSet)
                     .Where(dataSetSpecification =>
-                        dataSetSpecification.IsActive &&
                         dataSetSpecification.DataSet.SupplierId == supplierId &&
                         dataSetSpecification.DataSet.IsActive &&
+                        dataSetSpecification.IsActive &&
+                        dataSetSpecification.IsPublished &&
 
                         (dataSetSpecification.ActiveFrom == null
                             || dataSetSpecification.ActiveFrom <= now) &&

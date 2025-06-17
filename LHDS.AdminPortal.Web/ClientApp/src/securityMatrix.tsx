@@ -1,4 +1,7 @@
 const securityPoints = {
+    address: {
+        view: ["ISL.LDS.AdminSpa.Address", "ISL.LDS.AdminSpa.Administrators", "ISL.LDS.AdminSpa.ReadOnly"]
+    },
     suppliers: {
         add: ["ISL.LDS.AdminSpa.Suppliers", "ISL.LDS.AdminSpa.Administrators"],
         delete: ["ISL.LDS.AdminSpa.Suppliers", "ISL.LDS.AdminSpa.Administrators"],
@@ -27,6 +30,12 @@ const securityPoints = {
         delete: ["ISL.LDS.AdminSpa.Administrators"],
         edit: ["ISL.LDS.AdminSpa.Administrators"],
     },
+    resolvedAddress: {
+        view: ["ISL.LDS.AdminSpa.ResolvedAddress", "ISL.LDS.AdminSpa.Administrators", "ISL.LDS.AdminSpa.ReadOnly"],
+        add: ["ISL.LDS.AdminSpa.Administrators"],
+        edit: ["ISL.LDS.AdminSpa.Administrators"],
+    },
+
     terminologyArtifact: {
         view: ["ISL.LDS.AdminSpa.TerminologyArtifact", "ISL.LDS.AdminSpa.Administrators", "ISL.LDS.AdminSpa.ReadOnly"]
     },

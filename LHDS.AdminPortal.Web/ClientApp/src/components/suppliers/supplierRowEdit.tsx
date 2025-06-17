@@ -98,28 +98,16 @@ const SupplierRowEdit: FunctionComponent<SupplierRowEditProps> = (props) => {
 
                 <br />
 
-                <TextInputBase
-                    id="landingManualTriggerUrl"
-                    name="landingManualTriggerUrl"
-                    label="landing Manual Trigger Url"
-                    placeholder="landing Manual Trigger Url"
-                    value={editSupplier.landingManualTriggerUrl}
-                    required={true}
-                    error={errors.name}
-                    onChange={handleChange} />
-
             </TableBaseData>
 
             <TableBaseData>
 
-                <TextInputBase
-                    id="decryptionManualTriggerUrl"
-                    name="decryptionManualTriggerUrl"
-                    label="decryption Manual Trigger Url"
-                    placeholder="Decryption Manual Trigger Url"
-                    value={editSupplier.landingManualTriggerUrl}
-                    required={true}
-                    error={errors.name}
+                <CheckboxBase
+                    id="isIngestionTracked"
+                    name="isIngestionTracked"
+                    label="is Ingestion Tracked"
+                    checked={editSupplier.isIngestionTracked === true ? true : false}
+                    error={errors.isIngestionTracked}
                     onChange={handleChange} />
 
                 <br />

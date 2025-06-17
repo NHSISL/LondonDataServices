@@ -64,10 +64,10 @@ namespace LHDS.Core.Services.Orchestrations.Tpp
             this.landingConfiguration = landingConfiguration;
         }
 
-        public async ValueTask<Guid> ProcessAsync(Stream input, string fileName, Guid supplierId) =>
+        public async ValueTask<Guid> ProcessAsync(string fileName, Guid supplierId) =>
             await TryCatch(async () =>
             {
-                ValidateArgumentsOnProcess(input, fileName, supplierId);
+                ValidateArgumentsOnProcess(fileName, supplierId);
 
                 IQueryable<IngestionTracking> allIngestionTrackings =
                     await this.ingestionTrackingProcessingService.RetrieveAllIngestionTrackingsAsync();
@@ -137,7 +137,7 @@ namespace LHDS.Core.Services.Orchestrations.Tpp
                             EncryptedFileSha256Hash = string.Empty,
                             DecryptedFileName = decryptedFileName,
                             Decrypted = true,
-                            DecryptedFileSize = input.Length,
+                            DecryptedFileSize = 0,
                             DecryptedFileSha256Hash = string.Empty,
                             LastSeen = currentDateTime,
                             LastAttempt = currentDateTime,
@@ -218,6 +218,7 @@ namespace LHDS.Core.Services.Orchestrations.Tpp
                             string decryptedFileSha256Hash =
                                 await this.hashBroker.GenerateSha256HashAsync(data: readFileStream);
 
+                            maybeIngestionTracking.DecryptedFileSize = readFileStream.Length;
                             maybeIngestionTracking.DecryptedFileSha256Hash = decryptedFileSha256Hash;
 
                             await this.documentProcessingService.AddDocumentAsync(

@@ -19,7 +19,7 @@ namespace LHDS.Core.Tests.Unit.Services.Coordinations.HealthChecks.IngestionTrac
             var failedIngestionTrackingFilesReceivedHealthCheckServiceException =
                 new FailedIngestionTrackingFilesReceivedHealthCheckServiceException(
 
-                    message: "Failed ingestion tracking failed to process health check service error occurred, " +
+                    message: "Failed ingestion tracking files received health check service error occurred, " +
                     "please contact support.",
 
                     innerException: serviceException);
@@ -27,7 +27,7 @@ namespace LHDS.Core.Tests.Unit.Services.Coordinations.HealthChecks.IngestionTrac
             var expectedIngestionTrackingFilesReceivedHealthCheckServiceException =
                 new IngestionTrackingFilesReceivedHealthCheckServiceException(
 
-                    message: "Ingestion tracking failed to process health check service error occurred, " +
+                    message: "Ingestion tracking files received health check service error occurred, " +
                     "please contact support.",
 
                     innerException: failedIngestionTrackingFilesReceivedHealthCheckServiceException);

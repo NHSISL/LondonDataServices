@@ -70,22 +70,26 @@ namespace LHDS.Core.Services.Foundations.HealthChecks.IngestionTracking
                     var ingestionTrackingQuery = await storageBroker.SelectAllIngestionTrackingsAsync();
 
                     var filteredQuery = ingestionTrackingQuery
-                        .Where(ingestionTracking => ingestionTracking.SupplierId == supplierId).ToList();
+                        .Where(ingestionTracking => ingestionTracking.SupplierId == supplierId
+                            && ingestionTracking.CreatedDate <= degradedThresholdDateTime).ToList();
 
                     int itemsReceived = filteredQuery.Count();
 
-                    bool isDegraded = filteredQuery.Any(ingestionTracking =>
+                    bool isDegraded = !filteredQuery.Any(ingestionTracking =>
+                        ingestionTracking.CreatedDate > degradedThresholdDateTime);
+
+                    bool isUnhealthy = !filteredQuery.Any(ingestionTracking =>
                         ingestionTracking.CreatedDate <= degradedThresholdDateTime &&
-                            ingestionTracking.CreatedDate > unHealthyThresholdDateTime);
+                        ingestionTracking.CreatedDate > unHealthyThresholdDateTime);
 
-                    bool isUnhealthy = filteredQuery.Any(ingestionTracking =>
-                        ingestionTracking.CreatedDate <= unHealthyThresholdDateTime);
+                    bool noNonHealthyItems = itemsReceived == 0;
 
-                    HealthStatus status = (isUnhealthy, isDegraded) switch
+                    HealthStatus status = (noNonHealthyItems, isUnhealthy, isDegraded) switch
                     {
-                        (true, _) => HealthStatus.Unhealthy,
-                        (_, true) => HealthStatus.Degraded,
-                        _ => HealthStatus.Healthy
+                        (true, _, _) => HealthStatus.Healthy,
+                        (_, true, _) => HealthStatus.Unhealthy,
+                        (_, _, true) => HealthStatus.Degraded,
+                        (_, _, _) => HealthStatus.Healthy
                     };
 
                     var values = new Dictionary<string, object>

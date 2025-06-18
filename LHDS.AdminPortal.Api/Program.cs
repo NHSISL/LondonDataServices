@@ -252,6 +252,9 @@ namespace LHDS.AdminPortal.Api
             services.AddSingleton
                 <IResolvedAddressHealthItemService, ResolvedAddressFailedToProcessHealthCheckService>();
 
+            services.AddSingleton
+                <IResolvedAddressHealthItemService, ResolvedAddressFailedToExportHealthCheckService>();
+
             services.AddHealthChecks()
                 .AddCheck<IngestionTrackingHealthCheckOrchestrationService>("ingestionTrackingHealthChecks");
 

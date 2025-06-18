@@ -14,17 +14,17 @@ using Microsoft.Extensions.Diagnostics.HealthChecks;
 
 namespace LHDS.Core.Services.Foundations.HealthChecks.ResolvedAddress
 {
-    public class ResolvedAddressProcessingHealthCheckService : IResolvedAddressHealthItemService
+    public class ResolvedAddressFailedToExportHealthCheckService : IResolvedAddressHealthItemService
     {
         private readonly IStorageBroker storageBroker;
         private readonly IConfiguration configuration;
         private readonly IDateTimeBroker dateTimeBroker;
         private readonly ILoggingBroker loggingBroker;
-        private const string CheckName = "processingQueue";
-        private const string CheckDescriptionName = "Processing Queue";
-        private const string ConfigSectionName = "HealthChecks:ResolvedAddress:Processing";
+        private const string CheckName = "failedToExport";
+        private const string CheckDescriptionName = "Failed To Export";
+        private const string ConfigSectionName = "HealthChecks:ResolvedAddress:FailedToExport";
 
-        public ResolvedAddressProcessingHealthCheckService(
+        public ResolvedAddressFailedToExportHealthCheckService(
             IStorageBroker storageBroker,
             IConfiguration configuration,
             IDateTimeBroker dateTimeBroker,
@@ -38,13 +38,17 @@ namespace LHDS.Core.Services.Foundations.HealthChecks.ResolvedAddress
 
         public async ValueTask<HealthCheckResult> GetHealthStatusAsync()
         {
+            int retryCount = configuration.GetValue($"{ConfigSectionName}:RetryCount", 3);
             int degradedThresholdMinutes = configuration.GetValue($"{ConfigSectionName}:DegradedThreshold", 1440);
             int unHealthyThresholdMinutes = configuration.GetValue($"{ConfigSectionName}:UnHealthyThreshold", 2880);
             DateTimeOffset currentDateTime = await dateTimeBroker.GetCurrentDateTimeOffsetAsync();
             DateTimeOffset degradedThresholdDateTime = currentDateTime.AddMinutes(-1 * degradedThresholdMinutes);
             DateTimeOffset unHealthyThresholdDateTime = currentDateTime.AddMinutes(-1 * unHealthyThresholdMinutes);
             var resolvedAddressQuery = await storageBroker.SelectAllResolvedAddressesAsync();
-            var filteredQuery = resolvedAddressQuery.Where(i => i.IsProcessing);
+            var filteredQuery = resolvedAddressQuery.Where(i => i.RetryCount >= retryCount);
+
+            int baseCount = filteredQuery.Count(resolvedAddress =>
+                resolvedAddress.UpdatedDate > degradedThresholdDateTime);
 
             int degradedCount = filteredQuery.Count(resolvedAddress =>
                 resolvedAddress.UpdatedDate <= degradedThresholdDateTime &&
@@ -53,16 +57,16 @@ namespace LHDS.Core.Services.Foundations.HealthChecks.ResolvedAddress
             int unHealthyCount = filteredQuery
                 .Count(resolvedAddress => resolvedAddress.UpdatedDate <= unHealthyThresholdDateTime);
 
-            int totalCount = degradedCount + unHealthyCount;
+            int totalCount = baseCount + degradedCount + unHealthyCount;
 
             string message = totalCount == 0
                 ? $"Nothing to process. All up to date."
-                : $"{totalCount} files have not been processed. Please check logs and function status.";
+                : $"{totalCount} files have not been exported. Please check logs and function status.";
 
             var vals = new Dictionary<string, object>
             {
                 { "description", CheckDescriptionName },
-                { "stuckInProcessing", totalCount },
+                { "failedToExport", totalCount },
                 { "degradedItems", degradedCount},
                 { "unHealthyItems", unHealthyCount},
                 { "degradedThresholdMinutes", degradedThresholdMinutes.ToString() },

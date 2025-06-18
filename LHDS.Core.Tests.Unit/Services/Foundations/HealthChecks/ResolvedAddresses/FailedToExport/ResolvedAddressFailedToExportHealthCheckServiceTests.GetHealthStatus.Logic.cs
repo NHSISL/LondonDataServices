@@ -15,24 +15,21 @@ using Xunit;
 
 namespace LHDS.Core.Tests.Unit.Services.Foundations.HealthChecks.ResolvedAddresses
 {
-    public partial class ResolvedAdressFailedToProcessHealthCheckServiceTests
+    public partial class ResolvedAddressFailedToExportHealthCheckServiceTests
     {
         [Fact]
         public async Task ShouldGetHealthStatusAsHealthyAsync()
         {
             // given
-            string CheckName = "failedToProcess";
             DateTimeOffset randomDateTimeOffset = DateTimeOffset.UtcNow;
             int randomNumber = GetRandomNumber();
-
-            int retryCount = this.inMemoryConfiguration
-                .GetValue("HealthChecks:ResolvedAddress:FailedToProcess:RetryCount", 4);
+            int retryCount = this.inMemoryConfiguration.GetValue($"{ConfigSectionName}:RetryCount", 4);
 
             int degradedThresholdMinutes = this.inMemoryConfiguration
-                .GetValue("HealthChecks:ResolvedAddress:FailedToProcess:DegradedThreshold", 1440);
+                .GetValue($"{ConfigSectionName}:DegradedThreshold", 1440);
 
             int unHealthyThresholdMinutes = this.inMemoryConfiguration
-                .GetValue("HealthChecks:ResolvedAddress:FailedToProcess:UnHealthyThreshold", 2880);
+                .GetValue($"{ConfigSectionName}:UnHealthyThreshold", 2880);
 
             List<ResolvedAddress> healthyRecords = CreateRandomResolvedAddresses(
                 dateTimeOffset: randomDateTimeOffset,
@@ -47,12 +44,12 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.HealthChecks.ResolvedAddress
                 broker.SelectAllResolvedAddressesAsync())
                     .ReturnsAsync(healthyRecords.AsQueryable());
 
-            string message = $"{healthyRecords.Count} files have not been processed. Please check logs and function status.";
+            string message = $"{healthyRecords.Count} files have not been exported. Please check logs and function status.";
 
             var vals = new Dictionary<string, object>
             {
-                { "description", "Failed To Process" },
-                { "failedToProcess", healthyRecords.Count},
+                { "description", CheckDescriptionName },
+                { "failedToExport", healthyRecords.Count},
                 { "degradedItems", 0},
                 { "unHealthyItems", 0},
                 { "degradedThresholdMinutes", degradedThresholdMinutes.ToString() },
@@ -95,18 +92,15 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.HealthChecks.ResolvedAddress
         public async Task ShouldGetHealthStatusAsDegradedAsync()
         {
             // given
-            string CheckName = "failedToProcess";
             DateTimeOffset randomDateTimeOffset = DateTimeOffset.UtcNow;
             int randomNumber = GetRandomNumber();
-
-            int retryCount = this.inMemoryConfiguration
-                 .GetValue("HealthChecks:ResolvedAddress:FailedToProcess:RetryCount", 4);
+            int retryCount = this.inMemoryConfiguration.GetValue($"{ConfigSectionName}:RetryCount", 4);
 
             int degradedThresholdMinutes = this.inMemoryConfiguration
-                .GetValue("HealthChecks:ResolvedAddress:FailedToProcess:DegradedThreshold", 1440);
+                .GetValue($"{ConfigSectionName}:DegradedThreshold", 1440);
 
             int unHealthyThresholdMinutes = this.inMemoryConfiguration
-                .GetValue("HealthChecks:ResolvedAddress:FailedToProcess:UnHealthyThreshold", 2880);
+                .GetValue($"{ConfigSectionName}:UnHealthyThreshold", 2880);
 
             List<ResolvedAddress> degradedRecords = CreateRandomResolvedAddresses(
                 dateTimeOffset: randomDateTimeOffset.AddMinutes(-degradedThresholdMinutes).AddSeconds(-1),
@@ -121,12 +115,12 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.HealthChecks.ResolvedAddress
                 broker.SelectAllResolvedAddressesAsync())
                     .ReturnsAsync(degradedRecords.AsQueryable());
 
-            string message = $"{randomNumber} files have not been processed. Please check logs and function status.";
+            string message = $"{randomNumber} files have not been exported. Please check logs and function status.";
 
             var vals = new Dictionary<string, object>
             {
-                { "description", "Failed To Process" },
-                { "failedToProcess", randomNumber},
+                { "description", CheckDescriptionName },
+                { "failedToExport", randomNumber},
                 { "degradedItems", randomNumber},
                 { "unHealthyItems", 0},
                 { "degradedThresholdMinutes", degradedThresholdMinutes.ToString() },
@@ -169,18 +163,15 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.HealthChecks.ResolvedAddress
         public async Task ShouldGetHealthStatusAsUnHealthyAsync()
         {
             // given
-            string CheckName = "failedToProcess";
             DateTimeOffset randomDateTimeOffset = DateTimeOffset.UtcNow;
             int randomNumber = GetRandomNumber();
-
-            int retryCount = this.inMemoryConfiguration
-                 .GetValue("HealthChecks:ResolvedAddress:FailedToProcess:RetryCount", 4);
+            int retryCount = this.inMemoryConfiguration.GetValue($"{ConfigSectionName}:RetryCount", 4);
 
             int degradedThresholdMinutes = this.inMemoryConfiguration
-                .GetValue("HealthChecks:ResolvedAddress:FailedToProcess:DegradedThreshold", 1440);
+                .GetValue($"{ConfigSectionName}:DegradedThreshold", 1440);
 
             int unHealthyThresholdMinutes = this.inMemoryConfiguration
-                .GetValue("HealthChecks:ResolvedAddress:FailedToProcess:UnHealthyThreshold", 2880);
+                .GetValue($"{ConfigSectionName}:UnHealthyThreshold", 2880);
 
             List<ResolvedAddress> unHealthyRecords = CreateRandomResolvedAddresses(
                 dateTimeOffset: randomDateTimeOffset.AddMinutes(-unHealthyThresholdMinutes).AddSeconds(-1),
@@ -195,12 +186,12 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.HealthChecks.ResolvedAddress
                 broker.SelectAllResolvedAddressesAsync())
                     .ReturnsAsync(unHealthyRecords.AsQueryable());
 
-            string message = $"{randomNumber} files have not been processed. Please check logs and function status.";
+            string message = $"{randomNumber} files have not been exported. Please check logs and function status.";
 
             var vals = new Dictionary<string, object>
             {
-                { "description", "Failed To Process" },
-                { "failedToProcess", randomNumber},
+                { "description", CheckDescriptionName },
+                { "failedToExport", randomNumber},
                 { "degradedItems", 0},
                 { "unHealthyItems", randomNumber},
                 { "degradedThresholdMinutes", degradedThresholdMinutes.ToString() },
@@ -243,17 +234,14 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.HealthChecks.ResolvedAddress
         public async Task ShouldGetHealthStatusAsUnHealthyWithMixedItemsAsync()
         {
             // given
-            string CheckName = "failedToProcess";
             DateTimeOffset randomDateTimeOffset = DateTimeOffset.UtcNow;
-
-            int retryCount = this.inMemoryConfiguration
-                 .GetValue("HealthChecks:ResolvedAddress:FailedToProcess:RetryCount", 4);
+            int retryCount = this.inMemoryConfiguration.GetValue($"{ConfigSectionName}:RetryCount", 4);
 
             int degradedThresholdMinutes = this.inMemoryConfiguration
-                .GetValue("HealthChecks:ResolvedAddress:FailedToProcess:DegradedThreshold", 1440);
+                .GetValue($"{ConfigSectionName}:DegradedThreshold", 1440);
 
             int unHealthyThresholdMinutes = this.inMemoryConfiguration
-                .GetValue("HealthChecks:ResolvedAddress:FailedToProcess:UnHealthyThreshold", 2880);
+                .GetValue($"{ConfigSectionName}:UnHealthyThreshold", 2880);
 
             List<ResolvedAddress> healthyRecords = CreateRandomResolvedAddresses(
                 dateTimeOffset: randomDateTimeOffset,
@@ -281,12 +269,12 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.HealthChecks.ResolvedAddress
                 broker.SelectAllResolvedAddressesAsync())
                     .ReturnsAsync(allRecords.AsQueryable());
 
-            string message = $"{allRecords.Count} files have not been processed. Please check logs and function status.";
+            string message = $"{allRecords.Count} files have not been exported. Please check logs and function status.";
 
             var vals = new Dictionary<string, object>
             {
-                { "description", "Failed To Process" },
-                { "failedToProcess", allRecords.Count},
+                { "description", CheckDescriptionName },
+                { "failedToExport", allRecords.Count},
                 { "degradedItems", degradedRecords.Count},
                 { "unHealthyItems", unhealthyRecords.Count},
                 { "degradedThresholdMinutes", degradedThresholdMinutes.ToString() },

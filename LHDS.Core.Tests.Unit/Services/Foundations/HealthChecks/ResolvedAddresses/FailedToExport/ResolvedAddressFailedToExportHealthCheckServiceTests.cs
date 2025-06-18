@@ -5,24 +5,20 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Linq.Expressions;
-using System.Runtime.CompilerServices;
 using KellermanSoftware.CompareNetObjects;
 using LHDS.Core.Brokers.DateTimes;
 using LHDS.Core.Brokers.Loggings;
 using LHDS.Core.Brokers.Storages.Sql;
 using LHDS.Core.Models.Foundations.ResolvedAddresses;
 using LHDS.Core.Services.Foundations.HealthChecks.ResolvedAddress;
-using Microsoft.Data.SqlClient;
 using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.Diagnostics.HealthChecks;
 using Moq;
 using Tynamix.ObjectFiller;
-using Xeptions;
+using Xunit;
 
 namespace LHDS.Core.Tests.Unit.Services.Foundations.HealthChecks.ResolvedAddresses
 {
-    public partial class ResolvedAdressProcessingHealthCheckServiceTests
+    public partial class ResolvedAddressFailedToExportHealthCheckServiceTests
     {
         private readonly Mock<IStorageBroker> storageBrokerMock;
         private readonly IConfiguration inMemoryConfiguration;
@@ -30,16 +26,20 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.HealthChecks.ResolvedAddress
         private readonly Mock<ILoggingBroker> loggingBrokerMock;
         private readonly IResolvedAddressHealthItemService resolvedAddressHealthItemService;
         private readonly ICompareLogic compareLogic;
+        private const string CheckName = "failedToExport";
+        private const string CheckDescriptionName = "Failed To Export";
+        private const string ConfigSectionName = "HealthChecks:ResolvedAddress:FailedToExport";
 
-        public ResolvedAdressProcessingHealthCheckServiceTests()
+        public ResolvedAddressFailedToExportHealthCheckServiceTests()
         {
             storageBrokerMock = new Mock<IStorageBroker>();
             dateTimeBrokerMock = new Mock<IDateTimeBroker>();
             loggingBrokerMock = new Mock<ILoggingBroker>();
 
             var appSettingsStub = new Dictionary<string, string> {
-                {"HealthChecks:ResolvedAddress:Processing:DegradedThreshold", "1440"},
-                {"HealthChecks:ResolvedAddress:Processing:UnHealthyThreshold", "2880"},
+                {$"{ConfigSectionName}:DegradedThreshold", "1440"},
+                {$"{ConfigSectionName}:UnHealthyThreshold", "2880"},
+                {$"{ConfigSectionName}:RetryCount", "3"},
             };
 
             this.inMemoryConfiguration = new ConfigurationBuilder()
@@ -48,50 +48,51 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.HealthChecks.ResolvedAddress
 
             compareLogic = new CompareLogic();
 
-            this.resolvedAddressHealthItemService = new ResolvedAddressProcessingHealthCheckService(
+            this.resolvedAddressHealthItemService = new ResolvedAddressFailedToExportHealthCheckService(
                 storageBroker: storageBrokerMock.Object,
                 configuration: inMemoryConfiguration,
                 dateTimeBroker: dateTimeBrokerMock.Object,
                 loggingBroker: loggingBrokerMock.Object);
         }
 
-        private static Expression<Func<Xeption, bool>> SameExceptionAs(Xeption expectedException) =>
-            actualException => actualException.SameExceptionAs(expectedException);
+        public static TheoryData<int> MinutesBeforeOrAfter()
+        {
+            int randomNumber = GetRandomNumber();
+            int randomNegativeNumber = GetRandomNegativeNumber();
 
-        private Expression<Func<HealthCheckResult, bool>> SameHealthCheckResultAs(
-            HealthCheckResult expectedHealthCheckResult) =>
-                actualHealthCheckResult => compareLogic.Compare(expectedHealthCheckResult, actualHealthCheckResult)
-                    .AreEqual;
-
-        private static SqlException GetSqlException() =>
-            (SqlException)RuntimeHelpers.GetUninitializedObject(typeof(SqlException));
+            return new TheoryData<int>
+            {
+                randomNumber,
+                randomNegativeNumber
+            };
+        }
 
         private static int GetRandomNumber() =>
             new IntRange(min: 2, max: 10).GetValue();
 
-        private static DateTimeOffset GetRandomDateTimeOffset() =>
-            new DateTimeRange(earliestDate: new DateTime()).GetValue();
+        private static int GetRandomNegativeNumber() =>
+            -1 * new IntRange(min: 2, max: 10).GetValue();
 
         private static List<ResolvedAddress> CreateRandomResolvedAddresses(
             DateTimeOffset dateTimeOffset,
-            bool isProcessing,
+            int retryCount,
             int count)
         {
-            return CreateResolvedAddressFiller(dateTimeOffset, isProcessing)
+            return CreateResolvedAddressFiller(dateTimeOffset, retryCount)
                 .Create(count)
                     .ToList();
         }
 
         private static Filler<ResolvedAddress> CreateResolvedAddressFiller(
             DateTimeOffset dateTimeOffset,
-            bool isProcessing)
+            int retryCount)
         {
             string user = Guid.NewGuid().ToString();
             var filler = new Filler<ResolvedAddress>();
 
             filler.Setup()
                 .OnType<DateTimeOffset>().Use(dateTimeOffset)
-                .OnProperty(resolvedAddress => resolvedAddress.IsProcessing).Use(isProcessing)
+                .OnProperty(resolvedAddress => resolvedAddress.RetryCount).Use(retryCount)
                 .OnProperty(resolvedAddress => resolvedAddress.CreatedBy).Use(user)
                 .OnProperty(resolvedAddress => resolvedAddress.UpdatedBy).Use(user);
 

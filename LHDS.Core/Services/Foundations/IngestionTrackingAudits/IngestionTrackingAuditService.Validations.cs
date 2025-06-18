@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using LHDS.Core.Models.Brokers.Securities;
 using LHDS.Core.Models.Foundations.IngestionTrackingAudits;
 using LHDS.Core.Models.Foundations.IngestionTrackingAudits.Exceptions;
+using LHDS.Core.Models.Foundations.ResolvedAddresses;
 
 namespace LHDS.Core.Services.Foundations.IngestionTrackingAudits
 {
@@ -64,9 +65,10 @@ namespace LHDS.Core.Services.Foundations.IngestionTrackingAudits
                     Parameter: nameof(IngestionTrackingAudit.CreatedDate)));
         }
 
-        private async ValueTask ValidateIngestionTrackingAuditOnModifyAsync(IngestionTrackingAudit ingestionTrackingAudit)
+        private async ValueTask ValidateIngestionTrackingAuditOnModifyAsync(
+            IngestionTrackingAudit ingestionTrackingAudit)
         {
-            ValidateIngestionTrackingAuditIsNotNull(ingestionTrackingAudit);
+            EntraUser currentUser = await this.securityBroker.GetCurrentUserAsync();
 
             Validate(
                 (Rule: IsInvalid(ingestionTrackingAudit.Id), Parameter: nameof(IngestionTrackingAudit.Id)),
@@ -88,6 +90,11 @@ namespace LHDS.Core.Services.Foundations.IngestionTrackingAudits
 
                 (Rule: IsInvalid(ingestionTrackingAudit.UpdatedBy),
                     Parameter: nameof(IngestionTrackingAudit.UpdatedBy)),
+
+                (Rule: IsNotSame(
+                    first: currentUser.EntraUserId,
+                    second: ingestionTrackingAudit.UpdatedBy),
+                Parameter: nameof(IngestionTrackingAudit.UpdatedBy)),
 
                 (Rule: IsSame(
                     firstDate: ingestionTrackingAudit.UpdatedDate,

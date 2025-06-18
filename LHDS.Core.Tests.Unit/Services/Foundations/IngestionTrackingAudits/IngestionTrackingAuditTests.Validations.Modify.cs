@@ -23,7 +23,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.IngestionTrackingAudits
             // given
             IngestionTrackingAudit nullIngestionTrackingAudit = null;
             var nullIngestionTrackingAuditException = new NullIngestionTrackingAuditException(
-                message: "Ingestion tracking audit is null.");
+                message: "IngestionTrackingAudit is null.");
 
             var expectedIngestionTrackingAuditValidationException =
                 new IngestionTrackingAuditValidationException(
@@ -100,10 +100,14 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.IngestionTrackingAudits
 
             var invalidIngestionTrackingAuditException =
                 new InvalidIngestionTrackingAuditException(
-                    message: "Invalid resolved address. Please correct the errors and try again.");
+                    message: "Invalid IngestionTrackingAudit. Please correct the errors and try again.");
 
             invalidIngestionTrackingAuditException.AddData(
                 key: nameof(IngestionTrackingAudit.Id),
+                values: "Id is required");
+
+            invalidIngestionTrackingAuditException.AddData(
+                key: nameof(IngestionTrackingAudit.IngestionTrackingId),
                 values: "Id is required");
 
             invalidIngestionTrackingAuditException.AddData(
@@ -138,7 +142,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.IngestionTrackingAudits
 
             var expectedIngestionTrackingAuditValidationException =
                 new IngestionTrackingAuditValidationException(
-                    message: "Ingestion tracking audit validation errors occurred, please try again.",
+                    message: "IngestionTrackingAudit validation errors occurred, please try again.",
                     innerException: invalidIngestionTrackingAuditException);
 
             // when
@@ -249,6 +253,10 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.IngestionTrackingAudits
                 broker.GetCurrentDateTimeOffsetAsync(),
                     Times.Once);
 
+            this.securityBrokerMock.Verify(broker =>
+                broker.GetCurrentUserAsync(),
+                    Times.Once);
+
             this.loggingBrokerMock.Verify(broker =>
                 broker.LogErrorAsync(It.Is(SameExceptionAs(
                     expectedIngestionTrackingAuditValidationException))),
@@ -301,7 +309,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.IngestionTrackingAudits
 
             var invalidIngestionTrackingAuditException =
                 new InvalidIngestionTrackingAuditException(
-                    message: "Invalid resolved address. Please correct the errors and try again.");
+                    message: "Invalid IngestionTrackingAudit. Please correct the errors and try again.");
 
             invalidIngestionTrackingAuditException.AddData(
                 key: nameof(IngestionTrackingAudit.UpdatedDate),
@@ -309,7 +317,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.IngestionTrackingAudits
 
             var expectedIngestionTrackingAuditValidatonException =
                 new IngestionTrackingAuditValidationException(
-                    message: "Ingestion tracking audit validation errors occurred, please try again.",
+                    message: "IngestionTrackingAudit validation errors occurred, please try again.",
                     innerException: invalidIngestionTrackingAuditException);
 
             this.dateTimeBrokerMock.Setup(broker =>
@@ -370,11 +378,12 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.IngestionTrackingAudits
             IngestionTrackingAudit nonExistIngestionTrackingAudit = invalidIngestionTrackingAudit;
 
             var notFoundIngestionTrackingAuditException =
-                new NotFoundIngestionTrackingAuditException(message: "Not found ingestion tracking audit.");
+                new NotFoundIngestionTrackingAuditException(
+                    message: $"Couldn't find IngestionTrackingAudit with Id: {nonExistIngestionTrackingAudit.Id}.");
 
             var expectedIngestionTrackingAuditValidationException =
                 new IngestionTrackingAuditValidationException(
-                    message: "Ingestion tracking audit validation errors occurred, please try again.",
+                    message: "IngestionTrackingAudit validation errors occurred, please try again.",
                     innerException: notFoundIngestionTrackingAuditException);
 
             var ingestionTrackingAuditServiceMock = new Mock<IngestionTrackingAuditService>(
@@ -489,7 +498,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.IngestionTrackingAudits
 
             var invalidIngestionTrackingAuditException =
                 new InvalidIngestionTrackingAuditException(
-                    message: "Invalid resolved address. Please correct the errors and try again.");
+                    message: "Invalid IngestionTrackingAudit. Please correct the errors and try again.");
 
             invalidIngestionTrackingAuditException.AddData(
                 key: nameof(IngestionTrackingAudit.CreatedDate),
@@ -497,7 +506,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.IngestionTrackingAudits
 
             var expectedIngestionTrackingAuditValidationException =
                 new IngestionTrackingAuditValidationException(
-                    message: "Ingestion tracking audit validation errors occurred, please try again.",
+                    message: "IngestionTrackingAudit validation errors occurred, please try again.",
                     innerException: invalidIngestionTrackingAuditException);
 
             this.storageBrokerMock.Setup(broker =>
@@ -631,6 +640,10 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.IngestionTrackingAudits
                 broker.GetCurrentDateTimeOffsetAsync(),
                     Times.Once);
 
+            this.securityBrokerMock.Verify(broker =>
+                broker.GetCurrentUserAsync(),
+                    Times.Once);
+
             this.storageBrokerMock.Verify(broker =>
                 broker.SelectIngestionTrackingAuditByIdAsync(invalidIngestionTrackingAudit.Id),
                     Times.Once);
@@ -669,7 +682,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.IngestionTrackingAudits
 
             var invalidIngestionTrackingAuditException =
                 new InvalidIngestionTrackingAuditException(
-                    message: "Invalid resolved address. Please correct the errors and try again.");
+                    message: "Invalid IngestionTrackingAudit. Please correct the errors and try again.");
 
             invalidIngestionTrackingAuditException.AddData(
                 key: nameof(IngestionTrackingAudit.UpdatedDate),
@@ -677,7 +690,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.IngestionTrackingAudits
 
             var expectedIngestionTrackingAuditValidationException =
                 new IngestionTrackingAuditValidationException(
-                    message: "Ingestion tracking audit validation errors occurred, please try again.",
+                    message: "IngestionTrackingAudit validation errors occurred, please try again.",
                     innerException: invalidIngestionTrackingAuditException);
 
             var ingestionTrackingAuditServiceMock = new Mock<IngestionTrackingAuditService>(
@@ -728,10 +741,19 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.IngestionTrackingAudits
                 broker.GetCurrentDateTimeOffsetAsync(),
                     Times.Once);
 
+            this.securityBrokerMock.Verify(broker =>
+                broker.GetCurrentUserAsync(),
+                    Times.Once);
+
             ingestionTrackingAuditServiceMock.Verify(service =>
                 service.EnsureCreatedAuditPropertiesIsSameAsStorageAsync(
                     invalidIngestionTrackingAudit,
                     storageIngestionTrackingAudit),
+                        Times.Once);
+
+            this.loggingBrokerMock.Verify(broker =>
+                broker.LogErrorAsync(It.Is(SameExceptionAs(
+                    expectedIngestionTrackingAuditValidationException))),
                         Times.Once);
 
             this.storageBrokerMock.Verify(broker =>

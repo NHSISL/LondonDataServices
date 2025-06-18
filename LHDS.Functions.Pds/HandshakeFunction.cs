@@ -25,7 +25,7 @@ namespace LHDS.Functions.Pds
         }
 
         [Function("HandShakeFunction")]
-        public async Task Run([TimerTrigger("%PdsHandShakeFunctionTrigger%")] MyInformation myTimer)
+        public async Task Run([TimerTrigger("%PdsHandShakeInterval%")] MyInformation myTimer)
         {
             await this.loggingBroker.LogInformationAsync($"C# Timer trigger function executed at: {DateTime.Now}");
 

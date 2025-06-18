@@ -25,7 +25,7 @@ namespace LHDS.Functions.OptOut
         }
 
         [Function("ProcessUpdatedOptOutStatusFunction")]
-        public async Task Run([TimerTrigger("%ProcessUpdatedOptOutTimerTrigger%")] MyInformation myTimer)
+        public async Task Run([TimerTrigger("%OptOutProcessUpdatedOptOutInterval%")] MyInformation myTimer)
         {
             await this.loggingBroker.LogInformationAsync($"C# Timer trigger function executed at: {DateTime.Now}");
 

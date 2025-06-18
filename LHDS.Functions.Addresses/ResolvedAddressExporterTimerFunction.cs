@@ -24,7 +24,7 @@ namespace LHDS.Functions.Addresses
             this.addressClient = addressClient;
         }
 
-        [Function("ResolvedAddressExporterTimerFunction")]
+        [Function("ResolvedAddressExporterInterval")]
         public async Task Run([TimerTrigger("%ResolvedAddressExporterFunctionTrigger%")] MyInformation myTimer)
         {
             await loggingBroker.LogInformationAsync($"C# Timer trigger function executed at: {DateTime.Now}");

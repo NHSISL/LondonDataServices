@@ -11,8 +11,7 @@ namespace LHDS.Core.Services.Foundations.HealthChecks.IngestionTracking
         private delegate Task<HealthCheckResult> ReturningHealthCheckResultFunction();
 
         private async ValueTask<HealthCheckResult> TryCatch(
-            ReturningHealthCheckResultFunction returningHealthCheckResultFunction
-        )
+            ReturningHealthCheckResultFunction returningHealthCheckResultFunction)
         {
             try
             {
@@ -24,7 +23,7 @@ namespace LHDS.Core.Services.Foundations.HealthChecks.IngestionTracking
                     new FailedIngestionTrackingFilesReceivedHealthCheckServiceException(
 
                         message: "Failed ingestion tracking files received health check service error occurred, " +
-                        "please contact support.",
+                            "please contact support.",
 
                         innerException: exception);
 
@@ -34,14 +33,14 @@ namespace LHDS.Core.Services.Foundations.HealthChecks.IngestionTracking
             }
         }
 
-        private async ValueTask<IngestionTrackingFilesReceivedHealthCheckServiceException> CreateAndLogServiceExceptionAsync(
-            Xeption exception)
+        private async ValueTask<IngestionTrackingFilesReceivedHealthCheckServiceException> 
+            CreateAndLogServiceExceptionAsync(Xeption exception)
         {
             var ingestionTrackingFilesReceivedHealthCheckServiceException =
                 new IngestionTrackingFilesReceivedHealthCheckServiceException(
 
                     message: "Ingestion tracking files received health check service error occurred, " +
-                    "please contact support.",
+                        "please contact support.",
 
                     innerException: exception);
 

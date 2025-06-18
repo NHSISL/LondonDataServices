@@ -34,11 +34,12 @@ namespace LHDS.Core.Tests.Unit.Services.Coordinations.HealthChecks.IngestionTrac
             this.dateTimeBrokerMock = new Mock<IDateTimeBroker>();
             this.loggingBrokerMock = new Mock<ILoggingBroker>();
 
-            this.ingestionTrackingFilesReceivedHealthCheckService = new IngestionTrackingFilesReceivedHealthCheckService(
-                storageBroker: this.storageBrokerMock.Object,
-                configuration: this.configuration,
-                dateTimeBroker: this.dateTimeBrokerMock.Object,
-                loggingBroker: this.loggingBrokerMock.Object);
+            this.ingestionTrackingFilesReceivedHealthCheckService = 
+                new IngestionTrackingFilesReceivedHealthCheckService(
+                    storageBroker: this.storageBrokerMock.Object,
+                    configuration: this.configuration,
+                    dateTimeBroker: this.dateTimeBrokerMock.Object,
+                    loggingBroker: this.loggingBrokerMock.Object);
         }
 
         private static int GetRandomNumber() =>
@@ -49,15 +50,11 @@ namespace LHDS.Core.Tests.Unit.Services.Coordinations.HealthChecks.IngestionTrac
             return CreateSupplierFiller(true).Create(count: 1).AsQueryable();
         }
 
-        private static IQueryable<Supplier> CreateRandomNonIngestionTrackedSupplier()
-        {
-            return CreateSupplierFiller(false).Create(count: 1).AsQueryable();
-        }
-
         private static IQueryable<IngestionTracking> CreateRandomUnhealthyIngestionTrackings(Guid supplierId)
         {
             DateTimeOffset dateTimeOffset = DateTimeOffset.UtcNow;
             DateTimeOffset unhealthyDateTime = dateTimeOffset.AddMinutes((UnHealthyThresholdMinutes + 1) * -1);
+
             return CreateIngestionTrackingFiller(unhealthyDateTime, supplierId).Create(count: GetRandomNumber()).AsQueryable();
         }
 
@@ -65,6 +62,7 @@ namespace LHDS.Core.Tests.Unit.Services.Coordinations.HealthChecks.IngestionTrac
         {
             DateTimeOffset dateTimeOffset = DateTimeOffset.UtcNow;
             DateTimeOffset degradedDateTime = dateTimeOffset.AddMinutes((DegradedThresholdMinutes + 1) * -1);
+
             return CreateIngestionTrackingFiller(degradedDateTime, supplierId).Create(count: GetRandomNumber()).AsQueryable();
         }
 
@@ -72,13 +70,13 @@ namespace LHDS.Core.Tests.Unit.Services.Coordinations.HealthChecks.IngestionTrac
         {
             DateTimeOffset dateTimeOffset = DateTimeOffset.UtcNow;
             DateTimeOffset healthyDateTime = dateTimeOffset;
+
             return CreateIngestionTrackingFiller(healthyDateTime, supplierId).Create(count: GetRandomNumber()).AsQueryable();
         }
 
         private static Filler<IngestionTracking> CreateIngestionTrackingFiller(
             DateTimeOffset createdDate,
-            Guid supplierId
-        )
+            Guid supplierId)
         {
             DateTimeOffset dateTimeOffset = DateTimeOffset.UtcNow;
             string user = Guid.NewGuid().ToString();
@@ -99,8 +97,7 @@ namespace LHDS.Core.Tests.Unit.Services.Coordinations.HealthChecks.IngestionTrac
         }
 
         private static Filler<Supplier> CreateSupplierFiller(
-            bool isIngestionTracked
-        )
+            bool isIngestionTracked)
         {
             DateTimeOffset dateTimeOffset = DateTimeOffset.UtcNow;
             string user = Guid.NewGuid().ToString();

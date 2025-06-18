@@ -28,7 +28,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.HealthChecks.ResolvedAddress
 
                     innerException: serviceException);
 
-            var expectedIngestionTrackingFilesReceivedHealthCheckServiceException =
+            var expectedResolvedAddressFailedToExportHealthCheckServiceException =
                 new ResolvedAddressFailedToExportHealthCheckServiceException(
 
                     message: "Resolved address failed to export health check service error occurred, " +
@@ -45,13 +45,13 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.HealthChecks.ResolvedAddress
                 this.resolvedAddressHealthItemService.GetHealthStatusAsync();
 
             ResolvedAddressFailedToExportHealthCheckServiceException
-                actualIngestionTrackingFilesReceivedHealthCheckServiceException =
+                actualResolvedAddressFailedToExportHealthCheckServiceException =
                     await Assert.ThrowsAsync<ResolvedAddressFailedToExportHealthCheckServiceException>(
                         getHealthStatusTask.AsTask);
 
             // then
-            actualIngestionTrackingFilesReceivedHealthCheckServiceException.Should()
-                .BeEquivalentTo(expectedIngestionTrackingFilesReceivedHealthCheckServiceException);
+            actualResolvedAddressFailedToExportHealthCheckServiceException.Should()
+                .BeEquivalentTo(expectedResolvedAddressFailedToExportHealthCheckServiceException);
 
             this.dateTimeBrokerMock.Verify(broker =>
                 broker.GetCurrentDateTimeOffsetAsync(),
@@ -59,7 +59,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.HealthChecks.ResolvedAddress
 
             this.loggingBrokerMock.Verify(broker =>
                 broker.LogCriticalAsync(It.Is(SameExceptionAs(
-                    expectedIngestionTrackingFilesReceivedHealthCheckServiceException))),
+                    expectedResolvedAddressFailedToExportHealthCheckServiceException))),
                         Times.Once);
 
             this.storageBrokerMock.VerifyNoOtherCalls();

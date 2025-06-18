@@ -43,7 +43,7 @@ namespace LHDS.Core.Services.Processings.ResolvedAddresses
         {
             if (resolvedAddress is null)
             {
-                throw new NullResolvedAddressProcessingException(message: "Ingestion tracking audit is null.");
+                throw new NullResolvedAddressProcessingException(message: "Resolved address is null.");
             }
         }
 
@@ -67,7 +67,7 @@ namespace LHDS.Core.Services.Processings.ResolvedAddresses
         private static dynamic IsInvalid(List<ResolvedAddress>? resolvedAddresses) => new
         {
             Condition = resolvedAddresses is null,
-            Message = "Ingestion tracking audites is required"
+            Message = "Resolved addresses is required"
         };
 
         private static void Validate<T>(string message, params (dynamic Rule, string Parameter)[] validations)

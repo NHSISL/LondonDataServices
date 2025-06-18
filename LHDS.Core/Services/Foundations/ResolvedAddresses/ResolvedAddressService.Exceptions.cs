@@ -51,7 +51,7 @@ namespace LHDS.Core.Services.Foundations.ResolvedAddresses
             {
                 var alreadyExistsResolvedAddressException =
                     new AlreadyExistsResolvedAddressException(
-                        message: "Ingestion tracking audit with the same Id already exists.",
+                        message: "Resolved address with the same Id already exists.",
                         innerException: duplicateKeyException);
 
                 throw await CreateAndLogDependencyValidationExceptionAsync(alreadyExistsResolvedAddressException);
@@ -125,7 +125,7 @@ namespace LHDS.Core.Services.Foundations.ResolvedAddresses
             {
                 var alreadyExistsResolvedAddressException =
                     new AlreadyExistsResolvedAddressException(
-                        message: "Ingestion tracking audit with the same Id already exists.",
+                        message: "Resolved address with the same Id already exists.",
                         innerException: duplicateKeyException);
 
                 throw await CreateAndLogDependencyValidationExceptionAsync(alreadyExistsResolvedAddressException);
@@ -209,7 +209,7 @@ namespace LHDS.Core.Services.Foundations.ResolvedAddresses
         {
             var resolvedAddressValidationException =
                 new ResolvedAddressValidationException(
-                    message: "Ingestion tracking audit validation errors occurred, please try again.",
+                    message: "Resolved address validation errors occurred, please try again.",
                     innerException: exception);
 
             await this.loggingBroker.LogErrorAsync(resolvedAddressValidationException);
@@ -222,7 +222,7 @@ namespace LHDS.Core.Services.Foundations.ResolvedAddresses
         {
             var resolvedAddressDependencyException =
                 new ResolvedAddressDependencyException(
-                    message: "Ingestion tracking audit dependency error occurred, please contact support.",
+                    message: "Resolved address dependency error occurred, please contact support.",
                     innerException: exception);
 
             await this.loggingBroker.LogCriticalAsync(resolvedAddressDependencyException);
@@ -235,7 +235,7 @@ namespace LHDS.Core.Services.Foundations.ResolvedAddresses
         {
             var resolvedAddressDependencyValidationException =
                 new ResolvedAddressDependencyValidationException(
-                    message: "Ingestion tracking audit dependency validation occurred, please try again.",
+                    message: "Resolved address dependency validation occurred, please try again.",
                     innerException: exception);
 
             await this.loggingBroker.LogErrorAsync(resolvedAddressDependencyValidationException);
@@ -248,7 +248,7 @@ namespace LHDS.Core.Services.Foundations.ResolvedAddresses
         {
             var resolvedAddressDependencyException =
                 new ResolvedAddressDependencyException(
-                    message: "Ingestion tracking audit dependency error occurred, please contact support.",
+                    message: "Resolved address dependency error occurred, please contact support.",
                     innerException: exception);
 
             await this.loggingBroker.LogErrorAsync(resolvedAddressDependencyException);
@@ -261,7 +261,7 @@ namespace LHDS.Core.Services.Foundations.ResolvedAddresses
         {
             var resolvedAddressServiceException =
                 new ResolvedAddressServiceException(
-                    message: "Ingestion tracking audit service error occurred, please contact support.",
+                    message: "Resolved address service error occurred, please contact support.",
                     innerException: exception);
 
             await this.loggingBroker.LogErrorAsync(resolvedAddressServiceException);

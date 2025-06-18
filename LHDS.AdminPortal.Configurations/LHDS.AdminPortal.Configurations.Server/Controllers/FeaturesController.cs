@@ -8,7 +8,6 @@ using Microsoft.Extensions.Configuration;
 
 namespace ISL.ReIdentification.Configurations.Server.Controllers
 {
-    [Authorize]
     [ApiController]
     [Route("api/[controller]")]
     public class FeaturesController : Controller

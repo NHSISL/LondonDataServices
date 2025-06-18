@@ -201,6 +201,8 @@ namespace LHDS.AdminPortal.Configurations.Server
                    options.JsonSerializerOptions.PropertyNameCaseInsensitive = true;
                    options.JsonSerializerOptions.WriteIndented = true;
                });
+
+            builder.Services.AddApplicationInsightsTelemetry();
         }
 
         public static void ConfigurePipeline(WebApplication app, InvisibleApiKey invisibleApiKey)
@@ -277,9 +279,9 @@ namespace LHDS.AdminPortal.Configurations.Server
             var blobStorageSettings = configuration.GetSection("blobStorage")
                 .Get<BlobStorageSettings>();
 
-            ValidateBlobStorageSettings(blobStorageSettings);
-            ValidateBlobContainers(blobStorageSettings.BlobContainers);
-            services.AddSingleton<BlobContainers>(blobStorageSettings.BlobContainers);
+            ValidateBlobStorageSettings(blobStorageSettings!);
+            ValidateBlobContainers(blobStorageSettings!.BlobContainers);
+            services.AddSingleton<BlobContainers>(blobStorageSettings!.BlobContainers);
 
             var blobServiceClientOptions = new BlobClientOptions()
             {

@@ -7,6 +7,7 @@ using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using LHDS.Core.Brokers.DateTimes;
+using LHDS.Core.Brokers.Files;
 using LHDS.Core.Brokers.Hashing;
 using LHDS.Core.Brokers.Identifiers;
 using LHDS.Core.Brokers.Loggings;
@@ -34,6 +35,7 @@ namespace LHDS.Core.Services.Orchestrations.Tpp
         private readonly IDateTimeBroker dateTimeBroker;
         private readonly IIdentifierBroker identifierBroker;
         private readonly IHashBroker hashBroker;
+        private readonly IFileBroker fileBroker;
         private readonly LandingConfiguration landingConfiguration;
 
         public TppLandingOrchestrationService(
@@ -46,6 +48,7 @@ namespace LHDS.Core.Services.Orchestrations.Tpp
             IDateTimeBroker dateTimeBroker,
             IIdentifierBroker identifierBroker,
             IHashBroker hashBroker,
+            IFileBroker fileBroker,
             LandingConfiguration landingConfiguration)
         {
             this.documentProcessingService = documentProcessingService;
@@ -57,22 +60,20 @@ namespace LHDS.Core.Services.Orchestrations.Tpp
             this.dateTimeBroker = dateTimeBroker;
             this.identifierBroker = identifierBroker;
             this.hashBroker = hashBroker;
+            this.fileBroker = fileBroker;
             this.landingConfiguration = landingConfiguration;
         }
 
-        public async ValueTask<Guid> ProcessAsync(Stream input, string fileName, Guid supplierId) =>
+        public async ValueTask<Guid> ProcessAsync(string fileName, Guid supplierId) =>
             await TryCatch(async () =>
             {
-                ValidateArgumentsOnProcess(input, fileName, supplierId);
+                ValidateArgumentsOnProcess(fileName, supplierId);
 
                 IQueryable<IngestionTracking> allIngestionTrackings =
                     await this.ingestionTrackingProcessingService.RetrieveAllIngestionTrackingsAsync();
 
                 IngestionTracking? maybeIngestionTracking = allIngestionTrackings
                         .FirstOrDefault(ingestionTracking => ingestionTracking.FileName == fileName);
-
-                string decryptedFileSha256Hash =
-                    await this.hashBroker.GenerateSha256HashAsync(data: input);
 
                 if (maybeIngestionTracking == null)
                 {
@@ -128,6 +129,7 @@ namespace LHDS.Core.Services.Orchestrations.Tpp
                             SourceFolderPath = sourceFolderPath,
                             BatchReadyFolderPath = baseFolder,
                             Batch = batch,
+                            IsBatchComplete = false,
                             ObjectName = objectName,
                             DataSetSpecificationId = retrievedDataSetSpecification.Id,
                             EncryptedFileName = "Not Encrypted",
@@ -135,59 +137,127 @@ namespace LHDS.Core.Services.Orchestrations.Tpp
                             EncryptedFileSha256Hash = string.Empty,
                             DecryptedFileName = decryptedFileName,
                             Decrypted = true,
-                            DecryptedFileSize = input.Length,
-                            DecryptedFileSha256Hash = decryptedFileSha256Hash,
+                            DecryptedFileSize = 0,
+                            DecryptedFileSha256Hash = string.Empty,
                             LastSeen = currentDateTime,
-                            FileDeleted = false
+                            LastAttempt = currentDateTime,
+                            FileDeleted = false,
+                            IsDownloaded = false,
+                            RetryCount = 0,
                         };
 
-                    await this.ingestionTrackingProcessingService.AddIngestionTrackingAsync(newIngestionTracking);
+                    maybeIngestionTracking = await this.ingestionTrackingProcessingService
+                        .AddIngestionTrackingAsync(newIngestionTracking);
 
                     await LogAudit(
                         ingestionTracking: newIngestionTracking,
                         message:
                             $"New file found '{newIngestionTracking.FileName}',  " +
                             $"created item with Id: {newIngestionTracking.Id}");
+                }
 
-                    await this.documentProcessingService.AddDocumentAsync(
-                        input,
-                        fileName: newIngestionTracking.DecryptedFileName,
-                        container: blobContainers.Ingress);
+                if (maybeIngestionTracking.IsDownloaded == false && maybeIngestionTracking.RetryCount <= 3)
+                {
+                    maybeIngestionTracking.RetryCount += 1;
 
                     await LogAudit(
-                        ingestionTracking: newIngestionTracking,
+                        ingestionTracking: maybeIngestionTracking,
                         message:
-                            $"Downloaded file '{newIngestionTracking.FileName}' and successfully uploaded " +
-                                $"to blob storage '{newIngestionTracking.DecryptedFileName}'");
+                            $"Processing file '{maybeIngestionTracking.FileName}' " +
+                            $"associated with Id: {maybeIngestionTracking.Id}." + Environment.NewLine +
+                            $"Downloading: {maybeIngestionTracking.FileName} " + Environment.NewLine +
+                            $"RetryCount: {maybeIngestionTracking.RetryCount}");
 
-                    return newIngestionTracking.Id;
-                }
-                else
-                {
-                    if (maybeIngestionTracking.DecryptedFileSha256Hash == decryptedFileSha256Hash)
+                    try
                     {
-                        return maybeIngestionTracking.Id;
+                        string batchReadyFileName =
+                            $"{maybeIngestionTracking.BatchReadyFolderPath}/{landingConfiguration.BatchReadyFile}"
+                                .Replace("\\", "/");
+
+                        await LogAudit(
+                            ingestionTracking: maybeIngestionTracking,
+                            message:
+                                $"Removing batch ready file '{batchReadyFileName}' as this file will invalidate the " +
+                                $"ready status for batch: {maybeIngestionTracking.Batch}.");
+
+                        await this.documentProcessingService.RemoveDocumentByFileNameAsync(
+                            batchReadyFileName,
+                            this.blobContainers.Ingress);
                     }
-                    else
+                    catch (Exception)
+                    { }
+
+                    var currentDateTime = await this.dateTimeBroker.GetCurrentDateTimeOffsetAsync();
+                    maybeIngestionTracking.IsDownloaded = false;
+                    maybeIngestionTracking.IsBatchComplete = false;
+                    maybeIngestionTracking.FileDeleted = false;
+                    maybeIngestionTracking.LastSeen = currentDateTime;
+
+                    await LogAudit(
+                        maybeIngestionTracking,
+                            $"Moving file '{maybeIngestionTracking.FileName}' to " +
+                                $"'{maybeIngestionTracking.DecryptedFileName}'." +
+                                    Environment.NewLine + $"RetryCount: {maybeIngestionTracking.RetryCount}");
+
+                    string tempFilePath = await this.fileBroker.GetTempFileName();
+
+                    try
                     {
-                        await this.documentProcessingService.AddDocumentAsync(
-                            input,
-                            fileName: maybeIngestionTracking.DecryptedFileName,
-                            container: blobContainers.Ingress);
+                        using (FileStream writeFileStream =
+                            new FileStream(tempFilePath, FileMode.Create, FileAccess.ReadWrite))
+                        {
+                            await this.documentProcessingService.RetrieveDocumentByFileNameAsync(
+                                output: writeFileStream,
+                                fileName: maybeIngestionTracking.FileName,
+                                container: blobContainers.TppLanding);
+                        }
 
-                        maybeIngestionTracking.DecryptedFileSha256Hash = decryptedFileSha256Hash;
+                        using (FileStream readFileStream =
+                            new FileStream(tempFilePath, FileMode.Open, FileAccess.ReadWrite))
+                        {
+                            string decryptedFileSha256Hash =
+                                await this.hashBroker.GenerateSha256HashAsync(data: readFileStream);
 
-                        await this.ingestionTrackingProcessingService.ModifyIngestionTrackingAsync(
-                            maybeIngestionTracking);
+                            maybeIngestionTracking.DecryptedFileSize = readFileStream.Length;
+                            maybeIngestionTracking.DecryptedFileSha256Hash = decryptedFileSha256Hash;
+
+                            await this.documentProcessingService.AddDocumentAsync(
+                                input: readFileStream,
+                                fileName: maybeIngestionTracking.DecryptedFileName,
+                                container: blobContainers.Ingress);
+                        }
 
                         await LogAudit(
                             maybeIngestionTracking,
                             $"Received and updated file from TPP which has now been uploaded " +
                                 $"to the blob storage '{maybeIngestionTracking.DecryptedFileName}'");
 
-                        return maybeIngestionTracking.Id;
+                        maybeIngestionTracking.IsDownloaded = true;
+
+                        await this.ingestionTrackingProcessingService.ModifyIngestionTrackingAsync(
+                            maybeIngestionTracking);
+                    }
+                    catch (Exception)
+                    {
+                        await LogAudit(
+                            maybeIngestionTracking,
+                            $"Unable to process file. File could not be uploaded " +
+                                $"to the blob storage '{maybeIngestionTracking.DecryptedFileName}'");
+
+                        maybeIngestionTracking.IsDownloaded = false;
+
+                        await this.ingestionTrackingProcessingService.ModifyIngestionTrackingAsync(
+                            maybeIngestionTracking);
+
+                        throw;
+                    }
+                    finally
+                    {
+                        await this.fileBroker.DeleteFileAsync(tempFilePath);
                     }
                 }
+
+                return maybeIngestionTracking.Id;
             });
 
         virtual internal async ValueTask LogAudit(

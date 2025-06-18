@@ -12,7 +12,6 @@ import { PublicClientApplication } from "@azure/msal-browser";
 import "react-toastify/dist/ReactToastify.css";
 import ToastBroker from './brokers/toastBroker';
 
-
 const baseUrl = document.getElementsByTagName('base')[0].getAttribute('href') || "\\";
 const rootElement = document.getElementById('root');
 

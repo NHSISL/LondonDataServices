@@ -30,7 +30,7 @@ namespace LHDS.Core.Tests.Unit.Services.Coordinations.HealthChecks.IngestionTrac
             IQueryable<IngestionTracking> randomTrackings =
                 randomUnhealthyTrackings.Concat(randomHealthyTrackings);
 
-            int expectedItemsCount = randomHealthyTrackings.Count() + randomUnhealthyTrackings.Count();
+            int expectedItemsCount = randomUnhealthyTrackings.Count();
 
             Dictionary<string, object> healthCheckResultValues =
                 GetHealthCheckResultValues(
@@ -108,7 +108,7 @@ namespace LHDS.Core.Tests.Unit.Services.Coordinations.HealthChecks.IngestionTrac
             IQueryable<IngestionTracking> randomTrackings =
                 randomDegradedTrackings.Concat(randomHealthyTrackings);
 
-            int expectedItemsCount = randomHealthyTrackings.Count() + randomDegradedTrackings.Count();
+            int expectedItemsCount = randomDegradedTrackings.Count();
 
             Dictionary<string, object> healthCheckResultValues =
                 GetHealthCheckResultValues(
@@ -180,7 +180,7 @@ namespace LHDS.Core.Tests.Unit.Services.Coordinations.HealthChecks.IngestionTrac
             IQueryable<IngestionTracking> randomHealthyTrackings =
                 CreateRandomHealthyIngestionTrackings(randomSupplier.Id);
 
-            int expectedItemsCount = randomHealthyTrackings.Count();
+            int expectedItemsCount = 0;
 
             Dictionary<string, object> healthCheckResultValues =
                 GetHealthCheckResultValues(

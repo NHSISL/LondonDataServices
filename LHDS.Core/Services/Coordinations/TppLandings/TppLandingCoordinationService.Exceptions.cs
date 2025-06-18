@@ -13,7 +13,70 @@ namespace LHDS.Core.Services.Coordinations.TppLandings
 {
     public partial class TppLandingCoordinationService
     {
+        private delegate ValueTask ReturningNothingFunction();
         private delegate ValueTask<Guid> ReturningGuidFunction();
+
+        private async ValueTask TryCatch(ReturningNothingFunction returningNothingFunction)
+        {
+            try
+            {
+                await returningNothingFunction();
+            }
+            catch (InvalidArgumentTppLandingCoordinationException invalidArgumentTppLandingCoordinationException)
+            {
+                throw await CreateAndLogValidationExceptionAsync(invalidArgumentTppLandingCoordinationException);
+            }
+            catch (TppLandingOrchestrationValidationException
+                tppLandingOrchestrationValidationException)
+            {
+                throw await CreateAndLogDependencyValidationExceptionAsync(tppLandingOrchestrationValidationException);
+            }
+            catch (TppLandingOrchestrationDependencyValidationException
+                tppLandingOrchestrationDependencyValidationException)
+            {
+                throw await CreateAndLogDependencyValidationExceptionAsync(
+                    tppLandingOrchestrationDependencyValidationException);
+            }
+            catch (IngressOrchestrationValidationException
+                ingresOrchestrationValidationException)
+            {
+                throw await CreateAndLogDependencyValidationExceptionAsync(ingresOrchestrationValidationException);
+            }
+            catch (IngressOrchestrationDependencyValidationException
+                ingresOrchestrationDependencyValidationException)
+            {
+                throw await CreateAndLogDependencyValidationExceptionAsync(ingresOrchestrationDependencyValidationException);
+            }
+            catch (TppLandingOrchestrationDependencyException
+                tppLandingOrchestrationDependencyException)
+            {
+                throw await CreateAndLogDependencyExceptionAsync(tppLandingOrchestrationDependencyException);
+            }
+            catch (TppLandingOrchestrationServiceException
+                tppLandingOrchestrationServiceException)
+            {
+                throw await CreateAndLogDependencyExceptionAsync(tppLandingOrchestrationServiceException);
+            }
+            catch (IngressOrchestrationDependencyException
+                ingresOrchestrationDependencyException)
+            {
+                throw await CreateAndLogDependencyExceptionAsync(ingresOrchestrationDependencyException);
+            }
+            catch (IngressOrchestrationServiceException
+                ingresOrchestrationServiceException)
+            {
+                throw await CreateAndLogDependencyExceptionAsync(ingresOrchestrationServiceException);
+            }
+            catch (Exception exception)
+            {
+                var failedTppLandingCoordinationServiceException =
+                    new FailedTppLandingCoordinationServiceException(
+                        message: "Failed TPP landing coordination service error occurred, please contact support.",
+                        innerException: exception);
+
+                throw await CreateAndLogServiceExceptionAsync(failedTppLandingCoordinationServiceException);
+            }
+        }
 
         private async ValueTask<Guid> TryCatch(ReturningGuidFunction returningGuidFunction)
         {

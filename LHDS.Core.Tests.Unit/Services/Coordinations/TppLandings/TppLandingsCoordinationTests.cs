@@ -17,7 +17,7 @@ using Tynamix.ObjectFiller;
 using Xeptions;
 using Xunit;
 
-namespace LHDS.Core.Tests.Unit.Services.Coordinations.Decryptions
+namespace LHDS.Core.Tests.Unit.Services.Coordinations.TppLandings
 {
     public partial class TppLandingsCoordinationTests
     {

@@ -12,10 +12,8 @@ using LHDS.Core.Brokers.Identifiers;
 using LHDS.Core.Brokers.Loggings;
 using LHDS.Core.Brokers.Securities;
 using LHDS.Core.Brokers.Storages.Sql;
-using LHDS.Core.Models.Foundations.ResolvedAddresss;
 using LHDS.Core.Models.Foundations.ResolvedAddresses;
 using LHDS.Core.Models.Foundations.ResolvedAddresses.Exceptions;
-using LHDS.Core.Models.Foundations.SubscriberAgreements;
 
 namespace LHDS.Core.Services.Foundations.ResolvedAddresses
 {
@@ -47,7 +45,7 @@ namespace LHDS.Core.Services.Foundations.ResolvedAddresses
         public ValueTask<ResolvedAddress> AddResolvedAddressAsync(ResolvedAddress resolvedAddress) =>
             TryCatch(async () =>
             {
-                ResolvedAddress resolvedAddressWithAddAuditApplied = 
+                ResolvedAddress resolvedAddressWithAddAuditApplied =
                     await ApplyAddAuditAsync(resolvedAddress);
 
                 await ValidateResolvedAddressOnAddAsync(resolvedAddressWithAddAuditApplied);
@@ -82,7 +80,7 @@ namespace LHDS.Core.Services.Foundations.ResolvedAddresses
         public ValueTask<ResolvedAddress> ModifyResolvedAddressAsync(ResolvedAddress resolvedAddress) =>
             TryCatch(async () =>
             {
-                ResolvedAddress resolvedAddressWithModifyAuditApplied = 
+                ResolvedAddress resolvedAddressWithModifyAuditApplied =
                     await ApplyModifyAuditAsync(resolvedAddress);
 
                 await ValidateResolvedAddressOnModifyAsync(resolvedAddressWithModifyAuditApplied);
@@ -98,7 +96,7 @@ namespace LHDS.Core.Services.Foundations.ResolvedAddresses
                       maybeResolvedAddress);
 
                 ValidateAgainstStorageResolvedAddressOnModify(
-                    inputResolvedAddress: ResolvedAddressWithModifyAuditAppliedEnsured, 
+                    inputResolvedAddress: ResolvedAddressWithModifyAuditAppliedEnsured,
                     storageResolvedAddress: maybeResolvedAddress);
 
                 return await this.storageBroker.UpdateResolvedAddressAsync(

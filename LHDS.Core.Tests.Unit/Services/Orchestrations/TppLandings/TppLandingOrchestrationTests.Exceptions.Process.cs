@@ -41,7 +41,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.TppLandings
 
             // when
             ValueTask<Guid> processTask = this.tppOrchestrationService
-                .ProcessAsync(input: inputStream, fileName: inputFileName, supplierId: randomSupplierId);
+                .ProcessAsync(fileName: inputFileName, supplierId: randomSupplierId);
 
             TppLandingOrchestrationDependencyValidationException actualException =
                 await Assert.ThrowsAsync<TppLandingOrchestrationDependencyValidationException>(processTask.AsTask);
@@ -90,7 +90,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.TppLandings
 
             // when
             ValueTask<Guid> processTask = this.tppOrchestrationService
-                .ProcessAsync(input: inputStream, fileName: inputFileName, supplierId: randomSupplierId);
+                .ProcessAsync(fileName: inputFileName, supplierId: randomSupplierId);
 
             TppLandingOrchestrationDependencyException actualException =
                 await Assert.ThrowsAsync<TppLandingOrchestrationDependencyException>(processTask.AsTask);
@@ -143,7 +143,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.TppLandings
 
             // when
             ValueTask<Guid> processTask = this.tppOrchestrationService
-                .ProcessAsync(input: inputStream, fileName: inputFileName, supplierId: randomSupplierId);
+                .ProcessAsync(fileName: inputFileName, supplierId: randomSupplierId);
 
             TppLandingOrchestrationServiceException actualException =
                 await Assert.ThrowsAsync<TppLandingOrchestrationServiceException>(processTask.AsTask);

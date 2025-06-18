@@ -14,6 +14,7 @@ using Azure.Identity;
 using Azure.Storage.Blobs;
 using LHDS.Core.Brokers.Audits;
 using LHDS.Core.Brokers.DateTimes;
+using LHDS.Core.Brokers.Files;
 using LHDS.Core.Brokers.Hashing;
 using LHDS.Core.Brokers.Identifiers;
 using LHDS.Core.Brokers.Loggings;
@@ -117,6 +118,7 @@ namespace LHDS.Core.Clients.Extensions
             services.AddTransient<ISecurityBroker, SecurityBroker>();
             services.AddTransient<IHashBroker, HashBroker>();
             services.AddTransient<IAuditBroker, AuditBroker>();
+            services.AddTransient<IFileBroker, FileBroker>();
             services.AddSingleton<IStorageBroker, StorageBroker>();
 
             LandingConfiguration landingConfiguration =

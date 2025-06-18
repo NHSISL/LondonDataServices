@@ -181,7 +181,7 @@ namespace LHDS.Core.Services.Processings.ResolvedAddresses
         {
             var resolvedAddressProcessingValidationExceptionn =
                 new ResolvedAddressProcessingValidationException(
-                    message: "Resolved address processing validation error occurred, please try again.",
+                    message: "Ingestion tracking audit processing validation error occurred, please try again.",
                     innerException: exception);
 
             await this.loggingBroker.LogErrorAsync(resolvedAddressProcessingValidationExceptionn);
@@ -194,7 +194,7 @@ namespace LHDS.Core.Services.Processings.ResolvedAddresses
         {
             var resolvedAddressProcessingDependencyValidationException =
                 new ResolvedAddressProcessingDependencyValidationException(
-                    message: "Resolved address processing dependency validation error occurred, please try again.",
+                    message: "Ingestion tracking audit processing dependency validation error occurred, please try again.",
                     innerException: exception.InnerException as Xeption);
 
             await this.loggingBroker.LogErrorAsync(resolvedAddressProcessingDependencyValidationException);
@@ -207,7 +207,7 @@ namespace LHDS.Core.Services.Processings.ResolvedAddresses
         {
             var resolvedAddressProcessingDependencyException =
                 new ResolvedAddressProcessingDependencyException(
-                    message: "Resolved address processing dependency error occurred, please contact support.",
+                    message: "Ingestion tracking audit processing dependency error occurred, please contact support.",
                     innerException: exception?.InnerException as Xeption);
 
             await this.loggingBroker.LogErrorAsync(resolvedAddressProcessingDependencyException);
@@ -220,7 +220,7 @@ namespace LHDS.Core.Services.Processings.ResolvedAddresses
         {
             var resolvedAddressProcessingServiceException = new
                 ResolvedAddressProcessingServiceException(
-                    message: "Resolved address processing service error occurred, please contact support.",
+                    message: "Ingestion tracking audit processing service error occurred, please contact support.",
                     innerException: exception);
 
             await this.loggingBroker.LogErrorAsync(resolvedAddressProcessingServiceException);

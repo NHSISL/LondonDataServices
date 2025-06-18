@@ -188,7 +188,7 @@ namespace LHDS.Core.Services.Orchestrations.ResolvedAddresses
         {
             var resolvedAddressOrchestrationValidationException =
                 new ResolvedAddressOrchestrationValidationException(
-                    message: "Resolved address validation errors occured, please try again.",
+                    message: "Ingestion tracking audit validation errors occured, please try again.",
                     innerException: exception);
 
             await this.loggingBroker.LogErrorAsync(resolvedAddressOrchestrationValidationException);
@@ -201,7 +201,7 @@ namespace LHDS.Core.Services.Orchestrations.ResolvedAddresses
         {
             var resolvedAddressOrchestrationDependencyValidationException =
                 new ResolvedAddressOrchestrationDependencyValidationException(
-                    message: "Resolved address orchestration dependency validation errors occurred, please try again.",
+                    message: "Ingestion tracking audit orchestration dependency validation errors occurred, please try again.",
                     exception.InnerException as Xeption);
 
             await this.loggingBroker.LogErrorAsync(resolvedAddressOrchestrationDependencyValidationException);
@@ -214,7 +214,7 @@ namespace LHDS.Core.Services.Orchestrations.ResolvedAddresses
         {
             var resolvedAddressOrchestrationDependencyException =
                 new ResolvedAddressOrchestrationDependencyException(
-                    message: "Resolved address orchestration dependency errors occurred, please contact support.",
+                    message: "Ingestion tracking audit orchestration dependency errors occurred, please contact support.",
                     innerException: exception.InnerException as Xeption);
 
             await this.loggingBroker.LogErrorAsync(resolvedAddressOrchestrationDependencyException);
@@ -227,7 +227,7 @@ namespace LHDS.Core.Services.Orchestrations.ResolvedAddresses
         {
             var resolvedAddressOrchestrationServiceException =
                 new ResolvedAddressOrchestrationServiceException(
-                    message: "Resolved address orchestration service error occurred, please contact support.",
+                    message: "Ingestion tracking audit orchestration service error occurred, please contact support.",
                     exception);
 
             await this.loggingBroker.LogErrorAsync(resolvedAddressOrchestrationServiceException);

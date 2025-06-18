@@ -108,7 +108,7 @@ namespace LHDS.Core.Services.Foundations.ResolvedAddresses
         {
             if (resolvedAddress is null)
             {
-                throw new NullResolvedAddressException(message: "Resolved address is null.");
+                throw new NullResolvedAddressException(message: "Ingestion tracking audit is null.");
             }
         }
 

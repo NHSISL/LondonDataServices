@@ -162,11 +162,11 @@ namespace LHDS.Core.Tests.Unit.Services.Coordinations.AddressCoordinations
                     innerException),
 
                 new ResolvedAddressOrchestrationValidationException(
-                    message: "Resolved address orchestration validation error occured, please try again",
+                    message: "Ingestion tracking audit orchestration validation error occured, please try again",
                     innerException),
 
                 new ResolvedAddressOrchestrationDependencyValidationException(
-                    message: "Resolved address orchestration dependency validation error occurred, " +
+                    message: "Ingestion tracking audit orchestration dependency validation error occurred, " +
                     "please try again.",
                     innerException),
             };
@@ -189,11 +189,11 @@ namespace LHDS.Core.Tests.Unit.Services.Coordinations.AddressCoordinations
                     innerException),
 
                 new ResolvedAddressOrchestrationDependencyException(
-                    message: "Resolved address orchestration dependency error occurred, please try again.",
+                    message: "Ingestion tracking audit orchestration dependency error occurred, please try again.",
                     innerException),
 
                 new ResolvedAddressOrchestrationServiceException(
-                    message: "Resolved address orchestration service error occured, please try again",
+                    message: "Ingestion tracking audit orchestration service error occured, please try again",
                     innerException),
             };
         }

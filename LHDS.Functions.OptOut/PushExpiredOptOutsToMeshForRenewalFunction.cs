@@ -25,7 +25,7 @@ namespace LHDS.Functions.OptOut
         }
 
         [Function("PushExpiredOptOutsToMeshForRenewalFunction")]
-        public async Task Run([TimerTrigger("%PushExpiredOptOutsToMeshTimerTrigger%")] MyInformation myTimer)
+        public async Task Run([TimerTrigger("%OptOutPushExpiredOptOutsToMeshInterval%")] MyInformation myTimer)
         {
             await this.loggingBroker.LogInformationAsync($"C# Timer trigger function executed at: {DateTime.Now}");
 

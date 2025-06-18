@@ -33,7 +33,7 @@ namespace LHDS.Functions.Landings.Emis
         }
 
         [Function("RedecryptionTimerFunction")]
-        public async Task Run([TimerTrigger("0 */15 * * * *")] MyInfo myTimer)
+        public async Task Run([TimerTrigger("%RedecryptionTimerInterval%")] MyInfo myTimer)
         {
             await this.loggingBroker.LogInformationAsync($"C# Timer trigger function executed at: {DateTime.Now}");
 

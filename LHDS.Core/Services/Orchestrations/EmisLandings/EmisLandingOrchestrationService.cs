@@ -312,7 +312,7 @@ namespace LHDS.Core.Services.Orchestrations.Downloads
                 maybeIngestionTracking = storageIngestionTracking;
             }
 
-            if (maybeIngestionTracking.IsDownloaded == false && maybeIngestionTracking.RetryCount <= 3)
+            if (maybeIngestionTracking.IsDownloaded == false && maybeIngestionTracking.RetryCount < 4)
             {
                 maybeIngestionTracking.RetryCount += 1;
 

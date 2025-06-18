@@ -36,7 +36,6 @@ const App = ({ msalInstance }: any) => {
     return (
         <MsalProvider instance={msalInstance}>
             <QueryClientProvider client={queryClientGlobalOptions}>
-
                 <Routes>
                     <Route path="/" element={<Home />} />
                     <Route path="/address" element={<SecuredRoute allowedRoles={securityPoints.address.view}><AddressPage /></SecuredRoute>} />
@@ -71,7 +70,6 @@ const App = ({ msalInstance }: any) => {
                     <Route path="/subscriberAgreement/new" element={<SecuredRoute allowedRoles={securityPoints.subscriberAgreement.add}><SubscriberAgreementAddPage /></SecuredRoute>} />
                     <Route path="/subscriberAgreementDetail/:subscriberAgreementId" element={<SecuredRoute allowedRoles={securityPoints.subscriberAgreement.view}><SubscriberAgreementDetailPage /></SecuredRoute>} />
                 </Routes>
-
                 <ReactQueryDevtools initialIsOpen={false} />
             </QueryClientProvider>
         </MsalProvider>

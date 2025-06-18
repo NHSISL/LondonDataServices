@@ -10,7 +10,7 @@ using LHDS.Core.Models.Coordinations.TppLandings.Exceptions;
 using Moq;
 using Xunit;
 
-namespace LHDS.Core.Tests.Unit.Services.Coordinations.Decryptions
+namespace LHDS.Core.Tests.Unit.Services.Coordinations.TppLandings
 {
     public partial class TppLandingsCoordinationTests
     {
@@ -32,10 +32,6 @@ namespace LHDS.Core.Tests.Unit.Services.Coordinations.Decryptions
                         "please correct the errors and try again.");
 
             invalidArgumentTppLandingCoordinationException.AddData(
-                key: "Input",
-                values: "Stream is required");
-
-            invalidArgumentTppLandingCoordinationException.AddData(
                 key: "FileName",
                 values: "Text is required");
 
@@ -50,7 +46,6 @@ namespace LHDS.Core.Tests.Unit.Services.Coordinations.Decryptions
 
             // when
             ValueTask<Guid> returnedGuidTask = this.tppLandingCoordinationService.ProcessAsync(
-                input: inputStream,
                 fileName: inputFileName,
                 supplierId: inputSupplierId);
 
@@ -67,7 +62,7 @@ namespace LHDS.Core.Tests.Unit.Services.Coordinations.Decryptions
                         Times.Once);
 
             this.tppLandingOrchestrationServiceMock.Verify(service =>
-                service.ProcessAsync(inputStream, inputFileName, inputSupplierId),
+                service.ProcessAsync(inputFileName, inputSupplierId),
                 Times.Never);
 
             this.ingressOrchestrationServiceMock.Verify(service =>

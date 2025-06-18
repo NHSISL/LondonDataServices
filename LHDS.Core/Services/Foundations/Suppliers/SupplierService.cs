@@ -81,27 +81,17 @@ namespace LHDS.Core.Services.Foundations.Suppliers
             });
 
         public ValueTask<Supplier> RemoveSupplierByIdAsync(Guid supplierId) =>
-            TryCatch(async () =>
-            {
-                ValidateSupplierId(supplierId: supplierId);
+             TryCatch(async () =>
+             {
+                 ValidateSupplierId(supplierId);
 
-                Supplier maybeSupplier = await this.storageBroker
-                    .SelectSupplierByIdAsync(supplierId);
+                 Supplier maybeSupplier = await this.storageBroker
+                     .SelectSupplierByIdAsync(supplierId);
 
-                ValidateStorageSupplier(maybeSupplier, supplierId);
+                 ValidateStorageSupplier(maybeSupplier, supplierId);
 
-                Supplier supplierWithDeleteAuditApplied =
-                    await ApplyDeleteAuditAsync(maybeSupplier);
-
-                Supplier updatedSupplier =
-                    await this.storageBroker.UpdateSupplierAsync(supplierWithDeleteAuditApplied);
-
-                await ValidateAgainstStorageSupplierOnDeleteAsync(
-                    supplier: updatedSupplier,
-                    maybeSupplier: supplierWithDeleteAuditApplied);
-
-                return await this.storageBroker.DeleteSupplierAsync(updatedSupplier);
-            });
+                 return await this.storageBroker.DeleteSupplierAsync(maybeSupplier);
+             });
 
         virtual internal async ValueTask<Supplier> ApplyAddSupplierAsync(Supplier supplier)
         {
@@ -117,17 +107,6 @@ namespace LHDS.Core.Services.Foundations.Suppliers
         }
 
         virtual internal async ValueTask<Supplier> ApplyModifyAuditAsync(Supplier supplier)
-        {
-            ValidateSupplierIsNotNull(supplier);
-            var auditDateTimeOffset = await this.dateTimeBroker.GetCurrentDateTimeOffsetAsync();
-            var auditUser = await this.securityBroker.GetCurrentUserAsync();
-            supplier.UpdatedBy = auditUser?.EntraUserId.ToString() ?? string.Empty;
-            supplier.UpdatedDate = auditDateTimeOffset;
-
-            return supplier;
-        }
-
-        virtual internal async ValueTask<Supplier> ApplyDeleteAuditAsync(Supplier supplier)
         {
             ValidateSupplierIsNotNull(supplier);
             var auditDateTimeOffset = await this.dateTimeBroker.GetCurrentDateTimeOffsetAsync();

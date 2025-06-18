@@ -32,8 +32,7 @@ namespace LHDS.Core.Services.Foundations.HealthChecks.IngestionTracking
                         innerException: exception);
 
                 throw await CreateAndLogServiceExceptionAsync(
-                    failedIngestionTrackingProcessingHealthCheckServiceException
-                );
+                    failedIngestionTrackingProcessingHealthCheckServiceException);
             }
         }
 

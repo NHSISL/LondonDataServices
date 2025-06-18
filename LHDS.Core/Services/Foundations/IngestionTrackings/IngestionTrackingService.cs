@@ -10,7 +10,6 @@ using LHDS.Core.Brokers.Loggings;
 using LHDS.Core.Brokers.Securities;
 using LHDS.Core.Brokers.Storages.Sql;
 using LHDS.Core.Models.Foundations.IngestionTrackings;
-using LHDS.Core.Models.Foundations.IngestionTrackings;
 
 namespace LHDS.Core.Services.Foundations.IngestionTrackings
 {
@@ -43,7 +42,7 @@ namespace LHDS.Core.Services.Foundations.IngestionTrackings
             });
 
         public ValueTask<IQueryable<IngestionTracking>> RetrieveAllIngestionTrackingsAsync() =>
-            TryCatch(async() => await this.storageBroker.SelectAllIngestionTrackingsAsync());
+            TryCatch(async () => await this.storageBroker.SelectAllIngestionTrackingsAsync());
 
         public ValueTask<IngestionTracking> RetrieveIngestionTrackingByIdAsync(Guid ingestionTrackingId) =>
             TryCatch(async () =>

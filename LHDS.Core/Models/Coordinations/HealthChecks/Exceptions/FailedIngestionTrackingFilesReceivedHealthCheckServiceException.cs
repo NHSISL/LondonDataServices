@@ -7,8 +7,8 @@ namespace LHDS.Core.Models.Coordinations.HealthChecks.Exceptions
     {
         public FailedIngestionTrackingFilesReceivedHealthCheckServiceException(
             string message,
-            Exception innerException
-            ) : base(message, innerException)
+            Exception innerException) 
+            : base(message, innerException)
         { }
     }
 }

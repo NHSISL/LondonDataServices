@@ -14,7 +14,7 @@ using Microsoft.Extensions.Diagnostics.HealthChecks;
 
 namespace LHDS.Core.Services.Foundations.HealthChecks.ResolvedAddress
 {
-    public class ResolvedAddressFailedToExportHealthCheckService : IResolvedAddressHealthItemService
+    public partial class ResolvedAddressFailedToExportHealthCheckService : IResolvedAddressHealthItemService
     {
         private readonly IStorageBroker storageBroker;
         private readonly IConfiguration configuration;
@@ -36,69 +36,70 @@ namespace LHDS.Core.Services.Foundations.HealthChecks.ResolvedAddress
             this.loggingBroker = loggingBroker;
         }
 
-        public async ValueTask<HealthCheckResult> GetHealthStatusAsync()
-        {
-            int retryCount = configuration.GetValue($"{ConfigSectionName}:RetryCount", 3);
-            int degradedThresholdMinutes = configuration.GetValue($"{ConfigSectionName}:DegradedThreshold", 1440);
-            int unHealthyThresholdMinutes = configuration.GetValue($"{ConfigSectionName}:UnHealthyThreshold", 2880);
-            DateTimeOffset currentDateTime = await dateTimeBroker.GetCurrentDateTimeOffsetAsync();
-            DateTimeOffset degradedThresholdDateTime = currentDateTime.AddMinutes(-1 * degradedThresholdMinutes);
-            DateTimeOffset unHealthyThresholdDateTime = currentDateTime.AddMinutes(-1 * unHealthyThresholdMinutes);
-            var resolvedAddressQuery = await storageBroker.SelectAllResolvedAddressesAsync();
-            var filteredQuery = resolvedAddressQuery.Where(i => i.RetryCount >= retryCount);
-
-            int baseCount = filteredQuery.Count(resolvedAddress =>
-                resolvedAddress.UpdatedDate > degradedThresholdDateTime);
-
-            int degradedCount = filteredQuery.Count(resolvedAddress =>
-                resolvedAddress.UpdatedDate <= degradedThresholdDateTime &&
-                resolvedAddress.UpdatedDate > unHealthyThresholdDateTime);
-
-            int unHealthyCount = filteredQuery
-                .Count(resolvedAddress => resolvedAddress.UpdatedDate <= unHealthyThresholdDateTime);
-
-            int totalCount = baseCount + degradedCount + unHealthyCount;
-
-            string message = totalCount == 0
-                ? $"Nothing to process. All up to date."
-                : $"{totalCount} files have not been exported. Please check logs and function status.";
-
-            var vals = new Dictionary<string, object>
+        public ValueTask<HealthCheckResult> GetHealthStatusAsync() =>
+            TryCatch(async () =>
             {
-                { "description", CheckDescriptionName },
-                { "failedToExport", totalCount },
-                { "degradedItems", degradedCount},
-                { "unHealthyItems", unHealthyCount},
-                { "degradedThresholdMinutes", degradedThresholdMinutes.ToString() },
-                { "unHealthyThresholdMinutes", unHealthyThresholdMinutes.ToString() },
-                { "checkedAt", currentDateTime.ToString("o") },
-                { "message", message }
-            };
+                int retryCount = configuration.GetValue($"{ConfigSectionName}:RetryCount", 3);
+                int degradedThresholdMinutes = configuration.GetValue($"{ConfigSectionName}:DegradedThreshold", 1440);
+                int unHealthyThresholdMinutes = configuration.GetValue($"{ConfigSectionName}:UnHealthyThreshold", 2880);
+                DateTimeOffset currentDateTime = await dateTimeBroker.GetCurrentDateTimeOffsetAsync();
+                DateTimeOffset degradedThresholdDateTime = currentDateTime.AddMinutes(-1 * degradedThresholdMinutes);
+                DateTimeOffset unHealthyThresholdDateTime = currentDateTime.AddMinutes(-1 * unHealthyThresholdMinutes);
+                var resolvedAddressQuery = await storageBroker.SelectAllResolvedAddressesAsync();
+                var filteredQuery = resolvedAddressQuery.Where(i => i.RetryCount >= retryCount);
 
-            if (unHealthyCount > 0)
-            {
-                vals.Add("status", HealthStatus.Unhealthy.ToString());
+                int baseCount = filteredQuery.Count(resolvedAddress =>
+                    resolvedAddress.UpdatedDate > degradedThresholdDateTime);
 
-                return HealthCheckResult.Unhealthy(
-                    description: CheckName,
-                    data: vals);
-            }
-            else if (degradedCount > 0)
-            {
-                vals.Add("status", HealthStatus.Degraded.ToString());
+                int degradedCount = filteredQuery.Count(resolvedAddress =>
+                    resolvedAddress.UpdatedDate <= degradedThresholdDateTime &&
+                    resolvedAddress.UpdatedDate > unHealthyThresholdDateTime);
 
-                return HealthCheckResult.Degraded(
-                    description: CheckName,
-                    data: vals);
-            }
-            else
-            {
-                vals.Add("status", HealthStatus.Healthy.ToString());
+                int unHealthyCount = filteredQuery
+                    .Count(resolvedAddress => resolvedAddress.UpdatedDate <= unHealthyThresholdDateTime);
 
-                return HealthCheckResult.Healthy(
-                    description: CheckName,
-                    data: vals);
-            }
-        }
+                int totalCount = baseCount + degradedCount + unHealthyCount;
+
+                string message = totalCount == 0
+                    ? $"Nothing to process. All up to date."
+                    : $"{totalCount} files have not been exported. Please check logs and function status.";
+
+                var vals = new Dictionary<string, object>
+                {
+                    { "description", CheckDescriptionName },
+                    { "failedToExport", totalCount },
+                    { "degradedItems", degradedCount},
+                    { "unHealthyItems", unHealthyCount},
+                    { "degradedThresholdMinutes", degradedThresholdMinutes.ToString() },
+                    { "unHealthyThresholdMinutes", unHealthyThresholdMinutes.ToString() },
+                    { "checkedAt", currentDateTime.ToString("o") },
+                    { "message", message }
+                };
+
+                if (unHealthyCount > 0)
+                {
+                    vals.Add("status", HealthStatus.Unhealthy.ToString());
+
+                    return HealthCheckResult.Unhealthy(
+                        description: CheckName,
+                        data: vals);
+                }
+                else if (degradedCount > 0)
+                {
+                    vals.Add("status", HealthStatus.Degraded.ToString());
+
+                    return HealthCheckResult.Degraded(
+                        description: CheckName,
+                        data: vals);
+                }
+                else
+                {
+                    vals.Add("status", HealthStatus.Healthy.ToString());
+
+                    return HealthCheckResult.Healthy(
+                        description: CheckName,
+                        data: vals);
+                }
+            });
     }
 }

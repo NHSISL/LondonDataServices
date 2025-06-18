@@ -10,7 +10,6 @@ using LHDS.Core.Brokers.Loggings;
 using LHDS.Core.Brokers.Securities;
 using LHDS.Core.Brokers.Storages.Sql;
 using LHDS.Core.Models.Foundations.Suppliers;
-using LHDS.Core.Models.Foundations.Suppliers;
 
 namespace LHDS.Core.Services.Foundations.Suppliers
 {

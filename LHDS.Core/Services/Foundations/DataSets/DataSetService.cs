@@ -42,7 +42,7 @@ namespace LHDS.Core.Services.Foundations.DataSets
             });
 
         public ValueTask<IQueryable<DataSet>> RetrieveAllDataSetsAsync() =>
-            TryCatch(async() => await this.storageBroker.SelectAllDataSetsAsync());
+            TryCatch(async () => await this.storageBroker.SelectAllDataSetsAsync());
 
         public ValueTask<DataSet> RetrieveDataSetByIdAsync(Guid dataSetId) =>
             TryCatch(async () =>
@@ -66,6 +66,12 @@ namespace LHDS.Core.Services.Foundations.DataSets
                     await this.storageBroker.SelectDataSetByIdAsync(dataSet.Id);
 
                 ValidateStorageDataSet(maybeDataSet, dataSet.Id);
+
+                DataSet DataSetWithModifyAuditAppliedEnsured =
+                  await EnsureCreatedAuditPropertiesIsSameAsStorageAsync(
+                      dataSet,
+                      maybeDataSet);
+
                 ValidateAgainstStorageDataSetOnModify(inputDataSet: dataSet, storageDataSet: maybeDataSet);
 
                 return await this.storageBroker.UpdateDataSetAsync(dataSet);
@@ -82,11 +88,11 @@ namespace LHDS.Core.Services.Foundations.DataSets
 
                 DataSet dataSetWithDeleteAuditApplied = await ApplyDeleteAuditAsync(maybeDataSet);
 
-                DataSet updatedDataSet = 
+                DataSet updatedDataSet =
                     await this.storageBroker.UpdateDataSetAsync(dataSetWithDeleteAuditApplied);
 
                 await ValidateAgainstStorageDataSetOnDeleteAsync(
-                    updatedDataSet, 
+                    updatedDataSet,
                     dataSetWithDeleteAuditApplied);
 
                 return await this.storageBroker.DeleteDataSetAsync(updatedDataSet);
@@ -112,6 +118,16 @@ namespace LHDS.Core.Services.Foundations.DataSets
             var auditUser = await this.securityBroker.GetCurrentUserAsync();
             dataSet.UpdatedBy = auditUser?.EntraUserId.ToString() ?? string.Empty;
             dataSet.UpdatedDate = auditDateTimeOffset;
+            return dataSet;
+        }
+
+        virtual internal async ValueTask<DataSet> EnsureCreatedAuditPropertiesIsSameAsStorageAsync(
+           DataSet dataSet,
+           DataSet maybeDataSet)
+        {
+            dataSet.CreatedDate = maybeDataSet.CreatedDate;
+            dataSet.CreatedBy = maybeDataSet.CreatedBy;
+
             return dataSet;
         }
     }

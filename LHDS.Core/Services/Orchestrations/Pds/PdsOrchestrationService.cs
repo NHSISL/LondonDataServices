@@ -164,6 +164,16 @@ namespace LHDS.Core.Services.Orchestrations.Pds
                             await this.pdsAuditService.AddPdsAuditAsync(pdsAudit);
                             await this.meshService.AcknowledgeMessageByIdAsync(message.MessageId);
 
+                            IQueryable<PdsAudit> relatedPdsAudits = 
+                                await this.pdsAuditService.RetrieveAllPdsAuditsByCorrelationIdAsync(correlationId);
+
+                            foreach (PdsAudit relatedPdsAudit in relatedPdsAudits)
+                            {
+                                var amendedPdsAudit = relatedPdsAudit;
+                                amendedPdsAudit.IsCompleted = true;
+                                await this.pdsAuditService.ModifyPdsAuditAsync(amendedPdsAudit);
+                            }
+
                             return pdsAudit;
                         });
 

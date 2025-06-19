@@ -65,6 +65,13 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Pds
                 Stream inputStream = new MemoryStream(message.FileContent);
                 Guid correlationId = Guid.Parse(message.Headers["mex-localid"].FirstOrDefault());
 
+                IQueryable<PdsAudit> pdsAuditsWithCorrelationId = CreateRandomPdsAuditsWithCorrelationId(correlationId);
+
+                this.pdsAuditServiceMock
+                    .Setup(service =>
+                        service.RetrieveAllPdsAuditsByCorrelationIdAsync(correlationId))
+                    .ReturnsAsync(pdsAuditsWithCorrelationId);
+
                 this.documentServiceMock
                     .Setup(service =>
                         service.AddDocumentAsync(It.Is(SameStreamAs(inputStream)), inputFileName, inputContainer))
@@ -132,6 +139,10 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Pds
                 Stream inputStream = new MemoryStream(message.FileContent);
                 Guid correlationId = Guid.Parse(message.Headers["mex-localid"].FirstOrDefault());
 
+                this.pdsAuditServiceMock.Verify(service =>
+                    service.RetrieveAllPdsAuditsByCorrelationIdAsync(correlationId),
+                    Times.Once); 
+
                 this.documentServiceMock.Verify(service =>
                     service.AddDocumentAsync(It.IsAny<Stream>(), inputFileName, inputContainer),
                         Times.Once);
@@ -162,6 +173,10 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Pds
 
                 pdsAuditsList.Add(pdsAudit);
             };
+
+            this.pdsAuditServiceMock.Verify(service =>
+                service.ModifyPdsAuditAsync(It.IsAny<PdsAudit>()),
+                    Times.Exactly(retrievedMessages.Count));
 
             this.meshServiceMock.VerifyNoOtherCalls();
             this.documentServiceMock.VerifyNoOtherCalls();

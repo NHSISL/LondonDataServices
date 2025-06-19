@@ -157,6 +157,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.PdsAudits
                 .OnType<DateTimeOffset?>().Use(dateTimeOffset)
                 .OnProperty(pdsAudit => pdsAudit.CreatedBy).Use(user)
                 .OnProperty(pdsAudit => pdsAudit.UpdatedBy).Use(user)
+                .OnProperty(pdsAudit => pdsAudit.RequestType).Use("Request")
                 .OnProperty(pdsAudit => pdsAudit.CorrelationId).Use(correlationId);
 
             return filler;

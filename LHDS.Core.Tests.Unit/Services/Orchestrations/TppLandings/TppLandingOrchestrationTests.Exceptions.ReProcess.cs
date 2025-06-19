@@ -18,7 +18,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.TppLandings
     {
         [Theory]
         [MemberData(nameof(TppDependencyValidationExceptions))]
-        public async Task ShouldThrowDependencyValidationOnProcessIfDependencyValidationOccursAndLogItAsync(
+        public async Task ShouldThrowDependencyValidationOnReProcessIfDependencyValidationOccursAndLogItAsync(
              Xeption dependancyValidationException)
         {
             // given
@@ -56,8 +56,8 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.TppLandings
                     .ThrowsAsync(dependancyValidationException);
 
             // when
-            ValueTask<Guid> processTask = tppOrchestrationServiceMock.Object
-                .ProcessAsync(fileName: inputFileName, supplierId: randomSupplierId);
+            ValueTask processTask = tppOrchestrationServiceMock.Object
+                .ReProcessAsync(supplierId: randomSupplierId);
 
             TppLandingOrchestrationDependencyValidationException actualException =
                 await Assert.ThrowsAsync<TppLandingOrchestrationDependencyValidationException>(processTask.AsTask);
@@ -85,7 +85,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.TppLandings
 
         [Theory]
         [MemberData(nameof(TppDependencyExceptions))]
-        public async Task ShouldThrowDependencyExceptionOnProcessIfDependencyExceptionOccursAndLogItAsync(
+        public async Task ShouldThrowDependencyExceptionOnReProcessIfDependencyExceptionOccursAndLogItAsync(
           Xeption dependancyException)
         {
             // given
@@ -122,8 +122,8 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.TppLandings
                     .ThrowsAsync(dependancyException);
 
             // when
-            ValueTask<Guid> processTask = this.tppOrchestrationService
-                .ProcessAsync(fileName: inputFileName, supplierId: randomSupplierId);
+            ValueTask processTask = this.tppOrchestrationService
+                .ReProcessAsync(supplierId: randomSupplierId);
 
             TppLandingOrchestrationDependencyException actualException =
                 await Assert.ThrowsAsync<TppLandingOrchestrationDependencyException>(processTask.AsTask);
@@ -150,7 +150,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.TppLandings
         }
 
         [Fact]
-        public async Task ShouldThrowServiceExceptionOnProcessIfServiceErrorOccursAndLogItAsync()
+        public async Task ShouldThrowServiceExceptionOnReProcessIfServiceErrorOccursAndLogItAsync()
         {
             //Given
             Guid randomSupplierId = Guid.NewGuid();
@@ -190,8 +190,8 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.TppLandings
                     .ThrowsAsync(serviceException);
 
             // when
-            ValueTask<Guid> processTask = this.tppOrchestrationService
-                .ProcessAsync(fileName: inputFileName, supplierId: randomSupplierId);
+            ValueTask processTask = this.tppOrchestrationService
+                .ReProcessAsync(supplierId: randomSupplierId);
 
             TppLandingOrchestrationServiceException actualException =
                 await Assert.ThrowsAsync<TppLandingOrchestrationServiceException>(processTask.AsTask);

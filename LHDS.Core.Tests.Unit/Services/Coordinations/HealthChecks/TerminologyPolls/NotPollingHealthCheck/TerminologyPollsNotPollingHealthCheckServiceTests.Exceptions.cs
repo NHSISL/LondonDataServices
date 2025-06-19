@@ -20,7 +20,7 @@ namespace LHDS.Core.Tests.Unit.Services.Coordinations.HealthChecks.TerminologyPo
                 new FailedTerminologyPollsNotPollingHealthCheckServiceException(
 
                     message:
-                        "Failed terminology polls not polling health check coordination service error occurred, "
+                        "Failed terminology polls not polling health check service error occurred, "
                         + "please contact support.",
 
                     innerException: serviceException);
@@ -29,7 +29,7 @@ namespace LHDS.Core.Tests.Unit.Services.Coordinations.HealthChecks.TerminologyPo
                 new TerminologyPollsNotPollingHealthCheckServiceException(
 
                     message:
-                        "Terminology polls not polling health check coordination service error occurred, "
+                        "Terminology polls not polling health check service error occurred, "
                         + "please contact support.",
 
                     innerException: failedTerminologyPollsNotPollingHealthCheckServiceException);

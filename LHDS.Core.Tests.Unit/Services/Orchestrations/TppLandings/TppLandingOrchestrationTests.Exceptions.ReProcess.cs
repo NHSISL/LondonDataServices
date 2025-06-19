@@ -51,8 +51,8 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.TppLandings
                 CallBase = true
             };
 
-            tppOrchestrationServiceMock.Setup(service =>
-                service.ProcessFileAsync(inputFileName, inputSupplierId))
+            this.ingestionTrackingProcessingServiceMock.Setup(service =>
+                service.RetrieveAllIngestionTrackingsAsync())
                     .ThrowsAsync(dependancyValidationException);
 
             // when
@@ -117,8 +117,8 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.TppLandings
                 CallBase = true
             };
 
-            tppOrchestrationServiceMock.Setup(service =>
-                service.ProcessFileAsync(inputFileName, inputSupplierId))
+            this.ingestionTrackingProcessingServiceMock.Setup(service =>
+                service.RetrieveAllIngestionTrackingsAsync())
                     .ThrowsAsync(dependancyException);
 
             // when
@@ -185,8 +185,8 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.TppLandings
                 CallBase = true
             };
 
-            tppOrchestrationServiceMock.Setup(service =>
-                service.ProcessFileAsync(inputFileName, inputSupplierId))
+            this.ingestionTrackingProcessingServiceMock.Setup(service =>
+                service.RetrieveAllIngestionTrackingsAsync())
                     .ThrowsAsync(serviceException);
 
             // when

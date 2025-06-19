@@ -118,6 +118,13 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.PdsAudits
                     .AsQueryable();
         }
 
+        private static IQueryable<PdsAudit> CreateRandomPdsAuditsWithCorrelationId(Guid correlationId)
+        {
+            return CreatePdsAuditFiller(dateTimeOffset: GetRandomDateTimeOffset(), correlationId)
+                .Create(count: GetRandomNumber())
+                    .AsQueryable();
+        }
+
         private static PdsAudit CreateRandomPdsAudit() =>
             CreatePdsAuditFiller(dateTimeOffset: GetRandomDateTimeOffset()).Create();
 
@@ -134,6 +141,23 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.PdsAudits
                 .OnType<DateTimeOffset?>().Use(dateTimeOffset)
                 .OnProperty(pdsAudit => pdsAudit.CreatedBy).Use(user)
                 .OnProperty(pdsAudit => pdsAudit.UpdatedBy).Use(user);
+
+            return filler;
+        }
+
+        private static Filler<PdsAudit> CreatePdsAuditFiller(
+            DateTimeOffset dateTimeOffset,
+            Guid correlationId)
+        {
+            string user = Guid.NewGuid().ToString();
+            var filler = new Filler<PdsAudit>();
+
+            filler.Setup()
+                .OnType<DateTimeOffset>().Use(dateTimeOffset)
+                .OnType<DateTimeOffset?>().Use(dateTimeOffset)
+                .OnProperty(pdsAudit => pdsAudit.CreatedBy).Use(user)
+                .OnProperty(pdsAudit => pdsAudit.UpdatedBy).Use(user)
+                .OnProperty(pdsAudit => pdsAudit.CorrelationId).Use(correlationId);
 
             return filler;
         }

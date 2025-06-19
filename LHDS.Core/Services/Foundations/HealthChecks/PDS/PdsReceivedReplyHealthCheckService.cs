@@ -41,13 +41,13 @@ namespace LHDS.Core.Services.Foundations.HealthChecks.PDS
             var pdsAuditQuery = await storageBroker.SelectAllPdsAuditsAsync();
 
             var filteredQuery = pdsAuditQuery.Where(i => i.UpdatedDate <= unHealthyThresholdDateTime
-                && i.IsCompleted == false);
+                && i.IsCompleted == false && i.RequestType != "Request");
 
             int unHealthyCount = filteredQuery.Count();
 
             string message = unHealthyCount == 0
-                ? $"All requests received reply"
-                : $"{unHealthyCount} request have no reply. Please check logs and function status.";
+                ? $"All requests received reply."
+                : $"{unHealthyCount} requests have no reply. Please check logs and function status.";
 
             var vals = new Dictionary<string, object>
             {

@@ -98,6 +98,10 @@ namespace LHDS.Core.Services.Foundations.PdsAudits
             {
                 return await returningPdsAuditsFunction();
             }
+            catch (InvalidPdsAuditException invalidPdsAuditException)
+            {
+                throw await CreateAndLogValidationExceptionAsync(invalidPdsAuditException);
+            }
             catch (SqlException sqlException)
             {
                 var failedPdsAuditStorageException =

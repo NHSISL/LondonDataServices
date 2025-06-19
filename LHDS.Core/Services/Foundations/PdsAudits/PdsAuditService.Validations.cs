@@ -93,6 +93,9 @@ namespace LHDS.Core.Services.Foundations.PdsAudits
         public void ValidatePdsAuditId(Guid pdsAuditId) =>
             Validate((Rule: IsInvalid(pdsAuditId), Parameter: nameof(PdsAudit.Id)));
 
+        public void ValidateCorrelationId(Guid correlationId) =>
+            Validate((Rule: IsInvalid(correlationId), Parameter: nameof(PdsAudit.CorrelationId)));
+
         private static void ValidateStoragePdsAudit(PdsAudit maybePdsAudit, Guid pdsAuditId)
         {
             if (maybePdsAudit is null)

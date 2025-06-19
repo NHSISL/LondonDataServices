@@ -8,7 +8,7 @@ using Microsoft.Extensions.Diagnostics.HealthChecks;
 using Moq;
 using Xunit;
 
-namespace LHDS.Core.Tests.Unit.Services.Coordinations.HealthChecks.TerminologyPolls.ProcessingHealthCheck
+namespace LHDS.Core.Tests.Unit.Services.Coordinations.HealthChecks.TerminologyPolls.NotPollingHealthCheck
 {
     public partial class TerminologyPollsNotPollingHealthCheckServiceTests
     {

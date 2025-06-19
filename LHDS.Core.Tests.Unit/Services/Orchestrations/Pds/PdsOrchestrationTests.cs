@@ -216,7 +216,9 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Pds
                 CreatedDate = randomDate,
                 UpdatedDate = randomDate,
                 CreatedBy = "System",
-                UpdatedBy = "System"
+                UpdatedBy = "System",
+                RequestType = "Request",
+                IsCompleted = false
             };
 
             return pdsAudit;

@@ -18,5 +18,7 @@ namespace LHDS.Core.Models.Foundations.PdsAudits
         public string UpdatedBy { get; set; } = string.Empty;
         public DateTimeOffset UpdatedDate { get; set; }
         public DateTimeOffset CreatedDate { get; set; }
+        public bool IsCompleted { get; set; }
+        public string RequestType {  get; set; }
     }
 }

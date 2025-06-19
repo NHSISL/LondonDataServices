@@ -92,7 +92,9 @@ namespace LHDS.Core.Services.Orchestrations.Pds
                         CreatedDate = timeStamp,
                         UpdatedDate = timeStamp,
                         CreatedBy = "System",
-                        UpdatedBy = "System"
+                        UpdatedBy = "System",
+                        RequestType = "Request",
+                        IsCompleted = false
                     });
 
             return pdsAuditItem;
@@ -154,7 +156,9 @@ namespace LHDS.Core.Services.Orchestrations.Pds
                                 CreatedDate = currentDate,
                                 UpdatedDate = currentDate,
                                 CreatedBy = "System",
-                                UpdatedBy = "System"
+                                UpdatedBy = "System",
+                                RequestType = "Response",
+                                IsCompleted = true
                             };
 
                             await this.pdsAuditService.AddPdsAuditAsync(pdsAudit);

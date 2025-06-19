@@ -80,7 +80,9 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Pds
                     CreatedDate = randomDate,
                     UpdatedDate = randomDate,
                     CreatedBy = "System",
-                    UpdatedBy = "System"
+                    UpdatedBy = "System",
+                    RequestType = "Response",
+                    IsCompleted = true
                 };
 
                 this.pdsAuditServiceMock.Setup(service =>
@@ -145,7 +147,9 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Pds
                     CreatedDate = randomDate,
                     UpdatedDate = randomDate,
                     CreatedBy = "System",
-                    UpdatedBy = "System"
+                    UpdatedBy = "System",
+                    RequestType = "Response",
+                    IsCompleted = true
                 };
 
                 this.pdsAuditServiceMock.Verify(service =>

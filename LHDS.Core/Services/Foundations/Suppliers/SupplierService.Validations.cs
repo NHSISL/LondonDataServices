@@ -135,38 +135,6 @@ namespace LHDS.Core.Services.Foundations.Suppliers
                 Parameter: nameof(Supplier.UpdatedDate)));
         }
 
-        private async ValueTask ValidateAgainstStorageSupplierOnDeleteAsync(
-            Supplier supplier,
-            Supplier maybeSupplier)
-        {
-            EntraUser auditUser = await this.securityBroker.GetCurrentUserAsync();
-
-            Validate(
-                (Rule: IsNotSame(
-                    supplier.CreatedDate,
-                    maybeSupplier.CreatedDate,
-                    nameof(maybeSupplier.CreatedDate)),
-                 Parameter: nameof(Supplier.CreatedDate)),
-
-                (Rule: IsNotSame(
-                    supplier.CreatedBy,
-                    maybeSupplier.CreatedBy,
-                    nameof(maybeSupplier.CreatedBy)),
-                 Parameter: nameof(Supplier.CreatedBy)),
-
-                (Rule: IsNotSame(
-                    maybeSupplier.UpdatedDate,
-                    supplier.UpdatedDate,
-                    nameof(Supplier.UpdatedDate)),
-                 Parameter: nameof(Supplier.UpdatedDate)),
-
-                (Rule: IsNotSame(
-                    auditUser.EntraUserId.ToString(),
-                    supplier.UpdatedBy,
-                    nameof(Supplier.UpdatedBy)),
-                 Parameter: nameof(Supplier.UpdatedBy))
-            );
-        }
         private static dynamic IsInvalid(Guid id) => new
         {
             Condition = id == Guid.Empty,

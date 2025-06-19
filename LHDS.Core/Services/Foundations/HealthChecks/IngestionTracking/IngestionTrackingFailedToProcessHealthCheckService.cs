@@ -14,7 +14,7 @@ using Microsoft.Extensions.Diagnostics.HealthChecks;
 
 namespace LHDS.Core.Services.Foundations.HealthChecks.IngestionTracking
 {
-    public class IngestionTrackingFailedToProcessHealthCheckService : IIngestionTrackingHealthItemService
+    public partial class IngestionTrackingFailedToProcessHealthCheckService : IIngestionTrackingHealthItemService
     {
         private readonly IStorageBroker storageBroker;
         private readonly IConfiguration configuration;
@@ -36,42 +36,43 @@ namespace LHDS.Core.Services.Foundations.HealthChecks.IngestionTracking
             this.loggingBroker = loggingBroker;
         }
 
-        public async ValueTask<HealthCheckResult> GetHealthStatusAsync()
-        {
-            int retryCount = configuration
-                .GetValue($"{ConfigSectionName}:RetryCount", 3);
+        public ValueTask<HealthCheckResult> GetHealthStatusAsync() =>
+            TryCatch(async () =>
+            {
+                int retryCount = configuration
+                    .GetValue($"{ConfigSectionName}:RetryCount", 3);
 
-            int degradedThresholdMinutes = configuration
-                .GetValue($"{ConfigSectionName}:DegradedThreshold", 1440);
+                int degradedThresholdMinutes = configuration
+                    .GetValue($"{ConfigSectionName}:DegradedThreshold", 1440);
 
-            int unHealthyThresholdMinutes = configuration
-                .GetValue($"{ConfigSectionName}:UnHealthyThreshold", 2880);
+                int unHealthyThresholdMinutes = configuration
+                    .GetValue($"{ConfigSectionName}:UnHealthyThreshold", 2880);
 
-            DateTimeOffset currentDateTime = await dateTimeBroker.GetCurrentDateTimeOffsetAsync();
-            DateTimeOffset degradedThresholdDateTime = currentDateTime.AddMinutes(-1 * degradedThresholdMinutes);
-            DateTimeOffset unHealthyThresholdDateTime = currentDateTime.AddMinutes(-1 * unHealthyThresholdMinutes);
-            var ingestionTrackingQuery = await storageBroker.SelectAllIngestionTrackingsAsync();
+                DateTimeOffset currentDateTime = await dateTimeBroker.GetCurrentDateTimeOffsetAsync();
+                DateTimeOffset degradedThresholdDateTime = currentDateTime.AddMinutes(-1 * degradedThresholdMinutes);
+                DateTimeOffset unHealthyThresholdDateTime = currentDateTime.AddMinutes(-1 * unHealthyThresholdMinutes);
+                var ingestionTrackingQuery = await storageBroker.SelectAllIngestionTrackingsAsync();
 
-            var filteredQuery = ingestionTrackingQuery.Where(ingestionTracking =>
+                var filteredQuery = ingestionTrackingQuery.Where(ingestionTracking =>
                 ingestionTracking.RetryCount >= retryCount);
 
-            int baseCount = filteredQuery.Count(ingestionTracking =>
-                ingestionTracking.UpdatedDate > degradedThresholdDateTime);
+                int baseCount = filteredQuery.Count(ingestionTracking =>
+                    ingestionTracking.UpdatedDate > degradedThresholdDateTime);
 
-            int degradedCount = filteredQuery.Count(ingestionTracking =>
-                ingestionTracking.UpdatedDate <= degradedThresholdDateTime &&
-                ingestionTracking.UpdatedDate > unHealthyThresholdDateTime);
+                int degradedCount = filteredQuery.Count(ingestionTracking =>
+                    ingestionTracking.UpdatedDate <= degradedThresholdDateTime &&
+                    ingestionTracking.UpdatedDate > unHealthyThresholdDateTime);
 
-            int unHealthyCount = filteredQuery
-                .Count(ingestionTracking => ingestionTracking.UpdatedDate <= unHealthyThresholdDateTime);
+                int unHealthyCount = filteredQuery
+                    .Count(ingestionTracking => ingestionTracking.UpdatedDate <= unHealthyThresholdDateTime);
 
-            int totalCount = baseCount + degradedCount + unHealthyCount;
+                int totalCount = baseCount + degradedCount + unHealthyCount;
 
-            string message = totalCount == 0
-                ? $"Nothing to process. All up to date."
-                : $"{totalCount} files have not been processed. Please check logs and function status.";
+                string message = totalCount == 0
+                    ? $"Nothing to process. All up to date."
+                    : $"{totalCount} files have not been processed. Please check logs and function status.";
 
-            var values = new Dictionary<string, object>
+                var values = new Dictionary<string, object>
             {
                 { "description", CheckDescriptionName },
                 { "failedToProcess", totalCount },
@@ -83,30 +84,30 @@ namespace LHDS.Core.Services.Foundations.HealthChecks.IngestionTracking
                 { "message", message }
             };
 
-            if (unHealthyCount > 0)
-            {
-                values.Add("status", HealthStatus.Unhealthy.ToString());
+                if (unHealthyCount > 0)
+                {
+                    values.Add("status", HealthStatus.Unhealthy.ToString());
 
-                return HealthCheckResult.Unhealthy(
-                    description: CheckName,
-                    data: values);
-            }
-            else if (degradedCount > 0)
-            {
-                values.Add("status", HealthStatus.Degraded.ToString());
+                    return HealthCheckResult.Unhealthy(
+                        description: CheckName,
+                        data: values);
+                }
+                else if (degradedCount > 0)
+                {
+                    values.Add("status", HealthStatus.Degraded.ToString());
 
-                return HealthCheckResult.Degraded(
-                    description: CheckName,
-                    data: values);
-            }
-            else
-            {
-                values.Add("status", HealthStatus.Healthy.ToString());
+                    return HealthCheckResult.Degraded(
+                        description: CheckName,
+                        data: values);
+                }
+                else
+                {
+                    values.Add("status", HealthStatus.Healthy.ToString());
 
-                return HealthCheckResult.Healthy(
-                    description: CheckName,
-                    data: values);
-            }
-        }
+                    return HealthCheckResult.Healthy(
+                        description: CheckName,
+                        data: values);
+                }
+            });
     }
 }

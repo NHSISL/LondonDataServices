@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Linq.Expressions;
 using LHDS.Core.Brokers.DateTimes;
 using LHDS.Core.Brokers.Loggings;
 using LHDS.Core.Brokers.Storages.Sql;
@@ -10,6 +11,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
 using Moq;
 using Tynamix.ObjectFiller;
+using Xeptions;
 
 namespace LHDS.Core.Tests.Unit.Services.Coordinations.HealthChecks.Pds.ReceivedReply
 {
@@ -50,7 +52,7 @@ namespace LHDS.Core.Tests.Unit.Services.Coordinations.HealthChecks.Pds.ReceivedR
             return CreatePdsAuditFiller(unhealthyDateTime, correlationId).Create(count: 1).AsQueryable();
         }
 
-        private static IQueryable<PdsAudit> CreateRandomHealthyPdsAudtis(Guid correlationId)
+        private static IQueryable<PdsAudit> CreateRandomHealthyPdsAudits(Guid correlationId)
         {
             DateTimeOffset dateTimeOffset = DateTimeOffset.UtcNow;
             DateTimeOffset healthyDateTime = dateTimeOffset;
@@ -71,6 +73,7 @@ namespace LHDS.Core.Tests.Unit.Services.Coordinations.HealthChecks.Pds.ReceivedR
                 .OnProperty(ingestionTracking => ingestionTracking.CreatedBy).Use(user)
                 .OnProperty(ingestionTracking => ingestionTracking.UpdatedBy).Use(user)
                 .OnProperty(ingestionTracking => ingestionTracking.UpdatedDate).Use(updatedDate)
+                .OnProperty(ingestionTracking => ingestionTracking.IsCompleted).Use(false)
                 .OnProperty(ingestionTracking => ingestionTracking.CorrelationId).Use(correlationId);
 
             return filler;
@@ -79,11 +82,9 @@ namespace LHDS.Core.Tests.Unit.Services.Coordinations.HealthChecks.Pds.ReceivedR
         private static Dictionary<string, object> GetHealthCheckResultValues(
             DateTimeOffset dateTime,
             HealthStatus healthStatus,
-            int healthyItemsCount = 0,
-            int degradedItemsCount = 0,
             int unhealthyItemsCount = 0)
         {
-            var totalItemsCount = healthyItemsCount + degradedItemsCount + unhealthyItemsCount;
+            var totalItemsCount = unhealthyItemsCount;
             var message = "All requests received reply.";
 
             if (totalItemsCount > 0)
@@ -94,8 +95,7 @@ namespace LHDS.Core.Tests.Unit.Services.Coordinations.HealthChecks.Pds.ReceivedR
             return new Dictionary<string, object>
             {
                 { "description", CheckNameDescription },
-                { "failedToProcess", totalItemsCount},
-                { "degradedItems", degradedItemsCount},
+                { "notReceivedReply", totalItemsCount},
                 { "unHealthyItems", unhealthyItemsCount},
                 { "unHealthyThresholdMinutes", UnHealthyThresholdMinutes.ToString() },
                 { "checkedAt", dateTime.ToString("o") },
@@ -103,5 +103,8 @@ namespace LHDS.Core.Tests.Unit.Services.Coordinations.HealthChecks.Pds.ReceivedR
                 { "status", healthStatus.ToString() }
             };
         }
+
+        private static Expression<Func<Xeption, bool>> SameExceptionAs(Xeption expectedException) =>
+          actualException => actualException.SameExceptionAs(expectedException);
     }
 }

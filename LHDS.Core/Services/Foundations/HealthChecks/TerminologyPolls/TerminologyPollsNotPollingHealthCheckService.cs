@@ -50,13 +50,13 @@ namespace LHDS.Core.Services.Foundations.HealthChecks.TerminologyPolls
                 terminologyPoll.LastPoll > unHealthyThresholdDateTime);
 
             int unHealthyCount = terminologyPollsQuery
-                .Count(terminologyPoll => terminologyPoll.UpdatedDate <= unHealthyThresholdDateTime);
+                .Count(terminologyPoll => terminologyPoll.LastPoll <= unHealthyThresholdDateTime);
 
             int totalCount = degradedCount + unHealthyCount;
 
             string message = totalCount == 0
                 ? $"Nothing to poll. All up to date."
-                : $"{totalCount} files are not polling. Please check logs and function status.";
+                : $"{totalCount} not polling. Please check logs and function status.";
 
             var vals = new Dictionary<string, object>
             {

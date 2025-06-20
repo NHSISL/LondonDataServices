@@ -166,18 +166,26 @@ namespace LHDS.Core.Services.Orchestrations.Decryptions
 
                 var currentDateTime = await this.dateTimeBroker.GetCurrentDateTimeOffsetAsync();
                 ingestionTracking.Decrypted = true;
-                ingestionTracking.IsBatchComplete = false;
                 ingestionTracking.DecryptedFileSize = fileSize;
                 ingestionTracking.DecryptedFileSha256Hash = decryptedFileSha256Hash;
                 ingestionTracking.IsProcessing = false;
+                ingestionTracking.IsBatchComplete = false;
                 ingestionTracking.UpdatedDate = currentDateTime;
 
-                await this.ingestionTrackingService
+                var updatedIngestionTracking = await this.ingestionTrackingService
                     .ModifyIngestionTrackingAsync(ingestionTracking);
 
-                await LogAudit(ingestionTracking, "Decrypted document", currentDateTime);
+                await LogAudit(
+                    ingestionTracking,
 
-                return (ingestionTracking.DecryptedFileName, ingestionTracking.Id);
+                    message:
+                        $"Decrypted document for Id: {updatedIngestionTracking.Id}, " +
+                        $"DecryptedFileSize={updatedIngestionTracking.DecryptedFileSize}, " +
+                        $"DecryptedFileSha256Hash={updatedIngestionTracking.DecryptedFileSha256Hash}",
+
+                    currentDateTime);
+
+                return (updatedIngestionTracking.DecryptedFileName, ingestionTracking.Id);
             });
 
         public ValueTask<string?> GetNextItemToBeDecrypted() =>

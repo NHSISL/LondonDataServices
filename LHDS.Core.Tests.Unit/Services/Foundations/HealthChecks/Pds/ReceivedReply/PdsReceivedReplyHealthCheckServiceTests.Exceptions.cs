@@ -6,7 +6,7 @@ using Microsoft.Extensions.Diagnostics.HealthChecks;
 using Moq;
 using Xunit;
 
-namespace LHDS.Core.Tests.Unit.Services.Coordinations.HealthChecks.Pds.ReceivedReply
+namespace LHDS.Core.Tests.Unit.Services.Foundations.HealthChecks.Pds.ReceivedReply
 {
     public partial class PdsReceivedReplyHealthCheckServiceTests
     {
@@ -20,7 +20,7 @@ namespace LHDS.Core.Tests.Unit.Services.Coordinations.HealthChecks.Pds.ReceivedR
                 new FailedPdsReceivedReplyHealthCheckServiceException(
 
                     message: "Failed pds received reply health check service error occurred, " +
-                        "please contact support.",
+                    "please contact support.",
 
                     innerException: serviceException);
 
@@ -28,7 +28,7 @@ namespace LHDS.Core.Tests.Unit.Services.Coordinations.HealthChecks.Pds.ReceivedR
                 new PdsReceivedReplyHealthCheckServiceException(
 
                     message: "Pds received reply health check service error occurred, " +
-                        "please contact support.",
+                    "please contact support.",
 
                     innerException: failedPdsReceivedReplyHealthCheckServiceException);
 

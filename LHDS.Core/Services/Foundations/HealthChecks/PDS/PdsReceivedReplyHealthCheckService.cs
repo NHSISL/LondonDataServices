@@ -10,7 +10,7 @@ using Microsoft.Extensions.Diagnostics.HealthChecks;
 
 namespace LHDS.Core.Services.Foundations.HealthChecks.PDS
 {
-    public class PdsReceivedReplyHealthCheckService : IPdsHealthItemService
+    public partial class PdsReceivedReplyHealthCheckService : IPdsHealthItemService
     {
         private readonly IStorageBroker storageBroker;
         private readonly IConfiguration configuration;
@@ -31,50 +31,51 @@ namespace LHDS.Core.Services.Foundations.HealthChecks.PDS
             this.dateTimeBroker = dateTimeBroker;
             this.loggingBroker = loggingBroker;
         }
-        public async ValueTask<HealthCheckResult> GetHealthStatusAsync()
-        {
-            int unHealthyThresholdMinutes = configuration
-                .GetValue($"${ConfigSectionName}:UnHealthyThreshold", 1440);
-
-            DateTimeOffset currentDateTime = await dateTimeBroker.GetCurrentDateTimeOffsetAsync();
-            DateTimeOffset unHealthyThresholdDateTime = currentDateTime.AddMinutes(-1 * unHealthyThresholdMinutes);
-            var pdsAuditQuery = await storageBroker.SelectAllPdsAuditsAsync();
-
-            var filteredQuery = pdsAuditQuery.Where(i => i.UpdatedDate <= unHealthyThresholdDateTime
-                && i.IsCompleted == false && i.RequestType != "Request");
-
-            int unHealthyCount = filteredQuery.Count();
-
-            string message = unHealthyCount == 0
-                ? $"All requests received reply."
-                : $"{unHealthyCount} requests have no reply. Please check logs and function status.";
-
-            var vals = new Dictionary<string, object>
+        public ValueTask<HealthCheckResult> GetHealthStatusAsync() =>
+            TryCatch(async () =>
             {
-                { "description", CheckNameDescription },
-                { "notReceivedReply", unHealthyCount },
-                { "unHealthyItems", unHealthyCount},
-                { "unHealthyThresholdMinutes", unHealthyThresholdMinutes.ToString() },
-                { "checkedAt", currentDateTime.ToString("o") },
-                { "message", message }
-            };
+                int unHealthyThresholdMinutes = configuration
+                    .GetValue($"${ConfigSectionName}:UnHealthyThreshold", 1440);
 
-            if (unHealthyCount > 0)
-            {
-                vals.Add("status", HealthStatus.Unhealthy.ToString());
+                DateTimeOffset currentDateTime = await dateTimeBroker.GetCurrentDateTimeOffsetAsync();
+                DateTimeOffset unHealthyThresholdDateTime = currentDateTime.AddMinutes(-1 * unHealthyThresholdMinutes);
+                var pdsAuditQuery = await storageBroker.SelectAllPdsAuditsAsync();
 
-                return HealthCheckResult.Unhealthy(
-                    description: CheckName,
-                    data: vals);
-            }
-            else
-            {
-                vals.Add("status", HealthStatus.Healthy.ToString());
+                var filteredQuery = pdsAuditQuery.Where(i => i.UpdatedDate <= unHealthyThresholdDateTime
+                    && i.IsCompleted == false && i.RequestType != "Request");
 
-                return HealthCheckResult.Healthy(
-                    description: CheckName,
-                    data: vals);
-            }
-        }
+                int unHealthyCount = filteredQuery.Count();
+
+                string message = unHealthyCount == 0
+                    ? $"All requests received reply."
+                    : $"{unHealthyCount} requests have no reply. Please check logs and function status.";
+
+                var vals = new Dictionary<string, object>
+                {
+                    { "description", CheckNameDescription },
+                    { "notReceivedReply", unHealthyCount },
+                    { "unHealthyItems", unHealthyCount},
+                    { "unHealthyThresholdMinutes", unHealthyThresholdMinutes.ToString() },
+                    { "checkedAt", currentDateTime.ToString("o") },
+                    { "message", message }
+                };
+
+                if (unHealthyCount > 0)
+                {
+                    vals.Add("status", HealthStatus.Unhealthy.ToString());
+
+                    return HealthCheckResult.Unhealthy(
+                        description: CheckName,
+                        data: vals);
+                }
+                else
+                {
+                    vals.Add("status", HealthStatus.Healthy.ToString());
+
+                    return HealthCheckResult.Healthy(
+                        description: CheckName,
+                        data: vals);
+                }
+            });
     }
 }

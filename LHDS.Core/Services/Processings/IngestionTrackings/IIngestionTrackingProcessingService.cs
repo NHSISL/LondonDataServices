@@ -19,6 +19,7 @@ namespace LHDS.Core.Services.Processings.IngestionTrackings
         ValueTask<IngestionTracking> ModifyOrAddIngestionTrackingAsync(IngestionTracking ingestionTracking);
         ValueTask<IngestionTracking> ModifyIngestionTrackingAsync(IngestionTracking ingestionTracking);
         ValueTask<IngestionTracking> RemoveIngestionTrackingByIdAsync(Guid ingestionTrackingId);
+
         ValueTask<List<string>> RetrieveObjectsInBatchByBatchReferenceAsync(
             string batchReference,
             bool? decrypted = null,

@@ -55,12 +55,12 @@ namespace LHDS.Core.Services.Foundations.HealthChecks.OptOut
                 var filteredQuery = optOutsQuery.Where(i => i.CacheTime < expirationDate
                     && i.LastSentToMesh < lastSentExpirationDate);
 
-                int degradedCount = filteredQuery.Count(ingestionTracking =>
-                    ingestionTracking.UpdatedDate <= degradedThresholdDateTime &&
-                    ingestionTracking.UpdatedDate > unHealthyThresholdDateTime);
+                int degradedCount = filteredQuery.Count(optOut =>
+                    optOut.UpdatedDate <= degradedThresholdDateTime &&
+                    optOut.UpdatedDate > unHealthyThresholdDateTime);
 
                 int unHealthyCount = filteredQuery
-                    .Count(ingestionTracking => ingestionTracking.UpdatedDate <= unHealthyThresholdDateTime);
+                    .Count(optOut => optOut.UpdatedDate <= unHealthyThresholdDateTime);
 
                 int totalCount = degradedCount + unHealthyCount;
 

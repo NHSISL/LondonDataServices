@@ -3,7 +3,6 @@
 // ---------------------------------------------------------
 
 using System;
-using System.IO;
 using System.Threading.Tasks;
 using FluentAssertions;
 using LHDS.Core.Models.Orchestrations.TppLandings.Exceptions;
@@ -25,8 +24,6 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.TppLandings
         {
             // given
             Guid supplierId = Guid.Empty;
-            Stream randomStream = new MemoryStream();
-            Stream inputStream = new MemoryStream();
             string inputFileName = invalidText;
 
             var invalidArgumentException =

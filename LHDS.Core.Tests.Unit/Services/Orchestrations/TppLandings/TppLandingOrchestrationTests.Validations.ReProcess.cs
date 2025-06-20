@@ -19,7 +19,8 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.TppLandings
         [InlineData(null)]
         [InlineData("")]
         [InlineData(" ")]
-        public async Task ShouldThrowValidationExceptionOnReProcessIfDocumentFileNameIsNullAndLogItAsync(string invalidText)
+        public async Task ShouldThrowValidationExceptionOnReProcessIfDocumentFileNameIsNullAndLogItAsync(
+            string invalidText)
         {
             // given
             Guid supplierId = Guid.Empty;

@@ -12,7 +12,6 @@ using Moq;
 using Xeptions;
 using Xunit;
 
-
 namespace LHDS.Core.Tests.Unit.Services.Orchestrations.TppLandings
 {
     public partial class TppLandingOrchestrationTests

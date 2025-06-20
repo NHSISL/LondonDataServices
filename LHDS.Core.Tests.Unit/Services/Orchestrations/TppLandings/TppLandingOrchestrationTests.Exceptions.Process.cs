@@ -66,8 +66,8 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.TppLandings
             // then
             actualException.Should().BeEquivalentTo(expectedDependencyException);
 
-            this.ingestionTrackingProcessingServiceMock.Verify(service =>
-                service.RetrieveAllIngestionTrackingsAsync(),
+            tppOrchestrationServiceMock.Verify(service =>
+                service.ProcessFileAsync(inputFileName, inputSupplierId),
                     Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>

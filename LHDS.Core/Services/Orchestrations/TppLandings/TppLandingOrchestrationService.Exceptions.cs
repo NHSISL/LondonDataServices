@@ -79,6 +79,17 @@ namespace LHDS.Core.Services.Orchestrations.Tpp
             {
                 throw await CreateAndLogDependencyExceptionAsync(auditServiceException);
             }
+            catch (AggregateException aggregateException)
+            {
+                var failedTppLandingOrchestrationServiceException =
+                    new FailedTppLandingOrchestrationServiceException(
+                        message:
+                            "Failed TPP landing orchestration aggregate service error occurred, " +
+                            "please contact support.",
+                        aggregateException);
+
+                throw await CreateAndLogServiceExceptionAsync(failedTppLandingOrchestrationServiceException);
+            }
             catch (Exception exception)
             {
                 var failedTppLandingOrchestrationServiceException =

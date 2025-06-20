@@ -18,15 +18,9 @@ namespace LHDS.Core.Tests.Unit.Services.Coordinations.HealthChecks.Pds.ReceivedR
             // given
             DateTimeOffset currentDateTime = DateTimeOffset.UtcNow;
             Guid someCorrelationId = Guid.NewGuid();
-
-            IQueryable<PdsAudit> randomUnhealthyPdsAudits =
-                CreateRandomUnhealthyPdsAudits(someCorrelationId);
-
-            IQueryable<PdsAudit> randomHealthyPdsAudits =
-                CreateRandomHealthyPdsAudits(someCorrelationId);
-
-            IQueryable<PdsAudit> randomTrackings =
-                randomUnhealthyPdsAudits.Concat(randomHealthyPdsAudits);
+            IQueryable<PdsAudit> randomUnhealthyPdsAudits = CreateRandomUnhealthyPdsAudits(someCorrelationId);
+            IQueryable<PdsAudit> randomHealthyPdsAudits = CreateRandomHealthyPdsAudits(someCorrelationId);
+            IQueryable<PdsAudit> randomTrackings = randomUnhealthyPdsAudits.Concat(randomHealthyPdsAudits);
 
             Dictionary<string, object> healthCheckResultValues =
                 GetHealthCheckResultValues(
@@ -74,9 +68,7 @@ namespace LHDS.Core.Tests.Unit.Services.Coordinations.HealthChecks.Pds.ReceivedR
             // given
             DateTimeOffset currentDateTime = DateTimeOffset.UtcNow;
             Guid someCorrelationId = Guid.NewGuid();
-
-            IQueryable<PdsAudit> randomTrackings =
-                CreateRandomHealthyPdsAudits(someCorrelationId);
+            IQueryable<PdsAudit> randomTrackings = CreateRandomHealthyPdsAudits(someCorrelationId);
 
             Dictionary<string, object> healthCheckResultValues =
                  GetHealthCheckResultValues(

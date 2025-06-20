@@ -19,10 +19,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.HealthChecks.Pds.ReceivedRep
         private readonly Mock<IStorageBroker> storageBrokerMock;
         private readonly Mock<IDateTimeBroker> dateTimeBrokerMock;
         private readonly Mock<ILoggingBroker> loggingBrokerMock;
-
-        private readonly PdsReceivedReplyHealthCheckService
-            pdsReceivedReplyHealthCheckService;
-
+        private readonly PdsReceivedReplyHealthCheckService pdsReceivedReplyHealthCheckService;
         private const string CheckName = "receivedReply";
         private const string CheckNameDescription = "Received Reply";
         private const string ConfigSectionName = "HealthChecks:Pds:ReceivedReply";
@@ -40,8 +37,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.HealthChecks.Pds.ReceivedRep
                     storageBroker: this.storageBrokerMock.Object,
                     configuration: this.configuration,
                     dateTimeBroker: this.dateTimeBrokerMock.Object,
-                    loggingBroker: this.loggingBrokerMock.Object
-                );
+                    loggingBroker: this.loggingBrokerMock.Object);
         }
 
         private static int GetRandomNumber() =>

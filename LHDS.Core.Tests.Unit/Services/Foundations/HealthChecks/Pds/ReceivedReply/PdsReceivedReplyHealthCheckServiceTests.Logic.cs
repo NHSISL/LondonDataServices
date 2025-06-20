@@ -18,12 +18,8 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.HealthChecks.Pds.ReceivedRep
             // given
             DateTimeOffset currentDateTime = DateTimeOffset.UtcNow;
             Guid someCorrelationId = Guid.NewGuid();
-
-            IQueryable<PdsAudit> randomHealthyPdsAudits =
-                CreateRandomHealthyPdsAudits(someCorrelationId);
-
+            IQueryable<PdsAudit> randomHealthyPdsAudits = CreateRandomHealthyPdsAudits(someCorrelationId);
             IQueryable<PdsAudit> randomTrackings = randomHealthyPdsAudits;
-
             string message = "All requests received reply.";
 
             var vals = new Dictionary<string, object>
@@ -78,18 +74,10 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.HealthChecks.Pds.ReceivedRep
             // given
             DateTimeOffset currentDateTime = DateTimeOffset.UtcNow;
             Guid someCorrelationId = Guid.NewGuid();
-
-            IQueryable<PdsAudit> randomUnhealthyPdsAudits =
-                CreateRandomUnhealthyPdsAudits(someCorrelationId);
-
-            IQueryable<PdsAudit> randomHealthyPdsAudits =
-                CreateRandomHealthyPdsAudits(someCorrelationId);
-
-            IQueryable<PdsAudit> randomTrackings =
-                randomUnhealthyPdsAudits.Concat(randomHealthyPdsAudits);
-
+            IQueryable<PdsAudit> randomUnhealthyPdsAudits = CreateRandomUnhealthyPdsAudits(someCorrelationId);
+            IQueryable<PdsAudit> randomHealthyPdsAudits = CreateRandomHealthyPdsAudits(someCorrelationId);
+            IQueryable<PdsAudit> randomTrackings = randomUnhealthyPdsAudits.Concat(randomHealthyPdsAudits);
             int unhealthyItemsCount = randomUnhealthyPdsAudits.Count();
-
             string message = $"{unhealthyItemsCount} requests have no reply. Please check logs and function status.";
 
             var vals = new Dictionary<string, object>

@@ -20,7 +20,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.HealthChecks.Pds.ReceivedRep
                 new FailedPdsReceivedReplyHealthCheckServiceException(
 
                     message: "Failed pds received reply health check service error occurred, " +
-                    "please contact support.",
+                        "please contact support.",
 
                     innerException: serviceException);
 
@@ -28,7 +28,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.HealthChecks.Pds.ReceivedRep
                 new PdsReceivedReplyHealthCheckServiceException(
 
                     message: "Pds received reply health check service error occurred, " +
-                    "please contact support.",
+                        "please contact support.",
 
                     innerException: failedPdsReceivedReplyHealthCheckServiceException);
 

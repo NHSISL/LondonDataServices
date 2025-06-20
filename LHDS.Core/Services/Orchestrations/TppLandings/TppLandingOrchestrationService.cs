@@ -73,8 +73,8 @@ namespace LHDS.Core.Services.Orchestrations.Tpp
                 return await this.ProcessFileAsync(fileName, supplierId);
             });
 
-        public async ValueTask ReProcessAsync(Guid supplierId) =>
-            await TryCatch(async () =>
+        public ValueTask ReProcessAsync(Guid supplierId) =>
+            TryCatch(async () =>
             {
                 ValidateArgumentsOnReProcess(supplierId);
 

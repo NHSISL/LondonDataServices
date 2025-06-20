@@ -19,8 +19,7 @@ namespace LHDS.Core.Services.Orchestrations.Tpp
 
         private static void ValidateArgumentsOnReProcess(Guid supplierId)
         {
-            Validate(
-                (Rule: IsInvalid(supplierId), Parameter: "SupplierId"));
+            Validate((Rule: IsInvalid(supplierId), Parameter: "SupplierId"));
         }
 
         private static dynamic IsInvalid(Guid id) => new

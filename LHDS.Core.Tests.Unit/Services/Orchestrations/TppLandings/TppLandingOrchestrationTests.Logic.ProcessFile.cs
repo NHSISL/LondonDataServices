@@ -377,7 +377,6 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.TppLandings
             this.loggingBrokerMock.VerifyNoOtherCalls();
         }
 
-
         [Fact]
         public async Task ShouldProcessExisitingDocumentIfUpdatedUpdateHashOnProcessFileAsync()
         {

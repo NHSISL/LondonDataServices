@@ -7,7 +7,6 @@ using System.Threading.Tasks;
 using Moq;
 using Xunit;
 
-
 namespace LHDS.Core.Tests.Unit.Services.Coordinations.TppLandings
 {
     public partial class TppLandingsCoordinationTests

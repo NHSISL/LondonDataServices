@@ -9,7 +9,6 @@ using LHDS.Core.Models.Coordinations.TppLandings.Exceptions;
 using Moq;
 using Xunit;
 
-
 namespace LHDS.Core.Tests.Unit.Services.Coordinations.TppLandings
 {
     public partial class TppLandingsCoordinationTests

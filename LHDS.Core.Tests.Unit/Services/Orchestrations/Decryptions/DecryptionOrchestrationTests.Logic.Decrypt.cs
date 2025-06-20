@@ -113,7 +113,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Decryptions
             var outputIngestionTracking = updatedIngestionTracking.DeepClone();
 
             this.ingestionTrackingServiceMock.Setup(service =>
-                service.ModifyIngestionTrackingAsync(updatedIngestionTracking))
+                service.ModifyIngestionTrackingAsync(It.Is(SameIngestionTrackingAs(updatedIngestionTracking))))
                     .ReturnsAsync(outputIngestionTracking);
 
             // when

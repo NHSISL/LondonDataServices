@@ -105,6 +105,7 @@ namespace LHDS.Core.Tests.Unit.Services.Coordinations.TppLandings
             this.loggingBrokerMock.VerifyNoOtherCalls();
         }
 
+
         [Fact]
         public async Task ShouldThrowServiceExceptionOnReProcessIfServiceErrorOccursAndLogItAsync()
         {

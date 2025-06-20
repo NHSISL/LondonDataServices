@@ -12,6 +12,7 @@ using Moq;
 using Xeptions;
 using Xunit;
 
+
 namespace LHDS.Core.Tests.Unit.Services.Orchestrations.TppLandings
 {
     public partial class TppLandingOrchestrationTests
@@ -122,8 +123,8 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.TppLandings
                     .ThrowsAsync(dependancyException);
 
             // when
-            ValueTask<Guid> processTask = this.tppOrchestrationService
-                .ProcessAsync(fileName: inputFileName, supplierId: randomSupplierId);
+            ValueTask<Guid> processTask = tppOrchestrationServiceMock.Object
+                .ProcessAsync(fileName: inputFileName, supplierId: inputSupplierId);
 
             TppLandingOrchestrationDependencyException actualException =
                 await Assert.ThrowsAsync<TppLandingOrchestrationDependencyException>(processTask.AsTask);
@@ -131,8 +132,8 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.TppLandings
             // then
             actualException.Should().BeEquivalentTo(expectedDependencyException);
 
-            this.ingestionTrackingProcessingServiceMock.Verify(service =>
-                service.RetrieveAllIngestionTrackingsAsync(),
+            tppOrchestrationServiceMock.Verify(service =>
+                service.ProcessFileAsync(inputFileName, inputSupplierId),
                     Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>

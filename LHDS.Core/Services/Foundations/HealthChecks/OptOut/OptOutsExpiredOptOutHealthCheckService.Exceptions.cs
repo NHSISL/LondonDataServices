@@ -37,7 +37,7 @@ namespace LHDS.Core.Services.Foundations.HealthChecks.OptOut
         private async ValueTask<OptOutsExpiredOptOutsHealthCheckServiceException> CreateAndLogServiceExceptionAsync(
             Xeption exception)
         {
-            var ingestionTrackingFailedToProcessHealthCheckServiceException =
+            var optOutsExpiredOptOutsHealthCheckServiceException =
                 new OptOutsExpiredOptOutsHealthCheckServiceException(
 
                     message: "Opt outs expired opt outs health check service error occurred, " +
@@ -45,9 +45,9 @@ namespace LHDS.Core.Services.Foundations.HealthChecks.OptOut
 
                     innerException: exception);
 
-            await this.loggingBroker.LogCriticalAsync(ingestionTrackingFailedToProcessHealthCheckServiceException);
+            await this.loggingBroker.LogCriticalAsync(optOutsExpiredOptOutsHealthCheckServiceException);
 
-            return ingestionTrackingFailedToProcessHealthCheckServiceException;
+            return optOutsExpiredOptOutsHealthCheckServiceException;
         }
     }
 }

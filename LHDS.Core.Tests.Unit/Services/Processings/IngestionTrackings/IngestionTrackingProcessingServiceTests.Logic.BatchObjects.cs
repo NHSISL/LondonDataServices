@@ -21,6 +21,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.IngestionTrackings
         {
             // Given
             string batchReference = GetRandomString();
+            Guid subscriberAgreementId = Guid.NewGuid();
             List<IngestionTracking> randomIngestionTrackings = CreateRandomIngestionTrackings();
 
             randomIngestionTrackings.ForEach(ingestionTracking =>
@@ -43,7 +44,8 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.IngestionTrackings
             // When
             List<string> actualIngestionTracking =
                 await this.ingestionTrackingProcessingService
-                    .RetrieveObjectsInBatchByBatchReferenceAsync(batchReference);
+                    .RetrieveObjectsInBatchByBatchReferenceAsync(
+                        batchReference);
 
             // Then
             actualIngestionTracking.Should().BeEquivalentTo(expectedIngestionTracking);
@@ -59,7 +61,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.IngestionTrackings
         [Theory]
         [InlineData(true)]
         [InlineData(false)]
-        public async Task ShouldRetrieveDecryptedObjectsInBatchByBatchReferenceAsync(bool decrypted)
+        public async Task ShouldRetrieveDecryptedObjectsInBatchByBatchReferenceAndDecryptedAsync(bool decrypted)
         {
             // Given
             string batchReference = GetRandomString();
@@ -78,6 +80,127 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.IngestionTrackings
             {
                 ingestionTracking.Batch = batchReference;
                 ingestionTracking.Decrypted = false;
+                ingestionTracking.SubscriberAgreementId = subscriberAgreementId;
+            });
+
+            List<IngestionTracking> storageIngestionTrackings = new List<IngestionTracking>();
+            storageIngestionTrackings.AddRange(randomDecryptedIngestionTrackings);
+            storageIngestionTrackings.AddRange(randomUnEncryptedIngestionTrackings);
+
+            List<string> ingestionTrackingObjects = storageIngestionTrackings
+
+                .Where(ingestionTrackingObject =>
+                    ingestionTrackingObject.Batch == batchReference
+                    && ingestionTrackingObject.Decrypted == decrypted)
+
+                .Select(ingestionTracking => ingestionTracking.ObjectName)
+                    .ToList();
+
+            List<string> expectedIngestionTracking = ingestionTrackingObjects.DeepClone();
+
+            this.ingestionTrackingServiceMock.Setup(service =>
+                service.RetrieveAllIngestionTrackingsAsync())
+                    .ReturnsAsync(storageIngestionTrackings.AsQueryable());
+
+            // When
+            List<string> actualIngestionTracking =
+                await this.ingestionTrackingProcessingService.RetrieveObjectsInBatchByBatchReferenceAsync(
+                    batchReference,
+                    decrypted,
+                    subscriberAgreementId);
+
+            // Then
+            actualIngestionTracking.Should().BeEquivalentTo(expectedIngestionTracking);
+
+            this.ingestionTrackingServiceMock.Verify(service =>
+                service.RetrieveAllIngestionTrackingsAsync(),
+                    Times.Once);
+
+            this.ingestionTrackingServiceMock.VerifyNoOtherCalls();
+            this.loggingBrokerMock.VerifyNoOtherCalls();
+        }
+
+        [Fact]
+        public async Task ShouldRetrieveDecryptedObjectsInBatchByBatchReferenceAndSubscriberAgreementIsAsync()
+        {
+            // Given
+            string batchReference = GetRandomString();
+            Guid subscriberAgreementId = Guid.NewGuid();
+            List<IngestionTracking> randomDecryptedIngestionTrackings = CreateRandomIngestionTrackings();
+
+            randomDecryptedIngestionTrackings.ForEach(ingestionTracking =>
+            {
+                ingestionTracking.Batch = batchReference;
+                ingestionTracking.SubscriberAgreementId = subscriberAgreementId;
+            });
+
+            List<IngestionTracking> randomUnEncryptedIngestionTrackings = CreateRandomIngestionTrackings();
+
+            randomUnEncryptedIngestionTrackings.ForEach(ingestionTracking =>
+            {
+                ingestionTracking.Batch = batchReference;
+                ingestionTracking.SubscriberAgreementId = subscriberAgreementId;
+            });
+
+            List<IngestionTracking> storageIngestionTrackings = new List<IngestionTracking>();
+            storageIngestionTrackings.AddRange(randomDecryptedIngestionTrackings);
+            storageIngestionTrackings.AddRange(randomUnEncryptedIngestionTrackings);
+
+            List<string> ingestionTrackingObjects = storageIngestionTrackings
+
+                .Where(ingestionTrackingObject =>
+                    ingestionTrackingObject.Batch == batchReference
+                    && ingestionTrackingObject.SubscriberAgreementId == subscriberAgreementId)
+
+                .Select(ingestionTracking => ingestionTracking.ObjectName)
+                    .ToList();
+
+            List<string> expectedIngestionTracking = ingestionTrackingObjects.DeepClone();
+
+            this.ingestionTrackingServiceMock.Setup(service =>
+                service.RetrieveAllIngestionTrackingsAsync())
+                    .ReturnsAsync(storageIngestionTrackings.AsQueryable());
+
+            // When
+            List<string> actualIngestionTracking =
+                await this.ingestionTrackingProcessingService.RetrieveObjectsInBatchByBatchReferenceAsync(
+                    batchReference: batchReference,
+                    subscriberAgreementId: subscriberAgreementId);
+
+            // Then
+            actualIngestionTracking.Should().BeEquivalentTo(expectedIngestionTracking);
+
+            this.ingestionTrackingServiceMock.Verify(service =>
+                service.RetrieveAllIngestionTrackingsAsync(),
+                    Times.Once);
+
+            this.ingestionTrackingServiceMock.VerifyNoOtherCalls();
+            this.loggingBrokerMock.VerifyNoOtherCalls();
+        }
+
+        [Theory]
+        [InlineData(true)]
+        [InlineData(false)]
+        public async Task ShouldRetrieveDecryptedObjectsByBatchReferenceAndDecryptedAndSubscriberAgreementIsAsync(
+            bool decrypted)
+        {
+            // Given
+            string batchReference = GetRandomString();
+            Guid subscriberAgreementId = Guid.NewGuid();
+            List<IngestionTracking> randomDecryptedIngestionTrackings = CreateRandomIngestionTrackings();
+
+            randomDecryptedIngestionTrackings.ForEach(ingestionTracking =>
+            {
+                ingestionTracking.Batch = batchReference;
+                ingestionTracking.Decrypted = decrypted;
+                ingestionTracking.SubscriberAgreementId = subscriberAgreementId;
+            });
+
+            List<IngestionTracking> randomUnEncryptedIngestionTrackings = CreateRandomIngestionTrackings();
+
+            randomUnEncryptedIngestionTrackings.ForEach(ingestionTracking =>
+            {
+                ingestionTracking.Batch = batchReference;
                 ingestionTracking.SubscriberAgreementId = subscriberAgreementId;
             });
 

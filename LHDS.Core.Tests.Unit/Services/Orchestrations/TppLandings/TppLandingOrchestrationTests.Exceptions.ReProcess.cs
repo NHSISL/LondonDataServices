@@ -26,9 +26,6 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.TppLandings
         {
             // given
             Guid randomSupplierId = Guid.NewGuid();
-            Guid inputSupplierId = randomSupplierId;
-            string randomFileName = GetRandomString();
-            string inputFileName = randomFileName;
 
             var expectedDependencyException =
                 new TppLandingOrchestrationDependencyValidationException(

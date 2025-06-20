@@ -3,8 +3,6 @@
 // ---------------------------------------------------------
 
 using System;
-using System.IO;
-using System.Text;
 using System.Threading.Tasks;
 using FluentAssertions;
 using LHDS.Core.Models.Coordinations.TppLandings.Exceptions;
@@ -66,11 +64,7 @@ namespace LHDS.Core.Tests.Unit.Services.Coordinations.TppLandings
           Xeption dependancyException)
         {
             // given
-            Stream randomData = new MemoryStream(Encoding.UTF8.GetBytes(GetRandomString()));
-            Stream inputStream = randomData;
-            string inputFileName = GetRandomString();
             Guid inputSupplierId = Guid.NewGuid();
-            Guid ingestionTrackingId = Guid.NewGuid();
 
             var expectedDependencyException =
                 new TppLandingCoordinationDependencyException(
@@ -109,11 +103,7 @@ namespace LHDS.Core.Tests.Unit.Services.Coordinations.TppLandings
         public async Task ShouldThrowServiceExceptionOnReProcessIfServiceErrorOccursAndLogItAsync()
         {
             //Given
-            Stream randomData = new MemoryStream(Encoding.UTF8.GetBytes(GetRandomString()));
-            Stream inputStream = randomData;
-            string inputFileName = GetRandomString();
             Guid inputSupplierId = Guid.NewGuid();
-            Guid ingestionTrackingId = Guid.NewGuid();
             var serviceException = new Exception();
 
             var failedTppCoordinationServiceException =

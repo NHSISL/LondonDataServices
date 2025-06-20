@@ -71,7 +71,10 @@ namespace LHDS.Core.Services.Orchestrations.Ingress
             }
 
             List<string> decryptedIngestiontrackingObjects = await this.ingestionTrackingProcessingService
-                .RetrieveObjectsInBatchByBatchReferenceAsync(bacthReference: ingestionTracking.Batch, decrypted: true);
+                .RetrieveObjectsInBatchByBatchReferenceAsync(
+                    batchReference: ingestionTracking.Batch,
+                    decrypted: true,
+                    subscriberAgreementId: ingestionTracking.SubscriberAgreementId);
 
             List<string> missingSpecificationObjectIds = specificationObjectIds
                 .Except(decryptedIngestiontrackingObjects).ToList();
@@ -90,7 +93,8 @@ namespace LHDS.Core.Services.Orchestrations.Ingress
             if (isBatchComplete)
             {
                 string batchComplete =
-                    $"All specification object files present for batch '{ingestionTracking.Batch}' " +
+                    $"All specification object files present for subscriber agreement " +
+                    $"'{ingestionTracking.SubscriberAgreementId}' and batch '{ingestionTracking.Batch}' " +
                     $"as defined in Dataset Specification Id: '{ingestionTracking.DataSetSpecificationId}'.";
 
                 Stream data = new MemoryStream(System.Text.Encoding.UTF8.GetBytes(batchComplete));
@@ -105,7 +109,11 @@ namespace LHDS.Core.Services.Orchestrations.Ingress
 
                 await this.auditBroker.LogInformationAsync(
                     auditType: "BatchComplete",
-                    title: $"{batchReadyFileName} generated",
+
+                    title: $"{batchReadyFileName} generated for subscriber agreement " +
+                        $"'{ingestionTracking.SubscriberAgreementId}' and " +
+                            $"batch '{ingestionTracking.Batch}'",
+
                     message: batchComplete,
                     fileName: batchCompleteFileName,
                     correlationId: ingestionTracking.Batch);

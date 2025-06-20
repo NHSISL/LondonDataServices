@@ -70,6 +70,7 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.PdsAudits
         private static Filler<PdsAudit> CreatePdsAuditFiller()
         {
             string user = Guid.NewGuid().ToString();
+            Guid correlationId = Guid.NewGuid();
             var filler = new Filler<PdsAudit>();
             var now = DateTimeOffset.UtcNow;
 
@@ -77,7 +78,8 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.PdsAudits
                 .OnType<DateTimeOffset>().Use(now)
                 .OnType<DateTimeOffset?>().Use(now)
                 .OnProperty(pdsAudit => pdsAudit.CreatedBy).Use(user)
-                .OnProperty(pdsAudit => pdsAudit.UpdatedBy).Use(user);
+                .OnProperty(pdsAudit => pdsAudit.UpdatedBy).Use(user)
+                .OnProperty(pdsAudit => pdsAudit.CorrelationId).Use(correlationId);
 
             return filler;
         }

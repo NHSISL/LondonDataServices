@@ -40,8 +40,11 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Ingress
                     .ReturnsAsync(dataSetSpecificationObjects);
 
             this.ingestionTrackingProcessingServiceMock.Setup(service =>
-                service.RetrieveObjectsInBatchByBatchReferenceAsync(batchReference, true))
-                    .ReturnsAsync(ingestionTrackingObjects);
+                service.RetrieveObjectsInBatchByBatchReferenceAsync(
+                    batchReference,
+                    true,
+                    storageIngestionTracking.SubscriberAgreementId))
+                        .ReturnsAsync(ingestionTrackingObjects);
 
             // when
             await this.ingressOrchestrationService.CheckForBatchCompleteAsync(ingestionTrackingId);
@@ -56,8 +59,11 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Ingress
                     Times.Once);
 
             this.ingestionTrackingProcessingServiceMock.Verify(service =>
-                service.RetrieveObjectsInBatchByBatchReferenceAsync(batchReference, true),
-                    Times.Once);
+                service.RetrieveObjectsInBatchByBatchReferenceAsync(
+                    batchReference,
+                    true,
+                    storageIngestionTracking.SubscriberAgreementId),
+                        Times.Once);
 
             this.ingestionTrackingProcessingServiceMock.VerifyNoOtherCalls();
             this.specificationObjectProcessingServiceMock.VerifyNoOtherCalls();
@@ -84,7 +90,8 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Ingress
             List<string> dataSetSpecificationObjects = randomObjects.DeepClone();
 
             string message =
-                $"All specification object files present for batch '{randomIngestionTracking.Batch}' " +
+                $"All specification object files present for subscriber agreement " +
+                $"'{randomIngestionTracking.SubscriberAgreementId}' and batch '{randomIngestionTracking.Batch}' " +
                 $"as defined in Dataset Specification Id: '{randomIngestionTracking.DataSetSpecificationId}'.";
 
             Stream batchReadyStream =
@@ -103,8 +110,11 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Ingress
                     .ReturnsAsync(dataSetSpecificationObjects);
 
             this.ingestionTrackingProcessingServiceMock.Setup(service =>
-                service.RetrieveObjectsInBatchByBatchReferenceAsync(batchReference, true))
-                    .ReturnsAsync(ingestionTrackingObjects);
+                service.RetrieveObjectsInBatchByBatchReferenceAsync(
+                    batchReference,
+                    true,
+                    storageIngestionTracking.SubscriberAgreementId))
+                        .ReturnsAsync(ingestionTrackingObjects);
 
             this.documentProcessingServiceMock
                 .Setup(service => service.AddDocumentAsync(
@@ -135,8 +145,11 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Ingress
                     Times.Once);
 
             this.ingestionTrackingProcessingServiceMock.Verify(service =>
-                service.RetrieveObjectsInBatchByBatchReferenceAsync(batchReference, true),
-                    Times.Once);
+                service.RetrieveObjectsInBatchByBatchReferenceAsync(
+                    batchReference,
+                    true,
+                    storageIngestionTracking.SubscriberAgreementId),
+                        Times.Once);
 
             this.documentProcessingServiceMock.Verify(service =>
                 service.AddDocumentAsync(
@@ -151,7 +164,9 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Ingress
 
             this.auditBrokerMock.Verify(service => service.LogInformationAsync(
                 "BatchComplete",
-                $"{batchReadyFileName} generated",
+                    $"{batchReadyFileName} generated for subscriber agreement " +
+                        $"'{randomIngestionTracking.SubscriberAgreementId}' and " +
+                            $"batch '{randomIngestionTracking.Batch}'",
                 message,
                 batchReadyFilePath,
                 randomIngestionTracking.Batch),

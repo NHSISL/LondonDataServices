@@ -91,7 +91,8 @@ namespace LHDS.Core.Services.Processings.IngestionTrackings
 
         public ValueTask<List<string>> RetrieveObjectsInBatchByBatchReferenceAsync(
             string bacthReference,
-            bool? decrypted = null) =>
+            bool? decrypted = null,
+            Guid? subscriberAgreementId = null) =>
             TryCatch(async () =>
             {
                 ValidateOnRetrieveObjectsInBatchByBatchReference(bacthReference);
@@ -102,7 +103,9 @@ namespace LHDS.Core.Services.Processings.IngestionTrackings
                     await this.ingestionTrackingService.RetrieveAllIngestionTrackingsAsync();
 
                 allingestionTrackings = allingestionTrackings
-                    .Where(ingestionTracking => ingestionTracking.Batch == bacthReference);
+                    .Where(ingestionTracking =>
+                        ingestionTracking.Batch == bacthReference
+                        && ingestionTracking.SubscriberAgreementId == subscriberAgreementId);
 
                 if (decrypted != null)
                 {

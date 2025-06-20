@@ -19,10 +19,17 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.HealthChecks.OptOuts.Expired
             // given
             DateTimeOffset randomDateTimeOffset = DateTimeOffset.UtcNow;
             int randomNumber = GetRandomNumber();
-            int degradedThresholdMinutes = this.inMemoryConfiguration.GetValue($"{ConfigSectionName}:DegradedThreshold", 1440);
-            int unHealthyThresholdMinutes = this.inMemoryConfiguration.GetValue($"{ConfigSectionName}:UnHealthyThreshold", 2880);
+
+            int degradedThresholdMinutes = 
+                this.inMemoryConfiguration.GetValue($"{ConfigSectionName}:DegradedThreshold", 1440);
+
+            int unHealthyThresholdMinutes = 
+                this.inMemoryConfiguration.GetValue($"{ConfigSectionName}:UnHealthyThreshold", 2880);
+
             int expiredAfterDays = this.inMemoryConfiguration.GetValue($"{ConfigSectionName}:ExpiredAfterDays", 7);
-            int lastSentExpiredAfterDays = this.inMemoryConfiguration.GetValue($"{ConfigSectionName}:LastSentExpiredAfterDays", 2);
+
+            int lastSentExpiredAfterDays = 
+                this.inMemoryConfiguration.GetValue($"{ConfigSectionName}:LastSentExpiredAfterDays", 2);
 
             List<OptOut> healthyRecords = CreateRandomOptOuts(
                 dateTimeOffset: randomDateTimeOffset,
@@ -86,10 +93,17 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.HealthChecks.OptOuts.Expired
             // given
             DateTimeOffset randomDateTimeOffset = DateTimeOffset.UtcNow;
             int randomNumber = GetRandomNumber();
-            int degradedThresholdMinutes = this.inMemoryConfiguration.GetValue($"{ConfigSectionName}:DegradedThreshold", 1440);
-            int unHealthyThresholdMinutes = this.inMemoryConfiguration.GetValue($"{ConfigSectionName}:UnHealthyThreshold", 2880);
+
+            int degradedThresholdMinutes = 
+                this.inMemoryConfiguration.GetValue($"{ConfigSectionName}:DegradedThreshold", 1440);
+
+            int unHealthyThresholdMinutes = 
+                this.inMemoryConfiguration.GetValue($"{ConfigSectionName}:UnHealthyThreshold", 2880);
+
             int expiredAfterDays = this.inMemoryConfiguration.GetValue($"{ConfigSectionName}:ExpiredAfterDays", 7);
-            int lastSentExpiredAfterDays = this.inMemoryConfiguration.GetValue($"{ConfigSectionName}:LastSentExpiredAfterDays", 2);
+
+            int lastSentExpiredAfterDays = 
+                this.inMemoryConfiguration.GetValue($"{ConfigSectionName}:LastSentExpiredAfterDays", 2);
 
             List<OptOut> degradedRecords = CreateRandomOptOuts(
                 dateTimeOffset: randomDateTimeOffset.AddMinutes(-degradedThresholdMinutes).AddSeconds(-1),
@@ -153,10 +167,17 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.HealthChecks.OptOuts.Expired
             // given
             DateTimeOffset randomDateTimeOffset = DateTimeOffset.UtcNow;
             int randomNumber = GetRandomNumber();
-            int degradedThresholdMinutes = this.inMemoryConfiguration.GetValue($"{ConfigSectionName}:DegradedThreshold", 1440);
-            int unHealthyThresholdMinutes = this.inMemoryConfiguration.GetValue($"{ConfigSectionName}:UnHealthyThreshold", 2880);
+
+            int degradedThresholdMinutes = 
+                this.inMemoryConfiguration.GetValue($"{ConfigSectionName}:DegradedThreshold", 1440);
+
+            int unHealthyThresholdMinutes = 
+                this.inMemoryConfiguration.GetValue($"{ConfigSectionName}:UnHealthyThreshold", 2880);
+
             int expiredAfterDays = this.inMemoryConfiguration.GetValue($"{ConfigSectionName}:ExpiredAfterDays", 7);
-            int lastSentExpiredAfterDays = this.inMemoryConfiguration.GetValue($"{ConfigSectionName}:LastSentExpiredAfterDays", 2);
+
+            int lastSentExpiredAfterDays = 
+                this.inMemoryConfiguration.GetValue($"{ConfigSectionName}:LastSentExpiredAfterDays", 2);
 
             List<OptOut> unHealthyRecords = CreateRandomOptOuts(
                 dateTimeOffset: randomDateTimeOffset.AddMinutes(-unHealthyThresholdMinutes).AddSeconds(-1),
@@ -220,10 +241,17 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.HealthChecks.OptOuts.Expired
             // given
             DateTimeOffset randomDateTimeOffset = DateTimeOffset.UtcNow;
             int randomNumber = GetRandomNumber();
-            int degradedThresholdMinutes = this.inMemoryConfiguration.GetValue($"{ConfigSectionName}:DegradedThreshold", 1440);
-            int unHealthyThresholdMinutes = this.inMemoryConfiguration.GetValue($"{ConfigSectionName}:UnHealthyThreshold", 2880);
+
+            int degradedThresholdMinutes = 
+                this.inMemoryConfiguration.GetValue($"{ConfigSectionName}:DegradedThreshold", 1440);
+
+            int unHealthyThresholdMinutes = 
+                this.inMemoryConfiguration.GetValue($"{ConfigSectionName}:UnHealthyThreshold", 2880);
+
             int expiredAfterDays = this.inMemoryConfiguration.GetValue($"{ConfigSectionName}:ExpiredAfterDays", 7);
-            int lastSentExpiredAfterDays = this.inMemoryConfiguration.GetValue($"{ConfigSectionName}:LastSentExpiredAfterDays", 2);
+
+            int lastSentExpiredAfterDays = 
+                this.inMemoryConfiguration.GetValue($"{ConfigSectionName}:LastSentExpiredAfterDays", 2);
 
             List<OptOut> healthyRecords = CreateRandomOptOuts(
                 dateTimeOffset: randomDateTimeOffset,

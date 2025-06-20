@@ -36,7 +36,10 @@ namespace LHDS.Core.Services.Foundations.HealthChecks.OptOut
             TryCatch(async () =>
             {
                 int degradedThresholdMinutes = configuration.GetValue($"{ConfigSectionName}:DegradedThreshold", 1440);
-                int unHealthyThresholdMinutes = configuration.GetValue($"{ConfigSectionName}:UnHealthyThreshold", 2880);
+
+                int unHealthyThresholdMinutes =
+                configuration.GetValue($"{ConfigSectionName}:UnHealthyThreshold", 2880);
+
                 int expiredAfterDays = configuration.GetValue($"{ConfigSectionName}:ExpiredAfterDays", 7);
 
                 int lastSentExpiredAfterDays = configuration

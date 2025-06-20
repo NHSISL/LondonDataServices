@@ -2,6 +2,7 @@
 // Copyright (c) North East London ICB. All rights reserved.
 // ---------------------------------------------------------
 
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -62,6 +63,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.IngestionTrackings
         {
             // Given
             string batchReference = GetRandomString();
+            Guid subscriberAgreementId = Guid.NewGuid();
             List<IngestionTracking> randomDecryptedIngestionTrackings = CreateRandomIngestionTrackings();
 
             randomDecryptedIngestionTrackings.ForEach(ingestionTracking =>
@@ -76,6 +78,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.IngestionTrackings
             {
                 ingestionTracking.Batch = batchReference;
                 ingestionTracking.Decrypted = false;
+                ingestionTracking.SubscriberAgreementId = subscriberAgreementId;
             });
 
             List<IngestionTracking> storageIngestionTrackings = new List<IngestionTracking>();
@@ -84,8 +87,10 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.IngestionTrackings
 
             List<string> ingestionTrackingObjects = storageIngestionTrackings
 
-                .Where(ingestionTrackingObject => ingestionTrackingObject.Batch == batchReference
-                    && ingestionTrackingObject.Decrypted == decrypted)
+                .Where(ingestionTrackingObject =>
+                    ingestionTrackingObject.Batch == batchReference
+                    && ingestionTrackingObject.Decrypted == decrypted
+                    && ingestionTrackingObject.SubscriberAgreementId == subscriberAgreementId)
 
                 .Select(ingestionTracking => ingestionTracking.ObjectName)
                     .ToList();
@@ -98,8 +103,10 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.IngestionTrackings
 
             // When
             List<string> actualIngestionTracking =
-                await this.ingestionTrackingProcessingService
-                    .RetrieveObjectsInBatchByBatchReferenceAsync(batchReference, decrypted);
+                await this.ingestionTrackingProcessingService.RetrieveObjectsInBatchByBatchReferenceAsync(
+                    batchReference,
+                    decrypted,
+                    subscriberAgreementId);
 
             // Then
             actualIngestionTracking.Should().BeEquivalentTo(expectedIngestionTracking);

@@ -72,7 +72,7 @@ namespace LHDS.Core.Services.Orchestrations.Ingress
 
             List<string> decryptedIngestiontrackingObjects = await this.ingestionTrackingProcessingService
                 .RetrieveObjectsInBatchByBatchReferenceAsync(
-                    bacthReference: ingestionTracking.Batch,
+                    batchReference: ingestionTracking.Batch,
                     decrypted: true,
                     subscriberAgreementId: ingestionTracking.SubscriberAgreementId);
 

@@ -191,7 +191,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.TppLandings
                     .ThrowsAsync(serviceException);
 
             // when
-            ValueTask<Guid> processTask = this.tppOrchestrationService
+            ValueTask<Guid> processTask = tppOrchestrationServiceMock.Object
                 .ProcessAsync(fileName: inputFileName, supplierId: randomSupplierId);
 
             TppLandingOrchestrationServiceException actualException =
@@ -200,8 +200,8 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.TppLandings
             // then
             actualException.Should().BeEquivalentTo(expectedTppOrchestrationServiceException);
 
-            this.ingestionTrackingProcessingServiceMock.Verify(service =>
-                service.RetrieveAllIngestionTrackingsAsync(),
+            tppOrchestrationServiceMock.Verify(service =>
+                service.ProcessFileAsync(inputFileName, inputSupplierId),
                     Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>

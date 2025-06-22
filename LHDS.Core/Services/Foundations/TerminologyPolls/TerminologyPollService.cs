@@ -10,6 +10,7 @@ using LHDS.Core.Brokers.Loggings;
 using LHDS.Core.Brokers.Securities;
 using LHDS.Core.Brokers.Storages.Sql;
 using LHDS.Core.Models.Foundations.TerminologyPolls;
+using LHDS.Core.Models.Foundations.TerminologyPolls;
 
 namespace LHDS.Core.Services.Foundations.TerminologyPolls
 {
@@ -69,6 +70,11 @@ namespace LHDS.Core.Services.Foundations.TerminologyPolls
                     await this.storageBroker.SelectTerminologyPollByIdAsync(terminologyPoll.Id);
 
                 ValidateStorageTerminologyPoll(maybeTerminologyPoll, terminologyPoll.Id);
+
+                TerminologyPoll terminologyPollWithModifyAuditAppliedEnsured =
+                    await EnsureCreatedAuditPropertiesIsSameAsStorageAsync(
+                        terminologyPollWithModifyAuditApplied,
+                        maybeTerminologyPoll);
 
                 ValidateAgainstStorageTerminologyPollOnModify(
                     inputTerminologyPoll: terminologyPoll,
@@ -131,6 +137,16 @@ namespace LHDS.Core.Services.Foundations.TerminologyPolls
             var auditUser = await this.securityBroker.GetCurrentUserAsync();
             terminologyPoll.UpdatedBy = auditUser?.EntraUserId.ToString() ?? string.Empty;
             terminologyPoll.UpdatedDate = auditDateTimeOffset;
+
+            return terminologyPoll;
+        }
+
+        virtual internal async ValueTask<TerminologyPoll> EnsureCreatedAuditPropertiesIsSameAsStorageAsync(
+            TerminologyPoll terminologyPoll,
+            TerminologyPoll maybeTerminologyPoll)
+        {
+            terminologyPoll.CreatedDate = maybeTerminologyPoll.CreatedDate;
+            terminologyPoll.CreatedBy = maybeTerminologyPoll.CreatedBy;
 
             return terminologyPoll;
         }

@@ -10,7 +10,6 @@ using LHDS.Core.Brokers.Loggings;
 using LHDS.Core.Brokers.Securities;
 using LHDS.Core.Brokers.Storages.Sql;
 using LHDS.Core.Models.Foundations.TerminologyPolls;
-using LHDS.Core.Models.Foundations.TerminologyPolls;
 
 namespace LHDS.Core.Services.Foundations.TerminologyPolls
 {
@@ -61,7 +60,7 @@ namespace LHDS.Core.Services.Foundations.TerminologyPolls
         public ValueTask<TerminologyPoll> ModifyTerminologyPollAsync(TerminologyPoll terminologyPoll) =>
             TryCatch(async () =>
             {
-                TerminologyPoll terminologyPollWithModifyAuditApplied = 
+                TerminologyPoll terminologyPollWithModifyAuditApplied =
                     await ApplyModifyTerminologyPollAsync(terminologyPoll);
 
                 await ValidateTerminologyPollOnModifyAsync(terminologyPollWithModifyAuditApplied);

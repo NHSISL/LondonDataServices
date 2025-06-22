@@ -38,7 +38,7 @@ namespace LHDS.Core.Services.Foundations.TerminologyPolls
                 TerminologyPoll terminologyPollWithAddAuditApplied = await ApplyAddTerminologyPollAsync(terminologyPoll);
                 await ValidateTerminologyPollOnAddAsync(terminologyPollWithAddAuditApplied);
 
-                return await this.storageBroker.InsertTerminologyPollAsync(terminologyPoll);
+                return await this.storageBroker.InsertTerminologyPollAsync(terminologyPollWithAddAuditApplied);
             });
 
         public ValueTask<IQueryable<TerminologyPoll>> RetrieveAllTerminologyPollsAsync() =>
@@ -79,7 +79,7 @@ namespace LHDS.Core.Services.Foundations.TerminologyPolls
                     inputTerminologyPoll: terminologyPoll,
                     storageTerminologyPoll: maybeTerminologyPoll);
 
-                return await this.storageBroker.UpdateTerminologyPollAsync(terminologyPoll);
+                return await this.storageBroker.UpdateTerminologyPollAsync(terminologyPollWithModifyAuditApplied);
             });
 
         public ValueTask<TerminologyPoll> RemoveTerminologyPollByIdAsync(Guid terminologyPollId) =>

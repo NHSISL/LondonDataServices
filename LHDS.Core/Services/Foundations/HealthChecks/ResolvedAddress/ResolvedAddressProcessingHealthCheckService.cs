@@ -21,6 +21,8 @@ namespace LHDS.Core.Services.Foundations.HealthChecks.ResolvedAddress
         private readonly IDateTimeBroker dateTimeBroker;
         private readonly ILoggingBroker loggingBroker;
         private const string CheckName = "processingQueue";
+        private const string CheckDescriptionName = "Processing Queue";
+        private const string ConfigSectionName = "HealthChecks:ResolvedAddress:Processing";
 
         public ResolvedAddressProcessingHealthCheckService(
             IStorageBroker storageBroker,
@@ -36,24 +38,20 @@ namespace LHDS.Core.Services.Foundations.HealthChecks.ResolvedAddress
 
         public async ValueTask<HealthCheckResult> GetHealthStatusAsync()
         {
-            int degradedThresholdMinutes = configuration
-                .GetValue("HealthChecks:ResolvedAddress:Processing:DegradedThreshold", 1440);
-
-            int unHealthyThresholdMinutes = configuration
-                .GetValue("HealthChecks:ResolvedAddress:Processing:UnHealthyThreshold", 2880);
-
+            int degradedThresholdMinutes = configuration.GetValue($"{ConfigSectionName}:DegradedThreshold", 1440);
+            int unHealthyThresholdMinutes = configuration.GetValue($"{ConfigSectionName}:UnHealthyThreshold", 2880);
             DateTimeOffset currentDateTime = await dateTimeBroker.GetCurrentDateTimeOffsetAsync();
             DateTimeOffset degradedThresholdDateTime = currentDateTime.AddMinutes(-1 * degradedThresholdMinutes);
             DateTimeOffset unHealthyThresholdDateTime = currentDateTime.AddMinutes(-1 * unHealthyThresholdMinutes);
-            var ingestionTrackingQuery = await storageBroker.SelectAllResolvedAddressesAsync();
-            var filteredQuery = ingestionTrackingQuery.Where(i => i.IsProcessing);
+            var resolvedAddressQuery = await storageBroker.SelectAllResolvedAddressesAsync();
+            var filteredQuery = resolvedAddressQuery.Where(i => i.IsProcessing);
 
-            int degradedCount = filteredQuery.Count(ingestionTracking =>
-                ingestionTracking.UpdatedDate <= degradedThresholdDateTime &&
-                ingestionTracking.UpdatedDate > unHealthyThresholdDateTime);
+            int degradedCount = filteredQuery.Count(resolvedAddress =>
+                resolvedAddress.UpdatedDate <= degradedThresholdDateTime &&
+                resolvedAddress.UpdatedDate > unHealthyThresholdDateTime);
 
             int unHealthyCount = filteredQuery
-                .Count(ingestionTracking => ingestionTracking.UpdatedDate <= unHealthyThresholdDateTime);
+                .Count(resolvedAddress => resolvedAddress.UpdatedDate <= unHealthyThresholdDateTime);
 
             int totalCount = degradedCount + unHealthyCount;
 
@@ -63,7 +61,7 @@ namespace LHDS.Core.Services.Foundations.HealthChecks.ResolvedAddress
 
             var vals = new Dictionary<string, object>
             {
-                { "description", "Processing Queue" },
+                { "description", CheckDescriptionName },
                 { "stuckInProcessing", totalCount },
                 { "degradedItems", degradedCount},
                 { "unHealthyItems", unHealthyCount},

@@ -15,21 +15,20 @@ using Xunit;
 
 namespace LHDS.Core.Tests.Unit.Services.Foundations.HealthChecks.ResolvedAddresses
 {
-    public partial class ResolvedAdressProcessingHealthCheckServiceTests
+    public partial class ResolvedAddressProcessingHealthCheckServiceTests
     {
         [Fact]
         public async Task ShouldGetHealthStatusAsHealthyAsync()
         {
             // given
-            string CheckName = "processingQueue";
             DateTimeOffset randomDateTimeOffset = DateTimeOffset.UtcNow;
             int randomNumber = GetRandomNumber();
 
             int degradedThresholdMinutes = this.inMemoryConfiguration
-                .GetValue("HealthChecks:ResolvedAddress:Processing:DegradedThreshold", 1440);
+                .GetValue($"{ConfigSectionName}:DegradedThreshold", 1440);
 
             int unHealthyThresholdMinutes = this.inMemoryConfiguration
-                .GetValue("HealthChecks:ResolvedAddress:Processing:UnHealthyThreshold", 2880);
+                .GetValue($"{ConfigSectionName}:UnHealthyThreshold", 2880);
 
             List<ResolvedAddress> healthyRecords = CreateRandomResolvedAddresses(
                 dateTimeOffset: randomDateTimeOffset,
@@ -48,7 +47,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.HealthChecks.ResolvedAddress
 
             var vals = new Dictionary<string, object>
             {
-                { "description", "Processing Queue" },
+                { "description", CheckDescriptionName },
                 { "stuckInProcessing", 0},
                 { "degradedItems", 0},
                 { "unHealthyItems", 0},
@@ -92,15 +91,14 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.HealthChecks.ResolvedAddress
         public async Task ShouldGetHealthStatusAsDegradedAsync()
         {
             // given
-            string CheckName = "processingQueue";
             DateTimeOffset randomDateTimeOffset = DateTimeOffset.UtcNow;
             int randomNumber = GetRandomNumber();
 
             int degradedThresholdMinutes = this.inMemoryConfiguration
-                .GetValue("HealthChecks:ResolvedAddress:Processing:DegradedThreshold", 1440);
+                .GetValue($"{ConfigSectionName}:DegradedThreshold", 1440);
 
             int unHealthyThresholdMinutes = this.inMemoryConfiguration
-                .GetValue("HealthChecks:ResolvedAddress:Processing:UnHealthyThreshold", 2880);
+                .GetValue($"{ConfigSectionName}:UnHealthyThreshold", 2880);
 
             List<ResolvedAddress> degradedRecords = CreateRandomResolvedAddresses(
                 dateTimeOffset: randomDateTimeOffset.AddMinutes(-degradedThresholdMinutes).AddSeconds(-1),
@@ -119,7 +117,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.HealthChecks.ResolvedAddress
 
             var vals = new Dictionary<string, object>
             {
-                { "description", "Processing Queue" },
+                { "description", CheckDescriptionName },
                 { "stuckInProcessing", randomNumber},
                 { "degradedItems", randomNumber},
                 { "unHealthyItems", 0},
@@ -163,15 +161,14 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.HealthChecks.ResolvedAddress
         public async Task ShouldGetHealthStatusAsUnHealthyAsync()
         {
             // given
-            string CheckName = "processingQueue";
             DateTimeOffset randomDateTimeOffset = DateTimeOffset.UtcNow;
             int randomNumber = GetRandomNumber();
 
             int degradedThresholdMinutes = this.inMemoryConfiguration
-                .GetValue("HealthChecks:ResolvedAddress:Processing:DegradedThreshold", 1440);
+                .GetValue($"{ConfigSectionName}:DegradedThreshold", 1440);
 
             int unHealthyThresholdMinutes = this.inMemoryConfiguration
-                .GetValue("HealthChecks:ResolvedAddress:Processing:UnHealthyThreshold", 2880);
+                .GetValue($"{ConfigSectionName}:UnHealthyThreshold", 2880);
 
             List<ResolvedAddress> unHealthyRecords = CreateRandomResolvedAddresses(
                 dateTimeOffset: randomDateTimeOffset.AddMinutes(-unHealthyThresholdMinutes).AddSeconds(-1),
@@ -190,7 +187,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.HealthChecks.ResolvedAddress
 
             var vals = new Dictionary<string, object>
             {
-                { "description", "Processing Queue" },
+                { "description", CheckDescriptionName },
                 { "stuckInProcessing", randomNumber},
                 { "degradedItems", 0},
                 { "unHealthyItems", randomNumber},
@@ -235,14 +232,13 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.HealthChecks.ResolvedAddress
         public async Task ShouldGetHealthStatusAsUnHealthyWithMixedItemsAsync()
         {
             // given
-            string CheckName = "processingQueue";
             DateTimeOffset randomDateTimeOffset = DateTimeOffset.UtcNow;
 
             int degradedThresholdMinutes = this.inMemoryConfiguration
-                .GetValue("HealthChecks:ResolvedAddress:Processing:DegradedThreshold", 1440);
+                .GetValue($"{ConfigSectionName}:DegradedThreshold", 1440);
 
             int unHealthyThresholdMinutes = this.inMemoryConfiguration
-                .GetValue("HealthChecks:ResolvedAddress:Processing:UnHealthyThreshold", 2880);
+                .GetValue($"{ConfigSectionName}:UnHealthyThreshold", 2880);
 
             List<ResolvedAddress> healthyRecords = CreateRandomResolvedAddresses(
                 dateTimeOffset: randomDateTimeOffset,
@@ -274,7 +270,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.HealthChecks.ResolvedAddress
 
             var vals = new Dictionary<string, object>
             {
-                { "description", "Processing Queue" },
+                { "description", CheckDescriptionName },
                 { "stuckInProcessing", unDecryptedCount},
                 { "degradedItems", degradedRecords.Count},
                 { "unHealthyItems", unhealthyRecords.Count},

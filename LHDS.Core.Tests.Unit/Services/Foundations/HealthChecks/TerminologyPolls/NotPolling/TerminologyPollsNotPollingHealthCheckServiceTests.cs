@@ -1,8 +1,4 @@
-// ---------------------------------------------------------
-// Copyright (c) North East London ICB. All rights reserved.
-// ---------------------------------------------------------
-
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
@@ -11,37 +7,38 @@ using KellermanSoftware.CompareNetObjects;
 using LHDS.Core.Brokers.DateTimes;
 using LHDS.Core.Brokers.Loggings;
 using LHDS.Core.Brokers.Storages.Sql;
-using LHDS.Core.Models.Foundations.ResolvedAddresses;
-using LHDS.Core.Services.Foundations.HealthChecks.ResolvedAddress;
+using LHDS.Core.Models.Foundations.TerminologyPolls;
+using LHDS.Core.Services.Foundations.HealthChecks.TerminologyPolls;
 using Microsoft.Data.SqlClient;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
 using Moq;
 using Tynamix.ObjectFiller;
 using Xeptions;
-using Xunit;
 
-namespace LHDS.Core.Tests.Unit.Services.Foundations.HealthChecks.ResolvedAddresses
+namespace LHDS.Core.Tests.Unit.Services.Foundations.HealthChecks.TerminologyPolls.NotPolling
 {
-    public partial class ResolvedAdressFailedToProcessHealthCheckServiceTests
+    public partial class TerminologyPollsNotPollingHealthCheckServiceTests
     {
         private readonly Mock<IStorageBroker> storageBrokerMock;
         private readonly IConfiguration inMemoryConfiguration;
         private readonly Mock<IDateTimeBroker> dateTimeBrokerMock;
         private readonly Mock<ILoggingBroker> loggingBrokerMock;
-        private readonly IResolvedAddressHealthItemService resolvedAddressHealthItemService;
+        private readonly ITerminologyPollsHealthItemService terminologyPollsHealthItemService;
         private readonly ICompareLogic compareLogic;
+        private const string CheckName = "terminologyPolls";
+        private const string CheckNameDescription = "Terminology Polls";
+        private const string ConfigSectionName = "HealthChecks:TerminologyPolls:NotPolling";
 
-        public ResolvedAdressFailedToProcessHealthCheckServiceTests()
+        public TerminologyPollsNotPollingHealthCheckServiceTests()
         {
             storageBrokerMock = new Mock<IStorageBroker>();
             dateTimeBrokerMock = new Mock<IDateTimeBroker>();
             loggingBrokerMock = new Mock<ILoggingBroker>();
 
             var appSettingsStub = new Dictionary<string, string> {
-                {"HealthChecks:ResolvedAddress:Processing:DegradedThreshold", "1440"},
-                {"HealthChecks:ResolvedAddress:Processing:UnHealthyThreshold", "2880"},
-                {"HealthChecks:ResolvedAddress:Processing:RetryCount", "3"},
+                {$"{ConfigSectionName}:DegradedThreshold", "1440"},
+                {$"{ConfigSectionName}:UnHealthyThreshold", "2880"},
             };
 
             this.inMemoryConfiguration = new ConfigurationBuilder()
@@ -50,7 +47,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.HealthChecks.ResolvedAddress
 
             compareLogic = new CompareLogic();
 
-            this.resolvedAddressHealthItemService = new ResolvedAddressFailedToProcessHealthCheckService(
+            this.terminologyPollsHealthItemService = new TerminologyPollsNotPollingHealthCheckService(
                 storageBroker: storageBrokerMock.Object,
                 configuration: inMemoryConfiguration,
                 dateTimeBroker: dateTimeBrokerMock.Object,
@@ -65,62 +62,36 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.HealthChecks.ResolvedAddress
                 actualHealthCheckResult => compareLogic.Compare(expectedHealthCheckResult, actualHealthCheckResult)
                     .AreEqual;
 
-        private static string GetRandomString() =>
-            new MnemonicString(wordCount: GetRandomNumber()).GetValue();
-
-        private static string GetRandomStringWithLengthOf(int length)
-        {
-            string result = new MnemonicString(wordCount: 1, wordMinLength: length, wordMaxLength: length).GetValue();
-
-            return result.Length > length ? result.Substring(0, length) : result;
-        }
-
-        public static TheoryData<int> MinutesBeforeOrAfter()
-        {
-            int randomNumber = GetRandomNumber();
-            int randomNegativeNumber = GetRandomNegativeNumber();
-
-            return new TheoryData<int>
-            {
-                randomNumber,
-                randomNegativeNumber
-            };
-        }
-
         private static SqlException GetSqlException() =>
             (SqlException)RuntimeHelpers.GetUninitializedObject(typeof(SqlException));
 
         private static int GetRandomNumber() =>
             new IntRange(min: 2, max: 10).GetValue();
 
-        private static int GetRandomNegativeNumber() =>
-            -1 * new IntRange(min: 2, max: 10).GetValue();
-
         private static DateTimeOffset GetRandomDateTimeOffset() =>
             new DateTimeRange(earliestDate: new DateTime()).GetValue();
 
-        private static List<ResolvedAddress> CreateRandomResolvedAddresses(
+        private static List<TerminologyPoll> CreateRandomTerminologyPolls(
             DateTimeOffset dateTimeOffset,
-            int retryCount,
             int count)
         {
-            return CreateResolvedAddressFiller(dateTimeOffset, retryCount)
+            return CreateTerminologyPollsFiller(dateTimeOffset)
                 .Create(count)
                     .ToList();
         }
 
-        private static Filler<ResolvedAddress> CreateResolvedAddressFiller(
-            DateTimeOffset dateTimeOffset,
-            int retryCount)
+        private static Filler<TerminologyPoll> CreateTerminologyPollsFiller(
+            DateTimeOffset lastPollDateTime)
         {
+            DateTimeOffset dateTimeOffset = DateTimeOffset.UtcNow;
             string user = Guid.NewGuid().ToString();
-            var filler = new Filler<ResolvedAddress>();
+            var filler = new Filler<TerminologyPoll>();
 
             filler.Setup()
                 .OnType<DateTimeOffset>().Use(dateTimeOffset)
-                .OnProperty(resolvedAddress => resolvedAddress.RetryCount).Use(retryCount)
-                .OnProperty(resolvedAddress => resolvedAddress.CreatedBy).Use(user)
-                .OnProperty(resolvedAddress => resolvedAddress.UpdatedBy).Use(user);
+                .OnProperty(terminologyPolls => terminologyPolls.LastPoll).Use(lastPollDateTime)
+                .OnProperty(terminologyPolls => terminologyPolls.CreatedBy).Use(user)
+                .OnProperty(terminologyPolls => terminologyPolls.UpdatedBy).Use(user);
 
             return filler;
         }

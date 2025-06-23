@@ -38,7 +38,7 @@ namespace LHDS.Core.Services.Foundations.TerminologyPolls
                 TerminologyPoll terminologyPollWithAddAuditApplied = await ApplyAddTerminologyPollAsync(terminologyPoll);
                 await ValidateTerminologyPollOnAddAsync(terminologyPollWithAddAuditApplied);
 
-                return await this.storageBroker.InsertTerminologyPollAsync(terminologyPoll);
+                return await this.storageBroker.InsertTerminologyPollAsync(terminologyPollWithAddAuditApplied);
             });
 
         public ValueTask<IQueryable<TerminologyPoll>> RetrieveAllTerminologyPollsAsync() =>
@@ -60,7 +60,7 @@ namespace LHDS.Core.Services.Foundations.TerminologyPolls
         public ValueTask<TerminologyPoll> ModifyTerminologyPollAsync(TerminologyPoll terminologyPoll) =>
             TryCatch(async () =>
             {
-                TerminologyPoll terminologyPollWithModifyAuditApplied = 
+                TerminologyPoll terminologyPollWithModifyAuditApplied =
                     await ApplyModifyTerminologyPollAsync(terminologyPoll);
 
                 await ValidateTerminologyPollOnModifyAsync(terminologyPollWithModifyAuditApplied);
@@ -70,11 +70,16 @@ namespace LHDS.Core.Services.Foundations.TerminologyPolls
 
                 ValidateStorageTerminologyPoll(maybeTerminologyPoll, terminologyPoll.Id);
 
+                TerminologyPoll terminologyPollWithModifyAuditAppliedEnsured =
+                    await EnsureCreatedAuditPropertiesIsSameAsStorageAsync(
+                        terminologyPollWithModifyAuditApplied,
+                        maybeTerminologyPoll);
+
                 ValidateAgainstStorageTerminologyPollOnModify(
                     inputTerminologyPoll: terminologyPoll,
                     storageTerminologyPoll: maybeTerminologyPoll);
 
-                return await this.storageBroker.UpdateTerminologyPollAsync(terminologyPoll);
+                return await this.storageBroker.UpdateTerminologyPollAsync(terminologyPollWithModifyAuditApplied);
             });
 
         public ValueTask<TerminologyPoll> RemoveTerminologyPollByIdAsync(Guid terminologyPollId) =>
@@ -131,6 +136,16 @@ namespace LHDS.Core.Services.Foundations.TerminologyPolls
             var auditUser = await this.securityBroker.GetCurrentUserAsync();
             terminologyPoll.UpdatedBy = auditUser?.EntraUserId.ToString() ?? string.Empty;
             terminologyPoll.UpdatedDate = auditDateTimeOffset;
+
+            return terminologyPoll;
+        }
+
+        virtual internal async ValueTask<TerminologyPoll> EnsureCreatedAuditPropertiesIsSameAsStorageAsync(
+            TerminologyPoll terminologyPoll,
+            TerminologyPoll maybeTerminologyPoll)
+        {
+            terminologyPoll.CreatedDate = maybeTerminologyPoll.CreatedDate;
+            terminologyPoll.CreatedBy = maybeTerminologyPoll.CreatedBy;
 
             return terminologyPoll;
         }

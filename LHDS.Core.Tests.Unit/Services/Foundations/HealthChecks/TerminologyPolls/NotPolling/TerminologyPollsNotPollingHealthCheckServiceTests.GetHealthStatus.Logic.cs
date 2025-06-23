@@ -1,42 +1,33 @@
-// ---------------------------------------------------------
-// Copyright (c) North East London ICB. All rights reserved.
-// ---------------------------------------------------------
-
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using FluentAssertions;
-using LHDS.Core.Models.Foundations.ResolvedAddresses;
+using LHDS.Core.Models.Foundations.TerminologyPolls;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
 using Moq;
 using Xunit;
 
-namespace LHDS.Core.Tests.Unit.Services.Foundations.HealthChecks.ResolvedAddresses
+namespace LHDS.Core.Tests.Unit.Services.Foundations.HealthChecks.TerminologyPolls.NotPolling
 {
-    public partial class ResolvedAdressFailedToProcessHealthCheckServiceTests
+    public partial class TerminologyPollsNotPollingHealthCheckServiceTests
     {
         [Fact]
         public async Task ShouldGetHealthStatusAsHealthyAsync()
         {
             // given
-            string CheckName = "failedToProcess";
             DateTimeOffset randomDateTimeOffset = DateTimeOffset.UtcNow;
             int randomNumber = GetRandomNumber();
 
-            int retryCount = this.inMemoryConfiguration
-                .GetValue("HealthChecks:ResolvedAddress:FailedToProcess:RetryCount", 4);
-
             int degradedThresholdMinutes = this.inMemoryConfiguration
-                .GetValue("HealthChecks:ResolvedAddress:FailedToProcess:DegradedThreshold", 1440);
+                .GetValue($"{ConfigSectionName}:DegradedThreshold", 1440);
 
             int unHealthyThresholdMinutes = this.inMemoryConfiguration
-                .GetValue("HealthChecks:ResolvedAddress:FailedToProcess:UnHealthyThreshold", 2880);
+                .GetValue($"{ConfigSectionName}:UnHealthyThreshold", 2880);
 
-            List<ResolvedAddress> healthyRecords = CreateRandomResolvedAddresses(
+            List<TerminologyPoll> healthyRecords = CreateRandomTerminologyPolls(
                 dateTimeOffset: randomDateTimeOffset,
-                retryCount: retryCount,
                 count: randomNumber);
 
             this.dateTimeBrokerMock.Setup(broker =>
@@ -44,15 +35,15 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.HealthChecks.ResolvedAddress
                     .ReturnsAsync(randomDateTimeOffset);
 
             this.storageBrokerMock.Setup(broker =>
-                broker.SelectAllResolvedAddressesAsync())
+                broker.SelectAllTerminologyPollsAsync())
                     .ReturnsAsync(healthyRecords.AsQueryable());
 
-            string message = $"{healthyRecords.Count} files have not been processed. Please check logs and function status.";
+            string message = "Nothing to poll. All up to date.";
 
             var vals = new Dictionary<string, object>
             {
-                { "description", "Failed To Process" },
-                { "failedToProcess", healthyRecords.Count},
+                { "description", CheckNameDescription },
+                { "notPolling", 0},
                 { "degradedItems", 0},
                 { "unHealthyItems", 0},
                 { "degradedThresholdMinutes", degradedThresholdMinutes.ToString() },
@@ -68,7 +59,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.HealthChecks.ResolvedAddress
 
             // when
             HealthCheckResult actualHealthCheckResult =
-                await this.resolvedAddressHealthItemService.GetHealthStatusAsync();
+                await this.terminologyPollsHealthItemService.GetHealthStatusAsync();
 
             // then
             actualHealthCheckResult.Should().BeEquivalentTo(expectedHealthCheckResult, options =>
@@ -83,7 +74,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.HealthChecks.ResolvedAddress
                     Times.Once);
 
             this.storageBrokerMock.Verify(broker =>
-                broker.SelectAllResolvedAddressesAsync(),
+                broker.SelectAllTerminologyPollsAsync(),
                     Times.Once);
 
             this.dateTimeBrokerMock.VerifyNoOtherCalls();
@@ -95,22 +86,17 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.HealthChecks.ResolvedAddress
         public async Task ShouldGetHealthStatusAsDegradedAsync()
         {
             // given
-            string CheckName = "failedToProcess";
             DateTimeOffset randomDateTimeOffset = DateTimeOffset.UtcNow;
             int randomNumber = GetRandomNumber();
 
-            int retryCount = this.inMemoryConfiguration
-                 .GetValue("HealthChecks:ResolvedAddress:FailedToProcess:RetryCount", 4);
-
             int degradedThresholdMinutes = this.inMemoryConfiguration
-                .GetValue("HealthChecks:ResolvedAddress:FailedToProcess:DegradedThreshold", 1440);
+                .GetValue($"{ConfigSectionName}:DegradedThreshold", 1440);
 
             int unHealthyThresholdMinutes = this.inMemoryConfiguration
-                .GetValue("HealthChecks:ResolvedAddress:FailedToProcess:UnHealthyThreshold", 2880);
+                .GetValue($"{ConfigSectionName}:UnHealthyThreshold", 2880);
 
-            List<ResolvedAddress> degradedRecords = CreateRandomResolvedAddresses(
+            List<TerminologyPoll> degradedRecords = CreateRandomTerminologyPolls(
                 dateTimeOffset: randomDateTimeOffset.AddMinutes(-degradedThresholdMinutes).AddSeconds(-1),
-                retryCount: retryCount,
                 count: randomNumber);
 
             this.dateTimeBrokerMock.Setup(broker =>
@@ -118,15 +104,15 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.HealthChecks.ResolvedAddress
                     .ReturnsAsync(randomDateTimeOffset);
 
             this.storageBrokerMock.Setup(broker =>
-                broker.SelectAllResolvedAddressesAsync())
+                broker.SelectAllTerminologyPollsAsync())
                     .ReturnsAsync(degradedRecords.AsQueryable());
 
-            string message = $"{randomNumber} files have not been processed. Please check logs and function status.";
+            string message = $"{randomNumber} not polling. Please check logs and function status.";
 
             var vals = new Dictionary<string, object>
             {
-                { "description", "Failed To Process" },
-                { "failedToProcess", randomNumber},
+                { "description", CheckNameDescription },
+                { "notPolling", randomNumber},
                 { "degradedItems", randomNumber},
                 { "unHealthyItems", 0},
                 { "degradedThresholdMinutes", degradedThresholdMinutes.ToString() },
@@ -142,7 +128,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.HealthChecks.ResolvedAddress
 
             // when
             HealthCheckResult actualHealthCheckResult =
-                await this.resolvedAddressHealthItemService.GetHealthStatusAsync();
+                await this.terminologyPollsHealthItemService.GetHealthStatusAsync();
 
             // then
             actualHealthCheckResult.Should().BeEquivalentTo(expectedHealthCheckResult, options =>
@@ -157,7 +143,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.HealthChecks.ResolvedAddress
                     Times.Once);
 
             this.storageBrokerMock.Verify(broker =>
-                broker.SelectAllResolvedAddressesAsync(),
+                broker.SelectAllTerminologyPollsAsync(),
                     Times.Once);
 
             this.dateTimeBrokerMock.VerifyNoOtherCalls();
@@ -169,22 +155,17 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.HealthChecks.ResolvedAddress
         public async Task ShouldGetHealthStatusAsUnHealthyAsync()
         {
             // given
-            string CheckName = "failedToProcess";
             DateTimeOffset randomDateTimeOffset = DateTimeOffset.UtcNow;
             int randomNumber = GetRandomNumber();
 
-            int retryCount = this.inMemoryConfiguration
-                 .GetValue("HealthChecks:ResolvedAddress:FailedToProcess:RetryCount", 4);
-
             int degradedThresholdMinutes = this.inMemoryConfiguration
-                .GetValue("HealthChecks:ResolvedAddress:FailedToProcess:DegradedThreshold", 1440);
+                .GetValue($"{ConfigSectionName}:DegradedThreshold", 1440);
 
             int unHealthyThresholdMinutes = this.inMemoryConfiguration
-                .GetValue("HealthChecks:ResolvedAddress:FailedToProcess:UnHealthyThreshold", 2880);
+                .GetValue($"{ConfigSectionName}:UnHealthyThreshold", 2880);
 
-            List<ResolvedAddress> unHealthyRecords = CreateRandomResolvedAddresses(
+            List<TerminologyPoll> unHealthyRecords = CreateRandomTerminologyPolls(
                 dateTimeOffset: randomDateTimeOffset.AddMinutes(-unHealthyThresholdMinutes).AddSeconds(-1),
-                retryCount: retryCount,
                 count: randomNumber);
 
             this.dateTimeBrokerMock.Setup(broker =>
@@ -192,15 +173,15 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.HealthChecks.ResolvedAddress
                     .ReturnsAsync(randomDateTimeOffset);
 
             this.storageBrokerMock.Setup(broker =>
-                broker.SelectAllResolvedAddressesAsync())
+                broker.SelectAllTerminologyPollsAsync())
                     .ReturnsAsync(unHealthyRecords.AsQueryable());
 
-            string message = $"{randomNumber} files have not been processed. Please check logs and function status.";
+            string message = $"{randomNumber} not polling. Please check logs and function status.";
 
             var vals = new Dictionary<string, object>
             {
-                { "description", "Failed To Process" },
-                { "failedToProcess", randomNumber},
+                { "description", CheckNameDescription },
+                { "notPolling", randomNumber},
                 { "degradedItems", 0},
                 { "unHealthyItems", randomNumber},
                 { "degradedThresholdMinutes", degradedThresholdMinutes.ToString() },
@@ -216,7 +197,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.HealthChecks.ResolvedAddress
 
             // when
             HealthCheckResult actualHealthCheckResult =
-                await this.resolvedAddressHealthItemService.GetHealthStatusAsync();
+                await this.terminologyPollsHealthItemService.GetHealthStatusAsync();
 
             // then
             actualHealthCheckResult.Should().BeEquivalentTo(expectedHealthCheckResult, options =>
@@ -231,7 +212,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.HealthChecks.ResolvedAddress
                     Times.Once);
 
             this.storageBrokerMock.Verify(broker =>
-                broker.SelectAllResolvedAddressesAsync(),
+                broker.SelectAllTerminologyPollsAsync(),
                     Times.Once);
 
             this.dateTimeBrokerMock.VerifyNoOtherCalls();
@@ -239,38 +220,32 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.HealthChecks.ResolvedAddress
             this.loggingBrokerMock.VerifyNoOtherCalls();
         }
 
+
         [Fact]
         public async Task ShouldGetHealthStatusAsUnHealthyWithMixedItemsAsync()
         {
             // given
-            string CheckName = "failedToProcess";
             DateTimeOffset randomDateTimeOffset = DateTimeOffset.UtcNow;
 
-            int retryCount = this.inMemoryConfiguration
-                 .GetValue("HealthChecks:ResolvedAddress:FailedToProcess:RetryCount", 4);
-
             int degradedThresholdMinutes = this.inMemoryConfiguration
-                .GetValue("HealthChecks:ResolvedAddress:FailedToProcess:DegradedThreshold", 1440);
+                .GetValue($"{ConfigSectionName}:DegradedThreshold", 1440);
 
             int unHealthyThresholdMinutes = this.inMemoryConfiguration
-                .GetValue("HealthChecks:ResolvedAddress:FailedToProcess:UnHealthyThreshold", 2880);
+                .GetValue($"{ConfigSectionName}:UnHealthyThreshold", 2880);
 
-            List<ResolvedAddress> healthyRecords = CreateRandomResolvedAddresses(
+            List<TerminologyPoll> healthyRecords = CreateRandomTerminologyPolls(
                 dateTimeOffset: randomDateTimeOffset,
-                retryCount: retryCount,
                 count: GetRandomNumber());
 
-            List<ResolvedAddress> degradedRecords = CreateRandomResolvedAddresses(
+            List<TerminologyPoll> degradedRecords = CreateRandomTerminologyPolls(
                 dateTimeOffset: randomDateTimeOffset.AddMinutes(-degradedThresholdMinutes).AddSeconds(-1),
-                retryCount: retryCount,
                 count: GetRandomNumber());
 
-            List<ResolvedAddress> unhealthyRecords = CreateRandomResolvedAddresses(
+            List<TerminologyPoll> unhealthyRecords = CreateRandomTerminologyPolls(
                 dateTimeOffset: randomDateTimeOffset.AddMinutes(-unHealthyThresholdMinutes).AddSeconds(-1),
-                retryCount: retryCount,
                 count: GetRandomNumber());
 
-            List<ResolvedAddress> allRecords = [.. healthyRecords, .. degradedRecords, .. unhealthyRecords];
+            List<TerminologyPoll> allRecords = [.. healthyRecords, .. degradedRecords, .. unhealthyRecords];
             int unDecryptedCount = degradedRecords.Count + unhealthyRecords.Count;
 
             this.dateTimeBrokerMock.Setup(broker =>
@@ -278,15 +253,15 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.HealthChecks.ResolvedAddress
                     .ReturnsAsync(randomDateTimeOffset);
 
             this.storageBrokerMock.Setup(broker =>
-                broker.SelectAllResolvedAddressesAsync())
+                broker.SelectAllTerminologyPollsAsync())
                     .ReturnsAsync(allRecords.AsQueryable());
 
-            string message = $"{allRecords.Count} files have not been processed. Please check logs and function status.";
+            string message = $"{unDecryptedCount} not polling. Please check logs and function status.";
 
             var vals = new Dictionary<string, object>
             {
-                { "description", "Failed To Process" },
-                { "failedToProcess", allRecords.Count},
+                { "description", CheckNameDescription },
+                { "notPolling", unDecryptedCount},
                 { "degradedItems", degradedRecords.Count},
                 { "unHealthyItems", unhealthyRecords.Count},
                 { "degradedThresholdMinutes", degradedThresholdMinutes.ToString() },
@@ -302,7 +277,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.HealthChecks.ResolvedAddress
 
             // when
             HealthCheckResult actualHealthCheckResult =
-                await this.resolvedAddressHealthItemService.GetHealthStatusAsync();
+                await this.terminologyPollsHealthItemService.GetHealthStatusAsync();
 
             // then
             actualHealthCheckResult.Should().BeEquivalentTo(expectedHealthCheckResult, options =>
@@ -317,7 +292,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.HealthChecks.ResolvedAddress
                     Times.Once);
 
             this.storageBrokerMock.Verify(broker =>
-                broker.SelectAllResolvedAddressesAsync(),
+                broker.SelectAllTerminologyPollsAsync(),
                     Times.Once);
 
             this.dateTimeBrokerMock.VerifyNoOtherCalls();

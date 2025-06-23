@@ -179,7 +179,7 @@ namespace LHDS.Core.Services.Orchestrations.Tpp
         {
             var tppLandingOrchestrationValidationException =
                 new TppLandingOrchestrationValidationException(
-                    message: "TPP landing orchestration validation errors occured, please try again.",
+                    message: "TPP landing orchestration validation errors occurred, please try again.",
                     innerException: exception);
 
             await this.loggingBroker.LogErrorAsync(tppLandingOrchestrationValidationException);

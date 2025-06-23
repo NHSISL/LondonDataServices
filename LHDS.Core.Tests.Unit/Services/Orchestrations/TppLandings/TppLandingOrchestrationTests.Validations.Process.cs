@@ -41,7 +41,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.TppLandings
 
             var expectedTppOrchestrationValidationException =
                 new TppLandingOrchestrationValidationException(
-                    message: "TPP landing orchestration validation errors occured, please try again.",
+                    message: "TPP landing orchestration validation errors occurred, please try again.",
                     innerException: invalidArgumentException);
 
             // when

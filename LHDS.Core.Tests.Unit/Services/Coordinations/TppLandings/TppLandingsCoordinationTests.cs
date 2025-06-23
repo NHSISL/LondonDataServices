@@ -64,7 +64,7 @@ namespace LHDS.Core.Tests.Unit.Services.Coordinations.TppLandings
             return new TheoryData<Xeption>
             {
                 new TppLandingOrchestrationValidationException(
-                    message: "TPP landing orchestration validation errors occured, please try again.",
+                    message: "TPP landing orchestration validation errors occurred, please try again.",
                     innerException),
 
                 new TppLandingOrchestrationDependencyValidationException(
@@ -73,7 +73,7 @@ namespace LHDS.Core.Tests.Unit.Services.Coordinations.TppLandings
                     innerException),
 
                 new IngressOrchestrationValidationException(
-                    message: "Ingres orchestration validation errors occured, please try again.",
+                    message: "Ingres orchestration validation errors occurred, please try again.",
                     innerException),
 
                 new IngressOrchestrationDependencyValidationException(

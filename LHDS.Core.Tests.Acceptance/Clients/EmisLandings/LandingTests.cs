@@ -222,12 +222,14 @@ namespace LHDS.Core.Tests.Acceptance.Clients.EmisLandings
 
         private static string CreateRandomFilePath(Guid subscriberAgreementId, string fileName)
         {
+            string fileDate = fileName.Split('_')[4];
+
             return Path.Combine(
                 "emisnightingale-data-preprod-provider-extracts",
                 "IM1",
                 "sftp",
                 $"{subscriberAgreementId}",
-                $"{DateTime.Now.ToString("yyyyMMdd")}000000",
+                $"{fileDate}",
                 $"{fileName}");
         }
 

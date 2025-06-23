@@ -500,7 +500,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.EmisLandings
             string dataSetName = randomDataSetSpecification?.DataSet?.DataSetName ?? string.Empty;
             string dataSetVersion = randomDataSetSpecification?.OurSpecificationVersion ?? string.Empty;
             string extractGroup = inputSubscriberCredential.Id.ToString();
-            string extractTime = $"{splitFileName[5]}000000";
+            string extractTime = splitFileName[6].Split('_')[4];
 
             string baseFolder =
                 $"/{landingConfiguration.DecryptedFolder}" +

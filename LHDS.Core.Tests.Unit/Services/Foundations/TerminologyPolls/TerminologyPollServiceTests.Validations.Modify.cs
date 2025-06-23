@@ -494,6 +494,11 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.TerminologyPolls
                 broker.SelectTerminologyPollByIdAsync(invalidTerminologyPoll.Id))
                     .ReturnsAsync(storageTerminologyPoll);
 
+            terminologyPollServiceMock.Setup(service =>
+                service.EnsureCreatedAuditPropertiesIsSameAsStorageAsync(
+                    invalidTerminologyPoll, storageTerminologyPoll))
+                        .ReturnsAsync(invalidTerminologyPoll);
+
             // when
             ValueTask<TerminologyPoll> modifyTerminologyPollTask =
                 terminologyPollServiceMock.Object.ModifyTerminologyPollAsync(invalidTerminologyPoll);
@@ -521,6 +526,11 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.TerminologyPolls
             this.storageBrokerMock.Verify(broker =>
                 broker.SelectTerminologyPollByIdAsync(invalidTerminologyPoll.Id),
                     Times.Once);
+
+            terminologyPollServiceMock.Verify(service =>
+                service.EnsureCreatedAuditPropertiesIsSameAsStorageAsync(
+                    invalidTerminologyPoll, storageTerminologyPoll),
+                        Times.Once());
 
             this.loggingBrokerMock.Verify(broker =>
                broker.LogErrorAsync(It.Is(SameExceptionAs(
@@ -587,6 +597,16 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.TerminologyPolls
                 broker.SelectTerminologyPollByIdAsync(invalidTerminologyPoll.Id))
                     .ReturnsAsync(storageTerminologyPoll);
 
+            terminologyPollServiceMock.Setup(service =>
+                service.EnsureCreatedAuditPropertiesIsSameAsStorageAsync(
+                    invalidTerminologyPoll, storageTerminologyPoll))
+                        .ReturnsAsync(invalidTerminologyPoll);
+
+            terminologyPollServiceMock.Setup(service =>
+                service.EnsureCreatedAuditPropertiesIsSameAsStorageAsync(
+                    invalidTerminologyPoll, storageTerminologyPoll))
+                        .ReturnsAsync(invalidTerminologyPoll);
+
             // when
             ValueTask<TerminologyPoll> modifyTerminologyPollTask =
                 terminologyPollServiceMock.Object.ModifyTerminologyPollAsync(invalidTerminologyPoll);
@@ -613,6 +633,11 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.TerminologyPolls
             this.storageBrokerMock.Verify(broker =>
                 broker.SelectTerminologyPollByIdAsync(invalidTerminologyPoll.Id),
                     Times.Once);
+
+            terminologyPollServiceMock.Verify(service =>
+                service.EnsureCreatedAuditPropertiesIsSameAsStorageAsync(
+                    invalidTerminologyPoll, storageTerminologyPoll),
+                        Times.Once());
 
             this.loggingBrokerMock.Verify(broker =>
                broker.LogErrorAsync(It.Is(SameExceptionAs(
@@ -678,6 +703,11 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.TerminologyPolls
                 broker.SelectTerminologyPollByIdAsync(invalidTerminologyPoll.Id))
                     .ReturnsAsync(storageTerminologyPoll);
 
+            terminologyPollServiceMock.Setup(service =>
+                service.EnsureCreatedAuditPropertiesIsSameAsStorageAsync(
+                    invalidTerminologyPoll, storageTerminologyPoll))
+                        .ReturnsAsync(invalidTerminologyPoll);
+
             // when
             ValueTask<TerminologyPoll> modifyTerminologyPollTask =
                 terminologyPollServiceMock.Object.ModifyTerminologyPollAsync(invalidTerminologyPoll);
@@ -698,14 +728,19 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.TerminologyPolls
                 broker.GetCurrentUserAsync(),
                     Times.Once);
 
+            this.storageBrokerMock.Verify(broker =>
+                broker.SelectTerminologyPollByIdAsync(invalidTerminologyPoll.Id),
+                    Times.Once);
+
+            terminologyPollServiceMock.Verify(service =>
+                service.EnsureCreatedAuditPropertiesIsSameAsStorageAsync(
+                    invalidTerminologyPoll, storageTerminologyPoll),
+                        Times.Once());
+
             this.loggingBrokerMock.Verify(broker =>
                 broker.LogErrorAsync(It.Is(SameExceptionAs(
                     expectedTerminologyPollValidationException))),
                         Times.Once);
-
-            this.storageBrokerMock.Verify(broker =>
-                broker.SelectTerminologyPollByIdAsync(invalidTerminologyPoll.Id),
-                    Times.Once);
 
             terminologyPollServiceMock.VerifyNoOtherCalls();
             this.dateTimeBrokerMock.VerifyNoOtherCalls();

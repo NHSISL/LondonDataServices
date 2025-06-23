@@ -5,24 +5,19 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Linq.Expressions;
-using System.Runtime.CompilerServices;
 using KellermanSoftware.CompareNetObjects;
 using LHDS.Core.Brokers.DateTimes;
 using LHDS.Core.Brokers.Loggings;
 using LHDS.Core.Brokers.Storages.Sql;
 using LHDS.Core.Models.Foundations.ResolvedAddresses;
 using LHDS.Core.Services.Foundations.HealthChecks.ResolvedAddress;
-using Microsoft.Data.SqlClient;
 using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.Diagnostics.HealthChecks;
 using Moq;
 using Tynamix.ObjectFiller;
-using Xeptions;
 
 namespace LHDS.Core.Tests.Unit.Services.Foundations.HealthChecks.ResolvedAddresses
 {
-    public partial class ResolvedAdressProcessingHealthCheckServiceTests
+    public partial class ResolvedAddressProcessingHealthCheckServiceTests
     {
         private readonly Mock<IStorageBroker> storageBrokerMock;
         private readonly IConfiguration inMemoryConfiguration;
@@ -30,16 +25,19 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.HealthChecks.ResolvedAddress
         private readonly Mock<ILoggingBroker> loggingBrokerMock;
         private readonly IResolvedAddressHealthItemService resolvedAddressHealthItemService;
         private readonly ICompareLogic compareLogic;
+        private const string CheckName = "processingQueue";
+        private const string CheckDescriptionName = "Processing Queue";
+        private const string ConfigSectionName = "HealthChecks:ResolvedAddress:Processing";
 
-        public ResolvedAdressProcessingHealthCheckServiceTests()
+        public ResolvedAddressProcessingHealthCheckServiceTests()
         {
             storageBrokerMock = new Mock<IStorageBroker>();
             dateTimeBrokerMock = new Mock<IDateTimeBroker>();
             loggingBrokerMock = new Mock<ILoggingBroker>();
 
             var appSettingsStub = new Dictionary<string, string> {
-                {"HealthChecks:ResolvedAddress:Processing:DegradedThreshold", "1440"},
-                {"HealthChecks:ResolvedAddress:Processing:UnHealthyThreshold", "2880"},
+                {$"{ConfigSectionName}:DegradedThreshold", "1440"},
+                {$"{ConfigSectionName}:UnHealthyThreshold", "2880"},
             };
 
             this.inMemoryConfiguration = new ConfigurationBuilder()
@@ -55,22 +53,8 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.HealthChecks.ResolvedAddress
                 loggingBroker: loggingBrokerMock.Object);
         }
 
-        private static Expression<Func<Xeption, bool>> SameExceptionAs(Xeption expectedException) =>
-            actualException => actualException.SameExceptionAs(expectedException);
-
-        private Expression<Func<HealthCheckResult, bool>> SameHealthCheckResultAs(
-            HealthCheckResult expectedHealthCheckResult) =>
-                actualHealthCheckResult => compareLogic.Compare(expectedHealthCheckResult, actualHealthCheckResult)
-                    .AreEqual;
-
-        private static SqlException GetSqlException() =>
-            (SqlException)RuntimeHelpers.GetUninitializedObject(typeof(SqlException));
-
         private static int GetRandomNumber() =>
             new IntRange(min: 2, max: 10).GetValue();
-
-        private static DateTimeOffset GetRandomDateTimeOffset() =>
-            new DateTimeRange(earliestDate: new DateTime()).GetValue();
 
         private static List<ResolvedAddress> CreateRandomResolvedAddresses(
             DateTimeOffset dateTimeOffset,

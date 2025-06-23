@@ -260,7 +260,10 @@ namespace LHDS.AdminPortal.Api
                 <IResolvedAddressHealthItemService, ResolvedAddressFailedToExportHealthCheckService>();
 
             services.AddSingleton
-                <ITerminologyPollsHealthItemService, TerminologyPollFailedToProcessHealthCheckService>();
+                <ITerminologyPollsHealthItemService, TerminologyPollsNotPollingHealthCheckService>();
+
+            services.AddSingleton
+                <ITerminologyPollsHealthItemService, TerminologyPollsFailedToProcessHealthCheckService>();
 
             services.AddSingleton
                 <IOptOutHealthItemService, OptOutsExpiredOptOutHealthCheckService>();

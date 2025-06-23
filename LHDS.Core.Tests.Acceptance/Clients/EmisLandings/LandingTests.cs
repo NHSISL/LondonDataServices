@@ -227,7 +227,7 @@ namespace LHDS.Core.Tests.Acceptance.Clients.EmisLandings
                 "IM1",
                 "sftp",
                 $"{subscriberAgreementId}",
-                $"{DateTime.Now.ToString("yyyyMMdd")}",
+                $"{DateTime.Now.ToString("yyyyMMdd")}000000",
                 $"{fileName}");
         }
 

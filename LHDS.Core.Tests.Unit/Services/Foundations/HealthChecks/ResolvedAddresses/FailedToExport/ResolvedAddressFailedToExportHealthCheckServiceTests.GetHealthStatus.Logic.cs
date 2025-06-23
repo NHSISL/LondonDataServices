@@ -44,7 +44,8 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.HealthChecks.ResolvedAddress
                 broker.SelectAllResolvedAddressesAsync())
                     .ReturnsAsync(healthyRecords.AsQueryable());
 
-            string message = $"{healthyRecords.Count} files have not been exported. Please check logs and function status.";
+            string message = $"{healthyRecords.Count} files have not been exported. " + 
+                "Please check logs and function status.";
 
             var vals = new Dictionary<string, object>
             {

@@ -43,6 +43,8 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.PdsAudits
                 .OnProperty(pdsAudit => pdsAudit.CreatedBy).Use(inputPdsAudit.CreatedBy)
                 .OnProperty(pdsAudit => pdsAudit.CreatedDate).Use(inputPdsAudit.CreatedDate)
                 .OnProperty(pdsAudit => pdsAudit.UpdatedDate).Use(now)
+                .OnProperty(pdsAudit => pdsAudit.RequestType).Use(inputPdsAudit.RequestType)
+                .OnProperty(pdsAudit => pdsAudit.IsCompleted).Use(inputPdsAudit.IsCompleted)
                 .OnType<DateTimeOffset>().Use(GetRandomDateTime());
 
             return filler.Create();

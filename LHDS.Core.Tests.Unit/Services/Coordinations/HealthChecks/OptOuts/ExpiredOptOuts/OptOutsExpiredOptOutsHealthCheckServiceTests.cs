@@ -47,6 +47,7 @@ namespace LHDS.Core.Tests.Unit.Services.Coordinations.HealthChecks.OptOuts.Expir
         {
             DateTimeOffset dateTimeOffset = DateTimeOffset.UtcNow;
             DateTimeOffset unhealthyDateTime = dateTimeOffset.AddDays((UnHealthyThresholdMinutes + 1) * -1);
+            
             return CreateOptOutFiller(unhealthyDateTime).Create(count: GetRandomNumber()).AsQueryable();
         }
 
@@ -54,6 +55,7 @@ namespace LHDS.Core.Tests.Unit.Services.Coordinations.HealthChecks.OptOuts.Expir
         {
             DateTimeOffset dateTimeOffset = DateTimeOffset.UtcNow;
             DateTimeOffset degradedDateTime = dateTimeOffset.AddMinutes((DegradedThresholdMinutes + 1) * -1);
+            
             return CreateOptOutFiller(degradedDateTime).Create(count: GetRandomNumber()).AsQueryable();
         }
 
@@ -61,6 +63,7 @@ namespace LHDS.Core.Tests.Unit.Services.Coordinations.HealthChecks.OptOuts.Expir
         {
             DateTimeOffset dateTimeOffset = DateTimeOffset.UtcNow;
             DateTimeOffset healthyDateTime = dateTimeOffset;
+            
             return CreateOptOutFiller(healthyDateTime).Create(count: GetRandomNumber()).AsQueryable();
         }
 
@@ -68,8 +71,7 @@ namespace LHDS.Core.Tests.Unit.Services.Coordinations.HealthChecks.OptOuts.Expir
            new IntRange(min: 2, max: 10).GetValue();
 
         private static Filler<OptOut> CreateOptOutFiller(
-            DateTimeOffset updatedDate
-        )
+            DateTimeOffset updatedDate)
         {
             DateTimeOffset dateTimeOffset = DateTimeOffset.UtcNow;
             DateTimeOffset expiredDateTimeOffset = dateTimeOffset.AddDays(-1 * ExpiredAfterDays).AddMinutes(-1);
@@ -121,6 +123,6 @@ namespace LHDS.Core.Tests.Unit.Services.Coordinations.HealthChecks.OptOuts.Expir
         }
 
         private static Expression<Func<Xeption, bool>> SameExceptionAs(Xeption expectedException) =>
-          actualException => actualException.SameExceptionAs(expectedException);
+            actualException => actualException.SameExceptionAs(expectedException);
     }
 }

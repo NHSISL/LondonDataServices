@@ -20,8 +20,8 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.HealthChecks.OptOuts.Expired
                 new FailedOptOutsExpiredOptOutsHealthCheckServiceException(
 
                     message:
-                        "Failed opt outs expired opt outs health check service error occurred, "
-                        + "please contact support.",
+                        "Failed opt outs expired opt outs health check service error occurred, " + 
+                        "please contact support.",
 
                     innerException: serviceException);
 
@@ -29,8 +29,8 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.HealthChecks.OptOuts.Expired
                 new OptOutsExpiredOptOutsHealthCheckServiceException(
 
                     message:
-                        "Opt outs expired opt outs health check service error occurred, "
-                        + "please contact support.",
+                        "Opt outs expired opt outs health check service error occurred, " + 
+                        "please contact support.",
 
                     innerException: failedOptOutsExpiredOptOutsHealthCheckServiceException);
 

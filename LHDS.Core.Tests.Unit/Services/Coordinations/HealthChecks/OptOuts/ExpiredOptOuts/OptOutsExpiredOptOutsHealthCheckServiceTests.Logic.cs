@@ -30,13 +30,11 @@ namespace LHDS.Core.Tests.Unit.Services.Coordinations.HealthChecks.OptOuts.Expir
             Dictionary<string, object> healthCheckResultValues =
                 GetHealthCheckResultValues(
                     currentDateTime, HealthStatus.Unhealthy,
-                    unhealthyItemsCount: randomUnhealthyTrackings.Count()
-                );
+                    unhealthyItemsCount: randomUnhealthyTrackings.Count());
 
             var expectedHealthCheckResult = HealthCheckResult.Unhealthy(
                 description: CheckName,
-                data: healthCheckResultValues
-            );
+                data: healthCheckResultValues);
 
             this.dateTimeBrokerMock.Setup(broker =>
                 broker.GetCurrentDateTimeOffsetAsync())
@@ -86,13 +84,11 @@ namespace LHDS.Core.Tests.Unit.Services.Coordinations.HealthChecks.OptOuts.Expir
             Dictionary<string, object> healthCheckResultValues =
                 GetHealthCheckResultValues(
                     currentDateTime, HealthStatus.Degraded,
-                    degradedItemsCount: randomDegradedTrackings.Count()
-                );
+                    degradedItemsCount: randomDegradedTrackings.Count());
 
             var expectedHealthCheckResult = HealthCheckResult.Degraded(
                 description: CheckName,
-                data: healthCheckResultValues
-            );
+                data: healthCheckResultValues);
 
             this.dateTimeBrokerMock.Setup(broker =>
                 broker.GetCurrentDateTimeOffsetAsync())
@@ -138,8 +134,7 @@ namespace LHDS.Core.Tests.Unit.Services.Coordinations.HealthChecks.OptOuts.Expir
 
             var expectedHealthCheckResult = HealthCheckResult.Healthy(
                 description: CheckName,
-                data: healthCheckResultValues
-            );
+                data: healthCheckResultValues);
 
             this.dateTimeBrokerMock.Setup(broker =>
                 broker.GetCurrentDateTimeOffsetAsync())

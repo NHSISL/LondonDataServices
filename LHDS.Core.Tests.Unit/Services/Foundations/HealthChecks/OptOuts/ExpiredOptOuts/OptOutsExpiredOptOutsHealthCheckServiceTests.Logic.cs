@@ -276,7 +276,9 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.HealthChecks.OptOuts.Expired
                 broker.SelectAllOptOutsAsync())
                     .ReturnsAsync(allRecords.AsQueryable());
 
-            string message = $"{expiredAndOutdatedCount} opt outs expired and outdated. Please check logs and function status.";
+            string message = 
+                $"{expiredAndOutdatedCount} opt outs expired and outdated. " + 
+                "Please check logs and function status.";
 
             var vals = new Dictionary<string, object>
             {

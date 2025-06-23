@@ -39,7 +39,8 @@ namespace LHDS.Core.Tests.Unit.Services.Coordinations.HealthChecks.OptOuts.Expir
                     .ThrowsAsync(serviceException);
 
             // when
-            ValueTask<HealthCheckResult> getHealthStatusTask = this.optOutExpiredOptOutHealthCheckService.GetHealthStatusAsync();
+            ValueTask<HealthCheckResult> getHealthStatusTask = this.optOutExpiredOptOutHealthCheckService
+                .GetHealthStatusAsync();
 
             OptOutsExpiredOptOutsHealthCheckServiceException
                 actualOptOutsExpiredOptOutsHealthCheckServiceException =

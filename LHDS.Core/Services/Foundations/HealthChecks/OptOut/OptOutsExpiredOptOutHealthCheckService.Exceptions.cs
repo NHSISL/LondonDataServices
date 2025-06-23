@@ -11,8 +11,7 @@ namespace LHDS.Core.Services.Foundations.HealthChecks.OptOut
         private delegate Task<HealthCheckResult> ReturningHealthCheckResultFunction();
 
         private async ValueTask<HealthCheckResult> TryCatch(
-            ReturningHealthCheckResultFunction returningHealthCheckResultFunction
-        )
+            ReturningHealthCheckResultFunction returningHealthCheckResultFunction)
         {
             try
             {
@@ -29,8 +28,7 @@ namespace LHDS.Core.Services.Foundations.HealthChecks.OptOut
                         innerException: exception);
 
                 throw await CreateAndLogServiceExceptionAsync(
-                    failedOptOutsExpiredOptOutsHealthCheckServiceException
-                );
+                    failedOptOutsExpiredOptOutsHealthCheckServiceException);
             }
         }
 

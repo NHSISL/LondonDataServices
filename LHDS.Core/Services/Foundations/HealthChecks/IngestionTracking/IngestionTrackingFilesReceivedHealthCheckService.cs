@@ -15,7 +15,7 @@ using Microsoft.Extensions.Diagnostics.HealthChecks;
 
 namespace LHDS.Core.Services.Foundations.HealthChecks.IngestionTracking
 {
-    public class IngestionTrackingFilesReceivedHealthCheckService : IIngestionTrackingHealthItemService
+    public partial class IngestionTrackingFilesReceivedHealthCheckService : IIngestionTrackingHealthItemService
     {
         private readonly IStorageBroker storageBroker;
         private readonly IConfiguration configuration;
@@ -37,109 +37,113 @@ namespace LHDS.Core.Services.Foundations.HealthChecks.IngestionTracking
             this.loggingBroker = loggingBroker;
         }
 
-        public async ValueTask<HealthCheckResult> GetHealthStatusAsync()
-        {
-            int degradedThresholdMinutes = configuration
-                .GetValue($"{ConfigSectionName}:DegradedThreshold", 1440);
-
-            int unHealthyThresholdMinutes = configuration
-                .GetValue($"{ConfigSectionName}:UnHealthyThreshold", 2880);
-
-            DateTimeOffset currentDateTime = await dateTimeBroker.GetCurrentDateTimeOffsetAsync();
-            DateTimeOffset degradedThresholdDateTime = currentDateTime.AddMinutes(-1 * degradedThresholdMinutes);
-            DateTimeOffset unHealthyThresholdDateTime = currentDateTime.AddMinutes(-1 * unHealthyThresholdMinutes);
-            var supplierQuery = await storageBroker.SelectAllSuppliersAsync();
-
-            List<Guid> supplierIds = supplierQuery
-                .Where(i => i.IsIngestionTracked == true)
-                .Select(supplier => supplier.Id)
-                .ToList();
-
-            var dataDictionary = new Dictionary<string, object>
+        public ValueTask<HealthCheckResult> GetHealthStatusAsync() =>
+            TryCatch(async () =>
             {
-                { "description", CheckDescriptionName },
-                { "checkedAt", currentDateTime.ToString("o") },
-            };
+                int degradedThresholdMinutes = configuration
+                    .GetValue($"{ConfigSectionName}:DegradedThreshold", 1440);
 
-            List<HealthCheckResult> results = new List<HealthCheckResult>();
+                int unHealthyThresholdMinutes = configuration
+                    .GetValue($"{ConfigSectionName}:UnHealthyThreshold", 2880);
 
-            foreach (Guid supplierId in supplierIds)
-            {
-                Supplier supplier = await storageBroker.SelectSupplierByIdAsync(supplierId);
-                var ingestionTrackingQuery = await storageBroker.SelectAllIngestionTrackingsAsync();
+                DateTimeOffset currentDateTime = await dateTimeBroker.GetCurrentDateTimeOffsetAsync();
+                DateTimeOffset degradedThresholdDateTime = currentDateTime.AddMinutes(-1 * degradedThresholdMinutes);
+                DateTimeOffset unHealthyThresholdDateTime = currentDateTime.AddMinutes(-1 * unHealthyThresholdMinutes);
+                var supplierQuery = await storageBroker.SelectAllSuppliersAsync();
 
-                var filteredQuery = ingestionTrackingQuery
-                    .Where(ingestionTracking => ingestionTracking.SupplierId == supplierId
-                        && ingestionTracking.CreatedDate > unHealthyThresholdDateTime).ToList();
+                List<Guid> supplierIds = supplierQuery
+                    .Where(i => i.IsIngestionTracked == true)
+                    .Select(supplier => supplier.Id)
+                    .ToList();
 
-                int itemsReceived = filteredQuery.Count();
-
-                bool isDegraded = !filteredQuery.Any(ingestionTracking =>
-                    ingestionTracking.CreatedDate > degradedThresholdDateTime);
-
-                bool isUnhealthy = !filteredQuery.Any(ingestionTracking =>
-                    ingestionTracking.CreatedDate <= degradedThresholdDateTime &&
-                    ingestionTracking.CreatedDate > unHealthyThresholdDateTime);
-
-                HealthStatus status = (isUnhealthy, isDegraded) switch
+                var dataDictionary = new Dictionary<string, object>
                 {
-                    (true, true) => HealthStatus.Unhealthy,
-                    (_, true) => HealthStatus.Degraded,
-                    _ => HealthStatus.Healthy
-                };
-
-                var values = new Dictionary<string, object>
-                {
-                    { "description", $"{supplier.Name}" },
-                    { "filesReceived", itemsReceived },
-                    { "degradedThresholdMinutes", degradedThresholdMinutes.ToString() },
-                    { "unHealthyThresholdMinutes", unHealthyThresholdMinutes.ToString() },
+                    { "description", CheckDescriptionName },
                     { "checkedAt", currentDateTime.ToString("o") },
-                    { "status", status.ToString() }
                 };
 
-                HealthCheckResult result = status switch
+                List<HealthCheckResult> results = new List<HealthCheckResult>();
+
+                foreach (Guid supplierId in supplierIds)
                 {
-                    HealthStatus.Unhealthy => HealthCheckResult.Unhealthy(supplier.Name, data: values),
-                    HealthStatus.Degraded => HealthCheckResult.Degraded(supplier.Name, data: values),
-                    _ => HealthCheckResult.Healthy(supplier.Name, data: values)
-                };
+                    Supplier supplier = await storageBroker.SelectSupplierByIdAsync(supplierId);
+                    var ingestionTrackingQuery = await storageBroker.SelectAllIngestionTrackingsAsync();
 
-                dataDictionary[GetUniqueKey(dataDictionary, result.Description)] = result.Data;
-                results.Add(result);
-            }
+                    var filteredQuery = ingestionTrackingQuery
+                        .Where(ingestionTracking => ingestionTracking.SupplierId == supplierId
+                            && ingestionTracking.CreatedDate <= degradedThresholdDateTime).ToList();
 
-            int totalFilesReceived = results
-                .Select(result => result.Data.TryGetValue("filesReceived", out var val)
-                    && int.TryParse(val?.ToString(), out int count) ? count : 0).Sum();
+                    int itemsReceived = filteredQuery.Count();
 
-            dataDictionary.Add("filesReceived", totalFilesReceived);
+                    bool isDegraded = !filteredQuery.Any(ingestionTracking =>
+                        ingestionTracking.CreatedDate > degradedThresholdDateTime);
 
-            if (results.Any(item => item.Status == HealthStatus.Unhealthy))
-            {
-                dataDictionary.Add("status", HealthStatus.Unhealthy.ToString());
+                    bool isUnhealthy = !filteredQuery.Any(ingestionTracking =>
+                        ingestionTracking.CreatedDate <= degradedThresholdDateTime &&
+                        ingestionTracking.CreatedDate > unHealthyThresholdDateTime);
 
-                return HealthCheckResult.Unhealthy(
-                    description: $"{CheckName}",
-                    data: dataDictionary);
-            }
-            else if (results.Any(item => item.Status == HealthStatus.Degraded))
-            {
-                dataDictionary.Add("status", HealthStatus.Degraded.ToString());
+                    bool noNonHealthyItems = itemsReceived == 0;
 
-                return HealthCheckResult.Degraded(
-                    description: $"{CheckName}",
-                    data: dataDictionary);
-            }
-            else
-            {
-                dataDictionary.Add("status", HealthStatus.Healthy.ToString());
+                    HealthStatus status = (noNonHealthyItems, isUnhealthy, isDegraded) switch
+                    {
+                        (true, _, _) => HealthStatus.Healthy,
+                        (_, true, _) => HealthStatus.Unhealthy,
+                        (_, _, true) => HealthStatus.Degraded,
+                        (_, _, _) => HealthStatus.Healthy
+                    };
 
-                return HealthCheckResult.Healthy(
-                    description: $"{CheckName}",
-                    data: dataDictionary);
-            }
-        }
+                    var values = new Dictionary<string, object>
+                    {
+                        { "description", $"{supplier.Name}" },
+                        { "filesReceived", itemsReceived },
+                        { "degradedThresholdMinutes", degradedThresholdMinutes.ToString() },
+                        { "unHealthyThresholdMinutes", unHealthyThresholdMinutes.ToString() },
+                        { "checkedAt", currentDateTime.ToString("o") },
+                        { "status", status.ToString() }
+                    };
+
+                    HealthCheckResult result = status switch
+                    {
+                        HealthStatus.Unhealthy => HealthCheckResult.Unhealthy(supplier.Name, data: values),
+                        HealthStatus.Degraded => HealthCheckResult.Degraded(supplier.Name, data: values),
+                        _ => HealthCheckResult.Healthy(supplier.Name, data: values)
+                    };
+
+                    dataDictionary[GetUniqueKey(dataDictionary, result.Description)] = result.Data;
+                    results.Add(result);
+                }
+
+                int totalFilesReceived = results
+                    .Select(result => result.Data.TryGetValue("filesReceived", out var val)
+                        && int.TryParse(val?.ToString(), out int count) ? count : 0).Sum();
+
+                dataDictionary.Add("filesReceived", totalFilesReceived);
+
+                if (results.Any(item => item.Status == HealthStatus.Unhealthy))
+                {
+                    dataDictionary.Add("status", HealthStatus.Unhealthy.ToString());
+
+                    return HealthCheckResult.Unhealthy(
+                        description: $"{CheckName}",
+                        data: dataDictionary);
+                }
+                else if (results.Any(item => item.Status == HealthStatus.Degraded))
+                {
+                    dataDictionary.Add("status", HealthStatus.Degraded.ToString());
+
+                    return HealthCheckResult.Degraded(
+                        description: $"{CheckName}",
+                        data: dataDictionary);
+                }
+                else
+                {
+                    dataDictionary.Add("status", HealthStatus.Healthy.ToString());
+
+                    return HealthCheckResult.Healthy(
+                        description: $"{CheckName}",
+                        data: dataDictionary);
+                }
+            });
 
         private string GetUniqueKey(Dictionary<string, object> dictionary, string baseKey)
         {

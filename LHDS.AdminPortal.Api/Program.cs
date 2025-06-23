@@ -51,6 +51,7 @@ using LHDS.Core.Services.Foundations.Documents;
 using LHDS.Core.Services.Foundations.HealthChecks;
 using LHDS.Core.Services.Foundations.HealthChecks.IngestionTracking;
 using LHDS.Core.Services.Foundations.HealthChecks.ResolvedAddress;
+using LHDS.Core.Services.Foundations.HealthChecks.TerminologyPolls;
 using LHDS.Core.Services.Foundations.IngestionTrackingAudits;
 using LHDS.Core.Services.Foundations.IngestionTrackings;
 using LHDS.Core.Services.Foundations.ObjectColumns;
@@ -64,6 +65,7 @@ using LHDS.Core.Services.Foundations.TerminologyArtifacts;
 using LHDS.Core.Services.Foundations.TerminologyPolls;
 using LHDS.Core.Services.Orchestrations.HealthChecks.IngestionTrackings;
 using LHDS.Core.Services.Orchestrations.HealthChecks.ResolvedAddresses;
+using LHDS.Core.Services.Orchestrations.HealthChecks.TerminologyPolls;
 using LHDS.Core.Services.Processings.Addresses;
 using LHDS.Core.Services.Processings.DataSetSpecifications;
 using LHDS.Core.Services.Processings.Documents;
@@ -252,11 +254,17 @@ namespace LHDS.AdminPortal.Api
             services.AddSingleton
                 <IResolvedAddressHealthItemService, ResolvedAddressFailedToProcessHealthCheckService>();
 
+            services.AddSingleton
+                <ITerminologyPollsHealthItemService, TerminologyPollsNotPollingHealthCheckService>();
+
             services.AddHealthChecks()
                 .AddCheck<IngestionTrackingHealthCheckOrchestrationService>("ingestionTrackingHealthChecks");
 
             services.AddHealthChecks()
                 .AddCheck<ResolvedAddressHealthCheckOrchestrationService>("resolvedAddressHealthChecks");
+
+            services.AddHealthChecks()
+                .AddCheck<TerminologyPollsHealthCheckCoordinationService>("terminologyPollsHealthChecks");
 
             services.AddSingleton<IHealthCheckPublisher, HealthCheckPublisherCoordinationService>();
 

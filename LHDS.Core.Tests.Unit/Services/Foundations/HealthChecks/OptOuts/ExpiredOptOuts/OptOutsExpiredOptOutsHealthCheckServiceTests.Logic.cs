@@ -1,42 +1,38 @@
-// ---------------------------------------------------------
-// Copyright (c) North East London ICB. All rights reserved.
-// ---------------------------------------------------------
-
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using FluentAssertions;
-using LHDS.Core.Models.Foundations.ResolvedAddresses;
+using LHDS.Core.Models.Foundations.OptOuts;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
 using Moq;
 using Xunit;
 
-namespace LHDS.Core.Tests.Unit.Services.Foundations.HealthChecks.ResolvedAddresses
+namespace LHDS.Core.Tests.Unit.Services.Foundations.HealthChecks.OptOuts.ExpiredOptOuts
 {
-    public partial class ResolvedAdressFailedToProcessHealthCheckServiceTests
+    public partial class OptOutsExpiredOptOutsHealthCheckServiceTests
     {
         [Fact]
         public async Task ShouldGetHealthStatusAsHealthyAsync()
         {
             // given
-            string CheckName = "failedToProcess";
             DateTimeOffset randomDateTimeOffset = DateTimeOffset.UtcNow;
             int randomNumber = GetRandomNumber();
 
-            int retryCount = this.inMemoryConfiguration
-                .GetValue("HealthChecks:ResolvedAddress:FailedToProcess:RetryCount", 4);
+            int degradedThresholdMinutes = 
+                this.inMemoryConfiguration.GetValue($"{ConfigSectionName}:DegradedThreshold", 1440);
 
-            int degradedThresholdMinutes = this.inMemoryConfiguration
-                .GetValue("HealthChecks:ResolvedAddress:FailedToProcess:DegradedThreshold", 1440);
+            int unHealthyThresholdMinutes = 
+                this.inMemoryConfiguration.GetValue($"{ConfigSectionName}:UnHealthyThreshold", 2880);
 
-            int unHealthyThresholdMinutes = this.inMemoryConfiguration
-                .GetValue("HealthChecks:ResolvedAddress:FailedToProcess:UnHealthyThreshold", 2880);
+            int expiredAfterDays = this.inMemoryConfiguration.GetValue($"{ConfigSectionName}:ExpiredAfterDays", 7);
 
-            List<ResolvedAddress> healthyRecords = CreateRandomResolvedAddresses(
+            int lastSentExpiredAfterDays = 
+                this.inMemoryConfiguration.GetValue($"{ConfigSectionName}:LastSentExpiredAfterDays", 2);
+
+            List<OptOut> healthyRecords = CreateRandomOptOuts(
                 dateTimeOffset: randomDateTimeOffset,
-                retryCount: retryCount,
                 count: randomNumber);
 
             this.dateTimeBrokerMock.Setup(broker =>
@@ -44,15 +40,15 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.HealthChecks.ResolvedAddress
                     .ReturnsAsync(randomDateTimeOffset);
 
             this.storageBrokerMock.Setup(broker =>
-                broker.SelectAllResolvedAddressesAsync())
+                broker.SelectAllOptOutsAsync())
                     .ReturnsAsync(healthyRecords.AsQueryable());
 
-            string message = $"{healthyRecords.Count} files have not been processed. Please check logs and function status.";
+            string message = "Nothing is expired and outdated. All up to date.";
 
             var vals = new Dictionary<string, object>
             {
-                { "description", "Failed To Process" },
-                { "failedToProcess", healthyRecords.Count},
+                { "description", CheckNameDescription },
+                { "expiredAndOutdated", 0},
                 { "degradedItems", 0},
                 { "unHealthyItems", 0},
                 { "degradedThresholdMinutes", degradedThresholdMinutes.ToString() },
@@ -68,7 +64,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.HealthChecks.ResolvedAddress
 
             // when
             HealthCheckResult actualHealthCheckResult =
-                await this.resolvedAddressHealthItemService.GetHealthStatusAsync();
+                await this.OptOutsHealthItemService.GetHealthStatusAsync();
 
             // then
             actualHealthCheckResult.Should().BeEquivalentTo(expectedHealthCheckResult, options =>
@@ -83,7 +79,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.HealthChecks.ResolvedAddress
                     Times.Once);
 
             this.storageBrokerMock.Verify(broker =>
-                broker.SelectAllResolvedAddressesAsync(),
+                broker.SelectAllOptOutsAsync(),
                     Times.Once);
 
             this.dateTimeBrokerMock.VerifyNoOtherCalls();
@@ -95,22 +91,22 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.HealthChecks.ResolvedAddress
         public async Task ShouldGetHealthStatusAsDegradedAsync()
         {
             // given
-            string CheckName = "failedToProcess";
             DateTimeOffset randomDateTimeOffset = DateTimeOffset.UtcNow;
             int randomNumber = GetRandomNumber();
 
-            int retryCount = this.inMemoryConfiguration
-                 .GetValue("HealthChecks:ResolvedAddress:FailedToProcess:RetryCount", 4);
+            int degradedThresholdMinutes = 
+                this.inMemoryConfiguration.GetValue($"{ConfigSectionName}:DegradedThreshold", 1440);
 
-            int degradedThresholdMinutes = this.inMemoryConfiguration
-                .GetValue("HealthChecks:ResolvedAddress:FailedToProcess:DegradedThreshold", 1440);
+            int unHealthyThresholdMinutes = 
+                this.inMemoryConfiguration.GetValue($"{ConfigSectionName}:UnHealthyThreshold", 2880);
 
-            int unHealthyThresholdMinutes = this.inMemoryConfiguration
-                .GetValue("HealthChecks:ResolvedAddress:FailedToProcess:UnHealthyThreshold", 2880);
+            int expiredAfterDays = this.inMemoryConfiguration.GetValue($"{ConfigSectionName}:ExpiredAfterDays", 7);
 
-            List<ResolvedAddress> degradedRecords = CreateRandomResolvedAddresses(
+            int lastSentExpiredAfterDays = 
+                this.inMemoryConfiguration.GetValue($"{ConfigSectionName}:LastSentExpiredAfterDays", 2);
+
+            List<OptOut> degradedRecords = CreateRandomOptOuts(
                 dateTimeOffset: randomDateTimeOffset.AddMinutes(-degradedThresholdMinutes).AddSeconds(-1),
-                retryCount: retryCount,
                 count: randomNumber);
 
             this.dateTimeBrokerMock.Setup(broker =>
@@ -118,15 +114,15 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.HealthChecks.ResolvedAddress
                     .ReturnsAsync(randomDateTimeOffset);
 
             this.storageBrokerMock.Setup(broker =>
-                broker.SelectAllResolvedAddressesAsync())
+                broker.SelectAllOptOutsAsync())
                     .ReturnsAsync(degradedRecords.AsQueryable());
 
-            string message = $"{randomNumber} files have not been processed. Please check logs and function status.";
+            string message = $"{randomNumber} opt outs expired and outdated. Please check logs and function status.";
 
             var vals = new Dictionary<string, object>
             {
-                { "description", "Failed To Process" },
-                { "failedToProcess", randomNumber},
+                { "description", CheckNameDescription },
+                { "expiredAndOutdated", randomNumber},
                 { "degradedItems", randomNumber},
                 { "unHealthyItems", 0},
                 { "degradedThresholdMinutes", degradedThresholdMinutes.ToString() },
@@ -142,7 +138,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.HealthChecks.ResolvedAddress
 
             // when
             HealthCheckResult actualHealthCheckResult =
-                await this.resolvedAddressHealthItemService.GetHealthStatusAsync();
+                await this.OptOutsHealthItemService.GetHealthStatusAsync();
 
             // then
             actualHealthCheckResult.Should().BeEquivalentTo(expectedHealthCheckResult, options =>
@@ -157,7 +153,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.HealthChecks.ResolvedAddress
                     Times.Once);
 
             this.storageBrokerMock.Verify(broker =>
-                broker.SelectAllResolvedAddressesAsync(),
+                broker.SelectAllOptOutsAsync(),
                     Times.Once);
 
             this.dateTimeBrokerMock.VerifyNoOtherCalls();
@@ -169,22 +165,22 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.HealthChecks.ResolvedAddress
         public async Task ShouldGetHealthStatusAsUnHealthyAsync()
         {
             // given
-            string CheckName = "failedToProcess";
             DateTimeOffset randomDateTimeOffset = DateTimeOffset.UtcNow;
             int randomNumber = GetRandomNumber();
 
-            int retryCount = this.inMemoryConfiguration
-                 .GetValue("HealthChecks:ResolvedAddress:FailedToProcess:RetryCount", 4);
+            int degradedThresholdMinutes = 
+                this.inMemoryConfiguration.GetValue($"{ConfigSectionName}:DegradedThreshold", 1440);
 
-            int degradedThresholdMinutes = this.inMemoryConfiguration
-                .GetValue("HealthChecks:ResolvedAddress:FailedToProcess:DegradedThreshold", 1440);
+            int unHealthyThresholdMinutes = 
+                this.inMemoryConfiguration.GetValue($"{ConfigSectionName}:UnHealthyThreshold", 2880);
 
-            int unHealthyThresholdMinutes = this.inMemoryConfiguration
-                .GetValue("HealthChecks:ResolvedAddress:FailedToProcess:UnHealthyThreshold", 2880);
+            int expiredAfterDays = this.inMemoryConfiguration.GetValue($"{ConfigSectionName}:ExpiredAfterDays", 7);
 
-            List<ResolvedAddress> unHealthyRecords = CreateRandomResolvedAddresses(
+            int lastSentExpiredAfterDays = 
+                this.inMemoryConfiguration.GetValue($"{ConfigSectionName}:LastSentExpiredAfterDays", 2);
+
+            List<OptOut> unHealthyRecords = CreateRandomOptOuts(
                 dateTimeOffset: randomDateTimeOffset.AddMinutes(-unHealthyThresholdMinutes).AddSeconds(-1),
-                retryCount: retryCount,
                 count: randomNumber);
 
             this.dateTimeBrokerMock.Setup(broker =>
@@ -192,15 +188,15 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.HealthChecks.ResolvedAddress
                     .ReturnsAsync(randomDateTimeOffset);
 
             this.storageBrokerMock.Setup(broker =>
-                broker.SelectAllResolvedAddressesAsync())
+                broker.SelectAllOptOutsAsync())
                     .ReturnsAsync(unHealthyRecords.AsQueryable());
 
-            string message = $"{randomNumber} files have not been processed. Please check logs and function status.";
+            string message = $"{randomNumber} opt outs expired and outdated. Please check logs and function status.";
 
             var vals = new Dictionary<string, object>
             {
-                { "description", "Failed To Process" },
-                { "failedToProcess", randomNumber},
+                { "description", CheckNameDescription },
+                { "expiredAndOutdated", randomNumber},
                 { "degradedItems", 0},
                 { "unHealthyItems", randomNumber},
                 { "degradedThresholdMinutes", degradedThresholdMinutes.ToString() },
@@ -216,7 +212,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.HealthChecks.ResolvedAddress
 
             // when
             HealthCheckResult actualHealthCheckResult =
-                await this.resolvedAddressHealthItemService.GetHealthStatusAsync();
+                await this.OptOutsHealthItemService.GetHealthStatusAsync();
 
             // then
             actualHealthCheckResult.Should().BeEquivalentTo(expectedHealthCheckResult, options =>
@@ -231,7 +227,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.HealthChecks.ResolvedAddress
                     Times.Once);
 
             this.storageBrokerMock.Verify(broker =>
-                broker.SelectAllResolvedAddressesAsync(),
+                broker.SelectAllOptOutsAsync(),
                     Times.Once);
 
             this.dateTimeBrokerMock.VerifyNoOtherCalls();
@@ -243,50 +239,51 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.HealthChecks.ResolvedAddress
         public async Task ShouldGetHealthStatusAsUnHealthyWithMixedItemsAsync()
         {
             // given
-            string CheckName = "failedToProcess";
             DateTimeOffset randomDateTimeOffset = DateTimeOffset.UtcNow;
+            int randomNumber = GetRandomNumber();
 
-            int retryCount = this.inMemoryConfiguration
-                 .GetValue("HealthChecks:ResolvedAddress:FailedToProcess:RetryCount", 4);
+            int degradedThresholdMinutes = 
+                this.inMemoryConfiguration.GetValue($"{ConfigSectionName}:DegradedThreshold", 1440);
 
-            int degradedThresholdMinutes = this.inMemoryConfiguration
-                .GetValue("HealthChecks:ResolvedAddress:FailedToProcess:DegradedThreshold", 1440);
+            int unHealthyThresholdMinutes = 
+                this.inMemoryConfiguration.GetValue($"{ConfigSectionName}:UnHealthyThreshold", 2880);
 
-            int unHealthyThresholdMinutes = this.inMemoryConfiguration
-                .GetValue("HealthChecks:ResolvedAddress:FailedToProcess:UnHealthyThreshold", 2880);
+            int expiredAfterDays = this.inMemoryConfiguration.GetValue($"{ConfigSectionName}:ExpiredAfterDays", 7);
 
-            List<ResolvedAddress> healthyRecords = CreateRandomResolvedAddresses(
+            int lastSentExpiredAfterDays = 
+                this.inMemoryConfiguration.GetValue($"{ConfigSectionName}:LastSentExpiredAfterDays", 2);
+
+            List<OptOut> healthyRecords = CreateRandomOptOuts(
                 dateTimeOffset: randomDateTimeOffset,
-                retryCount: retryCount,
                 count: GetRandomNumber());
 
-            List<ResolvedAddress> degradedRecords = CreateRandomResolvedAddresses(
+            List<OptOut> degradedRecords = CreateRandomOptOuts(
                 dateTimeOffset: randomDateTimeOffset.AddMinutes(-degradedThresholdMinutes).AddSeconds(-1),
-                retryCount: retryCount,
                 count: GetRandomNumber());
 
-            List<ResolvedAddress> unhealthyRecords = CreateRandomResolvedAddresses(
+            List<OptOut> unhealthyRecords = CreateRandomOptOuts(
                 dateTimeOffset: randomDateTimeOffset.AddMinutes(-unHealthyThresholdMinutes).AddSeconds(-1),
-                retryCount: retryCount,
                 count: GetRandomNumber());
 
-            List<ResolvedAddress> allRecords = [.. healthyRecords, .. degradedRecords, .. unhealthyRecords];
-            int unDecryptedCount = degradedRecords.Count + unhealthyRecords.Count;
+            List<OptOut> allRecords = [.. healthyRecords, .. degradedRecords, .. unhealthyRecords];
+            int expiredAndOutdatedCount = degradedRecords.Count + unhealthyRecords.Count;
 
             this.dateTimeBrokerMock.Setup(broker =>
                 broker.GetCurrentDateTimeOffsetAsync())
                     .ReturnsAsync(randomDateTimeOffset);
 
             this.storageBrokerMock.Setup(broker =>
-                broker.SelectAllResolvedAddressesAsync())
+                broker.SelectAllOptOutsAsync())
                     .ReturnsAsync(allRecords.AsQueryable());
 
-            string message = $"{allRecords.Count} files have not been processed. Please check logs and function status.";
+            string message = 
+                $"{expiredAndOutdatedCount} opt outs expired and outdated. " + 
+                "Please check logs and function status.";
 
             var vals = new Dictionary<string, object>
             {
-                { "description", "Failed To Process" },
-                { "failedToProcess", allRecords.Count},
+                { "description", CheckNameDescription },
+                { "expiredAndOutdated", expiredAndOutdatedCount},
                 { "degradedItems", degradedRecords.Count},
                 { "unHealthyItems", unhealthyRecords.Count},
                 { "degradedThresholdMinutes", degradedThresholdMinutes.ToString() },
@@ -302,7 +299,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.HealthChecks.ResolvedAddress
 
             // when
             HealthCheckResult actualHealthCheckResult =
-                await this.resolvedAddressHealthItemService.GetHealthStatusAsync();
+                await this.OptOutsHealthItemService.GetHealthStatusAsync();
 
             // then
             actualHealthCheckResult.Should().BeEquivalentTo(expectedHealthCheckResult, options =>
@@ -317,7 +314,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.HealthChecks.ResolvedAddress
                     Times.Once);
 
             this.storageBrokerMock.Verify(broker =>
-                broker.SelectAllResolvedAddressesAsync(),
+                broker.SelectAllOptOutsAsync(),
                     Times.Once);
 
             this.dateTimeBrokerMock.VerifyNoOtherCalls();

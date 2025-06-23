@@ -50,6 +50,7 @@ using LHDS.Core.Services.Foundations.DataTypes;
 using LHDS.Core.Services.Foundations.Documents;
 using LHDS.Core.Services.Foundations.HealthChecks;
 using LHDS.Core.Services.Foundations.HealthChecks.IngestionTracking;
+using LHDS.Core.Services.Foundations.HealthChecks.OptOut;
 using LHDS.Core.Services.Foundations.HealthChecks.PDS;
 using LHDS.Core.Services.Foundations.HealthChecks.ResolvedAddress;
 using LHDS.Core.Services.Foundations.HealthChecks.TerminologyPolls;
@@ -65,6 +66,7 @@ using LHDS.Core.Services.Foundations.Suppliers;
 using LHDS.Core.Services.Foundations.TerminologyArtifacts;
 using LHDS.Core.Services.Foundations.TerminologyPolls;
 using LHDS.Core.Services.Orchestrations.HealthChecks.IngestionTrackings;
+using LHDS.Core.Services.Orchestrations.HealthChecks.OptOuts;
 using LHDS.Core.Services.Orchestrations.HealthChecks.Pds;
 using LHDS.Core.Services.Orchestrations.HealthChecks.ResolvedAddresses;
 using LHDS.Core.Services.Orchestrations.HealthChecks.TerminologyPolls;
@@ -257,6 +259,9 @@ namespace LHDS.AdminPortal.Api
                 <IResolvedAddressHealthItemService, ResolvedAddressFailedToProcessHealthCheckService>();
 
             services.AddSingleton
+                <IResolvedAddressHealthItemService, ResolvedAddressFailedToExportHealthCheckService>();
+
+            services.AddSingleton
                 <ITerminologyPollsHealthItemService, TerminologyPollsNotPollingHealthCheckService>();
 
             services.AddSingleton
@@ -270,6 +275,9 @@ namespace LHDS.AdminPortal.Api
 
             services.AddHealthChecks()
                 .AddCheck<TerminologyPollsHealthCheckCoordinationService>("terminologyPollsHealthChecks");
+
+            services.AddHealthChecks()
+                .AddCheck<OptOutsHealthCheckOrchestrationService>("optOutsHealthChecks");
 
             services.AddHealthChecks()
                 .AddCheck<PdsHealthCheckOrchestrationService>("pdsHealthChecks");

@@ -32,98 +32,99 @@ namespace LHDS.Core.Services.Foundations.HealthChecks.TerminologyPolls
             this.loggingBroker = loggingBroker;
         }
 
-        public async ValueTask<HealthCheckResult> GetHealthStatusAsync()
-        {
+        public ValueTask<HealthCheckResult> GetHealthStatusAsync() =>
+            TryCatch(async () =>
             {
-                int degradedThresholdMinutes = configuration
-                    .GetValue($"{ConfigSectionName}:DegradedThreshold", 1440);
-
-                int unHealthyThresholdMinutes = configuration
-                    .GetValue($"{ConfigSectionName}:UnHealthyThreshold", 2880);
-
-                DateTimeOffset currentDateTime = await dateTimeBroker.GetCurrentDateTimeOffsetAsync();
-                DateTimeOffset lastExpectedPollTime = currentDateTime.Date.AddDays(-1).AddHours(23);
-                DateTimeOffset degradedThresholdDateTime = lastExpectedPollTime.AddMinutes(-1 * degradedThresholdMinutes);
-                DateTimeOffset unHealthyThresholdDateTime = lastExpectedPollTime.AddMinutes(-1 * unHealthyThresholdMinutes);
-                var terminologyPollsQuery = await storageBroker.SelectAllTerminologyPollsAsync();
-
-                var degradedQuery = terminologyPollsQuery.Where(terminologyPoll =>
-                    terminologyPoll.LastPoll <= degradedThresholdDateTime &&
-                    terminologyPoll.LastPoll > unHealthyThresholdDateTime);
-
-                var unHealthyQuery = terminologyPollsQuery
-                    .Where(terminologyPoll => terminologyPoll.LastPoll <= unHealthyThresholdDateTime);
-
-                int codeSystemDegradedCount = degradedQuery
-                    .Count(terminologyPoll => terminologyPoll.ResourceType == "CodeSystem");
-
-                int codeSystemUnhealthyCount = unHealthyQuery
-                    .Count(terminologyPoll => terminologyPoll.ResourceType == "CodeSystem");
-
-                int conceptMapDegradedCount = degradedQuery
-                    .Count(terminologyPoll => terminologyPoll.ResourceType == "ConceptMap");
-
-                int conceptMapUnhealthyCount = unHealthyQuery
-                    .Count(terminologyPoll => terminologyPoll.ResourceType == "ConceptMap");
-
-                int valueSetDegradedCount = degradedQuery
-                    .Count(terminologyPoll => terminologyPoll.ResourceType == "ValueSet");
-
-                int valueSetMapUnhealthyCount = unHealthyQuery
-                    .Count(terminologyPoll => terminologyPoll.ResourceType == "ValueSet");
-
-                int totalCount = codeSystemDegradedCount 
-                    + codeSystemUnhealthyCount 
-                    + conceptMapDegradedCount
-                    + conceptMapUnhealthyCount
-                    + valueSetDegradedCount
-                    +valueSetMapUnhealthyCount;
-
-                string message = totalCount == 0
-                    ? $"Nothing to process. All up to date."
-                    : $"{totalCount} have not been processed. Please check logs and function status.";
-
-                var vals = new Dictionary<string, object>
-            {
-                { "description", CheckNameDescription },
-                { "failedToProcess", totalCount },
-                { "degradedCodeSystemItems", codeSystemDegradedCount},
-                { "unHealthyCodeSystemItems", codeSystemUnhealthyCount},
-                { "degradedConceptMapItems", conceptMapDegradedCount},
-                { "unHealthyConceptMapItems", conceptMapUnhealthyCount},
-                { "degradedValueSetItems", valueSetDegradedCount},
-                { "unHealthyValueItems", valueSetMapUnhealthyCount},
-                { "degradedThresholdMinutes", degradedThresholdMinutes.ToString() },
-                { "unHealthyThresholdMinutes", unHealthyThresholdMinutes.ToString() },
-                { "checkedAt", currentDateTime.ToString("o") },
-                { "message", message }
-            };
-
-                if ((codeSystemUnhealthyCount + conceptMapUnhealthyCount + valueSetMapUnhealthyCount) > 0)
                 {
-                    vals.Add("status", HealthStatus.Unhealthy.ToString());
+                    int degradedThresholdMinutes = configuration
+                        .GetValue($"{ConfigSectionName}:DegradedThreshold", 1440);
 
-                    return HealthCheckResult.Unhealthy(
-                        description: CheckName,
-                        data: vals);
-                }
-                else if ((codeSystemDegradedCount + conceptMapDegradedCount + valueSetDegradedCount) > 0)
+                    int unHealthyThresholdMinutes = configuration
+                        .GetValue($"{ConfigSectionName}:UnHealthyThreshold", 2880);
+
+                    DateTimeOffset currentDateTime = await dateTimeBroker.GetCurrentDateTimeOffsetAsync();
+                    DateTimeOffset lastExpectedPollTime = currentDateTime.Date.AddDays(-1).AddHours(23);
+                    DateTimeOffset degradedThresholdDateTime = lastExpectedPollTime.AddMinutes(-1 * degradedThresholdMinutes);
+                    DateTimeOffset unHealthyThresholdDateTime = lastExpectedPollTime.AddMinutes(-1 * unHealthyThresholdMinutes);
+                    var terminologyPollsQuery = await storageBroker.SelectAllTerminologyPollsAsync();
+
+                    var degradedQuery = terminologyPollsQuery.Where(terminologyPoll =>
+                        terminologyPoll.LastPoll <= degradedThresholdDateTime &&
+                        terminologyPoll.LastPoll > unHealthyThresholdDateTime);
+
+                    var unHealthyQuery = terminologyPollsQuery
+                        .Where(terminologyPoll => terminologyPoll.LastPoll <= unHealthyThresholdDateTime);
+
+                    int codeSystemDegradedCount = degradedQuery
+                        .Count(terminologyPoll => terminologyPoll.ResourceType == "CodeSystem");
+
+                    int codeSystemUnhealthyCount = unHealthyQuery
+                        .Count(terminologyPoll => terminologyPoll.ResourceType == "CodeSystem");
+
+                    int conceptMapDegradedCount = degradedQuery
+                        .Count(terminologyPoll => terminologyPoll.ResourceType == "ConceptMap");
+
+                    int conceptMapUnhealthyCount = unHealthyQuery
+                        .Count(terminologyPoll => terminologyPoll.ResourceType == "ConceptMap");
+
+                    int valueSetDegradedCount = degradedQuery
+                        .Count(terminologyPoll => terminologyPoll.ResourceType == "ValueSet");
+
+                    int valueSetMapUnhealthyCount = unHealthyQuery
+                        .Count(terminologyPoll => terminologyPoll.ResourceType == "ValueSet");
+
+                    int totalCount = codeSystemDegradedCount
+                        + codeSystemUnhealthyCount
+                        + conceptMapDegradedCount
+                        + conceptMapUnhealthyCount
+                        + valueSetDegradedCount
+                        + valueSetMapUnhealthyCount;
+
+                    string message = totalCount == 0
+                        ? $"Nothing to process. All up to date."
+                        : $"{totalCount} have not been processed. Please check logs and function status.";
+
+                    var vals = new Dictionary<string, object>
                 {
-                    vals.Add("status", HealthStatus.Degraded.ToString());
+                    { "description", CheckNameDescription },
+                    { "failedToProcess", totalCount },
+                    { "degradedCodeSystemItems", codeSystemDegradedCount},
+                    { "unHealthyCodeSystemItems", codeSystemUnhealthyCount},
+                    { "degradedConceptMapItems", conceptMapDegradedCount},
+                    { "unHealthyConceptMapItems", conceptMapUnhealthyCount},
+                    { "degradedValueSetItems", valueSetDegradedCount},
+                    { "unHealthyValueItems", valueSetMapUnhealthyCount},
+                    { "degradedThresholdMinutes", degradedThresholdMinutes.ToString() },
+                    { "unHealthyThresholdMinutes", unHealthyThresholdMinutes.ToString() },
+                    { "checkedAt", currentDateTime.ToString("o") },
+                    { "message", message }
+                };
 
-                    return HealthCheckResult.Degraded(
-                        description: CheckName,
-                        data: vals);
-                }
-                else
-                {
-                    vals.Add("status", HealthStatus.Healthy.ToString());
+                    if ((codeSystemUnhealthyCount + conceptMapUnhealthyCount + valueSetMapUnhealthyCount) > 0)
+                    {
+                        vals.Add("status", HealthStatus.Unhealthy.ToString());
 
-                    return HealthCheckResult.Healthy(
-                        description: CheckName,
-                        data: vals);
+                        return HealthCheckResult.Unhealthy(
+                            description: CheckName,
+                            data: vals);
+                    }
+                    else if ((codeSystemDegradedCount + conceptMapDegradedCount + valueSetDegradedCount) > 0)
+                    {
+                        vals.Add("status", HealthStatus.Degraded.ToString());
+
+                        return HealthCheckResult.Degraded(
+                            description: CheckName,
+                            data: vals);
+                    }
+                    else
+                    {
+                        vals.Add("status", HealthStatus.Healthy.ToString());
+
+                        return HealthCheckResult.Healthy(
+                            description: CheckName,
+                            data: vals);
+                    }
                 }
-            }
-        }
+            });
     }
 }

@@ -22,7 +22,7 @@ namespace LHDS.Core.Tests.Unit.Services.Coordinations.HealthChecks.TerminologyPo
         private readonly Mock<IDateTimeBroker> dateTimeBrokerMock;
         private readonly Mock<ILoggingBroker> loggingBrokerMock;
 
-        private readonly TerminologyPollsFailedToProcessHealthCheckService
+        private readonly TerminologyPollsNotPollingHealthCheckService
             terminologyPollsNotPollingHealthCheckService;
 
         private const string CheckName = "notPolling";
@@ -38,7 +38,7 @@ namespace LHDS.Core.Tests.Unit.Services.Coordinations.HealthChecks.TerminologyPo
             this.loggingBrokerMock = new Mock<ILoggingBroker>();
 
             this.terminologyPollsNotPollingHealthCheckService =
-                new TerminologyPollsFailedToProcessHealthCheckService(
+                new TerminologyPollsNotPollingHealthCheckService(
                     storageBroker: this.storageBrokerMock.Object,
                     configuration: this.configuration,
                     dateTimeBroker: this.dateTimeBrokerMock.Object,

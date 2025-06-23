@@ -40,7 +40,7 @@ namespace LHDS.Core.Services.Foundations.TerminologyArtifacts
 
                 await ValidateTerminologyArtifactOnAddAsync(terminologyArtifactWithAddAuditApplied);
 
-                return await this.storageBroker.InsertTerminologyArtifactAsync(terminologyArtifact);
+                return await this.storageBroker.InsertTerminologyArtifactAsync(terminologyArtifactWithAddAuditApplied);
             });
 
         public ValueTask<IQueryable<TerminologyArtifact>> RetrieveAllTerminologyArtifactsAsync() =>

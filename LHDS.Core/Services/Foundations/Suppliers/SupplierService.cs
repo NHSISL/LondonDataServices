@@ -35,7 +35,7 @@ namespace LHDS.Core.Services.Foundations.Suppliers
         public ValueTask<Supplier> AddSupplierAsync(Supplier supplier) =>
             TryCatch(async () =>
             {
-                Supplier supplierWithAddAuditApplied = await ApplyAddSupplierAsync(supplier);
+                Supplier supplierWithAddAuditApplied = await ApplyAddAuditAsync(supplier);
                 await ValidateSupplierOnAddAsync(supplierWithAddAuditApplied);
 
                 Supplier maybeSupplier =
@@ -93,7 +93,7 @@ namespace LHDS.Core.Services.Foundations.Suppliers
                  return await this.storageBroker.DeleteSupplierAsync(maybeSupplier);
              });
 
-        virtual internal async ValueTask<Supplier> ApplyAddSupplierAsync(Supplier supplier)
+        virtual internal async ValueTask<Supplier> ApplyAddAuditAsync(Supplier supplier)
         {
             ValidateSupplierIsNotNull(supplier);
             var auditDateTimeOffset = await this.dateTimeBroker.GetCurrentDateTimeOffsetAsync();

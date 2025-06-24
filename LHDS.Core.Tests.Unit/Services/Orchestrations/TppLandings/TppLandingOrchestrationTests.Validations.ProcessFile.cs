@@ -4,22 +4,42 @@
 
 using System;
 using System.Threading.Tasks;
+using FluentAssertions;
+using LHDS.Core.Models.Orchestrations.TppLandings.Exceptions;
 using LHDS.Core.Services.Orchestrations.Tpp;
 using Moq;
 using Xunit;
+
 
 namespace LHDS.Core.Tests.Unit.Services.Orchestrations.TppLandings
 {
     public partial class TppLandingOrchestrationTests
     {
-        [Fact]
-        public async Task ShouldProcessAsync()
+        [Theory]
+        [InlineData(null)]
+        [InlineData("")]
+        [InlineData(" ")]
+        public async Task ShouldThrowValidationExceptionOnProcessFileIfDocumentFileNameIsNullAndLogItAsync(
+            string invalidText)
         {
             // given
-            string randomFileName = GetRandomString();
-            string inputFileName = randomFileName;
-            Guid randomSupplierId = Guid.NewGuid();
-            Guid inputSupplierId = randomSupplierId;
+            Guid supplierId = Guid.Empty;
+            string inputFileName = invalidText;
+
+            var invalidArgumentException =
+                new InvalidArgumentTppLandingOrchestrationException(
+                    message: "Invalid TPP landing orchestration argument(s), " +
+                        "please correct the errors and try again.");
+
+            invalidArgumentException.AddData(
+               key: "FileName",
+               values: "Text is required");
+
+            invalidArgumentException.AddData(
+               key: "SupplierId",
+               values: "Id is required");
+
+            var expectedTppOrchestrationValidationException = invalidArgumentException;
 
             var tppOrchestrationServiceMock = new Mock<TppLandingOrchestrationService>(
                 documentProcessingServiceMock.Object,
@@ -37,26 +57,23 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.TppLandings
                 CallBase = true
             };
 
-            tppOrchestrationServiceMock.Setup(service =>
-                service.ProcessFileAsync(inputFileName, inputSupplierId))
-                    .ReturnsAsync(inputSupplierId);
-
             // when
-            Guid returnedGuid = await tppOrchestrationServiceMock.Object.ProcessAsync(
-                fileName: inputFileName,
-                supplierId: inputSupplierId);
+            ValueTask<Guid> returnedGuidTask = tppOrchestrationServiceMock.Object
+                .ProcessFileAsync(fileName: inputFileName, supplierId);
+
+            InvalidArgumentTppLandingOrchestrationException actualException =
+                await Assert.ThrowsAsync<InvalidArgumentTppLandingOrchestrationException>(returnedGuidTask.AsTask);
 
             // then
-            tppOrchestrationServiceMock.Verify(service =>
-                service.ProcessFileAsync(inputFileName, inputSupplierId),
-                    Times.Once);
+            actualException.Should()
+               .BeEquivalentTo(expectedTppOrchestrationValidationException);
 
             this.ingestionTrackingProcessingServiceMock.VerifyNoOtherCalls();
             this.hashBrokerMock.VerifyNoOtherCalls();
             this.dateTimeBrokerMock.VerifyNoOtherCalls();
-            this.dataSetSpecificationProcessingServiceMock.VerifyNoOtherCalls();
             this.documentProcessingServiceMock.VerifyNoOtherCalls();
             this.ingestionTrackingProcessingAuditServiceMock.VerifyNoOtherCalls();
+            this.dataSetSpecificationProcessingServiceMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
         }
     }

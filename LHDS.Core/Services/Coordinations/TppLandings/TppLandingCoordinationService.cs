@@ -40,5 +40,12 @@ namespace LHDS.Core.Services.Coordinations.TppLandings
 
                 return ingestionTrackingId;
             });
+
+        public ValueTask ReProcessAsync(Guid supplierId) =>
+            TryCatch(async () =>
+            {
+                ValidateArgumentsOnReProcess(supplierId);
+                await this.tppOrchestrationService.ReProcessAsync(supplierId);
+            });
     }
 }

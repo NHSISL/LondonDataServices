@@ -208,12 +208,10 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.IngestionTrackings
             storageIngestionTrackings.AddRange(randomEncryptedIngestionTrackings);
 
             List<string> ingestionTrackingObjects = storageIngestionTrackings
-
                 .Where(ingestionTrackingObject =>
                     ingestionTrackingObject.Batch == batchReference
                     && ingestionTrackingObject.Decrypted == decrypted
                     && ingestionTrackingObject.SubscriberAgreementId == subscriberAgreementId)
-
                 .Select(ingestionTracking => ingestionTracking.ObjectName)
                     .ToList();
 

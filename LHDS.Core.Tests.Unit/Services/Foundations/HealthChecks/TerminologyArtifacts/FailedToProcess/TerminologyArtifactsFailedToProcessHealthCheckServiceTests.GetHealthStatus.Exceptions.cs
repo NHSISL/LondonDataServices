@@ -6,9 +6,9 @@ using Microsoft.Extensions.Diagnostics.HealthChecks;
 using Moq;
 using Xunit;
 
-namespace LHDS.Core.Tests.Unit.Services.Foundations.HealthChecks.TerminologyPolls.FailedToProcess
+namespace LHDS.Core.Tests.Unit.Services.Foundations.HealthChecks.TerminologyArtifacts.FailedToProcess
 {
-    public partial class TerminologyPollsFailedToProcessHealthCheckServiceTests
+    public partial class TerminologyArtifactsFailedToProcessHealthCheckServiceTests
     {
         [Fact]
         public async Task ShouldThrowServiceExceptionOnGetHealthStatusIfServiceErrorOccursAndLogItAsync()
@@ -16,23 +16,23 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.HealthChecks.TerminologyPoll
             // given
             var serviceException = new Exception();
 
-            var failedTerminologyPollsFailedToProcessHealthCheckServiceException =
-                new FailedTerminologyPollsFailedToProcessHealthCheckServiceException(
+            var failedTerminologyArtifactsFailedToProcessHealthCheckServiceException =
+                new FailedTerminologyArtifactsFailedToProcessHealthCheckServiceException(
 
                     message:
-                        "Failed terminology polls failed to process health check service error occurred, "
+                        "Failed terminology artifacts failed to process health check service error occurred, "
                             + "please contact support.",
 
                     innerException: serviceException);
 
-            var expectedTerminologyPollsFailedToProcessHealthCheckServiceException =
-                new TerminologyPollsFailedToProcessHealthCheckServiceException(
+            var expectedTerminologyArtifactsFailedToProcessHealthCheckServiceException =
+                new TerminologyArtifactsFailedToProcessHealthCheckServiceException(
 
                     message:
-                        "Terminology polls failed to process health check service error occurred, "
+                        "Terminology artifacts failed to process health check service error occurred, "
                             + "please contact support.",
 
-                    innerException: failedTerminologyPollsFailedToProcessHealthCheckServiceException);
+                    innerException: failedTerminologyArtifactsFailedToProcessHealthCheckServiceException);
 
             this.dateTimeBrokerMock.Setup(broker =>
                 broker.GetCurrentDateTimeOffsetAsync())
@@ -42,14 +42,14 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.HealthChecks.TerminologyPoll
             ValueTask<HealthCheckResult> getHealthStatusTask = 
                 this.terminologyPollsHealthItemService.GetHealthStatusAsync();
 
-            TerminologyPollsFailedToProcessHealthCheckServiceException
-                actualTerminologyPollsFailedToProcessHealthCheckServiceException =
-                    await Assert.ThrowsAsync<TerminologyPollsFailedToProcessHealthCheckServiceException>(
+            TerminologyArtifactsFailedToProcessHealthCheckServiceException
+                actualTerminologyArtifactsFailedToProcessHealthCheckServiceException =
+                    await Assert.ThrowsAsync<TerminologyArtifactsFailedToProcessHealthCheckServiceException>(
                         getHealthStatusTask.AsTask);
 
             // then
-            actualTerminologyPollsFailedToProcessHealthCheckServiceException.Should()
-                .BeEquivalentTo(expectedTerminologyPollsFailedToProcessHealthCheckServiceException);
+            actualTerminologyArtifactsFailedToProcessHealthCheckServiceException.Should()
+                .BeEquivalentTo(expectedTerminologyArtifactsFailedToProcessHealthCheckServiceException);
 
             this.dateTimeBrokerMock.Verify(broker =>
                 broker.GetCurrentDateTimeOffsetAsync(),
@@ -57,7 +57,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.HealthChecks.TerminologyPoll
 
             this.loggingBrokerMock.Verify(broker =>
                 broker.LogCriticalAsync(It.Is(SameExceptionAs(
-                    expectedTerminologyPollsFailedToProcessHealthCheckServiceException))),
+                    expectedTerminologyArtifactsFailedToProcessHealthCheckServiceException))),
                         Times.Once);
 
             this.storageBrokerMock.VerifyNoOtherCalls();

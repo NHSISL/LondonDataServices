@@ -3,9 +3,9 @@ using Xeptions;
 
 namespace LHDS.Core.Models.Coordinations.HealthChecks.Exceptions
 {
-    public class FailedTerminologyPollsFailedToProcessHealthCheckServiceException : Xeption
+    public class TerminologyArtifactsFailedToProcessHealthCheckServiceException : Xeption
     {
-        public FailedTerminologyPollsFailedToProcessHealthCheckServiceException(
+        public TerminologyArtifactsFailedToProcessHealthCheckServiceException(
             string message,
             Exception innerException)
             : base(message, innerException)

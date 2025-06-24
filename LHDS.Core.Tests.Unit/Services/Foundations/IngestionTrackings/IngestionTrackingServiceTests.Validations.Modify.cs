@@ -490,8 +490,12 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.IngestionTrackings
                 broker.SelectIngestionTrackingByIdAsync(invalidIngestionTracking.Id))
                 .ReturnsAsync(storageIngestionTracking);
 
+            ingestionTrackingServiceMock.Setup(service =>
+                service.EnsureCreatedAuditPropertiesIsSameAsStorageAsync(
+                    invalidIngestionTracking, storageIngestionTracking))
+                        .ReturnsAsync(invalidIngestionTracking);
             // when
-            ValueTask<IngestionTracking> modifyIngestionTrackingTask =
+            ValueTask <IngestionTracking> modifyIngestionTrackingTask =
                 ingestionTrackingServiceMock.Object.ModifyIngestionTrackingAsync(invalidIngestionTracking);
 
             IngestionTrackingValidationException actualIngestionTrackingValidationException =
@@ -513,6 +517,11 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.IngestionTrackings
             this.securityBrokerMock.Verify(broker =>
                 broker.GetCurrentUserAsync(),
                     Times.Once);
+
+            ingestionTrackingServiceMock.Verify(service =>
+                service.EnsureCreatedAuditPropertiesIsSameAsStorageAsync(
+                    invalidIngestionTracking, storageIngestionTracking),
+                        Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>
                broker.LogErrorAsync(It.Is(SameExceptionAs(
@@ -577,6 +586,11 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.IngestionTrackings
                 broker.SelectIngestionTrackingByIdAsync(invalidIngestionTracking.Id))
                 .ReturnsAsync(storageIngestionTracking);
 
+            ingestionTrackingServiceMock.Setup(service =>
+                service.EnsureCreatedAuditPropertiesIsSameAsStorageAsync(
+                    invalidIngestionTracking, storageIngestionTracking))
+                        .ReturnsAsync(invalidIngestionTracking);
+
             // when
             ValueTask<IngestionTracking> modifyIngestionTrackingTask =
                 ingestionTrackingServiceMock.Object.ModifyIngestionTrackingAsync(invalidIngestionTracking);
@@ -599,6 +613,11 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.IngestionTrackings
             this.securityBrokerMock.Verify(broker =>
                 broker.GetCurrentUserAsync(),
                     Times.Once);
+
+            ingestionTrackingServiceMock.Verify(service =>
+                service.EnsureCreatedAuditPropertiesIsSameAsStorageAsync(
+                    invalidIngestionTracking, storageIngestionTracking),
+                        Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>
                broker.LogErrorAsync(It.Is(SameExceptionAs(

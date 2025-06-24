@@ -10,5 +10,6 @@ namespace LHDS.Core.Clients
     public interface ITppLandingClient
     {
         ValueTask<Guid> ProcessAsync(string fileName, Guid supplierId);
+        ValueTask ReProcessAsync(Guid supplierId);
     }
 }

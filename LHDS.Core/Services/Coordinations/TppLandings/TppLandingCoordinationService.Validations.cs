@@ -15,7 +15,11 @@ namespace LHDS.Core.Services.Coordinations.TppLandings
             Validate(
                 (Rule: IsInvalid(fileName), Parameter: "FileName"),
                 (Rule: IsInvalid(supplierId), Parameter: "SupplierId"));
+        }
 
+        private static void ValidateArgumentsOnReProcess(Guid supplierId)
+        {
+            Validate((Rule: IsInvalid(supplierId), Parameter: "SupplierId"));
         }
 
         private static dynamic IsInvalid(Guid id) => new

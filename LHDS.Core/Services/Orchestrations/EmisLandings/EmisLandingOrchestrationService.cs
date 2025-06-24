@@ -312,7 +312,7 @@ namespace LHDS.Core.Services.Orchestrations.Downloads
                 maybeIngestionTracking = storageIngestionTracking;
             }
 
-            if (maybeIngestionTracking.IsDownloaded == false && maybeIngestionTracking.RetryCount <= 3)
+            if (maybeIngestionTracking.IsDownloaded == false && maybeIngestionTracking.RetryCount < 4)
             {
                 maybeIngestionTracking.RetryCount += 1;
 
@@ -486,7 +486,7 @@ namespace LHDS.Core.Services.Orchestrations.Downloads
             string dataSetName = retrievedDataSetSpecification?.DataSet?.DataSetName ?? string.Empty;
             string dataSetVersion = retrievedDataSetSpecification?.OurSpecificationVersion ?? string.Empty;
             string extractGroup = subscriberCredential.Id.ToString();
-            string extractTime = splitFileName[5];
+            string extractTime = splitFileName[6].Split('_')[4];
 
             string baseFolder =
                 $"/{landingConfiguration.DecryptedFolder}" +

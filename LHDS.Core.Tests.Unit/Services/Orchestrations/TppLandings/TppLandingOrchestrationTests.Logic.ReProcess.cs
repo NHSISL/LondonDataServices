@@ -3,7 +3,10 @@
 // ---------------------------------------------------------
 
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
+using LHDS.Core.Models.Foundations.IngestionTrackings;
 using LHDS.Core.Services.Orchestrations.Tpp;
 using Moq;
 using Xunit;
@@ -13,13 +16,15 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.TppLandings
     public partial class TppLandingOrchestrationTests
     {
         [Fact]
-        public async Task ShouldProcessAsync()
+        public async Task ShouldReProcessAsync()
         {
             // given
             string randomFileName = GetRandomString();
             string inputFileName = randomFileName;
             Guid randomSupplierId = Guid.NewGuid();
             Guid inputSupplierId = randomSupplierId;
+            DateTimeOffset randomDateTime = GetRandomDateTimeOffset();
+            List<string> randomFileNames = GetRandomStrings();
 
             var tppOrchestrationServiceMock = new Mock<TppLandingOrchestrationService>(
                 documentProcessingServiceMock.Object,
@@ -37,19 +42,40 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.TppLandings
                 CallBase = true
             };
 
-            tppOrchestrationServiceMock.Setup(service =>
-                service.ProcessFileAsync(inputFileName, inputSupplierId))
-                    .ReturnsAsync(inputSupplierId);
+            List<IngestionTracking> ingestionTrackings = CreateRandomIngestionTrackings(
+                dateTimeOffset: randomDateTime,
+                fileNames: randomFileNames,
+                supplierId: randomSupplierId);
+
+            foreach (IngestionTracking ingestionTracking in ingestionTrackings)
+            {
+                ingestionTracking.IsDownloaded = false;
+                ingestionTracking.RetryCount = 1;
+
+                tppOrchestrationServiceMock.Setup(service =>
+                    service.ProcessFileAsync(ingestionTracking.FileName, ingestionTracking.SupplierId))
+                        .ReturnsAsync(inputSupplierId);
+            }
+
+            this.ingestionTrackingProcessingServiceMock.Setup(service =>
+                service.RetrieveAllIngestionTrackingsAsync())
+                    .ReturnsAsync(ingestionTrackings.AsQueryable());
 
             // when
-            Guid returnedGuid = await tppOrchestrationServiceMock.Object.ProcessAsync(
-                fileName: inputFileName,
+            await tppOrchestrationServiceMock.Object.ReProcessAsync(
                 supplierId: inputSupplierId);
 
             // then
-            tppOrchestrationServiceMock.Verify(service =>
-                service.ProcessFileAsync(inputFileName, inputSupplierId),
+            this.ingestionTrackingProcessingServiceMock.Verify(service =>
+                service.RetrieveAllIngestionTrackingsAsync(),
                     Times.Once);
+
+            foreach (IngestionTracking ingestionTracking in ingestionTrackings)
+            {
+                tppOrchestrationServiceMock.Verify(service =>
+                    service.ProcessFileAsync(ingestionTracking.FileName, ingestionTracking.SupplierId),
+                        Times.Once);
+            }
 
             this.ingestionTrackingProcessingServiceMock.VerifyNoOtherCalls();
             this.hashBrokerMock.VerifyNoOtherCalls();

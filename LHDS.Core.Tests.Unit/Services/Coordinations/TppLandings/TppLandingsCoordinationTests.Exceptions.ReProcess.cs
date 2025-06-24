@@ -1,0 +1,147 @@
+﻿// ---------------------------------------------------------
+// Copyright (c) North East London ICB. All rights reserved.
+// ---------------------------------------------------------
+
+using System;
+using System.Threading.Tasks;
+using FluentAssertions;
+using LHDS.Core.Models.Coordinations.TppLandings.Exceptions;
+using Moq;
+using Xeptions;
+using Xunit;
+
+namespace LHDS.Core.Tests.Unit.Services.Coordinations.TppLandings
+{
+    public partial class TppLandingsCoordinationTests
+    {
+        [Theory]
+        [MemberData(nameof(TppDependencyValidationExceptions))]
+        public async Task ShouldThrowDependencyValidationOnReProcessIfDependencyValidationOccursAndLogItAsync(
+             Xeption dependancyValidationException)
+        {
+            // given
+            Guid inputSupplierId = Guid.NewGuid();
+
+            var expectedDependencyException =
+                new TppLandingCoordinationDependencyValidationException(
+
+                    message: "TPP landing coordination dependency validation error occurred, " +
+                        "fix the errors and try again.",
+
+                    dependancyValidationException.InnerException as Xeption);
+
+            this.tppLandingOrchestrationServiceMock.Setup(service =>
+                service.ReProcessAsync(It.IsAny<Guid>()))
+                    .ThrowsAsync(dependancyValidationException);
+
+            // when
+            ValueTask reProcessTask = this.tppLandingCoordinationService
+                .ReProcessAsync(supplierId: inputSupplierId);
+
+            TppLandingCoordinationDependencyValidationException actualException =
+                await Assert.ThrowsAsync<TppLandingCoordinationDependencyValidationException>(reProcessTask.AsTask);
+
+            // then
+            actualException.Should().BeEquivalentTo(expectedDependencyException);
+
+            this.tppLandingOrchestrationServiceMock.Verify(service =>
+                service.ReProcessAsync(It.IsAny<Guid>()),
+                    Times.Once);
+
+            this.loggingBrokerMock.Verify(broker =>
+                broker.LogErrorAsync(It.Is(SameExceptionAs(
+                    expectedDependencyException))),
+                       Times.Once);
+
+            this.tppLandingOrchestrationServiceMock.VerifyNoOtherCalls();
+            this.ingressOrchestrationServiceMock.VerifyNoOtherCalls();
+            this.loggingBrokerMock.VerifyNoOtherCalls();
+        }
+
+        [Theory]
+        [MemberData(nameof(TppDependencyExceptions))]
+        public async Task ShouldThrowDependencyExceptionOnReProcessIfDependencyExceptionOccursAndLogItAsync(
+          Xeption dependancyException)
+        {
+            // given
+            Guid inputSupplierId = Guid.NewGuid();
+
+            var expectedDependencyException =
+                new TppLandingCoordinationDependencyException(
+                    message: "TPP landing coordination dependency error occurred, fix the errors and try again.",
+                    innerException: dependancyException.InnerException as Xeption);
+
+            this.tppLandingOrchestrationServiceMock.Setup(service =>
+                service.ReProcessAsync(It.IsAny<Guid>()))
+                    .ThrowsAsync(dependancyException);
+
+            // when
+            ValueTask reProcessTask = this.tppLandingCoordinationService
+                .ReProcessAsync(supplierId: inputSupplierId);
+
+            TppLandingCoordinationDependencyException actualException =
+                await Assert.ThrowsAsync<TppLandingCoordinationDependencyException>(reProcessTask.AsTask);
+
+            // then
+            actualException.Should().BeEquivalentTo(expectedDependencyException);
+
+            this.tppLandingOrchestrationServiceMock.Verify(service =>
+                service.ReProcessAsync(It.IsAny<Guid>()),
+                    Times.Once);
+
+            this.loggingBrokerMock.Verify(broker =>
+                broker.LogErrorAsync(It.Is(SameExceptionAs(
+                    expectedDependencyException))),
+                        Times.Once);
+
+            this.tppLandingOrchestrationServiceMock.VerifyNoOtherCalls();
+            this.ingressOrchestrationServiceMock.VerifyNoOtherCalls();
+            this.loggingBrokerMock.VerifyNoOtherCalls();
+        }
+
+        [Fact]
+        public async Task ShouldThrowServiceExceptionOnReProcessIfServiceErrorOccursAndLogItAsync()
+        {
+            //Given
+            Guid inputSupplierId = Guid.NewGuid();
+            var serviceException = new Exception();
+
+            var failedTppCoordinationServiceException =
+                new FailedTppLandingCoordinationServiceException(
+                    message: "Failed TPP landing coordination service error occurred, please contact support.",
+                    serviceException);
+
+            var expectedTppCoordinationServiceException =
+                new TppLandingCoordinationServiceException(
+                    message: "TPP landing coordination service error occurred, please contact support.",
+                    failedTppCoordinationServiceException);
+
+            this.tppLandingOrchestrationServiceMock.Setup(service =>
+                service.ReProcessAsync(It.IsAny<Guid>()))
+                    .ThrowsAsync(serviceException);
+
+            // when
+            ValueTask reProcessTask = this.tppLandingCoordinationService
+                .ReProcessAsync(supplierId: inputSupplierId);
+
+            TppLandingCoordinationServiceException actualException =
+                await Assert.ThrowsAsync<TppLandingCoordinationServiceException>(reProcessTask.AsTask);
+
+            // then
+            actualException.Should().BeEquivalentTo(expectedTppCoordinationServiceException);
+
+            this.tppLandingOrchestrationServiceMock.Verify(service =>
+                service.ReProcessAsync(It.IsAny<Guid>()),
+                    Times.Once);
+
+            this.loggingBrokerMock.Verify(broker =>
+                broker.LogErrorAsync(It.Is(SameExceptionAs(
+                    expectedTppCoordinationServiceException))),
+                        Times.Once);
+
+            this.tppLandingOrchestrationServiceMock.VerifyNoOtherCalls();
+            this.ingressOrchestrationServiceMock.VerifyNoOtherCalls();
+            this.loggingBrokerMock.VerifyNoOtherCalls();
+        }
+    }
+}

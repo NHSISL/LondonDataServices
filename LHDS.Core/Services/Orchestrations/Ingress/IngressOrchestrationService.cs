@@ -94,8 +94,8 @@ namespace LHDS.Core.Services.Orchestrations.Ingress
             {
                 string batchComplete =
                     $"All specification object files present for subscriber agreement " +
-                    $"'{ingestionTracking.SubscriberAgreementId}' and batch '{ingestionTracking.Batch}' " +
-                    $"as defined in Dataset Specification Id: '{ingestionTracking.DataSetSpecificationId}'.";
+                        $"'{ingestionTracking.SubscriberAgreementId}' and batch '{ingestionTracking.Batch}' " +
+                            $"as defined in Dataset Specification Id: '{ingestionTracking.DataSetSpecificationId}'.";
 
                 Stream data = new MemoryStream(System.Text.Encoding.UTF8.GetBytes(batchComplete));
 

@@ -14,9 +14,7 @@ import ToastBroker from './brokers/toastBroker';
 
 const baseUrl = document.getElementsByTagName('base')[0].getAttribute('href') || "\\";
 const rootElement = document.getElementById('root');
-
 const msalInstance = new PublicClientApplication(msalConfig);
-
 const root = createRoot(rootElement!);
 
 root.render(

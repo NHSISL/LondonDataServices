@@ -4,9 +4,9 @@ using LHDS.Core.Models.Coordinations.HealthChecks.Exceptions;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
 using Xeptions;
 
-namespace LHDS.Core.Services.Foundations.HealthChecks.TerminologyPolls
+namespace LHDS.Core.Services.Foundations.HealthChecks.TerminologyArtifacts
 {
-    public partial class TerminologyPollsFailedToProcessHealthCheckService : ITerminologyPollsHealthItemService
+    public partial class TerminologyArtifactsFailedToProcessHealthCheckService : ITerminologyArtifactsHealthItemService
     {
         private delegate Task<HealthCheckResult> ReturningHealthCheckResultFunction();
 
@@ -19,27 +19,27 @@ namespace LHDS.Core.Services.Foundations.HealthChecks.TerminologyPolls
             }
             catch (Exception exception)
             {
-                var failedTerminologyPollsFailedToProcessHealthCheckServiceException =
-                    new FailedTerminologyPollsFailedToProcessHealthCheckServiceException(
+                var failedTerminologyArtifactsFailedToProcessHealthCheckServiceException =
+                    new FailedTerminologyArtifactsFailedToProcessHealthCheckServiceException(
 
-                        message: "Failed terminology polls failed to process health check service error occurred, "
+                        message: "Failed terminology artifacts failed to process health check service error occurred, "
                             + "please contact support.",
 
                         innerException: exception);
 
                 throw await CreateAndLogServiceExceptionAsync(
-                    failedTerminologyPollsFailedToProcessHealthCheckServiceException
+                    failedTerminologyArtifactsFailedToProcessHealthCheckServiceException
                 );
             }
         }
 
-        private async ValueTask<TerminologyPollsFailedToProcessHealthCheckServiceException> 
+        private async ValueTask<TerminologyArtifactsFailedToProcessHealthCheckServiceException> 
             CreateAndLogServiceExceptionAsync(Xeption exception)
         {
             var terminologyPollsFailedToProcessHealthCheckServiceException =
-                new TerminologyPollsFailedToProcessHealthCheckServiceException(
+                new TerminologyArtifactsFailedToProcessHealthCheckServiceException(
 
-                    message: "Terminology polls failed to process health check service error occurred, "
+                    message: "Terminology artifacts failed to process health check service error occurred, "
                         + "please contact support.",
 
                     innerException: exception);

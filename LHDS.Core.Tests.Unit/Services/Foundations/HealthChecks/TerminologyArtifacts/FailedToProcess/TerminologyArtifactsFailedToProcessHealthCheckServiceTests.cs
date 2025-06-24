@@ -6,29 +6,29 @@ using KellermanSoftware.CompareNetObjects;
 using LHDS.Core.Brokers.DateTimes;
 using LHDS.Core.Brokers.Loggings;
 using LHDS.Core.Brokers.Storages.Sql;
-using LHDS.Core.Models.Foundations.TerminologyPolls;
-using LHDS.Core.Services.Foundations.HealthChecks.TerminologyPolls;
+using LHDS.Core.Models.Foundations.TerminologyArtifacts;
+using LHDS.Core.Services.Foundations.HealthChecks.TerminologyArtifacts;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
 using Moq;
 using Tynamix.ObjectFiller;
 using Xeptions;
 
-namespace LHDS.Core.Tests.Unit.Services.Foundations.HealthChecks.TerminologyPolls.FailedToProcess
+namespace LHDS.Core.Tests.Unit.Services.Foundations.HealthChecks.TerminologyArtifacts.FailedToProcess
 {
-    public partial class TerminologyPollsFailedToProcessHealthCheckServiceTests
+    public partial class TerminologyArtifactsFailedToProcessHealthCheckServiceTests
     {
         private readonly Mock<IStorageBroker> storageBrokerMock;
         private readonly IConfiguration inMemoryConfiguration;
         private readonly Mock<IDateTimeBroker> dateTimeBrokerMock;
         private readonly Mock<ILoggingBroker> loggingBrokerMock;
-        private readonly ITerminologyPollsHealthItemService terminologyPollsHealthItemService;
+        private readonly ITerminologyArtifactsHealthItemService terminologyPollsHealthItemService;
         private readonly ICompareLogic compareLogic;
         private const string CheckName = "failedToProcess";
         private const string CheckNameDescription = "Failed To Process";
-        private const string ConfigSectionName = "HealthChecks:TerminologyPolls:FailedToProcess";
+        private const string ConfigSectionName = "HealthChecks:TerminologyArtifacts:FailedToProcess";
 
-        public TerminologyPollsFailedToProcessHealthCheckServiceTests()
+        public TerminologyArtifactsFailedToProcessHealthCheckServiceTests()
         {
             storageBrokerMock = new Mock<IStorageBroker>();
             dateTimeBrokerMock = new Mock<IDateTimeBroker>();
@@ -45,7 +45,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.HealthChecks.TerminologyPoll
 
             compareLogic = new CompareLogic();
 
-            this.terminologyPollsHealthItemService = new TerminologyPollsFailedToProcessHealthCheckService(
+            this.terminologyPollsHealthItemService = new TerminologyArtifactsFailedToProcessHealthCheckService(
                 storageBroker: storageBrokerMock.Object,
                 configuration: inMemoryConfiguration,
                 dateTimeBroker: dateTimeBrokerMock.Object,
@@ -66,28 +66,30 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.HealthChecks.TerminologyPoll
         private static DateTimeOffset GetRandomDateTimeOffset() =>
             new DateTimeRange(earliestDate: new DateTime()).GetValue();
 
-        private static List<TerminologyPoll> CreateRandomTerminologyPolls(
+        private static List<TerminologyArtifact> CreateRandomTerminologyArtifacts(
             DateTimeOffset dateTimeOffset,
             string resourceType,
             int count)
         {
-            return CreateTerminologyPollsFiller(dateTimeOffset, resourceType)
+            return CreateTerminologyArtifactsFiller(dateTimeOffset, resourceType)
                 .Create(count)
                     .ToList();
         }
 
-        private static Filler<TerminologyPoll> CreateTerminologyPollsFiller(
-            DateTimeOffset lastPollDateTime,
+        private static Filler<TerminologyArtifact> CreateTerminologyArtifactsFiller(
+            DateTimeOffset updatedDateTime,
             string resourceType)
         {
             DateTimeOffset dateTimeOffset = DateTimeOffset.UtcNow;
             string user = Guid.NewGuid().ToString();
-            var filler = new Filler<TerminologyPoll>();
+            var filler = new Filler<TerminologyArtifact>();
 
             filler.Setup()
                 .OnType<DateTimeOffset>().Use(dateTimeOffset)
-                .OnProperty(terminologyPolls => terminologyPolls.LastPoll).Use(lastPollDateTime)
+                .OnType<DateTimeOffset?>().Use(dateTimeOffset)
+                .OnProperty(terminologyPolls => terminologyPolls.UpdatedDate).Use(updatedDateTime)
                 .OnProperty(terminologyPolls => terminologyPolls.ResourceType).Use(resourceType)
+                .OnProperty(terminologyPolls => terminologyPolls.IsError).Use(true)
                 .OnProperty(terminologyPolls => terminologyPolls.CreatedBy).Use(user)
                 .OnProperty(terminologyPolls => terminologyPolls.UpdatedBy).Use(user);
 

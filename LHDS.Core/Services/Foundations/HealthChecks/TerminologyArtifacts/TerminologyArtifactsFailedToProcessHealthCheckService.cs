@@ -8,9 +8,9 @@ using LHDS.Core.Brokers.Storages.Sql;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
 
-namespace LHDS.Core.Services.Foundations.HealthChecks.TerminologyPolls
+namespace LHDS.Core.Services.Foundations.HealthChecks.TerminologyArtifacts
 {
-    public partial class TerminologyPollsFailedToProcessHealthCheckService : ITerminologyPollsHealthItemService
+    public partial class TerminologyArtifactsFailedToProcessHealthCheckService : ITerminologyArtifactsHealthItemService
     {
         private readonly IStorageBroker storageBroker;
         private readonly IConfiguration configuration;
@@ -18,9 +18,9 @@ namespace LHDS.Core.Services.Foundations.HealthChecks.TerminologyPolls
         private readonly ILoggingBroker loggingBroker;
         private const string CheckName = "failedToProcess";
         private const string CheckNameDescription = "Failed To Process";
-        private const string ConfigSectionName = "HealthChecks:TerminologyPolls:FailedToProcess";
+        private const string ConfigSectionName = "HealthChecks:TerminologyArtifacts:FailedToProcess";
 
-        public TerminologyPollsFailedToProcessHealthCheckService(
+        public TerminologyArtifactsFailedToProcessHealthCheckService(
             IStorageBroker storageBroker,
             IConfiguration configuration,
             IDateTimeBroker dateTimeBroker,
@@ -43,17 +43,18 @@ namespace LHDS.Core.Services.Foundations.HealthChecks.TerminologyPolls
                         .GetValue($"{ConfigSectionName}:UnHealthyThreshold", 2880);
 
                     DateTimeOffset currentDateTime = await dateTimeBroker.GetCurrentDateTimeOffsetAsync();
-                    DateTimeOffset lastExpectedPollTime = currentDateTime.Date.AddDays(-1).AddHours(23);
-                    DateTimeOffset degradedThresholdDateTime = lastExpectedPollTime.AddMinutes(-1 * degradedThresholdMinutes);
-                    DateTimeOffset unHealthyThresholdDateTime = lastExpectedPollTime.AddMinutes(-1 * unHealthyThresholdMinutes);
-                    var terminologyPollsQuery = await storageBroker.SelectAllTerminologyPollsAsync();
+                    DateTimeOffset degradedThresholdDateTime = currentDateTime.AddMinutes(-1 * degradedThresholdMinutes);
+                    DateTimeOffset unHealthyThresholdDateTime = currentDateTime.AddMinutes(-1 * unHealthyThresholdMinutes);
+                    var terminologyArtifactsQuery = await storageBroker.SelectAllTerminologyArtifactsAsync();
 
-                    var degradedQuery = terminologyPollsQuery.Where(terminologyPoll =>
-                        terminologyPoll.LastPoll <= degradedThresholdDateTime &&
-                        terminologyPoll.LastPoll > unHealthyThresholdDateTime);
+                    var filteredQuery = terminologyArtifactsQuery.Where(terminologyArtifact => terminologyArtifact.IsError);
 
-                    var unHealthyQuery = terminologyPollsQuery
-                        .Where(terminologyPoll => terminologyPoll.LastPoll <= unHealthyThresholdDateTime);
+                    var degradedQuery = terminologyArtifactsQuery.Where(terminologyPoll =>
+                        terminologyPoll.UpdatedDate <= degradedThresholdDateTime &&
+                        terminologyPoll.UpdatedDate > unHealthyThresholdDateTime);
+
+                    var unHealthyQuery = terminologyArtifactsQuery
+                        .Where(terminologyPoll => terminologyPoll.UpdatedDate <= unHealthyThresholdDateTime);
 
                     int codeSystemDegradedCount = degradedQuery
                         .Count(terminologyPoll => terminologyPoll.ResourceType == "CodeSystem");

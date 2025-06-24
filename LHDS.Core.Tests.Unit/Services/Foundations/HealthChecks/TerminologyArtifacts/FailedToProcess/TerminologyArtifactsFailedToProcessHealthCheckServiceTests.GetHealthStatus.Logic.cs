@@ -3,15 +3,15 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using FluentAssertions;
-using LHDS.Core.Models.Foundations.TerminologyPolls;
+using LHDS.Core.Models.Foundations.TerminologyArtifacts;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
 using Moq;
 using Xunit;
 
-namespace LHDS.Core.Tests.Unit.Services.Foundations.HealthChecks.TerminologyPolls.FailedToProcess
+namespace LHDS.Core.Tests.Unit.Services.Foundations.HealthChecks.TerminologyArtifacts.FailedToProcess
 {
-    public partial class TerminologyPollsFailedToProcessHealthCheckServiceTests
+    public partial class TerminologyArtifactsFailedToProcessHealthCheckServiceTests
     {
         [Fact]
         public async Task ShouldGetHealthStatusAsHealthyAsync()
@@ -26,7 +26,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.HealthChecks.TerminologyPoll
             int unHealthyThresholdMinutes = this.inMemoryConfiguration
                 .GetValue($"{ConfigSectionName}:UnHealthyThreshold", 2880);
 
-            List<TerminologyPoll> healthyRecords = CreateRandomTerminologyPolls(
+            List<TerminologyArtifact> healthyRecords = CreateRandomTerminologyArtifacts(
                 dateTimeOffset: randomDateTimeOffset,
                 resourceType: "CodeSystem",
                 count: randomNumber);
@@ -36,7 +36,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.HealthChecks.TerminologyPoll
                     .ReturnsAsync(randomDateTimeOffset);
 
             this.storageBrokerMock.Setup(broker =>
-                broker.SelectAllTerminologyPollsAsync())
+                broker.SelectAllTerminologyArtifactsAsync())
                     .ReturnsAsync(healthyRecords.AsQueryable());
 
             string message = "Nothing to process. All up to date.";
@@ -79,7 +79,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.HealthChecks.TerminologyPoll
                     Times.Once);
 
             this.storageBrokerMock.Verify(broker =>
-                broker.SelectAllTerminologyPollsAsync(),
+                broker.SelectAllTerminologyArtifactsAsync(),
                     Times.Once);
 
             this.dateTimeBrokerMock.VerifyNoOtherCalls();
@@ -92,7 +92,6 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.HealthChecks.TerminologyPoll
         {
             // given
             DateTimeOffset randomDateTimeOffset = DateTimeOffset.UtcNow;
-            DateTimeOffset lastExpectedPollTime = randomDateTimeOffset.Date.AddDays(-1).AddHours(23);
             int randomNumber = GetRandomNumber();
 
             int degradedThresholdMinutes = this.inMemoryConfiguration
@@ -101,8 +100,8 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.HealthChecks.TerminologyPoll
             int unHealthyThresholdMinutes = this.inMemoryConfiguration
                 .GetValue($"{ConfigSectionName}:UnHealthyThreshold", 2880);
 
-            List<TerminologyPoll> degradedRecords = CreateRandomTerminologyPolls(
-                dateTimeOffset: lastExpectedPollTime.AddMinutes(-degradedThresholdMinutes).AddSeconds(-1),
+            List<TerminologyArtifact> degradedRecords = CreateRandomTerminologyArtifacts(
+                dateTimeOffset: randomDateTimeOffset.AddMinutes(-degradedThresholdMinutes).AddSeconds(-1),
                 resourceType: "CodeSystem",
                 count: randomNumber);
 
@@ -111,7 +110,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.HealthChecks.TerminologyPoll
                     .ReturnsAsync(randomDateTimeOffset);
 
             this.storageBrokerMock.Setup(broker =>
-                broker.SelectAllTerminologyPollsAsync())
+                broker.SelectAllTerminologyArtifactsAsync())
                     .ReturnsAsync(degradedRecords.AsQueryable());
 
             string message = $"{randomNumber} have not been processed. Please check logs and function status.";
@@ -154,7 +153,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.HealthChecks.TerminologyPoll
                     Times.Once);
 
             this.storageBrokerMock.Verify(broker =>
-                broker.SelectAllTerminologyPollsAsync(),
+                broker.SelectAllTerminologyArtifactsAsync(),
                     Times.Once);
 
             this.dateTimeBrokerMock.VerifyNoOtherCalls();
@@ -167,7 +166,6 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.HealthChecks.TerminologyPoll
         {
             // given
             DateTimeOffset randomDateTimeOffset = DateTimeOffset.UtcNow;
-            DateTimeOffset lastExpectedPollTime = randomDateTimeOffset.Date.AddDays(-1).AddHours(23);
             int randomNumber = GetRandomNumber();
 
             int degradedThresholdMinutes = this.inMemoryConfiguration
@@ -176,8 +174,8 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.HealthChecks.TerminologyPoll
             int unHealthyThresholdMinutes = this.inMemoryConfiguration
                 .GetValue($"{ConfigSectionName}:UnHealthyThreshold", 2880);
 
-            List<TerminologyPoll> unHealthyRecords = CreateRandomTerminologyPolls(
-                dateTimeOffset: lastExpectedPollTime.AddMinutes(-unHealthyThresholdMinutes).AddSeconds(-1),
+            List<TerminologyArtifact> unHealthyRecords = CreateRandomTerminologyArtifacts(
+                dateTimeOffset: randomDateTimeOffset.AddMinutes(-unHealthyThresholdMinutes).AddSeconds(-1),
                 resourceType: "CodeSystem",
                 count: randomNumber);
 
@@ -186,7 +184,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.HealthChecks.TerminologyPoll
                     .ReturnsAsync(randomDateTimeOffset);
 
             this.storageBrokerMock.Setup(broker =>
-                broker.SelectAllTerminologyPollsAsync())
+                broker.SelectAllTerminologyArtifactsAsync())
                     .ReturnsAsync(unHealthyRecords.AsQueryable());
 
             string message = $"{randomNumber} have not been processed. Please check logs and function status.";
@@ -229,7 +227,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.HealthChecks.TerminologyPoll
                     Times.Once);
 
             this.storageBrokerMock.Verify(broker =>
-                broker.SelectAllTerminologyPollsAsync(),
+                broker.SelectAllTerminologyArtifactsAsync(),
                     Times.Once);
 
             this.dateTimeBrokerMock.VerifyNoOtherCalls();
@@ -243,7 +241,6 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.HealthChecks.TerminologyPoll
         {
             // given
             DateTimeOffset randomDateTimeOffset = DateTimeOffset.UtcNow;
-            DateTimeOffset lastExpectedPollTime = randomDateTimeOffset.Date.AddDays(-1).AddHours(23);
 
             int degradedThresholdMinutes = this.inMemoryConfiguration
                 .GetValue($"{ConfigSectionName}:DegradedThreshold", 1440);
@@ -251,22 +248,22 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.HealthChecks.TerminologyPoll
             int unHealthyThresholdMinutes = this.inMemoryConfiguration
                 .GetValue($"{ConfigSectionName}:UnHealthyThreshold", 2880);
 
-            List<TerminologyPoll> healthyRecords = CreateRandomTerminologyPolls(
+            List<TerminologyArtifact> healthyRecords = CreateRandomTerminologyArtifacts(
                 dateTimeOffset: randomDateTimeOffset,
                 resourceType: "CodeSystem",
                 count: GetRandomNumber());
 
-            List<TerminologyPoll> degradedRecords = CreateRandomTerminologyPolls(
-                dateTimeOffset: lastExpectedPollTime.AddMinutes(-degradedThresholdMinutes).AddSeconds(-1),
+            List<TerminologyArtifact> degradedRecords = CreateRandomTerminologyArtifacts(
+                dateTimeOffset: randomDateTimeOffset.AddMinutes(-degradedThresholdMinutes).AddSeconds(-1),
                 resourceType: "ConceptMap",
                 count: GetRandomNumber());
 
-            List<TerminologyPoll> unhealthyRecords = CreateRandomTerminologyPolls(
-                dateTimeOffset: lastExpectedPollTime.AddMinutes(-unHealthyThresholdMinutes).AddSeconds(-1),
+            List<TerminologyArtifact> unhealthyRecords = CreateRandomTerminologyArtifacts(
+                dateTimeOffset: randomDateTimeOffset.AddMinutes(-unHealthyThresholdMinutes).AddSeconds(-1),
                 resourceType: "ValueSet",
                 count: GetRandomNumber());
 
-            List<TerminologyPoll> allRecords = [.. healthyRecords, .. degradedRecords, .. unhealthyRecords];
+            List<TerminologyArtifact> allRecords = [.. healthyRecords, .. degradedRecords, .. unhealthyRecords];
             int nonHealthyCount = degradedRecords.Count + unhealthyRecords.Count;
 
             this.dateTimeBrokerMock.Setup(broker =>
@@ -274,7 +271,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.HealthChecks.TerminologyPoll
                     .ReturnsAsync(randomDateTimeOffset);
 
             this.storageBrokerMock.Setup(broker =>
-                broker.SelectAllTerminologyPollsAsync())
+                broker.SelectAllTerminologyArtifactsAsync())
                     .ReturnsAsync(allRecords.AsQueryable());
 
             string message = $"{nonHealthyCount} have not been processed. Please check logs and function status.";
@@ -317,7 +314,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.HealthChecks.TerminologyPoll
                     Times.Once);
 
             this.storageBrokerMock.Verify(broker =>
-                broker.SelectAllTerminologyPollsAsync(),
+                broker.SelectAllTerminologyArtifactsAsync(),
                     Times.Once);
 
             this.dateTimeBrokerMock.VerifyNoOtherCalls();

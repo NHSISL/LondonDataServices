@@ -3,14 +3,14 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using FluentAssertions;
-using LHDS.Core.Models.Foundations.TerminologyPolls;
+using LHDS.Core.Models.Foundations.TerminologyArtifacts;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
 using Moq;
 using Xunit;
 
-namespace LHDS.Core.Tests.Unit.Services.Coordinations.HealthChecks.TerminologyPolls.FailedToProcessHealthCheck
+namespace LHDS.Core.Tests.Unit.Services.Coordinations.HealthChecks.TerminologyArtifacts.FailedToProcessHealthCheck
 {
-    public partial class TerminologyPollsFailedToProcessHealthCheckServiceTests
+    public partial class TerminologyArtifactsFailedToProcessHealthCheckServiceTests
     {
         [Fact]
         public async Task ShouldGetHealthStatusAsyncUnhealthyWhenAnyUnhealthy()
@@ -18,13 +18,13 @@ namespace LHDS.Core.Tests.Unit.Services.Coordinations.HealthChecks.TerminologyPo
             // given
             DateTimeOffset currentDateTime = DateTimeOffset.UtcNow;
 
-            IQueryable<TerminologyPoll> randomUnhealthyPolls =
-                CreateRandomUnhealthyTerminologyPolls("CodeSystem");
+            IQueryable<TerminologyArtifact> randomUnhealthyPolls =
+                CreateRandomUnhealthyTerminologyArtifacts("CodeSystem");
 
-            IQueryable<TerminologyPoll> randomHealthyPolls =
-                CreateRandomHealthyTerminologyPolls("ConceptMap");
+            IQueryable<TerminologyArtifact> randomHealthyPolls =
+                CreateRandomHealthyTerminologyArtifacts("ConceptMap");
 
-            IQueryable<TerminologyPoll> randomPolls =
+            IQueryable<TerminologyArtifact> randomPolls =
                 randomUnhealthyPolls.Concat(randomHealthyPolls);
 
             Dictionary<string, object> healthCheckResultValues =
@@ -44,11 +44,11 @@ namespace LHDS.Core.Tests.Unit.Services.Coordinations.HealthChecks.TerminologyPo
                     .ReturnsAsync(currentDateTime);
 
             this.storageBrokerMock.Setup(broker =>
-                broker.SelectAllTerminologyPollsAsync())
+                broker.SelectAllTerminologyArtifactsAsync())
                     .ReturnsAsync(randomPolls);
 
             // when
-            var result = await this.terminologyPollsFailedToProcessHealthCheckService.GetHealthStatusAsync();
+            var result = await this.terminologyArtifactsFailedToProcessHealthCheckService.GetHealthStatusAsync();
 
             // then
             result.Data.Should().BeEquivalentTo(expectedHealthCheckResult.Data);
@@ -61,7 +61,7 @@ namespace LHDS.Core.Tests.Unit.Services.Coordinations.HealthChecks.TerminologyPo
                     Times.Once);
 
             this.storageBrokerMock.Verify(broker =>
-                broker.SelectAllTerminologyPollsAsync(),
+                broker.SelectAllTerminologyArtifactsAsync(),
                     Times.Once);
 
             this.storageBrokerMock.VerifyNoOtherCalls();
@@ -75,13 +75,13 @@ namespace LHDS.Core.Tests.Unit.Services.Coordinations.HealthChecks.TerminologyPo
             // given
             DateTimeOffset currentDateTime = DateTimeOffset.UtcNow;
 
-            IQueryable<TerminologyPoll> randomDegradedPolls =
-                CreateRandomDegradedTerminologyPolls("CodeSystem");
+            IQueryable<TerminologyArtifact> randomDegradedPolls =
+                CreateRandomDegradedTerminologyArtifacts("CodeSystem");
 
-            IQueryable<TerminologyPoll> randomHealthyPolls =
-                CreateRandomHealthyTerminologyPolls("ValueSet");
+            IQueryable<TerminologyArtifact> randomHealthyPolls =
+                CreateRandomHealthyTerminologyArtifacts("ValueSet");
 
-            IQueryable<TerminologyPoll> randomPolls =
+            IQueryable<TerminologyArtifact> randomPolls =
                 randomDegradedPolls.Concat(randomHealthyPolls);
 
             Dictionary<string, object> healthCheckResultValues =
@@ -101,11 +101,11 @@ namespace LHDS.Core.Tests.Unit.Services.Coordinations.HealthChecks.TerminologyPo
                     .ReturnsAsync(currentDateTime);
 
             this.storageBrokerMock.Setup(broker =>
-                broker.SelectAllTerminologyPollsAsync())
+                broker.SelectAllTerminologyArtifactsAsync())
                     .ReturnsAsync(randomPolls);
 
             // when
-            var result = await this.terminologyPollsFailedToProcessHealthCheckService.GetHealthStatusAsync();
+            var result = await this.terminologyArtifactsFailedToProcessHealthCheckService.GetHealthStatusAsync();
 
             // then
             result.Data.Should().BeEquivalentTo(expectedHealthCheckResult.Data);
@@ -118,7 +118,7 @@ namespace LHDS.Core.Tests.Unit.Services.Coordinations.HealthChecks.TerminologyPo
                     Times.Once);
 
             this.storageBrokerMock.Verify(broker =>
-                broker.SelectAllTerminologyPollsAsync(),
+                broker.SelectAllTerminologyArtifactsAsync(),
                     Times.Once);
 
             this.storageBrokerMock.VerifyNoOtherCalls();
@@ -132,8 +132,8 @@ namespace LHDS.Core.Tests.Unit.Services.Coordinations.HealthChecks.TerminologyPo
             // given
             DateTimeOffset currentDateTime = DateTimeOffset.UtcNow;
 
-            IQueryable<TerminologyPoll> randomHealthyPolls =
-                CreateRandomHealthyTerminologyPolls("CodeSystem");
+            IQueryable<TerminologyArtifact> randomHealthyPolls =
+                CreateRandomHealthyTerminologyArtifacts("CodeSystem");
 
             Dictionary<string, object> healthCheckResultValues =
                 GetHealthCheckResultValues(
@@ -151,11 +151,11 @@ namespace LHDS.Core.Tests.Unit.Services.Coordinations.HealthChecks.TerminologyPo
                     .ReturnsAsync(currentDateTime);
 
             this.storageBrokerMock.Setup(broker =>
-                broker.SelectAllTerminologyPollsAsync())
+                broker.SelectAllTerminologyArtifactsAsync())
                     .ReturnsAsync(randomHealthyPolls);
 
             // when
-            var result = await this.terminologyPollsFailedToProcessHealthCheckService.GetHealthStatusAsync();
+            var result = await this.terminologyArtifactsFailedToProcessHealthCheckService.GetHealthStatusAsync();
 
             // then
             result.Data.Should().BeEquivalentTo(expectedHealthCheckResult.Data);
@@ -168,7 +168,7 @@ namespace LHDS.Core.Tests.Unit.Services.Coordinations.HealthChecks.TerminologyPo
                     Times.Once);
 
             this.storageBrokerMock.Verify(broker =>
-                broker.SelectAllTerminologyPollsAsync(),
+                broker.SelectAllTerminologyArtifactsAsync(),
                     Times.Once);
 
             this.storageBrokerMock.VerifyNoOtherCalls();

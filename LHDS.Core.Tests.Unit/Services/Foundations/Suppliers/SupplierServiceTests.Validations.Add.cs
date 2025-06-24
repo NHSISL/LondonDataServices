@@ -78,7 +78,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Suppliers
             };
 
             supplierServiceMock.Setup(service =>
-                service.ApplyAddSupplierAsync(invalidSupplier))
+                service.ApplyAddAuditAsync(invalidSupplier))
                     .ReturnsAsync(invalidSupplier);
 
             this.dateTimeBrokerMock.Setup(broker =>
@@ -213,7 +213,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Suppliers
             };
 
             supplierServiceMock.Setup(service =>
-                service.ApplyAddSupplierAsync(invalidSupplier))
+                service.ApplyAddAuditAsync(invalidSupplier))
                     .ReturnsAsync(invalidSupplier);
 
             this.dateTimeBrokerMock.Setup(broker =>
@@ -300,7 +300,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Suppliers
             };
 
             supplierServiceMock.Setup(service =>
-                service.ApplyAddSupplierAsync(invalidSupplier))
+                service.ApplyAddAuditAsync(invalidSupplier))
                     .ReturnsAsync(invalidSupplier);
 
             this.dateTimeBrokerMock.Setup(broker =>
@@ -387,7 +387,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Suppliers
             };
 
             supplierServiceMock.Setup(service =>
-                service.ApplyAddSupplierAsync(invalidSupplier))
+                service.ApplyAddAuditAsync(invalidSupplier))
                     .ReturnsAsync(invalidSupplier);
 
             this.dateTimeBrokerMock.Setup(broker =>
@@ -470,7 +470,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Suppliers
             };
 
             supplierServiceMock.Setup(service =>
-                service.ApplyAddSupplierAsync(invalidSupplier))
+                service.ApplyAddAuditAsync(invalidSupplier))
                     .ReturnsAsync(invalidSupplier);
 
             this.dateTimeBrokerMock.Setup(broker =>

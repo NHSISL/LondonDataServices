@@ -3,37 +3,27 @@
 // ---------------------------------------------------------
 
 using System;
-using System.IO;
 using System.Threading.Tasks;
 using FluentAssertions;
 using LHDS.Core.Models.Orchestrations.TppLandings.Exceptions;
 using Moq;
 using Xunit;
 
+
 namespace LHDS.Core.Tests.Unit.Services.Orchestrations.TppLandings
 {
     public partial class TppLandingOrchestrationTests
     {
-        [Theory]
-        [InlineData(null)]
-        [InlineData("")]
-        [InlineData(" ")]
-        public async Task ShouldThrowValidationExceptionIfDocumentFileNameIsNullAndLogItAsync(string invalidText)
+        [Fact]
+        public async Task ShouldThrowValidationExceptionOnReProcessIfDocumentFileNameIsNullAndLogItAsync()
         {
             // given
             Guid supplierId = Guid.Empty;
-            Stream randomStream = new MemoryStream();
-            Stream inputStream = new MemoryStream();
-            string inputFileName = invalidText;
 
             var invalidArgumentException =
                 new InvalidArgumentTppLandingOrchestrationException(
                     message: "Invalid TPP landing orchestration argument(s), " +
                         "please correct the errors and try again.");
-
-            invalidArgumentException.AddData(
-               key: "FileName",
-               values: "Text is required");
 
             invalidArgumentException.AddData(
                key: "SupplierId",
@@ -45,8 +35,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.TppLandings
                     innerException: invalidArgumentException);
 
             // when
-            ValueTask<Guid> returnedGuidTask = this.tppOrchestrationService
-                .ProcessAsync(fileName: inputFileName, supplierId);
+            ValueTask returnedGuidTask = this.tppOrchestrationService.ReProcessAsync(supplierId);
 
             TppLandingOrchestrationValidationException actualException =
                 await Assert.ThrowsAsync<TppLandingOrchestrationValidationException>(returnedGuidTask.AsTask);

@@ -23,7 +23,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.HealthChecks.IngestionTracki
             var failedIngestionTrackingProcessingHealthCheckServiceException =
                 new FailedIngestionTrackingProcessingHealthCheckServiceException(
 
-                    message: "Failed resolved address processing health check service error occurred, " +
+                    message: "Failed ingestion tracking processing health check service error occurred, " +
                         "please contact support.",
 
                     innerException: serviceException);
@@ -31,7 +31,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.HealthChecks.IngestionTracki
             var expectedIngestionTrackingProcessingHealthCheckServiceException =
                 new IngestionTrackingProcessingHealthCheckServiceException(
 
-                    message: "Resolved address processing health check service error occurred, " +
+                    message: "Ingestion tracking processing health check service error occurred, " +
                         "please contact support.",
 
                     innerException: failedIngestionTrackingProcessingHealthCheckServiceException);

@@ -14,7 +14,7 @@ using Microsoft.Extensions.Diagnostics.HealthChecks;
 
 namespace LHDS.Core.Services.Foundations.HealthChecks.ResolvedAddress
 {
-    public class ResolvedAddressProcessingHealthCheckService : IResolvedAddressHealthItemService
+    public partial class ResolvedAddressProcessingHealthCheckService : IResolvedAddressHealthItemService
     {
         private readonly IStorageBroker storageBroker;
         private readonly IConfiguration configuration;
@@ -36,65 +36,66 @@ namespace LHDS.Core.Services.Foundations.HealthChecks.ResolvedAddress
             this.loggingBroker = loggingBroker;
         }
 
-        public async ValueTask<HealthCheckResult> GetHealthStatusAsync()
-        {
-            int degradedThresholdMinutes = configuration.GetValue($"{ConfigSectionName}:DegradedThreshold", 1440);
-            int unHealthyThresholdMinutes = configuration.GetValue($"{ConfigSectionName}:UnHealthyThreshold", 2880);
-            DateTimeOffset currentDateTime = await dateTimeBroker.GetCurrentDateTimeOffsetAsync();
-            DateTimeOffset degradedThresholdDateTime = currentDateTime.AddMinutes(-1 * degradedThresholdMinutes);
-            DateTimeOffset unHealthyThresholdDateTime = currentDateTime.AddMinutes(-1 * unHealthyThresholdMinutes);
-            var resolvedAddressQuery = await storageBroker.SelectAllResolvedAddressesAsync();
-            var filteredQuery = resolvedAddressQuery.Where(i => i.IsProcessing);
-
-            int degradedCount = filteredQuery.Count(resolvedAddress =>
-                resolvedAddress.UpdatedDate <= degradedThresholdDateTime &&
-                resolvedAddress.UpdatedDate > unHealthyThresholdDateTime);
-
-            int unHealthyCount = filteredQuery
-                .Count(resolvedAddress => resolvedAddress.UpdatedDate <= unHealthyThresholdDateTime);
-
-            int totalCount = degradedCount + unHealthyCount;
-
-            string message = totalCount == 0
-                ? $"Nothing to process. All up to date."
-                : $"{totalCount} files have not been processed. Please check logs and function status.";
-
-            var vals = new Dictionary<string, object>
+        public ValueTask<HealthCheckResult> GetHealthStatusAsync() =>
+            TryCatch(async () =>
             {
-                { "description", CheckDescriptionName },
-                { "stuckInProcessing", totalCount },
-                { "degradedItems", degradedCount},
-                { "unHealthyItems", unHealthyCount},
-                { "degradedThresholdMinutes", degradedThresholdMinutes.ToString() },
-                { "unHealthyThresholdMinutes", unHealthyThresholdMinutes.ToString() },
-                { "checkedAt", currentDateTime.ToString("o") },
-                { "message", message }
-            };
+                int degradedThresholdMinutes = configuration.GetValue($"{ConfigSectionName}:DegradedThreshold", 1440);
+                int unHealthyThresholdMinutes = configuration.GetValue($"{ConfigSectionName}:UnHealthyThreshold", 2880);
+                DateTimeOffset currentDateTime = await dateTimeBroker.GetCurrentDateTimeOffsetAsync();
+                DateTimeOffset degradedThresholdDateTime = currentDateTime.AddMinutes(-1 * degradedThresholdMinutes);
+                DateTimeOffset unHealthyThresholdDateTime = currentDateTime.AddMinutes(-1 * unHealthyThresholdMinutes);
+                var resolvedAddressQuery = await storageBroker.SelectAllResolvedAddressesAsync();
+                var filteredQuery = resolvedAddressQuery.Where(i => i.IsProcessing);
 
-            if (unHealthyCount > 0)
-            {
-                vals.Add("status", HealthStatus.Unhealthy.ToString());
+                int degradedCount = filteredQuery.Count(resolvedAddress =>
+                    resolvedAddress.UpdatedDate <= degradedThresholdDateTime &&
+                    resolvedAddress.UpdatedDate > unHealthyThresholdDateTime);
 
-                return HealthCheckResult.Unhealthy(
-                    description: CheckName,
-                    data: vals);
-            }
-            else if (degradedCount > 0)
-            {
-                vals.Add("status", HealthStatus.Degraded.ToString());
+                int unHealthyCount = filteredQuery
+                    .Count(resolvedAddress => resolvedAddress.UpdatedDate <= unHealthyThresholdDateTime);
 
-                return HealthCheckResult.Degraded(
-                    description: CheckName,
-                    data: vals);
-            }
-            else
-            {
-                vals.Add("status", HealthStatus.Healthy.ToString());
+                int totalCount = degradedCount + unHealthyCount;
 
-                return HealthCheckResult.Healthy(
-                    description: CheckName,
-                    data: vals);
-            }
-        }
+                string message = totalCount == 0
+                    ? $"Nothing to process. All up to date."
+                    : $"{totalCount} files have not been processed. Please check logs and function status.";
+
+                var vals = new Dictionary<string, object>
+                {
+                    { "description", CheckDescriptionName },
+                    { "stuckInProcessing", totalCount },
+                    { "degradedItems", degradedCount},
+                    { "unHealthyItems", unHealthyCount},
+                    { "degradedThresholdMinutes", degradedThresholdMinutes.ToString() },
+                    { "unHealthyThresholdMinutes", unHealthyThresholdMinutes.ToString() },
+                    { "checkedAt", currentDateTime.ToString("o") },
+                    { "message", message }
+                };
+
+                if (unHealthyCount > 0)
+                {
+                    vals.Add("status", HealthStatus.Unhealthy.ToString());
+
+                    return HealthCheckResult.Unhealthy(
+                        description: CheckName,
+                        data: vals);
+                }
+                else if (degradedCount > 0)
+                {
+                    vals.Add("status", HealthStatus.Degraded.ToString());
+
+                    return HealthCheckResult.Degraded(
+                        description: CheckName,
+                        data: vals);
+                }
+                else
+                {
+                    vals.Add("status", HealthStatus.Healthy.ToString());
+
+                    return HealthCheckResult.Healthy(
+                        description: CheckName,
+                        data: vals);
+                }
+            });
     }
 }

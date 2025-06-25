@@ -23,7 +23,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.HealthChecks.IngestionTracki
             var failedIngestionTrackingDecryptionHealthCheckCooridinationServiceException =
                 new FailedIngestionTrackingDecryptionHealthCheckCooridinationServiceException(
 
-                    message: "Failed ingestion tracking decryption health check service error occurred, " +
+                    message: "Failed ingestion tracking decryption health check coordination service error occurred, " +
                         "please contact support.",
 
                     innerException: serviceException);
@@ -31,8 +31,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.HealthChecks.IngestionTracki
             var expectedIngestionTrackingDecryptionHealthCheckCooridinationServiceException =
                 new IngestionTrackingDecryptionHealthCheckCooridinationServiceException(
 
-                    message: "Ingestion tracking decryption health check service error occurred, " +
-                        "please contact support.",
+                    message: "Ingestion tracking decryption health check coordination service error occurred, please contact support.",
 
                     innerException: failedIngestionTrackingDecryptionHealthCheckCooridinationServiceException);
 

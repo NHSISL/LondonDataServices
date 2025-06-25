@@ -11,7 +11,6 @@ using KellermanSoftware.CompareNetObjects;
 using LHDS.Core.Brokers.DateTimes;
 using LHDS.Core.Brokers.Loggings;
 using LHDS.Core.Brokers.Storages.Sql;
-using LHDS.Core.Models.Foundations.IngestionTrackings;
 using LHDS.Core.Services.Foundations.HealthChecks.IngestionTracking;
 using Microsoft.Data.SqlClient;
 using Microsoft.Extensions.Configuration;

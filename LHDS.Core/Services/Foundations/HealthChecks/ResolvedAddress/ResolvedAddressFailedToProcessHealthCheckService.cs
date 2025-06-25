@@ -14,7 +14,7 @@ using Microsoft.Extensions.Diagnostics.HealthChecks;
 
 namespace LHDS.Core.Services.Foundations.HealthChecks.ResolvedAddress
 {
-    public class ResolvedAddressFailedToProcessHealthCheckService : IResolvedAddressHealthItemService
+    public partial class ResolvedAddressFailedToProcessHealthCheckService : IResolvedAddressHealthItemService
     {
         private readonly IStorageBroker storageBroker;
         private readonly IConfiguration configuration;
@@ -36,7 +36,8 @@ namespace LHDS.Core.Services.Foundations.HealthChecks.ResolvedAddress
             this.loggingBroker = loggingBroker;
         }
 
-        public async ValueTask<HealthCheckResult> GetHealthStatusAsync()
+        public ValueTask<HealthCheckResult> GetHealthStatusAsync() =>
+            TryCatch(async () =>
         {
             int retryCount = configuration.GetValue($"{ConfigSectionName}:RetryCount", 3);
             int degradedThresholdMinutes = configuration.GetValue($"{ConfigSectionName}:DegradedThreshold", 1440);
@@ -99,6 +100,6 @@ namespace LHDS.Core.Services.Foundations.HealthChecks.ResolvedAddress
                     description: CheckName,
                     data: vals);
             }
-        }
+        });
     }
 }

@@ -35,11 +35,13 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.ResolvedAddressAudits
             this.storageBrokerMock = new Mock<IStorageBroker>();
             this.dateTimeBrokerMock = new Mock<IDateTimeBroker>();
             this.securityBrokerMock = new Mock<ISecurityBroker>();
+            this.loggingBrokerMock = new Mock<ILoggingBroker>();
 
             this.resolvedAddressAuditService = new ResolvedAddressAuditService(
                 storageBroker: this.storageBrokerMock.Object,
                 dateTimeBroker: this.dateTimeBrokerMock.Object,
-                securityBroker: this.securityBrokerMock.Object);
+                securityBroker: this.securityBrokerMock.Object,
+                loggingBroker: this.loggingBrokerMock.Object);
         }
 
         private static Expression<Func<Xeption, bool>> SameExceptionAs(Xeption expectedException) =>

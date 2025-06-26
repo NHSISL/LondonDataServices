@@ -86,20 +86,20 @@ namespace LHDS.Core.Services.Foundations.HealthChecks.TerminologyArtifacts
                         : $"{totalCount} have not been processed. Please check logs and function status.";
 
                     var vals = new Dictionary<string, object>
-                {
-                    { "description", CheckNameDescription },
-                    { "failedToProcess", totalCount },
-                    { "degradedCodeSystemItems", codeSystemDegradedCount},
-                    { "unHealthyCodeSystemItems", codeSystemUnhealthyCount},
-                    { "degradedConceptMapItems", conceptMapDegradedCount},
-                    { "unHealthyConceptMapItems", conceptMapUnhealthyCount},
-                    { "degradedValueSetItems", valueSetDegradedCount},
-                    { "unHealthyValueItems", valueSetMapUnhealthyCount},
-                    { "degradedThresholdMinutes", degradedThresholdMinutes.ToString() },
-                    { "unHealthyThresholdMinutes", unHealthyThresholdMinutes.ToString() },
-                    { "checkedAt", currentDateTime.ToString("o") },
-                    { "message", message }
-                };
+                    {
+                        { "description", CheckNameDescription },
+                        { "failedToProcess", totalCount },
+                        { "degradedCodeSystemItems", codeSystemDegradedCount},
+                        { "unHealthyCodeSystemItems", codeSystemUnhealthyCount},
+                        { "degradedConceptMapItems", conceptMapDegradedCount},
+                        { "unHealthyConceptMapItems", conceptMapUnhealthyCount},
+                        { "degradedValueSetItems", valueSetDegradedCount},
+                        { "unHealthyValueItems", valueSetMapUnhealthyCount},
+                        { "degradedThresholdMinutes", degradedThresholdMinutes.ToString() },
+                        { "unHealthyThresholdMinutes", unHealthyThresholdMinutes.ToString() },
+                        { "checkedAt", currentDateTime.ToString("o") },
+                        { "message", message }
+                    };
 
                     if ((codeSystemUnhealthyCount + conceptMapUnhealthyCount + valueSetMapUnhealthyCount) > 0)
                     {

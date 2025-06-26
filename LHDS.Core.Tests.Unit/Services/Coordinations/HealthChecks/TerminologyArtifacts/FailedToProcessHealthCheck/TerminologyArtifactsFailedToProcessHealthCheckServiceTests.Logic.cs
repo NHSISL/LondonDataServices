@@ -31,13 +31,11 @@ namespace LHDS.Core.Tests.Unit.Services.Coordinations.HealthChecks.TerminologyAr
                 GetHealthCheckResultValues(
                     currentDateTime,
                     HealthStatus.Unhealthy,
-                    unHealthyCodeSystemItems: randomUnhealthyPolls.Count()
-                );
+                    unHealthyCodeSystemItems: randomUnhealthyPolls.Count());
 
             var expectedHealthCheckResult = HealthCheckResult.Unhealthy(
                 description: CheckName,
-                data: healthCheckResultValues
-            );
+                data: healthCheckResultValues);
 
             this.dateTimeBrokerMock.Setup(broker =>
                 broker.GetCurrentDateTimeOffsetAsync())
@@ -88,13 +86,11 @@ namespace LHDS.Core.Tests.Unit.Services.Coordinations.HealthChecks.TerminologyAr
                 GetHealthCheckResultValues(
                     currentDateTime,
                     HealthStatus.Degraded,
-                    degradedCodeSystemItems: randomDegradedPolls.Count()
-                );
+                    degradedCodeSystemItems: randomDegradedPolls.Count());
 
             var expectedHealthCheckResult = HealthCheckResult.Degraded(
                 description: CheckName,
-                data: healthCheckResultValues
-            );
+                data: healthCheckResultValues);
 
             this.dateTimeBrokerMock.Setup(broker =>
                 broker.GetCurrentDateTimeOffsetAsync())
@@ -138,13 +134,11 @@ namespace LHDS.Core.Tests.Unit.Services.Coordinations.HealthChecks.TerminologyAr
             Dictionary<string, object> healthCheckResultValues =
                 GetHealthCheckResultValues(
                     currentDateTime,
-                    HealthStatus.Healthy
-                );
+                    HealthStatus.Healthy);
 
             var expectedHealthCheckResult = HealthCheckResult.Healthy(
                 description: CheckName,
-                data: healthCheckResultValues
-            );
+                data: healthCheckResultValues);
 
             this.dateTimeBrokerMock.Setup(broker =>
                 broker.GetCurrentDateTimeOffsetAsync())

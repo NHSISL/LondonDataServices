@@ -109,6 +109,7 @@ const SubscriberAgreementTable: FunctionComponent<SubscriberAgreementTableProps>
                                         <TableBaseHeader>Supplier Agreement Id</TableBaseHeader>
                                         <TableBaseHeader>Supplier Sharing Agreement ShortName</TableBaseHeader>
                                         <TableBaseHeader>Supplier Sharing Agreement Guid</TableBaseHeader>
+                                        <TableBaseHeader>Active</TableBaseHeader>
                                         <TableBaseHeader></TableBaseHeader>
                                     </TableBaseRow>
                                 </TableBaseThead>

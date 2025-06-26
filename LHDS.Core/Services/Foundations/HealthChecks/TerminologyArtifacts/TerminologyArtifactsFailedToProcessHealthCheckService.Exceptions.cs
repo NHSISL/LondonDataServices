@@ -28,8 +28,7 @@ namespace LHDS.Core.Services.Foundations.HealthChecks.TerminologyArtifacts
                         innerException: exception);
 
                 throw await CreateAndLogServiceExceptionAsync(
-                    failedTerminologyArtifactsFailedToProcessHealthCheckServiceException
-                );
+                    failedTerminologyArtifactsFailedToProcessHealthCheckServiceException);
             }
         }
 
@@ -45,8 +44,7 @@ namespace LHDS.Core.Services.Foundations.HealthChecks.TerminologyArtifacts
                     innerException: exception);
 
             await this.loggingBroker.LogCriticalAsync(
-                terminologyPollsFailedToProcessHealthCheckServiceException
-            );
+                terminologyPollsFailedToProcessHealthCheckServiceException);
 
             return terminologyPollsFailedToProcessHealthCheckServiceException;
         }

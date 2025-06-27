@@ -28,6 +28,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.ResolvedAddresses
                 this.resolvedAddressProcessingServiceMock.Object,
                 this.assignProcessingServiceMock.Object,
                 this.addressProcessingServiceMock.Object,
+                this.auditBrokerMock.Object,
                 this.loggingBrokerMock.Object,
                 this.csvHelperBrokerMock.Object,
                 this.dateTimeBrokerMock.Object,
@@ -181,7 +182,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.ResolvedAddresses
             this.loggingBrokerMock.VerifyNoOtherCalls();
             this.csvHelperBrokerMock.VerifyNoOtherCalls();
             this.identifierBrokerMock.VerifyNoOtherCalls();
-            this.storageBrokerMock.VerifyNoOtherCalls();
+            this.auditBrokerMock.VerifyNoOtherCalls();
         }
     }
 }

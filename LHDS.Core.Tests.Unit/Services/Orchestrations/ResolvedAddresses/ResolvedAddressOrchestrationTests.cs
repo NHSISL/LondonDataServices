@@ -8,17 +8,16 @@ using System.IO;
 using System.Linq;
 using System.Linq.Expressions;
 using KellermanSoftware.CompareNetObjects;
+using LHDS.Core.Brokers.Audits;
 using LHDS.Core.Brokers.CsvHelpers;
 using LHDS.Core.Brokers.DateTimes;
 using LHDS.Core.Brokers.Identifiers;
 using LHDS.Core.Brokers.Loggings;
-using LHDS.Core.Brokers.Storages.Sql;
 using LHDS.Core.Models.Brokers.Storages.Blobs;
 using LHDS.Core.Models.Foundations.Addresses;
 using LHDS.Core.Models.Foundations.AssignAddresses;
 using LHDS.Core.Models.Foundations.Documents;
 using LHDS.Core.Models.Foundations.ResolvedAddresses;
-using LHDS.Core.Models.Foundations.ResolvedAddressesAudits;
 using LHDS.Core.Models.Processings.Documents.Exceptions;
 using LHDS.Core.Models.Processings.ResolvedAddresses.Exceptions;
 using LHDS.Core.Services.Orchestrations.ResolvedAddresses;
@@ -41,7 +40,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.ResolvedAddresses
         private readonly Mock<IResolvedAddressProcessingService> resolvedAddressProcessingServiceMock;
         private readonly Mock<IAssignProcessingService> assignProcessingServiceMock;
         private readonly Mock<IAddressProcessingService> addressProcessingServiceMock;
-        private readonly Mock<IStorageBroker> storageBrokerMock;
+        private readonly Mock<IAuditBroker> auditBrokerMock;
         private readonly Mock<IDateTimeBroker> dateTimeBrokerMock;
         private readonly Mock<ILoggingBroker> loggingBrokerMock;
         private readonly Mock<ICsvHelperBroker> csvHelperBrokerMock;
@@ -57,7 +56,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.ResolvedAddresses
             this.resolvedAddressProcessingServiceMock = new Mock<IResolvedAddressProcessingService>();
             this.assignProcessingServiceMock = new Mock<IAssignProcessingService>();
             this.addressProcessingServiceMock = new Mock<IAddressProcessingService>();
-            this.storageBrokerMock = new Mock<IStorageBroker>();
+            this.auditBrokerMock = new Mock<IAuditBroker>();
             this.loggingBrokerMock = new Mock<ILoggingBroker>();
             this.csvHelperBrokerMock = new Mock<ICsvHelperBroker>();
             this.dateTimeBrokerMock = new Mock<IDateTimeBroker>();
@@ -75,7 +74,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.ResolvedAddresses
                 resolvedAddressProcessingService: this.resolvedAddressProcessingServiceMock.Object,
                 assignProcessingService: this.assignProcessingServiceMock.Object,
                 addressProcessingService: this.addressProcessingServiceMock.Object,
-                storageBroker: this.storageBrokerMock.Object,
+                auditBroker: this.auditBrokerMock.Object,
                 loggingBroker: this.loggingBrokerMock.Object,
                 csvHelperBroker: this.csvHelperBrokerMock.Object,
                 dateTimeBroker: this.dateTimeBrokerMock.Object,
@@ -269,28 +268,6 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.ResolvedAddresses
                     }).ToList();
 
             return returnAddresses;
-        }
-
-        private static ResolvedAddressAudit GetRandomResolvedAddressAudit(
-            Guid auditIdentifier,
-            Guid correlationIdentifier,
-            DateTimeOffset randomDate,
-            string message,
-            string auditType)
-        {
-            ResolvedAddressAudit resolvedAddressAudit = new ResolvedAddressAudit
-            {
-                Id = auditIdentifier,
-                CorrelationId = correlationIdentifier,
-                Message = message,
-                AuditType = auditType,
-                CreatedDate = randomDate,
-                UpdatedDate = randomDate,
-                CreatedBy = "System",
-                UpdatedBy = "System"
-            };
-
-            return resolvedAddressAudit;
         }
 
         public static TheoryData<Xeption> DependencyValidationExceptions()

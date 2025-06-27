@@ -64,7 +64,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.ResolvedAddresses
             this.loggingBrokerMock.VerifyNoOtherCalls();
             this.csvHelperBrokerMock.VerifyNoOtherCalls();
             this.identifierBrokerMock.VerifyNoOtherCalls();
-            this.storageBrokerMock.VerifyNoOtherCalls();
+            this.auditBrokerMock.VerifyNoOtherCalls();
         }
 
         [Theory]
@@ -110,7 +110,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.ResolvedAddresses
             this.loggingBrokerMock.VerifyNoOtherCalls();
             this.csvHelperBrokerMock.VerifyNoOtherCalls();
             this.identifierBrokerMock.VerifyNoOtherCalls();
-            this.storageBrokerMock.VerifyNoOtherCalls();
+            this.auditBrokerMock.VerifyNoOtherCalls();
         }
 
         [Fact]
@@ -161,7 +161,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.ResolvedAddresses
             this.loggingBrokerMock.VerifyNoOtherCalls();
             this.csvHelperBrokerMock.VerifyNoOtherCalls();
             this.identifierBrokerMock.VerifyNoOtherCalls();
-            this.storageBrokerMock.VerifyNoOtherCalls();
+            this.auditBrokerMock.VerifyNoOtherCalls();
         }
 
         [Theory]
@@ -175,11 +175,16 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.ResolvedAddresses
             List<ResolvedAddress> randomResolvedAddresses = CreateRandomUnmatchedAddresses(count: 2);
             List<ResolvedAddress> storageResolvedAddresses = randomResolvedAddresses.DeepClone();
             List<ResolvedAddress> storageBatchResolvedAddresses = randomResolvedAddresses.DeepClone();
-            Guid batchReference = Guid.NewGuid();
+            Guid identifier = Guid.NewGuid();
+            string exportingAuditMessage = $"Exporting resolved addresses with correlation id {identifier}";
+            string exportedAuditMessage = $"Exported resolved addresses with correlation id {identifier}";
+            string exportingAuditTitle = "Exporting Resolved Addresses";
+            string exportedAuditTitle = "Exported Resolved Addresses";
+            string auditType = "Resolved Address Export";
 
             storageBatchResolvedAddresses.ForEach(pra =>
             {
-                pra.BatchReference = batchReference;
+                pra.BatchReference = identifier;
             });
 
             List<ResolvedAddress> processingResolvedAddresses = storageResolvedAddresses.DeepClone();
@@ -194,13 +199,13 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.ResolvedAddresses
 
             this.identifierBrokerMock.Setup(broker =>
                 broker.GetIdentifierAsync())
-                    .ReturnsAsync(batchReference);
+                    .ReturnsAsync(identifier);
 
             processingResolvedAddresses.ForEach(processingResolvedAddress =>
             {
                 processingResolvedAddress.IsProcessing = true;
                 processingResolvedAddress.RetryCount += 1;
-                processingResolvedAddress.BatchReference = batchReference;
+                processingResolvedAddress.BatchReference = identifier;
             });
 
             this.resolvedAddressProcessingServiceMock.Setup(processing =>
@@ -262,7 +267,17 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.ResolvedAddresses
 
             this.identifierBrokerMock.Verify(broker =>
                 broker.GetIdentifierAsync(),
-                    Times.Once());
+                    Times.Exactly(2));
+
+            this.auditBrokerMock.Verify(service =>
+                service.LogAsync(
+                    auditType,
+                    exportingAuditTitle,
+                    exportingAuditMessage,
+                    null,
+                    identifier.ToString(),
+                    "Information"),
+                        Times.Once());
 
             this.resolvedAddressProcessingServiceMock.Verify(processing =>
                 processing.BulkModifyResolvedAddressesAsync(
@@ -290,6 +305,16 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.ResolvedAddresses
                     actualResolvedAddressOrchestrationServiceException))),
                         Times.Once);
 
+            this.auditBrokerMock.Verify(service =>
+                service.LogAsync(
+                    auditType,
+                    exportedAuditTitle,
+                    exportedAuditMessage,
+                    null,
+                    identifier.ToString(),
+                    "Information"),
+                        Times.Never());
+
             this.documentProcessingServiceMock.VerifyNoOtherCalls();
             this.resolvedAddressProcessingServiceMock.VerifyNoOtherCalls();
             this.assignProcessingServiceMock.VerifyNoOtherCalls();
@@ -298,7 +323,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.ResolvedAddresses
             this.loggingBrokerMock.VerifyNoOtherCalls();
             this.csvHelperBrokerMock.VerifyNoOtherCalls();
             this.identifierBrokerMock.VerifyNoOtherCalls();
-            this.storageBrokerMock.VerifyNoOtherCalls();
+            this.auditBrokerMock.VerifyNoOtherCalls();
         }
 
         [Theory]
@@ -312,11 +337,16 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.ResolvedAddresses
             List<ResolvedAddress> randomResolvedAddresses = CreateRandomUnmatchedAddresses(count: 2);
             List<ResolvedAddress> storageResolvedAddresses = randomResolvedAddresses.DeepClone();
             List<ResolvedAddress> storageBatchResolvedAddresses = randomResolvedAddresses.DeepClone();
-            Guid batchReference = Guid.NewGuid();
+            Guid identifier = Guid.NewGuid();
+            string exportingAuditMessage = $"Exporting resolved addresses with correlation id {identifier}";
+            string exportedAuditMessage = $"Exported resolved addresses with correlation id {identifier}";
+            string exportingAuditTitle = "Exporting Resolved Addresses";
+            string exportedAuditTitle = "Exported Resolved Addresses";
+            string auditType = "Resolved Address Export";
 
             storageBatchResolvedAddresses.ForEach(pra =>
             {
-                pra.BatchReference = batchReference;
+                pra.BatchReference = identifier;
             });
 
             List<ResolvedAddress> processingResolvedAddresses = storageResolvedAddresses.DeepClone();
@@ -331,13 +361,13 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.ResolvedAddresses
 
             this.identifierBrokerMock.Setup(broker =>
                 broker.GetIdentifierAsync())
-                    .ReturnsAsync(batchReference);
+                    .ReturnsAsync(identifier);
 
             processingResolvedAddresses.ForEach(processingResolvedAddress =>
             {
                 processingResolvedAddress.IsProcessing = true;
                 processingResolvedAddress.RetryCount += 1;
-                processingResolvedAddress.BatchReference = batchReference;
+                processingResolvedAddress.BatchReference = identifier;
             });
 
             this.resolvedAddressProcessingServiceMock.Setup(processing =>
@@ -398,7 +428,17 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.ResolvedAddresses
 
             this.identifierBrokerMock.Verify(broker =>
                 broker.GetIdentifierAsync(),
-                    Times.Once());
+                    Times.Exactly(2));
+
+            this.auditBrokerMock.Verify(service =>
+                service.LogAsync(
+                    auditType,
+                    exportingAuditTitle,
+                    exportingAuditMessage,
+                    null,
+                    identifier.ToString(),
+                    "Information"),
+                        Times.Once());
 
             this.resolvedAddressProcessingServiceMock.Verify(processing =>
                 processing.BulkModifyResolvedAddressesAsync(
@@ -426,6 +466,16 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.ResolvedAddresses
                     actualResolvedAddressOrchestrationServiceException))),
                         Times.Once);
 
+            this.auditBrokerMock.Verify(service =>
+                service.LogAsync(
+                    auditType,
+                    exportedAuditTitle,
+                    exportedAuditMessage,
+                    null,
+                    identifier.ToString(),
+                    "Information"),
+                        Times.Never());
+
             this.documentProcessingServiceMock.VerifyNoOtherCalls();
             this.resolvedAddressProcessingServiceMock.VerifyNoOtherCalls();
             this.assignProcessingServiceMock.VerifyNoOtherCalls();
@@ -434,7 +484,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.ResolvedAddresses
             this.loggingBrokerMock.VerifyNoOtherCalls();
             this.csvHelperBrokerMock.VerifyNoOtherCalls();
             this.identifierBrokerMock.VerifyNoOtherCalls();
-            this.storageBrokerMock.VerifyNoOtherCalls();
+            this.auditBrokerMock.VerifyNoOtherCalls();
         }
 
 
@@ -446,11 +496,16 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.ResolvedAddresses
             List<ResolvedAddress> randomResolvedAddresses = CreateRandomUnmatchedAddresses(count: 2);
             List<ResolvedAddress> storageResolvedAddresses = randomResolvedAddresses.DeepClone();
             List<ResolvedAddress> storageBatchResolvedAddresses = randomResolvedAddresses.DeepClone();
-            Guid batchReference = Guid.NewGuid();
+            Guid identifier = Guid.NewGuid();
+            string exportingAuditMessage = $"Exporting resolved addresses with correlation id {identifier}";
+            string exportedAuditMessage = $"Exported resolved addresses with correlation id {identifier}";
+            string exportingAuditTitle = "Exporting Resolved Addresses";
+            string exportedAuditTitle = "Exported Resolved Addresses";
+            string auditType = "Resolved Address Export";
 
             storageBatchResolvedAddresses.ForEach(pra =>
             {
-                pra.BatchReference = batchReference;
+                pra.BatchReference = identifier;
             });
 
             List<ResolvedAddress> processingResolvedAddresses = storageResolvedAddresses.DeepClone();
@@ -466,13 +521,13 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.ResolvedAddresses
 
             this.identifierBrokerMock.Setup(broker =>
                 broker.GetIdentifierAsync())
-                    .ReturnsAsync(batchReference);
+                    .ReturnsAsync(identifier);
 
             processingResolvedAddresses.ForEach(processingResolvedAddress =>
             {
                 processingResolvedAddress.IsProcessing = true;
                 processingResolvedAddress.RetryCount += 1;
-                processingResolvedAddress.BatchReference = batchReference;
+                processingResolvedAddress.BatchReference = identifier;
             });
 
             this.resolvedAddressProcessingServiceMock.Setup(processing =>
@@ -538,7 +593,17 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.ResolvedAddresses
 
             this.identifierBrokerMock.Verify(broker =>
                 broker.GetIdentifierAsync(),
-                    Times.Once());
+                    Times.Exactly(2));
+
+            this.auditBrokerMock.Verify(service =>
+                service.LogAsync(
+                    auditType,
+                    exportingAuditTitle,
+                    exportingAuditMessage,
+                    null,
+                    identifier.ToString(),
+                    "Information"),
+                        Times.Once());
 
             this.resolvedAddressProcessingServiceMock.Verify(processing =>
                 processing.BulkModifyResolvedAddressesAsync(
@@ -566,6 +631,16 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.ResolvedAddresses
                     actualResolvedAddressOrchestrationServiceException))),
                         Times.Once);
 
+            this.auditBrokerMock.Verify(service =>
+                service.LogAsync(
+                    auditType,
+                    exportedAuditTitle,
+                    exportedAuditMessage,
+                    null,
+                    identifier.ToString(),
+                    "Information"),
+                        Times.Never());
+
             this.documentProcessingServiceMock.VerifyNoOtherCalls();
             this.resolvedAddressProcessingServiceMock.VerifyNoOtherCalls();
             this.assignProcessingServiceMock.VerifyNoOtherCalls();
@@ -574,7 +649,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.ResolvedAddresses
             this.loggingBrokerMock.VerifyNoOtherCalls();
             this.csvHelperBrokerMock.VerifyNoOtherCalls();
             this.identifierBrokerMock.VerifyNoOtherCalls();
-            this.storageBrokerMock.VerifyNoOtherCalls();
+            this.auditBrokerMock.VerifyNoOtherCalls();
         }
     }
 }

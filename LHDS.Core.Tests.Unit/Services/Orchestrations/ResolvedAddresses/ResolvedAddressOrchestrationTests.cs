@@ -13,9 +13,12 @@ using LHDS.Core.Brokers.CsvHelpers;
 using LHDS.Core.Brokers.DateTimes;
 using LHDS.Core.Brokers.Identifiers;
 using LHDS.Core.Brokers.Loggings;
+using LHDS.Core.Brokers.Securities;
+using LHDS.Core.Models.Brokers.Securities;
 using LHDS.Core.Models.Brokers.Storages.Blobs;
 using LHDS.Core.Models.Foundations.Addresses;
 using LHDS.Core.Models.Foundations.AssignAddresses;
+using LHDS.Core.Models.Foundations.Audits;
 using LHDS.Core.Models.Foundations.Documents;
 using LHDS.Core.Models.Foundations.ResolvedAddresses;
 using LHDS.Core.Models.Processings.Documents.Exceptions;
@@ -45,6 +48,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.ResolvedAddresses
         private readonly Mock<ILoggingBroker> loggingBrokerMock;
         private readonly Mock<ICsvHelperBroker> csvHelperBrokerMock;
         private readonly Mock<IIdentifierBroker> identifierBrokerMock;
+        private readonly Mock<ISecurityBroker> securityBrokerMock;
         private readonly ICompareLogic compareLogic;
         private readonly BlobContainers blobContainers;
         private readonly IResolvedAddressOrchestrationService resolvedAddressOrchestrationService;
@@ -61,6 +65,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.ResolvedAddresses
             this.csvHelperBrokerMock = new Mock<ICsvHelperBroker>();
             this.dateTimeBrokerMock = new Mock<IDateTimeBroker>();
             this.identifierBrokerMock = new Mock<IIdentifierBroker>();
+            this.securityBrokerMock = new Mock<ISecurityBroker>();
             this.compareLogic = new CompareLogic();
             this.output = output;
 
@@ -79,6 +84,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.ResolvedAddresses
                 csvHelperBroker: this.csvHelperBrokerMock.Object,
                 dateTimeBroker: this.dateTimeBrokerMock.Object,
                 identifierBroker: this.identifierBrokerMock.Object,
+                securityBroker: this.securityBrokerMock.Object,
                 blobContainers: blobContainers);
         }
 
@@ -139,6 +145,13 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.ResolvedAddresses
         private static string GetRandomString() =>
             new MnemonicString().GetValue();
 
+        private static string GetRandomStringWithLengthOf(int length)
+        {
+            string result = new MnemonicString(wordCount: 1, wordMinLength: length, wordMaxLength: length).GetValue();
+
+            return result.Length > length ? result.Substring(0, length) : result;
+        }
+
         private static int GetRandomNumber() =>
             new IntRange(min: 2, max: 10).GetValue();
 
@@ -151,6 +164,26 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.ResolvedAddresses
                 .Create(count: GetRandomNumber())
                     .ToList();
         }
+
+        private EntraUser CreateRandomEntraUser(string entraUserId = "")
+        {
+            var userId = string.IsNullOrWhiteSpace(entraUserId) ? GetRandomStringWithLengthOf(255) : entraUserId;
+
+            return new EntraUser(
+                entraUserId: userId,
+                givenName: GetRandomString(),
+                surname: GetRandomString(),
+                displayName: GetRandomString(),
+                email: GetRandomString(),
+                jobTitle: GetRandomString(),
+                roles: new List<string> { GetRandomString() },
+
+                claims: new List<System.Security.Claims.Claim>
+                {
+                    new System.Security.Claims.Claim(type: GetRandomString(), value: GetRandomString())
+                });
+        }
+
         private Expression<Func<List<ResolvedAddressReturn>, bool>> SameResolvedAddressReturnsAs(
             List<ResolvedAddressReturn> expectedResolvedAddressReturns)
         {

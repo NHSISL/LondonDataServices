@@ -64,6 +64,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.ResolvedAddressAudits
             var invalidResolvedAddressAudit = new ResolvedAddressAudit
             {
                 Message = invalidText,
+                AuditType = invalidText
             };
 
             var resolvedAddressAuditServiceMock = new Mock<ResolvedAddressAuditService>(
@@ -100,11 +101,11 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.ResolvedAddressAudits
                 values: "Id is required");
 
             invalidResolvedAddressAuditException.AddData(
-                key: nameof(ResolvedAddressAudit.UniqueResolvedAddressReference),
-                values: "Id is required");
+                key: nameof(ResolvedAddressAudit.Message),
+                values: "Text is required");
 
             invalidResolvedAddressAuditException.AddData(
-                key: nameof(ResolvedAddressAudit.Message),
+                key: nameof(ResolvedAddressAudit.AuditType),
                 values: "Text is required");
 
             invalidResolvedAddressAuditException.AddData(

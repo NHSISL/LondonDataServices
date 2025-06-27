@@ -13,10 +13,12 @@ using LHDS.Core.Brokers.CsvHelpers;
 using LHDS.Core.Brokers.DateTimes;
 using LHDS.Core.Brokers.Identifiers;
 using LHDS.Core.Brokers.Loggings;
+using LHDS.Core.Brokers.Storages.Sql;
 using LHDS.Core.Models.Brokers.Storages.Blobs;
 using LHDS.Core.Models.Foundations.Addresses;
 using LHDS.Core.Models.Foundations.AssignAddresses;
 using LHDS.Core.Models.Foundations.ResolvedAddresses;
+using LHDS.Core.Models.Foundations.ResolvedAddressesAudits;
 using LHDS.Core.Services.Processings.Addresses;
 using LHDS.Core.Services.Processings.Assigns;
 using LHDS.Core.Services.Processings.Documents;
@@ -30,6 +32,7 @@ namespace LHDS.Core.Services.Orchestrations.ResolvedAddresses
         private readonly IResolvedAddressProcessingService resolvedAddressProcessingService;
         private readonly IAssignProcessingService assignProcessingService;
         private readonly IAddressProcessingService addressProcessingService;
+        private readonly IStorageBroker storageBroker;
         private readonly ILoggingBroker loggingBroker;
         private readonly ICsvHelperBroker csvHelperBroker;
         private readonly IDateTimeBroker dateTimeBroker;
@@ -41,6 +44,7 @@ namespace LHDS.Core.Services.Orchestrations.ResolvedAddresses
             IResolvedAddressProcessingService resolvedAddressProcessingService,
             IAssignProcessingService assignProcessingService,
             IAddressProcessingService addressProcessingService,
+            IStorageBroker storageBroker,
             ILoggingBroker loggingBroker,
             ICsvHelperBroker csvHelperBroker,
             IDateTimeBroker dateTimeBroker,
@@ -51,6 +55,7 @@ namespace LHDS.Core.Services.Orchestrations.ResolvedAddresses
             this.resolvedAddressProcessingService = resolvedAddressProcessingService;
             this.assignProcessingService = assignProcessingService;
             this.addressProcessingService = addressProcessingService;
+            this.storageBroker = storageBroker;
             this.loggingBroker = loggingBroker;
             this.csvHelperBroker = csvHelperBroker;
             this.dateTimeBroker = dateTimeBroker;
@@ -62,6 +67,23 @@ namespace LHDS.Core.Services.Orchestrations.ResolvedAddresses
         TryCatch(async () =>
         {
             ValidateOnUploadAddressesToResolve(input, fileName);
+
+            DateTimeOffset uploadingTimeStamp = await this.dateTimeBroker.GetCurrentDateTimeOffsetAsync();
+            Guid uploadingAuditId = await this.identifierBroker.GetIdentifierAsync();
+            Guid correlationId = await this.identifierBroker.GetIdentifierAsync();
+
+            await this.storageBroker.InsertResolvedAddressAuditAsync(
+                new ResolvedAddressAudit
+                {
+                    Id = uploadingAuditId,
+                    CorrelationId = correlationId,
+                    Message = $"Uploading addresses to resolve with correlation id {correlationId}",
+                    AuditType = "Upload",
+                    CreatedDate = uploadingTimeStamp,
+                    UpdatedDate = uploadingTimeStamp,
+                    CreatedBy = "System",
+                    UpdatedBy = "System"
+                });
 
             using (StreamReader streamReader = new StreamReader(input))
             {
@@ -80,6 +102,22 @@ namespace LHDS.Core.Services.Orchestrations.ResolvedAddresses
 
                 await this.resolvedAddressProcessingService
                     .BulkAddResolvedAddressesAsync(resolvedAddresses, fileName);
+
+                DateTimeOffset uploadedTimeStamp = await this.dateTimeBroker.GetCurrentDateTimeOffsetAsync();
+                Guid uploadedAuditId = await this.identifierBroker.GetIdentifierAsync();
+
+                await this.storageBroker.InsertResolvedAddressAuditAsync(
+                    new ResolvedAddressAudit
+                    {
+                        Id = uploadedAuditId,
+                        CorrelationId = correlationId,
+                        Message = $"Uploaded addresses to resolve with correlation id {correlationId}",
+                        AuditType = "Upload",
+                        CreatedDate = uploadedTimeStamp,
+                        UpdatedDate = uploadedTimeStamp,
+                        CreatedBy = "System",
+                        UpdatedBy = "System"
+                    });
             }
         });
 

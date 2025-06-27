@@ -62,7 +62,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.ResolvedAddresses
             this.loggingBrokerMock.VerifyNoOtherCalls();
             this.csvHelperBrokerMock.VerifyNoOtherCalls();
             this.identifierBrokerMock.VerifyNoOtherCalls();
-            this.storageBrokerMock.VerifyNoOtherCalls();
+            this.auditBrokerMock.VerifyNoOtherCalls();
         }
 
         [Theory]
@@ -107,7 +107,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.ResolvedAddresses
             this.loggingBrokerMock.VerifyNoOtherCalls();
             this.csvHelperBrokerMock.VerifyNoOtherCalls();
             this.identifierBrokerMock.VerifyNoOtherCalls();
-            this.storageBrokerMock.VerifyNoOtherCalls();
+            this.auditBrokerMock.VerifyNoOtherCalls();
         }
 
         [Fact]
@@ -156,7 +156,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.ResolvedAddresses
             this.loggingBrokerMock.VerifyNoOtherCalls();
             this.csvHelperBrokerMock.VerifyNoOtherCalls();
             this.identifierBrokerMock.VerifyNoOtherCalls();
-            this.storageBrokerMock.VerifyNoOtherCalls();
+            this.auditBrokerMock.VerifyNoOtherCalls();
         }
 
         [Theory]
@@ -288,7 +288,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.ResolvedAddresses
             this.loggingBrokerMock.VerifyNoOtherCalls();
             this.csvHelperBrokerMock.VerifyNoOtherCalls();
             this.identifierBrokerMock.VerifyNoOtherCalls();
-            this.storageBrokerMock.VerifyNoOtherCalls();
+            this.auditBrokerMock.VerifyNoOtherCalls();
         }
 
         [Theory]
@@ -418,7 +418,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.ResolvedAddresses
             this.loggingBrokerMock.VerifyNoOtherCalls();
             this.csvHelperBrokerMock.VerifyNoOtherCalls();
             this.identifierBrokerMock.VerifyNoOtherCalls();
-            this.storageBrokerMock.VerifyNoOtherCalls();
+            this.auditBrokerMock.VerifyNoOtherCalls();
         }
 
         [Fact]
@@ -549,7 +549,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.ResolvedAddresses
             this.loggingBrokerMock.VerifyNoOtherCalls();
             this.csvHelperBrokerMock.VerifyNoOtherCalls();
             this.identifierBrokerMock.VerifyNoOtherCalls();
-            this.storageBrokerMock.VerifyNoOtherCalls();
+            this.auditBrokerMock.VerifyNoOtherCalls();
         }
     }
 }

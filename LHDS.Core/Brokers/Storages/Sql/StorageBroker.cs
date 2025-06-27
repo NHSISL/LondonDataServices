@@ -47,7 +47,6 @@ namespace LHDS.Core.Brokers.Storages.Sql
             AddSubscriberAgreementConfigurations(modelBuilder);
             AddTerminologyArtifactConfigurations(modelBuilder);
             AddTerminologyPollConfigurations(modelBuilder);
-            AddResolvedAddressAuditConfigurations(modelBuilder);
         }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)

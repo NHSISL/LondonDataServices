@@ -18,9 +18,9 @@ namespace LHDS.Core.Services.Foundations.ResolvedAddressAudits
 
             Validate(
                 (Rule: IsInvalid(resolvedAddressAudit.Id), Parameter: nameof(ResolvedAddressAudit.Id)),
-                (Rule: IsInvalid(resolvedAddressAudit.UniqueResolvedAddressReference), Parameter: nameof(ResolvedAddressAudit.UniqueResolvedAddressReference)),
                 (Rule: IsInvalid(resolvedAddressAudit.CorrelationId), Parameter: nameof(ResolvedAddressAudit.CorrelationId)),
                 (Rule: IsInvalid(resolvedAddressAudit.Message), Parameter: nameof(ResolvedAddressAudit.Message)),
+                (Rule: IsInvalid(resolvedAddressAudit.AuditType), Parameter: nameof(ResolvedAddressAudit.AuditType)),
                 (Rule: IsInvalid(resolvedAddressAudit.CreatedDate), Parameter: nameof(ResolvedAddressAudit.CreatedDate)),
                 (Rule: IsInvalid(resolvedAddressAudit.CreatedBy), Parameter: nameof(ResolvedAddressAudit.CreatedBy)),
                 (Rule: IsInvalid(resolvedAddressAudit.UpdatedDate), Parameter: nameof(ResolvedAddressAudit.UpdatedDate)),
@@ -59,8 +59,8 @@ namespace LHDS.Core.Services.Foundations.ResolvedAddressAudits
             Validate(
                 (Rule: IsInvalid(resolvedAddressAudit.Id), Parameter: nameof(ResolvedAddressAudit.Id)),
                 (Rule: IsInvalid(resolvedAddressAudit.CorrelationId), Parameter: nameof(ResolvedAddressAudit.CorrelationId)),
-                (Rule: IsInvalid(resolvedAddressAudit.UniqueResolvedAddressReference), Parameter: nameof(ResolvedAddressAudit.UniqueResolvedAddressReference)),
                 (Rule: IsInvalid(resolvedAddressAudit.Message), Parameter: nameof(ResolvedAddressAudit.Message)),
+                (Rule: IsInvalid(resolvedAddressAudit.AuditType), Parameter: nameof(ResolvedAddressAudit.AuditType)),
                 (Rule: IsInvalid(resolvedAddressAudit.CreatedDate), Parameter: nameof(ResolvedAddressAudit.CreatedDate)),
                 (Rule: IsInvalid(resolvedAddressAudit.CreatedBy), Parameter: nameof(ResolvedAddressAudit.CreatedBy)),
                 (Rule: IsInvalid(resolvedAddressAudit.UpdatedDate), Parameter: nameof(ResolvedAddressAudit.UpdatedDate)),

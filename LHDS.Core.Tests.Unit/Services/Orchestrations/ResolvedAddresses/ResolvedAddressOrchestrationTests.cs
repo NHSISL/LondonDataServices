@@ -222,7 +222,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.ResolvedAddresses
         {
             var fillers = Enumerable.Range(1, count)
                 .Select(_ => CreateUnmatchedAddressFiller())
-                .ToList();
+                    .ToList();
 
             var result = fillers.Select(filler => filler.Create()).ToList();
 

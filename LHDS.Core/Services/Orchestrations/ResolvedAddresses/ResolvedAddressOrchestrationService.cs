@@ -196,8 +196,11 @@ namespace LHDS.Core.Services.Orchestrations.ResolvedAddresses
                         {
                             Id = await this.identifierBroker.GetIdentifierAsync(),
                             AuditType = "Resolved Address Match",
-                            Title = "Resolved Address Matching Complete",
-                            Message = $"Resolved address matching complete for {unMatchedResolvedAddress.UniqueReference}",
+
+                            Title = newResolvedAddress.MatchedWithAssign ? 
+                                "Resolved Address Successful Match" : "Resolved Address Unsuccessful Match",
+
+                            Message = $"Resolved address matching complete for {newResolvedAddress.UniqueReference}",
                             CorrelationId = correlationId.ToString(),
                             FileName = null,
                             LogLevel = "Information",

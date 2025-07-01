@@ -10,18 +10,20 @@ using FluentAssertions;
 using LHDS.Core.Models.Foundations.IngestionTrackingAudits;
 using LHDS.Core.Models.Foundations.IngestionTrackings;
 using LHDS.Core.Models.Foundations.Suppliers;
+using Xunit;
 
 namespace LHDS.Core.Tests.Integration.TppLandings
 {
     public partial class TppLandingTests
     {
-        [ReleaseCandidateFact]
+        [Fact]
         public async Task ShouldLandTPPFileAsync()
         {
             // given
-            byte[] fileBytes = File.ReadAllBytes(@"Resources\TppLandingTests\ShouldLandTPPFileAsync.txt");
+            string filePath = @"Resources\TppLandingTests\ShouldLandTPPFileAsync.txt";
+            byte[] fileBytes = File.ReadAllBytes(filePath);
+            FileInfo fi = new FileInfo(filePath);
             Stream fileStream = new MemoryStream(fileBytes);
-            FileInfo fi = new FileInfo(@"Resources\TppLandingTests\ShouldLandTPPFileAsync.txt");
             var fileNameWithoutExtension = fi.Name.Substring(0, fi.Name.Length - fi.Extension.Length);
             string sha256Hash = CalculateSHA256Hash(fileBytes);
 

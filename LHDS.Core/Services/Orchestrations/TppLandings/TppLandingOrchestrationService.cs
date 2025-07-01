@@ -73,7 +73,7 @@ namespace LHDS.Core.Services.Orchestrations.Tpp
                 return await this.ProcessFileAsync(fileName, supplierId);
             });
 
-        public ValueTask ReProcessAsync(Guid supplierId) =>
+        public ValueTask<List<Guid>> ReProcessAsync(Guid supplierId) =>
             TryCatch(async () =>
             {
                 ValidateArgumentsOnReProcess(supplierId);
@@ -87,27 +87,23 @@ namespace LHDS.Core.Services.Orchestrations.Tpp
                         && ingestionTracking.IsDownloaded == false
                         && ingestionTracking.RetryCount < 4);
 
-                List<Exception> exceptions = new List<Exception>();
                 List<IngestionTracking> ingestionTrackingsToProcess = filteredIngestionTrackings.ToList();
+                List<Guid> ingestionTrackingsProcessed = new List<Guid>();
 
                 foreach (IngestionTracking ingestionTracking in ingestionTrackingsToProcess)
                 {
                     try
                     {
                         await this.ProcessFileAsync(ingestionTracking.FileName, supplierId);
+                        ingestionTrackingsProcessed.Add(ingestionTracking.Id);
                     }
                     catch (Exception exception)
                     {
-                        exceptions.Add(exception);
+                        await this.loggingBroker.LogErrorAsync(exception);
                     }
                 }
 
-                if (exceptions.Any())
-                {
-                    throw new AggregateException(
-                        "One or more errors occurred while re-processing TPP files.",
-                        exceptions);
-                }
+                return ingestionTrackingsProcessed;
             });
 
 

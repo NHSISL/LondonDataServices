@@ -2,6 +2,7 @@
 // Copyright (c) North East London ICB. All rights reserved.
 // ---------------------------------------------------------
 
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Text;
@@ -18,9 +19,16 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.ResolvedAddresses
         public async Task ShouldUploadResolvedAddressAsync()
         {
             // Given
+            Guid identifier = Guid.NewGuid();
+            DateTimeOffset randomDate = GetRandomDateTimeOffset();
             string randomFileName = GetRandomString();
             string inputFileName = randomFileName;
             string inputContent = GetRandomString();
+            string uploadingAuditMessage = $"Uploading addresses to resolve with correlation id {identifier}";
+            string uploadedAuditMessage = $"Uploaded addresses to resolve with correlation id {identifier}";
+            string uploadingAuditTitle = "Uploading Resolved Addresses";
+            string uploadedAuditTitle = "Uploaded Resolved Addresses";
+            string auditType = "Resolved Address Upload";
             byte[] inputBytes = Encoding.UTF8.GetBytes(inputContent);
             Stream inputStream = new MemoryStream(inputBytes);
             List<ResolvedAddress> randomResolvedAddresses = CreateRandomResolvedAddresses();
@@ -32,6 +40,14 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.ResolvedAddresses
                     { nameof(ResolvedAddress.UniqueReference), 0 },
                     { nameof(ResolvedAddress.UnstructuredPostalAddress), 2 }
                 };
+
+            this.dateTimeBrokerMock.Setup(broker =>
+                broker.GetCurrentDateTimeOffsetAsync())
+                    .ReturnsAsync(randomDate);
+
+            this.identifierBrokerMock.Setup(broker =>
+                broker.GetIdentifierAsync())
+                    .ReturnsAsync(identifier);
 
             this.csvHelperBrokerMock.Setup(service =>
                 service.MapCsvToObjectAsync<ResolvedAddress>(inputContent, true, fieldMappings, true))
@@ -46,6 +62,19 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.ResolvedAddresses
                 .UploadAddressesToResolveAsync(input: inputStream, fileName: inputFileName);
 
             // Then
+            this.identifierBrokerMock.Verify(broker =>
+                broker.GetIdentifierAsync(),
+                    Times.Once());
+
+            this.auditBrokerMock.Verify(service =>
+                service.LogAsync(
+                    auditType,
+                    uploadingAuditTitle,
+                    uploadingAuditMessage,
+                    null,
+                    identifier.ToString(),
+                    "Information"),
+                        Times.Once());
 
             this.csvHelperBrokerMock.Verify(service =>
                 service.MapCsvToObjectAsync<ResolvedAddress>(inputContent, true, fieldMappings, true),
@@ -55,12 +84,24 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.ResolvedAddresses
                 service.BulkAddResolvedAddressesAsync(mappedResolvedAddresses, It.IsAny<string>()),
                     Times.Once);
 
+            this.auditBrokerMock.Verify(service =>
+                service.LogAsync(
+                    auditType,
+                    uploadedAuditTitle,
+                    uploadedAuditMessage,
+                    null,
+                    identifier.ToString(),
+                    "Information"),
+                        Times.Once());
+
             this.resolvedAddressProcessingServiceMock.VerifyNoOtherCalls();
             this.identifierBrokerMock.VerifyNoOtherCalls();
             this.csvHelperBrokerMock.VerifyNoOtherCalls();
             this.documentProcessingServiceMock.VerifyNoOtherCalls();
             this.dateTimeBrokerMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
+            this.auditBrokerMock.VerifyNoOtherCalls();
+            this.securityBrokerMock.VerifyNoOtherCalls();
         }
     }
 }

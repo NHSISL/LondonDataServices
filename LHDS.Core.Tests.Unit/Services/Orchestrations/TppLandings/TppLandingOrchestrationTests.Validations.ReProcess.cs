@@ -3,6 +3,7 @@
 // ---------------------------------------------------------
 
 using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using FluentAssertions;
 using LHDS.Core.Models.Orchestrations.TppLandings.Exceptions;
@@ -35,7 +36,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.TppLandings
                     innerException: invalidArgumentException);
 
             // when
-            ValueTask returnedGuidTask = this.tppOrchestrationService.ReProcessAsync(supplierId);
+            ValueTask<List<Guid>> returnedGuidTask = this.tppOrchestrationService.ReProcessAsync(supplierId);
 
             TppLandingOrchestrationValidationException actualException =
                 await Assert.ThrowsAsync<TppLandingOrchestrationValidationException>(returnedGuidTask.AsTask);

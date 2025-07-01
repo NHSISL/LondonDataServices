@@ -1,4 +1,8 @@
-﻿using System;
+﻿// ---------------------------------------------------------
+// Copyright (c) North East London ICB. All rights reserved.
+// ---------------------------------------------------------
+
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
@@ -34,7 +38,7 @@ namespace LHDS.Core.Tests.Unit.Services.Coordinations.HealthChecks.IngestionTrac
             this.dateTimeBrokerMock = new Mock<IDateTimeBroker>();
             this.loggingBrokerMock = new Mock<ILoggingBroker>();
 
-            this.ingestionTrackingFilesReceivedHealthCheckService = 
+            this.ingestionTrackingFilesReceivedHealthCheckService =
                 new IngestionTrackingFilesReceivedHealthCheckService(
                     storageBroker: this.storageBrokerMock.Object,
                     configuration: this.configuration,
@@ -91,6 +95,7 @@ namespace LHDS.Core.Tests.Unit.Services.Coordinations.HealthChecks.IngestionTrac
                 .OnProperty(ingestionTracking => ingestionTracking.RetryCount).Use(3)
                 .OnProperty(ingestionTracking => ingestionTracking.SupplierId).Use(supplierId)
                 .OnProperty(ingestionTracking => ingestionTracking.Supplier).IgnoreIt()
+                .OnProperty(ingestionTracking => ingestionTracking.SubscriberAgreement).IgnoreIt()
                 .OnProperty(ingestionTracking => ingestionTracking.IngestionTrackingAudits).IgnoreIt();
 
             return filler;
@@ -110,7 +115,9 @@ namespace LHDS.Core.Tests.Unit.Services.Coordinations.HealthChecks.IngestionTrac
                 .OnProperty(supplier => supplier.CreatedBy).Use(user)
                 .OnProperty(supplier => supplier.UpdatedBy).Use(user)
                 .OnProperty(supplier => supplier.Id).Use(supplierId)
-                .OnProperty(supplier => supplier.IsIngestionTracked).Use(isIngestionTracked);
+                .OnProperty(supplier => supplier.IsIngestionTracked).Use(isIngestionTracked)
+                .OnProperty(supplier => supplier.DataSets).IgnoreIt()
+                .OnProperty(supplier => supplier.IngestionTrackings).IgnoreIt();
 
             return filler;
         }

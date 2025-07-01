@@ -56,7 +56,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.TppLandings
                     .ThrowsAsync(dependancyValidationException);
 
             // when
-            ValueTask processTask = tppOrchestrationServiceMock.Object
+            ValueTask<List<Guid>> processTask = tppOrchestrationServiceMock.Object
                 .ReProcessAsync(supplierId: randomSupplierId);
 
             TppLandingOrchestrationDependencyValidationException actualException =
@@ -122,7 +122,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.TppLandings
                     .ThrowsAsync(dependancyException);
 
             // when
-            ValueTask processTask = this.tppOrchestrationService
+            ValueTask<List<Guid>> processTask = this.tppOrchestrationService
                 .ReProcessAsync(supplierId: randomSupplierId);
 
             TppLandingOrchestrationDependencyException actualException =
@@ -215,7 +215,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.TppLandings
                     failedTppOrchestrationServiceException);
 
             // when
-            ValueTask processTask = tppOrchestrationServiceMock.Object
+            ValueTask<List<Guid>> processTask = tppOrchestrationServiceMock.Object
                 .ReProcessAsync(supplierId: randomSupplierId);
 
             TppLandingOrchestrationServiceException actualException =
@@ -283,7 +283,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.TppLandings
                     .ThrowsAsync(serviceException);
 
             // when
-            ValueTask processTask = this.tppOrchestrationService
+            ValueTask<List<Guid>> processTask = this.tppOrchestrationService
                 .ReProcessAsync(supplierId: randomSupplierId);
 
             TppLandingOrchestrationServiceException actualException =

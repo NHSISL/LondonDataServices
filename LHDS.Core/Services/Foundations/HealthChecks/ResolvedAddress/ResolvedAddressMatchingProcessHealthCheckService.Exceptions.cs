@@ -34,8 +34,7 @@ namespace LHDS.Core.Services.Foundations.HealthChecks.ResolvedAddress
                         innerException: exception);
 
                 throw await CreateAndLogServiceExceptionAsync(
-                    failedResolvedAddressMatchingProcessHealthCheckServiceException
-                );
+                    failedResolvedAddressMatchingProcessHealthCheckServiceException);
             }
         }
 
@@ -51,8 +50,7 @@ namespace LHDS.Core.Services.Foundations.HealthChecks.ResolvedAddress
                     innerException: exception);
 
             await this.loggingBroker.LogCriticalAsync(
-                resolvedAddressMatchingProcessHealthCheckServiceException
-            );
+                resolvedAddressMatchingProcessHealthCheckServiceException);
 
             return resolvedAddressMatchingProcessHealthCheckServiceException;
         }

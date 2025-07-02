@@ -262,6 +262,9 @@ namespace LHDS.AdminPortal.Api
                 <IResolvedAddressHealthItemService, ResolvedAddressFailedToExportHealthCheckService>();
 
             services.AddSingleton
+                <IResolvedAddressHealthItemService, ResolvedAddressMatchQualityHealthCheckService>();
+
+            services.AddSingleton
                 <ITerminologyPollsHealthItemService, TerminologyPollsNotPollingHealthCheckService>();
 
             services.AddSingleton

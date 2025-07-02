@@ -43,14 +43,14 @@ namespace LHDS.Core.Services.Foundations.HealthChecks.ResolvedAddress
                 var filteredQuery = resolvedAddressQuery.Where(i => i.UpdatedDate >= queryCutOffDate);
                 int totalCount = filteredQuery.Count();
                 int matchedCount = filteredQuery.Where(i => i.MatchedWithAssign == true).Count();
-                double percentageMatched = matchedCount / totalCount;
+                double percentageMatched = (double) matchedCount / (double) totalCount;
 
                 bool isDegraded = (percentageMatched > unHealthyThresholdPercentage
                     && percentageMatched <= degradedThresholdPercentage);
 
                 bool isUnHealthy = percentageMatched <= unHealthyThresholdPercentage;
 
-                string message = totalCount == 0
+                string message = (!isDegraded && !isUnHealthy)
                     ? "Match quality is good"
                     : $"{percentageMatched * 100}% average match rate. Please check logs and function status.";
 

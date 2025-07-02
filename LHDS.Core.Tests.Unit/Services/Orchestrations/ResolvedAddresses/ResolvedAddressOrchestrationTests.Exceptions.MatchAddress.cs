@@ -8,6 +8,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using FluentAssertions;
 using Force.DeepCloner;
+using LHDS.Core.Models.Foundations.Audits;
 using LHDS.Core.Models.Foundations.ResolvedAddresses;
 using LHDS.Core.Models.Orchestrations.ResolvedAddresses.Exceptions;
 using Moq;
@@ -241,7 +242,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.ResolvedAddresses
 
             this.identifierBrokerMock.Verify(broker =>
                 broker.GetIdentifierAsync(),
-                    Times.Exactly((randomResolvedAddresses.Count) + 1));
+                    Times.Exactly((randomResolvedAddresses.Count * 2) + 1));
 
             this.securityBrokerMock.Verify(broker =>
                 broker.GetCurrentUserAsync(),
@@ -253,7 +254,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.ResolvedAddresses
 
             this.dateTimeBrokerMock.Verify(broker =>
                 broker.GetCurrentDateTimeOffsetAsync(),
-                    Times.Exactly(1 + (randomResolvedAddresses.Count * 2)));
+                    Times.Exactly(randomResolvedAddresses.Count * 4));
 
             foreach (ResolvedAddress unMatchedResolvedAddress in randomResolvedAddresses)
             {
@@ -295,6 +296,10 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.ResolvedAddresses
                 broker.LogErrorAsync(It.Is(SameExceptionAs(
                     actualResolvedAddressOrchestrationServiceException))),
                         Times.Once);
+
+            this.auditBrokerMock.Verify(broker =>
+                broker.BulkLogAsync(It.IsAny<List<Audit>>()),
+                    Times.Once());
 
             this.documentProcessingServiceMock.VerifyNoOtherCalls();
             this.resolvedAddressProcessingServiceMock.VerifyNoOtherCalls();
@@ -386,7 +391,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.ResolvedAddresses
 
             this.identifierBrokerMock.Verify(broker =>
                 broker.GetIdentifierAsync(),
-                    Times.Exactly((randomResolvedAddresses.Count) + 1));
+                    Times.Exactly((randomResolvedAddresses.Count * 2) + 1));
 
             this.securityBrokerMock.Verify(broker =>
                 broker.GetCurrentUserAsync(),
@@ -398,7 +403,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.ResolvedAddresses
 
             this.dateTimeBrokerMock.Verify(broker =>
                 broker.GetCurrentDateTimeOffsetAsync(),
-                    Times.Exactly(1 + (randomResolvedAddresses.Count * 2)));
+                    Times.Exactly(randomResolvedAddresses.Count * 4));
 
             foreach (ResolvedAddress unMatchedResolvedAddress in randomResolvedAddresses)
             {
@@ -439,6 +444,10 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.ResolvedAddresses
                 broker.LogErrorAsync(It.Is(SameExceptionAs(
                     actualResolvedAddressOrchestrationServiceException))),
                         Times.Once);
+
+            this.auditBrokerMock.Verify(broker =>
+                broker.BulkLogAsync(It.IsAny<List<Audit>>()),
+                    Times.Once());
 
             this.documentProcessingServiceMock.VerifyNoOtherCalls();
             this.resolvedAddressProcessingServiceMock.VerifyNoOtherCalls();
@@ -534,7 +543,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.ResolvedAddresses
 
             this.identifierBrokerMock.Verify(broker =>
                 broker.GetIdentifierAsync(),
-                    Times.Exactly((randomResolvedAddresses.Count) + 1));
+                    Times.Exactly((randomResolvedAddresses.Count * 2) + 1));
 
             this.securityBrokerMock.Verify(broker =>
                 broker.GetCurrentUserAsync(),
@@ -546,7 +555,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.ResolvedAddresses
 
             this.dateTimeBrokerMock.Verify(broker =>
                 broker.GetCurrentDateTimeOffsetAsync(),
-                    Times.Exactly(1 + (randomResolvedAddresses.Count * 2)));
+                    Times.Exactly(randomResolvedAddresses.Count * 4));
 
             foreach (ResolvedAddress unMatchedResolvedAddress in randomResolvedAddresses)
             {
@@ -584,6 +593,10 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.ResolvedAddresses
                 broker.LogErrorAsync(It.Is(SameExceptionAs(
                     actualResolvedAddressOrchestrationServiceException))),
                         Times.Once);
+
+            this.auditBrokerMock.Verify(broker =>
+                broker.BulkLogAsync(It.IsAny<List<Audit>>()),
+                    Times.Once());
 
             this.documentProcessingServiceMock.VerifyNoOtherCalls();
             this.resolvedAddressProcessingServiceMock.VerifyNoOtherCalls();

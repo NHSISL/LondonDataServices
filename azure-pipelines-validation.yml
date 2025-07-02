@@ -25,7 +25,7 @@ variables:
   - name: ConnectionStrings.DefaultConnection
     value: 'Server=localhost,1433;Database=LHDS-Acceptance-$(Build.BuildId);User Id=sa;Password=1Password;TrustServerCertificate=true'
 
-pool: selfhosted-vmss-linux-lds-dev
+pool: isl-dev-devops-linux-vmss01
 
 
 steps:

@@ -25,8 +25,8 @@ namespace LHDS.Core.Tests.Unit.Services.Coordinations.HealthChecks.TerminologyPo
         private readonly TerminologyPollsNotPollingHealthCheckService
             terminologyPollsNotPollingHealthCheckService;
 
-        private const string CheckName = "terminologyPolls";
-        private const string CheckNameDescription = "Terminology Polls";
+        private const string CheckName = "notPolling";
+        private const string CheckNameDescription = "Not Polling";
         private const int DegradedThresholdMinutes = 1440;
         private const int UnHealthyThresholdMinutes = 2880;
 

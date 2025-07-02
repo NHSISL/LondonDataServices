@@ -30,7 +30,12 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.ResolvedAddresses
             Stream inputStream = new MemoryStream(inputData);
             Stream expectedStream = inputStream;
             Stream actualStream = new MemoryStream();
-            Guid batchReference = Guid.NewGuid();
+            Guid identifier = Guid.NewGuid();
+            string exportingAuditMessage = $"Exporting resolved addresses with correlation id {identifier}";
+            string exportedAuditMessage = $"Exported resolved addresses with correlation id {identifier}";
+            string exportingAuditTitle = "Exporting Resolved Addresses";
+            string exportedAuditTitle = "Exported Resolved Addresses";
+            string auditType = "Resolved Address Export";
 
             this.resolvedAddressProcessingServiceMock.SetupSequence(service =>
                 service.RetrieveAllResolvedAddressesAsync())
@@ -42,12 +47,12 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.ResolvedAddresses
             {
                 pra.IsProcessing = true;
                 pra.RetryCount += 1;
-                pra.BatchReference = batchReference;
+                pra.BatchReference = identifier;
             });
 
             this.identifierBrokerMock.Setup(broker =>
                 broker.GetIdentifierAsync())
-                    .ReturnsAsync(batchReference);
+                    .ReturnsAsync(identifier);
 
             this.resolvedAddressProcessingServiceMock.Setup(processing =>
                 processing.BulkModifyResolvedAddressesAsync(processingResolvedAddresses))
@@ -87,7 +92,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.ResolvedAddresses
                     false))
                         .ReturnsAsync(ouputCsv);
 
-            string inputFileName = $"out/{batchReference}.csv";
+            string inputFileName = $"out/{identifier}.csv";
             string inputContainer = blobContainers.Addresses;
 
             this.documentProcessingServiceMock
@@ -104,7 +109,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.ResolvedAddresses
 
             doneProcessingResolvedAddresses.ForEach(dpra =>
             {
-                dpra.BatchReference = batchReference;
+                dpra.BatchReference = identifier;
                 dpra.IsProcessing = false;
                 dpra.RetryCount = 0;
                 dpra.IsExported = true;
@@ -121,11 +126,21 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.ResolvedAddresses
             // Then
             this.identifierBrokerMock.Verify(broker =>
                 broker.GetIdentifierAsync(),
-                    Times.Once());
+                    Times.Exactly(2));
 
             this.resolvedAddressProcessingServiceMock.Verify(service =>
                 service.RetrieveAllResolvedAddressesAsync(),
                     Times.Exactly(2));
+
+            this.auditBrokerMock.Verify(service =>
+                service.LogAsync(
+                    auditType,
+                    exportingAuditTitle,
+                    exportingAuditMessage,
+                    null,
+                    identifier.ToString(),
+                    "Information"),
+                        Times.Once());
 
             this.resolvedAddressProcessingServiceMock.Verify(processing =>
                 processing.BulkModifyResolvedAddressesAsync(
@@ -149,12 +164,24 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.ResolvedAddresses
                     It.Is(SameResolvedAddressListAs(doneProcessingResolvedAddresses))),
                         Times.Once);
 
+            this.auditBrokerMock.Verify(service =>
+                service.LogAsync(
+                    auditType,
+                    exportedAuditTitle,
+                    exportedAuditMessage,
+                    null,
+                    identifier.ToString(),
+                    "Information"),
+                        Times.Once());
+
             this.resolvedAddressProcessingServiceMock.VerifyNoOtherCalls();
             this.identifierBrokerMock.VerifyNoOtherCalls();
             this.csvHelperBrokerMock.VerifyNoOtherCalls();
             this.documentProcessingServiceMock.VerifyNoOtherCalls();
             this.dateTimeBrokerMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
+            this.auditBrokerMock.VerifyNoOtherCalls();
+            this.securityBrokerMock.VerifyNoOtherCalls();
         }
     }
 }

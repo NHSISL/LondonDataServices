@@ -53,6 +53,7 @@ using LHDS.Core.Services.Foundations.HealthChecks.IngestionTracking;
 using LHDS.Core.Services.Foundations.HealthChecks.OptOut;
 using LHDS.Core.Services.Foundations.HealthChecks.PDS;
 using LHDS.Core.Services.Foundations.HealthChecks.ResolvedAddress;
+using LHDS.Core.Services.Foundations.HealthChecks.TerminologyArtifacts;
 using LHDS.Core.Services.Foundations.HealthChecks.TerminologyPolls;
 using LHDS.Core.Services.Foundations.IngestionTrackingAudits;
 using LHDS.Core.Services.Foundations.IngestionTrackings;
@@ -69,6 +70,7 @@ using LHDS.Core.Services.Orchestrations.HealthChecks.IngestionTrackings;
 using LHDS.Core.Services.Orchestrations.HealthChecks.OptOuts;
 using LHDS.Core.Services.Orchestrations.HealthChecks.Pds;
 using LHDS.Core.Services.Orchestrations.HealthChecks.ResolvedAddresses;
+using LHDS.Core.Services.Orchestrations.HealthChecks.TerminologyArtifacts;
 using LHDS.Core.Services.Orchestrations.HealthChecks.TerminologyPolls;
 using LHDS.Core.Services.Processings.Addresses;
 using LHDS.Core.Services.Processings.DataSetSpecifications;
@@ -265,6 +267,12 @@ namespace LHDS.AdminPortal.Api
                 <ITerminologyPollsHealthItemService, TerminologyPollsNotPollingHealthCheckService>();
 
             services.AddSingleton
+                <ITerminologyArtifactsHealthItemService, TerminologyArtifactsFailedToProcessHealthCheckService>();
+
+            services.AddSingleton
+                <IOptOutHealthItemService, OptOutsExpiredOptOutHealthCheckService>();
+
+            services.AddSingleton
                 <IPdsHealthItemService, PdsReceivedReplyHealthCheckService>();
 
             services.AddHealthChecks()
@@ -278,6 +286,9 @@ namespace LHDS.AdminPortal.Api
 
             services.AddHealthChecks()
                 .AddCheck<OptOutsHealthCheckOrchestrationService>("optOutsHealthChecks");
+
+            services.AddHealthChecks()
+                .AddCheck<TerminologyArtifactsHealthCheckCoordinationService>("terminologyArtifactsHealthChecks");
 
             services.AddHealthChecks()
                 .AddCheck<PdsHealthCheckOrchestrationService>("pdsHealthChecks");

@@ -83,6 +83,7 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.AspNetCore.OData;
 using Microsoft.EntityFrameworkCore;
@@ -225,6 +226,7 @@ namespace LHDS.AdminPortal.Api
                 ResponseWriter = HealthCheckResponseWriter.WriteResponse
             });
 
+            app.MapGet("/api", () => Results.Ok("AdminPortal API is running"));
             app.UseHttpsRedirection();
             app.UseCors("AllowFrontendOrigin");
             app.UseRouting();

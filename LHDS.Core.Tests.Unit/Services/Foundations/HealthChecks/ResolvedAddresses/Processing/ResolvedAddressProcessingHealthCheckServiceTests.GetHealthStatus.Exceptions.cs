@@ -23,7 +23,8 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.HealthChecks.ResolvedAddress
             var failedResolvedAddressProcessingHealthCheckServiceException =
                 new FailedResolvedAddressProcessingHealthCheckServiceException(
 
-                    message: "Failed resolved address processing health check service error occurred, " +
+                    message: 
+                        "Failed resolved address processing health check service error occurred, " +
                         "please contact support.",
 
                     innerException: serviceException);
@@ -31,7 +32,8 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.HealthChecks.ResolvedAddress
             var expectedResolvedAddressProcessingHealthCheckServiceException =
                 new ResolvedAddressProcessingHealthCheckServiceException(
 
-                    message: "Resolved address processing health check service error occurred, " +
+                    message: 
+                        "Resolved address processing health check service error occurred, " +
                         "please contact support.",
 
                     innerException: failedResolvedAddressProcessingHealthCheckServiceException);

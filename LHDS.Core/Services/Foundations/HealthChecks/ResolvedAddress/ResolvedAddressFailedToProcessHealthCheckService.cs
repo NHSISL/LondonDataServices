@@ -37,7 +37,7 @@ namespace LHDS.Core.Services.Foundations.HealthChecks.ResolvedAddress
         }
 
         public ValueTask<HealthCheckResult> GetHealthStatusAsync() =>
-            TryCatch(async () =>
+        TryCatch(async () =>
         {
             int retryCount = configuration.GetValue($"{ConfigSectionName}:RetryCount", 3);
             int degradedThresholdMinutes = configuration.GetValue($"{ConfigSectionName}:DegradedThreshold", 1440);

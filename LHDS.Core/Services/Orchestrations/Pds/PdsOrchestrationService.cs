@@ -126,7 +126,10 @@ namespace LHDS.Core.Services.Orchestrations.Pds
                             }
 
                             string filename = message.Headers["mex-filename"].FirstOrDefault();
-                            string cleanedFileName = filename.StartsWith("RESP_") ? filename.Substring("RESP_".Length) : filename;
+                            
+                            string cleanedFileName = 
+                                filename.StartsWith("RESP_") ? filename.Substring("RESP_".Length) : filename;
+                                
                             string fileName = $"{pdsConfiguration.OutputFolder}/{cleanedFileName}";
 
                             using (Stream input = new MemoryStream(message.FileContent))

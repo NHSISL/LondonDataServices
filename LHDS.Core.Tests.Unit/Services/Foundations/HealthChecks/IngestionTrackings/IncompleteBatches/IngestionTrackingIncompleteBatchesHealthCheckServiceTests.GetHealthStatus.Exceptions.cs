@@ -23,7 +23,8 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.HealthChecks.IngestionTracki
             var failedIngestionTrackingIncompleteBatchHealthCheckServiceException =
                 new FailedIngestionTrackingIncompleteBatchHealthCheckServiceException(
 
-                    message: "Failed ingestion tracking incomplete batch health check service error occurred, " +
+                    message: 
+                        "Failed ingestion tracking incomplete batch health check service error occurred, " +
                         "please contact support.",
 
                     innerException: serviceException);
@@ -31,7 +32,8 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.HealthChecks.IngestionTracki
             var expectedIngestionTrackingIncompleteBatchHealthCheckServiceException =
                 new IngestionTrackingIncompleteBatchHealthCheckServiceException(
 
-                    message: "Ingestion tracking incomplete batch health check service error occurred, " +
+                    message: 
+                        "Ingestion tracking incomplete batch health check service error occurred, " +
                         "please contact support.",
 
                     innerException: failedIngestionTrackingIncompleteBatchHealthCheckServiceException);

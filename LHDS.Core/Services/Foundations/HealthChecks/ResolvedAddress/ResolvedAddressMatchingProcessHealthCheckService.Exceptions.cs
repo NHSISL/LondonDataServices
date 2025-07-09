@@ -17,7 +17,8 @@ namespace LHDS.Core.Services.Foundations.HealthChecks.ResolvedAddress
     {
         private delegate Task<HealthCheckResult> ReturningHealthCheckResultFunction();
 
-        private async ValueTask<HealthCheckResult> TryCatch(ReturningHealthCheckResultFunction returningHealthCheckResultFunction)
+        private async ValueTask<HealthCheckResult> TryCatch(
+            ReturningHealthCheckResultFunction returningHealthCheckResultFunction)
         {
             try
             {

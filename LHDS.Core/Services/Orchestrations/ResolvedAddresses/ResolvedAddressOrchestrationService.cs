@@ -230,7 +230,8 @@ namespace LHDS.Core.Services.Orchestrations.ResolvedAddresses
 
                     exceptions.Add(ex);
 
-                    DateTimeOffset matchingFailedDateTimeOffset = await this.dateTimeBroker.GetCurrentDateTimeOffsetAsync();
+                    DateTimeOffset matchingFailedDateTimeOffset = 
+                        await this.dateTimeBroker.GetCurrentDateTimeOffsetAsync();
 
                     Audit resolvedAddressMatchingFailedAudit = new Audit
                     {

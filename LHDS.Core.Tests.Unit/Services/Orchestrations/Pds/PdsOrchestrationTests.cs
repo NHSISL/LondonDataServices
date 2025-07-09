@@ -166,7 +166,13 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Pds
         {
             var messages = new List<MeshMessage>();
             var fileName =
-                    GetRandomString() + "_" + GetRandomString() + "_" + GetRandomString() + "_" + GetRandomString() + ".csv";
+                      GetRandomString() 
+                      + "/" + GetRandomString()
+                      + "/" + GetRandomString() 
+                      + "_" + GetRandomString() 
+                      + "_" + GetRandomString() 
+                      + "_" + GetRandomString() 
+                      + ".csv";
 
             randomMessageIds.ForEach(id =>
             {

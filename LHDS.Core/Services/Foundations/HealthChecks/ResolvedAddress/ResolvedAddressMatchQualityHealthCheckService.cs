@@ -33,63 +33,63 @@ namespace LHDS.Core.Services.Foundations.HealthChecks.ResolvedAddress
         }
 
         public ValueTask<HealthCheckResult> GetHealthStatusAsync() =>
-            TryCatch(async () =>
+        TryCatch(async () =>
+        {
+            double degradedThresholdPercentage = configuration.GetValue($"{ConfigSectionName}:DegradedThresholdPercentage", 0.9);
+            double unHealthyThresholdPercentage = configuration.GetValue($"{ConfigSectionName}:UnHealthyThresholdPercentage", 0.8);
+            DateTimeOffset currentDateTime = await dateTimeBroker.GetCurrentDateTimeOffsetAsync();
+            DateTimeOffset queryCutOffDate = currentDateTime.AddDays(-1);
+            var resolvedAddressQuery = await storageBroker.SelectAllResolvedAddressesAsync();
+            var filteredQuery = resolvedAddressQuery.Where(i => i.UpdatedDate >= queryCutOffDate);
+            int totalCount = filteredQuery.Count();
+            int matchedCount = filteredQuery.Where(i => i.MatchedWithAssign == true).Count();
+            double percentageMatched = (double) matchedCount / (double) totalCount;
+
+            bool isDegraded = (percentageMatched > unHealthyThresholdPercentage
+                && percentageMatched <= degradedThresholdPercentage);
+
+            bool isUnHealthy = percentageMatched <= unHealthyThresholdPercentage;
+
+            string message = (!isDegraded && !isUnHealthy)
+                ? "Match quality is good"
+                : $"{percentageMatched * 100}% average match rate. Please check logs and function status.";
+
+            var vals = new Dictionary<string, object>
             {
-                double degradedThresholdPercentage = configuration.GetValue($"{ConfigSectionName}:DegradedThresholdPercentage", 0.9);
-                double unHealthyThresholdPercentage = configuration.GetValue($"{ConfigSectionName}:UnHealthyThresholdPercentage", 0.8);
-                DateTimeOffset currentDateTime = await dateTimeBroker.GetCurrentDateTimeOffsetAsync();
-                DateTimeOffset queryCutOffDate = currentDateTime.AddDays(-1);
-                var resolvedAddressQuery = await storageBroker.SelectAllResolvedAddressesAsync();
-                var filteredQuery = resolvedAddressQuery.Where(i => i.UpdatedDate >= queryCutOffDate);
-                int totalCount = filteredQuery.Count();
-                int matchedCount = filteredQuery.Where(i => i.MatchedWithAssign == true).Count();
-                double percentageMatched = (double) matchedCount / (double) totalCount;
+                { "description", CheckDescriptionName },
+                { "averageMatchRate", percentageMatched },
+                { "isDegraded", isDegraded},
+                { "isUnhealthy", isUnHealthy},
+                { "degradedThresholdPercentage", degradedThresholdPercentage.ToString() },
+                { "unHealthyThresholdPercentage", unHealthyThresholdPercentage.ToString() },
+                { "checkedAt", currentDateTime.ToString("o") },
+                { "message", message }
+            };
 
-                bool isDegraded = (percentageMatched > unHealthyThresholdPercentage
-                    && percentageMatched <= degradedThresholdPercentage);
+            if (isUnHealthy)
+            {
+                vals.Add("status", HealthStatus.Unhealthy.ToString());
 
-                bool isUnHealthy = percentageMatched <= unHealthyThresholdPercentage;
+                return HealthCheckResult.Unhealthy(
+                    description: CheckName,
+                    data: vals);
+            }
+            else if (isDegraded)
+            {
+                vals.Add("status", HealthStatus.Degraded.ToString());
 
-                string message = (!isDegraded && !isUnHealthy)
-                    ? "Match quality is good"
-                    : $"{percentageMatched * 100}% average match rate. Please check logs and function status.";
+                return HealthCheckResult.Degraded(
+                    description: CheckName,
+                    data: vals);
+            }
+            else
+            {
+                vals.Add("status", HealthStatus.Healthy.ToString());
 
-                var vals = new Dictionary<string, object>
-                {
-                    { "description", CheckDescriptionName },
-                    { "averageMatchRate", percentageMatched },
-                    { "isDegraded", isDegraded},
-                    { "isUnhealthy", isUnHealthy},
-                    { "degradedThresholdPercentage", degradedThresholdPercentage.ToString() },
-                    { "unHealthyThresholdPercentage", unHealthyThresholdPercentage.ToString() },
-                    { "checkedAt", currentDateTime.ToString("o") },
-                    { "message", message }
-                };
-
-                if (isUnHealthy)
-                {
-                    vals.Add("status", HealthStatus.Unhealthy.ToString());
-
-                    return HealthCheckResult.Unhealthy(
-                        description: CheckName,
-                        data: vals);
-                }
-                else if (isDegraded)
-                {
-                    vals.Add("status", HealthStatus.Degraded.ToString());
-
-                    return HealthCheckResult.Degraded(
-                        description: CheckName,
-                        data: vals);
-                }
-                else
-                {
-                    vals.Add("status", HealthStatus.Healthy.ToString());
-
-                    return HealthCheckResult.Healthy(
-                        description: CheckName,
-                        data: vals);
-                }
-            });
+                return HealthCheckResult.Healthy(
+                    description: CheckName,
+                    data: vals);
+            }
+        });
     }
 }

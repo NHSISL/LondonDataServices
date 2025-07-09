@@ -23,7 +23,8 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.HealthChecks.ResolvedAddress
             var failedResolvedAddressMatchQualityHealthCheckServiceException =
                 new FailedResolvedAddressMatchQualityHealthCheckServiceException(
 
-                    message: "Failed resolved address match quality health check service error occurred, " +
+                    message: 
+                        "Failed resolved address match quality health check service error occurred, " +
                         "please contact support.",
 
                     innerException: serviceException);
@@ -31,7 +32,8 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.HealthChecks.ResolvedAddress
             var expectedResolvedAddressMatchQualityHealthCheckServiceException =
                 new ResolvedAddressMatchQualityHealthCheckServiceException(
 
-                    message: "Resolved address match quality health check service error occurred, " +
+                    message: 
+                        "Resolved address match quality health check service error occurred, " +
                         "please contact support.",
 
                     innerException: failedResolvedAddressMatchQualityHealthCheckServiceException);

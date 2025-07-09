@@ -54,14 +54,10 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Pds
                         .ReturnsAsync(message);
 
                 string filename = message.Headers["mex-filename"].FirstOrDefault();
-                string fileNameWithoutExtension = Path.GetFileNameWithoutExtension(filename);
-                string[] fileNameParts = fileNameWithoutExtension.Split('_');
+                string cleanedFileName = filename.StartsWith("RESP_") ? filename.Substring("RESP_".Length) : filename;
+                string fileNameOutput = $"{pdsConfiguration.OutputFolder}/{cleanedFileName}";
 
-                string fileNameOutput =
-                    $"{fileNameParts[1]}_{fileNameParts[2]}_{fileNameParts[0]}_{fileNameParts[3]}";
-
-                fileNameOutput += Path.GetExtension(filename);
-                string inputFileName = $"{pdsConfiguration.OutputFolder}/{fileNameOutput}";
+                string inputFileName = $"{pdsConfiguration.OutputFolder}/{cleanedFileName}";
                 Stream inputStream = new MemoryStream(message.FileContent);
                 Guid correlationId = Guid.Parse(message.Headers["mex-localid"].FirstOrDefault());
 
@@ -119,21 +115,16 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Pds
                         Times.Once);
 
                 string filename = message.Headers["mex-filename"].FirstOrDefault();
-                string fileNameWithoutExtension = Path.GetFileNameWithoutExtension(filename);
-                string[] fileNameParts = fileNameWithoutExtension.Split('_');
+                string cleanedFileName = filename.StartsWith("RESP_") ? filename.Substring("RESP_".Length) : filename;
+                string fileNameOutput = $"{pdsConfiguration.OutputFolder}/{cleanedFileName}";
 
-                string fileNameOutput =
-                    $"{fileNameParts[1]}_{fileNameParts[2]}_{fileNameParts[0]}_{fileNameParts[3]}";
-
-                fileNameOutput += Path.GetExtension(filename);
-                string inputFileName = $"{pdsConfiguration.OutputFolder}/{fileNameOutput}";
+                string inputFileName = $"{pdsConfiguration.OutputFolder}/{cleanedFileName}";
                 Stream inputStream = new MemoryStream(message.FileContent);
                 Guid correlationId = Guid.Parse(message.Headers["mex-localid"].FirstOrDefault());
 
                 this.documentServiceMock.Verify(service =>
                     service.AddDocumentAsync(It.IsAny<Stream>(), inputFileName, inputContainer),
                         Times.Once);
-
 
                 PdsAudit pdsAudit = new PdsAudit
                 {

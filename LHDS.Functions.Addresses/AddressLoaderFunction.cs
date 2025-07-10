@@ -26,7 +26,7 @@ namespace LHDS.Functions.Addresses
 
         [Function("AddressLoaderFunction")]
         public async Task Run(
-            [BlobTrigger("addresses/ordinance/in/{name}", Connection = "BlobStorage")] Stream myBlob, string name)
+            [BlobTrigger("uprn/ordinance/in/{name}", Connection = "BlobStorage")] Stream myBlob, string name)
         {
             await loggingBroker
                   .LogInformationAsync(

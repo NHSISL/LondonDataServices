@@ -227,6 +227,7 @@ namespace LHDS.AdminPortal.Api
             });
 
             app.MapGet("/api", () => Results.Ok("AdminPortal API is running"));
+            app.MapGet("/", () => Results.Ok("AdminPortal API is running"));
             app.UseHttpsRedirection();
             app.UseCors("AllowFrontendOrigin");
             app.UseRouting();

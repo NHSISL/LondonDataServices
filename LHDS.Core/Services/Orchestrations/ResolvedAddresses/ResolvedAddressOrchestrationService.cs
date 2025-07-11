@@ -289,6 +289,7 @@ namespace LHDS.Core.Services.Orchestrations.ResolvedAddresses
                 unMatchedResolvedAddresses = retrievedResolvedAddresses
                     .Where(address =>
                         address.IsExported == false &&
+                        address.IsProcessed == true &&
                         address.IsProcessing == false &&
                         address.RetryCount < 4)
                     .Take(batchCount)

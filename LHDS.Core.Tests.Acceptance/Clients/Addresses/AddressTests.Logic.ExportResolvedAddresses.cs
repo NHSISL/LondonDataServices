@@ -20,6 +20,7 @@ namespace LHDS.Core.Tests.Acceptance.Clients.Addresses
         {
             //Given
             List<ResolvedAddress> randomResolvedAddresses = CreateRandomUnmatchedAddresses(GetRandomNumber());
+            randomResolvedAddresses.ForEach(address => address.IsProcessed = true);
 
             foreach (ResolvedAddress resolvedAddress in randomResolvedAddresses)
             {

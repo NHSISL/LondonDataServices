@@ -23,6 +23,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.ResolvedAddresses
             // Given
             List<ResolvedAddress> randomResolvedAddresses = CreateRandomUnmatchedAddresses(count: 2);
             List<ResolvedAddress> storageResolvedAddresses = randomResolvedAddresses.DeepClone();
+            storageResolvedAddresses.ForEach(address => address.IsProcessed = true);
             List<ResolvedAddress> processingResolvedAddresses = storageResolvedAddresses.DeepClone();
             List<ResolvedAddress> doneProcessingResolvedAddresses = processingResolvedAddresses.DeepClone();
             string ouputCsv = GetRandomString();

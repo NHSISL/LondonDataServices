@@ -177,6 +177,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.ResolvedAddresses
             DateTimeOffset randomDateTimeOffset = GetRandomDateTimeOffset();
             List<ResolvedAddress> randomResolvedAddresses = CreateRandomUnmatchedAddresses(count: 2);
             List<ResolvedAddress> storageResolvedAddresses = randomResolvedAddresses.DeepClone();
+            storageResolvedAddresses.ForEach(address => address.IsProcessed = true);
             List<ResolvedAddress> storageBatchResolvedAddresses = randomResolvedAddresses.DeepClone();
             Guid identifier = Guid.NewGuid();
             string exportingAuditMessage = $"Exporting resolved addresses with correlation id {identifier}";
@@ -340,6 +341,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.ResolvedAddresses
             DateTimeOffset randomDateTimeOffset = GetRandomDateTimeOffset();
             List<ResolvedAddress> randomResolvedAddresses = CreateRandomUnmatchedAddresses(count: 2);
             List<ResolvedAddress> storageResolvedAddresses = randomResolvedAddresses.DeepClone();
+            storageResolvedAddresses.ForEach(address => address.IsProcessed = true);
             List<ResolvedAddress> storageBatchResolvedAddresses = randomResolvedAddresses.DeepClone();
             Guid identifier = Guid.NewGuid();
             string exportingAuditMessage = $"Exporting resolved addresses with correlation id {identifier}";
@@ -500,6 +502,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.ResolvedAddresses
             DateTimeOffset randomDateTimeOffset = GetRandomDateTimeOffset();
             List<ResolvedAddress> randomResolvedAddresses = CreateRandomUnmatchedAddresses(count: 2);
             List<ResolvedAddress> storageResolvedAddresses = randomResolvedAddresses.DeepClone();
+            storageResolvedAddresses.ForEach(address => address.IsProcessed = true);
             List<ResolvedAddress> storageBatchResolvedAddresses = randomResolvedAddresses.DeepClone();
             Guid identifier = Guid.NewGuid();
             string exportingAuditMessage = $"Exporting resolved addresses with correlation id {identifier}";

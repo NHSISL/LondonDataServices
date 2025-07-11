@@ -265,7 +265,7 @@ namespace LHDS.Core.Tests.Acceptance.Clients.Addresses
             filler.Setup()
                 .OnType<DateTimeOffset>().Use(dateTimeOffset)
                 .OnType<DateTimeOffset?>().Use(dateTimeOffset)
-                .OnProperty(resolvedAddress => resolvedAddress.IsProcessed).Use(true)
+                .OnProperty(resolvedAddress => resolvedAddress.IsProcessed).Use(false)
                 .OnProperty(resolvedAddress => resolvedAddress.IsProcessing).Use(false)
                 .OnProperty(resolvedAddress => resolvedAddress.IsExported).Use(false)
                 .OnProperty(resolvedAddress => resolvedAddress.RetryCount).Use(3)

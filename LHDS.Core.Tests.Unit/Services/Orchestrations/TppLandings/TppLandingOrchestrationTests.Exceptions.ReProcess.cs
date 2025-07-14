@@ -5,10 +5,8 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using System.Threading.Tasks;
 using FluentAssertions;
-using LHDS.Core.Models.Foundations.IngestionTrackings;
 using LHDS.Core.Models.Orchestrations.TppLandings.Exceptions;
 using LHDS.Core.Services.Orchestrations.Tpp;
 using Moq;
@@ -56,7 +54,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.TppLandings
                     .ThrowsAsync(dependancyValidationException);
 
             // when
-            ValueTask processTask = tppOrchestrationServiceMock.Object
+            ValueTask<List<Guid>> processTask = tppOrchestrationServiceMock.Object
                 .ReProcessAsync(supplierId: randomSupplierId);
 
             TppLandingOrchestrationDependencyValidationException actualException =
@@ -122,7 +120,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.TppLandings
                     .ThrowsAsync(dependancyException);
 
             // when
-            ValueTask processTask = this.tppOrchestrationService
+            ValueTask<List<Guid>> processTask = this.tppOrchestrationService
                 .ReProcessAsync(supplierId: randomSupplierId);
 
             TppLandingOrchestrationDependencyException actualException =
@@ -138,99 +136,6 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.TppLandings
             this.loggingBrokerMock.Verify(broker =>
                 broker.LogErrorAsync(It.Is(SameExceptionAs(
                     expectedDependencyException))),
-                        Times.Once);
-
-            this.ingestionTrackingProcessingServiceMock.VerifyNoOtherCalls();
-            this.hashBrokerMock.VerifyNoOtherCalls();
-            this.dateTimeBrokerMock.VerifyNoOtherCalls();
-            this.documentProcessingServiceMock.VerifyNoOtherCalls();
-            this.ingestionTrackingProcessingAuditServiceMock.VerifyNoOtherCalls();
-            this.dataSetSpecificationProcessingServiceMock.VerifyNoOtherCalls();
-            this.loggingBrokerMock.VerifyNoOtherCalls();
-        }
-
-        [Fact]
-        public async Task ShouldThrowAggregateServiceExceptionOnReProcessIfAggregateErrorOccursAndLogItAsync()
-        {
-            //Given
-            string randomFileName = GetRandomString();
-            string inputFileName = randomFileName;
-            Guid randomSupplierId = Guid.NewGuid();
-            Guid inputSupplierId = randomSupplierId;
-            DateTimeOffset randomDateTime = GetRandomDateTimeOffset();
-            List<string> randomFileNames = GetRandomStrings();
-            var someException = new Exception();
-            List<Exception> exceptions = new List<Exception>();
-
-            var tppOrchestrationServiceMock = new Mock<TppLandingOrchestrationService>(
-                documentProcessingServiceMock.Object,
-                ingestionTrackingProcessingServiceMock.Object,
-                ingestionTrackingProcessingAuditServiceMock.Object,
-                dataSetSpecificationProcessingServiceMock.Object,
-                blobContainers,
-                loggingBrokerMock.Object,
-                dateTimeBrokerMock.Object,
-                identifierBrokerMock.Object,
-                hashBrokerMock.Object,
-                fileBrokerMock.Object,
-                landingConfiguration)
-            {
-                CallBase = true
-            };
-
-            List<IngestionTracking> ingestionTrackings = CreateRandomIngestionTrackings(
-                dateTimeOffset: randomDateTime,
-                fileNames: randomFileNames,
-                supplierId: randomSupplierId);
-
-            foreach (IngestionTracking ingestionTracking in ingestionTrackings)
-            {
-                ingestionTracking.IsDownloaded = false;
-                ingestionTracking.RetryCount = 1;
-
-                tppOrchestrationServiceMock.Setup(service =>
-                    service.ProcessFileAsync(It.IsAny<string>(), It.IsAny<Guid>()))
-                        .ThrowsAsync(someException);
-
-                exceptions.Add(someException);
-            }
-
-            this.ingestionTrackingProcessingServiceMock.Setup(service =>
-                service.RetrieveAllIngestionTrackingsAsync())
-                    .ReturnsAsync(ingestionTrackings.AsQueryable());
-
-            var aggregateException = new AggregateException(
-                        "One or more errors occurred while re-processing TPP files.",
-                        exceptions);
-
-            var failedTppOrchestrationServiceException =
-                new FailedTppLandingOrchestrationServiceException(
-                    message: "Failed TPP landing orchestration aggregate service error occurred, " +
-                            "please contact support.",
-                    aggregateException);
-
-            var expectedTppOrchestrationServiceException =
-                new TppLandingOrchestrationServiceException(
-                    message: "TPP landing orchestration service error occurred, please contact support.",
-                    failedTppOrchestrationServiceException);
-
-            // when
-            ValueTask processTask = tppOrchestrationServiceMock.Object
-                .ReProcessAsync(supplierId: randomSupplierId);
-
-            TppLandingOrchestrationServiceException actualException =
-                await Assert.ThrowsAsync<TppLandingOrchestrationServiceException>(processTask.AsTask);
-
-            // then
-            actualException.Should().BeEquivalentTo(expectedTppOrchestrationServiceException);
-
-            this.ingestionTrackingProcessingServiceMock.Verify(service =>
-                service.RetrieveAllIngestionTrackingsAsync(),
-                    Times.Once);
-
-            this.loggingBrokerMock.Verify(broker =>
-                broker.LogErrorAsync(It.Is(SameExceptionAs(
-                    expectedTppOrchestrationServiceException))),
                         Times.Once);
 
             this.ingestionTrackingProcessingServiceMock.VerifyNoOtherCalls();
@@ -283,7 +188,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.TppLandings
                     .ThrowsAsync(serviceException);
 
             // when
-            ValueTask processTask = this.tppOrchestrationService
+            ValueTask<List<Guid>> processTask = this.tppOrchestrationService
                 .ReProcessAsync(supplierId: randomSupplierId);
 
             TppLandingOrchestrationServiceException actualException =

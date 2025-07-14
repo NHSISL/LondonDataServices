@@ -16,8 +16,8 @@ namespace LHDS.Core.Services.Foundations.HealthChecks.TerminologyPolls
         private readonly IConfiguration configuration;
         private readonly IDateTimeBroker dateTimeBroker;
         private readonly ILoggingBroker loggingBroker;
-        private const string CheckName = "terminologyPolls";
-        private const string CheckNameDescription = "Terminology Polls";
+        private const string CheckName = "notPolling";
+        private const string CheckNameDescription = "Not Polling";
         private const string ConfigSectionName = "HealthChecks:TerminologyPolls:NotPolling";
 
         public TerminologyPollsNotPollingHealthCheckService(

@@ -3,6 +3,7 @@
 // ---------------------------------------------------------
 
 using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using LHDS.Core.Models.Foundations.Documents.Exceptions;
 using LHDS.Core.Models.Foundations.IngestionTrackingAudits.Exceptions;
@@ -16,6 +17,80 @@ namespace LHDS.Core.Services.Orchestrations.Tpp
     {
         private delegate ValueTask ReturningNothingFunction();
         private delegate ValueTask<Guid> ReturningGuidFunction();
+        private delegate ValueTask<List<Guid>> ReturningGuidListFunction();
+
+        private async ValueTask<List<Guid>> TryCatch(ReturningGuidListFunction returningGuidListFunction)
+        {
+            try
+            {
+                return await returningGuidListFunction();
+            }
+            catch (NullDocumentTppLandingException nullDocumentTppLandingException)
+            {
+                throw await CreateAndLogValidationExceptionAsync(nullDocumentTppLandingException);
+            }
+            catch (InvalidArgumentTppLandingOrchestrationException invalidArgumentTppLandingOrchestrationException)
+            {
+                throw await CreateAndLogValidationExceptionAsync(invalidArgumentTppLandingOrchestrationException);
+            }
+            catch (DocumentValidationException documentValidationException)
+            {
+                throw await CreateAndLogDependencyValidationExceptionAsync(documentValidationException);
+            }
+            catch (DocumentDependencyValidationException documentDependencyValidationException)
+            {
+                throw await CreateAndLogDependencyValidationExceptionAsync(documentDependencyValidationException);
+            }
+            catch (IngestionTrackingValidationException ingestionTrackingValidationException)
+            {
+                throw await CreateAndLogDependencyValidationExceptionAsync(ingestionTrackingValidationException);
+            }
+            catch (IngestionTrackingDependencyValidationException ingestionTrackingDependencyValidationException)
+            {
+                throw await CreateAndLogDependencyValidationExceptionAsync(ingestionTrackingDependencyValidationException);
+            }
+            catch (IngestionTrackingAuditValidationException auditValidationException)
+            {
+                throw await CreateAndLogDependencyValidationExceptionAsync(auditValidationException);
+            }
+            catch (IngestionTrackingAuditDependencyValidationException auditDependencyValidationException)
+            {
+                throw await CreateAndLogDependencyValidationExceptionAsync(auditDependencyValidationException);
+            }
+            catch (DocumentDependencyException documentDependencyException)
+            {
+                throw await CreateAndLogDependencyExceptionAsync(documentDependencyException);
+            }
+            catch (DocumentServiceException documentServiceException)
+            {
+                throw await CreateAndLogDependencyExceptionAsync(documentServiceException);
+            }
+            catch (IngestionTrackingDependencyException ingestionTrackingDependencyException)
+            {
+                throw await CreateAndLogDependencyExceptionAsync(ingestionTrackingDependencyException);
+            }
+            catch (IngestionTrackingServiceException ingestionTrackingServiceException)
+            {
+                throw await CreateAndLogDependencyExceptionAsync(ingestionTrackingServiceException);
+            }
+            catch (IngestionTrackingAuditDependencyException auditDependencyException)
+            {
+                throw await CreateAndLogDependencyExceptionAsync(auditDependencyException);
+            }
+            catch (IngestionTrackingAuditServiceException auditServiceException)
+            {
+                throw await CreateAndLogDependencyExceptionAsync(auditServiceException);
+            }
+            catch (Exception exception)
+            {
+                var failedTppLandingOrchestrationServiceException =
+                    new FailedTppLandingOrchestrationServiceException(
+                        message: "Failed TPP landing orchestration service error occurred, please contact support.",
+                        exception);
+
+                throw await CreateAndLogServiceExceptionAsync(failedTppLandingOrchestrationServiceException);
+            }
+        }
 
         private async ValueTask TryCatch(ReturningNothingFunction returningNothingFunction)
         {

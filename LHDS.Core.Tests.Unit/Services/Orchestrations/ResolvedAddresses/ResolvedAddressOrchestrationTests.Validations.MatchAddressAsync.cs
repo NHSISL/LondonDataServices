@@ -8,8 +8,10 @@ using System.Linq;
 using System.Threading.Tasks;
 using FluentAssertions;
 using Force.DeepCloner;
+using LHDS.Core.Models.Brokers.Securities;
 using LHDS.Core.Models.Brokers.Storages.Blobs;
 using LHDS.Core.Models.Foundations.AssignAddresses;
+using LHDS.Core.Models.Foundations.Audits;
 using LHDS.Core.Models.Foundations.ResolvedAddresses;
 using LHDS.Core.Models.Orchestrations.ResolvedAddresses.Exceptions;
 using LHDS.Core.Services.Orchestrations.ResolvedAddresses;
@@ -28,10 +30,12 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.ResolvedAddresses
                 this.resolvedAddressProcessingServiceMock.Object,
                 this.assignProcessingServiceMock.Object,
                 this.addressProcessingServiceMock.Object,
+                this.auditBrokerMock.Object,
                 this.loggingBrokerMock.Object,
                 this.csvHelperBrokerMock.Object,
                 this.dateTimeBrokerMock.Object,
                 this.identifierBrokerMock.Object,
+                this.securityBrokerMock.Object,
 
                 new BlobContainers
                 {
@@ -39,6 +43,8 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.ResolvedAddresses
                 })
                 { CallBase = true };
 
+            Guid identifier = Guid.NewGuid();
+            EntraUser randomEntraUser = CreateRandomEntraUser();
             DateTimeOffset randomDateTimeOffset = GetRandomDateTimeOffset();
             List<ResolvedAddress> randomResolvedAddresses = CreateRandomUnmatchedAddresses(count: 1);
             List<ResolvedAddress> unmatchedResolvedAddresses = randomResolvedAddresses;
@@ -50,6 +56,14 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.ResolvedAddresses
             AssignAddress randomAssignAddress = CreateRandomAssignAddress(randomDateTimeOffset);
             AssignAddress storageAssignAddress = randomAssignAddress;
             storageAssignAddress.BestMatch.UPRN = "";
+
+            this.identifierBrokerMock.Setup(broker =>
+               broker.GetIdentifierAsync())
+                   .ReturnsAsync(identifier);
+
+            this.securityBrokerMock.Setup(broker =>
+               broker.GetCurrentUserAsync())
+                   .ReturnsAsync(randomEntraUser);
 
             this.resolvedAddressProcessingServiceMock.SetupSequence(service =>
                service.RetrieveAllResolvedAddressesAsync())
@@ -139,13 +153,21 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.ResolvedAddresses
             actualResolvedAddressOrchestrationValidationException.Should()
                 .BeEquivalentTo(expectedResolvedAddressOrchestrationServiceException);
 
+            this.identifierBrokerMock.Verify(broker =>
+                broker.GetIdentifierAsync(),
+                    Times.Exactly(3));
+
+            this.securityBrokerMock.Verify(broker =>
+                broker.GetCurrentUserAsync(),
+                    Times.Once());
+
             this.resolvedAddressProcessingServiceMock.Verify(service =>
               service.RetrieveAllResolvedAddressesAsync(),
                   Times.Exactly(2));
 
             this.dateTimeBrokerMock.Verify(broker =>
               broker.GetCurrentDateTimeOffsetAsync(),
-                  Times.Exactly(2));
+                  Times.Exactly(4));
 
             this.resolvedAddressProcessingServiceMock.Verify(processing =>
                 processing.ModifyResolvedAddressAsync(It.Is(SameResolvedAddressAs(lockedResolvedAddress))),
@@ -173,6 +195,10 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.ResolvedAddresses
                     expectedResolvedAddressOrchestrationServiceException))),
                         Times.Once);
 
+            this.auditBrokerMock.Verify(broker =>
+                broker.BulkLogAsync(It.IsAny<List<Audit>>()),
+                    Times.Once());
+
             this.documentProcessingServiceMock.VerifyNoOtherCalls();
             this.resolvedAddressProcessingServiceMock.VerifyNoOtherCalls();
             this.assignProcessingServiceMock.VerifyNoOtherCalls();
@@ -181,6 +207,8 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.ResolvedAddresses
             this.loggingBrokerMock.VerifyNoOtherCalls();
             this.csvHelperBrokerMock.VerifyNoOtherCalls();
             this.identifierBrokerMock.VerifyNoOtherCalls();
+            this.auditBrokerMock.VerifyNoOtherCalls();
+            this.securityBrokerMock.VerifyNoOtherCalls();
         }
     }
 }

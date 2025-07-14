@@ -9,13 +9,16 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Force.DeepCloner;
+using LHDS.Core.Brokers.Audits;
 using LHDS.Core.Brokers.CsvHelpers;
 using LHDS.Core.Brokers.DateTimes;
 using LHDS.Core.Brokers.Identifiers;
 using LHDS.Core.Brokers.Loggings;
+using LHDS.Core.Brokers.Securities;
 using LHDS.Core.Models.Brokers.Storages.Blobs;
 using LHDS.Core.Models.Foundations.Addresses;
 using LHDS.Core.Models.Foundations.AssignAddresses;
+using LHDS.Core.Models.Foundations.Audits;
 using LHDS.Core.Models.Foundations.ResolvedAddresses;
 using LHDS.Core.Services.Processings.Addresses;
 using LHDS.Core.Services.Processings.Assigns;
@@ -30,10 +33,12 @@ namespace LHDS.Core.Services.Orchestrations.ResolvedAddresses
         private readonly IResolvedAddressProcessingService resolvedAddressProcessingService;
         private readonly IAssignProcessingService assignProcessingService;
         private readonly IAddressProcessingService addressProcessingService;
+        private readonly IAuditBroker auditBroker;
         private readonly ILoggingBroker loggingBroker;
         private readonly ICsvHelperBroker csvHelperBroker;
         private readonly IDateTimeBroker dateTimeBroker;
         private readonly IIdentifierBroker identifierBroker;
+        private readonly ISecurityBroker securityBroker;
         private readonly BlobContainers blobContainers;
 
         public ResolvedAddressOrchestrationService(
@@ -41,20 +46,24 @@ namespace LHDS.Core.Services.Orchestrations.ResolvedAddresses
             IResolvedAddressProcessingService resolvedAddressProcessingService,
             IAssignProcessingService assignProcessingService,
             IAddressProcessingService addressProcessingService,
+            IAuditBroker auditBroker,
             ILoggingBroker loggingBroker,
             ICsvHelperBroker csvHelperBroker,
             IDateTimeBroker dateTimeBroker,
             IIdentifierBroker identifierBroker,
+            ISecurityBroker securityBroker,
             BlobContainers blobContainers)
         {
             this.documentProcessingService = documentProcessingService;
             this.resolvedAddressProcessingService = resolvedAddressProcessingService;
             this.assignProcessingService = assignProcessingService;
             this.addressProcessingService = addressProcessingService;
+            this.auditBroker = auditBroker;
             this.loggingBroker = loggingBroker;
             this.csvHelperBroker = csvHelperBroker;
             this.dateTimeBroker = dateTimeBroker;
             this.identifierBroker = identifierBroker;
+            this.securityBroker = securityBroker;
             this.blobContainers = blobContainers;
         }
 
@@ -62,6 +71,14 @@ namespace LHDS.Core.Services.Orchestrations.ResolvedAddresses
         TryCatch(async () =>
         {
             ValidateOnUploadAddressesToResolve(input, fileName);
+            Guid correlationId = await this.identifierBroker.GetIdentifierAsync();
+
+            await this.auditBroker.LogAsync(
+                auditType: "Resolved Address Upload",
+                title: "Uploading Resolved Addresses",
+                message: $"Uploading addresses to resolve with correlation id {correlationId}",
+                fileName: null,
+                correlationId: correlationId.ToString());
 
             using (StreamReader streamReader = new StreamReader(input))
             {
@@ -80,15 +97,24 @@ namespace LHDS.Core.Services.Orchestrations.ResolvedAddresses
 
                 await this.resolvedAddressProcessingService
                     .BulkAddResolvedAddressesAsync(resolvedAddresses, fileName);
+
+                await this.auditBroker.LogAsync(
+                    auditType: "Resolved Address Upload",
+                    title: "Uploaded Resolved Addresses",
+                    message: $"Uploaded addresses to resolve with correlation id {correlationId}",
+                    fileName: null,
+                    correlationId: correlationId.ToString());
             }
         });
 
         public ValueTask MatchAddressDataAsync() =>
         TryCatch(async () =>
         {
+            Guid correlationId = await this.identifierBroker.GetIdentifierAsync();
+            var auditUser = await this.securityBroker.GetCurrentUserAsync();
             ResolvedAddress? unMatchedResolvedAddress;
-            var resolvedAddressAudits = new List<ResolvedAddress>();
             var exceptions = new List<Exception>();
+            List<Audit> audits = new List<Audit>();
 
             while (true)
             {
@@ -110,6 +136,25 @@ namespace LHDS.Core.Services.Orchestrations.ResolvedAddresses
                 {
                     await TryCatch(async () =>
                     {
+                        DateTimeOffset matchingDateTimeOffset = await this.dateTimeBroker.GetCurrentDateTimeOffsetAsync();
+
+                        Audit resolvedAddressMatchingAudit = new Audit
+                        {
+                            Id = await this.identifierBroker.GetIdentifierAsync(),
+                            AuditType = "Resolved Address Match",
+                            Title = "Matching Resolved Address",
+                            Message = $"Matching resolved address for {unMatchedResolvedAddress.UniqueReference}",
+                            CorrelationId = correlationId.ToString(),
+                            FileName = null,
+                            LogLevel = "Information",
+                            CreatedBy = auditUser?.EntraUserId.ToString() ?? string.Empty,
+                            CreatedDate = matchingDateTimeOffset,
+                            UpdatedBy = auditUser?.EntraUserId.ToString() ?? string.Empty,
+                            UpdatedDate = matchingDateTimeOffset,
+                        };
+
+                        audits.Add(resolvedAddressMatchingAudit);
+
                         unMatchedResolvedAddress.IsProcessing = true;
                         unMatchedResolvedAddress.RetryCount += 1;
                         unMatchedResolvedAddress.UpdatedDate = await dateTimeBroker.GetCurrentDateTimeOffsetAsync();
@@ -144,7 +189,31 @@ namespace LHDS.Core.Services.Orchestrations.ResolvedAddresses
 
                         await resolvedAddressProcessingService
                             .ModifyResolvedAddressAsync(newResolvedAddress);
+
+                        DateTimeOffset matchingCompleteDateTimeOffset = await this.dateTimeBroker.GetCurrentDateTimeOffsetAsync();
+
+                        Audit resolvedAddressMatchingCompleteAudit = new Audit
+                        {
+                            Id = await this.identifierBroker.GetIdentifierAsync(),
+                            AuditType = "Resolved Address Match",
+
+                            Title = newResolvedAddress.MatchedWithAssign ? 
+                                "Resolved Address Successful Match" : "Resolved Address Unsuccessful Match",
+
+                            Message = $"Resolved address matching complete for {newResolvedAddress.UniqueReference}",
+                            CorrelationId = correlationId.ToString(),
+                            FileName = null,
+                            LogLevel = "Information",
+                            CreatedBy = auditUser?.EntraUserId.ToString() ?? string.Empty,
+                            CreatedDate = matchingCompleteDateTimeOffset,
+                            UpdatedBy = auditUser?.EntraUserId.ToString() ?? string.Empty,
+                            UpdatedDate = matchingCompleteDateTimeOffset,
+                        };
+
+                        audits.Add(resolvedAddressMatchingCompleteAudit);
                     });
+
+                    await auditBroker.BulkLogAsync(audits);
                 }
                 catch (Exception ex)
                 {
@@ -160,6 +229,27 @@ namespace LHDS.Core.Services.Orchestrations.ResolvedAddresses
                         .ModifyResolvedAddressAsync(failedToProcess);
 
                     exceptions.Add(ex);
+
+                    DateTimeOffset matchingFailedDateTimeOffset = 
+                        await this.dateTimeBroker.GetCurrentDateTimeOffsetAsync();
+
+                    Audit resolvedAddressMatchingFailedAudit = new Audit
+                    {
+                        Id = await this.identifierBroker.GetIdentifierAsync(),
+                        AuditType = "Resolved Address Match",
+                        Title = "Resolved Address Matching Failed",
+                        Message = $"Resolved address matching failed for {failedToProcess.UniqueReference}",
+                        CorrelationId = correlationId.ToString(),
+                        FileName = null,
+                        LogLevel = "Information",
+                        CreatedBy = auditUser?.EntraUserId.ToString() ?? string.Empty,
+                        CreatedDate = matchingFailedDateTimeOffset,
+                        UpdatedBy = auditUser?.EntraUserId.ToString() ?? string.Empty,
+                        UpdatedDate = matchingFailedDateTimeOffset,
+                    };
+
+                    audits.Add(resolvedAddressMatchingFailedAudit);
+                    await auditBroker.BulkLogAsync(audits);
                 }
             }
 
@@ -220,6 +310,7 @@ namespace LHDS.Core.Services.Orchestrations.ResolvedAddresses
                 unMatchedResolvedAddresses = retrievedResolvedAddresses
                     .Where(address =>
                         address.IsExported == false &&
+                        address.IsProcessed == true &&
                         address.IsProcessing == false &&
                         address.RetryCount < 4)
                     .Take(batchCount)
@@ -237,6 +328,15 @@ namespace LHDS.Core.Services.Orchestrations.ResolvedAddresses
                 {
                     await TryCatch(async () =>
                     {
+                        Guid correlationId = await this.identifierBroker.GetIdentifierAsync();
+
+                        await this.auditBroker.LogAsync(
+                            auditType: "Resolved Address Export",
+                            title: "Exporting Resolved Addresses",
+                            message: $"Exporting resolved addresses with correlation id {correlationId}",
+                            fileName: null,
+                            correlationId: correlationId.ToString());
+
                         unMatchedResolvedAddresses.ForEach(setProcessing =>
                         {
                             setProcessing.IsProcessing = true;
@@ -306,6 +406,13 @@ namespace LHDS.Core.Services.Orchestrations.ResolvedAddresses
 
                         await resolvedAddressProcessingService
                             .BulkModifyResolvedAddressesAsync(doneProcessingResolvedAddresses);
+
+                        await this.auditBroker.LogAsync(
+                             auditType: "Resolved Address Export",
+                             title: "Exported Resolved Addresses",
+                             message: $"Exported resolved addresses with correlation id {correlationId}",
+                             fileName: null,
+                             correlationId: correlationId.ToString());
                     });
                 }
                 catch (Exception ex)

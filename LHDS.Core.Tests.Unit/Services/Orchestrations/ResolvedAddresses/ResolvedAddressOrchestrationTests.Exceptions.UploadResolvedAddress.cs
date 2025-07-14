@@ -31,13 +31,9 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.ResolvedAddresses
             byte[] inputBytes = Encoding.UTF8.GetBytes(inputContent);
             Stream someStream = new MemoryStream(inputBytes);
 
-            this.csvHelperBrokerMock.Setup(service =>
-                service.MapCsvToObjectAsync<ResolvedAddress>(
-                    It.IsAny<string>(),
-                    It.IsAny<bool>(),
-                    It.IsAny<Dictionary<string, int>>(),
-                    It.IsAny<bool>()))
-                        .ThrowsAsync(dependencyValidationException);
+            this.identifierBrokerMock.Setup(broker =>
+                broker.GetIdentifierAsync())
+                    .ThrowsAsync(dependencyValidationException);
 
             var expectedResolvedAddressOrchestrationDependencyValidationException =
                 new ResolvedAddressOrchestrationDependencyValidationException(
@@ -58,12 +54,8 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.ResolvedAddresses
             actualResolvedAddressOrchestrationDependencyValidationException.Should()
                 .BeEquivalentTo(expectedResolvedAddressOrchestrationDependencyValidationException);
 
-            this.csvHelperBrokerMock.Verify(service =>
-                service.MapCsvToObjectAsync<ResolvedAddress>(
-                    It.IsAny<string>(),
-                    It.IsAny<bool>(),
-                    It.IsAny<Dictionary<string, int>>(),
-                    It.IsAny<bool>()),
+            this.identifierBrokerMock.Verify(broker =>
+                broker.GetIdentifierAsync(),
                         Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>
@@ -77,6 +69,8 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.ResolvedAddresses
             this.identifierBrokerMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
             this.dateTimeBrokerMock.VerifyNoOtherCalls();
+            this.auditBrokerMock.VerifyNoOtherCalls();
+            this.securityBrokerMock.VerifyNoOtherCalls();
         }
 
         [Theory]
@@ -92,13 +86,9 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.ResolvedAddresses
             byte[] inputBytes = Encoding.UTF8.GetBytes(inputContent);
             Stream someStream = new MemoryStream(inputBytes);
 
-            this.csvHelperBrokerMock.Setup(service =>
-                service.MapCsvToObjectAsync<ResolvedAddress>(
-                    It.IsAny<string>(),
-                    It.IsAny<bool>(),
-                    It.IsAny<Dictionary<string, int>>(),
-                    It.IsAny<bool>()))
-                        .ThrowsAsync(dependencyException);
+            this.identifierBrokerMock.Setup(broker =>
+                broker.GetIdentifierAsync())
+                    .ThrowsAsync(dependencyException);
 
             var expectedResolvedAddressOrchestrationDependencyException =
                 new ResolvedAddressOrchestrationDependencyException(
@@ -121,13 +111,9 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.ResolvedAddresses
             actualResolvedAddressOrchestrationDependencyException.Should()
                 .BeEquivalentTo(expectedResolvedAddressOrchestrationDependencyException);
 
-            this.csvHelperBrokerMock.Verify(service =>
-                service.MapCsvToObjectAsync<ResolvedAddress>(
-                    It.IsAny<string>(),
-                    It.IsAny<bool>(),
-                    It.IsAny<Dictionary<string, int>>(),
-                    It.IsAny<bool>()),
-                        Times.Once);
+            this.identifierBrokerMock.Verify(broker =>
+                broker.GetIdentifierAsync(),
+                    Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>
                 broker.LogErrorAsync(It.Is(SameExceptionAs(
@@ -140,6 +126,8 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.ResolvedAddresses
             this.identifierBrokerMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
             this.dateTimeBrokerMock.VerifyNoOtherCalls();
+            this.auditBrokerMock.VerifyNoOtherCalls();
+            this.securityBrokerMock.VerifyNoOtherCalls();
         }
 
         [Fact]
@@ -153,13 +141,9 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.ResolvedAddresses
             byte[] inputBytes = Encoding.UTF8.GetBytes(inputContent);
             Stream someStream = new MemoryStream(inputBytes);
 
-            this.csvHelperBrokerMock.Setup(service =>
-                service.MapCsvToObjectAsync<ResolvedAddress>(
-                    It.IsAny<string>(),
-                    It.IsAny<bool>(),
-                    It.IsAny<Dictionary<string, int>>(),
-                    It.IsAny<bool>()))
-                        .ThrowsAsync(serviceException);
+            this.identifierBrokerMock.Setup(broker =>
+                broker.GetIdentifierAsync())
+                    .ThrowsAsync(serviceException);
 
             var failedResolvedAddressOrchestrationServiceException =
                 new FailedResolvedAddressOrchestrationServiceException(
@@ -184,13 +168,9 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.ResolvedAddresses
             actualResolvedAddressOrchestrationServiceException.Should()
                 .BeEquivalentTo(expectedResolvedAddressOrchestrationServiceException);
 
-            this.csvHelperBrokerMock.Verify(service =>
-                service.MapCsvToObjectAsync<ResolvedAddress>(
-                    It.IsAny<string>(),
-                    It.IsAny<bool>(),
-                    It.IsAny<Dictionary<string, int>>(),
-                    It.IsAny<bool>()),
-                        Times.Once);
+            this.identifierBrokerMock.Verify(broker =>
+                broker.GetIdentifierAsync(),
+                    Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>
                 broker.LogErrorAsync(It.Is(SameExceptionAs(
@@ -203,6 +183,8 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.ResolvedAddresses
             this.identifierBrokerMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
             this.dateTimeBrokerMock.VerifyNoOtherCalls();
+            this.auditBrokerMock.VerifyNoOtherCalls();
+            this.securityBrokerMock.VerifyNoOtherCalls();
         }
     }
 }

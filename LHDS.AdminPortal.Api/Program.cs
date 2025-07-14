@@ -52,6 +52,7 @@ using LHDS.Core.Services.Foundations.HealthChecks;
 using LHDS.Core.Services.Foundations.HealthChecks.IngestionTracking;
 using LHDS.Core.Services.Foundations.HealthChecks.OptOut;
 using LHDS.Core.Services.Foundations.HealthChecks.ResolvedAddress;
+using LHDS.Core.Services.Foundations.HealthChecks.TerminologyArtifacts;
 using LHDS.Core.Services.Foundations.HealthChecks.TerminologyPolls;
 using LHDS.Core.Services.Foundations.IngestionTrackingAudits;
 using LHDS.Core.Services.Foundations.IngestionTrackings;
@@ -67,6 +68,7 @@ using LHDS.Core.Services.Foundations.TerminologyPolls;
 using LHDS.Core.Services.Orchestrations.HealthChecks.IngestionTrackings;
 using LHDS.Core.Services.Orchestrations.HealthChecks.OptOuts;
 using LHDS.Core.Services.Orchestrations.HealthChecks.ResolvedAddresses;
+using LHDS.Core.Services.Orchestrations.HealthChecks.TerminologyArtifacts;
 using LHDS.Core.Services.Orchestrations.HealthChecks.TerminologyPolls;
 using LHDS.Core.Services.Processings.Addresses;
 using LHDS.Core.Services.Processings.DataSetSpecifications;
@@ -81,6 +83,7 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.AspNetCore.OData;
 using Microsoft.EntityFrameworkCore;
@@ -223,6 +226,8 @@ namespace LHDS.AdminPortal.Api
                 ResponseWriter = HealthCheckResponseWriter.WriteResponse
             });
 
+            app.MapGet("/api", () => Results.Ok("AdminPortal API is running"));
+            app.MapGet("/", () => Results.Ok("AdminPortal API is running"));
             app.UseHttpsRedirection();
             app.UseCors("AllowFrontendOrigin");
             app.UseRouting();
@@ -260,7 +265,16 @@ namespace LHDS.AdminPortal.Api
                 <IResolvedAddressHealthItemService, ResolvedAddressFailedToExportHealthCheckService>();
 
             services.AddSingleton
+                <IResolvedAddressHealthItemService, ResolvedAddressMatchingProcessHealthCheckService>();
+
+            services.AddSingleton
+                <IResolvedAddressHealthItemService, ResolvedAddressMatchQualityHealthCheckService>();
+
+            services.AddSingleton
                 <ITerminologyPollsHealthItemService, TerminologyPollsNotPollingHealthCheckService>();
+
+            services.AddSingleton
+                <ITerminologyArtifactsHealthItemService, TerminologyArtifactsFailedToProcessHealthCheckService>();
 
             services.AddSingleton
                 <IOptOutHealthItemService, OptOutsExpiredOptOutHealthCheckService>();
@@ -276,6 +290,9 @@ namespace LHDS.AdminPortal.Api
 
             services.AddHealthChecks()
                 .AddCheck<OptOutsHealthCheckOrchestrationService>("optOutsHealthChecks");
+
+            services.AddHealthChecks()
+                .AddCheck<TerminologyArtifactsHealthCheckCoordinationService>("terminologyArtifactsHealthChecks");
 
             services.AddSingleton<IHealthCheckPublisher, HealthCheckPublisherCoordinationService>();
 

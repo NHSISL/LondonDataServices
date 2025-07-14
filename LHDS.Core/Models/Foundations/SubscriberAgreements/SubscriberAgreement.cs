@@ -28,5 +28,6 @@ namespace LHDS.Core.Models.Foundations.SubscriberAgreements
 
         [BindNever]
         public List<IngestionTracking> IngestionTrackings { get; set; } = new List<IngestionTracking>();
+        public List<SubscriberPractice> SubscriberPractices { get; set; } = new List<SubscriberPractice>();
     }
 }

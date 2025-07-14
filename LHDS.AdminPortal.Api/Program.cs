@@ -268,6 +268,9 @@ namespace LHDS.AdminPortal.Api
                 <IResolvedAddressHealthItemService, ResolvedAddressMatchingProcessHealthCheckService>();
 
             services.AddSingleton
+                <IResolvedAddressHealthItemService, ResolvedAddressMatchQualityHealthCheckService>();
+
+            services.AddSingleton
                 <ITerminologyPollsHealthItemService, TerminologyPollsNotPollingHealthCheckService>();
 
             services.AddSingleton

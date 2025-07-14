@@ -7,6 +7,7 @@ using System.IO;
 using System.Threading.Tasks;
 using FluentAssertions;
 using LHDS.Core.Models.Foundations.PdsAudits;
+using Xunit;
 
 namespace LHDS.Core.Tests.Integration.Pds
 {
@@ -19,10 +20,14 @@ namespace LHDS.Core.Tests.Integration.Pds
             string pdsFileContainer = "pds";
             byte[] fileBytes =
                 File.ReadAllBytes(
-                    @"Resources\EmisPDSPatientExtract_247BB600-213A-494E-8E90-A4F9190F07DF_20230601T130544.csv");
+                    @"Resources\RegistrarPatientRequest_1C75C2B4-026D-4548-9083-7F2A36B88CB4.csv");
 
             //Add File to blob
-            string fileName = "RESP_MPTREQ_CCYYMMDDHHMISS_CCYYMMDDHHMISS.csv";
+            string fileName =
+                "1C75C2B4-026D-4548-9083-7F2A36B88CB4/" +
+                "RegistrarPatientRequest/" +
+                "20250702142718/" +
+                "RegistrarPatientRequest_1C75C2B4-026D-4548-9083-7F2A36B88CB4.csv";
 
             var meshMessage = await this.meshService.SendMessageAsync(
                    mexTo: this.pdsConfiguration.To,
@@ -37,7 +42,10 @@ namespace LHDS.Core.Tests.Integration.Pds
                    accept: "application/json");
 
             string fileNameReturn =
-                $"{this.pdsConfiguration.OutputFolder}/MPTREQ_CCYYMMDDHHMISS_RESP_CCYYMMDDHHMISS.csv";
+                $"{this.pdsConfiguration.OutputFolder}/1C75C2B4-026D-4548-9083-7F2A36B88CB4/" +
+                "20250702142718/" +
+                "RegistrarPatientRequest/" +
+                "RegistrarPatientRequest_1C75C2B4-026D-4548-9083-7F2A36B88CB4.csv";
 
             // When
             List<PdsAudit> actualPdsAudits =
@@ -60,8 +68,6 @@ namespace LHDS.Core.Tests.Integration.Pds
                 await this.blobStorageBroker.DeleteFileAsync(fileName: fileNameReturn, container: pdsFileContainer);
                 await this.pdsAuditService.RemovePdsAuditByIdAsync(audit.Id);
             }
-
-            await this.meshService.AcknowledgeMessageByIdAsync(meshMessage.MessageId);
 
             await Task.CompletedTask;
         }

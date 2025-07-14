@@ -126,18 +126,14 @@ namespace LHDS.Core.Services.Orchestrations.Pds
                             }
 
                             string filename = message.Headers["mex-filename"].FirstOrDefault();
-                            string fileNameWithoutExtension = Path.GetFileNameWithoutExtension(filename);
-                            string[] fileNameParts = fileNameWithoutExtension?.Split('_') ?? Array.Empty<string>();
-
-                            string fileNameOutput =
-                                $"{fileNameParts[1]}_{fileNameParts[2]}_{fileNameParts[0]}_{fileNameParts[3]}";
-
-                            fileNameOutput += Path.GetExtension(filename);
-                            string fileName = $"{pdsConfiguration.OutputFolder}/{fileNameOutput}";
+                            
+                            string cleanedFileName = 
+                                filename.StartsWith("RESP_") ? filename.Substring("RESP_".Length) : filename;
+                                
+                            string fileName = $"{pdsConfiguration.OutputFolder}/{cleanedFileName}";
 
                             using (Stream input = new MemoryStream(message.FileContent))
                             {
-                                //TODO:  Should we inject the container name into the method to have more control?
                                 await this.documentService.AddDocumentAsync(input, fileName, container: blobContainers.Pds);
                             }
 

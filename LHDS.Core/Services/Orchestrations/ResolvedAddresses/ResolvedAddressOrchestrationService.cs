@@ -229,6 +229,27 @@ namespace LHDS.Core.Services.Orchestrations.ResolvedAddresses
                         .ModifyResolvedAddressAsync(failedToProcess);
 
                     exceptions.Add(ex);
+
+                    DateTimeOffset matchingFailedDateTimeOffset = 
+                        await this.dateTimeBroker.GetCurrentDateTimeOffsetAsync();
+
+                    Audit resolvedAddressMatchingFailedAudit = new Audit
+                    {
+                        Id = await this.identifierBroker.GetIdentifierAsync(),
+                        AuditType = "Resolved Address Match",
+                        Title = "Resolved Address Matching Failed",
+                        Message = $"Resolved address matching failed for {failedToProcess.UniqueReference}",
+                        CorrelationId = correlationId.ToString(),
+                        FileName = null,
+                        LogLevel = "Information",
+                        CreatedBy = auditUser?.EntraUserId.ToString() ?? string.Empty,
+                        CreatedDate = matchingFailedDateTimeOffset,
+                        UpdatedBy = auditUser?.EntraUserId.ToString() ?? string.Empty,
+                        UpdatedDate = matchingFailedDateTimeOffset,
+                    };
+
+                    audits.Add(resolvedAddressMatchingFailedAudit);
+                    await auditBroker.BulkLogAsync(audits);
                 }
             }
 
@@ -289,6 +310,7 @@ namespace LHDS.Core.Services.Orchestrations.ResolvedAddresses
                 unMatchedResolvedAddresses = retrievedResolvedAddresses
                     .Where(address =>
                         address.IsExported == false &&
+                        address.IsProcessed == true &&
                         address.IsProcessing == false &&
                         address.RetryCount < 4)
                     .Take(batchCount)

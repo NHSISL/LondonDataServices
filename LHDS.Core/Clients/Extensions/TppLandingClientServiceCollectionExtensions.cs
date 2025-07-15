@@ -119,7 +119,7 @@ namespace LHDS.Core.Clients.Extensions
             services.AddTransient<IHashBroker, HashBroker>();
             services.AddTransient<IAuditBroker, AuditBroker>();
             services.AddTransient<IFileBroker, FileBroker>();
-            services.AddSingleton<IStorageBroker, StorageBroker>();
+            services.AddTransient<IStorageBroker, StorageBroker>();
 
             LandingConfiguration landingConfiguration =
                 configuration.GetSection("landingSettings").Get<LandingConfiguration>();
@@ -173,7 +173,7 @@ namespace LHDS.Core.Clients.Extensions
             services.AddTransient<ISupplierService, SupplierService>();
             services.AddTransient<IDataSetService, DataSetService>();
             services.AddTransient<IDataSetSpecificationService, DataSetSpecificationService>();
-            services.AddSingleton<IIngestionTrackingAuditService, IngestionTrackingAuditService>();
+            services.AddTransient<IIngestionTrackingAuditService, IngestionTrackingAuditService>();
             services.AddSingleton<ISpecificationObjectService, SpecificationObjectService>();
             services.AddSingleton<IObjectColumnService, ObjectColumnService>();
         }

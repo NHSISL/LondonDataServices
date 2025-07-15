@@ -13,6 +13,7 @@ namespace LHDS.Core.Services.Foundations.PdsAudits
     {
         ValueTask<PdsAudit> AddPdsAuditAsync(PdsAudit pdsAudit);
         ValueTask<IQueryable<PdsAudit>> RetrieveAllPdsAuditsAsync();
+        ValueTask<IQueryable<PdsAudit>> RetrieveAllPdsAuditsByCorrelationIdAsync(Guid correlationId);
         ValueTask<PdsAudit> RetrievePdsAuditByIdAsync(Guid pdsAuditId);
         ValueTask<PdsAudit> ModifyPdsAuditAsync(PdsAudit pdsAudit);
         ValueTask<PdsAudit> RemovePdsAuditByIdAsync(Guid pdsAuditId);

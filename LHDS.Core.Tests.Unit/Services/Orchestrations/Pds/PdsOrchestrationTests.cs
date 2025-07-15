@@ -5,6 +5,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Linq.Expressions;
 using System.Text;
 using KellermanSoftware.CompareNetObjects;
@@ -165,15 +166,8 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Pds
         private static List<MeshMessage> GetRandomMessages(List<string> randomMessageIds, string mexWorkflowId)
         {
             var messages = new List<MeshMessage>();
-            
             var fileName =
-                GetRandomString() 
-                + "/" + GetRandomString()
-                + "/" + GetRandomString() 
-                + "_" + GetRandomString() 
-                + "_" + GetRandomString() 
-                + "_" + GetRandomString() 
-                + ".csv";
+                    GetRandomString() + "_" + GetRandomString() + "_" + GetRandomString() + "_" + GetRandomString() + ".csv";
 
             randomMessageIds.ForEach(id =>
             {
@@ -223,10 +217,36 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Pds
                 CreatedDate = randomDate,
                 UpdatedDate = randomDate,
                 CreatedBy = "System",
-                UpdatedBy = "System"
+                UpdatedBy = "System",
+                RequestType = "Request",
+                IsCompleted = false
             };
 
             return pdsAudit;
+        }
+
+        private static IQueryable<PdsAudit> CreateRandomPdsAuditsWithCorrelationId(Guid correlationId)
+        {
+            return CreatePdsAuditFiller(dateTimeOffset: GetRandomDateTimeOffset(), correlationId)
+                .Create(count: 1)
+                    .AsQueryable();
+        }
+
+        private static Filler<PdsAudit> CreatePdsAuditFiller(
+            DateTimeOffset dateTimeOffset,
+            Guid correlationId)
+        {
+            string user = Guid.NewGuid().ToString();
+            var filler = new Filler<PdsAudit>();
+
+            filler.Setup()
+                .OnType<DateTimeOffset>().Use(dateTimeOffset)
+                .OnType<DateTimeOffset?>().Use(dateTimeOffset)
+                .OnProperty(pdsAudit => pdsAudit.CreatedBy).Use(user)
+                .OnProperty(pdsAudit => pdsAudit.UpdatedBy).Use(user)
+                .OnProperty(pdsAudit => pdsAudit.CorrelationId).Use(correlationId);
+
+            return filler;
         }
 
         public static TheoryData<Xeption> PdsDependencyValidationExceptions()

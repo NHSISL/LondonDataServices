@@ -23,5 +23,7 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Models.PdsAudits
 
         [JsonConverter(typeof(IsoDateTimeConverter))]
         public DateTimeOffset CreatedDate { get; set; }
+        public bool IsCompleted { get; set; }
+        public string RequestType { get; set; }
     }
 }

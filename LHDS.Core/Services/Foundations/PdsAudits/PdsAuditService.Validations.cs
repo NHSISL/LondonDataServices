@@ -26,6 +26,7 @@ namespace LHDS.Core.Services.Foundations.PdsAudits
                 (Rule: IsInvalid(pdsAudit.CreatedBy), Parameter: nameof(PdsAudit.CreatedBy)),
                 (Rule: IsInvalid(pdsAudit.UpdatedDate), Parameter: nameof(PdsAudit.UpdatedDate)),
                 (Rule: IsInvalid(pdsAudit.UpdatedBy), Parameter: nameof(PdsAudit.UpdatedBy)),
+                (Rule: IsInvalid(pdsAudit.RequestType), Parameter: nameof(PdsAudit.RequestType)),
 
                 (Rule: IsNotSame(
                     first: currentUser.EntraUserId,
@@ -67,6 +68,7 @@ namespace LHDS.Core.Services.Foundations.PdsAudits
                 (Rule: IsInvalid(pdsAudit.CreatedBy), Parameter: nameof(PdsAudit.CreatedBy)),
                 (Rule: IsInvalid(pdsAudit.UpdatedDate), Parameter: nameof(PdsAudit.UpdatedDate)),
                 (Rule: IsInvalid(pdsAudit.UpdatedBy), Parameter: nameof(PdsAudit.UpdatedBy)),
+                (Rule: IsInvalid(pdsAudit.RequestType), Parameter: nameof(PdsAudit.RequestType)),
 
                 (Rule: IsNotSame(
                     first: currentUser.EntraUserId,
@@ -90,6 +92,9 @@ namespace LHDS.Core.Services.Foundations.PdsAudits
 
         public void ValidatePdsAuditId(Guid pdsAuditId) =>
             Validate((Rule: IsInvalid(pdsAuditId), Parameter: nameof(PdsAudit.Id)));
+
+        public void ValidateCorrelationId(Guid correlationId) =>
+            Validate((Rule: IsInvalid(correlationId), Parameter: nameof(PdsAudit.CorrelationId)));
 
         private static void ValidateStoragePdsAudit(PdsAudit maybePdsAudit, Guid pdsAuditId)
         {

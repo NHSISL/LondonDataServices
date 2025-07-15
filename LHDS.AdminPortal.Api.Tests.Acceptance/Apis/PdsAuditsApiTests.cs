@@ -43,6 +43,8 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.PdsAudits
                 .OnProperty(pdsAudit => pdsAudit.CreatedBy).Use(inputPdsAudit.CreatedBy)
                 .OnProperty(pdsAudit => pdsAudit.CreatedDate).Use(inputPdsAudit.CreatedDate)
                 .OnProperty(pdsAudit => pdsAudit.UpdatedDate).Use(now)
+                .OnProperty(pdsAudit => pdsAudit.RequestType).Use(inputPdsAudit.RequestType)
+                .OnProperty(pdsAudit => pdsAudit.IsCompleted).Use(inputPdsAudit.IsCompleted)
                 .OnType<DateTimeOffset>().Use(GetRandomDateTime());
 
             return filler.Create();
@@ -70,6 +72,7 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.PdsAudits
         private static Filler<PdsAudit> CreatePdsAuditFiller()
         {
             string user = Guid.NewGuid().ToString();
+            Guid correlationId = Guid.NewGuid();
             var filler = new Filler<PdsAudit>();
             var now = DateTimeOffset.UtcNow;
 
@@ -77,7 +80,8 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.PdsAudits
                 .OnType<DateTimeOffset>().Use(now)
                 .OnType<DateTimeOffset?>().Use(now)
                 .OnProperty(pdsAudit => pdsAudit.CreatedBy).Use(user)
-                .OnProperty(pdsAudit => pdsAudit.UpdatedBy).Use(user);
+                .OnProperty(pdsAudit => pdsAudit.UpdatedBy).Use(user)
+                .OnProperty(pdsAudit => pdsAudit.CorrelationId).Use(correlationId);
 
             return filler;
         }

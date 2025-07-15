@@ -54,12 +54,23 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Pds
                         .ReturnsAsync(message);
 
                 string filename = message.Headers["mex-filename"].FirstOrDefault();
-                string cleanedFileName = filename.StartsWith("RESP_") ? filename.Substring("RESP_".Length) : filename;
-                string fileNameOutput = $"{pdsConfiguration.OutputFolder}/{cleanedFileName}";
+                string fileNameWithoutExtension = Path.GetFileNameWithoutExtension(filename);
+                string[] fileNameParts = fileNameWithoutExtension.Split('_');
 
-                string inputFileName = $"{pdsConfiguration.OutputFolder}/{cleanedFileName}";
+                string fileNameOutput =
+                    $"{fileNameParts[1]}_{fileNameParts[2]}_{fileNameParts[0]}_{fileNameParts[3]}";
+
+                fileNameOutput += Path.GetExtension(filename);
+                string inputFileName = $"{pdsConfiguration.OutputFolder}/{fileNameOutput}";
                 Stream inputStream = new MemoryStream(message.FileContent);
                 Guid correlationId = Guid.Parse(message.Headers["mex-localid"].FirstOrDefault());
+
+                IQueryable<PdsAudit> pdsAuditsWithCorrelationId = CreateRandomPdsAuditsWithCorrelationId(correlationId);
+
+                this.pdsAuditServiceMock
+                    .Setup(service =>
+                        service.RetrieveAllPdsAuditsByCorrelationIdAsync(correlationId))
+                    .ReturnsAsync(pdsAuditsWithCorrelationId);
 
                 this.documentServiceMock
                     .Setup(service =>
@@ -76,7 +87,9 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Pds
                     CreatedDate = randomDate,
                     UpdatedDate = randomDate,
                     CreatedBy = "System",
-                    UpdatedBy = "System"
+                    UpdatedBy = "System",
+                    RequestType = "Response",
+                    IsCompleted = true
                 };
 
                 this.pdsAuditServiceMock.Setup(service =>
@@ -84,7 +97,8 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Pds
                         .ReturnsAsync(pdsAudit);
 
                 pdsAuditsList.Add(pdsAudit);
-            };
+            }
+            ;
 
             List<PdsAudit> expectedPdsAudits = pdsAuditsList.DeepClone();
 
@@ -115,16 +129,25 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Pds
                         Times.Once);
 
                 string filename = message.Headers["mex-filename"].FirstOrDefault();
-                string cleanedFileName = filename.StartsWith("RESP_") ? filename.Substring("RESP_".Length) : filename;
-                string fileNameOutput = $"{pdsConfiguration.OutputFolder}/{cleanedFileName}";
+                string fileNameWithoutExtension = Path.GetFileNameWithoutExtension(filename);
+                string[] fileNameParts = fileNameWithoutExtension.Split('_');
 
-                string inputFileName = $"{pdsConfiguration.OutputFolder}/{cleanedFileName}";
+                string fileNameOutput =
+                    $"{fileNameParts[1]}_{fileNameParts[2]}_{fileNameParts[0]}_{fileNameParts[3]}";
+
+                fileNameOutput += Path.GetExtension(filename);
+                string inputFileName = $"{pdsConfiguration.OutputFolder}/{fileNameOutput}";
                 Stream inputStream = new MemoryStream(message.FileContent);
                 Guid correlationId = Guid.Parse(message.Headers["mex-localid"].FirstOrDefault());
+
+                this.pdsAuditServiceMock.Verify(service =>
+                    service.RetrieveAllPdsAuditsByCorrelationIdAsync(correlationId),
+                    Times.Once);
 
                 this.documentServiceMock.Verify(service =>
                     service.AddDocumentAsync(It.IsAny<Stream>(), inputFileName, inputContainer),
                         Times.Once);
+
 
                 PdsAudit pdsAudit = new PdsAudit
                 {
@@ -136,7 +159,9 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Pds
                     CreatedDate = randomDate,
                     UpdatedDate = randomDate,
                     CreatedBy = "System",
-                    UpdatedBy = "System"
+                    UpdatedBy = "System",
+                    RequestType = "Response",
+                    IsCompleted = true
                 };
 
                 this.pdsAuditServiceMock.Verify(service =>
@@ -148,7 +173,12 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Pds
                         Times.Exactly(1));
 
                 pdsAuditsList.Add(pdsAudit);
-            };
+            }
+            ;
+
+            this.pdsAuditServiceMock.Verify(service =>
+                service.ModifyPdsAuditAsync(It.IsAny<PdsAudit>()),
+                    Times.Exactly(retrievedMessages.Count));
 
             this.meshServiceMock.VerifyNoOtherCalls();
             this.documentServiceMock.VerifyNoOtherCalls();
@@ -184,7 +214,8 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Pds
                 {
                     continue;
                 }
-            };
+            }
+            ;
 
             List<PdsAudit> expectedPdsAudits = pdsAuditsList.DeepClone();
 
@@ -210,7 +241,8 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Pds
                 {
                     continue;
                 }
-            };
+            }
+            ;
 
             this.meshServiceMock.VerifyNoOtherCalls();
             this.documentServiceMock.VerifyNoOtherCalls();

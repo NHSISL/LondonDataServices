@@ -75,6 +75,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.PdsAudits
                 FileName = invalidText,
                 Message = invalidText,
                 MessageId = invalidText,
+                RequestType = invalidText,
             };
 
             var pdsAuditServiceMock = new Mock<PdsAuditService>(
@@ -147,6 +148,10 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.PdsAudits
                         $"Expected value to be '{randomEntraUser.EntraUserId}' but found " +
                         $"'{invalidPdsAudit.UpdatedBy}'."
                     ]);
+
+            invalidPdsAuditException.AddData(
+               key: nameof(PdsAudit.RequestType),
+               values: "Text is required");
 
             var expectedPdsAuditValidationException =
                 new PdsAuditValidationException(

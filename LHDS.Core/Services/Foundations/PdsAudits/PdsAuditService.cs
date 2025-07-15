@@ -44,6 +44,17 @@ namespace LHDS.Core.Services.Foundations.PdsAudits
         public ValueTask<IQueryable<PdsAudit>> RetrieveAllPdsAuditsAsync() =>
             TryCatch(async () => await this.storageBroker.SelectAllPdsAuditsAsync());
 
+        public ValueTask<IQueryable<PdsAudit>> RetrieveAllPdsAuditsByCorrelationIdAsync(Guid correlationId) =>
+            TryCatch(async () =>
+            {
+                ValidateCorrelationId(correlationId);
+
+                IQueryable<PdsAudit> pdsAudits = await this.storageBroker.SelectAllPdsAuditsAsync();
+                var filteredPdsAudits = pdsAudits.Where(pa => pa.CorrelationId == correlationId);
+
+                return filteredPdsAudits;
+            });
+
         public ValueTask<PdsAudit> RetrievePdsAuditByIdAsync(Guid pdsAuditId) =>
             TryCatch(async () =>
             {

@@ -92,7 +92,9 @@ namespace LHDS.Core.Services.Orchestrations.Pds
                         CreatedDate = timeStamp,
                         UpdatedDate = timeStamp,
                         CreatedBy = "System",
-                        UpdatedBy = "System"
+                        UpdatedBy = "System",
+                        RequestType = "Request",
+                        IsCompleted = false
                     });
 
             return pdsAuditItem;
@@ -126,14 +128,18 @@ namespace LHDS.Core.Services.Orchestrations.Pds
                             }
 
                             string filename = message.Headers["mex-filename"].FirstOrDefault();
-                            
-                            string cleanedFileName = 
-                                filename.StartsWith("RESP_") ? filename.Substring("RESP_".Length) : filename;
-                                
-                            string fileName = $"{pdsConfiguration.OutputFolder}/{cleanedFileName}";
+                            string fileNameWithoutExtension = Path.GetFileNameWithoutExtension(filename);
+                            string[] fileNameParts = fileNameWithoutExtension?.Split('_') ?? Array.Empty<string>();
+
+                            string fileNameOutput =
+                                $"{fileNameParts[1]}_{fileNameParts[2]}_{fileNameParts[0]}_{fileNameParts[3]}";
+
+                            fileNameOutput += Path.GetExtension(filename);
+                            string fileName = $"{pdsConfiguration.OutputFolder}/{fileNameOutput}";
 
                             using (Stream input = new MemoryStream(message.FileContent))
                             {
+                                //TODO:  Should we inject the container name into the method to have more control?
                                 await this.documentService.AddDocumentAsync(input, fileName, container: blobContainers.Pds);
                             }
 
@@ -150,11 +156,23 @@ namespace LHDS.Core.Services.Orchestrations.Pds
                                 CreatedDate = currentDate,
                                 UpdatedDate = currentDate,
                                 CreatedBy = "System",
-                                UpdatedBy = "System"
+                                UpdatedBy = "System",
+                                RequestType = "Response",
+                                IsCompleted = true
                             };
 
                             await this.pdsAuditService.AddPdsAuditAsync(pdsAudit);
                             await this.meshService.AcknowledgeMessageByIdAsync(message.MessageId);
+
+                            IQueryable<PdsAudit> relatedPdsAudits =
+                                await this.pdsAuditService.RetrieveAllPdsAuditsByCorrelationIdAsync(correlationId);
+
+                            foreach (PdsAudit relatedPdsAudit in relatedPdsAudits)
+                            {
+                                var amendedPdsAudit = relatedPdsAudit;
+                                amendedPdsAudit.IsCompleted = true;
+                                await this.pdsAuditService.ModifyPdsAuditAsync(amendedPdsAudit);
+                            }
 
                             return pdsAudit;
                         });

@@ -5,12 +5,13 @@
 using System.IO;
 using System.Reflection;
 using System.Threading.Tasks;
+using Xunit;
 
 namespace LHDS.Core.Tests.Integration.Addresses
 {
     public partial class AddressTests
     {
-        [ReleaseCandidateFact]
+        [Fact]
         public async Task ShouldLoadAddressDataAsync()
         {
             // Given

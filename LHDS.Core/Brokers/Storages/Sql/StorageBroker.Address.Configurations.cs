@@ -3,6 +3,7 @@
 // ---------------------------------------------------------
 
 using LHDS.Core.Models.Foundations.Addresses;
+using LHDS.Core.Models.Foundations.ResolvedAddresses;
 using Microsoft.EntityFrameworkCore;
 
 namespace LHDS.Core.Brokers.Storages.Sql
@@ -87,6 +88,26 @@ namespace LHDS.Core.Brokers.Storages.Sql
                 .Property(address => address.PostCode)
                 .HasMaxLength(255)
                 .IsRequired(false);
+
+            modelBuilder.Entity<Address>()
+               .Property(address => address.Latitude)
+               .HasMaxLength(255)
+               .IsRequired(false);
+
+            modelBuilder.Entity<Address>()
+               .Property(address => address.Longitude)
+               .HasMaxLength(255)
+               .IsRequired(false);
+
+            modelBuilder.Entity<Address>()
+                .Property(address => address.XCoordinate)
+                .HasMaxLength(255)
+                .IsRequired(false);
+
+            modelBuilder.Entity<Address>()
+               .Property(address => address.YCoordinate)
+               .HasMaxLength(255)
+               .IsRequired(false);
 
             modelBuilder.Entity<Address>()
                 .HasIndex(address => address.PostCode);

@@ -132,6 +132,26 @@ namespace LHDS.Core.Brokers.Storages.Sql
                 .IsRequired(false);
 
             modelBuilder.Entity<ResolvedAddress>()
+               .Property(address => address.Latitude)
+               .HasMaxLength(255)
+               .IsRequired(false);
+
+            modelBuilder.Entity<ResolvedAddress>()
+               .Property(address => address.Longitude)
+               .HasMaxLength(255)
+               .IsRequired(false);
+
+            modelBuilder.Entity<ResolvedAddress>()
+                .Property(address => address.XCoordinate)
+                .HasMaxLength(255)
+                .IsRequired(false);
+
+            modelBuilder.Entity<ResolvedAddress>()
+               .Property(address => address.YCoordinate)
+               .HasMaxLength(255)
+               .IsRequired(false);
+
+            modelBuilder.Entity<ResolvedAddress>()
                 .Property(address => address.CreatedBy)
                 .HasMaxLength(255)
                 .IsRequired();

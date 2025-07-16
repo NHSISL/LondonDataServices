@@ -35,7 +35,6 @@ namespace LHDS.Core.Brokers.Storages.Sql
                 .HasMaxLength(250)
                 .IsRequired();
 
-
             modelBuilder.Entity<SubscriberPractice>()
                 .Property(subscriberPractice => subscriberPractice.CreatedBy)
                 .HasMaxLength(255)

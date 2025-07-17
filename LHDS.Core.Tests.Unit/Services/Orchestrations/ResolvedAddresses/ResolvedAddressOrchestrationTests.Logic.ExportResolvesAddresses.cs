@@ -87,9 +87,6 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.ResolvedAddresses
                 { nameof(ResolvedAddress.YCoordinate), 23 },
                 { nameof(ResolvedAddress.Latitude), 24 },
                 { nameof(ResolvedAddress.Longitude), 25 }
-
-
-
             };
 
             this.csvHelperBrokerMock.Setup(broker =>

@@ -224,6 +224,7 @@ namespace LHDS.Core.Services.Orchestrations.ResolvedAddresses
 
                     failedToProcess.IsProcessing = false;
                     failedToProcess.UpdatedDate = await dateTimeBroker.GetCurrentDateTimeOffsetAsync();
+                    failedToProcess.RetryCount += 1;
 
                     await resolvedAddressProcessingService
                         .ModifyResolvedAddressAsync(failedToProcess);

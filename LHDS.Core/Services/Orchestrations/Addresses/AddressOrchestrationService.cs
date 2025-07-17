@@ -646,10 +646,9 @@ namespace LHDS.Core.Services.Orchestrations.Addresses
                     foreach (Address existingAddress in existingBlpuAddresses)
                     {
                         if (existingAddress.UPRN != null
-                            && blpuAddressesDict.TryGetValue(existingAddress.UPRN, out Address blpuAddress)
-                            && string.IsNullOrWhiteSpace(existingAddress.PostCode))
+                            && blpuAddressesDict.TryGetValue(existingAddress.UPRN, out Address blpuAddress))
                         {
-                            existingAddress.PostCode = blpuAddress.PostCode;
+                            existingAddress.PostCode = string.IsNullOrWhiteSpace(existingAddress.PostCode) ? blpuAddress.PostCode : existingAddress.PostCode;
                             existingAddress.YCoordinate = blpuAddress.YCoordinate;
                             existingAddress.XCoordinate = blpuAddress.XCoordinate;
                             existingAddress.Latitude = blpuAddress.Latitude;

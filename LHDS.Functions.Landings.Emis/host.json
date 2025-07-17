@@ -13,5 +13,5 @@
       "maxDegreeOfParallelism": 10
     }
   },
-  "functionTimeout": "01:00:00"
+  "functionTimeout": "03:00:00"
 }

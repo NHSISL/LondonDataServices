@@ -6,6 +6,7 @@ using System;
 using System.Collections.Generic;
 using LHDS.Core.Models.Bases;
 using LHDS.Core.Models.Foundations.IngestionTrackings;
+using LHDS.Core.Models.Foundations.SubscriberPractices;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 
 namespace LHDS.Core.Models.Foundations.SubscriberAgreements
@@ -28,5 +29,6 @@ namespace LHDS.Core.Models.Foundations.SubscriberAgreements
 
         [BindNever]
         public List<IngestionTracking> IngestionTrackings { get; set; } = new List<IngestionTracking>();
+        public List<SubscriberPractice> SubscriberPractices { get; set; } = new List<SubscriberPractice>();
     }
 }

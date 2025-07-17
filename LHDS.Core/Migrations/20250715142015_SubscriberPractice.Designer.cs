@@ -4,6 +4,7 @@ using LHDS.Core.Brokers.Storages.Sql;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace LHDS.Core.Migrations
 {
     [DbContext(typeof(StorageBroker))]
-    partial class StorageBrokerModelSnapshot : ModelSnapshot
+    [Migration("20250715142015_SubscriberPractice")]
+    partial class SubscriberPractice
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -60,14 +63,6 @@ namespace LHDS.Core.Migrations
                         .HasMaxLength(255)
                         .HasColumnType("nvarchar(255)");
 
-                    b.Property<string>("Latitude")
-                        .HasMaxLength(255)
-                        .HasColumnType("nvarchar(255)");
-
-                    b.Property<string>("Longitude")
-                        .HasMaxLength(255)
-                        .HasColumnType("nvarchar(255)");
-
                     b.Property<string>("OrganisationName")
                         .HasMaxLength(255)
                         .HasColumnType("nvarchar(255)");
@@ -107,14 +102,6 @@ namespace LHDS.Core.Migrations
 
                     b.Property<DateTimeOffset>("UpdatedDate")
                         .HasColumnType("datetimeoffset");
-
-                    b.Property<string>("XCoordinate")
-                        .HasMaxLength(255)
-                        .HasColumnType("nvarchar(255)");
-
-                    b.Property<string>("YCoordinate")
-                        .HasMaxLength(255)
-                        .HasColumnType("nvarchar(255)");
 
                     b.HasKey("Id");
 
@@ -966,14 +953,6 @@ namespace LHDS.Core.Migrations
                     b.Property<bool>("IsProcessing")
                         .HasColumnType("bit");
 
-                    b.Property<string>("Latitude")
-                        .HasMaxLength(255)
-                        .HasColumnType("nvarchar(255)");
-
-                    b.Property<string>("Longitude")
-                        .HasMaxLength(255)
-                        .HasColumnType("nvarchar(255)");
-
                     b.Property<string>("MatchPattern")
                         .HasMaxLength(255)
                         .HasColumnType("nvarchar(255)");
@@ -1036,14 +1015,6 @@ namespace LHDS.Core.Migrations
 
                     b.Property<DateTimeOffset>("UpdatedDate")
                         .HasColumnType("datetimeoffset");
-
-                    b.Property<string>("XCoordinate")
-                        .HasMaxLength(255)
-                        .HasColumnType("nvarchar(255)");
-
-                    b.Property<string>("YCoordinate")
-                        .HasMaxLength(255)
-                        .HasColumnType("nvarchar(255)");
 
                     b.HasKey("Id");
 

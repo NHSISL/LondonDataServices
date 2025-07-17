@@ -42,6 +42,10 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Addresses
                 { "StartDate", 15 },
                 { "EndDate", 16 },
                 { "PostCode", 20 },
+                { "YCoordinate", 9 },
+                { "XCoordinate", 8 },
+                { "Latitude", 10 },
+                { "Longitude", 11 },
             };
 
             string multipleHistoricalsUprn = GetRandomString();
@@ -49,8 +53,18 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Addresses
             DateTimeOffset latestEndDate = randomDateTimeOffset.AddDays(5);
             DateTimeOffset olderEndDate = randomDateTimeOffset.AddDays(3);
             DateTimeOffset startDate = randomDateTimeOffset.AddDays(1);
+            
             string updatedMultipleHistoricalsPostCode = GetRandomString();
+            string updatedMultipleHistoricalsYCoordinate = GetRandomString();
+            string updatedMultipleHistoricalsXCoordinate = GetRandomString();
+            string updatedMultipleHistoricalsLatitude = GetRandomString();
+            string updatedMultipleHistoricalsLongitude = GetRandomString();
+            
             string oldMultipleHistoricalsPostCode = GetRandomString();
+            string oldMultipleHistoricalsYCoordinate = GetRandomString();
+            string oldMultipleHistoricalsXCoordinate = GetRandomString();
+            string oldMultipleHistoricalsLatitude = GetRandomString();
+            string oldMultipleHistoricalsLongitude = GetRandomString();
 
             List<BLPUAddress> multipleHistoricalsBlpuAddresses =
             [
@@ -60,7 +74,12 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Addresses
                     LogicalStatus = 8,
                     StartDate = startDate,
                     EndDate = latestEndDate,
-                    PostCode = updatedMultipleHistoricalsPostCode
+                    PostCode = updatedMultipleHistoricalsPostCode,
+                    YCoordinate = updatedMultipleHistoricalsYCoordinate,
+                    XCoordinate = updatedMultipleHistoricalsXCoordinate,
+                    Latitude = updatedMultipleHistoricalsLatitude,
+                    Longitude = updatedMultipleHistoricalsLongitude,
+
                 },
                 new BLPUAddress
                 {
@@ -68,7 +87,11 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Addresses
                     LogicalStatus = 8,
                     StartDate = startDate,
                     EndDate = olderEndDate,
-                    PostCode = oldMultipleHistoricalsPostCode
+                    PostCode = oldMultipleHistoricalsPostCode,
+                    YCoordinate = oldMultipleHistoricalsYCoordinate,
+                    XCoordinate = oldMultipleHistoricalsXCoordinate,
+                    Latitude = oldMultipleHistoricalsLatitude,
+                    Longitude = oldMultipleHistoricalsLongitude,
                 },
                 new BLPUAddress
                 {
@@ -76,13 +99,27 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Addresses
                     LogicalStatus = 8,
                     StartDate = startDate,
                     EndDate = null,
-                    PostCode = oldMultipleHistoricalsPostCode
+                    PostCode = oldMultipleHistoricalsPostCode,
+                    YCoordinate = oldMultipleHistoricalsYCoordinate,
+                    XCoordinate = oldMultipleHistoricalsXCoordinate,
+                    Latitude = oldMultipleHistoricalsLatitude,
+                    Longitude = oldMultipleHistoricalsLongitude,
                 },
             ];
 
             string multipleAlternativesUprn = GetRandomString();
+
             string approvedPostCode = GetRandomString();
+            string approvedYCoordinate = GetRandomString();
+            string approvedXCoordinate = GetRandomString();
+            string approvedLatitude = GetRandomString();
+            string approvedLongitude = GetRandomString();
+
             string alternativePostCode = GetRandomString();
+            string alternativeYCoordinate = GetRandomString();
+            string alternativeXCoordinate = GetRandomString();
+            string alternativeLatitude = GetRandomString();
+            string alternativeLongitude = GetRandomString();
 
             List<BLPUAddress> multipleAlternativesBlpuAddresses =
             [
@@ -92,7 +129,11 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Addresses
                     LogicalStatus = 1,
                     StartDate = startDate,
                     EndDate = null,
-                    PostCode = approvedPostCode
+                    PostCode = approvedPostCode,
+                    YCoordinate = approvedYCoordinate,
+                    XCoordinate = approvedXCoordinate,
+                    Latitude = approvedLatitude,
+                    Longitude = approvedLongitude,
                 },
                 new BLPUAddress
                 {
@@ -100,7 +141,11 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Addresses
                     LogicalStatus = 3,
                     StartDate = startDate,
                     EndDate = null,
-                    PostCode = alternativePostCode
+                    PostCode = alternativePostCode,
+                    YCoordinate = alternativeYCoordinate,
+                    XCoordinate = alternativeXCoordinate,
+                    Latitude = alternativeLatitude,
+                    Longitude = alternativeLongitude,
                 },
                 new BLPUAddress
                 {
@@ -108,7 +153,11 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Addresses
                     LogicalStatus = 3,
                     StartDate = startDate,
                     EndDate = null,
-                    PostCode = alternativePostCode
+                    PostCode = alternativePostCode,
+                    YCoordinate = alternativeYCoordinate,
+                    XCoordinate = alternativeXCoordinate,
+                    Latitude = alternativeLatitude,
+                    Longitude = alternativeLongitude,
                 },
             ];
 
@@ -122,11 +171,19 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Addresses
                 {
                     UPRN = multipleHistoricalsUprn,
                     PostCode= updatedMultipleHistoricalsPostCode,
+                    YCoordinate = updatedMultipleHistoricalsYCoordinate,
+                    XCoordinate = updatedMultipleHistoricalsXCoordinate,
+                    Longitude = updatedMultipleHistoricalsLongitude,
+                    Latitude = updatedMultipleHistoricalsLatitude,
                 },
                 new Address
                 {
                     UPRN = multipleAlternativesUprn,
                     PostCode= approvedPostCode,
+                    YCoordinate = approvedYCoordinate,
+                    XCoordinate = approvedXCoordinate,
+                    Longitude = approvedLongitude,
+                    Latitude = approvedLatitude,
                 },
             ];
 

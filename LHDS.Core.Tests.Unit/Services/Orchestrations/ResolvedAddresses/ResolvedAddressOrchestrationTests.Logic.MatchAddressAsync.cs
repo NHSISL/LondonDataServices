@@ -282,6 +282,10 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.ResolvedAddresses
             newResolvedAddress.Classification = assignAddress?.BestMatch.Classification;
             newResolvedAddress.Algorithm = assignAddress?.BestMatch.Algorithm;
             newResolvedAddress.MatchPattern = assignAddress?.Pattern;
+            newResolvedAddress.XCoordinate = ordananceAddress?.XCoordinate;
+            newResolvedAddress.YCoordinate = ordananceAddress?.YCoordinate;
+            newResolvedAddress.Latitude = ordananceAddress?.Latitude;
+            newResolvedAddress.Longitude = ordananceAddress?.Longitude;
             newResolvedAddress.IsProcessing = false;
             newResolvedAddress.IsExported = false;
             newResolvedAddress.RetryCount = 0;

@@ -82,7 +82,11 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.ResolvedAddresses
                 { nameof(ResolvedAddress.Classification), 18 },
                 { nameof(ResolvedAddress.Algorithm), 19 },
                 { nameof(ResolvedAddress.MatchPattern), 20 },
-                { nameof(ResolvedAddress.UnstructuredPostalAddress), 21 }
+                { nameof(ResolvedAddress.UnstructuredPostalAddress), 21 },
+                { nameof(ResolvedAddress.XCoordinate), 22 },
+                { nameof(ResolvedAddress.YCoordinate), 23 },
+                { nameof(ResolvedAddress.Latitude), 24 },
+                { nameof(ResolvedAddress.Longitude), 25 }
             };
 
             this.csvHelperBrokerMock.Setup(broker =>

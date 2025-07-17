@@ -275,6 +275,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.ResolvedAddresses
 
                 cleanedUnMatchedResolvedAddress.IsProcessing = false;
                 cleanedUnMatchedResolvedAddress.UpdatedDate = randomDateTimeOffset;
+                cleanedUnMatchedResolvedAddress.RetryCount += 1;
 
                 this.resolvedAddressProcessingServiceMock.Verify(processing =>
                     processing.ModifyResolvedAddressAsync(It.Is(SameResolvedAddressAs(cleanedUnMatchedResolvedAddress))),
@@ -424,6 +425,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.ResolvedAddresses
 
                 cleanedUnMatchedResolvedAddress.IsProcessing = false;
                 cleanedUnMatchedResolvedAddress.UpdatedDate = randomDateTimeOffset;
+                cleanedUnMatchedResolvedAddress.RetryCount += 1;
 
                 this.resolvedAddressProcessingServiceMock.Verify(processing =>
                     processing.ModifyResolvedAddressAsync(It.Is(SameResolvedAddressAs(cleanedUnMatchedResolvedAddress))),
@@ -577,6 +579,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.ResolvedAddresses
 
                 cleanedUnMatchedResolvedAddress.IsProcessing = false;
                 cleanedUnMatchedResolvedAddress.UpdatedDate = randomDateTimeOffset;
+                cleanedUnMatchedResolvedAddress.RetryCount += 1;
 
                 this.resolvedAddressProcessingServiceMock.Verify(processing =>
                     processing.ModifyResolvedAddressAsync(It.Is(SameResolvedAddressAs(

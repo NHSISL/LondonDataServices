@@ -287,6 +287,10 @@ namespace LHDS.Core.Services.Orchestrations.ResolvedAddresses
             updatedResolovedAddress.Classification = foundAssignAddress?.BestMatch?.Classification;
             updatedResolovedAddress.Algorithm = foundAssignAddress?.BestMatch?.Algorithm;
             updatedResolovedAddress.MatchPattern = foundAssignAddress?.Pattern ?? null;
+            updatedResolovedAddress.XCoordinate = foundOrdananceAddress?.XCoordinate;
+            updatedResolovedAddress.YCoordinate = foundOrdananceAddress?.YCoordinate;
+            updatedResolovedAddress.Latitude = foundOrdananceAddress?.Latitude;
+            updatedResolovedAddress.Longitude = foundOrdananceAddress?.Longitude;
             updatedResolovedAddress.IsProcessing = false;
             updatedResolovedAddress.IsExported = false;
             updatedResolovedAddress.RetryCount = 0;
@@ -370,7 +374,11 @@ namespace LHDS.Core.Services.Orchestrations.ResolvedAddresses
                             { nameof(ResolvedAddress.Classification), 18 },
                             { nameof(ResolvedAddress.Algorithm), 19 },
                             { nameof(ResolvedAddress.MatchPattern), 20 },
-                            { nameof(ResolvedAddress.UnstructuredPostalAddress), 21 }
+                            { nameof(ResolvedAddress.UnstructuredPostalAddress), 21 },
+                            { nameof(ResolvedAddress.XCoordinate), 22 },
+                            { nameof(ResolvedAddress.YCoordinate), 23 },
+                            { nameof(ResolvedAddress.Latitude), 24 },
+                            { nameof(ResolvedAddress.Longitude), 25 }
                         };
 
                         string processedData = await this.csvHelperBroker

@@ -5,13 +5,12 @@
 using System.IO;
 using System.Reflection;
 using System.Threading.Tasks;
-using Xunit;
 
 namespace LHDS.Core.Tests.Integration.Addresses
 {
     public partial class AddressTests
     {
-        [Fact]
+        [ReleaseCandidateFact]
         public async Task ShouldLoadAddressDataAsync()
         {
             // Given
@@ -24,13 +23,13 @@ namespace LHDS.Core.Tests.Integration.Addresses
             string inputFilePath = Path.Combine(
                 projectRoot,
 
-                @"Resources/Clients/Address/CombinedFiles_London5k.zip");
+                @"Resources/Clients/Address/CombinedStratford.zip");
 
             byte[] inputData = await File.ReadAllBytesAsync(inputFilePath);
             Stream inputStream = new MemoryStream(inputData);
 
             // When
-            await this.addressClient.LoadAddressDataAsync(inputStream, "CombinedFiles_London5k.zip");
+            await this.addressClient.LoadAddressDataAsync(inputStream, "CombinedStratford.zip");
         }
     }
 }

@@ -35,6 +35,10 @@ namespace LHDS.Core.Models.Foundations.ResolvedAddresses
         public string? Classification { get; set; }
         public string? Algorithm { get; set; }
         public string? MatchPattern { get; set; }
+        public string? Latitude { get; set; }
+        public string? Longitude { get; set; }
+        public string? XCoordinate { get; set; }
+        public string? YCoordinate { get; set; }
         public bool IsProcessing { get; set; }
         public bool IsExported { get; set; }
         public int RetryCount { get; set; }

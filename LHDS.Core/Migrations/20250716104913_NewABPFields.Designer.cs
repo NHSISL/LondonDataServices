@@ -4,6 +4,7 @@ using LHDS.Core.Brokers.Storages.Sql;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace LHDS.Core.Migrations
 {
     [DbContext(typeof(StorageBroker))]
-    partial class StorageBrokerModelSnapshot : ModelSnapshot
+    [Migration("20250716104913_NewABPFields")]
+    partial class NewABPFields
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -1219,40 +1222,6 @@ namespace LHDS.Core.Migrations
                     b.ToTable("SubscriberAgreements", "Configurations");
                 });
 
-            modelBuilder.Entity("LHDS.Core.Models.Foundations.SubscriberPractices.SubscriberPractice", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<string>("CreatedBy")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<DateTimeOffset>("CreatedDate")
-                        .HasColumnType("datetimeoffset");
-
-                    b.Property<string>("Name")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("PracticeCode")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<Guid>("SubscriberAgreementId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<string>("UpdatedBy")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<DateTimeOffset>("UpdatedDate")
-                        .HasColumnType("datetimeoffset");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("SubscriberAgreementId");
-
-                    b.ToTable("SubscriberPractices");
-                });
-
             modelBuilder.Entity("LHDS.Core.Models.Foundations.Suppliers.Supplier", b =>
                 {
                     b.Property<Guid>("Id")
@@ -1503,17 +1472,6 @@ namespace LHDS.Core.Migrations
                     b.Navigation("DataSetSpecification");
                 });
 
-            modelBuilder.Entity("LHDS.Core.Models.Foundations.SubscriberPractices.SubscriberPractice", b =>
-                {
-                    b.HasOne("LHDS.Core.Models.Foundations.SubscriberAgreements.SubscriberAgreement", "SubscriberAgreement")
-                        .WithMany("SubscriberPractices")
-                        .HasForeignKey("SubscriberAgreementId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("SubscriberAgreement");
-                });
-
             modelBuilder.Entity("LHDS.Core.Models.Foundations.DataSetSpecifications.DataSetSpecification", b =>
                 {
                     b.Navigation("PresededBy");
@@ -1541,8 +1499,6 @@ namespace LHDS.Core.Migrations
             modelBuilder.Entity("LHDS.Core.Models.Foundations.SubscriberAgreements.SubscriberAgreement", b =>
                 {
                     b.Navigation("IngestionTrackings");
-
-                    b.Navigation("SubscriberPractices");
                 });
 
             modelBuilder.Entity("LHDS.Core.Models.Foundations.Suppliers.Supplier", b =>

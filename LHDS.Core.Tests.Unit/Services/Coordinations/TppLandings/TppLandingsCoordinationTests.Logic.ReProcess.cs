@@ -3,6 +3,7 @@
 // ---------------------------------------------------------
 
 using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using Moq;
 using Xunit;
@@ -16,10 +17,11 @@ namespace LHDS.Core.Tests.Unit.Services.Coordinations.TppLandings
         {
             // given
             Guid inputSupplierId = Guid.NewGuid();
+            Guid ingestionTrackingId = Guid.NewGuid();
 
             this.tppLandingOrchestrationServiceMock.Setup(service =>
                 service.ReProcessAsync(inputSupplierId))
-                    .Returns(ValueTask.CompletedTask);
+                    .ReturnsAsync(new List<Guid> { ingestionTrackingId });
 
             // when
             await this.tppLandingCoordinationService.ReProcessAsync(
@@ -28,7 +30,11 @@ namespace LHDS.Core.Tests.Unit.Services.Coordinations.TppLandings
             // then
             this.tppLandingOrchestrationServiceMock.Verify(service =>
                 service.ReProcessAsync(inputSupplierId),
-                Times.Once);
+                    Times.Once);
+
+            this.ingressOrchestrationServiceMock.Verify(service =>
+                service.CheckForBatchCompleteAsync(ingestionTrackingId),
+                    Times.Once);
 
             this.tppLandingOrchestrationServiceMock.VerifyNoOtherCalls();
             this.ingressOrchestrationServiceMock.VerifyNoOtherCalls();

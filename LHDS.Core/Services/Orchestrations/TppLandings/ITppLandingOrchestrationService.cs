@@ -3,6 +3,7 @@
 // ---------------------------------------------------------
 
 using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace LHDS.Core.Services.Orchestrations.TppLandings
@@ -10,6 +11,6 @@ namespace LHDS.Core.Services.Orchestrations.TppLandings
     public interface ITppLandingOrchestrationService
     {
         ValueTask<Guid> ProcessAsync(string fileName, Guid supplierId);
-        ValueTask ReProcessAsync(Guid supplierId);
+        ValueTask<List<Guid>> ReProcessAsync(Guid supplierId);
     }
 }

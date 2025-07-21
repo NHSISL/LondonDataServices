@@ -26,8 +26,8 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.HealthChecks.TerminologyPoll
         private readonly Mock<ILoggingBroker> loggingBrokerMock;
         private readonly ITerminologyPollsHealthItemService terminologyPollsHealthItemService;
         private readonly ICompareLogic compareLogic;
-        private const string CheckName = "terminologyPolls";
-        private const string CheckNameDescription = "Terminology Polls";
+        private const string CheckName = "notPolling";
+        private const string CheckNameDescription = "Not Polling";
         private const string ConfigSectionName = "HealthChecks:TerminologyPolls:NotPolling";
 
         public TerminologyPollsNotPollingHealthCheckServiceTests()

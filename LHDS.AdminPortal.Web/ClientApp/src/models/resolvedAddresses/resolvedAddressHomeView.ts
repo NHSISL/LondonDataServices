@@ -3,7 +3,7 @@ import { Guid } from 'guid-typescript';
 export class ResolvedAddressHomeView {
     public id: Guid;
     public uprn?: string;
-    public upsn?: string;
+    public usrn?: string;
     public postCode?: string;
     public retryCount?: number;
     public isProcessing?: boolean;
@@ -38,7 +38,7 @@ export class ResolvedAddressHomeView {
     constructor(
         id: Guid,
         uprn?: string,
-        upsn?: string,
+        usrn?: string,
         postCode?: string,
         retryCount?: number,
         isProcessing?: boolean,
@@ -72,7 +72,7 @@ export class ResolvedAddressHomeView {
     {
         this.id = id;
         this.uprn = uprn;
-        this.upsn = upsn;
+        this.usrn = usrn;
         this.postCode = postCode;
         this.retryCount = retryCount;
         this.isProcessing = isProcessing;

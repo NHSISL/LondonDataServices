@@ -263,7 +263,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.ResolvedAddresses
             Address ordananceAddress)
         {
             ResolvedAddress newResolvedAddress = processingResolvedAddress;
-            newResolvedAddress.UPSN = ordananceAddress?.UPSN ?? null;
+            newResolvedAddress.USRN = ordananceAddress?.USRN ?? null;
             newResolvedAddress.OrganisationName = ordananceAddress?.OrganisationName;
             newResolvedAddress.DepartmentName = ordananceAddress?.DepartmentName;
             newResolvedAddress.SubBuildingName = ordananceAddress?.SubBuildingName;

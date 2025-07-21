@@ -40,7 +40,7 @@ const AddressRowView: FunctionComponent<AddressRowProps> = (props) => {
                 <span style={{ fontSize: '14px' }}>{address.uprn}</span>
             </TableBaseData>
             <TableBaseData>
-                <span style={{ fontSize: '14px' }}>{address.upsn}</span>
+                <span style={{ fontSize: '14px' }}>{address.usrn}</span>
             </TableBaseData>
             <TableBaseData>
                 <span style={{ fontSize: '14px' }}>{concateAddresses(address)}</span>

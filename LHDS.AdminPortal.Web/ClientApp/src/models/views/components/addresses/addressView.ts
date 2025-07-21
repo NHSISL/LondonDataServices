@@ -5,7 +5,7 @@ export class AddressView {
     public isProcessing: boolean;
     public isSynced: boolean;
     public uprn?: string;
-    public upsn?: string;
+    public usrn?: string;
     public organisationName?: string;
     public departmentName?: string;
     public subBuildingName?: string;
@@ -27,7 +27,7 @@ export class AddressView {
         isProcessing: boolean,
         isSynced: boolean,
         uprn?: string,
-        upsn?: string,
+        usrn?: string,
         organisationName?: string,
         departmentName?: string,
         subBuildingName?: string,
@@ -46,7 +46,7 @@ export class AddressView {
     ) {
         this.id = id;
         this.uprn = uprn || "";
-        this.upsn = upsn || "";
+        this.usrn = usrn || "";
         this.organisationName = organisationName || "";
         this.departmentName = departmentName || "";
         this.subBuildingName = subBuildingName || "";

@@ -39,7 +39,7 @@ namespace LHDS.Core.Tests.Acceptance.Clients.Pds
                 mexFileName: fileName);
 
             string fileNameReturn =
-                $"{this.pdsConfiguration.OutputFolder}/MPTREQ_CCYYMMDDHHMISS_RESP_CCYYMMDDHHMISS.csv";
+                $"{this.pdsConfiguration.OutputFolder}/MPTREQ_CCYYMMDDHHMISS_CCYYMMDDHHMISS.csv";
 
             message.MessageId = messageId;
             List<Message> messages = new List<Message> { message };

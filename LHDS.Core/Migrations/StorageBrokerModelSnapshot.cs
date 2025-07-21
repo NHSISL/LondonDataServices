@@ -60,6 +60,14 @@ namespace LHDS.Core.Migrations
                         .HasMaxLength(255)
                         .HasColumnType("nvarchar(255)");
 
+                    b.Property<string>("Latitude")
+                        .HasMaxLength(255)
+                        .HasColumnType("nvarchar(255)");
+
+                    b.Property<string>("Longitude")
+                        .HasMaxLength(255)
+                        .HasColumnType("nvarchar(255)");
+
                     b.Property<string>("OrganisationName")
                         .HasMaxLength(255)
                         .HasColumnType("nvarchar(255)");
@@ -99,6 +107,14 @@ namespace LHDS.Core.Migrations
 
                     b.Property<DateTimeOffset>("UpdatedDate")
                         .HasColumnType("datetimeoffset");
+
+                    b.Property<string>("XCoordinate")
+                        .HasMaxLength(255)
+                        .HasColumnType("nvarchar(255)");
+
+                    b.Property<string>("YCoordinate")
+                        .HasMaxLength(255)
+                        .HasColumnType("nvarchar(255)");
 
                     b.HasKey("Id");
 
@@ -950,6 +966,14 @@ namespace LHDS.Core.Migrations
                     b.Property<bool>("IsProcessing")
                         .HasColumnType("bit");
 
+                    b.Property<string>("Latitude")
+                        .HasMaxLength(255)
+                        .HasColumnType("nvarchar(255)");
+
+                    b.Property<string>("Longitude")
+                        .HasMaxLength(255)
+                        .HasColumnType("nvarchar(255)");
+
                     b.Property<string>("MatchPattern")
                         .HasMaxLength(255)
                         .HasColumnType("nvarchar(255)");
@@ -1012,6 +1036,14 @@ namespace LHDS.Core.Migrations
 
                     b.Property<DateTimeOffset>("UpdatedDate")
                         .HasColumnType("datetimeoffset");
+
+                    b.Property<string>("XCoordinate")
+                        .HasMaxLength(255)
+                        .HasColumnType("nvarchar(255)");
+
+                    b.Property<string>("YCoordinate")
+                        .HasMaxLength(255)
+                        .HasColumnType("nvarchar(255)");
 
                     b.HasKey("Id");
 
@@ -1185,6 +1217,40 @@ namespace LHDS.Core.Migrations
                         .IsUnique();
 
                     b.ToTable("SubscriberAgreements", "Configurations");
+                });
+
+            modelBuilder.Entity("LHDS.Core.Models.Foundations.SubscriberPractices.SubscriberPractice", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("CreatedBy")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTimeOffset>("CreatedDate")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<string>("Name")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("PracticeCode")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<Guid>("SubscriberAgreementId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("UpdatedBy")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTimeOffset>("UpdatedDate")
+                        .HasColumnType("datetimeoffset");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("SubscriberAgreementId");
+
+                    b.ToTable("SubscriberPractices");
                 });
 
             modelBuilder.Entity("LHDS.Core.Models.Foundations.Suppliers.Supplier", b =>
@@ -1437,6 +1503,17 @@ namespace LHDS.Core.Migrations
                     b.Navigation("DataSetSpecification");
                 });
 
+            modelBuilder.Entity("LHDS.Core.Models.Foundations.SubscriberPractices.SubscriberPractice", b =>
+                {
+                    b.HasOne("LHDS.Core.Models.Foundations.SubscriberAgreements.SubscriberAgreement", "SubscriberAgreement")
+                        .WithMany("SubscriberPractices")
+                        .HasForeignKey("SubscriberAgreementId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("SubscriberAgreement");
+                });
+
             modelBuilder.Entity("LHDS.Core.Models.Foundations.DataSetSpecifications.DataSetSpecification", b =>
                 {
                     b.Navigation("PresededBy");
@@ -1464,6 +1541,8 @@ namespace LHDS.Core.Migrations
             modelBuilder.Entity("LHDS.Core.Models.Foundations.SubscriberAgreements.SubscriberAgreement", b =>
                 {
                     b.Navigation("IngestionTrackings");
+
+                    b.Navigation("SubscriberPractices");
                 });
 
             modelBuilder.Entity("LHDS.Core.Models.Foundations.Suppliers.Supplier", b =>

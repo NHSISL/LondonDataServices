@@ -3,6 +3,7 @@
 // ---------------------------------------------------------
 
 using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using LHDS.Core.Brokers.Loggings;
 using LHDS.Core.Services.Orchestrations.Ingress;
@@ -45,7 +46,20 @@ namespace LHDS.Core.Services.Coordinations.TppLandings
             TryCatch(async () =>
             {
                 ValidateArgumentsOnReProcess(supplierId);
-                await this.tppOrchestrationService.ReProcessAsync(supplierId);
+                List<Guid> itemsToProcess = await this.tppOrchestrationService.ReProcessAsync(supplierId);
+
+                foreach (Guid ingestionTrackingId in itemsToProcess)
+                {
+                    try
+                    {
+                        await this.ingressOrchestrationService
+                            .CheckForBatchCompleteAsync(ingestionTrackingId);
+                    }
+                    catch (Exception exception)
+                    {
+                        await this.loggingBroker.LogErrorAsync(exception);
+                    }
+                }
             });
     }
 }

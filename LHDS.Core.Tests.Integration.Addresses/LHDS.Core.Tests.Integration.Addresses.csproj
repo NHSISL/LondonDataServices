@@ -48,6 +48,12 @@
 		<None Update="local.appsettings.json">
 			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
 		</None>
+		<None Update="Resources\Clients\Address\CombinedStratford.zip">
+		  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+		</None>
+		<None Update="Resources\Clients\Address\ID21_BLPU_Records_SMALL.zip">
+		  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+		</None>
 		<None Update="Resources\DataEngineering\IncomingFileToMatch.csv">
 			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
 		</None>

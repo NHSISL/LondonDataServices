@@ -162,7 +162,7 @@ namespace LHDS.Core.Services.Foundations.Addresses
                         Title = "Unable to add address",
 
                         Message =
-                            $"Invalid address - Id: {address.Id}; UPRN: {address.UPRN}; IPSN: {address.UPSN} " +
+                            $"Invalid address - Id: {address.Id}; UPRN: {address.UPRN}; URSN: {address.USRN} " +
                             $"from file: {fileName}" + Environment.NewLine +
                             $"Error: {exception.Message}",
 
@@ -174,7 +174,7 @@ namespace LHDS.Core.Services.Foundations.Addresses
 
                     await this.loggingBroker.LogWarningAsync(message:
                             $"Unable to add address. Invalid address - Id: {address.Id}; " +
-                            $"UPRN: {address.UPRN}; IPSN: {address.UPSN} " +
+                            $"UPRN: {address.UPRN}; URSN: {address.USRN} " +
                             $"from file: {fileName}" + Environment.NewLine +
                             $"Error: {exception.Message}");
                 }
@@ -215,7 +215,7 @@ namespace LHDS.Core.Services.Foundations.Addresses
                         Title = "Unable to add address",
 
                         Message =
-                            $"Invalid address - Id: {address.Id}; UPRN: {address.UPRN}; IPSN: {address.UPSN} " +
+                            $"Invalid address - Id: {address.Id}; UPRN: {address.UPRN}; USRN: {address.USRN} " +
                             $"from file: {fileName}" + Environment.NewLine +
                             $"Error: {exception.Message}",
 
@@ -227,7 +227,7 @@ namespace LHDS.Core.Services.Foundations.Addresses
 
                     await this.loggingBroker.LogWarningAsync(message:
                             $"Unable to add address. Invalid address - Id: {address.Id}; " +
-                            $"UPRN: {address.UPRN}; IPSN: {address.UPSN} " +
+                            $"UPRN: {address.UPRN}; USRN: {address.USRN} " +
                             $"from file: {fileName}" + Environment.NewLine +
                             $"Error: {exception.Message}");
                 }

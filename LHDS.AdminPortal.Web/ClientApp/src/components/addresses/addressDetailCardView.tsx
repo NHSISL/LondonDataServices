@@ -40,8 +40,8 @@ const AddressDetailCardView: FunctionComponent<AddressDetailCardViewProps> = (pr
                                         <SummaryListBaseValue>{address.uprn}</SummaryListBaseValue>
                                     </SummaryListBaseRow>
                                     <SummaryListBaseRow>
-                                        <SummaryListBaseKey>UPSN</SummaryListBaseKey>
-                                        <SummaryListBaseValue>{address.upsn}</SummaryListBaseValue>
+                                        <SummaryListBaseKey>USRN</SummaryListBaseKey>
+                                        <SummaryListBaseValue>{address.usrn}</SummaryListBaseValue>
                                     </SummaryListBaseRow>
                                     <SummaryListBaseRow>
                                         <SummaryListBaseKey>Organisation Name</SummaryListBaseKey>

@@ -17,7 +17,7 @@ export const addressViewService = {
             if (searchTerm) {
                 const fields = [
                     'uprn',
-                    'upsn',
+                    'usrn',
                     'organisationName',
                     'departmentName',
                     'subBuildingName',
@@ -49,7 +49,7 @@ export const addressViewService = {
                             addresses.isProcessing,
                             addresses.isSynced,
                             addresses.uprn,
-                            addresses.upsn,
+                            addresses.usrn,
                             addresses.organisationName,
                             addresses.departmentName,
                             addresses.subBuildingName,
@@ -92,7 +92,7 @@ export const addressViewService = {
                         response.data[0].isProcessing,
                         response.data[0].isSynced,
                         response.data[0].uprn,
-                        response.data[0].upsn,
+                        response.data[0].usrn,
                         response.data[0].organisationName,
                         response.data[0].departmentName,
                         response.data[0].subBuildingName,

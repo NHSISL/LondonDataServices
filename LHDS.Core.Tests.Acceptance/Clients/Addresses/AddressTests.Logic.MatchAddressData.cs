@@ -74,7 +74,7 @@ namespace LHDS.Core.Tests.Acceptance.Clients.Addresses
                     .FirstOrDefault(resolvedAddress => resolvedAddress.Id == expectedResolvedAddress.Id);
 
                 retrievedResolvedAddress.UPRN.Should().Be(expectedResolvedAddress.UPRN);
-                retrievedResolvedAddress.UPSN.Should().Be(expectedResolvedAddress.UPSN);
+                retrievedResolvedAddress.USRN.Should().Be(expectedResolvedAddress.USRN);
                 retrievedResolvedAddress.OrganisationName.Should().Be(expectedResolvedAddress.OrganisationName);
                 retrievedResolvedAddress.DepartmentName.Should().Be(expectedResolvedAddress.DepartmentName);
                 retrievedResolvedAddress.SubBuildingName.Should().Be(expectedResolvedAddress.SubBuildingName);

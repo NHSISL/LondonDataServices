@@ -118,7 +118,7 @@ const ResolvedAddressTable: FunctionComponent = () => {
                                 <TableBaseThead>
                                     <TableBaseRow>
                                         <TableBaseHeader>UPRN</TableBaseHeader>
-                                        <TableBaseHeader>UPSN</TableBaseHeader>
+                                        <TableBaseHeader>USRN</TableBaseHeader>
                                         <TableBaseHeader classes="text-center">Unstructured Address</TableBaseHeader>
                                         <TableBaseHeader classes="text-center">Matched Address</TableBaseHeader>
                                         <TableBaseHeader classes="text-center">Matched</TableBaseHeader>

@@ -72,7 +72,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Addresses
             var invalidAddress = new Address
             {
                 UPRN = invalidText,
-                UPSN = invalidText,
+                USRN = invalidText,
                 OrganisationName = invalidText,
                 DepartmentName = invalidText,
                 SubBuildingName = invalidText,

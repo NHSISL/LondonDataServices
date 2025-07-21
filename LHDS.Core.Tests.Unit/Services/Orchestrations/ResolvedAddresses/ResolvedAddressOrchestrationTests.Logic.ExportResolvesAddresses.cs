@@ -63,7 +63,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.ResolvedAddresses
             {
                 { nameof(ResolvedAddress.UniqueReference), 0 },
                 { nameof(ResolvedAddress.UPRN), 1 },
-                { nameof(ResolvedAddress.UPSN), 2 },
+                { nameof(ResolvedAddress.USRN), 2 },
                 { nameof(ResolvedAddress.OrganisationName), 3 },
                 { nameof(ResolvedAddress.DepartmentName), 4 },
                 { nameof(ResolvedAddress.SubBuildingName), 5 },

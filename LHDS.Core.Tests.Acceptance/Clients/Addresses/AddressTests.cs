@@ -148,7 +148,7 @@ namespace LHDS.Core.Tests.Acceptance.Clients.Addresses
 
             dynamic address1 = new
             {
-                UPSN = "upsn",
+                USPN = "uspn",
                 UPRN = "uprn",
                 OrganisationName = "",
                 DepartmentName = "",
@@ -170,7 +170,7 @@ namespace LHDS.Core.Tests.Acceptance.Clients.Addresses
 
             dynamic address2 = new
             {
-                UPSN = "upsn",
+                USPN = "uspn",
                 UPRN = "uprn",
                 OrganisationName = "",
                 DepartmentName = "",
@@ -192,7 +192,7 @@ namespace LHDS.Core.Tests.Acceptance.Clients.Addresses
 
             dynamic address3 = new
             {
-                UPSN = "upsn",
+                USRN = "usrn",
                 UPRN = "uprn",
                 OrganisationName = "",
                 DepartmentName = "",
@@ -222,7 +222,7 @@ namespace LHDS.Core.Tests.Acceptance.Clients.Addresses
             Address address = new Address
             {
                 Id = Guid.NewGuid(),
-                UPSN = "upsn",
+                USRN = "usrn",
                 UPRN = "uprn",
                 OrganisationName = "",
                 DepartmentName = "",
@@ -336,7 +336,7 @@ namespace LHDS.Core.Tests.Acceptance.Clients.Addresses
         {
             ResolvedAddress updatedResolovedAddress = unMatchedResolvedAddress;
             updatedResolovedAddress.UPRN = foundOrdananceAddress.UPRN;
-            updatedResolovedAddress.UPSN = foundOrdananceAddress.UPSN;
+            updatedResolovedAddress.USRN = foundOrdananceAddress.USRN;
             updatedResolovedAddress.OrganisationName = foundOrdananceAddress.OrganisationName;
             updatedResolovedAddress.DepartmentName = foundOrdananceAddress.DepartmentName;
             updatedResolovedAddress.SubBuildingName = foundOrdananceAddress.SubBuildingName;
@@ -395,7 +395,7 @@ namespace LHDS.Core.Tests.Acceptance.Clients.Addresses
             {
                 { nameof(ResolvedAddress.UniqueReference), 0 },
                 { nameof(ResolvedAddress.UPRN), 1 },
-                { nameof(ResolvedAddress.UPSN), 2 },
+                { nameof(ResolvedAddress.USRN), 2 },
                 { nameof(ResolvedAddress.OrganisationName), 3 },
                 { nameof(ResolvedAddress.DepartmentName), 4 },
                 { nameof(ResolvedAddress.SubBuildingName), 5 },
@@ -431,7 +431,7 @@ namespace LHDS.Core.Tests.Acceptance.Clients.Addresses
             {
                 { nameof(ResolvedAddress.UniqueReference), 0 },
                 { nameof(ResolvedAddress.UPRN), 1 },
-                { nameof(ResolvedAddress.UPSN), 2 },
+                { nameof(ResolvedAddress.USRN), 2 },
                 { nameof(ResolvedAddress.OrganisationName), 3 },
                 { nameof(ResolvedAddress.DepartmentName), 4 },
                 { nameof(ResolvedAddress.SubBuildingName), 5 },
@@ -466,7 +466,7 @@ namespace LHDS.Core.Tests.Acceptance.Clients.Addresses
                 new Address
                 {
                     UPRN = "6044747",
-                    UPSN = "",
+                    USRN = "",
                     OrganisationName = "",
                     DepartmentName = "",
                     SubBuildingName = "FLAT 24",
@@ -482,7 +482,7 @@ namespace LHDS.Core.Tests.Acceptance.Clients.Addresses
                 new Address
                 {
                     UPRN = "10094881956",
-                    UPSN = "56027796",
+                    USRN = "56027796",
                     OrganisationName = "",
                     DepartmentName = "",
                     SubBuildingName = "FLAT 240",
@@ -498,7 +498,7 @@ namespace LHDS.Core.Tests.Acceptance.Clients.Addresses
                 new Address
                 {
                     UPRN = "10094881505",
-                    UPSN = "56027168",
+                    USRN = "56027168",
                     OrganisationName = "",
                     DepartmentName = "",
                     SubBuildingName = "FLAT 81",
@@ -514,7 +514,7 @@ namespace LHDS.Core.Tests.Acceptance.Clients.Addresses
                 new Address
                 {
                     UPRN = "6027433",
-                    UPSN = "56027168",
+                    USRN = "56027168",
                     OrganisationName = "",
                     DepartmentName = "",
                     SubBuildingName = "FLAT 23",

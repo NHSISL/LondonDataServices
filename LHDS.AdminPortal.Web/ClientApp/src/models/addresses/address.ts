@@ -3,7 +3,7 @@ import { Guid } from 'guid-typescript';
 export class Address {
     public id: Guid;
     public uprn?: string;
-    public upsn?: string;
+    public usrn?: string;
     public organisationName?: string;
     public departmentName?: string;
     public subBuildingName?: string;
@@ -25,7 +25,7 @@ export class Address {
     constructor(address: any) {
         this.id = address.id ? Guid.parse(address.id) : Guid.parse(Guid.EMPTY);
         this.uprn = address.uprn || "";
-        this.upsn = address.upsn || "";
+        this.usrn = address.usrn || "";
         this.organisationName = address.organisationName || "";
         this.departmentName = address.departmentName || "";
         this.subBuildingName = address.subBuildingName || "";

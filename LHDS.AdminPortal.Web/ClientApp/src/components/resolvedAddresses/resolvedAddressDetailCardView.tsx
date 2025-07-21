@@ -54,8 +54,8 @@ const ResolvedAddressDetailCardView: FunctionComponent<ResolvedAddressDetailCard
                                                 <SummaryListBaseValue>{resolvedAddress.uprn}</SummaryListBaseValue>
                                             </SummaryListBaseRow>
                                             <SummaryListBaseRow>
-                                                <SummaryListBaseKey>UPSN</SummaryListBaseKey>
-                                                <SummaryListBaseValue>{resolvedAddress.upsn}</SummaryListBaseValue>
+                                                <SummaryListBaseKey>USRN</SummaryListBaseKey>
+                                                <SummaryListBaseValue>{resolvedAddress.usrn}</SummaryListBaseValue>
                                             </SummaryListBaseRow>
                                             <SummaryListBaseRow>
                                                 <SummaryListBaseKey>Unstructured Postal Address</SummaryListBaseKey>

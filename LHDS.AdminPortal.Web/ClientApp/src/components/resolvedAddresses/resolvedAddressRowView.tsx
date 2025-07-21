@@ -45,7 +45,7 @@ const ResolvedAddressRowView: FunctionComponent<ResolvedAddressRowProps> = (prop
             </TableBaseData>
             <TableBaseData>
                 <span>
-                    <span style={{ fontSize: '14px' }}>{resolvedAddress.upsn}</span>
+                    <span style={{ fontSize: '14px' }}>{resolvedAddress.usrn}</span>
                 </span>
             </TableBaseData>
             <TableBaseData>

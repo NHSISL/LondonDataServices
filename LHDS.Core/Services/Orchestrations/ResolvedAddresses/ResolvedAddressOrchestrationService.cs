@@ -114,10 +114,10 @@ namespace LHDS.Core.Services.Orchestrations.ResolvedAddresses
             var auditUser = await this.securityBroker.GetCurrentUserAsync();
             ResolvedAddress? unMatchedResolvedAddress;
             var exceptions = new List<Exception>();
-            List<Audit> audits = new List<Audit>();
 
             while (true)
             {
+                List<Audit> audits = new List<Audit>();
                 var retrievedResolvedAddresses = await resolvedAddressProcessingService
                     .RetrieveAllResolvedAddressesAsync();
 

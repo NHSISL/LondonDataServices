@@ -56,7 +56,7 @@ export const ResolvedAddressHomeViewService = {
                                 new ResolvedAddressHomeView(
                                     resolvedAddress.id,
                                     resolvedAddress.uprn,
-                                    resolvedAddress.upsn,
+                                    resolvedAddress.usrn,
                                     resolvedAddress.postCode,
                                     resolvedAddress.retryCount,
                                     resolvedAddress.isProcessing,

@@ -5,7 +5,6 @@ import BreadCrumbBase from "../components/bases/layouts/BreadCrumb/BreadCrumbBas
 import AddressDetail from "../components/addresses/addressDetail";
 
 export const AddressDetailPage = () => {
-
     const { addressId } = useParams();
 
     return <PageLayout>

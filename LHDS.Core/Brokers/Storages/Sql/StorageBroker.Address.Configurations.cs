@@ -25,11 +25,6 @@ namespace LHDS.Core.Brokers.Storages.Sql
                 .IsUnique();
 
             modelBuilder.Entity<Address>()
-                .Property(address => address.UPSN)
-                .HasMaxLength(15)
-                .IsRequired(false);
-
-            modelBuilder.Entity<Address>()
                 .Property(address => address.USRN)
                 .HasMaxLength(15)
                 .IsRequired(false);

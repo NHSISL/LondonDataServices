@@ -286,7 +286,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.ResolvedAddresses
                     {
                         UniqueReference = resolvedAddress.UniqueReference,
                         UPRN = resolvedAddress.UPRN,
-                        UPSN = resolvedAddress.UPSN,
+                        USRN = resolvedAddress.USRN,
                         OrganisationName = resolvedAddress.OrganisationName,
                         DepartmentName = resolvedAddress.DepartmentName,
                         SubBuildingName = resolvedAddress.SubBuildingName,

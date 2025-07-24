@@ -90,7 +90,7 @@ const AddressTable: FunctionComponent = () => {
                                 <TableBaseThead>
                                     <TableBaseRow>
                                         <TableBaseHeader>UPRN</TableBaseHeader>
-                                        <TableBaseHeader>UPSN</TableBaseHeader>
+                                        <TableBaseHeader>USRN</TableBaseHeader>
                                         <TableBaseHeader classes="text-center">Address</TableBaseHeader>
                                         <TableBaseHeader classes="text-center">PostCode</TableBaseHeader>
                                         <TableBaseHeader classes="text-center">IsProcessing</TableBaseHeader>

@@ -38,7 +38,6 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Addresses
             Dictionary<string, int> fieldMappings = new Dictionary<string, int>
             {
                 { "UPRN", 3 },
-                { "UPSN", 4 },
                 { "OrganisationName", 5 },
                 { "DepartmentName", 6 },
                 { "SubBuildingName", 7 },

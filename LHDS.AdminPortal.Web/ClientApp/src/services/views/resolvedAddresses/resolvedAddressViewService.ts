@@ -18,7 +18,7 @@ export const resolvedAddressViewService = {
             if (searchTerm) {
                 const fields = [
                     'uprn',
-                    'upsn',
+                    'usrn',
                     'unstructuredPostalAddress',
                     'alternateUnstructuredPostalAddress',
                     'addressFormatQuality',
@@ -57,7 +57,7 @@ export const resolvedAddressViewService = {
                             resolvedAddresses.isProcessing,
                             resolvedAddresses.isSynced,
                             resolvedAddresses.uprn,
-                            resolvedAddresses.upsn,
+                            resolvedAddresses.usrn,
                             resolvedAddresses.organisationName,
                             resolvedAddresses.departmentName,
                             resolvedAddresses.subBuildingName,
@@ -98,7 +98,7 @@ export const resolvedAddressViewService = {
                     const resolvedAddress = new ResolvedAddressView(
                         response.data[0].id,
                         response.data[0].uprn,
-                        response.data[0].upsn,
+                        response.data[0].usrn,
                         response.data[0].postCode,
                         response.data[0].retryCount,
                         response.data[0].isProcessing,

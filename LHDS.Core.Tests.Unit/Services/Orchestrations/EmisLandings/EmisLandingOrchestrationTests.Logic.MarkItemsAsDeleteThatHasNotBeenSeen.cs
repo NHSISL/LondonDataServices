@@ -9,6 +9,7 @@ using System.Threading.Tasks;
 using FluentAssertions;
 using Force.DeepCloner;
 using LHDS.Core.Models.Foundations.IngestionTrackings;
+using LHDS.Core.Models.Processings.SubscriberCredentials;
 using LHDS.Core.Services.Orchestrations.Downloads;
 using Moq;
 using Xunit;
@@ -24,6 +25,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.EmisLandings
             Guid inputSupplierId = landingConfiguration.LandingSupplierId;
             DateTimeOffset randomDateTime = GetRandomDateTimeOffset();
             DateTimeOffset lastSeenDateTime = randomDateTime.AddMinutes(-this.landingConfiguration.LastSeenMinutes);
+            SubscriberCredential someSubscriberCredential = CreateRandomSubscriberCredential();
 
             List<IngestionTracking> storageIngestionTrackings = new List<IngestionTracking>
             {
@@ -37,6 +39,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.EmisLandings
                     Decrypted = true,
                     LastSeen = lastSeenDateTime,
                     FileDeleted = false,
+                    SubscriberAgreementId = someSubscriberCredential.Id
                 }
             };
 
@@ -66,8 +69,11 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.EmisLandings
                     .ReturnsAsync(storageIngestionTrackings.AsQueryable());
 
             List<IngestionTracking> unavailableIngestionTrackings = storageIngestionTrackings
-                .Where(ingestionTracking =>
-                    ingestionTracking.LastSeen <= lastSeenDateTime).ToList();
+              .Where(ingestionTracking =>
+                  ingestionTracking.LastSeen <= lastSeenDateTime
+                  && !ingestionTracking.FileDeleted
+                  && ingestionTracking.SubscriberAgreementId == someSubscriberCredential.Id)
+              .ToList();
 
             List<IngestionTracking> notSeenIngestionTrackings = storageIngestionTrackings.DeepClone();
 
@@ -81,7 +87,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.EmisLandings
             }
 
             // when
-            await emisLandingOrchestrationServiceMock.Object.MarkItemsAsDeleteThatHasNotBeenSeen();
+            await emisLandingOrchestrationServiceMock.Object.MarkItemsAsDeleteThatHasNotBeenSeen(someSubscriberCredential.Id);
 
             // then
             this.dateTimeBrokerMock.Verify(broker =>

@@ -87,7 +87,8 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.EmisLandings
             }
 
             // when
-            await emisLandingOrchestrationServiceMock.Object.MarkItemsAsDeleteThatHasNotBeenSeen(someSubscriberCredential.Id);
+            await emisLandingOrchestrationServiceMock.Object
+                .MarkItemsAsDeleteThatHasNotBeenSeen(someSubscriberCredential.Id);
 
             // then
             this.dateTimeBrokerMock.Verify(broker =>

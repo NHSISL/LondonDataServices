@@ -51,7 +51,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.EmisLandings
                     .ThrowsAsync(someProcessException);
 
             emisLandingOrchestrationServiceMock.Setup(service =>
-                service.MarkItemsAsDeleteThatHasNotBeenSeen(someSubscriberCredential.Id))
+                service.MarkItemsAsDeleteThatHasNotBeenSeen(It.IsAny<Guid>()))
                     .ThrowsAsync(someDeletionException);
 
             AggregateException aggregateException = new AggregateException(

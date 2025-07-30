@@ -59,7 +59,9 @@ namespace LHDS.Core.Services.Orchestrations.TerminologyDetails
                         {
                             string relativeUrl = artifact.FullUrl;
 
-                            string artifactDetail = await this.ontologyProcessingService.RetrieveArtifactDetailsAsync(relativeUrl);
+                            string expandedUrl = artifact.FullUrl.TrimEnd('/') + "/$expand";
+
+                            string artifactDetail = await this.ontologyProcessingService.RetrieveArtifactDetailsAsync(expandedUrl);
 
                             using var jsonDoc = JsonDocument.Parse(artifactDetail);
                             string formattedJson = JsonSerializer.Serialize(jsonDoc, new JsonSerializerOptions

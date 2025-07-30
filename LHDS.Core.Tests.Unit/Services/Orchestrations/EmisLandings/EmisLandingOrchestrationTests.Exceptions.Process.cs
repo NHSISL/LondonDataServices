@@ -51,7 +51,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.EmisLandings
                     .ThrowsAsync(someProcessException);
 
             emisLandingOrchestrationServiceMock.Setup(service =>
-                service.MarkItemsAsDeleteThatHasNotBeenSeen())
+                service.MarkItemsAsDeleteThatHasNotBeenSeen(It.IsAny<Guid>()))
                     .ThrowsAsync(someDeletionException);
 
             AggregateException aggregateException = new AggregateException(
@@ -84,7 +84,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.EmisLandings
                     Times.Once);
 
             emisLandingOrchestrationServiceMock.Verify(service =>
-                service.MarkItemsAsDeleteThatHasNotBeenSeen(),
+                service.MarkItemsAsDeleteThatHasNotBeenSeen(someSubscriberCredential.Id),
                     Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>

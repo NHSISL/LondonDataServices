@@ -16,6 +16,8 @@ using LHDS.Core.Models.Foundations.TerminologyArtifacts;
 using LHDS.Core.Services.Processings.Documents;
 using LHDS.Core.Services.Processings.Ontologies;
 using LHDS.Core.Services.Processings.TerminologyArtifacts;
+using Newtonsoft.Json.Linq;
+using Newtonsoft.Json;
 
 namespace LHDS.Core.Services.Orchestrations.TerminologyDetails
 {
@@ -57,19 +59,18 @@ namespace LHDS.Core.Services.Orchestrations.TerminologyDetails
                     {
                         await TryCatch(async () =>
                         {
-                            string relativeUrl = artifact.FullUrl;
+                            string baseUrl = artifact.FullUrl;
 
                             string expandedUrl = artifact.FullUrl.TrimEnd('/') + "/$expand";
 
-                            string artifactDetail = await this.ontologyProcessingService.RetrieveArtifactDetailsAsync(expandedUrl);
 
-                            using var jsonDoc = JsonDocument.Parse(artifactDetail);
-                            string formattedJson = JsonSerializer.Serialize(jsonDoc, new JsonSerializerOptions
-                            {
-                                WriteIndented = true
-                            });
+                            string originalJson = await this.ontologyProcessingService.RetrieveArtifactDetailsAsync(baseUrl);
+                            string expandedJson = await this.ontologyProcessingService.RetrieveArtifactDetailsAsync(expandedUrl);
 
-                            byte[] artifactDetailData = Encoding.UTF8.GetBytes(formattedJson);
+                            string mergedJson = MergeValueSetWithExpansion(originalJson, expandedJson);
+
+                            byte[] artifactDetailData = Encoding.UTF8.GetBytes(mergedJson);
+
                             string fileName = $"{artifact.ResourceType}/{artifact.Name}.json";
 
                             using (Stream input = new MemoryStream(artifactDetailData))
@@ -107,5 +108,21 @@ namespace LHDS.Core.Services.Orchestrations.TerminologyDetails
                         exceptions);
                 }
             });
+
+        private string MergeValueSetWithExpansion(string originalJson, string expandedJson)
+        {
+            JObject original = JObject.Parse(originalJson);
+            JObject expanded = JObject.Parse(expandedJson);
+
+            JToken expansion = expanded["expansion"];
+
+            if (expansion != null)
+            {
+                original.Remove("expansion");
+                original.Add("expansion", expansion);
+            }
+
+            return original.ToString(Formatting.Indented);
+        }
     }
 }

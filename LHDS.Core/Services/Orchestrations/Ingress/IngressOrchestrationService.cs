@@ -50,6 +50,7 @@ namespace LHDS.Core.Services.Orchestrations.Ingress
         public ValueTask ProcessDecryptedItemsForBatchCompleteAsync(Guid supplierId) =>
             TryCatch(async () =>
             {
+                ValidateOnProcessDecryptedItemsForBatchComplete(supplierId);
                 List<Exception> exceptions = new List<Exception>();
                 Guid ingestionTrackingId;
 

@@ -9,7 +9,7 @@ namespace LHDS.Core.Services.Orchestrations.Ingress
 {
     public interface IIngressOrchestrationService
     {
-        ValueTask ProcessDecryptedItemsForBatchCompleteAsync();
+        ValueTask ProcessDecryptedItemsForBatchCompleteAsync(Guid supplierId);
         ValueTask CheckForBatchCompleteAsync(Guid ingestionTrackingId);
         ValueTask RollbackIngestionTrackingItemAsync(string encryptedFileName);
     }

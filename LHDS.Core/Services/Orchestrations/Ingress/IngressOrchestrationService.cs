@@ -47,7 +47,7 @@ namespace LHDS.Core.Services.Orchestrations.Ingress
             this.auditBroker = auditBroker;
         }
 
-        public ValueTask ProcessDecryptedItemsForBatchCompleteAsync() =>
+        public ValueTask ProcessDecryptedItemsForBatchCompleteAsync(Guid supplierId) =>
             TryCatch(async () =>
             {
                 List<Exception> exceptions = new List<Exception>();
@@ -55,7 +55,9 @@ namespace LHDS.Core.Services.Orchestrations.Ingress
 
                 while ((ingestionTrackingId = (await this.ingestionTrackingProcessingService
                     .RetrieveAllIngestionTrackingsAsync())
-                    .Where(ingestionTracking => ingestionTracking.IsBatchComplete == false)
+
+                    .Where(ingestionTracking =>
+                        ingestionTracking.IsBatchComplete == false && ingestionTracking.SupplierId == supplierId)
 
                     .GroupBy(ingestionTracking =>
                         new { ingestionTracking.Batch, ingestionTracking.SubscriberAgreementId })

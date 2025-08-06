@@ -21,18 +21,20 @@ namespace LHDS.Core.Tests.Unit.Services.Coordinations.Decryptions
             Xeption dependancyValidationException)
         {
             // Given
+            Guid supplierId = Guid.NewGuid();
+
             var expectedDecryptionCoordinationDependencyValidationException =
                 new DecryptionCoordinationDependencyValidationException(
                     message: "Decryption coordination dependency validation error occurred, please try again.",
                     innerException: dependancyValidationException.InnerException as Xeption);
 
             this.ingressOrchestrationServiceMock.Setup(service =>
-                service.ProcessDecryptedItemsForBatchCompleteAsync())
+                service.ProcessDecryptedItemsForBatchCompleteAsync(It.IsAny<Guid>()))
                     .ThrowsAsync(dependancyValidationException);
 
             // When
             ValueTask processDataTask =
-                this.decryptionCoordinationService.ProcessDecryptedItemsForBatchCompleteAsync();
+                this.decryptionCoordinationService.ProcessDecryptedItemsForBatchCompleteAsync(supplierId);
 
             DecryptionCoordinationDependencyValidationException
                 actualDecryptionCoordinationDependencyValidationException =
@@ -44,7 +46,7 @@ namespace LHDS.Core.Tests.Unit.Services.Coordinations.Decryptions
                 .BeEquivalentTo(expectedDecryptionCoordinationDependencyValidationException);
 
             this.ingressOrchestrationServiceMock.Verify(service =>
-                service.ProcessDecryptedItemsForBatchCompleteAsync(),
+                service.ProcessDecryptedItemsForBatchCompleteAsync(It.IsAny<Guid>()),
                     Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>
@@ -64,8 +66,10 @@ namespace LHDS.Core.Tests.Unit.Services.Coordinations.Decryptions
            Xeption dependancyValidationException)
         {
             // Given
+            Guid supplierId = Guid.NewGuid();
+
             this.ingressOrchestrationServiceMock.Setup(service =>
-                service.ProcessDecryptedItemsForBatchCompleteAsync())
+                service.ProcessDecryptedItemsForBatchCompleteAsync(It.IsAny<Guid>()))
                     .ThrowsAsync(dependancyValidationException);
 
             var expectedDecryptionCoordinationDependencyException =
@@ -74,7 +78,8 @@ namespace LHDS.Core.Tests.Unit.Services.Coordinations.Decryptions
                     innerException: dependancyValidationException.InnerException as Xeption);
 
             // When
-            ValueTask processDataTask = this.decryptionCoordinationService.ProcessDecryptedItemsForBatchCompleteAsync();
+            ValueTask processDataTask = this.decryptionCoordinationService
+                .ProcessDecryptedItemsForBatchCompleteAsync(supplierId);
 
             DecryptionCoordinationDependencyException actualEmisLandingCoordinationDependencyException =
                 await Assert.ThrowsAsync<DecryptionCoordinationDependencyException>(
@@ -85,7 +90,7 @@ namespace LHDS.Core.Tests.Unit.Services.Coordinations.Decryptions
                 .BeEquivalentTo(expectedDecryptionCoordinationDependencyException);
 
             this.ingressOrchestrationServiceMock.Verify(service =>
-                service.ProcessDecryptedItemsForBatchCompleteAsync(),
+                service.ProcessDecryptedItemsForBatchCompleteAsync(It.IsAny<Guid>()),
                     Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>
@@ -103,13 +108,15 @@ namespace LHDS.Core.Tests.Unit.Services.Coordinations.Decryptions
         public async Task ShouldThrowServiceExceptionOnProcessDecryptedItemsForBatchCompleteIfErrorsAndLogItAsync()
         {
             // Given
+            Guid supplierId = Guid.NewGuid();
+
             var serviceException = new Exception();
             Guid SubscriberCredentialId = Guid.NewGuid();
             string encryptedFileName = CreateRandomFilePath(SubscriberCredentialId);
             List<Exception> exceptions = new List<Exception>();
 
             this.ingressOrchestrationServiceMock.Setup(service =>
-                service.ProcessDecryptedItemsForBatchCompleteAsync())
+                service.ProcessDecryptedItemsForBatchCompleteAsync(It.IsAny<Guid>()))
                     .ThrowsAsync(serviceException);
 
             var failedDecryptionCoordinationServiceException =
@@ -123,7 +130,8 @@ namespace LHDS.Core.Tests.Unit.Services.Coordinations.Decryptions
                     innerException: failedDecryptionCoordinationServiceException);
 
             // When
-            ValueTask processDataTask = this.decryptionCoordinationService.ProcessDecryptedItemsForBatchCompleteAsync();
+            ValueTask processDataTask = this.decryptionCoordinationService
+                .ProcessDecryptedItemsForBatchCompleteAsync(supplierId);
 
             DecryptionCoordinationServiceException actualDecryptionCoordinationServiceException =
                 await Assert.ThrowsAsync<DecryptionCoordinationServiceException>(
@@ -134,7 +142,7 @@ namespace LHDS.Core.Tests.Unit.Services.Coordinations.Decryptions
                 .BeEquivalentTo(expectedDecryptionCoordinationServiceException);
 
             this.ingressOrchestrationServiceMock.Verify(service =>
-                service.ProcessDecryptedItemsForBatchCompleteAsync(),
+                service.ProcessDecryptedItemsForBatchCompleteAsync(It.IsAny<Guid>()),
                     Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>

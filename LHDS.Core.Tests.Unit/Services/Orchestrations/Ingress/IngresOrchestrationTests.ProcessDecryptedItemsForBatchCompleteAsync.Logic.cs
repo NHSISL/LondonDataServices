@@ -20,6 +20,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Ingress
         public async Task ShouldProcessDecryptedItemsForBatchCompleteAsyncLogicAsync()
         {
             // given
+            Guid supplierId = Guid.NewGuid();
             IngestionTracking randomIngestionTrackingOne = CreateRandomIngestionTracking();
             randomIngestionTrackingOne.Decrypted = true;
             randomIngestionTrackingOne.IsBatchComplete = false;
@@ -57,7 +58,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Ingress
                     .Returns(ValueTask.CompletedTask);
 
             // when
-            await ingressOrchestrationServiceMock.Object.ProcessDecryptedItemsForBatchCompleteAsync();
+            await ingressOrchestrationServiceMock.Object.ProcessDecryptedItemsForBatchCompleteAsync(supplierId);
 
             // then
             this.ingestionTrackingProcessingServiceMock

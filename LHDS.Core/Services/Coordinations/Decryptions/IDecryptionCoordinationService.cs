@@ -2,6 +2,7 @@
 // Copyright (c) North East London ICB. All rights reserved.
 // ---------------------------------------------------------
 
+using System;
 using System.Threading.Tasks;
 
 namespace LHDS.Core.Services.Coordinations.Decryptions
@@ -10,6 +11,6 @@ namespace LHDS.Core.Services.Coordinations.Decryptions
     {
         ValueTask<string> DecryptAsync(string encryptedFileName);
         ValueTask RetryDecryptOnAllAsync();
-        ValueTask ProcessDecryptedItemsForBatchCompleteAsync();
+        ValueTask ProcessDecryptedItemsForBatchCompleteAsync(Guid supplierId);
     }
 }

@@ -33,6 +33,12 @@ namespace LHDS.Core.Services.Coordinations.Decryptions
             this.loggingBroker = loggingBroker;
         }
 
+        public ValueTask ProcessDecryptedItemsForBatchCompleteAsync() =>
+            TryCatch(async () =>
+            {
+                await this.ingressOrchestrationService.ProcessDecryptedItemsForBatchCompleteAsync();
+            });
+
         public ValueTask<string> DecryptAsync(string encryptedFileName) =>
             TryCatch(async () =>
             {

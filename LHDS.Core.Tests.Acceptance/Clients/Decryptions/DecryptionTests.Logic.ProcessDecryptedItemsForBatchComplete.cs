@@ -60,7 +60,7 @@ namespace LHDS.Core.Tests.Acceptance.Clients.Decryptions
             await this.ingestionTrackingService.AddIngestionTrackingAsync(ingestionTracking);
 
             //When
-            await this.decryptionClient.ProcessDecryptedItemsForBatchCompleteAsync();
+            await this.decryptionClient.ProcessDecryptedItemsForBatchCompleteAsync(supplierId);
 
             //Then
             IngestionTracking retrievedIngestionTracking =

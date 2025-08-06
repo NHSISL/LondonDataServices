@@ -2,6 +2,7 @@
 // Copyright (c) North East London ICB. All rights reserved.
 // ---------------------------------------------------------
 
+using System;
 using System.Threading.Tasks;
 
 namespace LHDS.Core.Tests.Integration.Decryptions
@@ -12,9 +13,9 @@ namespace LHDS.Core.Tests.Integration.Decryptions
         public async Task ShouldProcessDecryptedItemsForBatchCompleteAsync()
         {
             // given
-
+            Guid supplierId = Guid.NewGuid(); // Replace with actual supplier ID as needed
             // when
-            await decryptionClient.ProcessDecryptedItemsForBatchCompleteAsync();
+            await decryptionClient.ProcessDecryptedItemsForBatchCompleteAsync(supplierId);
 
             // then
         }

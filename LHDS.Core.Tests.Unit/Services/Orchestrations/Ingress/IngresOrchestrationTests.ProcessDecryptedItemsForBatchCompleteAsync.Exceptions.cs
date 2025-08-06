@@ -23,11 +23,10 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Ingress
         public async Task ShouldThrowDependencyExceptionForBatchCompleteExceptionOnProcessDecryptedItemsForBatchCompleteAndLogItAsync()
         {
             // given
-            Guid supplierId = Guid.NewGuid();
             IngestionTracking randomIngestionTrackingOne = CreateRandomIngestionTracking();
             randomIngestionTrackingOne.Decrypted = true;
+            randomIngestionTrackingOne.IsDownloaded = true;
             randomIngestionTrackingOne.IsBatchComplete = false;
-            randomIngestionTrackingOne.SupplierId = supplierId;
 
             IngestionTracking randomIngestionTrackingTwo = randomIngestionTrackingOne.DeepClone();
             randomIngestionTrackingTwo.Id = Guid.NewGuid();
@@ -77,7 +76,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Ingress
 
             // when
             ValueTask checkForBatchCompleteTask =
-                ingressOrchestrationServiceMock.Object.ProcessDecryptedItemsForBatchCompleteAsync(supplierId);
+                ingressOrchestrationServiceMock.Object.ProcessDecryptedItemsForBatchCompleteAsync();
 
             IngressOrchestrationDependencyException actualException =
                 await Assert.ThrowsAsync<IngressOrchestrationDependencyException>(checkForBatchCompleteTask.AsTask);
@@ -112,8 +111,6 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Ingress
            Xeption dependancyValidationException)
         {
             // given
-            Guid supplierId = Guid.NewGuid();
-
             var expectedDependencyException =
                 new IngressOrchestrationDependencyValidationException(
                     message:
@@ -127,7 +124,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Ingress
 
             //when
             ValueTask checkForBatchCompleteTask =
-                this.ingressOrchestrationService.ProcessDecryptedItemsForBatchCompleteAsync(supplierId);
+                this.ingressOrchestrationService.ProcessDecryptedItemsForBatchCompleteAsync();
 
             IngressOrchestrationDependencyValidationException actualException =
               await Assert.ThrowsAsync<IngressOrchestrationDependencyValidationException>(
@@ -159,8 +156,6 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Ingress
          Xeption dependancyException)
         {
             // given
-            Guid supplierId = Guid.NewGuid();
-
             var expectedDependencyException =
                 new IngressOrchestrationDependencyException(
                     message: "Ingress orchestration dependency error occurred, fix the errors and try again.",
@@ -172,7 +167,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Ingress
 
             // when
             ValueTask checkForBatchCompleteTask =
-                this.ingressOrchestrationService.ProcessDecryptedItemsForBatchCompleteAsync(supplierId);
+                this.ingressOrchestrationService.ProcessDecryptedItemsForBatchCompleteAsync();
 
             IngressOrchestrationDependencyException actualException =
                 await Assert.ThrowsAsync<IngressOrchestrationDependencyException>(checkForBatchCompleteTask.AsTask);
@@ -201,7 +196,6 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Ingress
         public async Task ShouldThrowServiceExceptionOnProcessDecryptedItemsForBatchCompleteIfServiceErrorOccursAndLogItAsync()
         {
             // given
-            Guid supplierId = Guid.NewGuid();
             var serviceException = new Exception();
 
             var failedIngressOrchestrationServiceException =
@@ -220,7 +214,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Ingress
 
             // when
             ValueTask checkForBatchCompleteTask =
-                this.ingressOrchestrationService.ProcessDecryptedItemsForBatchCompleteAsync(supplierId);
+                this.ingressOrchestrationService.ProcessDecryptedItemsForBatchCompleteAsync();
 
             IngressOrchestrationServiceException actualException =
                 await Assert.ThrowsAsync<IngressOrchestrationServiceException>(checkForBatchCompleteTask.AsTask);

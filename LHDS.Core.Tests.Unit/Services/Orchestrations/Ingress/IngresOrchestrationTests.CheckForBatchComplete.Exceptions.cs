@@ -6,6 +6,7 @@ using System;
 using System.Threading.Tasks;
 using FluentAssertions;
 using LHDS.Core.Models.Orchestrations.Ingres.Exceptions;
+using LHDS.Core.Services.Orchestrations.Ingress;
 using Moq;
 using Xeptions;
 using Xunit;
@@ -32,9 +33,21 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Ingress
                 .Setup(service => service.RetrieveIngestionTrackingByIdAsync(someIngestionTrackingId))
                     .ThrowsAsync(dependancyValidationException);
 
+            var ingressOrchestrationServiceMock = new Mock<IngressOrchestrationService>(
+                this.ingestionTrackingProcessingServiceMock.Object,
+                this.specificationObjectProcessingServiceMock.Object,
+                this.documentProcessingServiceMock.Object,
+                this.landingConfiguration,
+                this.blobContainers,
+                this.loggingBrokerMock.Object,
+                this.auditBrokerMock.Object)
+            {
+                CallBase = true
+            };
+
             //when
             ValueTask checkForBatchCompleteTask =
-                this.ingressOrchestrationService.CheckForBatchCompleteAsync(someIngestionTrackingId);
+                ingressOrchestrationServiceMock.Object.CheckForBatchCompleteAsync(someIngestionTrackingId);
 
             IngressOrchestrationDependencyValidationException actualException =
               await Assert.ThrowsAsync<IngressOrchestrationDependencyValidationException>(
@@ -77,9 +90,21 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Ingress
                 .Setup(service => service.RetrieveIngestionTrackingByIdAsync(someIngestionTrackingId))
                    .ThrowsAsync(dependancyException);
 
+            var ingressOrchestrationServiceMock = new Mock<IngressOrchestrationService>(
+                this.ingestionTrackingProcessingServiceMock.Object,
+                this.specificationObjectProcessingServiceMock.Object,
+                this.documentProcessingServiceMock.Object,
+                this.landingConfiguration,
+                this.blobContainers,
+                this.loggingBrokerMock.Object,
+                this.auditBrokerMock.Object)
+            {
+                CallBase = true
+            };
+
             // when
             ValueTask checkForBatchCompleteTask =
-                this.ingressOrchestrationService.CheckForBatchCompleteAsync(someIngestionTrackingId);
+                ingressOrchestrationServiceMock.Object.CheckForBatchCompleteAsync(someIngestionTrackingId);
 
             IngressOrchestrationDependencyException actualException =
                 await Assert.ThrowsAsync<IngressOrchestrationDependencyException>(checkForBatchCompleteTask.AsTask);
@@ -125,9 +150,21 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Ingress
                 .Setup(service => service.RetrieveIngestionTrackingByIdAsync(someIngestionTrackingId))
                   .ThrowsAsync(serviceException);
 
+            var ingressOrchestrationServiceMock = new Mock<IngressOrchestrationService>(
+                this.ingestionTrackingProcessingServiceMock.Object,
+                this.specificationObjectProcessingServiceMock.Object,
+                this.documentProcessingServiceMock.Object,
+                this.landingConfiguration,
+                this.blobContainers,
+                this.loggingBrokerMock.Object,
+                this.auditBrokerMock.Object)
+            {
+                CallBase = true
+            };
+
             // when
             ValueTask checkForBatchCompleteTask =
-                this.ingressOrchestrationService.CheckForBatchCompleteAsync(someIngestionTrackingId);
+                ingressOrchestrationServiceMock.Object.CheckForBatchCompleteAsync(someIngestionTrackingId);
 
             IngressOrchestrationServiceException actualException =
                 await Assert.ThrowsAsync<IngressOrchestrationServiceException>(checkForBatchCompleteTask.AsTask);

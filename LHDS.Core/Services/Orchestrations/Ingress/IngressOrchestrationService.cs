@@ -47,10 +47,9 @@ namespace LHDS.Core.Services.Orchestrations.Ingress
             this.auditBroker = auditBroker;
         }
 
-        public ValueTask ProcessDecryptedItemsForBatchCompleteAsync(Guid supplierId) =>
+        public ValueTask ProcessDecryptedItemsForBatchCompleteAsync() =>
             TryCatch(async () =>
             {
-                ValidateOnProcessDecryptedItemsForBatchComplete(supplierId);
                 List<Exception> exceptions = new List<Exception>();
                 Guid ingestionTrackingId;
 
@@ -58,12 +57,14 @@ namespace LHDS.Core.Services.Orchestrations.Ingress
                     .RetrieveAllIngestionTrackingsAsync())
 
                     .Where(ingestionTracking =>
-                        ingestionTracking.IsBatchComplete == false && ingestionTracking.SupplierId == supplierId)
+                        ingestionTracking.IsBatchComplete == false)
 
                     .GroupBy(ingestionTracking =>
                         new { ingestionTracking.Batch, ingestionTracking.SubscriberAgreementId })
 
-                    .Where(group => group.All(ingestionTracking => ingestionTracking.Decrypted))
+                    .Where(group =>
+                        group.All(ingestionTracking => ingestionTracking.IsDownloaded && ingestionTracking.Decrypted))
+
                     .Select(group => group.Select(ingestionTracking => ingestionTracking.Id).FirstOrDefault())
                     .FirstOrDefault()) != default)
                 {
@@ -89,7 +90,7 @@ namespace LHDS.Core.Services.Orchestrations.Ingress
                 }
             });
 
-        public virtual ValueTask CheckForBatchCompleteAsync(Guid ingestionTrackingId) =>
+        virtual internal ValueTask CheckForBatchCompleteAsync(Guid ingestionTrackingId) =>
         TryCatch(async () =>
         {
             ValidateOnCheckForBatchComplete(ingestionTrackingId);

@@ -71,7 +71,7 @@ namespace LHDS.Core.Tests.Acceptance.Clients.Decryptions
             IngestionTracking decryptedIngestionTracking =
                 await this.ingestionTrackingService.RetrieveIngestionTrackingByIdAsync(ingestionTracking.Id);
 
-            decryptedIngestionTracking.Decrypted.Should().BeTrue();
+            decryptedIngestionTracking.IsBatchComplete.Should().BeTrue();
 
             IQueryable<IngestionTrackingAudit> allAudits =
                 await this.auditService.RetrieveAllIngestionTrackingAuditsAsync();

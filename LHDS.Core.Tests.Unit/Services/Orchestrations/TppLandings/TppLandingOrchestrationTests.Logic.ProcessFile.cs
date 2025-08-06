@@ -482,6 +482,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.TppLandings
                         .Returns(ValueTask.CompletedTask);
 
             modifiedIngestionTracking.IsDownloaded = true;
+            modifiedIngestionTracking.Decrypted = true;
 
             this.fileBrokerMock.Setup(broker =>
                 broker.DeleteFileAsync(tempFilePath))

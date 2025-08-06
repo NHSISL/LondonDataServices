@@ -2,7 +2,6 @@
 // Copyright (c) North East London ICB. All rights reserved.
 // ---------------------------------------------------------
 
-using System;
 using System.Threading.Tasks;
 using LHDS.Core.Models.Clients.DecryptClient.Exceptions;
 using LHDS.Core.Models.Orchestrations.Decryptions.Exceptions;
@@ -86,11 +85,11 @@ namespace LHDS.Core.Clients
             }
         }
 
-        public async ValueTask ProcessDecryptedItemsForBatchCompleteAsync(Guid supplierId)
+        public async ValueTask ProcessDecryptedItemsForBatchCompleteAsync()
         {
             try
             {
-                await decryptionCoordinationService.ProcessDecryptedItemsForBatchCompleteAsync(supplierId);
+                await decryptionCoordinationService.ProcessDecryptedItemsForBatchCompleteAsync();
             }
             catch (DecryptionOrchestrationValidationException decryptionOrchestrationValidationException)
             {

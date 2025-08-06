@@ -32,10 +32,6 @@ namespace LHDS.Core.Tests.Unit.Services.Coordinations.TppLandings
                 service.ReProcessAsync(inputSupplierId),
                     Times.Once);
 
-            this.ingressOrchestrationServiceMock.Verify(service =>
-                service.CheckForBatchCompleteAsync(ingestionTrackingId),
-                    Times.Once);
-
             this.tppLandingOrchestrationServiceMock.VerifyNoOtherCalls();
             this.ingressOrchestrationServiceMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();

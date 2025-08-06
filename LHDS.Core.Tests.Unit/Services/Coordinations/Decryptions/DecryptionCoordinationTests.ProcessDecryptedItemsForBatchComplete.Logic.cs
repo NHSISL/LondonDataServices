@@ -2,7 +2,6 @@
 // Copyright (c) North East London ICB. All rights reserved.
 // ---------------------------------------------------------
 
-using System;
 using System.Threading.Tasks;
 using Moq;
 using Xunit;
@@ -15,18 +14,16 @@ namespace LHDS.Core.Tests.Unit.Services.Coordinations.Decryptions
         public async Task ShouldProcessDecryptedItemsForBatchCompleteAndLogAsync()
         {
             // Given
-            Guid supplierId = Guid.NewGuid();
-
             this.ingressOrchestrationServiceMock.Setup(service =>
-                service.ProcessDecryptedItemsForBatchCompleteAsync(supplierId))
+                service.ProcessDecryptedItemsForBatchCompleteAsync())
                     .Returns(ValueTask.CompletedTask);
 
             // When
-            await this.decryptionCoordinationService.ProcessDecryptedItemsForBatchCompleteAsync(supplierId);
+            await this.decryptionCoordinationService.ProcessDecryptedItemsForBatchCompleteAsync();
 
             // Then
             this.ingressOrchestrationServiceMock.Verify(service =>
-                service.ProcessDecryptedItemsForBatchCompleteAsync(supplierId),
+                service.ProcessDecryptedItemsForBatchCompleteAsync(),
                     Times.Once);
 
             this.subscriberCredentialOrchestrationMock.VerifyNoOtherCalls();

@@ -24,6 +24,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Ingress
             IngestionTracking randomIngestionTrackingOne = CreateRandomIngestionTracking();
             randomIngestionTrackingOne.Decrypted = true;
             randomIngestionTrackingOne.IsBatchComplete = false;
+            randomIngestionTrackingOne.SupplierId = supplierId;
 
             IngestionTracking randomIngestionTrackingTwo = randomIngestionTrackingOne.DeepClone();
             randomIngestionTrackingTwo.Id = Guid.NewGuid();

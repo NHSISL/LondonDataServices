@@ -150,12 +150,6 @@ namespace LHDS.Core.Services.Orchestrations.Downloads
             return files;
         }
 
-        public ValueTask CheckForBatchReady(SubscriberCredential subscriberCredential, Guid supplierId) =>
-            TryCatch(async () =>
-            {
-                throw new NotImplementedException();
-            });
-
         virtual internal async ValueTask MarkItemsAsDeleteThatHasNotBeenSeen(Guid SubscriberAgreementId)
         {
             var exceptions = new List<Exception>();

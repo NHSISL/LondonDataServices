@@ -15,8 +15,6 @@ namespace LHDS.Core.Services.Orchestrations.EmisLandings
         ValueTask<List<string>> ProcessAsync(SubscriberCredential subscriberCredential, Guid supplierId);
         ValueTask<List<string>> RetrieveListOfDocumentsToProcessAsync(SubscriberCredential subscriberCredential);
 
-        ValueTask CheckForBatchReady(SubscriberCredential subscriberCredential, Guid supplierId);
-
         ValueTask RetrieveDownloadByFileNameAsync(
             Stream output,
             string fileName,

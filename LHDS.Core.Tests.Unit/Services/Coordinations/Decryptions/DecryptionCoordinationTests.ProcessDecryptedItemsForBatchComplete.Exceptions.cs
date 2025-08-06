@@ -18,7 +18,7 @@ namespace LHDS.Core.Tests.Unit.Services.Coordinations.Decryptions
         [Theory]
         [MemberData(nameof(DependencyValidationExceptions))]
         public async Task ShouldThrowDependencyValidationExceptionOnProcessDecryptedItemsForBatchCompleteIfErrorsAndLogItAsync(
-                    Xeption dependancyValidationException)
+            Xeption dependancyValidationException)
         {
             // Given
             var expectedDecryptionCoordinationDependencyValidationException =

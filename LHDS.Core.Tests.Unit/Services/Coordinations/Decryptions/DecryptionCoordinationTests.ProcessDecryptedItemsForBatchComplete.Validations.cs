@@ -23,6 +23,10 @@ namespace LHDS.Core.Tests.Unit.Services.Coordinations.Decryptions
                 new InvalidArgumentDecryptionCoordinationException(
                     message: "Invalid decryption coordination argument, please correct the errors and try again.");
 
+            invalidArgumentDecryptionCoordinationException.AddData(
+                key: "supplierId",
+                values: "Id is required");
+
             var expectedDecryptionCoordinationValidationException =
                 new DecryptionCoordinationValidationException(
                     message: "Decryption coordination validation error occurred, please try again.",
@@ -46,7 +50,7 @@ namespace LHDS.Core.Tests.Unit.Services.Coordinations.Decryptions
 
             this.loggingBrokerMock.Verify(broker =>
                  broker.LogErrorAsync(It.Is(IsSameExceptionAs(
-                     invalidArgumentDecryptionCoordinationException))),
+                     expectedDecryptionCoordinationValidationException))),
                          Times.Once);
 
             this.subscriberCredentialOrchestrationMock.VerifyNoOtherCalls();

@@ -36,6 +36,7 @@ namespace LHDS.Core.Services.Coordinations.Decryptions
         public ValueTask ProcessDecryptedItemsForBatchCompleteAsync(Guid supplierId) =>
             TryCatch(async () =>
             {
+                ValidateOnProcessDecryptedItemsForBatchComplete(supplierId);
                 await this.ingressOrchestrationService.ProcessDecryptedItemsForBatchCompleteAsync(supplierId);
             });
 

@@ -17,7 +17,6 @@ using LHDS.Core.Models.Foundations.DataSetSpecifications;
 using LHDS.Core.Models.Foundations.Downloads;
 using LHDS.Core.Models.Foundations.IngestionTrackingAudits;
 using LHDS.Core.Models.Foundations.IngestionTrackings;
-using LHDS.Core.Models.Foundations.SubscriberAgreements;
 using LHDS.Core.Models.Orchestrations.EmisLandings;
 using LHDS.Core.Models.Processings.Documents.Exceptions;
 using LHDS.Core.Models.Processings.SubscriberCredentials;
@@ -150,6 +149,12 @@ namespace LHDS.Core.Services.Orchestrations.Downloads
 
             return files;
         }
+
+        public ValueTask CheckForBatchReady(SubscriberCredential subscriberCredential, Guid supplierId) =>
+            TryCatch(async () =>
+            {
+                throw new NotImplementedException();
+            });
 
         virtual internal async ValueTask MarkItemsAsDeleteThatHasNotBeenSeen(Guid SubscriberAgreementId)
         {

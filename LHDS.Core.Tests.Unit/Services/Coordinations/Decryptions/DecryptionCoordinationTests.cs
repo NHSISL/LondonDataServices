@@ -7,7 +7,6 @@ using System.Collections.Generic;
 using System.Linq.Expressions;
 using KellermanSoftware.CompareNetObjects;
 using LHDS.Core.Brokers.Loggings;
-using LHDS.Core.Extensions.Exceptions;
 using LHDS.Core.Models.Orchestrations.Decryptions.Exceptions;
 using LHDS.Core.Models.Orchestrations.Ingres.Exceptions;
 using LHDS.Core.Models.Orchestrations.SubscriberCredentials.Exceptions;
@@ -60,7 +59,7 @@ namespace LHDS.Core.Tests.Unit.Services.Coordinations.Decryptions
          actualException => actualException.SameExceptionAs(expectedException);
 
         private static Expression<Func<Xeption, bool>> IsSameExceptionAs(Xeption expectedException) =>
-            actualException => actualException.IsSameExceptionAs(expectedException);
+            actualException => actualException.SameExceptionAs(expectedException);
 
         public static List<SubscriberCredential> CreateRandomSubscriberCredentials(
             List<Guid> subscriberAgreementIds)

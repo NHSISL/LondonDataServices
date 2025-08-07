@@ -10,6 +10,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Force.DeepCloner;
 using LHDS.Core.Models.Foundations.IngestionTrackings;
+using LHDS.Core.Services.Orchestrations.Ingress;
 using Moq;
 using Xunit;
 
@@ -46,8 +47,20 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Ingress
                     storageIngestionTracking.SubscriberAgreementId))
                         .ReturnsAsync(ingestionTrackingObjects);
 
+            var ingressOrchestrationServiceMock = new Mock<IngressOrchestrationService>(
+                this.ingestionTrackingProcessingServiceMock.Object,
+                this.specificationObjectProcessingServiceMock.Object,
+                this.documentProcessingServiceMock.Object,
+                this.landingConfiguration,
+                this.blobContainers,
+                this.loggingBrokerMock.Object,
+                this.auditBrokerMock.Object)
+            {
+                CallBase = true
+            };
+
             // when
-            await this.ingressOrchestrationService.CheckForBatchCompleteAsync(ingestionTrackingId);
+            await ingressOrchestrationServiceMock.Object.CheckForBatchCompleteAsync(ingestionTrackingId);
 
             // then
             this.ingestionTrackingProcessingServiceMock.Verify(service =>
@@ -116,6 +129,18 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Ingress
                     storageIngestionTracking.SubscriberAgreementId))
                         .ReturnsAsync(ingestionTrackingObjects);
 
+            var ingressOrchestrationServiceMock = new Mock<IngressOrchestrationService>(
+                this.ingestionTrackingProcessingServiceMock.Object,
+                this.specificationObjectProcessingServiceMock.Object,
+                this.documentProcessingServiceMock.Object,
+                this.landingConfiguration,
+                this.blobContainers,
+                this.loggingBrokerMock.Object,
+                this.auditBrokerMock.Object)
+            {
+                CallBase = true
+            };
+
             this.documentProcessingServiceMock
                 .Setup(service => service.AddDocumentAsync(
                     It.Is(SameStreamAs(batchReadyStream)),
@@ -133,7 +158,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Ingress
                     .Returns(ValueTask.CompletedTask);
 
             // when
-            await this.ingressOrchestrationService.CheckForBatchCompleteAsync(ingestionTrackingId);
+            await ingressOrchestrationServiceMock.Object.CheckForBatchCompleteAsync(ingestionTrackingId);
 
             // then
             this.ingestionTrackingProcessingServiceMock.Verify(service =>

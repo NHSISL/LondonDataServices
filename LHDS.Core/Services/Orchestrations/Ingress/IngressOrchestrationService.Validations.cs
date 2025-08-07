@@ -10,6 +10,11 @@ namespace LHDS.Core.Services.Orchestrations.Ingress
 {
     public partial class IngressOrchestrationService
     {
+        private void ValidateOnProcessDecryptedItemsForBatchComplete(Guid supplierId)
+        {
+            Validate((Rule: IsInvalid(supplierId), Parameter: "supplierId"));
+        }
+
         private static void ValidateOnCheckForBatchComplete(Guid ingestionTrackingId)
         {
             Validate((Rule: IsInvalid(ingestionTrackingId),

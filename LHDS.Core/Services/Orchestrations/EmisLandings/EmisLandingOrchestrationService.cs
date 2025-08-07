@@ -17,7 +17,6 @@ using LHDS.Core.Models.Foundations.DataSetSpecifications;
 using LHDS.Core.Models.Foundations.Downloads;
 using LHDS.Core.Models.Foundations.IngestionTrackingAudits;
 using LHDS.Core.Models.Foundations.IngestionTrackings;
-using LHDS.Core.Models.Foundations.SubscriberAgreements;
 using LHDS.Core.Models.Orchestrations.EmisLandings;
 using LHDS.Core.Models.Processings.Documents.Exceptions;
 using LHDS.Core.Models.Processings.SubscriberCredentials;

@@ -231,6 +231,7 @@ namespace LHDS.Core.Services.Orchestrations.Tpp
 
                 var currentDateTime = await this.dateTimeBroker.GetCurrentDateTimeOffsetAsync();
                 maybeIngestionTracking.IsDownloaded = false;
+                maybeIngestionTracking.Decrypted = false;
                 maybeIngestionTracking.IsBatchComplete = false;
                 maybeIngestionTracking.FileDeleted = false;
                 maybeIngestionTracking.LastSeen = currentDateTime;
@@ -275,6 +276,7 @@ namespace LHDS.Core.Services.Orchestrations.Tpp
                             $"to the blob storage '{maybeIngestionTracking.DecryptedFileName}'");
 
                     maybeIngestionTracking.IsDownloaded = true;
+                    maybeIngestionTracking.Decrypted = true;
 
                     await this.ingestionTrackingProcessingService.ModifyIngestionTrackingAsync(
                         maybeIngestionTracking);

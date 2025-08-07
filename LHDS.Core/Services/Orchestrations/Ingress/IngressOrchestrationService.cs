@@ -47,7 +47,50 @@ namespace LHDS.Core.Services.Orchestrations.Ingress
             this.auditBroker = auditBroker;
         }
 
-        public ValueTask CheckForBatchCompleteAsync(Guid ingestionTrackingId) =>
+        public ValueTask ProcessDecryptedItemsForBatchCompleteAsync() =>
+            TryCatch(async () =>
+            {
+                List<Exception> exceptions = new List<Exception>();
+                Guid ingestionTrackingId;
+
+                while ((ingestionTrackingId = (await this.ingestionTrackingProcessingService
+                    .RetrieveAllIngestionTrackingsAsync())
+
+                    .Where(ingestionTracking =>
+                        ingestionTracking.IsBatchComplete == false)
+
+                    .GroupBy(ingestionTracking =>
+                        new { ingestionTracking.Batch, ingestionTracking.SubscriberAgreementId })
+
+                    .Where(group =>
+                        group.All(ingestionTracking => ingestionTracking.IsDownloaded && ingestionTracking.Decrypted))
+
+                    .Select(group => group.Select(ingestionTracking => ingestionTracking.Id).FirstOrDefault())
+                    .FirstOrDefault()) != default)
+                {
+                    try
+                    {
+                        await this.CheckForBatchCompleteAsync(ingestionTrackingId);
+                    }
+                    catch (Exception exception)
+                    {
+                        exceptions.Add(exception);
+                    }
+                }
+
+                if (exceptions.Any())
+                {
+                    AggregateException aggregateException = new AggregateException(
+                        "One or more errors occurred while checking for batch completion.",
+                        exceptions);
+
+                    throw new BatchCompleteException(
+                        message: "One or more errors occurred while checking for batch completion.",
+                        innerException: aggregateException);
+                }
+            });
+
+        virtual internal ValueTask CheckForBatchCompleteAsync(Guid ingestionTrackingId) =>
         TryCatch(async () =>
         {
             ValidateOnCheckForBatchComplete(ingestionTrackingId);

@@ -6,7 +6,6 @@ using System;
 using System.Linq.Expressions;
 using KellermanSoftware.CompareNetObjects;
 using LHDS.Core.Brokers.Loggings;
-using LHDS.Core.Extensions.Exceptions;
 using LHDS.Core.Models.Orchestrations.Ingres.Exceptions;
 using LHDS.Core.Models.Orchestrations.TppLandings.Exceptions;
 using LHDS.Core.Services.Coordinations.TppLandings;
@@ -47,13 +46,10 @@ namespace LHDS.Core.Tests.Unit.Services.Coordinations.TppLandings
             new IntRange(min: 2, max: 10).GetValue();
 
         private static DateTimeOffset GetRandomDateTimeOffset() =>
-          new DateTimeRange(earliestDate: new DateTime()).GetValue();
+            new DateTimeRange(earliestDate: new DateTime()).GetValue();
 
         private static Expression<Func<Xeption, bool>> SameExceptionAs(Xeption expectedException) =>
-         actualException => actualException.SameExceptionAs(expectedException);
-
-        private static Expression<Func<Xeption, bool>> IsSameExceptionAs(Xeption expectedException) =>
-            actualException => actualException.IsSameExceptionAs(expectedException);
+            actualException => actualException.SameExceptionAs(expectedException);
 
         public static TheoryData<Xeption> TppDependencyValidationExceptions()
         {

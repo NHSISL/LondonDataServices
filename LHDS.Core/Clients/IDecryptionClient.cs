@@ -10,5 +10,6 @@ namespace LHDS.Core.Clients
     {
         ValueTask<string> DecryptAsync(string encryptedFileName);
         ValueTask RetryDecryptAsync();
+        ValueTask ProcessDecryptedItemsForBatchCompleteAsync();
     }
 }

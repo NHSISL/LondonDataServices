@@ -61,6 +61,10 @@ namespace LHDS.Core.Services.Orchestrations.Ingress
             {
                 throw await CreateAndLogDependencyValidationExceptionAsync(documentDependencyValidationException);
             }
+            catch (BatchCompleteException batchCompleteException)
+            {
+                throw await CreateAndLogDependencyExceptionAsync(batchCompleteException);
+            }
             catch (IngestionTrackingProcessingDependencyException ingestionTrackingProcessingDependencyException)
             {
                 throw await CreateAndLogDependencyExceptionAsync(ingestionTrackingProcessingDependencyException);

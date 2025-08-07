@@ -68,27 +68,27 @@ namespace LHDS.Core.Extensions.Exceptions
             }
         }
 
-        public static bool IsSameExceptionAs(this Exception exception, Exception otherException)
-        {
-            // If both exceptions are null, they are considered equal
-            if (exception == null && otherException == null)
-                return true;
+        //public static bool IsSameExceptionAs(this Exception exception, Exception otherException)
+        //{
+        //    // If both exceptions are null, they are considered equal
+        //    if (exception == null && otherException == null)
+        //        return true;
 
-            // If only one of them is null, they are not equal
-            if (exception == null || otherException == null)
-                return false;
+        //    // If only one of them is null, they are not equal
+        //    if (exception == null || otherException == null)
+        //        return false;
 
-            // Compare exception types, messages, and data
-            if (exception.GetType().FullName != otherException.GetType().FullName ||
-                exception.Message != otherException.Message ||
-                !DataEquals(exception.Data, otherException.Data))
-            {
-                return false;
-            }
+        //    // Compare exception types, messages, and data
+        //    if (exception.GetType().FullName != otherException.GetType().FullName ||
+        //        exception.Message != otherException.Message ||
+        //        !DataEquals(exception.Data, otherException.Data))
+        //    {
+        //        return false;
+        //    }
 
-            // Recursively compare inner exceptions
-            return IsSameExceptionAs(exception.InnerException, otherException.InnerException);
-        }
+        //    // Recursively compare inner exceptions
+        //    return IsSameExceptionAs(exception.InnerException, otherException.InnerException);
+        //}
 
         private static bool DataEquals(IDictionary data1, IDictionary data2)
         {

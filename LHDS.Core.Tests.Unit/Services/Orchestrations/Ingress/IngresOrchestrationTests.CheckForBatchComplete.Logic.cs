@@ -197,6 +197,10 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Ingress
                 randomIngestionTracking.Batch),
                     Times.Once);
 
+            this.loggingBrokerMock.Verify(service =>
+                service.LogInformationAsync(message),
+                    Times.Once);
+
             Assert.True(IsSameStream(expectedStream, actualStream));
 
             this.ingestionTrackingProcessingServiceMock.VerifyNoOtherCalls();

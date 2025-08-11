@@ -47,6 +47,10 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Ingress
                     storageIngestionTracking.SubscriberAgreementId))
                         .ReturnsAsync(ingestionTrackingObjects);
 
+            this.ingestionTrackingProcessingServiceMock.Setup(service =>
+                service.MarkAsBatchCompleteAsync(ingestionTrackingId, false))
+                    .Returns(ValueTask.CompletedTask);
+
             var ingressOrchestrationServiceMock = new Mock<IngressOrchestrationService>(
                 this.ingestionTrackingProcessingServiceMock.Object,
                 this.specificationObjectProcessingServiceMock.Object,
@@ -54,7 +58,8 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Ingress
                 this.landingConfiguration,
                 this.blobContainers,
                 this.loggingBrokerMock.Object,
-                this.auditBrokerMock.Object)
+                this.auditBrokerMock.Object,
+                this.dateTimeBrokerMock.Object)
             {
                 CallBase = true
             };
@@ -77,6 +82,10 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Ingress
                     true,
                     storageIngestionTracking.SubscriberAgreementId),
                         Times.Once);
+
+            this.ingestionTrackingProcessingServiceMock.Verify(service =>
+                service.MarkAsBatchCompleteAsync(ingestionTrackingId, false),
+                    Times.Once);
 
             this.ingestionTrackingProcessingServiceMock.VerifyNoOtherCalls();
             this.specificationObjectProcessingServiceMock.VerifyNoOtherCalls();
@@ -136,7 +145,8 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Ingress
                 this.landingConfiguration,
                 this.blobContainers,
                 this.loggingBrokerMock.Object,
-                this.auditBrokerMock.Object)
+                this.auditBrokerMock.Object,
+                this.dateTimeBrokerMock.Object)
             {
                 CallBase = true
             };

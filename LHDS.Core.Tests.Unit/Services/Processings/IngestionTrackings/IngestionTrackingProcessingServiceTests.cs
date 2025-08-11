@@ -8,6 +8,7 @@ using System.Linq;
 using System.Linq.Expressions;
 using FluentAssertions;
 using KellermanSoftware.CompareNetObjects;
+using LHDS.Core.Brokers.DateTimes;
 using LHDS.Core.Brokers.Loggings;
 using LHDS.Core.Models.Foundations.IngestionTrackings;
 using LHDS.Core.Models.Foundations.IngestionTrackings.Exceptions;
@@ -27,6 +28,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.IngestionTrackings
             new Mock<IIngestionTrackingService>();
 
         private readonly Mock<ILoggingBroker> loggingBrokerMock = new Mock<ILoggingBroker>();
+        private readonly Mock<IDateTimeBroker> dateTimeBrokerMock = new Mock<IDateTimeBroker>();
         private readonly IIngestionTrackingProcessingService ingestionTrackingProcessingService;
         private readonly ITestOutputHelper output;
 
@@ -36,6 +38,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.IngestionTrackings
 
             ingestionTrackingProcessingService = new IngestionTrackingProcessingService(
                 ingestionTrackingService: ingestionTrackingServiceMock.Object,
+                dateTimeBroker: dateTimeBrokerMock.Object,
                 loggingBroker: loggingBrokerMock.Object);
         }
 

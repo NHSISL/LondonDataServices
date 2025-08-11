@@ -91,6 +91,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Ingress
 
             this.ingestionTrackingProcessingServiceMock.Verify(service =>
                 service.MarkAsBatchCompleteAsync(ingestionTrackingId, false),
+                    Times.Once);
 
             this.loggingBrokerMock.Verify(service =>
                 service.LogInformationAsync(message),

@@ -76,6 +76,7 @@ namespace LHDS.Core.Services.Orchestrations.Ingress
                 {
                     try
                     {
+                        Console.WriteLine($"Checking batch completion for IngestionTrackingId: {ingestionTrackingId}");
                         await this.CheckForBatchCompleteAsync(ingestionTrackingId);
                     }
                     catch (Exception exception)
@@ -131,6 +132,15 @@ namespace LHDS.Core.Services.Orchestrations.Ingress
             if (missingSpecificationObjectIds.Any())
             {
                 isBatchComplete = false;
+
+                string message =
+                    $"Checking IngestionTrackingId {ingestionTrackingId} for subscriber agreement " +
+                    $"'{ingestionTracking.SubscriberAgreementId}' and batch '{ingestionTracking.Batch}' " +
+                    $"Batch is not complete. " +
+                    $"Missing specification object files: {string.Join(", ", missingSpecificationObjectIds)}";
+
+                Console.WriteLine(message);
+                await this.loggingBroker.LogInformationAsync(message);
             }
 
             string batchReadyFileName = this.landingConfiguration.BatchReadyFile;
@@ -146,6 +156,8 @@ namespace LHDS.Core.Services.Orchestrations.Ingress
                         $"'{ingestionTracking.SubscriberAgreementId}' and batch '{ingestionTracking.Batch}' " +
                             $"as defined in Dataset Specification Id: '{ingestionTracking.DataSetSpecificationId}'.";
 
+                Console.WriteLine(batchComplete);
+                await this.loggingBroker.LogInformationAsync(batchComplete);
                 Stream data = new MemoryStream(System.Text.Encoding.UTF8.GetBytes(batchComplete));
 
                 await this.documentProcessingService.AddDocumentAsync(

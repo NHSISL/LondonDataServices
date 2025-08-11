@@ -51,6 +51,7 @@ namespace LHDS.Core.Tests.Acceptance.Clients.Decryptions
             ingestionTracking.DataSetSpecificationId = dataSetSpecification.Id;
             ingestionTracking.ObjectName = specificationObject.SupplierObjectName;
             ingestionTracking.IsBatchComplete = false;
+            ingestionTracking.LastBatchCompleteCheck = dateTimeOffset.AddMinutes(-15);
             ingestionTracking.IsDownloaded = true;
             ingestionTracking.Decrypted = true;
             ingestionTracking.IsProcessing = false;

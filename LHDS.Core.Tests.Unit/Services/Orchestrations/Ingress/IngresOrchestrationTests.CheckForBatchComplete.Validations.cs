@@ -43,7 +43,8 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Ingress
                 this.landingConfiguration,
                 this.blobContainers,
                 this.loggingBrokerMock.Object,
-                this.auditBrokerMock.Object)
+                this.auditBrokerMock.Object,
+                this.dateTimeBrokerMock.Object)
             {
                 CallBase = true
             };
@@ -98,7 +99,8 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Ingress
                 this.landingConfiguration,
                 this.blobContainers,
                 this.loggingBrokerMock.Object,
-                this.auditBrokerMock.Object)
+                this.auditBrokerMock.Object,
+                this.dateTimeBrokerMock.Object)
             {
                 CallBase = true
             };
@@ -158,7 +160,8 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Ingress
                 this.landingConfiguration,
                 this.blobContainers,
                 this.loggingBrokerMock.Object,
-                this.auditBrokerMock.Object)
+                this.auditBrokerMock.Object,
+                this.dateTimeBrokerMock.Object)
             {
                 CallBase = true
             };

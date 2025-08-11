@@ -6,6 +6,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using LHDS.Core.Brokers.DateTimes;
 using LHDS.Core.Brokers.Loggings;
 using LHDS.Core.Models.Foundations.IngestionTrackings;
 using LHDS.Core.Services.Foundations.IngestionTrackings;
@@ -15,13 +16,16 @@ namespace LHDS.Core.Services.Processings.IngestionTrackings
     public partial class IngestionTrackingProcessingService : IIngestionTrackingProcessingService
     {
         private readonly IIngestionTrackingService ingestionTrackingService;
+        private readonly IDateTimeBroker dateTimeBroker;
         private readonly ILoggingBroker loggingBroker;
 
         public IngestionTrackingProcessingService(
             IIngestionTrackingService ingestionTrackingService,
+            IDateTimeBroker dateTimeBroker,
             ILoggingBroker loggingBroker)
         {
             this.ingestionTrackingService = ingestionTrackingService;
+            this.dateTimeBroker = dateTimeBroker;
             this.loggingBroker = loggingBroker;
         }
 
@@ -175,9 +179,12 @@ namespace LHDS.Core.Services.Processings.IngestionTrackings
             List<IngestionTracking> batchIngestionTrackings = allIngestionTrackings
                 .Where(ingestionTracking => ingestionTracking.Batch == ingestionTrackingItem.Batch).ToList();
 
+            DateTimeOffset currentDateTime = await this.dateTimeBroker.GetCurrentDateTimeOffsetAsync();
+
             foreach (IngestionTracking batchIngestionTracking in batchIngestionTrackings)
             {
                 batchIngestionTracking.IsBatchComplete = isBatchComplete;
+                batchIngestionTracking.LastBatchCompleteCheck = currentDateTime;
                 await this.ingestionTrackingService.ModifyIngestionTrackingAsync(batchIngestionTracking);
             }
         });

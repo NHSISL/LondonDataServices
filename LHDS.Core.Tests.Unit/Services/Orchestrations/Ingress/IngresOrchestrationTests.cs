@@ -10,6 +10,7 @@ using System.Linq.Expressions;
 using FluentAssertions;
 using KellermanSoftware.CompareNetObjects;
 using LHDS.Core.Brokers.Audits;
+using LHDS.Core.Brokers.DateTimes;
 using LHDS.Core.Brokers.Loggings;
 using LHDS.Core.Models.Brokers.Securities;
 using LHDS.Core.Models.Brokers.Storages.Blobs;
@@ -38,6 +39,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Ingress
         private readonly Mock<IDocumentProcessingService> documentProcessingServiceMock;
         private readonly Mock<ILoggingBroker> loggingBrokerMock;
         private readonly Mock<IAuditBroker> auditBrokerMock;
+        private readonly Mock<IDateTimeBroker> dateTimeBrokerMock;
         private readonly BlobContainers blobContainers;
         private readonly LandingConfiguration landingConfiguration;
         private readonly IIngressOrchestrationService ingressOrchestrationService;
@@ -53,6 +55,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Ingress
             this.documentProcessingServiceMock = new Mock<IDocumentProcessingService>();
             this.loggingBrokerMock = new Mock<ILoggingBroker>();
             this.auditBrokerMock = new Mock<IAuditBroker>();
+            this.dateTimeBrokerMock = new Mock<IDateTimeBroker>();
 
             blobContainers = new BlobContainers
             {
@@ -74,7 +77,8 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Ingress
                 landingConfiguration: this.landingConfiguration,
                 blobContainers: this.blobContainers,
                 loggingBroker: this.loggingBrokerMock.Object,
-                auditBroker: this.auditBrokerMock.Object);
+                auditBroker: this.auditBrokerMock.Object,
+                dateTimeBroker: this.dateTimeBrokerMock.Object);
         }
 
         private static Expression<Func<Xeption, bool>> SameExceptionAs(Xeption expectedException) =>

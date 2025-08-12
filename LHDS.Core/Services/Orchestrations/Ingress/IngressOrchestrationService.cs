@@ -63,7 +63,8 @@ namespace LHDS.Core.Services.Orchestrations.Ingress
 
                     .Where(ingestionTracking =>
                         ingestionTracking.IsBatchComplete == false &&
-                        ingestionTracking.LastBatchCompleteCheck <= dateTimeCheck)
+                            (ingestionTracking.LastBatchCompleteCheck == null
+                                || ingestionTracking.LastBatchCompleteCheck <= dateTimeCheck))
 
                     .GroupBy(ingestionTracking =>
                         new { ingestionTracking.Batch, ingestionTracking.SubscriberAgreementId })

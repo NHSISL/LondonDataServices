@@ -12,5 +12,8 @@ namespace LHDS.Core.Models.Orchestrations.EmisLandings
         public string EncryptedFolder { get; set; }
         public string DecryptedFolder { get; set; }
         public string KeyVaultUrl { get; set; }
+        public string BatchDownloadedFile { get; set; } = "LDSBatchDownloaded.txt";
+        public string BatchReadyFile { get; set; } = "LDSBatchReady.txt";
+        public int LastSeenMinutes { get; set; } = 60;
     }
 }

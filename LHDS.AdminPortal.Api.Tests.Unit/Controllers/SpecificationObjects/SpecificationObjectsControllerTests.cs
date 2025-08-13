@@ -51,7 +51,9 @@ namespace LHDS.AdminPortal.Api.Tests.Unit.Controllers.SpecificationObjects
                 .OnType<DateTimeOffset>().Use(dateTimeOffset)
                 .OnType<DateTimeOffset?>().Use(dateTimeOffset)
                 .OnProperty(accessAudit => accessAudit.CreatedBy).Use(user)
-                .OnProperty(accessAudit => accessAudit.UpdatedBy).Use(user);
+                .OnProperty(accessAudit => accessAudit.UpdatedBy).Use(user)
+                .OnProperty(accessAudit => accessAudit.DataSetSpecification).IgnoreIt()
+                .OnProperty(accessAudit => accessAudit.ObjectColumns).IgnoreIt();
 
             return filler;
         }

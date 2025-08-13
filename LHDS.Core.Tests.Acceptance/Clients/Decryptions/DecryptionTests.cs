@@ -17,6 +17,7 @@ using LHDS.Core.Models.Foundations.DataSetSpecifications;
 using LHDS.Core.Models.Foundations.IngestionTrackings;
 using LHDS.Core.Models.Foundations.ObjectColumns;
 using LHDS.Core.Models.Foundations.SpecificationObjects;
+using LHDS.Core.Models.Foundations.SubscriberAgreements;
 using LHDS.Core.Models.Foundations.Suppliers;
 using LHDS.Core.Models.Orchestrations.EmisLandings;
 using LHDS.Core.Models.Processings.SubscriberCredentials;
@@ -28,6 +29,7 @@ using LHDS.Core.Services.Foundations.IngestionTrackingAudits;
 using LHDS.Core.Services.Foundations.IngestionTrackings;
 using LHDS.Core.Services.Foundations.ObjectColumns;
 using LHDS.Core.Services.Foundations.SpecificationObjects;
+using LHDS.Core.Services.Foundations.SubscriberAgreements;
 using LHDS.Core.Services.Foundations.Suppliers;
 using LHDS.Core.Services.Orchestrations.SubscriberCredentials;
 using LHDS.Core.Tests.Acceptance.Brokers.DependencyBrokers;
@@ -46,6 +48,7 @@ namespace LHDS.Core.Tests.Acceptance.Clients.Decryptions
         private readonly IIngestionTrackingService ingestionTrackingService;
         private readonly IDecryptionClient decryptionClient;
         private readonly ISupplierService supplierService;
+        private readonly ISubscriberAgreementService subscriberAgreementService;
         private readonly IDocumentService documentService;
         private readonly LandingConfiguration landingConfiguration;
         private readonly BlobContainers blobContainers;
@@ -68,7 +71,7 @@ namespace LHDS.Core.Tests.Acceptance.Clients.Decryptions
             });
 
             var claimsPrincipal = new ClaimsPrincipal();
-            
+
             claimsPrincipal.AddIdentity(new ClaimsIdentity(new List<Claim>
             {
                 new Claim("oid", Guid.NewGuid().ToString()),
@@ -101,6 +104,7 @@ namespace LHDS.Core.Tests.Acceptance.Clients.Decryptions
             this.dataSetSpecificationService = serviceProvider.GetRequiredService<IDataSetSpecificationService>();
             this.specificationObjectService = serviceProvider.GetRequiredService<ISpecificationObjectService>();
             this.objectColumnService = serviceProvider.GetRequiredService<IObjectColumnService>();
+            this.subscriberAgreementService = serviceProvider.GetRequiredService<ISubscriberAgreementService>();
             decryptionClient = serviceProvider.GetService<IDecryptionClient>();
             subscriberCredentialOrchestration = serviceProvider.GetService<ISubscriberCredentialOrchestration>();
         }
@@ -199,7 +203,10 @@ namespace LHDS.Core.Tests.Acceptance.Clients.Decryptions
                 .OnProperty(ingestionTracking => ingestionTracking.SupplierId).Use(supplierId)
                 .OnProperty(ingestionTracking => ingestionTracking.DataSetSpecificationId).Use(dataSetSpecificationId)
                 .OnType<DateTimeOffset>().Use(dateTimeOffset)
-                .OnType<DateTimeOffset?>().Use(dateTimeOffset);
+                .OnType<DateTimeOffset?>().Use(dateTimeOffset)
+                .OnProperty(ingestionTracking => ingestionTracking.Supplier).IgnoreIt()
+                .OnProperty(ingestionTracking => ingestionTracking.IngestionTrackingAudits).IgnoreIt()
+                .OnProperty(ingestionTracking => ingestionTracking.SubscriberAgreement).IgnoreIt();
 
             return filler;
         }
@@ -267,6 +274,10 @@ namespace LHDS.Core.Tests.Acceptance.Clients.Decryptions
 
                 .OnProperty(dataSetSpecification => dataSetSpecification.PresededById).IgnoreIt()
                 .OnProperty(dataSetSpecification => dataSetSpecification.SupersededById).IgnoreIt()
+                .OnProperty(dataSetSpecification => dataSetSpecification.PresededBy).IgnoreIt()
+                .OnProperty(dataSetSpecification => dataSetSpecification.SupersededBy).IgnoreIt()
+                .OnProperty(dataSetSpecification => dataSetSpecification.SpecificationObjects).IgnoreIt()
+                .OnProperty(dataSetSpecification => dataSetSpecification.DataSet).IgnoreIt()
                 .OnProperty(dataSetSpecification => dataSetSpecification.CreatedBy).Use(user)
                 .OnProperty(dataSetSpecification => dataSetSpecification.CreatedBy).Use(user)
                 .OnProperty(dataSetSpecification => dataSetSpecification.UpdatedBy).Use(user);
@@ -289,16 +300,11 @@ namespace LHDS.Core.Tests.Acceptance.Clients.Decryptions
                 .OnProperty(dataSet => dataSet.SupplierId).Use(supplierId)
                 .OnProperty(dataSet => dataSet.CreatedBy).Use(user)
                 .OnProperty(dataSet => dataSet.UpdatedBy).Use(user)
-                .OnProperty(dataSet => dataSet.ActiveTo).Use(now.AddDays(GetRandomNumber()));
+                .OnProperty(dataSet => dataSet.ActiveTo).Use(now.AddDays(GetRandomNumber()))
+                .OnProperty(dataSet => dataSet.Supplier).IgnoreIt()
+                .OnProperty(dataSet => dataSet.DataSetSpecifications).IgnoreIt();
 
             return filler;
-        }
-
-        private static List<ObjectColumn> CreateRandomObjectColumns(DateTimeOffset dateTimeOffset, Guid specificationId)
-        {
-            return CreateObjectColumnFiller(dateTimeOffset, specificationId)
-                .Create(count: GetRandomNumber())
-                    .ToList();
         }
 
         private static List<ObjectColumn> CreateRandomObjectColumns(Guid specificationId)
@@ -325,6 +331,28 @@ namespace LHDS.Core.Tests.Acceptance.Clients.Decryptions
             return filler;
         }
 
+        private static SubscriberAgreement CreateRandomSubscriberAgreement(Guid id) =>
+            CreateRandomSubscriberAgreementFiller(id).Create();
+
+        private static Filler<SubscriberAgreement> CreateRandomSubscriberAgreementFiller(Guid id)
+        {
+            string user = Guid.NewGuid().ToString();
+            DateTime now = DateTime.UtcNow;
+            var filler = new Filler<SubscriberAgreement>();
+
+            filler.Setup()
+                .OnType<DateTimeOffset>().Use(now)
+                .OnType<DateTimeOffset?>().Use(now)
+                .OnProperty(subscriberAgreement => subscriberAgreement.Id).Use(id)
+                .OnProperty(subscriberAgreement => subscriberAgreement.CreatedDate).Use(now)
+                .OnProperty(subscriberAgreement => subscriberAgreement.CreatedBy).Use(user)
+                .OnProperty(subscriberAgreement => subscriberAgreement.UpdatedDate).Use(now)
+                .OnProperty(subscriberAgreement => subscriberAgreement.IngestionTrackings).IgnoreIt()
+                .OnProperty(subscriberAgreement => subscriberAgreement.SubscriberPractices).IgnoreIt();
+
+            return filler;
+        }
+
         private static List<SpecificationObject> CreateRandomSpecificationObjects(
             Guid dataSetSpecificationId)
         {
@@ -332,6 +360,9 @@ namespace LHDS.Core.Tests.Acceptance.Clients.Decryptions
                 .Create(count: GetRandomNumber())
                     .ToList();
         }
+
+        private static SpecificationObject CreateRandomSpecificationObject(Guid dataSetSpecificationId) =>
+            CreateSpecificationObjectFiller(dateTimeOffset: DateTimeOffset.Now, dataSetSpecificationId).Create();
 
         private static Filler<SpecificationObject> CreateSpecificationObjectFiller(
             DateTimeOffset dateTimeOffset,

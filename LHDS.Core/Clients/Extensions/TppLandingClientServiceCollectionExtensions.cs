@@ -14,6 +14,7 @@ using Azure.Identity;
 using Azure.Storage.Blobs;
 using LHDS.Core.Brokers.Audits;
 using LHDS.Core.Brokers.DateTimes;
+using LHDS.Core.Brokers.Files;
 using LHDS.Core.Brokers.Hashing;
 using LHDS.Core.Brokers.Identifiers;
 using LHDS.Core.Brokers.Loggings;
@@ -114,10 +115,11 @@ namespace LHDS.Core.Clients.Extensions
             services.AddTransient<ILoggingBroker, LoggingBroker>();
             services.AddTransient<IDateTimeBroker, DateTimeBroker>();
             services.AddTransient<IIdentifierBroker, IdentifierBroker>();
-            services.AddTransient<IStorageBroker, StorageBroker>();
             services.AddTransient<ISecurityBroker, SecurityBroker>();
             services.AddTransient<IHashBroker, HashBroker>();
             services.AddTransient<IAuditBroker, AuditBroker>();
+            services.AddTransient<IFileBroker, FileBroker>();
+            services.AddTransient<IStorageBroker, StorageBroker>();
 
             LandingConfiguration landingConfiguration =
                 configuration.GetSection("landingSettings").Get<LandingConfiguration>();
@@ -171,7 +173,7 @@ namespace LHDS.Core.Clients.Extensions
             services.AddTransient<ISupplierService, SupplierService>();
             services.AddTransient<IDataSetService, DataSetService>();
             services.AddTransient<IDataSetSpecificationService, DataSetSpecificationService>();
-            services.AddSingleton<IIngestionTrackingAuditService, IngestionTrackingAuditService>();
+            services.AddTransient<IIngestionTrackingAuditService, IngestionTrackingAuditService>();
             services.AddSingleton<ISpecificationObjectService, SpecificationObjectService>();
             services.AddSingleton<IObjectColumnService, ObjectColumnService>();
         }
@@ -216,7 +218,13 @@ namespace LHDS.Core.Clients.Extensions
                     Parameter: "landingSettings__landingSupplierId"),
 
                 (Rule: IsInvalid(landingConfiguration.DecryptedFolder),
-                    Parameter: "landingSettings:decryptedFolder"));
+                    Parameter: "landingSettings:decryptedFolder"),
+
+                (Rule: IsInvalid(landingConfiguration.BatchDownloadedFile),
+                    Parameter: "landingSettings:batchDownloadedFile"),
+
+                (Rule: IsInvalid(landingConfiguration.BatchReadyFile),
+                    Parameter: "landingSettings:batchReadyFile"));
         }
 
         private static void ValidateBlobStorageSettings(BlobStorageSettings blobStorageSettings)

@@ -3,7 +3,11 @@
 // ---------------------------------------------------------
 
 using System;
+using System.Collections.Generic;
 using LHDS.Core.Models.Bases;
+using LHDS.Core.Models.Foundations.IngestionTrackings;
+using LHDS.Core.Models.Foundations.SubscriberPractices;
+using Microsoft.AspNetCore.Mvc.ModelBinding;
 
 namespace LHDS.Core.Models.Foundations.SubscriberAgreements
 {
@@ -22,5 +26,9 @@ namespace LHDS.Core.Models.Foundations.SubscriberAgreements
         public string UpdatedBy { get; set; } = string.Empty;
         public DateTimeOffset UpdatedDate { get; set; }
         public DateTimeOffset CreatedDate { get; set; }
+
+        [BindNever]
+        public List<IngestionTracking> IngestionTrackings { get; set; } = new List<IngestionTracking>();
+        public List<SubscriberPractice> SubscriberPractices { get; set; } = new List<SubscriberPractice>();
     }
 }

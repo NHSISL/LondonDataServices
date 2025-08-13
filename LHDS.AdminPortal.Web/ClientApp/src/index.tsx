@@ -1,8 +1,6 @@
 import 'bootstrap/dist/css/bootstrap.css';
-
 import React from 'react';
 import { createRoot } from 'react-dom/client';
-
 import { BrowserRouter } from 'react-router-dom';
 import App from './App';
 import * as serviceWorkerRegistration from './serviceWorkerRegistration';
@@ -12,12 +10,9 @@ import { PublicClientApplication } from "@azure/msal-browser";
 import "react-toastify/dist/ReactToastify.css";
 import ToastBroker from './brokers/toastBroker';
 
-
 const baseUrl = document.getElementsByTagName('base')[0].getAttribute('href') || "\\";
 const rootElement = document.getElementById('root');
-
 const msalInstance = new PublicClientApplication(msalConfig);
-
 const root = createRoot(rootElement!);
 
 root.render(

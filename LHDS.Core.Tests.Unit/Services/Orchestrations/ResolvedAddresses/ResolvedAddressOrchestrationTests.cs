@@ -8,13 +8,17 @@ using System.IO;
 using System.Linq;
 using System.Linq.Expressions;
 using KellermanSoftware.CompareNetObjects;
+using LHDS.Core.Brokers.Audits;
 using LHDS.Core.Brokers.CsvHelpers;
 using LHDS.Core.Brokers.DateTimes;
 using LHDS.Core.Brokers.Identifiers;
 using LHDS.Core.Brokers.Loggings;
+using LHDS.Core.Brokers.Securities;
+using LHDS.Core.Models.Brokers.Securities;
 using LHDS.Core.Models.Brokers.Storages.Blobs;
 using LHDS.Core.Models.Foundations.Addresses;
 using LHDS.Core.Models.Foundations.AssignAddresses;
+using LHDS.Core.Models.Foundations.Audits;
 using LHDS.Core.Models.Foundations.Documents;
 using LHDS.Core.Models.Foundations.ResolvedAddresses;
 using LHDS.Core.Models.Processings.Documents.Exceptions;
@@ -39,10 +43,12 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.ResolvedAddresses
         private readonly Mock<IResolvedAddressProcessingService> resolvedAddressProcessingServiceMock;
         private readonly Mock<IAssignProcessingService> assignProcessingServiceMock;
         private readonly Mock<IAddressProcessingService> addressProcessingServiceMock;
+        private readonly Mock<IAuditBroker> auditBrokerMock;
         private readonly Mock<IDateTimeBroker> dateTimeBrokerMock;
         private readonly Mock<ILoggingBroker> loggingBrokerMock;
         private readonly Mock<ICsvHelperBroker> csvHelperBrokerMock;
         private readonly Mock<IIdentifierBroker> identifierBrokerMock;
+        private readonly Mock<ISecurityBroker> securityBrokerMock;
         private readonly ICompareLogic compareLogic;
         private readonly BlobContainers blobContainers;
         private readonly IResolvedAddressOrchestrationService resolvedAddressOrchestrationService;
@@ -54,10 +60,12 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.ResolvedAddresses
             this.resolvedAddressProcessingServiceMock = new Mock<IResolvedAddressProcessingService>();
             this.assignProcessingServiceMock = new Mock<IAssignProcessingService>();
             this.addressProcessingServiceMock = new Mock<IAddressProcessingService>();
+            this.auditBrokerMock = new Mock<IAuditBroker>();
             this.loggingBrokerMock = new Mock<ILoggingBroker>();
             this.csvHelperBrokerMock = new Mock<ICsvHelperBroker>();
             this.dateTimeBrokerMock = new Mock<IDateTimeBroker>();
             this.identifierBrokerMock = new Mock<IIdentifierBroker>();
+            this.securityBrokerMock = new Mock<ISecurityBroker>();
             this.compareLogic = new CompareLogic();
             this.output = output;
 
@@ -71,10 +79,12 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.ResolvedAddresses
                 resolvedAddressProcessingService: this.resolvedAddressProcessingServiceMock.Object,
                 assignProcessingService: this.assignProcessingServiceMock.Object,
                 addressProcessingService: this.addressProcessingServiceMock.Object,
+                auditBroker: this.auditBrokerMock.Object,
                 loggingBroker: this.loggingBrokerMock.Object,
                 csvHelperBroker: this.csvHelperBrokerMock.Object,
                 dateTimeBroker: this.dateTimeBrokerMock.Object,
                 identifierBroker: this.identifierBrokerMock.Object,
+                securityBroker: this.securityBrokerMock.Object,
                 blobContainers: blobContainers);
         }
 
@@ -135,6 +145,13 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.ResolvedAddresses
         private static string GetRandomString() =>
             new MnemonicString().GetValue();
 
+        private static string GetRandomStringWithLengthOf(int length)
+        {
+            string result = new MnemonicString(wordCount: 1, wordMinLength: length, wordMaxLength: length).GetValue();
+
+            return result.Length > length ? result.Substring(0, length) : result;
+        }
+
         private static int GetRandomNumber() =>
             new IntRange(min: 2, max: 10).GetValue();
 
@@ -147,6 +164,26 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.ResolvedAddresses
                 .Create(count: GetRandomNumber())
                     .ToList();
         }
+
+        private EntraUser CreateRandomEntraUser(string entraUserId = "")
+        {
+            var userId = string.IsNullOrWhiteSpace(entraUserId) ? GetRandomStringWithLengthOf(255) : entraUserId;
+
+            return new EntraUser(
+                entraUserId: userId,
+                givenName: GetRandomString(),
+                surname: GetRandomString(),
+                displayName: GetRandomString(),
+                email: GetRandomString(),
+                jobTitle: GetRandomString(),
+                roles: new List<string> { GetRandomString() },
+
+                claims: new List<System.Security.Claims.Claim>
+                {
+                    new System.Security.Claims.Claim(type: GetRandomString(), value: GetRandomString())
+                });
+        }
+
         private Expression<Func<List<ResolvedAddressReturn>, bool>> SameResolvedAddressReturnsAs(
             List<ResolvedAddressReturn> expectedResolvedAddressReturns)
         {
@@ -184,8 +221,8 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.ResolvedAddresses
         private static List<ResolvedAddress> CreateRandomUnmatchedAddresses(int count)
         {
             var fillers = Enumerable.Range(1, count)
-                                    .Select(_ => CreateUnmatchedAddressFiller())
-                                    .ToList();
+                .Select(_ => CreateUnmatchedAddressFiller())
+                    .ToList();
 
             var result = fillers.Select(filler => filler.Create()).ToList();
 
@@ -249,7 +286,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.ResolvedAddresses
                     {
                         UniqueReference = resolvedAddress.UniqueReference,
                         UPRN = resolvedAddress.UPRN,
-                        UPSN = resolvedAddress.UPSN,
+                        USRN = resolvedAddress.USRN,
                         OrganisationName = resolvedAddress.OrganisationName,
                         DepartmentName = resolvedAddress.DepartmentName,
                         SubBuildingName = resolvedAddress.SubBuildingName,

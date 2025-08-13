@@ -11,8 +11,10 @@ using System.Text.Json;
 using System.Threading.Tasks;
 using LHDS.Core.Brokers.DateTimes;
 using LHDS.Core.Brokers.Loggings;
+using LHDS.Core.Models.Brokers.Ontologies;
 using LHDS.Core.Models.Brokers.Storages.Blobs;
 using LHDS.Core.Models.Foundations.TerminologyArtifacts;
+using LHDS.Core.Models.Orchestrations.TerminologyDetails;
 using LHDS.Core.Services.Processings.Documents;
 using LHDS.Core.Services.Processings.Ontologies;
 using LHDS.Core.Services.Processings.TerminologyArtifacts;
@@ -29,12 +31,14 @@ namespace LHDS.Core.Services.Orchestrations.TerminologyDetails
         private readonly ILoggingBroker loggingBroker;
         private readonly IDateTimeBroker dateTimeBroker;
         private readonly BlobContainers blobContainers;
+        private readonly OntologyConfiguration ontologyConfiguration;
 
         public TerminologyDetailOrchestrationService(
             ITerminologyArtifactProcessingService terminologyArtifactProcessingService,
             IOntologyProcessingService ontologyProcessingService,
             IDocumentProcessingService documentProcessingService,
             BlobContainers blobContainers,
+            OntologyConfiguration ontologyConfiguration,
             ILoggingBroker loggingBroker,
             IDateTimeBroker dateTimeBroker)
         {
@@ -42,6 +46,7 @@ namespace LHDS.Core.Services.Orchestrations.TerminologyDetails
             this.ontologyProcessingService = ontologyProcessingService;
             this.documentProcessingService = documentProcessingService;
             this.blobContainers = blobContainers;
+            this.ontologyConfiguration = ontologyConfiguration;
             this.loggingBroker = loggingBroker;
             this.dateTimeBroker = dateTimeBroker;
         }
@@ -71,7 +76,12 @@ namespace LHDS.Core.Services.Orchestrations.TerminologyDetails
 
                             byte[] artifactDetailData = Encoding.UTF8.GetBytes(mergedJson);
 
-                            string fileName = $"{artifact.ResourceType}/{artifact.Name}.json";
+                            byte[] artifactDetailData = Encoding.UTF8.GetBytes(artifactDetail);
+                            
+                            string fileName = Path.Combine(
+                                ontologyConfiguration.LandingFolder,
+                                artifact.ResourceType,
+                                artifact.Name + ".json");
 
                             using (Stream input = new MemoryStream(artifactDetailData))
                             {

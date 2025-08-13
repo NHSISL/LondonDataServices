@@ -12,6 +12,7 @@ using LHDS.Core.Brokers.Loggings;
 using LHDS.Core.Models.Brokers.Storages.Blobs;
 using LHDS.Core.Models.Foundations.IngestionTrackingAudits;
 using LHDS.Core.Models.Foundations.IngestionTrackings;
+using LHDS.Core.Models.Orchestrations.EmisLandings;
 using LHDS.Core.Models.Processings.SubscriberCredentials;
 using LHDS.Core.Services.Foundations.Cryptographies;
 using LHDS.Core.Services.Foundations.Documents;
@@ -32,6 +33,7 @@ namespace LHDS.Core.Services.Orchestrations.Decryptions
         private readonly ILoggingBroker loggingBroker;
         private readonly IDateTimeBroker dateTimeBroker;
         private readonly IHashBroker hashBroker;
+        private readonly LandingConfiguration landingConfiguration;
 
         public DecryptionOrchestrationService(
             IDocumentService documentService,
@@ -42,7 +44,8 @@ namespace LHDS.Core.Services.Orchestrations.Decryptions
             BlobContainers blobContainers,
             ILoggingBroker loggingBroker,
             IDateTimeBroker dateTimeBroker,
-            IHashBroker hashBroker)
+            IHashBroker hashBroker,
+            LandingConfiguration landingConfiguration)
         {
             this.documentService = documentService;
             this.downloadService = downloadService;
@@ -53,6 +56,7 @@ namespace LHDS.Core.Services.Orchestrations.Decryptions
             this.loggingBroker = loggingBroker;
             this.dateTimeBroker = dateTimeBroker;
             this.hashBroker = hashBroker;
+            this.landingConfiguration = landingConfiguration;
         }
 
         public ValueTask<(string DecryptedFileName, Guid IngestionTrackingId)> DecryptAsync(
@@ -66,6 +70,18 @@ namespace LHDS.Core.Services.Orchestrations.Decryptions
 
                 var ingestionTracking = await this.ingestionTrackingService
                     .RetrieveIngestionTrackingByEncryptedFileNameAsync(encryptedFileName);
+
+                try
+                {
+                    string batchCompleteFileName =
+                        $"{ingestionTracking.BatchReadyFolderPath}/{landingConfiguration.BatchReadyFile}".Replace("\\", "/");
+
+                    await this.documentService.RemoveDocumentByFileNameAsync(
+                        batchCompleteFileName,
+                        this.blobContainers.Ingress);
+                }
+                catch (Exception)
+                { }
 
                 string decryptedFileSha256Hash = string.Empty;
                 long fileSize = 0;
@@ -108,6 +124,9 @@ namespace LHDS.Core.Services.Orchestrations.Decryptions
                         FileAccess.Write,
                         FileShare.None))
                     {
+                        var decryptionStartDateTime = await this.dateTimeBroker.GetCurrentDateTimeOffsetAsync();
+                        await LogAudit(ingestionTracking, $"Decrypting {encryptedFileName}", decryptionStartDateTime);
+
                         await this.cryptographyService.DecryptAsync(
                              input: encryptedDocument,
                              output: decryptedDocument,
@@ -131,6 +150,14 @@ namespace LHDS.Core.Services.Orchestrations.Decryptions
                             container: blobContainers.Ingress);
                     }
                 }
+                catch (Exception ex)
+                {
+                    var errorDateTime = await this.dateTimeBroker.GetCurrentDateTimeOffsetAsync();
+                    await LogAudit(ingestionTracking, $"Error Decrypting {encryptedFileName};  " +
+                        $"Error: {ex.Message} {ex?.InnerException?.Message}", errorDateTime);
+
+                    throw;
+                }
                 finally
                 {
                     if (File.Exists(encryptedTempFile)) File.Delete(encryptedTempFile);
@@ -139,18 +166,26 @@ namespace LHDS.Core.Services.Orchestrations.Decryptions
 
                 var currentDateTime = await this.dateTimeBroker.GetCurrentDateTimeOffsetAsync();
                 ingestionTracking.Decrypted = true;
-                ingestionTracking.RecordCount = 0;
                 ingestionTracking.DecryptedFileSize = fileSize;
                 ingestionTracking.DecryptedFileSha256Hash = decryptedFileSha256Hash;
                 ingestionTracking.IsProcessing = false;
+                ingestionTracking.IsBatchComplete = false;
                 ingestionTracking.UpdatedDate = currentDateTime;
 
-                await this.ingestionTrackingService
+                var updatedIngestionTracking = await this.ingestionTrackingService
                     .ModifyIngestionTrackingAsync(ingestionTracking);
 
-                await LogAudit(ingestionTracking, currentDateTime);
+                await LogAudit(
+                    ingestionTracking,
 
-                return (ingestionTracking.DecryptedFileName, ingestionTracking.Id);
+                    message:
+                        $"Decrypted document for Id: {updatedIngestionTracking.Id}, " +
+                        $"DecryptedFileSize={updatedIngestionTracking.DecryptedFileSize}, " +
+                        $"DecryptedFileSha256Hash={updatedIngestionTracking.DecryptedFileSha256Hash}",
+
+                    currentDateTime);
+
+                return (updatedIngestionTracking.DecryptedFileName, ingestionTracking.Id);
             });
 
         public ValueTask<string?> GetNextItemToBeDecrypted() =>
@@ -191,6 +226,7 @@ namespace LHDS.Core.Services.Orchestrations.Decryptions
 
         private async ValueTask LogAudit(
             IngestionTracking ingestionTracking,
+            string message,
             DateTimeOffset currentDateTime)
         {
             IngestionTrackingAudit newAudit =
@@ -198,7 +234,7 @@ namespace LHDS.Core.Services.Orchestrations.Decryptions
                 {
                     Id = Guid.NewGuid(),
                     IngestionTrackingId = ingestionTracking.Id,
-                    Message = $"Decrypted document",
+                    Message = $"{message}",
                     CreatedDate = currentDateTime,
                     CreatedBy = "DecryptionOrchestrationService",
                     UpdatedDate = currentDateTime,

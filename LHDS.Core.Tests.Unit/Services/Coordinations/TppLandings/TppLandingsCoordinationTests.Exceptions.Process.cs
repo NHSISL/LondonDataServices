@@ -12,7 +12,7 @@ using Moq;
 using Xeptions;
 using Xunit;
 
-namespace LHDS.Core.Tests.Unit.Services.Coordinations.Decryptions
+namespace LHDS.Core.Tests.Unit.Services.Coordinations.TppLandings
 {
     public partial class TppLandingsCoordinationTests
     {
@@ -37,12 +37,12 @@ namespace LHDS.Core.Tests.Unit.Services.Coordinations.Decryptions
                     dependancyValidationException.InnerException as Xeption);
 
             this.tppLandingOrchestrationServiceMock.Setup(service =>
-                service.ProcessAsync(It.IsAny<Stream>(), It.IsAny<string>(), It.IsAny<Guid>()))
+                service.ProcessAsync(It.IsAny<string>(), It.IsAny<Guid>()))
                     .ThrowsAsync(dependancyValidationException);
 
             // when
             ValueTask<Guid> processTask = this.tppLandingCoordinationService
-                .ProcessAsync(input: inputStream, fileName: inputFileName, supplierId: inputSupplierId);
+                .ProcessAsync(fileName: inputFileName, supplierId: inputSupplierId);
 
             TppLandingCoordinationDependencyValidationException actualException =
                 await Assert.ThrowsAsync<TppLandingCoordinationDependencyValidationException>(processTask.AsTask);
@@ -51,7 +51,7 @@ namespace LHDS.Core.Tests.Unit.Services.Coordinations.Decryptions
             actualException.Should().BeEquivalentTo(expectedDependencyException);
 
             this.tppLandingOrchestrationServiceMock.Verify(service =>
-                service.ProcessAsync(It.IsAny<Stream>(), It.IsAny<string>(), It.IsAny<Guid>()),
+                service.ProcessAsync(It.IsAny<string>(), It.IsAny<Guid>()),
                     Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>
@@ -82,12 +82,12 @@ namespace LHDS.Core.Tests.Unit.Services.Coordinations.Decryptions
                     innerException: dependancyException.InnerException as Xeption);
 
             this.tppLandingOrchestrationServiceMock.Setup(service =>
-                service.ProcessAsync(It.IsAny<Stream>(), It.IsAny<string>(), It.IsAny<Guid>()))
+                service.ProcessAsync(It.IsAny<string>(), It.IsAny<Guid>()))
                     .ThrowsAsync(dependancyException);
 
             // when
             ValueTask<Guid> processTask = this.tppLandingCoordinationService
-                .ProcessAsync(input: inputStream, fileName: inputFileName, supplierId: inputSupplierId);
+                .ProcessAsync(fileName: inputFileName, supplierId: inputSupplierId);
 
             TppLandingCoordinationDependencyException actualException =
                 await Assert.ThrowsAsync<TppLandingCoordinationDependencyException>(processTask.AsTask);
@@ -96,7 +96,7 @@ namespace LHDS.Core.Tests.Unit.Services.Coordinations.Decryptions
             actualException.Should().BeEquivalentTo(expectedDependencyException);
 
             this.tppLandingOrchestrationServiceMock.Verify(service =>
-                service.ProcessAsync(It.IsAny<Stream>(), It.IsAny<string>(), It.IsAny<Guid>()),
+                service.ProcessAsync(It.IsAny<string>(), It.IsAny<Guid>()),
                     Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>
@@ -131,12 +131,12 @@ namespace LHDS.Core.Tests.Unit.Services.Coordinations.Decryptions
                     failedTppCoordinationServiceException);
 
             this.tppLandingOrchestrationServiceMock.Setup(service =>
-                service.ProcessAsync(It.IsAny<Stream>(), It.IsAny<string>(), It.IsAny<Guid>()))
+                service.ProcessAsync(It.IsAny<string>(), It.IsAny<Guid>()))
                     .ThrowsAsync(serviceException);
 
             // when
             ValueTask<Guid> processTask = this.tppLandingCoordinationService
-                .ProcessAsync(input: inputStream, fileName: inputFileName, supplierId: inputSupplierId);
+                .ProcessAsync(fileName: inputFileName, supplierId: inputSupplierId);
 
             TppLandingCoordinationServiceException actualException =
                 await Assert.ThrowsAsync<TppLandingCoordinationServiceException>(processTask.AsTask);
@@ -145,7 +145,7 @@ namespace LHDS.Core.Tests.Unit.Services.Coordinations.Decryptions
             actualException.Should().BeEquivalentTo(expectedTppCoordinationServiceException);
 
             this.tppLandingOrchestrationServiceMock.Verify(service =>
-                service.ProcessAsync(It.IsAny<Stream>(), It.IsAny<string>(), It.IsAny<Guid>()),
+                service.ProcessAsync(It.IsAny<string>(), It.IsAny<Guid>()),
                     Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>

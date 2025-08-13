@@ -32,10 +32,6 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.TppLandings
                         "please correct the errors and try again.");
 
             invalidArgumentException.AddData(
-               key: "Input",
-               values: "Stream is required");
-
-            invalidArgumentException.AddData(
                key: "FileName",
                values: "Text is required");
 
@@ -45,12 +41,12 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.TppLandings
 
             var expectedTppOrchestrationValidationException =
                 new TppLandingOrchestrationValidationException(
-                    message: "TPP landing orchestration validation errors occured, please try again.",
+                    message: "TPP landing orchestration validation errors occurred, please try again.",
                     innerException: invalidArgumentException);
 
             // when
             ValueTask<Guid> returnedGuidTask = this.tppOrchestrationService
-                .ProcessAsync(input: inputStream, fileName: inputFileName, supplierId);
+                .ProcessAsync(fileName: inputFileName, supplierId);
 
             TppLandingOrchestrationValidationException actualException =
                 await Assert.ThrowsAsync<TppLandingOrchestrationValidationException>(returnedGuidTask.AsTask);

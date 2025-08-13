@@ -73,6 +73,13 @@ namespace LHDS.Core.Services.Orchestrations.Addresses
                 await this.fileBroker.DeleteDirectoryAsync(ordinanceTempFolder, true);
             });
 
+        public ValueTask BulkAddAddressesAsync(string folderPath) =>
+            TryCatch(async () =>
+            {
+                ValidateFolderPathOnBulkAddAddresses(folderPath);
+                await ReadCsvDataAndBulkAddAddressesAsync(folderPath);
+            });
+
         virtual internal async ValueTask UnZipAndExtractAsync(Stream data, string extractPath)
         {
             using (ZipArchive archive = new ZipArchive(data, ZipArchiveMode.Read))
@@ -434,7 +441,6 @@ namespace LHDS.Core.Services.Orchestrations.Addresses
             Dictionary<string, int> fieldMappings = new Dictionary<string, int>
             {
                 { "UPRN", 3 },
-                { "UPSN", 4 },
                 { "OrganisationName", 5 },
                 { "DepartmentName", 6 },
                 { "SubBuildingName", 7 },
@@ -469,6 +475,10 @@ namespace LHDS.Core.Services.Orchestrations.Addresses
                 { "StartDate", 15 },
                 { "EndDate", 16 },
                 { "PostCode", 20 },
+                { "YCoordinate", 9 },
+                { "XCoordinate", 8 },
+                { "Latitude", 10 },
+                { "Longitude", 11 },
             };
 
             List<BLPUAddress> blpuAddresses = await LoadAndMapCsvAsync<BLPUAddress>(
@@ -492,6 +502,10 @@ namespace LHDS.Core.Services.Orchestrations.Addresses
                 {
                     UPRN = blpuAddress.UPRN,
                     PostCode = blpuAddress.PostCode,
+                    YCoordinate = blpuAddress.YCoordinate,
+                    XCoordinate = blpuAddress.XCoordinate,
+                    Latitude = blpuAddress.Latitude,
+                    Longitude = blpuAddress.Longitude,
                 };
 
                 addresses.Add(address);
@@ -631,10 +645,13 @@ namespace LHDS.Core.Services.Orchestrations.Addresses
                     foreach (Address existingAddress in existingBlpuAddresses)
                     {
                         if (existingAddress.UPRN != null
-                            && blpuAddressesDict.TryGetValue(existingAddress.UPRN, out Address blpuAddress)
-                            && string.IsNullOrWhiteSpace(existingAddress.PostCode))
+                            && blpuAddressesDict.TryGetValue(existingAddress.UPRN, out Address blpuAddress))
                         {
-                            existingAddress.PostCode = blpuAddress.PostCode;
+                            existingAddress.PostCode = string.IsNullOrWhiteSpace(existingAddress.PostCode) ? blpuAddress.PostCode : existingAddress.PostCode;
+                            existingAddress.YCoordinate = blpuAddress.YCoordinate;
+                            existingAddress.XCoordinate = blpuAddress.XCoordinate;
+                            existingAddress.Latitude = blpuAddress.Latitude;
+                            existingAddress.Longitude = blpuAddress.Longitude;
                             updatedBlpuAddress.Add(existingAddress);
                         }
                     }
@@ -682,7 +699,7 @@ namespace LHDS.Core.Services.Orchestrations.Addresses
                 { "USRN", 3 },
                 { "StreetDescription", 4 },
                 { "Locality", 5 },
-                { "TownName", 6 },
+                { "TownName", 6 },                
             };
 
             List<StreetDescriptor> streetDescriptors = await LoadAndMapCsvAsync<StreetDescriptor>(
@@ -715,11 +732,36 @@ namespace LHDS.Core.Services.Orchestrations.Addresses
         {
             int skipCounter = 0;
             var exceptions = new List<Exception>();
+            Guid correlationId = await this.identifierBroker.GetIdentifierAsync();
+
+            await this.auditBroker.LogInformationAsync(
+                auditType: "Address Import - Street Descriptors Processing",
+                title: "Processing Street Descriptors File",
+                message: $"Starting processing file {streetDescriptorCsvFile}.",
+                fileName: streetDescriptorCsvFile,
+                correlationId: correlationId.ToString());
+
+            await this.loggingBroker.LogInformationAsync(message: $"Starting processing file {streetDescriptorCsvFile}.");
 
             while ((await fileBroker.ReadLinesBatchAsync(streetDescriptorCsvFile, batchSize, skipCounter)).Any())
             {
                 try
                 {
+                    await this.auditBroker.LogInformationAsync(
+                        auditType: "Address Import - Street Descriptors Processing",
+                        title: "Processing Street Descriptors File",
+
+                        message:
+                            $"Processing Street Descriptors File - Processing lines {skipCounter} to " +
+                            $"{skipCounter + batchSize}. Correlation Id: {correlationId}.",
+
+                        fileName: streetDescriptorCsvFile,
+                        correlationId: correlationId.ToString());
+
+                    await this.loggingBroker.LogInformationAsync(
+                        message: $"Processing Street Descriptors File - Processing lines {skipCounter} to " +
+                            $"{skipCounter + batchSize}. Correlation Id: {correlationId}.");
+
                     List<Address> streetDescriptorAddresses =
                     await MapStreetDescriptorDataToAddressesAsync(streetDescriptorCsvFile, batchSize, skipCounter);
 
@@ -762,6 +804,15 @@ namespace LHDS.Core.Services.Orchestrations.Addresses
                     skipCounter = skipCounter + batchSize;
                 }
             }
+
+            await this.auditBroker.LogInformationAsync(
+                auditType: "Address Import - Street Descriptors Processing",
+                title: "Processing Street Descriptors File",
+                message: $"Finished processing file {streetDescriptorCsvFile}.",
+                fileName: streetDescriptorCsvFile,
+                correlationId: correlationId.ToString());
+
+            await this.loggingBroker.LogInformationAsync(message: $"Finished processing file {streetDescriptorCsvFile}.");
 
             if (exceptions.Any())
             {

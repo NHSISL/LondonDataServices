@@ -10,11 +10,13 @@ using System.Linq.Expressions;
 using FluentAssertions;
 using KellermanSoftware.CompareNetObjects;
 using LHDS.Core.Brokers.Audits;
+using LHDS.Core.Brokers.DateTimes;
 using LHDS.Core.Brokers.Loggings;
 using LHDS.Core.Models.Brokers.Securities;
 using LHDS.Core.Models.Brokers.Storages.Blobs;
 using LHDS.Core.Models.Foundations.Documents.Exceptions;
 using LHDS.Core.Models.Foundations.IngestionTrackings;
+using LHDS.Core.Models.Orchestrations.EmisLandings;
 using LHDS.Core.Models.Processings.Documents.Exceptions;
 using LHDS.Core.Models.Processings.IngestionTrackings.Exceptions;
 using LHDS.Core.Models.Processings.SpecificationObjects.Exceptions;
@@ -37,7 +39,9 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Ingress
         private readonly Mock<IDocumentProcessingService> documentProcessingServiceMock;
         private readonly Mock<ILoggingBroker> loggingBrokerMock;
         private readonly Mock<IAuditBroker> auditBrokerMock;
+        private readonly Mock<IDateTimeBroker> dateTimeBrokerMock;
         private readonly BlobContainers blobContainers;
+        private readonly LandingConfiguration landingConfiguration;
         private readonly IIngressOrchestrationService ingressOrchestrationService;
         private readonly ITestOutputHelper output;
         private readonly ICompareLogic compareLogic;
@@ -51,6 +55,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Ingress
             this.documentProcessingServiceMock = new Mock<IDocumentProcessingService>();
             this.loggingBrokerMock = new Mock<ILoggingBroker>();
             this.auditBrokerMock = new Mock<IAuditBroker>();
+            this.dateTimeBrokerMock = new Mock<IDateTimeBroker>();
 
             blobContainers = new BlobContainers
             {
@@ -62,13 +67,18 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Ingress
                 TppLanding = "tpplanding"
             };
 
+            this.landingConfiguration = new LandingConfiguration();
+            this.landingConfiguration.BatchReadyFile = "LDSBatchReady.txt";
+
             this.ingressOrchestrationService = new IngressOrchestrationService(
                 ingestionTrackingProcessingService: this.ingestionTrackingProcessingServiceMock.Object,
                 specificationObjectProcessingService: this.specificationObjectProcessingServiceMock.Object,
                 documentProcessingService: this.documentProcessingServiceMock.Object,
+                landingConfiguration: this.landingConfiguration,
                 blobContainers: this.blobContainers,
                 loggingBroker: this.loggingBrokerMock.Object,
-                auditBroker: this.auditBrokerMock.Object);
+                auditBroker: this.auditBrokerMock.Object,
+                dateTimeBroker: this.dateTimeBrokerMock.Object);
         }
 
         private static Expression<Func<Xeption, bool>> SameExceptionAs(Xeption expectedException) =>
@@ -224,7 +234,8 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Ingress
                 .OnProperty(ingestionTracking => ingestionTracking.CreatedBy).Use(user)
                 .OnProperty(ingestionTracking => ingestionTracking.UpdatedBy).Use(user)
                 .OnProperty(ingestionTracking => ingestionTracking.IngestionTrackingAudits).IgnoreIt()
-                .OnProperty(ingestionTracking => ingestionTracking.Supplier).IgnoreIt();
+                .OnProperty(ingestionTracking => ingestionTracking.Supplier).IgnoreIt()
+                .OnProperty(ingestionTracking => ingestionTracking.SubscriberAgreement).IgnoreIt();
 
             return filler;
         }

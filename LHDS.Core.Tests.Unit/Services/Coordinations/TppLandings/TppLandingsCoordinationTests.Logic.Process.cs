@@ -10,7 +10,7 @@ using FluentAssertions;
 using Moq;
 using Xunit;
 
-namespace LHDS.Core.Tests.Unit.Services.Coordinations.Decryptions
+namespace LHDS.Core.Tests.Unit.Services.Coordinations.TppLandings
 {
     public partial class TppLandingsCoordinationTests
     {
@@ -26,12 +26,11 @@ namespace LHDS.Core.Tests.Unit.Services.Coordinations.Decryptions
             Guid expectedIngestionTrackingId = ingestionTrackingId;
 
             this.tppLandingOrchestrationServiceMock.Setup(service =>
-                service.ProcessAsync(inputData, inputFileName, inputSupplierId))
+                service.ProcessAsync(inputFileName, inputSupplierId))
                     .ReturnsAsync(ingestionTrackingId);
 
             // when
             Guid actualIngestionTrackingId = await this.tppLandingCoordinationService.ProcessAsync(
-                input: inputData,
                 fileName: inputFileName,
                 supplierId: inputSupplierId);
 
@@ -39,12 +38,8 @@ namespace LHDS.Core.Tests.Unit.Services.Coordinations.Decryptions
             actualIngestionTrackingId.ToString().Should().BeEquivalentTo(expectedIngestionTrackingId.ToString());
 
             this.tppLandingOrchestrationServiceMock.Verify(service =>
-                service.ProcessAsync(inputData, inputFileName, inputSupplierId),
+                service.ProcessAsync(inputFileName, inputSupplierId),
                 Times.Once);
-
-            this.ingressOrchestrationServiceMock.Verify(service =>
-                service.CheckForBatchCompleteAsync(ingestionTrackingId),
-                    Times.Once);
 
             this.tppLandingOrchestrationServiceMock.VerifyNoOtherCalls();
             this.ingressOrchestrationServiceMock.VerifyNoOtherCalls();

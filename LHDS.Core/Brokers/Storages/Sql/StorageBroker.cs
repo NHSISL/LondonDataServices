@@ -20,7 +20,6 @@ namespace LHDS.Core.Brokers.Storages.Sql
         public StorageBroker(IConfiguration configuration)
         {
             this.configuration = configuration;
-            this.Database.Migrate();
             efCoreClient = new EFCoreClient(this);
         }
 
@@ -55,10 +54,6 @@ namespace LHDS.Core.Brokers.Storages.Sql
             optionsBuilder.UseQueryTrackingBehavior(QueryTrackingBehavior.NoTracking);
             string connectionString = this.configuration.GetConnectionString(name: "DefaultConnection");
             optionsBuilder.UseSqlServer(connectionString);
-
-            //// Disable PendingModelChangesWarning
-            //optionsBuilder.ConfigureWarnings(warnings =>
-            //    warnings.Ignore(RelationalEventId.PendingModelChangesWarning));
         }
 
         private IQueryable<T> SelectAll<T>() where T : class => this.Set<T>();

@@ -13,8 +13,9 @@ namespace LHDS.Core.Models.Foundations.ResolvedAddresses
         public Guid UniqueReference { get; set; }
         public Guid? BatchReference { get; set; }
         public string UnstructuredPostalAddress { get; set; } = string.Empty;
+        public string AlternateUnstructuredPostalAddress { get; set; } = string.Empty;
         public string? UPRN { get; set; }
-        public string? UPSN { get; set; }
+        public string? USRN { get; set; }
         public string? OrganisationName { get; set; }
         public string? DepartmentName { get; set; }
         public string? SubBuildingName { get; set; }
@@ -34,6 +35,10 @@ namespace LHDS.Core.Models.Foundations.ResolvedAddresses
         public string? Classification { get; set; }
         public string? Algorithm { get; set; }
         public string? MatchPattern { get; set; }
+        public string? Latitude { get; set; }
+        public string? Longitude { get; set; }
+        public string? XCoordinate { get; set; }
+        public string? YCoordinate { get; set; }
         public bool IsProcessing { get; set; }
         public bool IsExported { get; set; }
         public int RetryCount { get; set; }

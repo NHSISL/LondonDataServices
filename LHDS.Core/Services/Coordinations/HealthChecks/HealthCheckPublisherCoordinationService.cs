@@ -17,7 +17,7 @@ namespace LHDS.Core.Services.Foundations.HealthChecks
     {
         private readonly ITelemetryBroker telemetryBroker;
         private readonly ILoggingBroker loggingBroker;
-        private const string KeyDelimiter = " - ";
+        private const string KeyDelimiter = ".";
         private const int HealthyStatusCode = 2;
         private const int DegradedStatusCode = 1;
         private const int UnhealthyStatusCode = 0;
@@ -47,7 +47,8 @@ namespace LHDS.Core.Services.Foundations.HealthChecks
 
                 foreach (var reading in entry.Value.Data)
                 {
-                    await AddMetricOrPropertyAsync(eventTelemetry, reading.Key, reading.Value);
+                    string key = $"{entry.Key}{KeyDelimiter}{reading.Key}";
+                    await AddMetricOrPropertyAsync(eventTelemetry, key, reading.Value);
                 }
 
                 await telemetryBroker.TrackEventAsync(eventTelemetry);

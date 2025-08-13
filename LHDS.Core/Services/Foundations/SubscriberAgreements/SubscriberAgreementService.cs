@@ -35,7 +35,7 @@ namespace LHDS.Core.Services.Foundations.SubscriberAgreements
         public ValueTask<SubscriberAgreement> AddSubscriberAgreementAsync(SubscriberAgreement subscriberAgreement) =>
             TryCatch(async () =>
             {
-                SubscriberAgreement subscriberAgreementWithAddAuditApplied = 
+                SubscriberAgreement subscriberAgreementWithAddAuditApplied =
                     await ApplyAddAuditAsync(subscriberAgreement);
 
                 await ValidateSubscriberAgreementOnAddAsync(subscriberAgreementWithAddAuditApplied);
@@ -62,45 +62,41 @@ namespace LHDS.Core.Services.Foundations.SubscriberAgreements
         public ValueTask<SubscriberAgreement> ModifySubscriberAgreementAsync(SubscriberAgreement subscriberAgreement) =>
             TryCatch(async () =>
             {
-                SubscriberAgreement osubscriberAgreementWithModifyAuditApplied = 
+                SubscriberAgreement osubscriberAgreementWithModifyAuditApplied =
                     await ApplyModifyAuditAsync(subscriberAgreement);
 
                 await ValidateSubscriberAgreementOnModifyAsync(osubscriberAgreementWithModifyAuditApplied);
 
                 SubscriberAgreement maybeSubscriberAgreement =
-                    await this.storageBroker.SelectSubscriberAgreementByIdAsync(subscriberAgreement.Id);
+                    await this.storageBroker.SelectSubscriberAgreementByIdAsync(
+                        subscriberAgreement.Id);
 
                 ValidateStorageSubscriberAgreement(maybeSubscriberAgreement, subscriberAgreement.Id);
 
+                SubscriberAgreement SubscriberAgreementWithModifyAuditAppliedEnsured =
+                   await EnsureCreatedAuditPropertiesIsSameAsStorageAsync(
+                       subscriberAgreement,
+                       maybeSubscriberAgreement);
+
                 ValidateAgainstStorageSubscriberAgreementOnModify(
-                    inputSubscriberAgreement: subscriberAgreement,
+                    inputSubscriberAgreement: SubscriberAgreementWithModifyAuditAppliedEnsured,
                     storageSubscriberAgreement: maybeSubscriberAgreement);
 
                 return await this.storageBroker.UpdateSubscriberAgreementAsync(subscriberAgreement);
             });
 
-        public ValueTask<SubscriberAgreement> RemoveSubscriberAgreementByIdAsync(Guid subscriberAgreementId) =>
-             TryCatch(async () =>
-             {
-                 ValidateSubscriberAgreementId(subscriberAgreementId: subscriberAgreementId);
+        public ValueTask<SubscriberAgreement> RemoveSubscriberAgreementByIdAsync(Guid optOutId) =>
+            TryCatch(async () =>
+            {
+                ValidateSubscriberAgreementId(optOutId);
 
-                 SubscriberAgreement maybeSubscriberAgreement = await this.storageBroker
-                     .SelectSubscriberAgreementByIdAsync(subscriberAgreementId);
+                SubscriberAgreement maybeSubscriberAgreement = await this.storageBroker
+                    .SelectSubscriberAgreementByIdAsync(optOutId);
 
-                 ValidateStorageSubscriberAgreement(maybeSubscriberAgreement, subscriberAgreementId);
+                ValidateStorageSubscriberAgreement(maybeSubscriberAgreement, optOutId);
 
-                 SubscriberAgreement subscriberAgreementWithDeleteAuditApplied =
-                     await ApplyDeleteAuditAsync(maybeSubscriberAgreement);
-
-                 SubscriberAgreement updatedSubscriberAgreement =
-                     await this.storageBroker.UpdateSubscriberAgreementAsync(subscriberAgreementWithDeleteAuditApplied);
-
-                 await ValidateAgainstStorageSubscriberAgreementOnDeleteAsync(
-                     subscriberAgreement: updatedSubscriberAgreement,
-                     maybeSubscriberAgreement: subscriberAgreementWithDeleteAuditApplied);
-
-                 return await this.storageBroker.DeleteSubscriberAgreementAsync(updatedSubscriberAgreement);
-             });
+                return await this.storageBroker.DeleteSubscriberAgreementAsync(maybeSubscriberAgreement);
+            });
 
         virtual internal async ValueTask<SubscriberAgreement> ApplyAddAuditAsync(SubscriberAgreement subscriberAgreement)
         {
@@ -126,13 +122,12 @@ namespace LHDS.Core.Services.Foundations.SubscriberAgreements
             return subscriberAgreement;
         }
 
-        virtual internal async ValueTask<SubscriberAgreement> ApplyDeleteAuditAsync(SubscriberAgreement subscriberAgreement)
+        virtual internal async ValueTask<SubscriberAgreement> EnsureCreatedAuditPropertiesIsSameAsStorageAsync(
+            SubscriberAgreement subscriberAgreement,
+            SubscriberAgreement maybeSubscriberAgreement)
         {
-            ValidateSubscriberAgreementIsNotNull(subscriberAgreement);
-            var auditDateTimeOffset = await this.dateTimeBroker.GetCurrentDateTimeOffsetAsync();
-            var auditUser = await this.securityBroker.GetCurrentUserAsync();
-            subscriberAgreement.UpdatedBy = auditUser?.EntraUserId.ToString() ?? string.Empty;
-            subscriberAgreement.UpdatedDate = auditDateTimeOffset;
+            subscriberAgreement.CreatedDate = maybeSubscriberAgreement.CreatedDate;
+            subscriberAgreement.CreatedBy = maybeSubscriberAgreement.CreatedBy;
 
             return subscriberAgreement;
         }

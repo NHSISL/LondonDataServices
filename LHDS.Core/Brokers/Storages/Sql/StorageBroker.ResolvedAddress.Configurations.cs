@@ -23,12 +23,16 @@ namespace LHDS.Core.Brokers.Storages.Sql
                 .IsRequired();
 
             modelBuilder.Entity<ResolvedAddress>()
+               .Property(address => address.AlternateUnstructuredPostalAddress)
+               .IsRequired(false);
+
+            modelBuilder.Entity<ResolvedAddress>()
                 .Property(address => address.UPRN)
                 .HasMaxLength(15)
                 .IsRequired(false);
 
             modelBuilder.Entity<ResolvedAddress>()
-                .Property(address => address.UPSN)
+                .Property(address => address.USRN)
                 .HasMaxLength(15)
                 .IsRequired(false);
 
@@ -126,6 +130,26 @@ namespace LHDS.Core.Brokers.Storages.Sql
                 .Property(address => address.MatchPattern)
                 .HasMaxLength(255)
                 .IsRequired(false);
+
+            modelBuilder.Entity<ResolvedAddress>()
+               .Property(address => address.Latitude)
+               .HasMaxLength(255)
+               .IsRequired(false);
+
+            modelBuilder.Entity<ResolvedAddress>()
+               .Property(address => address.Longitude)
+               .HasMaxLength(255)
+               .IsRequired(false);
+
+            modelBuilder.Entity<ResolvedAddress>()
+                .Property(address => address.XCoordinate)
+                .HasMaxLength(255)
+                .IsRequired(false);
+
+            modelBuilder.Entity<ResolvedAddress>()
+               .Property(address => address.YCoordinate)
+               .HasMaxLength(255)
+               .IsRequired(false);
 
             modelBuilder.Entity<ResolvedAddress>()
                 .Property(address => address.CreatedBy)

@@ -3,7 +3,6 @@
 // ---------------------------------------------------------
 
 using System;
-using System.IO;
 using System.Threading.Tasks;
 using LHDS.Core.Brokers.Loggings;
 using LHDS.Core.Services.Orchestrations.Ingress;
@@ -27,20 +26,23 @@ namespace LHDS.Core.Services.Coordinations.TppLandings
             this.loggingBroker = loggingBroker;
         }
 
-        public ValueTask<Guid> ProcessAsync(Stream input, string fileName, Guid supplierId) =>
+        public ValueTask<Guid> ProcessAsync(string fileName, Guid supplierId) =>
             TryCatch(async () =>
             {
-                ValidateArgumentsOnProcess(input, fileName, supplierId);
+                ValidateArgumentsOnProcess(fileName, supplierId);
 
                 Guid ingestionTrackingId = await this.tppOrchestrationService.ProcessAsync(
-                    input: input,
                     fileName: fileName,
                     supplierId: supplierId);
 
-                await this.ingressOrchestrationService
-                    .CheckForBatchCompleteAsync(ingestionTrackingId);
-
                 return ingestionTrackingId;
+            });
+
+        public ValueTask ReProcessAsync(Guid supplierId) =>
+            TryCatch(async () =>
+            {
+                ValidateArgumentsOnReProcess(supplierId);
+                await this.tppOrchestrationService.ReProcessAsync(supplierId);
             });
     }
 }

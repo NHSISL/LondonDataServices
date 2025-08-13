@@ -6,6 +6,7 @@ namespace LHDS.Core.Clients
 {
     using System;
     using System.IO;
+    using System.Security.Cryptography;
     using System.Threading.Tasks;
     using Azure.Storage.Blobs;
     using Azure.Storage.Blobs.Models;
@@ -39,6 +40,13 @@ namespace LHDS.Core.Clients
         {
             try
             {
+                byte[] contentHash;
+                using (var md5 = MD5.Create())
+                {
+                    input.Position = 0;
+                    contentHash = md5.ComputeHash(input);
+                }
+
                 await loggingBroker.LogInformationAsync($"file:{fileName}, size:{input.Length}, container:{container}");
                 input.Position = 0;
                 var blobClient = blobServiceClient.GetBlobContainerClient(container).GetBlobClient(fileName);
@@ -46,6 +54,10 @@ namespace LHDS.Core.Clients
 
                 var options = new BlobUploadOptions
                 {
+                    HttpHeaders = new BlobHttpHeaders
+                    {
+                        ContentHash = contentHash
+                    },
                     ProgressHandler = new Progress<long>(progress =>
                     {
                         Console.WriteLine(
@@ -98,7 +110,7 @@ namespace LHDS.Core.Clients
                 Sas = sasBuilder.ToSasQueryParameters(userDelegationKey, blobServiceClient.AccountName)
             };
 
-            return await Task.FromResult(blobUriBuilder.ToUri());
+            return blobUriBuilder.ToUri();
         }
     }
 }

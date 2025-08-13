@@ -10,7 +10,7 @@ namespace LHDS.Core.Models.Foundations.ResolvedAddresses
     {
         public Guid UniqueReference { get; set; }
         public string? UPRN { get; set; }
-        public string? UPSN { get; set; }
+        public string? USRN { get; set; }
         public string? OrganisationName { get; set; }
         public string? DepartmentName { get; set; }
         public string? SubBuildingName { get; set; }

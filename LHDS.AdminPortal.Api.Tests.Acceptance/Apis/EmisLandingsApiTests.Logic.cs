@@ -133,6 +133,7 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.Landings
             string randomFileName = GetRandomFileName(inputSubscriberCredential.Id);
             string randomFilePath = CreateRandomFilePath(inputSubscriberCredential.Id, randomFileName);
             Guid emisSupplierId = Guid.Parse("67680f17-9d0c-4474-8b35-56ca8f9df1f6");
+            Supplier randomSupplier = await PostRandomSupplierAsync(supplierId: emisSupplierId);
             DataSet randomDataSet = await PostRandomActiveDataSetAsync(emisSupplierId);
             Stream randomStream = new MemoryStream();
 
@@ -210,7 +211,8 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.Landings
             foreach (Guid id in subscriberCredentialIds)
             {
                 await this.apiBroker.DeleteSubscriberCredentialByIdAsync(id);
-            };
+            }
+            ;
 
             await this.apiBroker.DeleteDataSetSpecificationByIdAsync(randomDataSetSpecification.Id);
             await this.apiBroker.DeleteDataSetByIdAsync(randomDataSet.Id);

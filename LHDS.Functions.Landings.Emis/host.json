@@ -12,5 +12,6 @@
     "blobs": {
       "maxDegreeOfParallelism": 10
     }
-  }
+  },
+  "functionTimeout": "03:00:00"
 }

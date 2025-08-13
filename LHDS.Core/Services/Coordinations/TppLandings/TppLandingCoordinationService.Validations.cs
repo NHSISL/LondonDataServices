@@ -10,13 +10,16 @@ namespace LHDS.Core.Services.Coordinations.TppLandings
 {
     public partial class TppLandingCoordinationService
     {
-        private static void ValidateArgumentsOnProcess(Stream input, string fileName, Guid supplierId)
+        private static void ValidateArgumentsOnProcess(string fileName, Guid supplierId)
         {
             Validate(
-                (Rule: IsInvalidInputStream(input), Parameter: "Input"),
                 (Rule: IsInvalid(fileName), Parameter: "FileName"),
                 (Rule: IsInvalid(supplierId), Parameter: "SupplierId"));
+        }
 
+        private static void ValidateArgumentsOnReProcess(Guid supplierId)
+        {
+            Validate((Rule: IsInvalid(supplierId), Parameter: "SupplierId"));
         }
 
         private static dynamic IsInvalid(Guid id) => new

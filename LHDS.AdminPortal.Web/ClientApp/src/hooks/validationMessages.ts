@@ -1,4 +1,3 @@
-
 export const ValidationMessages = {
     minimumLengthMessage: (minLength: number) => `must have a minimum length of ${minLength} characters`,
     maximumLengthMessage: (maxLength: number) => `must have a maximum length of ${maxLength} characters`,

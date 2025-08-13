@@ -79,7 +79,7 @@ namespace LHDS.Core.Tests.Acceptance.Clients.EmisLandings
             });
 
             var claimsPrincipal = new ClaimsPrincipal();
-            
+
             claimsPrincipal.AddIdentity(new ClaimsIdentity(new List<Claim>
             {
                 new Claim("oid", Guid.NewGuid().ToString()),
@@ -180,9 +180,9 @@ namespace LHDS.Core.Tests.Acceptance.Clients.EmisLandings
                     : "/" + relativeSourcePath;
 
                 string[] splitFileName = filename.Split('/');
-                string newFileName = $"{subscriberAgreementId}/{splitFileName[5]}/{splitFileName[6]}"; ;
+                string newFileName = $"{subscriberAgreementId}/{splitFileName[5]}/{splitFileName[6]}";
 
-                var encryptedFilePath = $"/{landingConfiguration.EncryptedFolder}/{newFileName}"; ;
+                var encryptedFilePath = $"/{landingConfiguration.EncryptedFolder}/{newFileName}";
 
                 var relativeDecryptedPath =
                     $"/{landingConfiguration.DecryptedFolder}" +
@@ -205,7 +205,7 @@ namespace LHDS.Core.Tests.Acceptance.Clients.EmisLandings
         }
 
         private static string GetRandomString() =>
-            new MnemonicString().GetValue();
+            new MnemonicString(wordCount: 1).GetValue();
 
         private static string GetRandomFileName(Guid subscriberAgreementId)
         {
@@ -222,12 +222,14 @@ namespace LHDS.Core.Tests.Acceptance.Clients.EmisLandings
 
         private static string CreateRandomFilePath(Guid subscriberAgreementId, string fileName)
         {
+            string fileDate = fileName.Split('_')[4];
+
             return Path.Combine(
                 "emisnightingale-data-preprod-provider-extracts",
                 "IM1",
                 "sftp",
                 $"{subscriberAgreementId}",
-                $"{DateTime.Now.ToString("yyyyMMdd")}",
+                $"{fileDate}",
                 $"{fileName}");
         }
 
@@ -242,7 +244,8 @@ namespace LHDS.Core.Tests.Acceptance.Clients.EmisLandings
 
         private async ValueTask<List<IngestionTracking>> CreateRandomIngestionTrackings(
             List<DocumentSource> documentSources,
-            Guid supplierId)
+            Guid supplierId,
+            Guid subscriberAgreementId)
         {
             List<IngestionTracking> items = new List<IngestionTracking>();
 
@@ -251,7 +254,8 @@ namespace LHDS.Core.Tests.Acceptance.Clients.EmisLandings
                 var item = CreateIngestionTrackingFiller(
                     await this.dateTimeBroker.GetCurrentDateTimeOffsetAsync(),
                     documentSource,
-                    supplierId)
+                    supplierId,
+                    subscriberAgreementId)
                         .Create();
 
                 await this.ingestionTrackingService.AddIngestionTrackingAsync(item);
@@ -262,7 +266,7 @@ namespace LHDS.Core.Tests.Acceptance.Clients.EmisLandings
         }
 
         private static Filler<IngestionTracking> CreateIngestionTrackingFiller(
-            DateTimeOffset dateTimeOffset, DocumentSource documentSource, Guid supplierId)
+            DateTimeOffset dateTimeOffset, DocumentSource documentSource, Guid supplierId, Guid subscriberAgreementId)
         {
             string user = "System";
             var filler = new Filler<IngestionTracking>();
@@ -279,23 +283,28 @@ namespace LHDS.Core.Tests.Acceptance.Clients.EmisLandings
                 .OnProperty(ingestionTracking => ingestionTracking.CreatedBy).Use(user)
                 .OnProperty(ingestionTracking => ingestionTracking.UpdatedBy).Use(user)
                 .OnProperty(ingestionTracking => ingestionTracking.SupplierId).Use(supplierId)
+                .OnProperty(ingestionTracking => ingestionTracking.SubscriberAgreementId).Use(subscriberAgreementId)
                 .OnType<DateTimeOffset>().Use(dateTimeOffset)
-                .OnType<DateTimeOffset?>().Use(dateTimeOffset);
+                .OnType<DateTimeOffset?>().Use(dateTimeOffset)
+                .OnProperty(ingestionTracking => ingestionTracking.Supplier).IgnoreIt()
+                .OnProperty(ingestionTracking => ingestionTracking.SubscriberAgreement).IgnoreIt()
+                .OnProperty(ingestionTracking => ingestionTracking.IngestionTrackingAudits).IgnoreIt();
 
             return filler;
         }
 
-        private static Supplier CreateRandomSupplier(Guid supplierId, DateTimeOffset dateTimeOffset) =>
-            CreateSupplierFiller(supplierId, dateTimeOffset).Create();
+        private static Supplier CreateRandomSupplier(Guid supplierId) =>
+            CreateSupplierFiller(supplierId).Create();
 
-        private static Filler<Supplier> CreateSupplierFiller(Guid supplierId, DateTimeOffset dateTimeOffset)
+        private static Filler<Supplier> CreateSupplierFiller(Guid supplierId)
         {
             string user = Guid.NewGuid().ToString();
             var filler = new Filler<Supplier>();
+            var now = DateTimeOffset.UtcNow;
 
             filler.Setup()
-                .OnType<DateTimeOffset>().Use(dateTimeOffset)
-                .OnType<DateTimeOffset?>().Use(dateTimeOffset)
+                .OnType<DateTimeOffset>().Use(now)
+                .OnType<DateTimeOffset?>().Use(now)
                 .OnProperty(supplier => supplier.Id).Use(supplierId)
                 .OnProperty(supplier => supplier.CreatedBy).Use(user)
                 .OnProperty(supplier => supplier.UpdatedBy).Use(user)
@@ -344,6 +353,7 @@ namespace LHDS.Core.Tests.Acceptance.Clients.EmisLandings
                 .OnProperty(dataSetSpecification => dataSetSpecification.DataSetId).Use(dataSet.Id)
                 .OnProperty(dataSetSpecification => dataSetSpecification.DataSet).Use(dataSet)
                 .OnProperty(dataSetSpecification => dataSetSpecification.IsActive).Use(true)
+                .OnProperty(dataSetSpecification => dataSetSpecification.IsPublished).Use(true)
                 .OnProperty(dataSetSpecification => dataSetSpecification.ActiveFrom).Use(now.AddDays(-2))
                 .OnProperty(dataSetSpecification => dataSetSpecification.ActiveTo).Use(now.AddDays(2))
 
@@ -355,6 +365,8 @@ namespace LHDS.Core.Tests.Acceptance.Clients.EmisLandings
 
                 .OnProperty(dataSetSpecification => dataSetSpecification.PresededById).IgnoreIt()
                 .OnProperty(dataSetSpecification => dataSetSpecification.SupersededById).IgnoreIt()
+                .OnProperty(dataSetSpecification => dataSetSpecification.PresededBy).IgnoreIt()
+                .OnProperty(dataSetSpecification => dataSetSpecification.SupersededBy).IgnoreIt()
                 .OnProperty(dataSetSpecification => dataSetSpecification.CreatedBy).Use(user)
                 .OnProperty(dataSetSpecification => dataSetSpecification.CreatedBy).Use(user)
                 .OnProperty(dataSetSpecification => dataSetSpecification.UpdatedBy).Use(user);

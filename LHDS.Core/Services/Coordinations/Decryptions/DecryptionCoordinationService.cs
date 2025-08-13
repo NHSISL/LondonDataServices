@@ -33,13 +33,19 @@ namespace LHDS.Core.Services.Coordinations.Decryptions
             this.loggingBroker = loggingBroker;
         }
 
+        public ValueTask ProcessDecryptedItemsForBatchCompleteAsync() =>
+            TryCatch(async () =>
+            {
+                await this.ingressOrchestrationService.ProcessDecryptedItemsForBatchCompleteAsync();
+            });
+
         public ValueTask<string> DecryptAsync(string encryptedFileName) =>
             TryCatch(async () =>
             {
                 try
                 {
-                    (string decryptedFileName, Guid ingestionTrackingId) = await DecryptFileAsync(encryptedFileName);
-                    await this.ingressOrchestrationService.CheckForBatchCompleteAsync(ingestionTrackingId);
+                    (string decryptedFileName, Guid ingestionTrackingId) =
+                        await DecryptFileAsync(encryptedFileName);
 
                     return decryptedFileName;
                 }
@@ -66,8 +72,8 @@ namespace LHDS.Core.Services.Coordinations.Decryptions
                 {
                     try
                     {
-                        (string decryptedFileName, Guid ingestionTrackingId) = await DecryptFileAsync(encryptedFileName);
-                        await this.ingressOrchestrationService.CheckForBatchCompleteAsync(ingestionTrackingId);
+                        (string decryptedFileName, Guid ingestionTrackingId) =
+                            await DecryptFileAsync(encryptedFileName);
                     }
                     catch (Exception exception)
                     {
@@ -76,7 +82,8 @@ namespace LHDS.Core.Services.Coordinations.Decryptions
                 }
             });
 
-        private async ValueTask<(string DecryptedFileName, Guid IngestionTrackingId)> DecryptFileAsync(string encryptedFileName)
+        private async ValueTask<(string DecryptedFileName, Guid IngestionTrackingId)> DecryptFileAsync(
+            string encryptedFileName)
         {
             ValidateFileNameOnDecrypt(encryptedFileName);
             string[] parts = encryptedFileName.Split("/");

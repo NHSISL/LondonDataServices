@@ -8,9 +8,11 @@ using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using LHDS.Core.Brokers.Audits;
+using LHDS.Core.Brokers.DateTimes;
 using LHDS.Core.Brokers.Loggings;
 using LHDS.Core.Models.Brokers.Storages.Blobs;
 using LHDS.Core.Models.Foundations.IngestionTrackings;
+using LHDS.Core.Models.Orchestrations.EmisLandings;
 using LHDS.Core.Models.Orchestrations.Ingres.Exceptions;
 using LHDS.Core.Services.Processings.Documents;
 using LHDS.Core.Services.Processings.IngestionTrackings;
@@ -23,27 +25,80 @@ namespace LHDS.Core.Services.Orchestrations.Ingress
         private readonly IIngestionTrackingProcessingService ingestionTrackingProcessingService;
         private readonly ISpecificationObjectProcessingService specificationObjectProcessingService;
         private readonly IDocumentProcessingService documentProcessingService;
+        private readonly LandingConfiguration landingConfiguration;
         private readonly BlobContainers blobContainers;
         private readonly ILoggingBroker loggingBroker;
         private readonly IAuditBroker auditBroker;
+        private readonly IDateTimeBroker dateTimeBroker;
 
         public IngressOrchestrationService(
             IIngestionTrackingProcessingService ingestionTrackingProcessingService,
             ISpecificationObjectProcessingService specificationObjectProcessingService,
             IDocumentProcessingService documentProcessingService,
+            LandingConfiguration landingConfiguration,
             BlobContainers blobContainers,
             ILoggingBroker loggingBroker,
-            IAuditBroker auditBroker)
+            IAuditBroker auditBroker,
+            IDateTimeBroker dateTimeBroker)
         {
             this.ingestionTrackingProcessingService = ingestionTrackingProcessingService;
             this.specificationObjectProcessingService = specificationObjectProcessingService;
             this.documentProcessingService = documentProcessingService;
+            this.landingConfiguration = landingConfiguration;
             this.blobContainers = blobContainers;
             this.loggingBroker = loggingBroker;
             this.auditBroker = auditBroker;
+            this.dateTimeBroker = dateTimeBroker;
         }
 
-        public ValueTask CheckForBatchCompleteAsync(Guid ingestionTrackingId) =>
+        public ValueTask ProcessDecryptedItemsForBatchCompleteAsync() =>
+            TryCatch(async () =>
+            {
+                List<Exception> exceptions = new List<Exception>();
+                Guid ingestionTrackingId;
+                var dateTimeCheck = (await this.dateTimeBroker.GetCurrentDateTimeOffsetAsync()).AddMinutes(-15);
+
+                while ((ingestionTrackingId = (await this.ingestionTrackingProcessingService
+                    .RetrieveAllIngestionTrackingsAsync())
+
+                    .Where(ingestionTracking =>
+                        ingestionTracking.IsBatchComplete == false &&
+                            (ingestionTracking.LastBatchCompleteCheck == null
+                                || ingestionTracking.LastBatchCompleteCheck <= dateTimeCheck))
+
+                    .GroupBy(ingestionTracking =>
+                        new { ingestionTracking.Batch, ingestionTracking.SubscriberAgreementId })
+
+                    .Where(group =>
+                        group.All(ingestionTracking => ingestionTracking.IsDownloaded && ingestionTracking.Decrypted))
+
+                    .Select(group => group.Select(ingestionTracking => ingestionTracking.Id).FirstOrDefault())
+                    .FirstOrDefault()) != default)
+                {
+                    try
+                    {
+                        Console.WriteLine($"Checking batch completion for IngestionTrackingId: {ingestionTrackingId}");
+                        await this.CheckForBatchCompleteAsync(ingestionTrackingId);
+                    }
+                    catch (Exception exception)
+                    {
+                        exceptions.Add(exception);
+                    }
+                }
+
+                if (exceptions.Any())
+                {
+                    AggregateException aggregateException = new AggregateException(
+                        "One or more errors occurred while checking for batch completion.",
+                        exceptions);
+
+                    throw new BatchCompleteException(
+                        message: "One or more errors occurred while checking for batch completion.",
+                        innerException: aggregateException);
+                }
+            });
+
+        virtual internal ValueTask CheckForBatchCompleteAsync(Guid ingestionTrackingId) =>
         TryCatch(async () =>
         {
             ValidateOnCheckForBatchComplete(ingestionTrackingId);
@@ -67,7 +122,10 @@ namespace LHDS.Core.Services.Orchestrations.Ingress
             }
 
             List<string> decryptedIngestiontrackingObjects = await this.ingestionTrackingProcessingService
-                .RetrieveObjectsInBatchByBatchReferenceAsync(bacthReference: ingestionTracking.Batch, decrypted: true);
+                .RetrieveObjectsInBatchByBatchReferenceAsync(
+                    batchReference: ingestionTracking.Batch,
+                    decrypted: true,
+                    subscriberAgreementId: ingestionTracking.SubscriberAgreementId);
 
             List<string> missingSpecificationObjectIds = specificationObjectIds
                 .Except(decryptedIngestiontrackingObjects).ToList();
@@ -75,24 +133,32 @@ namespace LHDS.Core.Services.Orchestrations.Ingress
             if (missingSpecificationObjectIds.Any())
             {
                 isBatchComplete = false;
+
+                string message =
+                    $"Checking IngestionTrackingId {ingestionTrackingId} for subscriber agreement " +
+                    $"'{ingestionTracking.SubscriberAgreementId}' and batch '{ingestionTracking.Batch}' " +
+                    $"Batch is not complete. " +
+                    $"Missing specification object files: {string.Join(", ", missingSpecificationObjectIds)}";
+
+                Console.WriteLine(message);
+                await this.loggingBroker.LogInformationAsync(message);
             }
 
-            string batchCompleteFileName =
-                $"{ingestionTracking.BatchReadyFolderPath}/BatchReady.txt"
-                .Replace("\\", "/");
+            string batchReadyFileName = this.landingConfiguration.BatchReadyFile;
 
-            string batchIncompleteFileName =
-                $"{ingestionTracking.BatchReadyFolderPath}/BatchNotReady.txt"
+            string batchCompleteFileName =
+                $"{ingestionTracking.BatchReadyFolderPath}/{batchReadyFileName}"
                 .Replace("\\", "/");
 
             if (isBatchComplete)
             {
                 string batchComplete =
-                    $"All specification object files present for batch '{ingestionTracking.Batch}' " +
-                    $"as defined in Dataset Specification Id: '{ingestionTracking.DataSetSpecificationId}'." +
-                    Environment.NewLine +
-                    $"Generate batch complete file: '{batchCompleteFileName}'";
+                    $"All specification object files present for subscriber agreement " +
+                        $"'{ingestionTracking.SubscriberAgreementId}' and batch '{ingestionTracking.Batch}' " +
+                            $"as defined in Dataset Specification Id: '{ingestionTracking.DataSetSpecificationId}'.";
 
+                Console.WriteLine(batchComplete);
+                await this.loggingBroker.LogInformationAsync(batchComplete);
                 Stream data = new MemoryStream(System.Text.Encoding.UTF8.GetBytes(batchComplete));
 
                 await this.documentProcessingService.AddDocumentAsync(
@@ -100,55 +166,24 @@ namespace LHDS.Core.Services.Orchestrations.Ingress
                     fileName: batchCompleteFileName,
                     container: this.blobContainers.Ingress);
 
+                await this.ingestionTrackingProcessingService
+                    .MarkAsBatchCompleteAsync(ingestionTrackingId, isBatchComplete: true);
+
                 await this.auditBroker.LogInformationAsync(
                     auditType: "BatchComplete",
-                    title: "BatchReady.txt generated",
+
+                    title: $"{batchReadyFileName} generated for subscriber agreement " +
+                        $"'{ingestionTracking.SubscriberAgreementId}' and " +
+                            $"batch '{ingestionTracking.Batch}'",
+
                     message: batchComplete,
                     fileName: batchCompleteFileName,
                     correlationId: ingestionTracking.Batch);
-
-                try
-                {
-                    await this.documentProcessingService.RemoveDocumentByFileNameAsync(
-                        batchIncompleteFileName,
-                        this.blobContainers.Ingress);
-                }
-                catch (Exception)
-                { }
             }
             else
             {
-                string batchIncomplete =
-                    $"Unable to generate '{batchCompleteFileName}' for batch: {ingestionTracking.Batch}.  " +
-                    Environment.NewLine +
-                    $"We are missing {missingSpecificationObjectIds.Count}/{specificationObjectIds.Count} files.  " +
-                    Environment.NewLine +
-                    $"Missing specification object Id's: {string.Join(", ", missingSpecificationObjectIds)} " +
-                    Environment.NewLine +
-                    $"as defined by Dataset Specification Id: {ingestionTracking.DataSetSpecificationId}";
-
-                Stream data = new MemoryStream(System.Text.Encoding.UTF8.GetBytes(batchIncomplete));
-
-                await this.documentProcessingService.AddDocumentAsync(
-                    input: data,
-                    fileName: batchIncompleteFileName,
-                    container: this.blobContainers.Ingress);
-
-                await this.auditBroker.LogInformationAsync(
-                    auditType: "BatchComplete",
-                    title: "Unable to generate BatchReady.txt",
-                    message: batchIncomplete,
-                    fileName: batchCompleteFileName,
-                    correlationId: ingestionTracking.Batch);
-
-                try
-                {
-                    await this.documentProcessingService.RemoveDocumentByFileNameAsync(
-                        batchCompleteFileName,
-                        this.blobContainers.Ingress);
-                }
-                catch (Exception)
-                { }
+                await this.ingestionTrackingProcessingService
+                    .MarkAsBatchCompleteAsync(ingestionTrackingId, isBatchComplete: false);
             }
         });
 

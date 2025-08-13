@@ -14,13 +14,15 @@ using Microsoft.Extensions.Diagnostics.HealthChecks;
 
 namespace LHDS.Core.Services.Foundations.HealthChecks.IngestionTracking
 {
-    public class IngestionTrackingDecryptionHealthCheckService : IIngestionTrackingHealthItemService
+    public partial class IngestionTrackingDecryptionHealthCheckService : IIngestionTrackingHealthItemService
     {
         private readonly IStorageBroker storageBroker;
         private readonly IConfiguration configuration;
         private readonly IDateTimeBroker dateTimeBroker;
         private readonly ILoggingBroker loggingBroker;
         private const string CheckName = "decryption";
+        private const string CheckDescriptionName = "Decryption Queue";
+        private const string ConfigSectionName = "HealthChecks:IngestionTracking:Decryption";
 
         public IngestionTrackingDecryptionHealthCheckService(
             IStorageBroker storageBroker,
@@ -34,37 +36,40 @@ namespace LHDS.Core.Services.Foundations.HealthChecks.IngestionTracking
             this.loggingBroker = loggingBroker;
         }
 
-        public async ValueTask<HealthCheckResult> GetHealthStatusAsync()
-        {
-            int degradedThresholdMinutes = configuration
-                .GetValue("HealthChecks:IngestionTracking:Decryption:DegradedThreshold", 1440);
-
-            int unHealthyThresholdMinutes = configuration
-                .GetValue("HealthChecks:IngestionTracking:Decryption:UnHealthyThreshold", 2880);
-
-            DateTimeOffset currentDateTime = await dateTimeBroker.GetCurrentDateTimeOffsetAsync();
-            DateTimeOffset degradedThresholdDateTime = currentDateTime.AddMinutes(-1 * degradedThresholdMinutes);
-            DateTimeOffset unHealthyThresholdDateTime = currentDateTime.AddMinutes(-1 * unHealthyThresholdMinutes);
-            var ingestionTrackingQuery = await storageBroker.SelectAllIngestionTrackingsAsync();
-            var filteredQuery = ingestionTrackingQuery.Where(i => !i.Decrypted && !i.IsProcessing);
-
-            int degradedCount = filteredQuery
-                .Count(ingestionTracking =>
-                    ingestionTracking.UpdatedDate <= degradedThresholdDateTime &&
-                    ingestionTracking.UpdatedDate > unHealthyThresholdDateTime);
-
-            int unHealthyCount = filteredQuery
-                .Count(ingestionTracking => ingestionTracking.UpdatedDate <= unHealthyThresholdDateTime);
-
-            int totalCount = degradedCount + unHealthyCount;
-
-            string message = totalCount == 0
-                ? $"Nothing to decrypt. All up to date."
-                : $"{totalCount} files have not been decrypted. Please check logs and function status.";
-
-            var vals = new Dictionary<string, object>
+        public ValueTask<HealthCheckResult> GetHealthStatusAsync() =>
+            TryCatch(async () =>
             {
-                { "description", "Decryption Queue" },
+                int degradedThresholdMinutes = configuration
+                    .GetValue($"{ConfigSectionName}:DegradedThreshold", 1440);
+
+                int unHealthyThresholdMinutes = configuration
+                    .GetValue($"{ConfigSectionName}:UnHealthyThreshold", 2880);
+
+                DateTimeOffset currentDateTime = await dateTimeBroker.GetCurrentDateTimeOffsetAsync();
+                DateTimeOffset degradedThresholdDateTime = currentDateTime.AddMinutes(-1 * degradedThresholdMinutes);
+                DateTimeOffset unHealthyThresholdDateTime = currentDateTime.AddMinutes(-1 * unHealthyThresholdMinutes);
+                var ingestionTrackingQuery = await storageBroker.SelectAllIngestionTrackingsAsync();
+
+                var filteredQuery = ingestionTrackingQuery.Where(ingestionTracking =>
+                !ingestionTracking.Decrypted && !ingestionTracking.IsProcessing);
+
+                int degradedCount = filteredQuery
+                    .Count(ingestionTracking =>
+                        ingestionTracking.UpdatedDate <= degradedThresholdDateTime &&
+                        ingestionTracking.UpdatedDate > unHealthyThresholdDateTime);
+
+                int unHealthyCount = filteredQuery
+                    .Count(ingestionTracking => ingestionTracking.UpdatedDate <= unHealthyThresholdDateTime);
+
+                int totalCount = degradedCount + unHealthyCount;
+
+                string message = totalCount == 0
+                    ? $"Nothing to decrypt. All up to date."
+                    : $"{totalCount} files have not been decrypted. Please check logs and function status.";
+
+                var values = new Dictionary<string, object>
+            {
+                { "description", CheckDescriptionName },
                 { "unDecryptedItems", totalCount},
                 { "degradedItems", degradedCount},
                 { "unHealthyItems", unHealthyCount},
@@ -74,30 +79,30 @@ namespace LHDS.Core.Services.Foundations.HealthChecks.IngestionTracking
                 { "message", message }
             };
 
-            if (unHealthyCount > 0)
-            {
-                vals.Add("status", HealthStatus.Unhealthy.ToString());
+                if (unHealthyCount > 0)
+                {
+                    values.Add("status", HealthStatus.Unhealthy.ToString());
 
-                return HealthCheckResult.Unhealthy(
-                    description: CheckName,
-                    data: vals);
-            }
-            else if (degradedCount > 0)
-            {
-                vals.Add("status", HealthStatus.Degraded.ToString());
+                    return HealthCheckResult.Unhealthy(
+                        description: CheckName,
+                        data: values);
+                }
+                else if (degradedCount > 0)
+                {
+                    values.Add("status", HealthStatus.Degraded.ToString());
 
-                return HealthCheckResult.Degraded(
-                    description: CheckName,
-                    data: vals);
-            }
-            else
-            {
-                vals.Add("status", HealthStatus.Healthy.ToString());
+                    return HealthCheckResult.Degraded(
+                        description: CheckName,
+                        data: values);
+                }
+                else
+                {
+                    values.Add("status", HealthStatus.Healthy.ToString());
 
-                return HealthCheckResult.Healthy(
-                    description: CheckName,
-                    data: vals);
-            }
-        }
+                    return HealthCheckResult.Healthy(
+                        description: CheckName,
+                        data: values);
+                }
+            });
     }
 }

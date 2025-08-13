@@ -6,6 +6,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using LHDS.Core.Brokers.DateTimes;
 using LHDS.Core.Brokers.Loggings;
 using LHDS.Core.Models.Foundations.IngestionTrackings;
 using LHDS.Core.Services.Foundations.IngestionTrackings;
@@ -15,13 +16,16 @@ namespace LHDS.Core.Services.Processings.IngestionTrackings
     public partial class IngestionTrackingProcessingService : IIngestionTrackingProcessingService
     {
         private readonly IIngestionTrackingService ingestionTrackingService;
+        private readonly IDateTimeBroker dateTimeBroker;
         private readonly ILoggingBroker loggingBroker;
 
         public IngestionTrackingProcessingService(
             IIngestionTrackingService ingestionTrackingService,
+            IDateTimeBroker dateTimeBroker,
             ILoggingBroker loggingBroker)
         {
             this.ingestionTrackingService = ingestionTrackingService;
+            this.dateTimeBroker = dateTimeBroker;
             this.loggingBroker = loggingBroker;
         }
 
@@ -90,11 +94,12 @@ namespace LHDS.Core.Services.Processings.IngestionTrackings
             });
 
         public ValueTask<List<string>> RetrieveObjectsInBatchByBatchReferenceAsync(
-            string bacthReference,
-            bool? decrypted = null) =>
+            string batchReference,
+            bool? decrypted = null,
+            Guid? subscriberAgreementId = null) =>
             TryCatch(async () =>
             {
-                ValidateOnRetrieveObjectsInBatchByBatchReference(bacthReference);
+                ValidateOnRetrieveObjectsInBatchByBatchReference(batchReference);
 
                 List<string> objectNames = new List<string>();
 
@@ -102,12 +107,18 @@ namespace LHDS.Core.Services.Processings.IngestionTrackings
                     await this.ingestionTrackingService.RetrieveAllIngestionTrackingsAsync();
 
                 allingestionTrackings = allingestionTrackings
-                    .Where(ingestionTracking => ingestionTracking.Batch == bacthReference);
+                    .Where(ingestionTracking => ingestionTracking.Batch == batchReference);
 
-                if (decrypted != null)
+                if (decrypted.HasValue)
                 {
                     allingestionTrackings = allingestionTrackings
                         .Where(ingestionTracking => ingestionTracking.Decrypted == decrypted.Value);
+                }
+
+                if (subscriberAgreementId.HasValue)
+                {
+                    allingestionTrackings = allingestionTrackings
+                        .Where(ingestionTracking => ingestionTracking.SubscriberAgreementId == subscriberAgreementId);
                 }
 
                 List<string?> result = allingestionTrackings
@@ -152,6 +163,30 @@ namespace LHDS.Core.Services.Processings.IngestionTrackings
             });
 
             return objectNames;
+        });
+
+        public ValueTask MarkAsBatchCompleteAsync(Guid ingestionTrackingId, bool isBatchComplete) =>
+        TryCatch(async () =>
+        {
+            ValidateIngestionTrackingId(ingestionTrackingId);
+
+            IngestionTracking ingestionTrackingItem =
+                await this.ingestionTrackingService.RetrieveIngestionTrackingByIdAsync(ingestionTrackingId);
+
+            IQueryable<IngestionTracking> allIngestionTrackings =
+                await this.ingestionTrackingService.RetrieveAllIngestionTrackingsAsync();
+
+            List<IngestionTracking> batchIngestionTrackings = allIngestionTrackings
+                .Where(ingestionTracking => ingestionTracking.Batch == ingestionTrackingItem.Batch).ToList();
+
+            DateTimeOffset currentDateTime = await this.dateTimeBroker.GetCurrentDateTimeOffsetAsync();
+
+            foreach (IngestionTracking batchIngestionTracking in batchIngestionTrackings)
+            {
+                batchIngestionTracking.IsBatchComplete = isBatchComplete;
+                batchIngestionTracking.LastBatchCompleteCheck = currentDateTime;
+                await this.ingestionTrackingService.ModifyIngestionTrackingAsync(batchIngestionTracking);
+            }
         });
     }
 }

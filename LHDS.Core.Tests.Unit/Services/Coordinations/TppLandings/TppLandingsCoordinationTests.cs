@@ -6,7 +6,6 @@ using System;
 using System.Linq.Expressions;
 using KellermanSoftware.CompareNetObjects;
 using LHDS.Core.Brokers.Loggings;
-using LHDS.Core.Extensions.Exceptions;
 using LHDS.Core.Models.Orchestrations.Ingres.Exceptions;
 using LHDS.Core.Models.Orchestrations.TppLandings.Exceptions;
 using LHDS.Core.Services.Coordinations.TppLandings;
@@ -17,7 +16,7 @@ using Tynamix.ObjectFiller;
 using Xeptions;
 using Xunit;
 
-namespace LHDS.Core.Tests.Unit.Services.Coordinations.Decryptions
+namespace LHDS.Core.Tests.Unit.Services.Coordinations.TppLandings
 {
     public partial class TppLandingsCoordinationTests
     {
@@ -47,13 +46,10 @@ namespace LHDS.Core.Tests.Unit.Services.Coordinations.Decryptions
             new IntRange(min: 2, max: 10).GetValue();
 
         private static DateTimeOffset GetRandomDateTimeOffset() =>
-          new DateTimeRange(earliestDate: new DateTime()).GetValue();
+            new DateTimeRange(earliestDate: new DateTime()).GetValue();
 
         private static Expression<Func<Xeption, bool>> SameExceptionAs(Xeption expectedException) =>
-         actualException => actualException.SameExceptionAs(expectedException);
-
-        private static Expression<Func<Xeption, bool>> IsSameExceptionAs(Xeption expectedException) =>
-            actualException => actualException.IsSameExceptionAs(expectedException);
+            actualException => actualException.SameExceptionAs(expectedException);
 
         public static TheoryData<Xeption> TppDependencyValidationExceptions()
         {
@@ -64,7 +60,7 @@ namespace LHDS.Core.Tests.Unit.Services.Coordinations.Decryptions
             return new TheoryData<Xeption>
             {
                 new TppLandingOrchestrationValidationException(
-                    message: "TPP landing orchestration validation errors occured, please try again.",
+                    message: "TPP landing orchestration validation errors occurred, please try again.",
                     innerException),
 
                 new TppLandingOrchestrationDependencyValidationException(
@@ -73,7 +69,7 @@ namespace LHDS.Core.Tests.Unit.Services.Coordinations.Decryptions
                     innerException),
 
                 new IngressOrchestrationValidationException(
-                    message: "Ingres orchestration validation errors occured, please try again.",
+                    message: "Ingres orchestration validation errors occurred, please try again.",
                     innerException),
 
                 new IngressOrchestrationDependencyValidationException(

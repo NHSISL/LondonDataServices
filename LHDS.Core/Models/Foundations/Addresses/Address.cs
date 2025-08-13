@@ -11,7 +11,6 @@ namespace LHDS.Core.Models.Foundations.Addresses
     {
         public Guid Id { get; set; }
         public string? UPRN { get; set; }
-        public string? UPSN { get; set; }
         public string? USRN { get; set; }
         public string? OrganisationName { get; set; }
         public string? DepartmentName { get; set; }
@@ -24,6 +23,10 @@ namespace LHDS.Core.Models.Foundations.Addresses
         public string? DependentLocality { get; set; }
         public string? PostTown { get; set; }
         public string? PostCode { get; set; }
+        public string? Latitude { get; set; }
+        public string? Longitude { get; set; }
+        public string? XCoordinate { get; set; }
+        public string? YCoordinate { get; set; }
         public string CreatedBy { get; set; } = string.Empty;
         public string UpdatedBy { get; set; } = string.Empty;
         public DateTimeOffset UpdatedDate { get; set; }

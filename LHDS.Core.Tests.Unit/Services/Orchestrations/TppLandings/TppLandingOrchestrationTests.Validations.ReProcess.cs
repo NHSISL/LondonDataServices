@@ -1,0 +1,62 @@
+﻿// ---------------------------------------------------------
+// Copyright (c) North East London ICB. All rights reserved.
+// ---------------------------------------------------------
+
+using System;
+using System.Collections.Generic;
+using System.Threading.Tasks;
+using FluentAssertions;
+using LHDS.Core.Models.Orchestrations.TppLandings.Exceptions;
+using Moq;
+using Xunit;
+
+
+namespace LHDS.Core.Tests.Unit.Services.Orchestrations.TppLandings
+{
+    public partial class TppLandingOrchestrationTests
+    {
+        [Fact]
+        public async Task ShouldThrowValidationExceptionOnReProcessIfDocumentFileNameIsNullAndLogItAsync()
+        {
+            // given
+            Guid supplierId = Guid.Empty;
+
+            var invalidArgumentException =
+                new InvalidArgumentTppLandingOrchestrationException(
+                    message: "Invalid TPP landing orchestration argument(s), " +
+                        "please correct the errors and try again.");
+
+            invalidArgumentException.AddData(
+               key: "SupplierId",
+               values: "Id is required");
+
+            var expectedTppOrchestrationValidationException =
+                new TppLandingOrchestrationValidationException(
+                    message: "TPP landing orchestration validation errors occurred, please try again.",
+                    innerException: invalidArgumentException);
+
+            // when
+            ValueTask<List<Guid>> returnedGuidTask = this.tppOrchestrationService.ReProcessAsync(supplierId);
+
+            TppLandingOrchestrationValidationException actualException =
+                await Assert.ThrowsAsync<TppLandingOrchestrationValidationException>(returnedGuidTask.AsTask);
+
+            // then
+            actualException.Should()
+               .BeEquivalentTo(expectedTppOrchestrationValidationException);
+
+            this.loggingBrokerMock.Verify(broker =>
+                broker.LogErrorAsync(It.Is(SameExceptionAs(
+                    expectedTppOrchestrationValidationException))),
+                        Times.Once);
+
+            this.ingestionTrackingProcessingServiceMock.VerifyNoOtherCalls();
+            this.hashBrokerMock.VerifyNoOtherCalls();
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
+            this.documentProcessingServiceMock.VerifyNoOtherCalls();
+            this.ingestionTrackingProcessingAuditServiceMock.VerifyNoOtherCalls();
+            this.dataSetSpecificationProcessingServiceMock.VerifyNoOtherCalls();
+            this.loggingBrokerMock.VerifyNoOtherCalls();
+        }
+    }
+}

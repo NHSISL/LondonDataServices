@@ -5,6 +5,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq.Expressions;
+using System.Threading.Tasks;
 using KellermanSoftware.CompareNetObjects;
 using LHDS.Core.Brokers.Loggings;
 using LHDS.Core.Brokers.Telemetries;
@@ -23,6 +24,7 @@ namespace LHDS.Core.Tests.Unit.Services.Coordinations.HealthChecks
         private readonly Mock<ILoggingBroker> loggingBrokerMock;
         private readonly HealthCheckPublisherCoordinationService healthCheckPublisherService;
         private readonly CompareLogic compareLogic;
+        private const string KeyDelimiter = ".";
 
         public HealthCheckPublisherCoordinationServiceTests()
         {
@@ -86,6 +88,62 @@ namespace LHDS.Core.Tests.Unit.Services.Coordinations.HealthChecks
             }
 
             return new HealthReport(entries, totalDuration: TimeSpan.FromSeconds(1));
+        }
+
+        private async ValueTask AddMetricOrPropertyAsync(EventTelemetry telemetry, string key, object value)
+        {
+            if (value is IDictionary<string, object> nestedDict)
+            {
+                foreach (var nested in nestedDict)
+                {
+                    string nestedKey = $"{key}{KeyDelimiter}{nested.Key}";
+                    await AddMetricOrPropertyAsync(telemetry, nestedKey, nested.Value);
+                }
+            }
+            else
+            {
+                switch (value)
+                {
+                    case int or long or float or double or decimal:
+                        double metricValue = Convert.ToDouble(value);
+                        string metricKey = GetUniqueKey(telemetry.Metrics, key);
+                        telemetry.Metrics.Add(metricKey, metricValue);
+
+                        telemetryBrokerMock.Verify(broker =>
+                            broker.TrackMetricAsync(It.Is(SameMetricTelemetryAs(new MetricTelemetry(metricKey, metricValue)))),
+                                Times.Once());
+
+                        break;
+
+                    case DateTime dateTime:
+                        string dtKey = GetUniqueKey(telemetry.Properties, key);
+                        telemetry.Properties.Add(dtKey, dateTime.ToString("o"));
+                        break;
+
+                    case DateTimeOffset dateTimeOffset:
+                        string dtoKey = GetUniqueKey(telemetry.Properties, key);
+                        telemetry.Properties.Add(dtoKey, dateTimeOffset.ToString("o"));
+                        break;
+
+                    default:
+                        string propKey = GetUniqueKey(telemetry.Properties, key);
+                        telemetry.Properties.Add(propKey, value?.ToString());
+                        break;
+                }
+            }
+        }
+
+        private string GetUniqueKey<TValue>(IDictionary<string, TValue> dictionary, string baseKey)
+        {
+            int suffix = 1;
+            string key = baseKey;
+
+            while (dictionary.ContainsKey(key))
+            {
+                key = $"{baseKey} ({suffix++})";
+            }
+
+            return key;
         }
     }
 }

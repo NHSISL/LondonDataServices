@@ -23,13 +23,13 @@ namespace LHDS.Core.Tests.Integration.Addresses
             string inputFilePath = Path.Combine(
                 projectRoot,
 
-                @"Resources/Clients/Address/Ordinance_data_London.zip");
+                @"Resources/Clients/Address/CombinedStratford.zip");
 
             byte[] inputData = await File.ReadAllBytesAsync(inputFilePath);
             Stream inputStream = new MemoryStream(inputData);
 
             // When
-            await this.addressClient.LoadAddressDataAsync(inputStream, "Ordinance_data_London.zip");
+            await this.addressClient.LoadAddressDataAsync(inputStream, "CombinedStratford.zip");
         }
     }
 }

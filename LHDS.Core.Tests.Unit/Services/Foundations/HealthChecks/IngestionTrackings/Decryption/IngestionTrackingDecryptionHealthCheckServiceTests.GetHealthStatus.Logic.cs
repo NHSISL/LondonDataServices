@@ -18,7 +18,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.HealthChecks.IngestionTracki
     public partial class IngestionTrackingDecryptionHealthCheckServiceTests
     {
         [Fact]
-        public async Task ShouldGetHealthStatusAsHealtyAsync()
+        public async Task ShouldGetHealthStatusAsHealthyAsync()
         {
             // given
             string CheckName = "decryption";
@@ -31,7 +31,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.HealthChecks.IngestionTracki
             int unHealthyThresholdMinutes = this.inMemoryConfiguration
                 .GetValue("HealthChecks:IngestionTracking:Decryption:UnHealthyThreshold", 2880);
 
-            List<IngestionTracking> healtyRecords = CreateRandomIngestionTrackings(
+            List<IngestionTracking> healthyRecords = CreateRandomIngestionTrackings(
                 dateTimeOffset: randomDateTimeOffset,
                 isDecrypted: true,
                 isProcessing: false,
@@ -43,7 +43,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.HealthChecks.IngestionTracki
 
             this.storageBrokerMock.Setup(broker =>
                 broker.SelectAllIngestionTrackingsAsync())
-                    .ReturnsAsync(healtyRecords.AsQueryable());
+                    .ReturnsAsync(healthyRecords.AsQueryable());
 
             string message = "Nothing to decrypt. All up to date.";
 
@@ -162,7 +162,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.HealthChecks.IngestionTracki
         }
 
         [Fact]
-        public async Task ShouldGetHealthStatusAsUnHealtyAsync()
+        public async Task ShouldGetHealthStatusAsUnHealthyAsync()
         {
             // given
             string CheckName = "decryption";
@@ -235,7 +235,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.HealthChecks.IngestionTracki
 
 
         [Fact]
-        public async Task ShouldGetHealthStatusAsUnHealtyWithMixedItemsAsync()
+        public async Task ShouldGetHealthStatusAsUnHealthyWithMixedItemsAsync()
         {
             // given
             string CheckName = "decryption";

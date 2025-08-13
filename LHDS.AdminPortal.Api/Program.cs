@@ -23,6 +23,7 @@ using LHDS.Core.Clients;
 using LHDS.Core.Clients.Extensions;
 using LHDS.Core.Models.Brokers.Storages.Blobs;
 using LHDS.Core.Models.Configurations;
+using LHDS.Core.Models.Foundations.Addresses;
 using LHDS.Core.Models.Foundations.DataSets;
 using LHDS.Core.Models.Foundations.DataSetSpecifications;
 using LHDS.Core.Models.Foundations.DataTypes;
@@ -31,6 +32,7 @@ using LHDS.Core.Models.Foundations.IngestionTrackings;
 using LHDS.Core.Models.Foundations.ObjectColumns;
 using LHDS.Core.Models.Foundations.OptOuts;
 using LHDS.Core.Models.Foundations.PdsAudits;
+using LHDS.Core.Models.Foundations.ResolvedAddresses;
 using LHDS.Core.Models.Foundations.SpecificationObjects;
 using LHDS.Core.Models.Foundations.SubscriberAgreements;
 using LHDS.Core.Models.Foundations.Suppliers;
@@ -40,6 +42,7 @@ using LHDS.Core.Providers.Downloads;
 using LHDS.Core.Providers.Downloads.Extensions;
 using LHDS.Core.Providers.Downloads.MockDownloads;
 using LHDS.Core.Services.Coordinations.Decryptions;
+using LHDS.Core.Services.Foundations.Addresses;
 using LHDS.Core.Services.Foundations.Cryptographies;
 using LHDS.Core.Services.Foundations.DataSets;
 using LHDS.Core.Services.Foundations.DataSetSpecifications;
@@ -47,32 +50,43 @@ using LHDS.Core.Services.Foundations.DataTypes;
 using LHDS.Core.Services.Foundations.Documents;
 using LHDS.Core.Services.Foundations.HealthChecks;
 using LHDS.Core.Services.Foundations.HealthChecks.IngestionTracking;
+using LHDS.Core.Services.Foundations.HealthChecks.OptOut;
 using LHDS.Core.Services.Foundations.HealthChecks.ResolvedAddress;
+using LHDS.Core.Services.Foundations.HealthChecks.TerminologyArtifacts;
+using LHDS.Core.Services.Foundations.HealthChecks.TerminologyPolls;
 using LHDS.Core.Services.Foundations.IngestionTrackingAudits;
 using LHDS.Core.Services.Foundations.IngestionTrackings;
 using LHDS.Core.Services.Foundations.ObjectColumns;
 using LHDS.Core.Services.Foundations.OptOuts;
 using LHDS.Core.Services.Foundations.PdsAudits;
+using LHDS.Core.Services.Foundations.ResolvedAddresses;
 using LHDS.Core.Services.Foundations.SecureDatas;
 using LHDS.Core.Services.Foundations.SpecificationObjects;
 using LHDS.Core.Services.Foundations.Suppliers;
 using LHDS.Core.Services.Foundations.TerminologyArtifacts;
 using LHDS.Core.Services.Foundations.TerminologyPolls;
 using LHDS.Core.Services.Orchestrations.HealthChecks.IngestionTrackings;
+using LHDS.Core.Services.Orchestrations.HealthChecks.OptOuts;
 using LHDS.Core.Services.Orchestrations.HealthChecks.ResolvedAddresses;
+using LHDS.Core.Services.Orchestrations.HealthChecks.TerminologyArtifacts;
+using LHDS.Core.Services.Orchestrations.HealthChecks.TerminologyPolls;
+using LHDS.Core.Services.Processings.Addresses;
 using LHDS.Core.Services.Processings.DataSetSpecifications;
 using LHDS.Core.Services.Processings.Documents;
 using LHDS.Core.Services.Processings.Downloads;
 using LHDS.Core.Services.Processings.IngestionTrackingAudits;
 using LHDS.Core.Services.Processings.IngestionTrackings;
 using LHDS.Core.Services.Processings.OptOuts;
+using LHDS.Core.Services.Processings.ResolvedAddresses;
 using LHDS.Core.Services.Processings.SecureDatas;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.AspNetCore.OData;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
@@ -100,6 +114,13 @@ namespace LHDS.AdminPortal.Api
             var invisibleApiKey = new InvisibleApiKey();
             ConfigureServices(builder, invisibleApiKey);
             var app = builder.Build();
+
+            using (var scope = app.Services.CreateScope())
+            {
+                var storageBroker = scope.ServiceProvider.GetRequiredService<StorageBroker>();
+                storageBroker.Database.Migrate();
+            }
+
             ConfigurePipeline(app, invisibleApiKey);
             app.Run();
         }
@@ -205,6 +226,8 @@ namespace LHDS.AdminPortal.Api
                 ResponseWriter = HealthCheckResponseWriter.WriteResponse
             });
 
+            app.MapGet("/api", () => Results.Ok("AdminPortal API is running"));
+            app.MapGet("/", () => Results.Ok("AdminPortal API is running"));
             app.UseHttpsRedirection();
             app.UseCors("AllowFrontendOrigin");
             app.UseRouting();
@@ -227,16 +250,49 @@ namespace LHDS.AdminPortal.Api
                 <IIngestionTrackingHealthItemService, IngestionTrackingFailedToProcessHealthCheckService>();
 
             services.AddSingleton
+                <IIngestionTrackingHealthItemService, IngestionTrackingFilesReceivedHealthCheckService>();
+
+            services.AddSingleton
+                <IIngestionTrackingHealthItemService, IngestionTrackingIncompleteBatchHealthCheckService>();
+
+            services.AddSingleton
                 <IResolvedAddressHealthItemService, ResolvedAddressProcessingHealthCheckService>();
 
             services.AddSingleton
                 <IResolvedAddressHealthItemService, ResolvedAddressFailedToProcessHealthCheckService>();
 
-            services.AddHealthChecks().AddCheck<IngestionTrackingHealthCheckOrchestrationService>(
-                "ingestionTrackingHealthCheckOrchestrationService");
+            services.AddSingleton
+                <IResolvedAddressHealthItemService, ResolvedAddressFailedToExportHealthCheckService>();
 
-            services.AddHealthChecks().AddCheck<ResolvedAddressHealthCheckOrchestrationService>(
-                "resolvedAddressHealthCheckOrchestrationService");
+            services.AddSingleton
+                <IResolvedAddressHealthItemService, ResolvedAddressMatchingProcessHealthCheckService>();
+
+            services.AddSingleton
+                <IResolvedAddressHealthItemService, ResolvedAddressMatchQualityHealthCheckService>();
+
+            services.AddSingleton
+                <ITerminologyPollsHealthItemService, TerminologyPollsNotPollingHealthCheckService>();
+
+            services.AddSingleton
+                <ITerminologyArtifactsHealthItemService, TerminologyArtifactsFailedToProcessHealthCheckService>();
+
+            services.AddSingleton
+                <IOptOutHealthItemService, OptOutsExpiredOptOutHealthCheckService>();
+
+            services.AddHealthChecks()
+                .AddCheck<IngestionTrackingHealthCheckOrchestrationService>("ingestionTrackingHealthChecks");
+
+            services.AddHealthChecks()
+                .AddCheck<ResolvedAddressHealthCheckOrchestrationService>("resolvedAddressHealthChecks");
+
+            services.AddHealthChecks()
+                .AddCheck<TerminologyPollsHealthCheckCoordinationService>("terminologyPollsHealthChecks");
+
+            services.AddHealthChecks()
+                .AddCheck<OptOutsHealthCheckOrchestrationService>("optOutsHealthChecks");
+
+            services.AddHealthChecks()
+                .AddCheck<TerminologyArtifactsHealthCheckCoordinationService>("terminologyArtifactsHealthChecks");
 
             services.AddSingleton<IHealthCheckPublisher, HealthCheckPublisherCoordinationService>();
 
@@ -266,7 +322,7 @@ namespace LHDS.AdminPortal.Api
             services.AddTransient<IDateTimeBroker, DateTimeBroker>();
             services.AddTransient<IIdentifierBroker, IdentifierBroker>();
             services.AddTransient<ILoggingBroker, LoggingBroker>();
-            services.AddTransient<IStorageBroker, StorageBroker>();
+            services.AddSingleton<IStorageBroker, StorageBroker>();
             services.AddTransient<IBlobStorageBroker, BlobStorageBroker>();
             services.AddTransient<IHashBroker, HashBroker>();
             services.AddTransient<IAzureBlobClient, AzureBlobClient>();
@@ -292,6 +348,8 @@ namespace LHDS.AdminPortal.Api
             services.AddTransient<ITerminologyArtifactService, TerminologyArtifactService>();
             services.AddTransient<ITerminologyPollService, TerminologyPollService>();
             services.AddTransient<ISecureDataService, SecureDataService>();
+            services.AddTransient<IAddressService, AddressService>();
+            services.AddTransient<IResolvedAddressService, ResolvedAddressService>();
 
             var blobStorageSettings = configuration.GetSection("blobStorage")
                 .Get<BlobStorageSettings>();
@@ -386,6 +444,8 @@ namespace LHDS.AdminPortal.Api
             services.AddTransient<IIngestionTrackingProcessingService, IngestionTrackingProcessingService>();
             services.AddTransient<IIngestionTrackingAuditProcessingService, IngestionTrackingAuditProcessingService>();
             services.AddTransient<ISecureDataProcessingService, SecureDataProcessingService>();
+            services.AddTransient<IAddressProcessingService, AddressProcessingService>();
+            services.AddTransient<IResolvedAddressProcessingService, ResolvedAddressProcessingService>();
         }
 
         private static void AddCoordinationServices(IServiceCollection services, IConfiguration configuration)
@@ -398,6 +458,7 @@ namespace LHDS.AdminPortal.Api
             ODataConventionModelBuilder builder =
                new ODataConventionModelBuilder();
 
+            builder.EntitySet<Address>("Addresses");
             builder.EntitySet<IngestionTrackingAudit>("IngestionTrackingAudits");
             builder.EntitySet<DataSet>("DataSets");
             builder.EntitySet<DataSetSpecification>("DataSetSpecifications");
@@ -408,6 +469,7 @@ namespace LHDS.AdminPortal.Api
             builder.EntitySet<OptOut>("OptOuts");
             builder.EntitySet<PdsAudit>("PdsAudits");
             builder.EntitySet<Supplier>("Suppliers");
+            builder.EntitySet<ResolvedAddress>("ResolvedAddresses");
             builder.EntitySet<TerminologyArtifact>("TerminologyArtifacts");
             builder.EntitySet<SubscriberCredential>("SubscriberCredentials");
             builder.EntitySet<SubscriberAgreement>("SubscriberAgreements");

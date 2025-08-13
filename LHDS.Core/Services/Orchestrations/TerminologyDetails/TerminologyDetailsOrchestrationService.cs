@@ -65,18 +65,14 @@ namespace LHDS.Core.Services.Orchestrations.TerminologyDetails
                         await TryCatch(async () =>
                         {
                             string baseUrl = artifact.FullUrl;
-
                             string expandedUrl = artifact.FullUrl.TrimEnd('/') + "/$expand";
 
-
-                            string originalJson = await this.ontologyProcessingService.RetrieveArtifactDetailsAsync(baseUrl);
+                            string baseJson = await this.ontologyProcessingService.RetrieveArtifactDetailsAsync(baseUrl);
                             string expandedJson = await this.ontologyProcessingService.RetrieveArtifactDetailsAsync(expandedUrl);
 
-                            string mergedJson = MergeValueSetWithExpansion(originalJson, expandedJson);
+                            string mergedJson = MergeValueSetWithExpansion(baseJson, expandedJson);
 
                             byte[] artifactDetailData = Encoding.UTF8.GetBytes(mergedJson);
-
-                            byte[] artifactDetailData = Encoding.UTF8.GetBytes(artifactDetail);
                             
                             string fileName = Path.Combine(
                                 ontologyConfiguration.LandingFolder,

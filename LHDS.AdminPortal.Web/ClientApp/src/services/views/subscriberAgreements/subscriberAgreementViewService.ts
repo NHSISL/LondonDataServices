@@ -41,6 +41,7 @@ export const subscriberAgreementViewService = {
                             subscriberAgreements.push(new SubscriberAgreementView(
                                 subscriberAgreement.id,
                                 subscriberAgreement.supplierSharingAgreementShortName,
+                                subscriberAgreement.supplierId,
                                 subscriberAgreement.ftpUserName,
                                 subscriberAgreement.ftpPublicKey,
                                 subscriberAgreement.gpgPublicKey,
@@ -87,6 +88,7 @@ export const subscriberAgreementViewService = {
                     const subscriberAgreement = new SubscriberAgreementView(
                         response.data[0].id,
                         response.data[0].supplierSharingAgreementShortName,
+                        response.data[0].supplierId,
                         response.data[0].ftpUserName,
                         response.data[0].ftpPublicKey,
                         response.data[0].gpgPublicKey,

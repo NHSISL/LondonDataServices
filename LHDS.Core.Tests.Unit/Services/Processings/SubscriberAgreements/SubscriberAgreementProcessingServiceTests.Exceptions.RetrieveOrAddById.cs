@@ -107,7 +107,6 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.SubscriberAgreements
             // given
             SubscriberAgreement someSubscriberAgreement = CreateRandomSubscriberAgreement();
             SubscriberAgreement inputSubscriberAgreement = someSubscriberAgreement;
-
             var serviceException = new Exception();
 
             var failedSubscriberAgreementProcessingServiceException =

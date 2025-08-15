@@ -68,7 +68,6 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.SubscriberAgreements
                 SupplierSharingAgreementShortName = invalidText,
             };
 
-
             var invalidArgumentSubscriberAgreementProcessingException =
                 new InvalidArgumentSubscriberAgreementProcessingException(
                     message: "Invalid argument(s). Please correct the errors and try again.");

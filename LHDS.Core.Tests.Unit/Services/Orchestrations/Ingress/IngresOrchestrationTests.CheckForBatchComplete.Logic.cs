@@ -49,8 +49,8 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Ingress
             this.ingestionTrackingProcessingServiceMock.Setup(service =>
                 service.RetrieveObjectsInBatchByBatchReferenceAsync(
                     batchReference,
-                    true,
-                    storageIngestionTracking.SubscriberAgreementId))
+                    storageIngestionTracking.SubscriberAgreementId.Value,
+                    true))
                         .ReturnsAsync(ingestionTrackingObjects);
 
             this.ingestionTrackingProcessingServiceMock.Setup(service =>
@@ -85,8 +85,8 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Ingress
             this.ingestionTrackingProcessingServiceMock.Verify(service =>
                 service.RetrieveObjectsInBatchByBatchReferenceAsync(
                     batchReference,
-                    true,
-                    storageIngestionTracking.SubscriberAgreementId),
+                    storageIngestionTracking.SubscriberAgreementId.Value,
+                    true),
                         Times.Once);
 
             this.ingestionTrackingProcessingServiceMock.Verify(service =>
@@ -144,8 +144,8 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Ingress
             this.ingestionTrackingProcessingServiceMock.Setup(service =>
                 service.RetrieveObjectsInBatchByBatchReferenceAsync(
                     batchReference,
-                    true,
-                    storageIngestionTracking.SubscriberAgreementId))
+                    storageIngestionTracking.SubscriberAgreementId.Value,
+                    true))
                         .ReturnsAsync(ingestionTrackingObjects);
 
             var ingressOrchestrationServiceMock = new Mock<IngressOrchestrationService>(
@@ -192,8 +192,8 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Ingress
             this.ingestionTrackingProcessingServiceMock.Verify(service =>
                 service.RetrieveObjectsInBatchByBatchReferenceAsync(
                     batchReference,
-                    true,
-                    storageIngestionTracking.SubscriberAgreementId),
+                    storageIngestionTracking.SubscriberAgreementId.Value,
+                    true),
                         Times.Once);
 
             this.documentProcessingServiceMock.Verify(service =>

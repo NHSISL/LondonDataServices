@@ -124,6 +124,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.TppLandings
             SubscriberAgreement randomSubscriberAgreement = new SubscriberAgreement
             {
                 Id = randomGuid,
+                SupplierId = randomSupplierId,
                 SupplierSharingAgreementShortName = resourceGroup,
                 IsActive = true,
             };

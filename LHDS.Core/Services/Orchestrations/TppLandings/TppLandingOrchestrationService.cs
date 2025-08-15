@@ -140,6 +140,7 @@ namespace LHDS.Core.Services.Orchestrations.Tpp
                 SubscriberAgreement subscriberAgreement = new SubscriberAgreement
                 {
                     Id = subscriberAgreementId,
+                    SupplierId = supplierId,
                     SupplierSharingAgreementShortName = resourceGroup,
                     IsActive = true,
                 };

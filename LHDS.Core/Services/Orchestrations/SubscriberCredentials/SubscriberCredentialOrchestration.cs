@@ -132,14 +132,16 @@ namespace LHDS.Core.Services.Orchestrations.SubscriberCredentials
                 return subscriberCredentials.AsQueryable();
             });
 
-        public ValueTask<List<Guid>> RetrieveAllActiveSubscriberCredentialIdsAsync() =>
+        public ValueTask<List<Guid>> RetrieveAllActiveSubscriberCredentialIdsAsync(Guid supplierId) =>
             TryCatch(async () =>
             {
                 IQueryable<SubscriberAgreement> retrievedSubscriberAgreements =
                     await this.subscriberAgreementProcessingService.RetrieveAllSubscriberAgreementsAsync();
 
                 List<Guid> retrievedActiveIds = retrievedSubscriberAgreements
-                    .Where(SubscriberAgreement => SubscriberAgreement.IsActive)
+                    .Where(SubscriberAgreement => SubscriberAgreement.IsActive == true
+                        && SubscriberAgreement.SupplierId == supplierId)
+
                     .Select(SubscriberAgreement => SubscriberAgreement.Id).ToList();
 
                 return await ValueTask.FromResult(retrievedActiveIds);

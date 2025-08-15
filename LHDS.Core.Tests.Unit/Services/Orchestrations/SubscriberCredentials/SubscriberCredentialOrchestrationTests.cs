@@ -228,20 +228,24 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.SubscriberCredentials
             return subscriberAgreement;
         }
 
-        private static List<SubscriberAgreement> CreateRandomSubscriberAgreements()
+        private static List<SubscriberAgreement> CreateRandomSubscriberAgreements(Guid supplierId)
         {
-            return CreateSubscriberAgreementFiller(dateTimeOffset: GetRandomDateTimeOffset())
+            return CreateSubscriberAgreementFiller(dateTimeOffset: GetRandomDateTimeOffset(), supplierId)
                 .Create(count: GetRandomNumber())
                     .ToList();
         }
 
-        private static SubscriberAgreement CreateRandomSubscriberAgreement() =>
-            CreateSubscriberAgreementFiller(dateTimeOffset: GetRandomDateTimeOffset()).Create();
+        private static SubscriberAgreement CreateRandomSubscriberAgreement(Guid supplierId) =>
+            CreateSubscriberAgreementFiller(dateTimeOffset: GetRandomDateTimeOffset(), supplierId).Create();
 
-        private static SubscriberAgreement CreateRandomSubscriberAgreement(DateTimeOffset dateTimeOffset) =>
-            CreateSubscriberAgreementFiller(dateTimeOffset).Create();
+        private static SubscriberAgreement CreateRandomSubscriberAgreement(
+            DateTimeOffset dateTimeOffset,
+            Guid supplierId) =>
+                CreateSubscriberAgreementFiller(dateTimeOffset, supplierId).Create();
 
-        private static Filler<SubscriberAgreement> CreateSubscriberAgreementFiller(DateTimeOffset dateTimeOffset)
+        private static Filler<SubscriberAgreement> CreateSubscriberAgreementFiller(
+            DateTimeOffset dateTimeOffset,
+            Guid supplierId)
         {
             string user = Guid.NewGuid().ToString();
             var filler = new Filler<SubscriberAgreement>();
@@ -249,6 +253,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.SubscriberCredentials
             filler.Setup()
                 .OnType<DateTimeOffset>().Use(dateTimeOffset)
                 .OnType<DateTimeOffset?>().Use(dateTimeOffset)
+                .OnProperty(subscriberAgreement => subscriberAgreement.SupplierId).Use(supplierId)
                 .OnProperty(subscriberAgreement => subscriberAgreement.CreatedBy).Use(user)
                 .OnProperty(subscriberAgreement => subscriberAgreement.UpdatedBy).Use(user)
                 .OnProperty(subscriberAgreement => subscriberAgreement.IngestionTrackings).IgnoreIt();

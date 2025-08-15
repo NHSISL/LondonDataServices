@@ -58,10 +58,11 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.SubscriberAgreements
             SubscriberAgreement inputSubscriberAgreement = randomSubscriberAgreement;
             SubscriberAgreement storageSubscriberAgreement = inputSubscriberAgreement;
             SubscriberAgreement expectedSubscriberAgreement = storageSubscriberAgreement.DeepClone();
+            List<SubscriberAgreement> storageSubscriberAgreements =new List<SubscriberAgreement>();
 
             this.subscriberAgreementServiceMock.Setup(service =>
                 service.RetrieveAllSubscriberAgreementsAsync())
-                    .ReturnsAsync(value: null);
+                    .ReturnsAsync(storageSubscriberAgreements.AsQueryable);
 
             this.subscriberAgreementServiceMock.Setup(service =>
                 service.AddSubscriberAgreementAsync(inputSubscriberAgreement))
@@ -75,7 +76,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.SubscriberAgreements
             actualSubscriberAgreement.Should().BeEquivalentTo(expectedSubscriberAgreement);
 
             this.subscriberAgreementServiceMock.Verify(service =>
-                service.RetrieveSubscriberAgreementByIdAsync(inputSubscriberAgreement.Id),
+                service.RetrieveAllSubscriberAgreementsAsync(),
                     Times.Once);
 
             this.subscriberAgreementServiceMock.Verify(service =>

@@ -2,6 +2,7 @@
 // Copyright (c) North East London ICB. All rights reserved.
 // ---------------------------------------------------------
 
+using System;
 using System.Threading.Tasks;
 using FluentAssertions;
 using LHDS.Core.Models.Foundations.SubscriberAgreements;
@@ -94,6 +95,54 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.SubscriberAgreements
             this.loggingBrokerMock.Verify(broker =>
                  broker.LogErrorAsync(It.Is(SameExceptionAs(
                      expectedSubscriberAgreementProcessingDependencyException))),
+                         Times.Once);
+
+            this.subscriberAgreementServiceMock.VerifyNoOtherCalls();
+            this.loggingBrokerMock.VerifyNoOtherCalls();
+        }
+
+        [Fact]
+        public async Task ShouldThrowServiceExceptionOnRetrieveOrAddNameIfServiceErrorOccursAsync()
+        {
+            // given
+            SubscriberAgreement someSubscriberAgreement = CreateRandomSubscriberAgreement();
+            SubscriberAgreement inputSubscriberAgreement = someSubscriberAgreement;
+
+            var serviceException = new Exception();
+
+            var failedSubscriberAgreementProcessingServiceException =
+                new FailedSubscriberAgreementProcessingServiceException(
+                    message: "Failed subscriber agreement processing service error occurred, please contact support.",
+                    innerException: serviceException);
+
+            var expectedSubscriberAgreementProcessingServiveException =
+                new SubscriberAgreementProcessingServiceException(
+                    message: "Subscriber agreement processing service error occurred, please contact support.",
+                    innerException: failedSubscriberAgreementProcessingServiceException);
+
+            this.subscriberAgreementServiceMock.Setup(service =>
+                service.RetrieveAllSubscriberAgreementsAsync())
+                    .ThrowsAsync(serviceException);
+
+            // when
+            ValueTask<SubscriberAgreement> subscriberAgreementRetrieveOrAddTask =
+                this.subscriberAgreementProcessingService.RetrieveOrAddSubscriberAgreementByNameAsync(
+                    inputSubscriberAgreement);
+
+            SubscriberAgreementProcessingServiceException actualException =
+                await Assert.ThrowsAsync<SubscriberAgreementProcessingServiceException>(
+                    subscriberAgreementRetrieveOrAddTask.AsTask);
+
+            // then
+            actualException.Should().BeEquivalentTo(expectedSubscriberAgreementProcessingServiveException);
+
+            this.subscriberAgreementServiceMock.Verify(service =>
+                service.RetrieveAllSubscriberAgreementsAsync(),
+                    Times.Once);
+
+            this.loggingBrokerMock.Verify(broker =>
+                 broker.LogErrorAsync(It.Is(SameExceptionAs(
+                     expectedSubscriberAgreementProcessingServiveException))),
                          Times.Once);
 
             this.subscriberAgreementServiceMock.VerifyNoOtherCalls();

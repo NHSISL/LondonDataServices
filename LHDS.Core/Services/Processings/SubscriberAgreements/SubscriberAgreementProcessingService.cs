@@ -70,11 +70,10 @@ namespace LHDS.Core.Services.Processings.SubscriberAgreements
                 {
                     return maybeSubscriberAgreement;
                 }
-                else
-                {
-                    ValidateSubscriberAgreement(subscriberAgreement);
-                    return await this.subscriberAgreementService.AddSubscriberAgreementAsync(subscriberAgreement);
-                }
+
+                ValidateSubscriberAgreement(subscriberAgreement);
+
+                return await this.subscriberAgreementService.AddSubscriberAgreementAsync(subscriberAgreement);
             });
 
         public ValueTask<SubscriberAgreement> ModifyOrAddSubscriberAgreementAsync(SubscriberAgreement subscriberAgreement) =>

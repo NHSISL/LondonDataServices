@@ -58,7 +58,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.SubscriberAgreements
             SubscriberAgreement inputSubscriberAgreement = randomSubscriberAgreement;
             SubscriberAgreement storageSubscriberAgreement = inputSubscriberAgreement;
             SubscriberAgreement expectedSubscriberAgreement = storageSubscriberAgreement.DeepClone();
-            List<SubscriberAgreement> storageSubscriberAgreements =new List<SubscriberAgreement>();
+            List<SubscriberAgreement> storageSubscriberAgreements = new List<SubscriberAgreement>();
 
             this.subscriberAgreementServiceMock.Setup(service =>
                 service.RetrieveAllSubscriberAgreementsAsync())

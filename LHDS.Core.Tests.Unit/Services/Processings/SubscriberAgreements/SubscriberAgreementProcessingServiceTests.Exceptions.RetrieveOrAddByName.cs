@@ -56,5 +56,48 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.SubscriberAgreements
             this.subscriberAgreementServiceMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
         }
+
+        [Theory]
+        [MemberData(nameof(DependencyExceptions))]
+        public async Task ShouldThrowDependencyExceptionOnRetrieveOrAddNameIfDependencyErrorOccursAndLogItAsync(
+            Xeption dependencyException)
+        {
+            // given
+            SubscriberAgreement someSubscriberAgreement = CreateRandomSubscriberAgreement();
+            SubscriberAgreement inputSubscriberAgreement = someSubscriberAgreement;
+
+            var expectedSubscriberAgreementProcessingDependencyException =
+                new SubscriberAgreementProcessingDependencyException(
+                    message: "Subscriber agreement processing dependency error occurred, please try again.",
+                    innerException: dependencyException.InnerException as Xeption);
+
+            this.subscriberAgreementServiceMock.Setup(service =>
+                service.RetrieveAllSubscriberAgreementsAsync())
+                    .ThrowsAsync(dependencyException);
+
+            // when
+            ValueTask<SubscriberAgreement> subscriberAgreementRetrieveOrAddTask =
+                this.subscriberAgreementProcessingService.RetrieveOrAddSubscriberAgreementByNameAsync(
+                    inputSubscriberAgreement);
+
+            SubscriberAgreementProcessingDependencyException actualException =
+                await Assert.ThrowsAsync<SubscriberAgreementProcessingDependencyException>(
+                    subscriberAgreementRetrieveOrAddTask.AsTask);
+
+            // then
+            actualException.Should().BeEquivalentTo(expectedSubscriberAgreementProcessingDependencyException);
+
+            this.subscriberAgreementServiceMock.Verify(service =>
+                service.RetrieveAllSubscriberAgreementsAsync(),
+                    Times.Once);
+
+            this.loggingBrokerMock.Verify(broker =>
+                 broker.LogErrorAsync(It.Is(SameExceptionAs(
+                     expectedSubscriberAgreementProcessingDependencyException))),
+                         Times.Once);
+
+            this.subscriberAgreementServiceMock.VerifyNoOtherCalls();
+            this.loggingBrokerMock.VerifyNoOtherCalls();
+        }
     }
 }

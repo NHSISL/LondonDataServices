@@ -97,6 +97,10 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.SubscriberAgreements
                 values: "Id is required");
 
             invalidSubscriberAgreementException.AddData(
+                key: nameof(SubscriberAgreement.SupplierId),
+                values: "Id is required");
+
+            invalidSubscriberAgreementException.AddData(
                key: nameof(SubscriberAgreement.SupplierSharingAgreementShortName),
                values: "Text is required");
 

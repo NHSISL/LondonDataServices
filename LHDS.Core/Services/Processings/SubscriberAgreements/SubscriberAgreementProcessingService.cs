@@ -56,7 +56,7 @@ namespace LHDS.Core.Services.Processings.SubscriberAgreements
             SubscriberAgreement subscriberAgreement) =>
             TryCatch(async () =>
             {
-                ValidateSubscriberAgreement(subscriberAgreement);
+                await ValidateSubscriberAgreementWithName(subscriberAgreement);
 
                 var retrievedSubscriberAgreements =
                     await this.subscriberAgreementService.RetrieveAllSubscriberAgreementsAsync();
@@ -70,8 +70,6 @@ namespace LHDS.Core.Services.Processings.SubscriberAgreements
                 {
                     return maybeSubscriberAgreement;
                 }
-
-                ValidateSubscriberAgreement(subscriberAgreement);
 
                 return await this.subscriberAgreementService.AddSubscriberAgreementAsync(subscriberAgreement);
             });

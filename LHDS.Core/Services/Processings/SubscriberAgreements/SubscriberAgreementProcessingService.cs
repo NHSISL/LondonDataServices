@@ -52,6 +52,10 @@ namespace LHDS.Core.Services.Processings.SubscriberAgreements
                     await this.subscriberAgreementService.AddSubscriberAgreementAsync(subscriberAgreement);
             });
 
+        public async ValueTask<SubscriberAgreement> RetrieveOrAddSubscriberAgreementByNameAsync(
+            SubscriberAgreement subscriberAgreement) =>
+            throw new System.NotImplementedException();
+
         public ValueTask<SubscriberAgreement> ModifyOrAddSubscriberAgreementAsync(SubscriberAgreement subscriberAgreement) =>
             TryCatch(async () =>
             {

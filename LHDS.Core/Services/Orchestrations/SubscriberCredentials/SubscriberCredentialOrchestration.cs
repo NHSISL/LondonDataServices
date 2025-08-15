@@ -107,6 +107,7 @@ namespace LHDS.Core.Services.Orchestrations.SubscriberCredentials
                     SubscriberCredential subscriberCredential = new SubscriberCredential
                     {
                         Id = subscriberAgreement.Id,
+                        SupplierId = subscriberAgreement.SupplierId,
                         SupplierSharingAgreementShortName = subscriberAgreement.SupplierSharingAgreementShortName,
                         SupplierSharingAgreementGuid = subscriberAgreement.SupplierSharingAgreementGuid,
                         FtpUserName = subscriberAgreement.FtpUserName,

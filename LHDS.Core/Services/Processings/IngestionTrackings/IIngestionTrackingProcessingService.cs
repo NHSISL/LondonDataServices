@@ -22,8 +22,8 @@ namespace LHDS.Core.Services.Processings.IngestionTrackings
 
         ValueTask<List<string>> RetrieveObjectsInBatchByBatchReferenceAsync(
             string batchReference,
-            bool? decrypted = null,
-            Guid? subscriberAgreementId = null);
+            Guid subscriberAgreementId,
+            bool? decrypted = null);
 
         ValueTask MarkAsBatchCompleteAsync(Guid ingestionTrackingId, bool isBatchComplete);
     }

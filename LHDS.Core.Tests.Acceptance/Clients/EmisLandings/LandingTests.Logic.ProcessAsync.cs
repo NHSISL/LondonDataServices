@@ -29,7 +29,7 @@ namespace LHDS.Core.Tests.Acceptance.Clients.EmisLandings
             //Given
             CleanupDownloadFolder();
             Guid supplierId = Guid.NewGuid();
-            SubscriberCredential randomSubscriberCredential = CreateRandomSubscriberCredential();
+            SubscriberCredential randomSubscriberCredential = CreateRandomSubscriberCredential(supplierId);
             DataSet randomDataSet = CreateRandomDataSet(supplierId);
             DataSetSpecification activeDataSetSpecifications = CreateRandomDataSetSpecification(randomDataSet);
             Supplier randomSupplier = CreateRandomSupplier(supplierId);
@@ -108,7 +108,7 @@ namespace LHDS.Core.Tests.Acceptance.Clients.EmisLandings
             CleanupDownloadFolder();
             Guid supplierId = Guid.NewGuid();
             byte[] documentData = Encoding.UTF8.GetBytes(GetRandomString());
-            SubscriberCredential randomSubscriberCredential = CreateRandomSubscriberCredential();
+            SubscriberCredential randomSubscriberCredential = CreateRandomSubscriberCredential(supplierId);
             DataSet randomDataSet = CreateRandomDataSet(supplierId);
             DataSetSpecification activeDataSetSpecification = CreateRandomDataSetSpecification(randomDataSet);
             Supplier randomSupplier = CreateRandomSupplier(supplierId);

@@ -127,12 +127,15 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.Landings
         public async Task ShouldRetrieveListOfDocumentsToProcessAsync()
         {
             //given 
-            SubscriberCredential randomSubscriberCredential = CreateRandomSubscriberCredential();
+            Guid emisSupplierId = Guid.Parse("67680f17-9d0c-4474-8b35-56ca8f9df1f6");
+
+            SubscriberCredential randomSubscriberCredential =
+                CreateRandomSubscriberCredential(supplierId: emisSupplierId);
+
             SubscriberCredential inputSubscriberCredential = randomSubscriberCredential;
             await this.apiBroker.PostSubscriberCredentialAndGenerateKeysAsync(inputSubscriberCredential);
             string randomFileName = GetRandomFileName(inputSubscriberCredential.Id);
             string randomFilePath = CreateRandomFilePath(inputSubscriberCredential.Id, randomFileName);
-            Guid emisSupplierId = Guid.Parse("67680f17-9d0c-4474-8b35-56ca8f9df1f6");
             Supplier randomSupplier = await PostRandomSupplierAsync(supplierId: emisSupplierId);
             DataSet randomDataSet = await PostRandomActiveDataSetAsync(emisSupplierId);
             Stream randomStream = new MemoryStream();
@@ -169,13 +172,14 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.Landings
         public async Task ShouldProcessDocumentsWithNewIngestionTrackingAsync()
         {
             //given 
+            Guid emisSupplierId = Guid.Parse("67680f17-9d0c-4474-8b35-56ca8f9df1f6");
             int randomFilesNumber = GetRandomNumber();
             List<Guid> subscriberCredentialIds = new List<Guid>();
             List<string> testFilePaths = new List<string>();
 
             for (int i = 0; i < randomFilesNumber; i++)
             {
-                SubscriberCredential randomSubscriberCredential = CreateRandomSubscriberCredential();
+                SubscriberCredential randomSubscriberCredential = CreateRandomSubscriberCredential(emisSupplierId);
                 SubscriberCredential inputSubscriberCredential = randomSubscriberCredential;
                 await this.apiBroker.PostSubscriberCredentialAndGenerateKeysAsync(inputSubscriberCredential);
                 subscriberCredentialIds.Add(inputSubscriberCredential.Id);
@@ -195,7 +199,6 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.Landings
                 testFilePaths.Add(testFilePath);
             }
 
-            Guid emisSupplierId = Guid.Parse("67680f17-9d0c-4474-8b35-56ca8f9df1f6");
             DataSet randomDataSet = await PostRandomActiveDataSetAsync(emisSupplierId);
 
             DataSetSpecification randomDataSetSpecification =

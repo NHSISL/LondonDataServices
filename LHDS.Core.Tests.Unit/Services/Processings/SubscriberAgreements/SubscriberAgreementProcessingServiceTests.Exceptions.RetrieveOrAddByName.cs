@@ -17,7 +17,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.SubscriberAgreements
     {
         [Theory]
         [MemberData(nameof(DependencyValidationExceptions))]
-        public async Task ShouldThrowDependencyValidationExceptionOnRetrieveOrAddIfErrorOccursAndLogItAsync(
+        public async Task ShouldThrowDependencyValidationExceptionOnRetrieveOrAddNameIfErrorOccursAndLogItAsync(
             Xeption dependencyValidationException)
         {
             // given
@@ -30,12 +30,12 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.SubscriberAgreements
                     innerException: dependencyValidationException.InnerException as Xeption);
 
             this.subscriberAgreementServiceMock.Setup(service =>
-                service.RetrieveSubscriberAgreementByIdAsync(inputSubscriberAgreement.Id))
+                service.RetrieveAllSubscriberAgreementsAsync())
                     .ThrowsAsync(dependencyValidationException);
 
             // when
             ValueTask<SubscriberAgreement> subscriberAgreementRetrieveOrAddTask =
-                this.subscriberAgreementProcessingService.RetrieveOrAddSubscriberAgreementAsync(
+                this.subscriberAgreementProcessingService.RetrieveOrAddSubscriberAgreementByNameAsync(
                     inputSubscriberAgreement);
 
             SubscriberAgreementProcessingDependencyValidationException actualException =
@@ -46,7 +46,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.SubscriberAgreements
             actualException.Should().BeEquivalentTo(expectedSubscriberAgreementProcessingDependencyValidationException);
 
             this.subscriberAgreementServiceMock.Verify(service =>
-                service.RetrieveSubscriberAgreementByIdAsync(inputSubscriberAgreement.Id),
+                service.RetrieveAllSubscriberAgreementsAsync(),
                     Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>
@@ -60,7 +60,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.SubscriberAgreements
 
         [Theory]
         [MemberData(nameof(DependencyExceptions))]
-        public async Task ShouldThrowDependencyExceptionOnRetrieveOrAddIfDependencyErrorOccursAndLogItAsync(
+        public async Task ShouldThrowDependencyExceptionOnRetrieveOrAddNameIfDependencyErrorOccursAndLogItAsync(
             Xeption dependencyException)
         {
             // given
@@ -73,12 +73,12 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.SubscriberAgreements
                     innerException: dependencyException.InnerException as Xeption);
 
             this.subscriberAgreementServiceMock.Setup(service =>
-                service.RetrieveSubscriberAgreementByIdAsync(inputSubscriberAgreement.Id))
+                service.RetrieveAllSubscriberAgreementsAsync())
                     .ThrowsAsync(dependencyException);
 
             // when
             ValueTask<SubscriberAgreement> subscriberAgreementRetrieveOrAddTask =
-                this.subscriberAgreementProcessingService.RetrieveOrAddSubscriberAgreementAsync(
+                this.subscriberAgreementProcessingService.RetrieveOrAddSubscriberAgreementByNameAsync(
                     inputSubscriberAgreement);
 
             SubscriberAgreementProcessingDependencyException actualException =
@@ -89,7 +89,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.SubscriberAgreements
             actualException.Should().BeEquivalentTo(expectedSubscriberAgreementProcessingDependencyException);
 
             this.subscriberAgreementServiceMock.Verify(service =>
-                service.RetrieveSubscriberAgreementByIdAsync(inputSubscriberAgreement.Id),
+                service.RetrieveAllSubscriberAgreementsAsync(),
                     Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>
@@ -102,12 +102,11 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.SubscriberAgreements
         }
 
         [Fact]
-        public async Task ShouldThrowServiceExceptionOnRetrieveOrAddIfServiceErrorOccursAsync()
+        public async Task ShouldThrowServiceExceptionOnRetrieveOrAddNameIfServiceErrorOccursAsync()
         {
             // given
             SubscriberAgreement someSubscriberAgreement = CreateRandomSubscriberAgreement();
             SubscriberAgreement inputSubscriberAgreement = someSubscriberAgreement;
-
             var serviceException = new Exception();
 
             var failedSubscriberAgreementProcessingServiceException =
@@ -121,12 +120,12 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.SubscriberAgreements
                     innerException: failedSubscriberAgreementProcessingServiceException);
 
             this.subscriberAgreementServiceMock.Setup(service =>
-                service.RetrieveSubscriberAgreementByIdAsync(inputSubscriberAgreement.Id))
+                service.RetrieveAllSubscriberAgreementsAsync())
                     .ThrowsAsync(serviceException);
 
             // when
             ValueTask<SubscriberAgreement> subscriberAgreementRetrieveOrAddTask =
-                this.subscriberAgreementProcessingService.RetrieveOrAddSubscriberAgreementAsync(
+                this.subscriberAgreementProcessingService.RetrieveOrAddSubscriberAgreementByNameAsync(
                     inputSubscriberAgreement);
 
             SubscriberAgreementProcessingServiceException actualException =
@@ -137,7 +136,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.SubscriberAgreements
             actualException.Should().BeEquivalentTo(expectedSubscriberAgreementProcessingServiveException);
 
             this.subscriberAgreementServiceMock.Verify(service =>
-                service.RetrieveSubscriberAgreementByIdAsync(inputSubscriberAgreement.Id),
+                service.RetrieveAllSubscriberAgreementsAsync(),
                     Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>

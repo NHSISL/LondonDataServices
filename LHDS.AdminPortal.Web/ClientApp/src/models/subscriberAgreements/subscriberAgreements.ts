@@ -3,6 +3,7 @@ import { Guid } from 'guid-typescript';
 export class SubscriberAgreement {
     public id: Guid;
     public supplierSharingAgreementShortName: string;
+    public supplierId: string;
     public ftpUserName?: string;
     public ftpPublicKey?: string;
     public gpgPublicKey?: string;
@@ -18,6 +19,7 @@ export class SubscriberAgreement {
     constructor(SubscriberAgreement: any) {
         this.id = SubscriberAgreement.id ? Guid.parse(SubscriberAgreement.id) : Guid.parse(Guid.EMPTY);
         this.supplierSharingAgreementShortName = SubscriberAgreement.supplierSharingAgreementShortName || "";
+        this.supplierId = SubscriberAgreement.supplierId || "";
         this.ftpUserName = SubscriberAgreement.ftpUserName || "";
         this.ftpPublicKey = SubscriberAgreement.ftpPublicKey || "";
         this.gpgPublicKey = SubscriberAgreement.gpgPublicKey || "";

@@ -33,6 +33,7 @@ using LHDS.Core.Services.Foundations.IngestionTrackingAudits;
 using LHDS.Core.Services.Foundations.IngestionTrackings;
 using LHDS.Core.Services.Foundations.ObjectColumns;
 using LHDS.Core.Services.Foundations.SpecificationObjects;
+using LHDS.Core.Services.Foundations.SubscriberAgreements;
 using LHDS.Core.Services.Foundations.Suppliers;
 using LHDS.Core.Services.Orchestrations.Ingress;
 using LHDS.Core.Services.Orchestrations.Tpp;
@@ -44,6 +45,7 @@ using LHDS.Core.Services.Processings.IngestionTrackingAudits;
 using LHDS.Core.Services.Processings.IngestionTrackings;
 using LHDS.Core.Services.Processings.OptOuts;
 using LHDS.Core.Services.Processings.SpecificationObjects;
+using LHDS.Core.Services.Processings.SubscriberAgreements;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -176,6 +178,7 @@ namespace LHDS.Core.Clients.Extensions
             services.AddTransient<IIngestionTrackingAuditService, IngestionTrackingAuditService>();
             services.AddSingleton<ISpecificationObjectService, SpecificationObjectService>();
             services.AddSingleton<IObjectColumnService, ObjectColumnService>();
+            services.AddSingleton<ISubscriberAgreementService, SubscriberAgreementService>();
         }
 
         private static void AddProcessingServices(IServiceCollection services)
@@ -187,6 +190,7 @@ namespace LHDS.Core.Clients.Extensions
             services.AddTransient<IIngestionTrackingProcessingService, IngestionTrackingProcessingService>();
             services.AddTransient<IIngestionTrackingAuditProcessingService, IngestionTrackingAuditProcessingService>();
             services.AddTransient<ISpecificationObjectProcessingService, SpecificationObjectProcessingService>();
+            services.AddTransient<ISubscriberAgreementProcessingService, SubscriberAgreementProcessingService>();
         }
 
         private static void AddOrchestrations(IServiceCollection services)

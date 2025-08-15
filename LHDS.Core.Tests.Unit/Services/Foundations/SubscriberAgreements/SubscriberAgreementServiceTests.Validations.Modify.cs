@@ -10,7 +10,6 @@ using LHDS.Core.Models.Brokers.Securities;
 using LHDS.Core.Models.Foundations.SubscriberAgreements;
 using LHDS.Core.Models.Foundations.SubscriberAgreements.Exceptions;
 using LHDS.Core.Services.Foundations.SubscriberAgreements;
-using Microsoft.Identity.Client.Extensions.Msal;
 using Moq;
 using Xunit;
 
@@ -104,6 +103,10 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.SubscriberAgreements
 
             invalidSubscriberAgreementException.AddData(
                 key: nameof(SubscriberAgreement.Id),
+                values: "Id is required");
+
+            invalidSubscriberAgreementException.AddData(
+                key: nameof(SubscriberAgreement.SupplierId),
                 values: "Id is required");
 
             invalidSubscriberAgreementException.AddData(

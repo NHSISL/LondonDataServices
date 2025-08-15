@@ -16,12 +16,14 @@ using LHDS.Core.Models.Brokers.Storages.Blobs;
 using LHDS.Core.Models.Foundations.DataSetSpecifications;
 using LHDS.Core.Models.Foundations.IngestionTrackingAudits;
 using LHDS.Core.Models.Foundations.IngestionTrackings;
+using LHDS.Core.Models.Foundations.SubscriberAgreements;
 using LHDS.Core.Models.Orchestrations.EmisLandings;
 using LHDS.Core.Services.Orchestrations.TppLandings;
 using LHDS.Core.Services.Processings.DataSetSpecifications;
 using LHDS.Core.Services.Processings.Documents;
 using LHDS.Core.Services.Processings.IngestionTrackingAudits;
 using LHDS.Core.Services.Processings.IngestionTrackings;
+using LHDS.Core.Services.Processings.SubscriberAgreements;
 
 namespace LHDS.Core.Services.Orchestrations.Tpp
 {
@@ -30,8 +32,9 @@ namespace LHDS.Core.Services.Orchestrations.Tpp
         private readonly IDocumentProcessingService documentProcessingService;
         private readonly IIngestionTrackingProcessingService ingestionTrackingProcessingService;
         private readonly IIngestionTrackingAuditProcessingService ingestionTrackingProcessingAuditService;
-        private readonly BlobContainers blobContainers;
         private readonly IDataSetSpecificationProcessingService dataSetSpecificationProcessingService;
+        private readonly ISubscriberAgreementProcessingService subscriberAgreementProcessingService;
+        private readonly BlobContainers blobContainers;
         private readonly ILoggingBroker loggingBroker;
         private readonly IDateTimeBroker dateTimeBroker;
         private readonly IIdentifierBroker identifierBroker;
@@ -44,6 +47,7 @@ namespace LHDS.Core.Services.Orchestrations.Tpp
             IIngestionTrackingProcessingService ingestionTrackingProcessingService,
             IIngestionTrackingAuditProcessingService ingestionTrackingProcessingAuditService,
             IDataSetSpecificationProcessingService dataSetSpecificationProcessingService,
+            ISubscriberAgreementProcessingService subscriberAgreementProcessingService,
             BlobContainers blobContainers,
             ILoggingBroker loggingBroker,
             IDateTimeBroker dateTimeBroker,
@@ -56,6 +60,7 @@ namespace LHDS.Core.Services.Orchestrations.Tpp
             this.ingestionTrackingProcessingService = ingestionTrackingProcessingService;
             this.ingestionTrackingProcessingAuditService = ingestionTrackingProcessingAuditService;
             this.dataSetSpecificationProcessingService = dataSetSpecificationProcessingService;
+            this.subscriberAgreementProcessingService = subscriberAgreementProcessingService;
             this.blobContainers = blobContainers;
             this.loggingBroker = loggingBroker;
             this.dateTimeBroker = dateTimeBroker;
@@ -129,6 +134,20 @@ namespace LHDS.Core.Services.Orchestrations.Tpp
                     : "/" + fileName;
 
                 string[] segments = filename.Split('/');
+                var resourceGroup = segments[1];
+                Guid subscriberAgreementId = await this.identifierBroker.GetIdentifierAsync();
+
+                SubscriberAgreement subscriberAgreement = new SubscriberAgreement
+                {
+                    Id = subscriberAgreementId,
+                    SupplierId = supplierId,
+                    SupplierSharingAgreementShortName = resourceGroup,
+                    IsActive = true,
+                };
+
+                subscriberAgreement =
+                    await this.subscriberAgreementProcessingService
+                        .RetrieveOrAddSubscriberAgreementByNameAsync(subscriberAgreement);
 
                 if (segments.Length < 4)
                 {
@@ -167,6 +186,7 @@ namespace LHDS.Core.Services.Orchestrations.Tpp
                     {
                         Id = await this.identifierBroker.GetIdentifierAsync(),
                         SupplierId = supplierId,
+                        SubscriberAgreementId = subscriberAgreementId,
                         FileName = filename,
                         SourceFolderPath = sourceFolderPath,
                         BatchReadyFolderPath = baseFolder,

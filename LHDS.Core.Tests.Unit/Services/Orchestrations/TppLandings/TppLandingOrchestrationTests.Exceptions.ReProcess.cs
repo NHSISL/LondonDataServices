@@ -38,6 +38,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.TppLandings
                 ingestionTrackingProcessingServiceMock.Object,
                 ingestionTrackingProcessingAuditServiceMock.Object,
                 dataSetSpecificationProcessingServiceMock.Object,
+                subscriberAgreementProcessingServiceMock.Object,
                 blobContainers,
                 loggingBrokerMock.Object,
                 dateTimeBrokerMock.Object,
@@ -78,6 +79,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.TppLandings
             this.documentProcessingServiceMock.VerifyNoOtherCalls();
             this.ingestionTrackingProcessingAuditServiceMock.VerifyNoOtherCalls();
             this.dataSetSpecificationProcessingServiceMock.VerifyNoOtherCalls();
+            this.subscriberAgreementProcessingServiceMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
         }
 
@@ -144,6 +146,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.TppLandings
             this.documentProcessingServiceMock.VerifyNoOtherCalls();
             this.ingestionTrackingProcessingAuditServiceMock.VerifyNoOtherCalls();
             this.dataSetSpecificationProcessingServiceMock.VerifyNoOtherCalls();
+            this.subscriberAgreementProcessingServiceMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
         }
 
@@ -212,6 +215,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.TppLandings
             this.documentProcessingServiceMock.VerifyNoOtherCalls();
             this.ingestionTrackingProcessingAuditServiceMock.VerifyNoOtherCalls();
             this.dataSetSpecificationProcessingServiceMock.VerifyNoOtherCalls();
+            this.subscriberAgreementProcessingServiceMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
         }
     }

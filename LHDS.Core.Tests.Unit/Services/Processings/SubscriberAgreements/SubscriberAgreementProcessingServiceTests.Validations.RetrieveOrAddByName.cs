@@ -58,7 +58,8 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.SubscriberAgreements
         [InlineData(null)]
         [InlineData("")]
         [InlineData(" ")]
-        public async Task ShouldThrowValidationExceptionOnModifyIfSubscriberAgreementIsInvalidAndLogItAsync(
+        public async Task 
+            ShouldThrowValidationExceptionOnRetrieveOrAddIfSubscriberAgreementProcessingIsInvalidAndLogItAsync(
             string invalidText)
         {
             // given 

@@ -20,20 +20,25 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.IngestionTrackings
         public async Task ShouldRetrieveObjectsInBatchByBatchReferenceAsync()
         {
             // Given
-            string batchReference = GetRandomString();
+            Guid supplierId = Guid.NewGuid();
             Guid subscriberAgreementId = Guid.NewGuid();
+            string batchReference = GetRandomString();
             List<IngestionTracking> randomIngestionTrackings = CreateRandomIngestionTrackings();
 
             randomIngestionTrackings.ForEach(ingestionTracking =>
             {
+                ingestionTracking.SupplierId = supplierId;
+                ingestionTracking.SubscriberAgreementId = subscriberAgreementId;
                 ingestionTracking.Batch = batchReference;
             });
 
             List<IngestionTracking> storageIngestionTrackings = randomIngestionTrackings;
 
             List<string> ingestionTrackingObjects = randomIngestionTrackings
-                .Where(ingestionTrackingObject => ingestionTrackingObject.Batch == batchReference)
-                    .Select(ingestionTracking => ingestionTracking.ObjectName).ToList();
+                .Where(ingestionTrackingObject =>
+                    ingestionTrackingObject.Batch == batchReference &&
+                    ingestionTrackingObject.SubscriberAgreementId == subscriberAgreementId)
+                        .Select(ingestionTracking => ingestionTracking.ObjectName).ToList();
 
             List<string> expectedIngestionTracking = ingestionTrackingObjects.DeepClone();
 
@@ -45,7 +50,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.IngestionTrackings
             List<string> actualIngestionTracking =
                 await this.ingestionTrackingProcessingService
                     .RetrieveObjectsInBatchByBatchReferenceAsync(
-                        batchReference);
+                        batchReference, subscriberAgreementId);
 
             // Then
             actualIngestionTracking.Should().BeEquivalentTo(expectedIngestionTracking);
@@ -64,11 +69,15 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.IngestionTrackings
         public async Task ShouldRetrieveDecryptedObjectsInBatchByBatchReferenceAndDecryptedAsync(bool decrypted)
         {
             // Given
+            Guid supplierId = Guid.NewGuid();
+            Guid subscriberAgreementId = Guid.NewGuid();
             string batchReference = GetRandomString();
             List<IngestionTracking> randomDecryptedIngestionTrackings = CreateRandomIngestionTrackings();
 
             randomDecryptedIngestionTrackings.ForEach(ingestionTracking =>
             {
+                ingestionTracking.SupplierId = supplierId;
+                ingestionTracking.SubscriberAgreementId = subscriberAgreementId;
                 ingestionTracking.Batch = batchReference;
                 ingestionTracking.Decrypted = true;
             });
@@ -77,6 +86,8 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.IngestionTrackings
 
             randomEncryptedIngestionTrackings.ForEach(ingestionTracking =>
             {
+                ingestionTracking.SupplierId = supplierId;
+                ingestionTracking.SubscriberAgreementId = subscriberAgreementId;
                 ingestionTracking.Batch = batchReference;
                 ingestionTracking.Decrypted = false;
             });
@@ -104,6 +115,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.IngestionTrackings
             List<string> actualIngestionTracking =
                 await this.ingestionTrackingProcessingService.RetrieveObjectsInBatchByBatchReferenceAsync(
                     batchReference,
+                    subscriberAgreementId,
                     decrypted);
 
             // Then
@@ -121,24 +133,27 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.IngestionTrackings
         public async Task ShouldRetrieveDecryptedObjectsInBatchByBatchReferenceAndSubscriberAgreementIsAsync()
         {
             // Given
-            string batchReference = GetRandomString();
+            Guid supplierId = Guid.NewGuid();
             Guid subscriberAgreementId = Guid.NewGuid();
+            string batchReference = GetRandomString();
             List<IngestionTracking> randomDecryptedIngestionTrackings = CreateRandomIngestionTrackings();
 
             randomDecryptedIngestionTrackings.ForEach(ingestionTracking =>
             {
+                ingestionTracking.SupplierId = supplierId;
+                ingestionTracking.SubscriberAgreementId = subscriberAgreementId;
                 ingestionTracking.Batch = batchReference;
                 ingestionTracking.Decrypted = true;
-                ingestionTracking.SubscriberAgreementId = subscriberAgreementId;
             });
 
             List<IngestionTracking> randomEncryptedIngestionTrackings = CreateRandomIngestionTrackings();
 
             randomEncryptedIngestionTrackings.ForEach(ingestionTracking =>
             {
+                ingestionTracking.SupplierId = supplierId;
+                ingestionTracking.SubscriberAgreementId = subscriberAgreementId;
                 ingestionTracking.Batch = batchReference;
                 ingestionTracking.Decrypted = false;
-                ingestionTracking.SubscriberAgreementId = subscriberAgreementId;
             });
 
             List<IngestionTracking> storageIngestionTrackings = new List<IngestionTracking>();
@@ -184,23 +199,26 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.IngestionTrackings
             bool decrypted)
         {
             // Given
-            string batchReference = GetRandomString();
+            Guid supplierId = Guid.NewGuid();
             Guid subscriberAgreementId = Guid.NewGuid();
+            string batchReference = GetRandomString();
             List<IngestionTracking> randomDecryptedIngestionTrackings = CreateRandomIngestionTrackings();
 
             randomDecryptedIngestionTrackings.ForEach(ingestionTracking =>
             {
+                ingestionTracking.SupplierId = supplierId;
+                ingestionTracking.SubscriberAgreementId = subscriberAgreementId;
                 ingestionTracking.Batch = batchReference;
                 ingestionTracking.Decrypted = decrypted;
-                ingestionTracking.SubscriberAgreementId = subscriberAgreementId;
             });
 
             List<IngestionTracking> randomEncryptedIngestionTrackings = CreateRandomIngestionTrackings();
 
             randomEncryptedIngestionTrackings.ForEach(ingestionTracking =>
             {
-                ingestionTracking.Batch = batchReference;
+                ingestionTracking.SupplierId = supplierId;
                 ingestionTracking.SubscriberAgreementId = subscriberAgreementId;
+                ingestionTracking.Batch = batchReference;
             });
 
             List<IngestionTracking> storageIngestionTrackings = new List<IngestionTracking>();
@@ -225,8 +243,8 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.IngestionTrackings
             List<string> actualIngestionTracking =
                 await this.ingestionTrackingProcessingService.RetrieveObjectsInBatchByBatchReferenceAsync(
                     batchReference,
-                    decrypted,
-                    subscriberAgreementId);
+                    subscriberAgreementId,
+                    decrypted);
 
             // Then
             actualIngestionTracking.Should().BeEquivalentTo(expectedIngestionTracking);

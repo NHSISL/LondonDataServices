@@ -406,10 +406,10 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.Landings
             return filler;
         }
 
-        private static SubscriberCredential CreateRandomSubscriberCredential() =>
-            CreateSubscriberCredentialFiller().Create();
+        private static SubscriberCredential CreateRandomSubscriberCredential(Guid supplierId) =>
+            CreateSubscriberCredentialFiller(supplierId).Create();
 
-        private static Filler<SubscriberCredential> CreateSubscriberCredentialFiller()
+        private static Filler<SubscriberCredential> CreateSubscriberCredentialFiller(Guid supplierId)
         {
             var filler = new Filler<SubscriberCredential>();
             string user = Guid.NewGuid().ToString();
@@ -418,6 +418,7 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.Landings
             filler.Setup()
                 .OnType<DateTimeOffset>().Use(now)
                 .OnType<DateTimeOffset?>().Use(now)
+                .OnProperty(subscriberCredential => subscriberCredential.SupplierId).Use(supplierId)
                 .OnProperty(subscriberCredential => subscriberCredential.CreatedBy).Use(user)
                 .OnProperty(subscriberCredential => subscriberCredential.UpdatedBy).Use(user);
 
@@ -490,10 +491,10 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.Landings
             return subscriberCredential;
         }
 
-        private static SubscriberCredential CreateRandomSubscriberCredential(Guid id) =>
-            CreateRandomSubscriberCredentialFiller(id).Create();
+        private static SubscriberCredential CreateRandomSubscriberCredential(Guid id, Guid supplierId) =>
+            CreateRandomSubscriberCredentialFiller(id, supplierId).Create();
 
-        private static Filler<SubscriberCredential> CreateRandomSubscriberCredentialFiller(Guid id)
+        private static Filler<SubscriberCredential> CreateRandomSubscriberCredentialFiller(Guid id, Guid supplierId)
         {
             string user = Guid.NewGuid().ToString();
             DateTime now = DateTime.UtcNow;
@@ -503,6 +504,7 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.Landings
                 .OnType<DateTimeOffset>().Use(now)
                 .OnType<DateTimeOffset?>().Use(now)
                 .OnProperty(subscriberCredential => subscriberCredential.Id).Use(id)
+                .OnProperty(subscriberCredential => subscriberCredential.SupplierId).Use(supplierId)
                 .OnProperty(subscriberCredential => subscriberCredential.CreatedDate).Use(now)
                 .OnProperty(subscriberCredential => subscriberCredential.CreatedBy).Use(user)
                 .OnProperty(subscriberCredential => subscriberCredential.UpdatedDate).Use(now)

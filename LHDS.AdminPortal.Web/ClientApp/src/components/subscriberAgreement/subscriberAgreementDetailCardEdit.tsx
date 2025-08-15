@@ -104,7 +104,7 @@ const SubscriberAgreementDetailCardEdit: FunctionComponent<SubscriberAgreementDe
                         <select
                             id="supplier"
                             name="supplierId"
-                            value={editSubscriberCredential.supplierId ?? ""}
+                            value={editSubscriberCredential.supplierId ? String(editSubscriberCredential.supplierId).trim().toUpperCase() : ""}
                             onChange={handleChange}
                         >
                             <option value="">Select Supplier</option>

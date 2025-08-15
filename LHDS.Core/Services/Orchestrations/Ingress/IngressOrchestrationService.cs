@@ -124,8 +124,8 @@ namespace LHDS.Core.Services.Orchestrations.Ingress
             List<string> decryptedIngestiontrackingObjects = await this.ingestionTrackingProcessingService
                 .RetrieveObjectsInBatchByBatchReferenceAsync(
                     batchReference: ingestionTracking.Batch,
-                    decrypted: true,
-                    subscriberAgreementId: ingestionTracking.SubscriberAgreementId);
+                    subscriberAgreementId: ingestionTracking.SubscriberAgreementId.Value,
+                    decrypted: true);
 
             List<string> missingSpecificationObjectIds = specificationObjectIds
                 .Except(decryptedIngestiontrackingObjects).ToList();

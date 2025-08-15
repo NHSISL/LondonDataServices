@@ -210,6 +210,7 @@ namespace LHDS.Core.Services.Orchestrations.SubscriberCredentials
             var mappedSubscriberCredential = new SubscriberCredential
             {
                 Id = subscriberAgreement.Id,
+                SupplierId = subscriberAgreement.SupplierId,
                 SupplierSharingAgreementShortName = subscriberAgreement.SupplierSharingAgreementShortName,
                 SupplierSharingAgreementGuid = subscriberAgreement.SupplierSharingAgreementGuid,
                 FtpUserName = subscriberAgreement.FtpUserName,
@@ -239,6 +240,7 @@ namespace LHDS.Core.Services.Orchestrations.SubscriberCredentials
             return new SubscriberCredential
             {
                 Id = subscriberCredential.Id,
+                SupplierId = subscriberCredential.SupplierId,
                 SupplierSharingAgreementShortName = subscriberCredential.SupplierSharingAgreementShortName,
                 SupplierSharingAgreementGuid = subscriberCredential.SupplierSharingAgreementGuid,
                 FtpUserName = subscriberCredential.FtpUserName,
@@ -265,6 +267,7 @@ namespace LHDS.Core.Services.Orchestrations.SubscriberCredentials
             return new SubscriberAgreement
             {
                 Id = subscriberCredential.Id,
+                SupplierId = subscriberCredential.SupplierId,
                 SupplierSharingAgreementShortName = subscriberCredential.SupplierSharingAgreementShortName,
                 SupplierSharingAgreementGuid = subscriberCredential.SupplierSharingAgreementGuid,
                 FtpUserName = subscriberCredential.FtpUserName,

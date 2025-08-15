@@ -3,6 +3,7 @@ import { Guid } from 'guid-typescript';
 export class SubscriberCredentialView {
     public id: Guid;
     public supplierSharingAgreementShortName: string;
+    public supplierId: string;
     public ftpUserName?: string;
     public ftpPublicKey?: string;
     public gpgPublicKey?: string;
@@ -17,6 +18,7 @@ export class SubscriberCredentialView {
     constructor(
         id: Guid,
         supplierSharingAgreementShortName?: string,
+        supplierId?: string,
         ftpUserName?: string,
         ftpPublicKey?: string,
         gpgPublicKey?: string,
@@ -31,6 +33,7 @@ export class SubscriberCredentialView {
     ) {
         this.id = id;
         this.supplierSharingAgreementShortName = supplierSharingAgreementShortName || "";
+        this.supplierId = supplierId || "";
         this.ftpUserName = ftpUserName || "";
         this.ftpPublicKey = ftpPublicKey || "";
         this.gpgPublicKey = gpgPublicKey || "";

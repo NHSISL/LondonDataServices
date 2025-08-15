@@ -73,6 +73,12 @@ const SubscriberAgreementDetailCardView: FunctionComponent<SubscriberAgreementDe
                     </SummaryListBaseValue>
                 </SummaryListBaseRow>
                 <SummaryListBaseRow>
+                    <SummaryListBaseKey>Supplier Id:</SummaryListBaseKey>
+                    <SummaryListBaseValue>
+                        {subscriberCredential.supplierId.toString()}
+                    </SummaryListBaseValue>
+                </SummaryListBaseRow>
+                <SummaryListBaseRow>
                     <SummaryListBaseKey>Short Name:</SummaryListBaseKey>
                     <SummaryListBaseValue>
                         {subscriberCredential.supplierSharingAgreementShortName}

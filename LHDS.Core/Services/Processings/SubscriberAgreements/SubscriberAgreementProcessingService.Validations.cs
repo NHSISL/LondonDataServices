@@ -3,6 +3,7 @@
 // ---------------------------------------------------------
 
 using System;
+using System.Threading.Tasks;
 using LHDS.Core.Models.Foundations.SubscriberAgreements;
 using LHDS.Core.Models.Processings.SubscriberAgreements.Exceptions;
 using Xeptions;
@@ -14,6 +15,16 @@ namespace LHDS.Core.Services.Processings.SubscriberAgreements
         private void ValidateSubscriberAgreement(SubscriberAgreement subscriberAgreement)
         {
             ValidateSubscriberAgreementIsNotNull(subscriberAgreement);
+        }
+
+        private async ValueTask ValidateSubscriberAgreementWithName(SubscriberAgreement subscriberAgreement)
+        {
+            ValidateSubscriberAgreementIsNotNull(subscriberAgreement);
+
+            Validate<InvalidArgumentSubscriberAgreementProcessingException>(
+                message: "Invalid argument(s). Please correct the errors and try again.",
+                (Rule: IsInvalid(subscriberAgreement.SupplierSharingAgreementShortName),
+                    Parameter: nameof(SubscriberAgreement.SupplierSharingAgreementShortName)));
         }
 
         private static void ValidateSubscriberAgreementIsNotNull(SubscriberAgreement subscriberAgreement)
@@ -33,6 +44,12 @@ namespace LHDS.Core.Services.Processings.SubscriberAgreements
         {
             Condition = id == Guid.Empty,
             Message = "Id is required"
+        };
+
+        private static dynamic IsInvalid(string? text) => new
+        {
+            Condition = String.IsNullOrWhiteSpace(text),
+            Message = "Text is required"
         };
 
         private static void Validate<T>(string message, params (dynamic Rule, string Parameter)[] validations)

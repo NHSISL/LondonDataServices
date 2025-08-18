@@ -21,6 +21,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.IngestionTrackings
             Xeption dependencyValidationException)
         {
             // given
+            Guid someSupplierId = Guid.NewGuid();
             string someBatchReference = GetRandomString();
 
             var expectedIngestionTrackingProcessingDependencyValidationException =
@@ -35,7 +36,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.IngestionTrackings
             // when
             ValueTask<List<string>> retrieveObjectsTask =
                 this.ingestionTrackingProcessingService
-                    .RetrieveObjectsInBatchByBatchReferenceAsync(someBatchReference);
+                    .RetrieveObjectsInBatchByBatchReferenceAsync(someBatchReference, someSupplierId);
 
             IngestionTrackingProcessingDependencyValidationException actualException =
                 await Assert.ThrowsAsync<IngestionTrackingProcessingDependencyValidationException>(
@@ -63,6 +64,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.IngestionTrackings
             Xeption dependencyException)
         {
             // given
+            Guid someSupplierId = Guid.NewGuid();
             string someBatchReference = GetRandomString();
 
             var expectedIngestionTrackingProcessingDependencyException =
@@ -77,7 +79,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.IngestionTrackings
             // when
             ValueTask<List<string>> retrieveObjectsTask =
                 this.ingestionTrackingProcessingService
-                    .RetrieveObjectsInBatchByBatchReferenceAsync(someBatchReference);
+                    .RetrieveObjectsInBatchByBatchReferenceAsync(someBatchReference, someSupplierId);
 
             IngestionTrackingProcessingDependencyException actualException =
                 await Assert.ThrowsAsync<IngestionTrackingProcessingDependencyException>(
@@ -103,6 +105,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.IngestionTrackings
         public async Task ShouldThrowServiceExceptionOnRetrieveObjectsInBatchIfServiceErrorOccursAsync()
         {
             // given
+            Guid someSupplierId = Guid.NewGuid();
             string someBatchReference = GetRandomString();
             var serviceException = new Exception();
 
@@ -111,7 +114,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.IngestionTrackings
                     message: "Failed IngestionTracking processing service error occurred, please contact support.",
                     innerException: serviceException);
 
-            var expectedIngestionTrackingProcessingServiveException =
+            var expectedIngestionTrackingProcessingServiceException =
                 new IngestionTrackingProcessingServiceException(
                     message: "IngestionTracking processing service error occurred, please contact support.",
                     innerException: failedIngestionTrackingProcessingServiceException);
@@ -123,14 +126,14 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.IngestionTrackings
             // when
             ValueTask<List<string>> retrieveObjectsTask =
                 this.ingestionTrackingProcessingService
-                    .RetrieveObjectsInBatchByBatchReferenceAsync(someBatchReference);
+                    .RetrieveObjectsInBatchByBatchReferenceAsync(someBatchReference, someSupplierId);
 
             IngestionTrackingProcessingServiceException actualException =
                 await Assert.ThrowsAsync<IngestionTrackingProcessingServiceException>(
                     retrieveObjectsTask.AsTask);
 
             // then
-            actualException.Should().BeEquivalentTo(expectedIngestionTrackingProcessingServiveException);
+            actualException.Should().BeEquivalentTo(expectedIngestionTrackingProcessingServiceException);
 
             this.ingestionTrackingServiceMock.Verify(service =>
                 service.RetrieveAllIngestionTrackingsAsync(),
@@ -138,7 +141,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.IngestionTrackings
 
             this.loggingBrokerMock.Verify(broker =>
                  broker.LogErrorAsync(It.Is(SameExceptionAs(
-                     expectedIngestionTrackingProcessingServiveException))),
+                     expectedIngestionTrackingProcessingServiceException))),
                          Times.Once);
 
             this.ingestionTrackingServiceMock.VerifyNoOtherCalls();

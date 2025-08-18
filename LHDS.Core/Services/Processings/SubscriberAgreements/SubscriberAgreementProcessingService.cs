@@ -43,16 +43,42 @@ namespace LHDS.Core.Services.Processings.SubscriberAgreements
                 return await this.subscriberAgreementService.RetrieveSubscriberAgreementByIdAsync(subscriberAgreementId);
             });
 
-        public ValueTask<SubscriberAgreement> RetrieveOrAddSubscriberAgreementAsync(SubscriberAgreement subscriberAgreement) =>
+        public ValueTask<SubscriberAgreement> RetrieveOrAddSubscriberAgreementAsync(
+            SubscriberAgreement subscriberAgreement) =>
             TryCatch(async () =>
             {
                 ValidateSubscriberAgreement(subscriberAgreement);
 
-                return await this.subscriberAgreementService.RetrieveSubscriberAgreementByIdAsync(subscriberAgreement.Id) ??
-                    await this.subscriberAgreementService.AddSubscriberAgreementAsync(subscriberAgreement);
+                return
+                    await this.subscriberAgreementService.RetrieveSubscriberAgreementByIdAsync(subscriberAgreement.Id)
+                        ?? await this.subscriberAgreementService.AddSubscriberAgreementAsync(subscriberAgreement);
             });
 
-        public ValueTask<SubscriberAgreement> ModifyOrAddSubscriberAgreementAsync(SubscriberAgreement subscriberAgreement) =>
+        public ValueTask<SubscriberAgreement> RetrieveOrAddSubscriberAgreementByNameAsync(
+            SubscriberAgreement subscriberAgreement) =>
+            TryCatch(async () =>
+            {
+                await ValidateSubscriberAgreementWithName(subscriberAgreement);
+
+                var retrievedSubscriberAgreements =
+                    await this.subscriberAgreementService.RetrieveAllSubscriberAgreementsAsync();
+
+                SubscriberAgreement maybeSubscriberAgreement =
+                    retrievedSubscriberAgreements.FirstOrDefault(storageAgreement =>
+                        storageAgreement.SupplierSharingAgreementShortName ==
+                        subscriberAgreement.SupplierSharingAgreementShortName
+                        && storageAgreement.SupplierId == subscriberAgreement.SupplierId);
+
+                if (maybeSubscriberAgreement != null)
+                {
+                    return maybeSubscriberAgreement;
+                }
+
+                return await this.subscriberAgreementService.AddSubscriberAgreementAsync(subscriberAgreement);
+            });
+
+        public ValueTask<SubscriberAgreement> ModifyOrAddSubscriberAgreementAsync(
+            SubscriberAgreement subscriberAgreement) =>
             TryCatch(async () =>
             {
                 ValidateSubscriberAgreement(subscriberAgreement);

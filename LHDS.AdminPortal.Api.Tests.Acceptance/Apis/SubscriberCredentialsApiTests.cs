@@ -108,6 +108,7 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.SubscriberCredentials
             SubscriberCredential subscriberCredential = new SubscriberCredential
             {
                 Id = subscriberAgreement.Id,
+                SupplierId = subscriberAgreement.SupplierId,
                 SupplierSharingAgreementShortName = subscriberAgreement.SupplierSharingAgreementShortName,
                 SupplierSharingAgreementGuid = subscriberAgreement.SupplierSharingAgreementGuid,
                 FtpPublicKey = subscriberAgreement.FtpPublicKey,
@@ -155,7 +156,7 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.SubscriberCredentials
         {
             SubscriberAgreement randomSubscriberAgreement = CreateRandomSubscriberAgreement(id);
 
-            SubscriberAgreement storageSubscriberAgreement = 
+            SubscriberAgreement storageSubscriberAgreement =
                 await this.apiBroker.PostSubscriberAgreementAsync(randomSubscriberAgreement);
 
             return storageSubscriberAgreement;

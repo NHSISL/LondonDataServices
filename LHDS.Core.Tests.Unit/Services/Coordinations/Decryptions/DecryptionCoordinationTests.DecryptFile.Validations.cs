@@ -28,6 +28,10 @@ namespace LHDS.Core.Tests.Unit.Services.Coordinations.Decryptions
                 new InvalidArgumentDecryptionCoordinationException(
                     message: "Invalid decryption coordination argument, please correct the errors and try again.");
 
+            invalidArgumentDecryptionCoordinationException.AddData(
+                key: "fileName",
+                values: "Text is required");
+
             var rollBackException = new RollbackDecryptionCoordinationException(
                 message: $"Failed to decrypt file. Rollback encrypted file: {invalidData}",
                 innerException: invalidArgumentDecryptionCoordinationException as Xeption);

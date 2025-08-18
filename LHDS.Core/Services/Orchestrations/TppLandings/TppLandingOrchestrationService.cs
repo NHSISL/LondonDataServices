@@ -116,15 +116,15 @@ namespace LHDS.Core.Services.Orchestrations.Tpp
         {
             ValidateArgumentsOnProcess(fileName, supplierId);
 
+            var filename = fileName.StartsWith('/')
+                ? fileName
+                : "/" + fileName;
+
             IQueryable<IngestionTracking> allIngestionTrackings =
                 await this.ingestionTrackingProcessingService.RetrieveAllIngestionTrackingsAsync();
 
             IngestionTracking? maybeIngestionTracking = allIngestionTrackings
                     .FirstOrDefault(ingestionTracking => ingestionTracking.FileName == fileName);
-
-            var filename = fileName.StartsWith('/')
-                ? fileName
-                : "/" + fileName;
 
             if (maybeIngestionTracking == null)
             {

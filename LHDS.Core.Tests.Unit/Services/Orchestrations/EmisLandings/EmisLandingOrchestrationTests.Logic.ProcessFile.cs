@@ -653,6 +653,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.EmisLandings
 
             IngestionTracking lastSeenIngestionTracking = storageIngestionTracking.DeepClone();
             lastSeenIngestionTracking.LastSeen = randomDateTime;
+            lastSeenIngestionTracking.FileDeleted = false;
 
             this.ingestionTrackingProcessingServiceMock.Setup(service =>
                 service.ModifyIngestionTrackingAsync(It.Is(SameIngestionTrackingAs(lastSeenIngestionTracking))))

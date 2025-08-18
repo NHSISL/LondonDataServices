@@ -67,19 +67,31 @@ const SubscriberAgreementDetailCardView: FunctionComponent<SubscriberAgreementDe
         <>
             <SummaryListBase>
                 <SummaryListBaseRow>
-                    <SummaryListBaseKey>Id:</SummaryListBaseKey>
+                    <SummaryListBaseKey>Id</SummaryListBaseKey>
                     <SummaryListBaseValue>
                         {subscriberCredential.id.toString()}
                     </SummaryListBaseValue>
                 </SummaryListBaseRow>
                 <SummaryListBaseRow>
-                    <SummaryListBaseKey>Short Name:</SummaryListBaseKey>
+                    <SummaryListBaseKey>Supplier</SummaryListBaseKey>
+                    <SummaryListBaseValue>
+                        {
+                            subscriberCredential.supplierId.toString().toUpperCase() === "67680F17-9D0C-4474-8B35-56CA8F9DF1F6"
+                                ? "EMIS"
+                                : subscriberCredential.supplierId.toString().toUpperCase() === "566C8C77-3A4D-4BA4-9F1C-D7D1958A8165"
+                                    ? "TPP"
+                                    : subscriberCredential.supplierId.toString()
+                        }
+                    </SummaryListBaseValue>
+                </SummaryListBaseRow>
+                <SummaryListBaseRow>
+                    <SummaryListBaseKey>Short Name</SummaryListBaseKey>
                     <SummaryListBaseValue>
                         {subscriberCredential.supplierSharingAgreementShortName}
                     </SummaryListBaseValue>
                 </SummaryListBaseRow>
                 <SummaryListBaseRow>
-                    <SummaryListBaseKey>Supplier Sharing Agreement Guid:</SummaryListBaseKey>
+                    <SummaryListBaseKey>Supplier Sharing Agreement Guid</SummaryListBaseKey>
                     <SummaryListBaseValue>
                         {subscriberCredential.supplierSharingAgreementGuid!.toString()}
                     </SummaryListBaseValue>

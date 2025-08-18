@@ -567,6 +567,9 @@ namespace LHDS.Core.Migrations
                     b.Property<DateTimeOffset>("LastAttempt")
                         .HasColumnType("datetimeoffset");
 
+                    b.Property<DateTimeOffset?>("LastBatchCompleteCheck")
+                        .HasColumnType("datetimeoffset");
+
                     b.Property<DateTimeOffset>("LastSeen")
                         .HasColumnType("datetimeoffset");
 
@@ -1190,6 +1193,9 @@ namespace LHDS.Core.Migrations
 
                     b.Property<DateTimeOffset?>("LastPollStartDate")
                         .HasColumnType("datetimeoffset");
+
+                    b.Property<Guid>("SupplierId")
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<Guid?>("SupplierSharingAgreementGuid")
                         .HasColumnType("uniqueidentifier");

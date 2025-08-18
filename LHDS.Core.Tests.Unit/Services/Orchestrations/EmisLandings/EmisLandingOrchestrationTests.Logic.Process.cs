@@ -49,7 +49,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.EmisLandings
                     .ReturnsAsync(processedFileNames);
 
             emisLandingOrchestrationServiceMock.Setup(service =>
-                service.MarkItemsAsDeleteThatHasNotBeenSeen())
+                service.MarkItemsAsDeleteThatHasNotBeenSeen(inputSubscriberCredential.Id))
                     .Returns(ValueTask.CompletedTask);
 
             // when
@@ -63,7 +63,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.EmisLandings
                     Times.Once);
 
             emisLandingOrchestrationServiceMock.Verify(service =>
-                service.MarkItemsAsDeleteThatHasNotBeenSeen(),
+                service.MarkItemsAsDeleteThatHasNotBeenSeen(inputSubscriberCredential.Id),
                     Times.Once);
 
             this.downloadProcessingServiceMock.VerifyNoOtherCalls();

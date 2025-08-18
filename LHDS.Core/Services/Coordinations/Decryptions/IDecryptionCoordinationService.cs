@@ -10,5 +10,6 @@ namespace LHDS.Core.Services.Coordinations.Decryptions
     {
         ValueTask<string> DecryptAsync(string encryptedFileName);
         ValueTask RetryDecryptOnAllAsync();
+        ValueTask ProcessDecryptedItemsForBatchCompleteAsync();
     }
 }

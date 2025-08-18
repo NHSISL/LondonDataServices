@@ -93,7 +93,7 @@ namespace LHDS.Core.Services.Orchestrations.Downloads
 
                 try
                 {
-                    await MarkItemsAsDeleteThatHasNotBeenSeen();
+                    await MarkItemsAsDeleteThatHasNotBeenSeen(subscriberCredential.Id);
                 }
                 catch (Exception ex)
                 {
@@ -150,7 +150,7 @@ namespace LHDS.Core.Services.Orchestrations.Downloads
             return files;
         }
 
-        virtual internal async ValueTask MarkItemsAsDeleteThatHasNotBeenSeen()
+        virtual internal async ValueTask MarkItemsAsDeleteThatHasNotBeenSeen(Guid SubscriberAgreementId)
         {
             var exceptions = new List<Exception>();
             DateTimeOffset currentDateTime = await this.dateTimeBroker.GetCurrentDateTimeOffsetAsync();
@@ -161,7 +161,10 @@ namespace LHDS.Core.Services.Orchestrations.Downloads
 
             List<IngestionTracking> unavailableIngestionTrackings = allIngestionTrackings
                 .Where(ingestionTracking =>
-                    ingestionTracking.LastSeen <= lastSeenMinutes).ToList();
+                    ingestionTracking.LastSeen <= lastSeenMinutes
+                    && !ingestionTracking.FileDeleted
+                    && ingestionTracking.SubscriberAgreementId == SubscriberAgreementId)
+                .ToList();
 
             foreach (var item in unavailableIngestionTrackings)
             {
@@ -434,6 +437,7 @@ namespace LHDS.Core.Services.Orchestrations.Downloads
                 .RetrieveIngestionTrackingByIdAsync(maybeIngestionTracking.Id);
 
             maybeIngestionTracking.LastSeen = currentDateTime;
+            maybeIngestionTracking.FileDeleted = false;
 
             await this.ingestionTrackingProcessingService
                 .ModifyIngestionTrackingAsync(maybeIngestionTracking);

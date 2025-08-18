@@ -114,11 +114,11 @@ namespace LHDS.Core.Services.Orchestrations.Tpp
 
         virtual internal async ValueTask<Guid> ProcessFileAsync(string fileName, Guid supplierId)
         {
+            ValidateArgumentsOnProcess(fileName, supplierId);
+
             var filename = fileName.StartsWith('/')
                 ? fileName
                 : "/" + fileName;
-
-            ValidateArgumentsOnProcess(fileName, supplierId);
 
             IQueryable<IngestionTracking> allIngestionTrackings =
                 await this.ingestionTrackingProcessingService.RetrieveAllIngestionTrackingsAsync();

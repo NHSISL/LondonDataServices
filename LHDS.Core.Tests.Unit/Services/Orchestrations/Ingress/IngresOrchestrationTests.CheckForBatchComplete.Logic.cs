@@ -49,9 +49,13 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Ingress
             this.ingestionTrackingProcessingServiceMock.Setup(service =>
                 service.RetrieveObjectsInBatchByBatchReferenceAsync(
                     batchReference,
-                    true,
-                    storageIngestionTracking.SubscriberAgreementId))
+                    storageIngestionTracking.SubscriberAgreementId.Value,
+                    true))
                         .ReturnsAsync(ingestionTrackingObjects);
+
+            this.ingestionTrackingProcessingServiceMock.Setup(service =>
+                service.MarkAsBatchCompleteAsync(ingestionTrackingId, false))
+                    .Returns(ValueTask.CompletedTask);
 
             var ingressOrchestrationServiceMock = new Mock<IngressOrchestrationService>(
                 this.ingestionTrackingProcessingServiceMock.Object,
@@ -60,7 +64,8 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Ingress
                 this.landingConfiguration,
                 this.blobContainers,
                 this.loggingBrokerMock.Object,
-                this.auditBrokerMock.Object)
+                this.auditBrokerMock.Object,
+                this.dateTimeBrokerMock.Object)
             {
                 CallBase = true
             };
@@ -80,9 +85,13 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Ingress
             this.ingestionTrackingProcessingServiceMock.Verify(service =>
                 service.RetrieveObjectsInBatchByBatchReferenceAsync(
                     batchReference,
-                    true,
-                    storageIngestionTracking.SubscriberAgreementId),
+                    storageIngestionTracking.SubscriberAgreementId.Value,
+                    true),
                         Times.Once);
+
+            this.ingestionTrackingProcessingServiceMock.Verify(service =>
+                service.MarkAsBatchCompleteAsync(ingestionTrackingId, false),
+                    Times.Once);
 
             this.loggingBrokerMock.Verify(service =>
                 service.LogInformationAsync(message),
@@ -135,8 +144,8 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Ingress
             this.ingestionTrackingProcessingServiceMock.Setup(service =>
                 service.RetrieveObjectsInBatchByBatchReferenceAsync(
                     batchReference,
-                    true,
-                    storageIngestionTracking.SubscriberAgreementId))
+                    storageIngestionTracking.SubscriberAgreementId.Value,
+                    true))
                         .ReturnsAsync(ingestionTrackingObjects);
 
             var ingressOrchestrationServiceMock = new Mock<IngressOrchestrationService>(
@@ -146,7 +155,8 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Ingress
                 this.landingConfiguration,
                 this.blobContainers,
                 this.loggingBrokerMock.Object,
-                this.auditBrokerMock.Object)
+                this.auditBrokerMock.Object,
+                this.dateTimeBrokerMock.Object)
             {
                 CallBase = true
             };
@@ -182,8 +192,8 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Ingress
             this.ingestionTrackingProcessingServiceMock.Verify(service =>
                 service.RetrieveObjectsInBatchByBatchReferenceAsync(
                     batchReference,
-                    true,
-                    storageIngestionTracking.SubscriberAgreementId),
+                    storageIngestionTracking.SubscriberAgreementId.Value,
+                    true),
                         Times.Once);
 
             this.documentProcessingServiceMock.Verify(service =>

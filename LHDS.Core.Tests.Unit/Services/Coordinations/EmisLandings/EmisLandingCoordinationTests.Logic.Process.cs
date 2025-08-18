@@ -31,7 +31,7 @@ namespace LHDS.Core.Tests.Unit.Services.Coordinations.EmisLandings
             List<string> randomEmisLandingPaths = CreateRandomLandingPaths(number: GetRandomNumber());
 
             this.subscriberCredentialOrchestrationMock.Setup(service =>
-                service.RetrieveAllActiveSubscriberCredentialIdsAsync())
+                service.RetrieveAllActiveSubscriberCredentialIdsAsync(inputSupplierId))
                     .ReturnsAsync(randomActiveSubscriberAgreementIds);
 
             foreach (Guid subscriberAgreementId in randomActiveSubscriberAgreementIds)
@@ -56,7 +56,7 @@ namespace LHDS.Core.Tests.Unit.Services.Coordinations.EmisLandings
             actualPaths.Count().Should().Be(randomEmisLandingPaths.Count * randomNumber);
 
             this.subscriberCredentialOrchestrationMock.Verify(service =>
-                service.RetrieveAllActiveSubscriberCredentialIdsAsync(),
+                service.RetrieveAllActiveSubscriberCredentialIdsAsync(inputSupplierId),
                     Times.Once);
 
             foreach (Guid subscriberAgreementId in randomActiveSubscriberAgreementIds)

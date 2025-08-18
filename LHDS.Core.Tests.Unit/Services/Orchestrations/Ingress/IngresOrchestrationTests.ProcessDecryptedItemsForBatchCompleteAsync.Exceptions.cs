@@ -23,7 +23,9 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Ingress
         public async Task ShouldThrowDependencyExceptionForBatchCompleteExceptionOnProcessDecryptedItemsForBatchCompleteAndLogItAsync()
         {
             // given
+            DateTimeOffset randomDateTime = GetRandomDateTimeOffset();
             IngestionTracking randomIngestionTrackingOne = CreateRandomIngestionTracking();
+            randomIngestionTrackingOne.LastBatchCompleteCheck = randomDateTime.AddMinutes(-15);
             randomIngestionTrackingOne.Decrypted = true;
             randomIngestionTrackingOne.IsDownloaded = true;
             randomIngestionTrackingOne.IsBatchComplete = false;
@@ -44,7 +46,8 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Ingress
                 this.landingConfiguration,
                 this.blobContainers,
                 this.loggingBrokerMock.Object,
-                this.auditBrokerMock.Object)
+                this.auditBrokerMock.Object,
+                this.dateTimeBrokerMock.Object)
             {
                 CallBase = true
             };
@@ -55,6 +58,10 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Ingress
                         .ReturnsAsync(new List<IngestionTracking>().AsQueryable());
 
             Exception someException = new Exception(message: GetRandomString());
+
+            this.dateTimeBrokerMock.Setup(service =>
+                service.GetCurrentDateTimeOffsetAsync())
+                    .ReturnsAsync(randomDateTime);
 
             ingressOrchestrationServiceMock.Setup(service =>
                 service.CheckForBatchCompleteAsync(It.IsAny<Guid>()))
@@ -67,7 +74,6 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Ingress
             var batchCompleteException = new BatchCompleteException(
                 message: "One or more errors occurred while checking for batch completion.",
                 innerException: aggregateException);
-
 
             var expectedDependencyException =
                 new IngressOrchestrationDependencyException(
@@ -84,6 +90,10 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Ingress
             // then
             actualException.Should()
                 .BeEquivalentTo(expectedDependencyException);
+
+            this.dateTimeBrokerMock.Verify(service =>
+                service.GetCurrentDateTimeOffsetAsync(),
+                    Times.Once);
 
             this.ingestionTrackingProcessingServiceMock
                 .Verify(service => service.RetrieveAllIngestionTrackingsAsync(),
@@ -118,8 +128,8 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Ingress
                         "fix the errors and try again.",
                     dependancyValidationException.InnerException as Xeption);
 
-            this.ingestionTrackingProcessingServiceMock
-                .Setup(service => service.RetrieveAllIngestionTrackingsAsync())
+            this.dateTimeBrokerMock.Setup(broker =>
+                broker.GetCurrentDateTimeOffsetAsync())
                     .ThrowsAsync(dependancyValidationException);
 
             //when
@@ -134,8 +144,8 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Ingress
             actualException.Should()
                 .BeEquivalentTo(expectedDependencyException);
 
-            this.ingestionTrackingProcessingServiceMock.Verify(service =>
-                service.RetrieveAllIngestionTrackingsAsync(),
+            this.dateTimeBrokerMock.Verify(broker =>
+                broker.GetCurrentDateTimeOffsetAsync(),
                     Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>
@@ -161,8 +171,8 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Ingress
                     message: "Ingress orchestration dependency error occurred, fix the errors and try again.",
                     innerException: dependancyException.InnerException as Xeption);
 
-            this.ingestionTrackingProcessingServiceMock
-                .Setup(service => service.RetrieveAllIngestionTrackingsAsync())
+            this.dateTimeBrokerMock.Setup(broker =>
+                broker.GetCurrentDateTimeOffsetAsync())
                    .ThrowsAsync(dependancyException);
 
             // when
@@ -176,8 +186,8 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Ingress
             actualException.Should()
                 .BeEquivalentTo(expectedDependencyException);
 
-            this.ingestionTrackingProcessingServiceMock.Verify(service =>
-                service.RetrieveAllIngestionTrackingsAsync(),
+            this.dateTimeBrokerMock.Verify(broker =>
+                broker.GetCurrentDateTimeOffsetAsync(),
                     Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>
@@ -208,9 +218,9 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Ingress
                     message: "Ingress orchestration service error occurred, please contact support.",
                     innerException: failedIngressOrchestrationServiceException);
 
-            this.ingestionTrackingProcessingServiceMock
-                .Setup(service => service.RetrieveAllIngestionTrackingsAsync())
-                  .ThrowsAsync(serviceException);
+            this.dateTimeBrokerMock.Setup(broker =>
+                broker.GetCurrentDateTimeOffsetAsync())
+                    .ThrowsAsync(serviceException);
 
             // when
             ValueTask checkForBatchCompleteTask =
@@ -223,8 +233,8 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Ingress
             actualException.Should()
                 .BeEquivalentTo(expectedIngressOrchestrationServiceException);
 
-            this.ingestionTrackingProcessingServiceMock.Verify(service =>
-                service.RetrieveAllIngestionTrackingsAsync(),
+            this.dateTimeBrokerMock.Verify(broker =>
+                broker.GetCurrentDateTimeOffsetAsync(),
                     Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>

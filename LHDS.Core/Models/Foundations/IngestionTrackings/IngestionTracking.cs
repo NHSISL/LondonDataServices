@@ -21,6 +21,7 @@ namespace LHDS.Core.Models.Foundations.IngestionTrackings
         public string? BatchReadyFolderPath { get; set; } = string.Empty;
         public string? Batch { get; set; } = string.Empty;
         public bool IsBatchComplete { get; set; } = false;
+        public DateTimeOffset? LastBatchCompleteCheck { get; set; }
         public string? ObjectName { get; set; } = string.Empty;
         public Guid DataSetSpecificationId { get; set; }
         public string EncryptedFileName { get; set; } = string.Empty;

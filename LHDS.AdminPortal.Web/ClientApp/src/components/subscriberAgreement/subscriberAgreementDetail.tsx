@@ -69,7 +69,7 @@ const SubscriberAgreementDetail: FunctionComponent<SubscriberAgreementDetailProp
             setMode('VIEW');
         }
         if (subscriberAgreementId === "" || subscriberAgreementId === undefined) {
-            setSubscriberCredential(new SubscriberCredentialView(Guid.create(), "", "", "", "",true))
+            setSubscriberCredential(new SubscriberCredentialView(Guid.create(),"", "", "", "", "",true))
             setMode('ADD');
         }
     }, [subscriberAgreementId, subscriberCredentialRetrieved]);

@@ -122,16 +122,16 @@ namespace LHDS.Core.Services.Orchestrations.Tpp
             IngestionTracking? maybeIngestionTracking = allIngestionTrackings
                     .FirstOrDefault(ingestionTracking => ingestionTracking.FileName == fileName);
 
+            var filename = fileName.StartsWith('/')
+                ? fileName
+                : "/" + fileName;
+
             if (maybeIngestionTracking == null)
             {
                 var currentDateTime = await this.dateTimeBroker.GetCurrentDateTimeOffsetAsync();
 
                 DataSetSpecification retrievedDataSetSpecification = await
                     this.dataSetSpecificationProcessingService.GetActiveDataSetSpecification(supplierId);
-
-                var filename = fileName.StartsWith('/')
-                    ? fileName
-                    : "/" + fileName;
 
                 string[] segments = filename.Split('/');
                 var resourceGroup = segments[1];

@@ -66,6 +66,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.TppLandings
             this.documentProcessingServiceMock.VerifyNoOtherCalls();
             this.ingestionTrackingProcessingAuditServiceMock.VerifyNoOtherCalls();
             this.dataSetSpecificationProcessingServiceMock.VerifyNoOtherCalls();
+            this.subscriberAgreementProcessingServiceMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
         }
     }

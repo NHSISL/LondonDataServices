@@ -2,7 +2,7 @@
 // Copyright (c) North East London ICB. All rights reserved.
 // ---------------------------------------------------------
 
-using System.Linq;
+using System;
 using System.Threading.Tasks;
 using FluentAssertions;
 using Force.DeepCloner;
@@ -18,30 +18,31 @@ namespace LHDS.AdminPortal.Api.Tests.Unit.Controllers.SubscriberPractices
     public partial class SubscriberPracticeControllerTests
     {
         [Fact]
-        public async Task ShouldReturnSubscriberPracticesOnGetAsync()
+        public async Task ShouldReturnSubscriberPracticeOnGetByIdAsync()
         {
             // given 
-            IQueryable<SubscriberPractice> randomSubscriberPractices = CreateRandomSubscriberPractices();
-            IQueryable<SubscriberPractice> storageSubscriberPractices = randomSubscriberPractices.DeepClone();
-            IQueryable<SubscriberPractice> expectedSubscriberPractices = storageSubscriberPractices.DeepClone();
-            var expectedObjectResult = new OkObjectResult(expectedSubscriberPractices);
+            SubscriberPractice randomSubscriberPractice = CreateRandomSubscriberPractice();
+            Guid inputId = randomSubscriberPractice.Id;
+            SubscriberPractice storageSubscriberPractice = randomSubscriberPractice.DeepClone();
+            SubscriberPractice expectedSubscriberPractice = storageSubscriberPractice.DeepClone();
+            var expectedObjectResult = new OkObjectResult(expectedSubscriberPractice);
 
             var expectedActionResult =
-                new ActionResult<IQueryable<SubscriberPractice>>(expectedObjectResult);
+                new ActionResult<SubscriberPractice>(expectedObjectResult);
 
             this.subscriberPracticeServiceMock.Setup(service =>
-                service.RetrieveAllSubscriberPracticesAsync())
-                    .ReturnsAsync(expectedSubscriberPractices);
+                service.RetrieveSubscriberPracticeByIdAsync(inputId))
+                    .ReturnsAsync(expectedSubscriberPractice);
 
             // when
-            ActionResult<IQueryable<SubscriberPractice>> actualActionResult =
-                await this.subscriberPracticesController.Get();
+            ActionResult<SubscriberPractice> actualActionResult =
+                await this.subscriberPracticesController.GetSubscriberPracticeByIdAsync(inputId);
 
             // then
             actualActionResult.Should().BeEquivalentTo(expectedActionResult);
 
             this.subscriberPracticeServiceMock.Verify(service =>
-                service.RetrieveAllSubscriberPracticesAsync(),
+                service.RetrieveSubscriberPracticeByIdAsync(inputId),
                     Times.Once());
 
             this.subscriberPracticeServiceMock.VerifyNoOtherCalls();

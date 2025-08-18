@@ -31,22 +31,22 @@ namespace LHDS.AdminPortal.Api.Tests.Unit.Controllers.SubscriberPractices
             var expectedActionResult =
                 new ActionResult<IQueryable<SubscriberPractice>>(expectedInternalServerErrorObjectResult);
 
-            this.subscriberAgreementServiceMock.Setup(service =>
+            this.subscriberPracticeServiceMock.Setup(service =>
                 service.RetrieveAllSubscriberPracticesAsync())
                     .ThrowsAsync(serverException);
 
             // when
             ActionResult<IQueryable<SubscriberPractice>> actualActionResult =
-                await this.subscriberAgreementsController.Get();
+                await this.subscriberPracticesController.Get();
 
             // then
             actualActionResult.Should().BeEquivalentTo(expectedActionResult);
 
-            this.subscriberAgreementServiceMock.Verify(service =>
+            this.subscriberPracticeServiceMock.Verify(service =>
                 service.RetrieveAllSubscriberPracticesAsync(),
                     Times.Once());
 
-            this.subscriberAgreementServiceMock.VerifyNoOtherCalls();
+            this.subscriberPracticeServiceMock.VerifyNoOtherCalls();
         }
     }
 }

@@ -186,7 +186,7 @@ namespace LHDS.Core.Services.Orchestrations.Tpp
                     {
                         Id = await this.identifierBroker.GetIdentifierAsync(),
                         SupplierId = supplierId,
-                        SubscriberAgreementId = subscriberAgreementId,
+                        SubscriberAgreementId = subscriberAgreement.Id,
                         FileName = filename,
                         SourceFolderPath = sourceFolderPath,
                         BatchReadyFolderPath = baseFolder,

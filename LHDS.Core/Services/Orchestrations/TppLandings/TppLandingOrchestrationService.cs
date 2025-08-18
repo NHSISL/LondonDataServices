@@ -114,6 +114,10 @@ namespace LHDS.Core.Services.Orchestrations.Tpp
 
         virtual internal async ValueTask<Guid> ProcessFileAsync(string fileName, Guid supplierId)
         {
+            var filename = fileName.StartsWith('/')
+                ? fileName
+                : "/" + fileName;
+
             ValidateArgumentsOnProcess(fileName, supplierId);
 
             IQueryable<IngestionTracking> allIngestionTrackings =
@@ -121,10 +125,6 @@ namespace LHDS.Core.Services.Orchestrations.Tpp
 
             IngestionTracking? maybeIngestionTracking = allIngestionTrackings
                     .FirstOrDefault(ingestionTracking => ingestionTracking.FileName == fileName);
-
-            var filename = fileName.StartsWith('/')
-                ? fileName
-                : "/" + fileName;
 
             if (maybeIngestionTracking == null)
             {

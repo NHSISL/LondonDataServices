@@ -9,8 +9,8 @@ namespace LHDS.Core.Models.Foundations.SubscriberPractices.Exceptions
 {
     public class NotFoundSubscriberPracticeException : Xeption
     {
-        public NotFoundSubscriberPracticeException(Guid subscriberAgreementId)
-            : base(message: $"Couldn't find subscriberAgreement with subscriberAgreementId: {subscriberAgreementId}.")
+        public NotFoundSubscriberPracticeException(Guid subscriberPracticeId)
+            : base(message: $"Couldn't find subscriberPractice with subscriberPracticeId: {subscriberPracticeId}.")
         { }
     }
 }

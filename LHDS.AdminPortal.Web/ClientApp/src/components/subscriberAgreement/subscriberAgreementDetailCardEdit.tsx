@@ -99,6 +99,23 @@ const SubscriberAgreementDetailCardEdit: FunctionComponent<SubscriberAgreementDe
                 </SummaryListBaseRow>
 
                 <SummaryListBaseRow>
+                    <SummaryListBaseKey>Supplier</SummaryListBaseKey>
+                    <SummaryListBaseValue>
+                        <select
+                            id="supplier"
+                            name="supplierId"
+                            value={editSubscriberCredential.supplierId ? String(editSubscriberCredential.supplierId).trim().toUpperCase() : ""}
+                            onChange={handleChange}
+                        >
+                            <option value="">Select Supplier</option>
+                            <option value="67680F17-9D0C-4474-8B35-56CA8F9DF1F6">EMIS</option>
+                            <option value="566C8C77-3A4D-4BA4-9F1C-D7D1958A8165">TPP</option>
+                        </select>
+                        
+                    </SummaryListBaseValue>
+                </SummaryListBaseRow>
+
+                <SummaryListBaseRow>
                     <SummaryListBaseKey>Supplier Sharing Agreement Guid</SummaryListBaseKey>
                     <SummaryListBaseValue>
                         <TextInputBase

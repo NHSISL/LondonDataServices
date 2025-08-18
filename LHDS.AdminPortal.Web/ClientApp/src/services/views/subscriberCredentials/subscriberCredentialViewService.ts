@@ -45,6 +45,7 @@ export const subscriberCredentialViewService = {
                             subscriberCredentials.push(new SubscriberCredentialView(
                                 subscriberCredential.id,
                                 subscriberCredential.supplierSharingAgreementShortName,
+                                subscriberCredential.supplierId,
                                 subscriberCredential.ftpUserName,
                                 subscriberCredential.ftpPublicKey,
                                 subscriberCredential.gpgPublicKey,
@@ -91,6 +92,7 @@ export const subscriberCredentialViewService = {
                     const subscriberCredential = new SubscriberCredentialView(
                         response.data[0].id,
                         response.data[0].supplierSharingAgreementShortName,
+                        response.data[0].supplierId,
                         response.data[0].ftpUserName,
                         response.data[0].ftpPublicKey,
                         response.data[0].gpgPublicKey,

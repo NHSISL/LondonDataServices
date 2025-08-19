@@ -74,10 +74,10 @@ namespace LHDS.ConfigImportExportTool.Clients.ImportExports
 
             builder.ConfigureServices(services =>
             {
+                services.AddScoped<IStorageBroker>(service => service.GetRequiredService<StorageBroker>());
                 services.AddSingleton(configuration);
                 services.AddTransient<ICsvHelperBroker, CsvHelperBroker>();
                 services.AddTransient<IDateTimeBroker, DateTimeBroker>();
-                services.AddScoped<IStorageBroker>(service => service.GetRequiredService<StorageBroker>());
                 services.AddTransient<IIdentifierBroker, IdentifierBroker>();
                 services.AddTransient<ILoggingBroker, LoggingBroker>();
                 services.AddTransient<IFileBroker, FileBroker>();

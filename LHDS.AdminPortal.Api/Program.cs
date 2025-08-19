@@ -240,40 +240,40 @@ namespace LHDS.AdminPortal.Api
 
         private static void AddHealthApi(IServiceCollection services, IConfiguration configuration)
         {
-            services.AddSingleton
+            services.AddTransient
                 <IIngestionTrackingHealthItemService, IngestionTrackingDecryptionHealthCheckService>();
 
-            services.AddSingleton
+            services.AddTransient
                 <IIngestionTrackingHealthItemService, IngestionTrackingProcessingHealthCheckService>();
 
-            services.AddSingleton
+            services.AddTransient
                 <IIngestionTrackingHealthItemService, IngestionTrackingFailedToProcessHealthCheckService>();
 
-            services.AddSingleton
+            services.AddTransient
                 <IIngestionTrackingHealthItemService, IngestionTrackingFilesReceivedHealthCheckService>();
 
-            services.AddSingleton
+            services.AddTransient
                 <IIngestionTrackingHealthItemService, IngestionTrackingIncompleteBatchHealthCheckService>();
 
-            services.AddSingleton
+            services.AddTransient
                 <IResolvedAddressHealthItemService, ResolvedAddressProcessingHealthCheckService>();
 
-            services.AddSingleton
+            services.AddTransient
                 <IResolvedAddressHealthItemService, ResolvedAddressFailedToProcessHealthCheckService>();
 
-            services.AddSingleton
+            services.AddTransient
                 <IResolvedAddressHealthItemService, ResolvedAddressFailedToExportHealthCheckService>();
 
-            services.AddSingleton
+            services.AddTransient
                 <IResolvedAddressHealthItemService, ResolvedAddressMatchingProcessHealthCheckService>();
 
-            services.AddSingleton
+            services.AddTransient
                 <IResolvedAddressHealthItemService, ResolvedAddressMatchQualityHealthCheckService>();
 
-            services.AddSingleton
+            services.AddTransient
                 <ITerminologyPollsHealthItemService, TerminologyPollsNotPollingHealthCheckService>();
 
-            services.AddSingleton
+            services.AddTransient
                 <ITerminologyArtifactsHealthItemService, TerminologyArtifactsFailedToProcessHealthCheckService>();
 
             services.AddSingleton
@@ -294,7 +294,7 @@ namespace LHDS.AdminPortal.Api
             services.AddHealthChecks()
                 .AddCheck<TerminologyArtifactsHealthCheckCoordinationService>("terminologyArtifactsHealthChecks");
 
-            services.AddSingleton<IHealthCheckPublisher, HealthCheckPublisherCoordinationService>();
+            services.AddTransient<IHealthCheckPublisher, HealthCheckPublisherCoordinationService>();
 
             int startupDelaySeconds = configuration.GetValue<int>(
                 "HealthChecks:StartupDelaySeconds", 10);
@@ -318,11 +318,11 @@ namespace LHDS.AdminPortal.Api
         private static void AddBrokers(IServiceCollection services, IConfiguration configuration)
         {
             ValidateAppInsightsCinfiguration(configuration);
+            services.AddScoped<IStorageBroker>(service => service.GetRequiredService<StorageBroker>());
             services.AddSingleton<IConfiguration>(_ => configuration);
             services.AddTransient<IDateTimeBroker, DateTimeBroker>();
             services.AddTransient<IIdentifierBroker, IdentifierBroker>();
             services.AddTransient<ILoggingBroker, LoggingBroker>();
-            services.AddScoped<IStorageBroker>(service => service.GetRequiredService<StorageBroker>());
             services.AddTransient<IBlobStorageBroker, BlobStorageBroker>();
             services.AddTransient<IHashBroker, HashBroker>();
             services.AddTransient<IAzureBlobClient, AzureBlobClient>();

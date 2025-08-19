@@ -176,9 +176,9 @@ namespace LHDS.Core.Clients.Extensions
             services.AddTransient<IDataSetService, DataSetService>();
             services.AddTransient<IDataSetSpecificationService, DataSetSpecificationService>();
             services.AddTransient<IIngestionTrackingAuditService, IngestionTrackingAuditService>();
-            services.AddSingleton<ISpecificationObjectService, SpecificationObjectService>();
-            services.AddSingleton<IObjectColumnService, ObjectColumnService>();
-            services.AddSingleton<ISubscriberAgreementService, SubscriberAgreementService>();
+            services.AddTransient<ISpecificationObjectService, SpecificationObjectService>();
+            services.AddTransient<IObjectColumnService, ObjectColumnService>();
+            services.AddTransient<ISubscriberAgreementService, SubscriberAgreementService>();
         }
 
         private static void AddProcessingServices(IServiceCollection services)

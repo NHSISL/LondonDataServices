@@ -198,8 +198,8 @@ namespace LHDS.Core.Clients.Extensions
             services.AddTransient<ISubscriberAgreementService, SubscriberAgreementService>();
             services.AddTransient<ISecureDataService, SecureDataService>();
             services.AddTransient<ICryptographyKeyService, CryptographyKeyService>();
-            services.AddSingleton<ISpecificationObjectService, SpecificationObjectService>();
-            services.AddSingleton<IObjectColumnService, ObjectColumnService>();
+            services.AddTransient<ISpecificationObjectService, SpecificationObjectService>();
+            services.AddTransient<IObjectColumnService, ObjectColumnService>();
         }
 
         private static void AddProcessingServices(IServiceCollection services)

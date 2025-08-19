@@ -11,6 +11,7 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Models.SubscriberAgreements
     public class SubscriberAgreement
     {
         public Guid Id { get; set; }
+        public Guid SupplierId { get; set; }
         public string SupplierSharingAgreementShortName { get; set; } = string.Empty;
         public Guid SupplierSharingAgreementGuid { get; set; }
         public string FtpUserName { get; set; }

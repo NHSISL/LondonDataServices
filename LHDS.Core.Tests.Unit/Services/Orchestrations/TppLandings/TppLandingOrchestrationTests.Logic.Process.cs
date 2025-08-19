@@ -26,6 +26,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.TppLandings
                 ingestionTrackingProcessingServiceMock.Object,
                 ingestionTrackingProcessingAuditServiceMock.Object,
                 dataSetSpecificationProcessingServiceMock.Object,
+                subscriberAgreementProcessingServiceMock.Object,
                 blobContainers,
                 loggingBrokerMock.Object,
                 dateTimeBrokerMock.Object,
@@ -55,6 +56,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.TppLandings
             this.hashBrokerMock.VerifyNoOtherCalls();
             this.dateTimeBrokerMock.VerifyNoOtherCalls();
             this.dataSetSpecificationProcessingServiceMock.VerifyNoOtherCalls();
+            this.subscriberAgreementProcessingServiceMock.VerifyNoOtherCalls();
             this.documentProcessingServiceMock.VerifyNoOtherCalls();
             this.ingestionTrackingProcessingAuditServiceMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();

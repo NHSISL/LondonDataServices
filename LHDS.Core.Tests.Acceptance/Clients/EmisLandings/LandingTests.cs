@@ -417,10 +417,10 @@ namespace LHDS.Core.Tests.Acceptance.Clients.EmisLandings
             return filler;
         }
 
-        private static SubscriberCredential CreateRandomSubscriberCredential() =>
-            CreateSubscriberCredentialFiller().Create();
+        private static SubscriberCredential CreateRandomSubscriberCredential(Guid supplierId) =>
+            CreateSubscriberCredentialFiller(supplierId).Create();
 
-        private static Filler<SubscriberCredential> CreateSubscriberCredentialFiller()
+        private static Filler<SubscriberCredential> CreateSubscriberCredentialFiller(Guid supplierId)
         {
             var filler = new Filler<SubscriberCredential>();
             string user = Guid.NewGuid().ToString();
@@ -429,6 +429,7 @@ namespace LHDS.Core.Tests.Acceptance.Clients.EmisLandings
             filler.Setup()
                 .OnType<DateTimeOffset>().Use(now)
                 .OnType<DateTimeOffset?>().Use(now)
+                .OnProperty(subscriberCredential => subscriberCredential.SupplierId).Use(supplierId)
                 .OnProperty(subscriberCredential => subscriberCredential.IsActive).Use(true)
                 .OnProperty(subscriberCredential => subscriberCredential.CreatedBy).Use(user)
                 .OnProperty(subscriberCredential => subscriberCredential.UpdatedBy).Use(user);

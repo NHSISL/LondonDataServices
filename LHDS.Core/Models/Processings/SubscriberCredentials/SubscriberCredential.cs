@@ -10,6 +10,7 @@ namespace LHDS.Core.Models.Processings.SubscriberCredentials
     public class SubscriberCredential : IKey
     {
         public Guid Id { get; set; }
+        public Guid SupplierId { get; set; }
         public string SupplierSharingAgreementShortName { get; set; }
         public Guid? SupplierSharingAgreementGuid { get; set; }
         public string? FtpUserName { get; set; }

@@ -20,7 +20,9 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Ingress
         public async Task ShouldProcessDecryptedItemsForBatchCompleteAsyncLogicAsync()
         {
             // given
+            DateTimeOffset randomDateTime = GetRandomDateTimeOffset();
             IngestionTracking randomIngestionTrackingOne = CreateRandomIngestionTracking();
+            randomIngestionTrackingOne.LastBatchCompleteCheck = randomDateTime.AddMinutes(-15);
             randomIngestionTrackingOne.IsDownloaded = true;
             randomIngestionTrackingOne.Decrypted = true;
             randomIngestionTrackingOne.IsBatchComplete = false;
@@ -41,10 +43,15 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Ingress
                 this.landingConfiguration,
                 this.blobContainers,
                 this.loggingBrokerMock.Object,
-                this.auditBrokerMock.Object)
+                this.auditBrokerMock.Object,
+                this.dateTimeBrokerMock.Object)
             {
                 CallBase = true
             };
+
+            this.dateTimeBrokerMock.Setup(broker =>
+                broker.GetCurrentDateTimeOffsetAsync())
+                    .ReturnsAsync(randomDateTime);
 
             this.ingestionTrackingProcessingServiceMock
                 .SetupSequence(service => service.RetrieveAllIngestionTrackingsAsync())
@@ -61,6 +68,10 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Ingress
             await ingressOrchestrationServiceMock.Object.ProcessDecryptedItemsForBatchCompleteAsync();
 
             // then
+            this.dateTimeBrokerMock.Verify(broker =>
+                broker.GetCurrentDateTimeOffsetAsync(),
+                    Times.Once);
+
             this.ingestionTrackingProcessingServiceMock
                 .Verify(service => service.RetrieveAllIngestionTrackingsAsync(),
                     Times.Exactly(2));

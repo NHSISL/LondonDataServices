@@ -5,6 +5,7 @@
 using System;
 using System.Linq;
 using LHDS.AdminPortal.Api.Controllers;
+using LHDS.Core.Models.Foundations.SubscriberAgreements.Exceptions;
 using LHDS.Core.Models.Foundations.SubscriberPractices;
 using LHDS.Core.Models.Foundations.SubscriberPractices.Exceptions;
 using LHDS.Core.Services.Foundations.SubscriberPractices;
@@ -73,5 +74,22 @@ namespace LHDS.AdminPortal.Api.Tests.Unit.Controllers.SubscriberPractices
                     innerException: someInnerException)
             };
         }
-       }
+
+        public static TheoryData<Xeption> ValidationExceptions()
+        {
+            var someInnerException = new Xeption();
+            string someMessage = GetRandomString();
+
+            return new TheoryData<Xeption>
+            {
+                new SubscriberAgreementValidationException(
+                    message: someMessage,
+                    innerException: someInnerException),
+
+                new SubscriberAgreementDependencyValidationException(
+                    message: someMessage,
+                    innerException: someInnerException)
+            };
+        }
+    }
 }

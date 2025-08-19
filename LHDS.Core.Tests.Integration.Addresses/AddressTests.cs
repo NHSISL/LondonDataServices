@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Security.Claims;
 using System.Security.Principal;
+using LHDS.Core.Brokers.Storages.Sql;
 using LHDS.Core.Clients;
 using LHDS.Core.Clients.Extensions;
 using LHDS.Core.Models.Brokers.Storages.Blobs;
@@ -49,6 +50,8 @@ namespace LHDS.Core.Tests.Integration.Addresses
                     builder.AddConsole();
                     builder.AddApplicationInsights();
                 })
+                .AddDbContext<StorageBroker>()
+                .AddScoped<IStorageBroker>(service => service.GetRequiredService<StorageBroker>())
                 .AddAddressClient(configuration, claimsPrincipal)
                 .BuildServiceProvider();
 

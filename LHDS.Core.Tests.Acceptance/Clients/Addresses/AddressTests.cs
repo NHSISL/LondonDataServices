@@ -76,14 +76,15 @@ namespace LHDS.Core.Tests.Acceptance.Clients.Addresses
             }));
 
             serviceCollection
+                .AddDbContext<StorageBroker>()
+                .AddScoped<IStorageBroker>(service => service.GetRequiredService<StorageBroker>())
                 .AddTransient<IAddressOrchestrationService, AddressOrchestrationService>()
                 .AddTransient<IResolvedAddressOrchestrationService, ResolvedAddressOrchestrationService>()
                 .AddTransient<IResolvedAddressProcessingService, ResolvedAddressProcessingService>()
                 .AddTransient<IDocumentService, DocumentService>()
                 .AddTransient<ICsvHelperBroker, CsvHelperBroker>()
                 .AddTransient<IAddressService, AddressService>()
-                .AddTransient<IDocumentService, DocumentService>()
-                .AddSingleton<IStorageBroker, StorageBroker>();
+                .AddTransient<IDocumentService, DocumentService>();
 
             serviceCollection.AddLogging(builder =>
             {

@@ -114,6 +114,7 @@ namespace LHDS.Core.Clients.Extensions
             IConfiguration configuration,
             ClaimsPrincipal claimsPrincipal)
         {
+            services.AddScoped<IStorageBroker>(service => service.GetRequiredService<StorageBroker>());
             services.AddTransient<ILoggingBroker, LoggingBroker>();
             services.AddTransient<IDateTimeBroker, DateTimeBroker>();
             services.AddTransient<IIdentifierBroker, IdentifierBroker>();
@@ -121,7 +122,6 @@ namespace LHDS.Core.Clients.Extensions
             services.AddTransient<IHashBroker, HashBroker>();
             services.AddTransient<IAuditBroker, AuditBroker>();
             services.AddTransient<IFileBroker, FileBroker>();
-            services.AddTransient<IStorageBroker, StorageBroker>();
 
             LandingConfiguration landingConfiguration =
                 configuration.GetSection("landingSettings").Get<LandingConfiguration>();

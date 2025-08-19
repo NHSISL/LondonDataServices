@@ -9,6 +9,7 @@ using System.Security.Claims;
 using KellermanSoftware.CompareNetObjects;
 using LHDS.Core.Brokers.DateTimes;
 using LHDS.Core.Brokers.Securities;
+using LHDS.Core.Brokers.Storages.Sql;
 using LHDS.Core.Clients;
 using LHDS.Core.Clients.Extensions;
 using LHDS.Core.Models.Brokers.Ontologies;
@@ -66,7 +67,12 @@ namespace LHDS.Core.Tests.Acceptance.Clients.Terminology
             });
 
             this.dependencyBroker.Configuration["ontologySettings:terminologyServerBaseUrl"] = this.wireMockServer.Url;
-            serviceCollection.AddTerminologyClient(this.dependencyBroker.Configuration, claimsPrincipal);
+
+            serviceCollection
+                .AddDbContext<StorageBroker>()
+                .AddScoped<IStorageBroker>(service => service.GetRequiredService<StorageBroker>())
+                .AddTerminologyClient(this.dependencyBroker.Configuration, claimsPrincipal);
+
             var serviceProvider = serviceCollection.BuildServiceProvider();
             this.dateTimeBroker = serviceProvider.GetService<IDateTimeBroker>();
             terminologyClient = serviceProvider.GetService<ITerminologyClient>();

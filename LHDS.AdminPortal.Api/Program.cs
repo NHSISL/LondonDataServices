@@ -322,7 +322,7 @@ namespace LHDS.AdminPortal.Api
             services.AddTransient<IDateTimeBroker, DateTimeBroker>();
             services.AddTransient<IIdentifierBroker, IdentifierBroker>();
             services.AddTransient<ILoggingBroker, LoggingBroker>();
-            services.AddSingleton<IStorageBroker, StorageBroker>();
+            services.AddScoped<IStorageBroker>(service => service.GetRequiredService<StorageBroker>());
             services.AddTransient<IBlobStorageBroker, BlobStorageBroker>();
             services.AddTransient<IHashBroker, HashBroker>();
             services.AddTransient<IAzureBlobClient, AzureBlobClient>();

@@ -31,6 +31,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.TppLandings
             Guid randomSupplierId = Guid.NewGuid();
             Guid inputSupplierId = randomSupplierId;
             List<string> randomFileNames = GetRandomStrings();
+            randomFileNames = randomFileNames.Select(name => name.StartsWith("/") ? name : "/" + name).ToList();
             string randomFileName = randomFileNames.Last();
             string inputFileName = randomFileName;
             Stream randomData = new MemoryStream(Encoding.UTF8.GetBytes(GetRandomString()));
@@ -410,6 +411,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.TppLandings
             int randomNumber = GetRandomNumber();
             Guid randomSupplierId = Guid.NewGuid();
             List<string> randomFileNames = GetRandomStrings();
+            randomFileNames = randomFileNames.Select(name => name.StartsWith("/") ? name : "/" + name).ToList();
             string randomFileName = randomFileNames.Last();
             string inputFileName = randomFileName;
             byte[] inputBytes = Encoding.UTF8.GetBytes(inputFileName);

@@ -6,7 +6,7 @@
 		<ImplicitUsings>disable</ImplicitUsings>
 		<OutputType>Library</OutputType>
 		<NoWarn>CS1998,CS8632</NoWarn>
-		<Version>0.4.0.6</Version>
+		<Version>0.4.0.7</Version>
 	</PropertyGroup>
 
 	<ItemGroup>

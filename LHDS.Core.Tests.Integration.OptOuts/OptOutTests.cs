@@ -9,6 +9,7 @@ using System.Security.Claims;
 using System.Security.Principal;
 using System.Text;
 using System.Threading.Tasks;
+using LHDS.Core.Brokers.Storages.Sql;
 using LHDS.Core.Clients;
 using LHDS.Core.Clients.Extensions;
 using LHDS.Core.Models.Brokers.Mesh;
@@ -58,6 +59,8 @@ namespace LHDS.Core.Tests.Integration.OptOuts
                     builder.AddConsole();
                     builder.AddApplicationInsights();
                 })
+                .AddDbContext<StorageBroker>()
+                .AddScoped<IStorageBroker>(service => service.GetRequiredService<StorageBroker>())
                 .AddOptOutClient(configuration, claimsPrincipal)
                 .BuildServiceProvider();
 

@@ -129,10 +129,10 @@ namespace LHDS.Core.Clients.Extensions
             IConfiguration configuration,
             ClaimsPrincipal claimsPrincipal)
         {
+            services.AddScoped<IStorageBroker>(service => service.GetRequiredService<StorageBroker>());
             services.AddTransient<ILoggingBroker, LoggingBroker>();
             services.AddTransient<IDateTimeBroker, DateTimeBroker>();
             services.AddTransient<IIdentifierBroker, IdentifierBroker>();
-            services.AddTransient<IStorageBroker, StorageBroker>();
             services.AddTransient<IHashBroker, HashBroker>();
             services.AddTransient<ICryptographyKeyBroker, GpgKeyBroker>();
             services.AddTransient<ICryptographyKeyBroker, SshKeyBroker>();
@@ -198,8 +198,8 @@ namespace LHDS.Core.Clients.Extensions
             services.AddTransient<ISubscriberAgreementService, SubscriberAgreementService>();
             services.AddTransient<ISecureDataService, SecureDataService>();
             services.AddTransient<ICryptographyKeyService, CryptographyKeyService>();
-            services.AddSingleton<ISpecificationObjectService, SpecificationObjectService>();
-            services.AddSingleton<IObjectColumnService, ObjectColumnService>();
+            services.AddTransient<ISpecificationObjectService, SpecificationObjectService>();
+            services.AddTransient<IObjectColumnService, ObjectColumnService>();
         }
 
         private static void AddProcessingServices(IServiceCollection services)

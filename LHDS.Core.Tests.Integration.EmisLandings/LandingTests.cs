@@ -8,6 +8,7 @@ using System.Security.Principal;
 using System.Threading.Tasks;
 using LHDS.Core.Brokers.Loggings;
 using LHDS.Core.Brokers.Storages.Blobs;
+using LHDS.Core.Brokers.Storages.Sql;
 using LHDS.Core.Clients;
 using LHDS.Core.Clients.Extensions;
 using LHDS.Core.Models.Brokers.Storages.Blobs;
@@ -65,6 +66,8 @@ namespace LHDS.Core.Tests.Integration.EmisLandings
                     builder.AddConsole();
                     builder.AddApplicationInsights();
                 })
+                .AddDbContext<StorageBroker>()
+                .AddScoped<IStorageBroker>(service => service.GetRequiredService<StorageBroker>())
                 .AddEmisLandingClient(configuration, claimsPrincipal)
                 .AddDecryptionClient(configuration, claimsPrincipal)
                 .UseFtpDownloadProvider(configuration, builder => builder.AddFtpDownloadProvider())

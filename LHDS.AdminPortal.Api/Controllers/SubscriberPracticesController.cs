@@ -20,43 +20,46 @@ namespace LHDS.AdminPortal.Api.Controllers
     [Route("api/[controller]")]
     public class SubscriberPracticesController : RESTFulController
     {
-        private readonly ISubscriberPracticeService subscriberAgreementService;
+        private readonly ISubscriberPracticeService subscriberPracticeService;
 
-        public SubscriberPracticesController(ISubscriberPracticeService subscriberAgreementService) =>
-            this.subscriberAgreementService = subscriberAgreementService;
+        public SubscriberPracticesController(ISubscriberPracticeService subscriberPracticeService) =>
+            this.subscriberPracticeService = subscriberPracticeService;
 
         [Authorize(Roles = "ISL.LDS.AdminApi.Administrators, ISL.LDS.AdminApi.Configurations")]
         [HttpPost]
-        public async ValueTask<ActionResult<SubscriberPractice>> PostSubscriberPracticeAsync(SubscriberPractice subscriberAgreement)
+        public async ValueTask<ActionResult<SubscriberPractice>> PostSubscriberPracticeAsync(
+            SubscriberPractice subscriberPractice)
         {
             try
             {
                 SubscriberPractice addedSubscriberPractice =
-                    await this.subscriberAgreementService.AddSubscriberPracticeAsync(subscriberAgreement);
+                    await this.subscriberPracticeService.AddSubscriberPracticeAsync(subscriberPractice);
 
                 return Created(addedSubscriberPractice);
             }
-            catch (SubscriberPracticeValidationException subscriberAgreementValidationException)
+            catch (SubscriberPracticeValidationException subscriberPracticeValidationException)
             {
-                return BadRequest(subscriberAgreementValidationException.InnerException);
+                return BadRequest(subscriberPracticeValidationException.InnerException);
             }
-            catch (SubscriberPracticeDependencyValidationException subscriberAgreementValidationException)
-                when (subscriberAgreementValidationException.InnerException is InvalidSubscriberPracticeReferenceException)
+            catch (SubscriberPracticeDependencyValidationException subscriberPracticeValidationException)
+                when (subscriberPracticeValidationException.InnerException is 
+                InvalidSubscriberPracticeReferenceException)
             {
-                return FailedDependency(subscriberAgreementValidationException.InnerException);
+                return FailedDependency(subscriberPracticeValidationException.InnerException);
             }
-            catch (SubscriberPracticeDependencyValidationException subscriberAgreementDependencyValidationException)
-               when (subscriberAgreementDependencyValidationException.InnerException is AlreadyExistsSubscriberPracticeException)
+            catch (SubscriberPracticeDependencyValidationException subscriberPracticeDependencyValidationException)
+               when (subscriberPracticeDependencyValidationException.InnerException is 
+               AlreadyExistsSubscriberPracticeException)
             {
-                return Conflict(subscriberAgreementDependencyValidationException.InnerException);
+                return Conflict(subscriberPracticeDependencyValidationException.InnerException);
             }
-            catch (SubscriberPracticeDependencyException subscriberAgreementDependencyException)
+            catch (SubscriberPracticeDependencyException subscriberPracticeDependencyException)
             {
-                return InternalServerError(subscriberAgreementDependencyException);
+                return InternalServerError(subscriberPracticeDependencyException);
             }
-            catch (SubscriberPracticeServiceException subscriberAgreementServiceException)
+            catch (SubscriberPracticeServiceException subscriberPracticeServiceException)
             {
-                return InternalServerError(subscriberAgreementServiceException);
+                return InternalServerError(subscriberPracticeServiceException);
             }
         }
     }

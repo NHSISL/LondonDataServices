@@ -73,22 +73,5 @@ namespace LHDS.AdminPortal.Api.Tests.Unit.Controllers.SubscriberPractices
                     innerException: someInnerException)
             };
         }
-
-        public static TheoryData<Xeption> ValidationExceptions()
-        {
-            var someInnerException = new Xeption();
-            string someMessage = GetRandomString();
-
-            return new TheoryData<Xeption>
-            {
-                new SubscriberPracticeValidationException(
-                    message: someMessage,
-                    innerException: someInnerException),
-
-                new SubscriberPracticeDependencyValidationException(
-                    message: someMessage,
-                    innerException: someInnerException)
-            };
-        }
-    }
+       }
 }

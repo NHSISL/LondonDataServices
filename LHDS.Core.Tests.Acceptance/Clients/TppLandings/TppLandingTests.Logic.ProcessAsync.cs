@@ -14,6 +14,7 @@ using LHDS.Core.Models.Foundations.IngestionTrackingAudits;
 using LHDS.Core.Models.Foundations.IngestionTrackings;
 using LHDS.Core.Models.Foundations.ObjectColumns;
 using LHDS.Core.Models.Foundations.SpecificationObjects;
+using LHDS.Core.Models.Foundations.SubscriberAgreements;
 using LHDS.Core.Models.Foundations.Suppliers;
 using Xunit;
 
@@ -89,7 +90,7 @@ namespace LHDS.Core.Tests.Acceptance.Clients.TppLandings
         {
             //Given
             DateTimeOffset randomDateTime = await this.dateTimeBroker.GetCurrentDateTimeOffsetAsync();
-            string randomFileName = GetRandomFileName();
+            string randomFileName = $"/{GetRandomFileName()}";
             string fileName = randomFileName;
             string randomHash = GetRandomString();
             byte[] documentData = Encoding.UTF8.GetBytes(GetRandomString());
@@ -107,10 +108,25 @@ namespace LHDS.Core.Tests.Acceptance.Clients.TppLandings
             await this.specificationObjectService.AddSpecificationObjectAsync(specificationObject);
             await this.objectColumnService.AddObjectColumnAsync(objectColumn);
 
+            SubscriberAgreement subscriberAgreement = new SubscriberAgreement
+            {
+                Id = Guid.NewGuid(),
+                SupplierId = supplierId,
+                SupplierSharingAgreementShortName = randomFileName.Split('/')[1],
+                IsActive = true,
+                CreatedBy = "TestUser",
+                UpdatedBy = "TestUser",
+                CreatedDate = randomDateTime,
+                UpdatedDate = randomDateTime
+            };
+
+            await this.subscriberAgreementService.AddSubscriberAgreementAsync(subscriberAgreement);
+
             IngestionTracking randomIngestionTracking =
                 CreateRandomIngestionTracking(randomDateTime, fileName, supplierId);
 
             randomIngestionTracking.FileName = randomFileName;
+            randomIngestionTracking.SubscriberAgreementId = subscriberAgreement.Id;
             randomIngestionTracking.IsDownloaded = true;
             randomIngestionTracking.RetryCount = 1;
             randomIngestionTracking.DecryptedFileSha256Hash = randomHash;
@@ -142,6 +158,7 @@ namespace LHDS.Core.Tests.Acceptance.Clients.TppLandings
             await this.dataSetSpecificationService.RemoveDataSetSpecificationByIdAsync(activeDataSetSpecification.Id);
             await this.dataSetService.RemoveDataSetByIdAsync(activeDataSet.Id);
             await this.ingestionTrackingService.RemoveIngestionTrackingByIdAsync(ingestionTracking.Id);
+            await this.subscriberAgreementService.RemoveSubscriberAgreementByIdAsync(subscriberAgreement.Id);
             await this.supplierService.RemoveSupplierByIdAsync(supplierId);
 
             await this.documentProcessingService.RemoveDocumentByFileNameAsync(
@@ -154,7 +171,7 @@ namespace LHDS.Core.Tests.Acceptance.Clients.TppLandings
         {
             //Given
             DateTimeOffset randomDateTime = await this.dateTimeBroker.GetCurrentDateTimeOffsetAsync();
-            string randomFileName = GetRandomFileName();
+            string randomFileName = $"/{GetRandomFileName()}";
             string fileName = randomFileName;
             string randomHash = GetRandomString();
             byte[] documentData = Encoding.UTF8.GetBytes(GetRandomString());
@@ -171,6 +188,20 @@ namespace LHDS.Core.Tests.Acceptance.Clients.TppLandings
             await this.dataSetSpecificationService.AddDataSetSpecificationAsync(activeDataSetSpecification);
             await this.specificationObjectService.AddSpecificationObjectAsync(specificationObject);
             await this.objectColumnService.AddObjectColumnAsync(objectColumn);
+
+            SubscriberAgreement subscriberAgreement = new SubscriberAgreement
+            {
+                Id = Guid.NewGuid(),
+                SupplierId = supplierId,
+                SupplierSharingAgreementShortName = randomFileName.Split('/')[1],
+                IsActive = true,
+                CreatedBy = "TestUser",
+                UpdatedBy = "TestUser",
+                CreatedDate = randomDateTime,
+                UpdatedDate = randomDateTime
+            };
+
+            await this.subscriberAgreementService.AddSubscriberAgreementAsync(subscriberAgreement);
 
             IngestionTracking randomIngestionTracking =
                 CreateRandomIngestionTracking(randomDateTime, fileName, supplierId);
@@ -206,6 +237,7 @@ namespace LHDS.Core.Tests.Acceptance.Clients.TppLandings
             await this.dataSetSpecificationService.RemoveDataSetSpecificationByIdAsync(activeDataSetSpecification.Id);
             await this.dataSetService.RemoveDataSetByIdAsync(activeDataSet.Id);
             await this.ingestionTrackingService.RemoveIngestionTrackingByIdAsync(ingestionTracking.Id);
+            await this.subscriberAgreementService.RemoveSubscriberAgreementByIdAsync(subscriberAgreement.Id);
             await this.supplierService.RemoveSupplierByIdAsync(landingSupplier.Id);
 
             await this.documentProcessingService.RemoveDocumentByFileNameAsync(

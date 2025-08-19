@@ -129,10 +129,10 @@ namespace LHDS.Core.Clients.Extensions
             IConfiguration configuration,
             ClaimsPrincipal claimsPrincipal)
         {
+            services.AddScoped<IStorageBroker>(service => service.GetRequiredService<StorageBroker>());
             services.AddTransient<ILoggingBroker, LoggingBroker>();
             services.AddTransient<IDateTimeBroker, DateTimeBroker>();
             services.AddTransient<IIdentifierBroker, IdentifierBroker>();
-            services.AddTransient<IStorageBroker, StorageBroker>();
             services.AddTransient<IHashBroker, HashBroker>();
             services.AddTransient<ICryptographyKeyBroker, GpgKeyBroker>();
             services.AddTransient<ICryptographyKeyBroker, SshKeyBroker>();

@@ -21,6 +21,7 @@ using LHDS.Core.Models.Foundations.Documents.Exceptions;
 using LHDS.Core.Models.Foundations.IngestionTrackingAudits.Exceptions;
 using LHDS.Core.Models.Foundations.IngestionTrackings;
 using LHDS.Core.Models.Foundations.IngestionTrackings.Exceptions;
+using LHDS.Core.Models.Foundations.SubscriberAgreements;
 using LHDS.Core.Models.Orchestrations.EmisLandings;
 using LHDS.Core.Services.Orchestrations.Tpp;
 using LHDS.Core.Services.Orchestrations.TppLandings;
@@ -28,6 +29,7 @@ using LHDS.Core.Services.Processings.DataSetSpecifications;
 using LHDS.Core.Services.Processings.Documents;
 using LHDS.Core.Services.Processings.IngestionTrackingAudits;
 using LHDS.Core.Services.Processings.IngestionTrackings;
+using LHDS.Core.Services.Processings.SubscriberAgreements;
 using Moq;
 using Tynamix.ObjectFiller;
 using Xeptions;
@@ -43,6 +45,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.TppLandings
         private readonly Mock<IIngestionTrackingProcessingService> ingestionTrackingProcessingServiceMock;
         private readonly Mock<IIngestionTrackingAuditProcessingService> ingestionTrackingProcessingAuditServiceMock;
         private readonly Mock<IDataSetSpecificationProcessingService> dataSetSpecificationProcessingServiceMock;
+        private readonly Mock<ISubscriberAgreementProcessingService> subscriberAgreementProcessingServiceMock;
         private readonly Mock<ILoggingBroker> loggingBrokerMock;
         private readonly Mock<IDateTimeBroker> dateTimeBrokerMock;
         private readonly Mock<IIdentifierBroker> identifierBrokerMock;
@@ -60,6 +63,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.TppLandings
             ingestionTrackingProcessingServiceMock = new Mock<IIngestionTrackingProcessingService>();
             ingestionTrackingProcessingAuditServiceMock = new Mock<IIngestionTrackingAuditProcessingService>();
             dataSetSpecificationProcessingServiceMock = new Mock<IDataSetSpecificationProcessingService>();
+            subscriberAgreementProcessingServiceMock = new Mock<ISubscriberAgreementProcessingService>();
             loggingBrokerMock = new Mock<ILoggingBroker>();
             dateTimeBrokerMock = new Mock<IDateTimeBroker>();
             identifierBrokerMock = new Mock<IIdentifierBroker>();
@@ -88,6 +92,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.TppLandings
                 ingestionTrackingProcessingService: ingestionTrackingProcessingServiceMock.Object,
                 ingestionTrackingProcessingAuditService: ingestionTrackingProcessingAuditServiceMock.Object,
                 dataSetSpecificationProcessingService: dataSetSpecificationProcessingServiceMock.Object,
+                subscriberAgreementProcessingService: subscriberAgreementProcessingServiceMock.Object,
                 blobContainers,
                 loggingBroker: loggingBrokerMock.Object,
                 dateTimeBroker: dateTimeBrokerMock.Object,
@@ -257,6 +262,13 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.TppLandings
         {
             return actualIngestionTracking =>
                 CompareObjects(expectedIngestionTracking, actualIngestionTracking);
+        }
+
+        private Expression<Func<SubscriberAgreement, bool>> SameSubscriberAgreementAs(
+            SubscriberAgreement expectedSubscriberAgreement)
+        {
+            return actualSubscriberAgreement =>
+                CompareObjects(expectedSubscriberAgreement, actualSubscriberAgreement);
         }
 
         private bool CompareObjects(object expected, object actual)

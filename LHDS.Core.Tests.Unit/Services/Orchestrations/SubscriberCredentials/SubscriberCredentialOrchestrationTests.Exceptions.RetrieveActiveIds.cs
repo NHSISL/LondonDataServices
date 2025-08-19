@@ -22,6 +22,8 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.SubscriberCredentials
             Xeption dependencyValidationException)
         {
             // given
+            Guid inputSupplierId = Guid.NewGuid();
+
             var expectedDependencyValidationException =
                 new SubscriberCredentialOrchestrationDependencyValidationException(
                     message: "Subscriber credential orchestration dependency validation error occurred, " +
@@ -34,7 +36,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.SubscriberCredentials
 
             // when
             ValueTask<List<Guid>> retrieveActiveSubscriberCredentialIdsTask =
-                this.subscriberCredentialOrchestration.RetrieveAllActiveSubscriberCredentialIdsAsync();
+                this.subscriberCredentialOrchestration.RetrieveAllActiveSubscriberCredentialIdsAsync(inputSupplierId);
 
             SubscriberCredentialOrchestrationDependencyValidationException actualDependencyValidationException =
                 await Assert.ThrowsAsync<SubscriberCredentialOrchestrationDependencyValidationException>(
@@ -66,6 +68,8 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.SubscriberCredentials
             Xeption dependencyException)
         {
             // given
+            Guid inputSupplierId = Guid.NewGuid();
+
             var expectedDependencyException =
                 new SubscriberCredentialDependencyOrchestrationException(
                     message: "Subscriber credential orchestration dependency error occurred, " +
@@ -78,7 +82,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.SubscriberCredentials
 
             // when
             ValueTask<List<Guid>> retrieveActiveSubscriberCredentialIdsTask =
-                this.subscriberCredentialOrchestration.RetrieveAllActiveSubscriberCredentialIdsAsync();
+                this.subscriberCredentialOrchestration.RetrieveAllActiveSubscriberCredentialIdsAsync(inputSupplierId);
 
             SubscriberCredentialDependencyOrchestrationException actualDepenedencyException =
                 await Assert.ThrowsAsync<SubscriberCredentialDependencyOrchestrationException>(
@@ -108,6 +112,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.SubscriberCredentials
             ShouldThrowServiceExceptionOnRetrieveActiveIdsIfServiceErrorOccursAndLogItAsync()
         {
             //given
+            Guid inputSupplierId = Guid.NewGuid();
             var serviceException = new Exception();
 
             var failedSubscriberCredentialOrchestrationServiceException =
@@ -128,7 +133,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.SubscriberCredentials
 
             // when
             ValueTask<List<Guid>> retrieveActiveSubscriberCredentialIdsTask =
-                this.subscriberCredentialOrchestration.RetrieveAllActiveSubscriberCredentialIdsAsync();
+                this.subscriberCredentialOrchestration.RetrieveAllActiveSubscriberCredentialIdsAsync(inputSupplierId);
 
             SubscriberCredentialOrchestrationServiceException actualServiceException =
                 await Assert.ThrowsAsync<SubscriberCredentialOrchestrationServiceException>(

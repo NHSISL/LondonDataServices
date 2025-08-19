@@ -6,6 +6,7 @@ using System;
 using System.IO;
 using Azure.Core;
 using Azure.Identity;
+using LHDS.Core.Brokers.Storages.Sql;
 using LHDS.Core.Clients.Extensions;
 using LHDS.Core.Providers.Cryptography.Extensions;
 using LHDS.Core.Providers.Downloads.Extensions;
@@ -38,10 +39,11 @@ var host = new HostBuilder()
                 setup.AddApplicationInsights();
                 setup.AddConsole();
             })
-           .AddEmisLandingClient(context.Configuration, accessToken.Token)
-           .AddDecryptionClient(context.Configuration, accessToken.Token)
-           .UseGpgCryptographyProvider(context.Configuration, builder => builder.AddGpgCryptographyProvider())
-           .UseFtpDownloadProvider(context.Configuration, builder => builder.AddFtpDownloadProvider());
+            .AddDbContext<StorageBroker>()
+            .AddEmisLandingClient(context.Configuration, accessToken.Token)
+            .AddDecryptionClient(context.Configuration, accessToken.Token)
+            .UseGpgCryptographyProvider(context.Configuration, builder => builder.AddGpgCryptographyProvider())
+            .UseFtpDownloadProvider(context.Configuration, builder => builder.AddFtpDownloadProvider());
     })
     .UseDefaultServiceProvider(options => options.ValidateScopes = false)
     .ConfigureFunctionsWorkerDefaults()

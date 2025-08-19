@@ -82,8 +82,11 @@ namespace LHDS.Core.Tests.Acceptance.Clients.TppLandings
                 new Claim(ClaimTypes.Role, "ISL.LDS.AdminApi.Configurations")
             }));
 
-            serviceCollection.AddTppLandingClient(this.dependencyBroker.Configuration, claimsPrincipal);
-            serviceCollection.AddSingleton<IStorageBroker, StorageBroker>();
+            serviceCollection
+                .AddDbContext<StorageBroker>()
+                .AddScoped<IStorageBroker>(service => service.GetRequiredService<StorageBroker>())
+                .AddTppLandingClient(this.dependencyBroker.Configuration, claimsPrincipal);
+
             var serviceProvider = serviceCollection.BuildServiceProvider();
             this.ingestionTrackingService = serviceProvider.GetService<IIngestionTrackingService>();
             this.supplierService = serviceProvider.GetService<ISupplierService>();

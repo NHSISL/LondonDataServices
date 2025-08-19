@@ -6,6 +6,7 @@ using System;
 using System.IO;
 using Azure.Core;
 using Azure.Identity;
+using LHDS.Core.Brokers.Storages.Sql;
 using LHDS.Core.Clients.Extensions;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -40,7 +41,8 @@ var host = new HostBuilder()
                 setup.AddApplicationInsights();
                 setup.AddConsole();
             })
-           .AddOptOutClient(context.Configuration, accessToken.Token, false);
+            .AddDbContext<StorageBroker>()
+            .AddOptOutClient(context.Configuration, accessToken.Token, false);
     })
     .UseDefaultServiceProvider(options => options.ValidateScopes = false)
     .ConfigureFunctionsWorkerDefaults()

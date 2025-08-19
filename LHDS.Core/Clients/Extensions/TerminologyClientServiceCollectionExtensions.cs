@@ -99,11 +99,11 @@ namespace LHDS.Core.Clients.Extensions
             ClaimsPrincipal claimsPrincipal,
             IConfiguration configuration)
         {
+            services.AddScoped<IStorageBroker>(service => service.GetRequiredService<StorageBroker>());
             services.AddTransient<IBlobStorageBroker, BlobStorageBroker>();
             services.AddTransient<ILoggingBroker, LoggingBroker>();
             services.AddTransient<IDateTimeBroker, DateTimeBroker>();
             services.AddTransient<IIdentifierBroker, IdentifierBroker>();
-            services.AddTransient<IStorageBroker, StorageBroker>();
             services.AddTransient<IOntologyBroker, OntologyBroker>();
 
             OntologyConfiguration? ontologyConfiguration =

@@ -121,7 +121,7 @@ namespace LHDS.Core.Clients.Extensions
             services.AddTransient<IHashBroker, HashBroker>();
             services.AddTransient<IAuditBroker, AuditBroker>();
             services.AddTransient<IFileBroker, FileBroker>();
-            services.AddSingleton<IStorageBroker, StorageBroker>();
+            services.AddTransient<IStorageBroker, StorageBroker>();
 
             LandingConfiguration landingConfiguration =
                 configuration.GetSection("landingSettings").Get<LandingConfiguration>();

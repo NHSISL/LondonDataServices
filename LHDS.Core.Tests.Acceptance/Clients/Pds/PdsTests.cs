@@ -9,6 +9,7 @@ using LHDS.Core.Brokers.Identifiers;
 using LHDS.Core.Brokers.Mesh;
 using LHDS.Core.Brokers.Securities;
 using LHDS.Core.Brokers.Storages.Blobs;
+using LHDS.Core.Brokers.Storages.Sql;
 using LHDS.Core.Clients;
 using LHDS.Core.Clients.Extensions;
 using LHDS.Core.Models.Brokers.Storages.Blobs;
@@ -67,7 +68,10 @@ namespace LHDS.Core.Tests.Acceptance.Clients.Pds
             var blobStorageSettings = dependencyBroker.Configuration
                 .GetSection("blobStorage").Get<BlobStorageSettings>();
 
-            serviceCollection.AddSingleton<BlobContainers>(blobStorageSettings.BlobContainers);
+            serviceCollection
+                .AddDbContext<StorageBroker>()
+                .AddScoped<IStorageBroker>(service => service.GetRequiredService<StorageBroker>())
+                .AddSingleton<BlobContainers>(blobStorageSettings.BlobContainers);
 
             serviceCollection
                 .AddTransient<IMeshBroker>(serviceProvider => meshBrokerMock.Object)

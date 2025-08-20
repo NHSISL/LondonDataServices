@@ -161,6 +161,15 @@ namespace LHDS.Core.Services.Orchestrations.Ingress
                 await this.loggingBroker.LogInformationAsync(batchComplete);
                 Stream data = new MemoryStream(System.Text.Encoding.UTF8.GetBytes(batchComplete));
 
+                try
+                {
+                    await this.documentProcessingService.RemoveDocumentByFileNameAsync(
+                        fileName: batchCompleteFileName,
+                        container: this.blobContainers.Ingress);
+                }
+                catch (Exception)
+                { }
+
                 await this.documentProcessingService.AddDocumentAsync(
                     input: data,
                     fileName: batchCompleteFileName,

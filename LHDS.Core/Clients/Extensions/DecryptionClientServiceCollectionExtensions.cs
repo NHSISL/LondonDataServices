@@ -192,7 +192,7 @@ namespace LHDS.Core.Clients.Extensions
             ClaimsPrincipal claimsPrincipal,
             bool acceptanceTest)
         {
-            services.AddTransient<IStorageBroker, StorageBroker>();
+            services.AddScoped<IStorageBroker>(service => service.GetRequiredService<StorageBroker>());
             services.AddTransient<ICryptographyBroker, CryptographyBroker>();
             services.AddTransient<ICryptographyKeyBroker, GpgKeyBroker>();
             services.AddTransient<ICryptographyKeyBroker, SshKeyBroker>();

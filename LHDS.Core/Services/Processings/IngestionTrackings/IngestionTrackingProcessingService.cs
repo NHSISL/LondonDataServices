@@ -173,7 +173,10 @@ namespace LHDS.Core.Services.Processings.IngestionTrackings
                 await this.ingestionTrackingService.RetrieveAllIngestionTrackingsAsync();
 
             List<IngestionTracking> batchIngestionTrackings = allIngestionTrackings
-                .Where(ingestionTracking => ingestionTracking.Batch == ingestionTrackingItem.Batch).ToList();
+                .Where(ingestionTracking =>
+                    ingestionTracking.Batch == ingestionTrackingItem.Batch &&
+                    ingestionTracking.SubscriberAgreementId == ingestionTrackingItem.SubscriberAgreementId)
+                .ToList();
 
             DateTimeOffset currentDateTime = await this.dateTimeBroker.GetCurrentDateTimeOffsetAsync();
 

@@ -56,7 +56,8 @@ namespace LHDS.AdminPortal.Api.Tests.Unit.Controllers.SubscriberPractices
             string someMessage = GetRandomString();
 
             var notFoundSubscriberPracticeException =
-                new NotFoundSubscriberPracticeException(subscriberPracticeId: someId);
+                new NotFoundSubscriberPracticeException(
+                    message: $"Couldn't find subscriberPractice with subscriberPracticeId: {someId}.");
 
             var addressValidationException =
                 new SubscriberPracticeValidationException(

@@ -12,6 +12,8 @@ using System.Text;
 using Azure.Core.Pipeline;
 using Azure.Identity;
 using Azure.Storage.Blobs;
+using ISL.Security.Client.Models.Clients;
+using LHDS.Core.Brokers.Audits;
 using LHDS.Core.Brokers.CryptographyKeys;
 using LHDS.Core.Brokers.DateTimes;
 using LHDS.Core.Brokers.Downloads;
@@ -28,6 +30,7 @@ using LHDS.Core.Models.Configurations;
 using LHDS.Core.Models.Orchestrations.EmisLandings;
 using LHDS.Core.Providers.Downloads;
 using LHDS.Core.Services.Coordinations.EmisLandings;
+using LHDS.Core.Services.Foundations.Audits;
 using LHDS.Core.Services.Foundations.CryptographicKeys;
 using LHDS.Core.Services.Foundations.DataSets;
 using LHDS.Core.Services.Foundations.DataSetSpecifications;
@@ -130,6 +133,10 @@ namespace LHDS.Core.Clients.Extensions
             ClaimsPrincipal claimsPrincipal)
         {
             services.AddScoped<IStorageBroker>(service => service.GetRequiredService<StorageBroker>());
+            services.AddScoped<ClaimsPrincipal>(_ => claimsPrincipal);
+            services.AddScoped<SecurityConfigurations>(_ => new SecurityConfigurations());
+            services.AddTransient<ISecurityAuditBroker, SecurityAuditBroker>();
+            services.AddTransient<IAuditBroker, AuditBroker>();
             services.AddTransient<ILoggingBroker, LoggingBroker>();
             services.AddTransient<IDateTimeBroker, DateTimeBroker>();
             services.AddTransient<IIdentifierBroker, IdentifierBroker>();
@@ -200,6 +207,7 @@ namespace LHDS.Core.Clients.Extensions
             services.AddTransient<ICryptographyKeyService, CryptographyKeyService>();
             services.AddTransient<ISpecificationObjectService, SpecificationObjectService>();
             services.AddTransient<IObjectColumnService, ObjectColumnService>();
+            services.AddTransient<IAuditService, AuditService>();
         }
 
         private static void AddProcessingServices(IServiceCollection services)
@@ -230,6 +238,7 @@ namespace LHDS.Core.Clients.Extensions
         private static void AddClients(IServiceCollection services)
         {
             services.AddTransient<IEmisLandingClient, EmisLandingClient>();
+            services.AddTransient<IAuditClient, AuditClient>();
         }
 
         private static void ValidateLandingConfiguration(LandingConfiguration landingConfiguration)

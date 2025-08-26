@@ -12,6 +12,7 @@ using System.Text;
 using Azure.Core.Pipeline;
 using Azure.Identity;
 using Azure.Storage.Blobs;
+using ISL.Security.Client.Models.Clients;
 using LHDS.Core.Brokers.Audits;
 using LHDS.Core.Brokers.DateTimes;
 using LHDS.Core.Brokers.Files;
@@ -115,6 +116,9 @@ namespace LHDS.Core.Clients.Extensions
             ClaimsPrincipal claimsPrincipal)
         {
             services.AddScoped<IStorageBroker>(service => service.GetRequiredService<StorageBroker>());
+            services.AddScoped<ClaimsPrincipal>(_ => claimsPrincipal);
+            services.AddScoped<SecurityConfigurations>(_ => new SecurityConfigurations());
+            services.AddTransient<ISecurityAuditBroker, SecurityAuditBroker>();
             services.AddTransient<ILoggingBroker, LoggingBroker>();
             services.AddTransient<IDateTimeBroker, DateTimeBroker>();
             services.AddTransient<IIdentifierBroker, IdentifierBroker>();

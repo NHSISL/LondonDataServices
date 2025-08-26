@@ -12,6 +12,7 @@ using System.Text;
 using Azure.Core.Pipeline;
 using Azure.Identity;
 using Azure.Storage.Blobs;
+using ISL.Security.Client.Models.Clients;
 using LHDS.Core.Brokers.Audits;
 using LHDS.Core.Brokers.Cryptographies;
 using LHDS.Core.Brokers.CryptographyKeys;
@@ -193,6 +194,8 @@ namespace LHDS.Core.Clients.Extensions
             bool acceptanceTest)
         {
             services.AddScoped<IStorageBroker>(service => service.GetRequiredService<StorageBroker>());
+            services.AddScoped<ClaimsPrincipal>(_ => claimsPrincipal);
+            services.AddScoped<SecurityConfigurations>(_ => new SecurityConfigurations());
             services.AddTransient<ICryptographyBroker, CryptographyBroker>();
             services.AddTransient<ICryptographyKeyBroker, GpgKeyBroker>();
             services.AddTransient<ICryptographyKeyBroker, SshKeyBroker>();
@@ -200,6 +203,7 @@ namespace LHDS.Core.Clients.Extensions
             services.AddTransient<IDateTimeBroker, DateTimeBroker>();
             services.AddTransient<IIdentifierBroker, IdentifierBroker>();
             services.AddTransient<ISecurityBroker, SecurityBroker>();
+            services.AddTransient<ISecurityAuditBroker, SecurityAuditBroker>();
             services.AddTransient<IHashBroker, HashBroker>();
             services.AddTransient<IAuditBroker, AuditBroker>();
 

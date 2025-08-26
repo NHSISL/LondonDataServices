@@ -51,6 +51,21 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.IngestionTrackings
                 loggingBroker: this.loggingBrokerMock.Object);
         }
 
+        int GetBatchSize(int count, int batchSize)
+        {
+            if (batchSize <= 0)
+            {
+                batchSize = 1;
+            }
+
+            if (count <= 0)
+            {
+                return 0;
+            }
+
+            return (count + batchSize - 1) / batchSize;
+        }
+
         private static string GetRandomStringWithLengthOf(int length)
         {
             string result = new MnemonicString(wordCount: 1, wordMinLength: length, wordMaxLength: length).GetValue();
@@ -104,11 +119,11 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.IngestionTrackings
             return randomIngestionTracking;
         }
 
-        private static IQueryable<IngestionTracking> CreateRandomIngestionTrackings()
+        private static List<IngestionTracking> CreateRandomIngestionTrackings()
         {
             return CreateIngestionTrackingFiller(dateTimeOffset: GetRandomDateTimeOffset())
                 .Create(count: GetRandomNumber())
-                    .AsQueryable();
+                    .ToList();
         }
 
         private static IngestionTracking CreateRandomIngestionTracking() =>

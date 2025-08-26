@@ -227,7 +227,7 @@ namespace LHDS.Core.Services.Foundations.IngestionTrackings
 
         private static dynamic IsInvalid(List<IngestionTracking> ingestionTrackingItems) => new
         {
-            Condition = ingestionTrackingItems == null,
+            Condition = ingestionTrackingItems == null || ingestionTrackingItems.Count == 0,
             Message = "Items is required"
         };
 

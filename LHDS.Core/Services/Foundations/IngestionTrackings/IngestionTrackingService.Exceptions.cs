@@ -63,7 +63,8 @@ namespace LHDS.Core.Services.Foundations.IngestionTrackings
                         message: "Invalid ingestion tracking reference error occurred.",
                         innerException: foreignKeyConstraintConflictException);
 
-                throw await CreateAndLogDependencyValidationExceptionAsync(invalidIngestionTrackingReferenceException);
+                throw await CreateAndLogCriticalDependencyValidationExceptionAsync(
+                    invalidIngestionTrackingReferenceException);
             }
             catch (DbUpdateConcurrencyException dbUpdateConcurrencyException)
             {
@@ -223,6 +224,18 @@ namespace LHDS.Core.Services.Foundations.IngestionTrackings
                     innerException: exception);
 
             await this.loggingBroker.LogErrorAsync(ingestionTrackingDependencyValidationException);
+
+            return ingestionTrackingDependencyValidationException;
+        }
+
+        private async ValueTask<IngestionTrackingDependencyValidationException> CreateAndLogCriticalDependencyValidationExceptionAsync(Xeption exception)
+        {
+            var ingestionTrackingDependencyValidationException =
+                new IngestionTrackingDependencyValidationException(
+                    message: "Ingestion tracking dependency validation occurred, please try again.",
+                    innerException: exception);
+
+            await this.loggingBroker.LogCriticalAsync(ingestionTrackingDependencyValidationException);
 
             return ingestionTrackingDependencyValidationException;
         }

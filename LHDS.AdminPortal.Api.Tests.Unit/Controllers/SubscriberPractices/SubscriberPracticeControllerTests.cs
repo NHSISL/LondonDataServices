@@ -82,11 +82,11 @@ namespace LHDS.AdminPortal.Api.Tests.Unit.Controllers.SubscriberPractices
 
             return new TheoryData<Xeption>
             {
-                new SubscriberAgreementValidationException(
+                new SubscriberPracticeValidationException(
                     message: someMessage,
                     innerException: someInnerException),
 
-                new SubscriberAgreementDependencyValidationException(
+                new SubscriberPracticeDependencyValidationException(
                     message: someMessage,
                     innerException: someInnerException)
             };

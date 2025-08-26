@@ -3,6 +3,7 @@
 // ---------------------------------------------------------
 
 using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using LHDS.Core.Models.Brokers.Securities;
 using LHDS.Core.Models.Foundations.IngestionTrackings;
@@ -78,6 +79,13 @@ namespace LHDS.Core.Services.Foundations.IngestionTrackings
                 Parameter: nameof(IngestionTracking.UpdatedDate)),
 
                 (Rule: await IsNotRecentAsync(ingestionTracking.UpdatedDate), Parameter: nameof(ingestionTracking.UpdatedDate)));
+        }
+
+        private async ValueTask ValidateOnBulkModifyIngestionTrackingAsync(
+            List<IngestionTracking> ingestionTrackingItems)
+        {
+            Validate(
+                (Rule: IsInvalid(ingestionTrackingItems), Parameter: nameof(ingestionTrackingItems)));
         }
 
         public void ValidateIngestionTrackingId(Guid ingestionTrackingId) =>
@@ -216,6 +224,12 @@ namespace LHDS.Core.Services.Foundations.IngestionTrackings
 
             return timeDifference.Duration() > oneMinute;
         }
+
+        private static dynamic IsInvalid(List<IngestionTracking> ingestionTrackingItems) => new
+        {
+            Condition = ingestionTrackingItems == null,
+            Message = "Items is required"
+        };
 
         private static void Validate(params (dynamic Rule, string Parameter)[] validations)
         {

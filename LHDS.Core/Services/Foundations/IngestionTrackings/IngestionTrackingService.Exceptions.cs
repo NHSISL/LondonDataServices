@@ -16,8 +16,82 @@ namespace LHDS.Core.Services.Foundations.IngestionTrackings
 {
     public partial class IngestionTrackingService
     {
+        private delegate ValueTask ReturningNothingFunction();
         private delegate ValueTask<T> ReturningIngestionTrackingFunction<T>();
         private delegate IQueryable<IngestionTracking> ReturningIngestionTrackingsFunction();
+
+        private async ValueTask TryCatch(ReturningNothingFunction returningNothingFunction)
+        {
+            try
+            {
+                await returningNothingFunction();
+            }
+            catch (NullIngestionTrackingException nullIngestionTrackingException)
+            {
+                throw await CreateAndLogValidationExceptionAsync(nullIngestionTrackingException);
+            }
+            catch (InvalidIngestionTrackingException invalidIngestionTrackingException)
+            {
+                throw await CreateAndLogValidationExceptionAsync(invalidIngestionTrackingException);
+            }
+            catch (SqlException sqlException)
+            {
+                var failedIngestionTrackingStorageException =
+                    new FailedIngestionTrackingStorageException(
+                        message: "Failed ingestion tracking storage error occurred, please contact support.",
+                        sqlException);
+
+                throw await CreateAndLogCriticalDependencyExceptionAsync(failedIngestionTrackingStorageException);
+            }
+            catch (NotFoundIngestionTrackingException notFoundIngestionTrackingException)
+            {
+                throw await CreateAndLogValidationExceptionAsync(notFoundIngestionTrackingException);
+            }
+            catch (DuplicateKeyException duplicateKeyException)
+            {
+                var alreadyExistsIngestionTrackingException =
+                    new AlreadyExistsIngestionTrackingException(
+                        message: "Ingestion tracking with the same Id already exists.",
+                        innerException: duplicateKeyException);
+
+                throw await CreateAndLogDependencyValidationExceptionAsync(alreadyExistsIngestionTrackingException);
+            }
+            catch (ForeignKeyConstraintConflictException foreignKeyConstraintConflictException)
+            {
+                var invalidIngestionTrackingReferenceException =
+                    new InvalidIngestionTrackingReferenceException(
+                        message: "Invalid ingestion tracking reference error occurred.",
+                        innerException: foreignKeyConstraintConflictException);
+
+                throw await CreateAndLogDependencyValidationExceptionAsync(invalidIngestionTrackingReferenceException);
+            }
+            catch (DbUpdateConcurrencyException dbUpdateConcurrencyException)
+            {
+                var lockedIngestionTrackingException = new LockedIngestionTrackingException(
+                    message: "Locked ingestion tracking record exception, please try again later",
+                    innerException: dbUpdateConcurrencyException);
+
+                throw await CreateAndLogDependencyValidationExceptionAsync(lockedIngestionTrackingException);
+            }
+            catch (DbUpdateException databaseUpdateException)
+            {
+                var failedIngestionTrackingStorageException =
+                    new FailedIngestionTrackingStorageException(
+                        message: "Failed ingestion tracking storage error occurred, please contact support.",
+                        databaseUpdateException);
+
+                throw await CreateAndLogDependencyExceptionAsync(failedIngestionTrackingStorageException);
+            }
+            catch (Exception exception)
+            {
+                var failedIngestionTrackingServiceException =
+                    new FailedIngestionTrackingServiceException(
+                        message: "Failed ingestion tracking service error occurred, please contact support.",
+                        innerException: exception);
+
+                throw await CreateAndLogServiceExceptionAsync(failedIngestionTrackingServiceException);
+            }
+        }
 
         private async ValueTask<T> TryCatch<T>(ReturningIngestionTrackingFunction<T> returningIngestionTrackingFunction)
         {

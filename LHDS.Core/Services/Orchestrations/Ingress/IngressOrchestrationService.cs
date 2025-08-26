@@ -70,7 +70,10 @@ namespace LHDS.Core.Services.Orchestrations.Ingress
                         new { ingestionTracking.Batch, ingestionTracking.SubscriberAgreementId })
 
                     .Where(group =>
-                        group.All(ingestionTracking => ingestionTracking.IsDownloaded && ingestionTracking.Decrypted))
+                        group.All(ingestionTracking =>
+                            ingestionTracking.IsDownloaded
+                            && ingestionTracking.Decrypted
+                            && ingestionTracking.SubscriberAgreementId != null))
 
                     .Select(group => group.Select(ingestionTracking => ingestionTracking.Id).FirstOrDefault())
                     .FirstOrDefault()) != default)

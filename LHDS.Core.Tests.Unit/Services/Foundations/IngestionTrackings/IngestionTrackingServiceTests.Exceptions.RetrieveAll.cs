@@ -41,7 +41,8 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.IngestionTrackings
                 this.ingestionTrackingService.RetrieveAllIngestionTrackingsAsync();
 
             IngestionTrackingDependencyException actualIngestionTrackingDependencyException =
-                await Assert.ThrowsAsync<IngestionTrackingDependencyException>(retrieveAllIngestionTrackingsTask.AsTask);
+                await Assert.ThrowsAsync<IngestionTrackingDependencyException>(
+                    retrieveAllIngestionTrackingsTask.AsTask);
 
             // then
             actualIngestionTrackingDependencyException.Should()
@@ -58,6 +59,9 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.IngestionTrackings
 
             this.storageBrokerMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
+            this.securityBrokerMock.VerifyNoOtherCalls();
+            this.securityAuditBrokerMock.VerifyNoOtherCalls();
+            this.auditBrokerMock.VerifyNoOtherCalls();
             this.dateTimeBrokerMock.VerifyNoOtherCalls();
         }
 
@@ -104,6 +108,10 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.IngestionTrackings
 
             this.storageBrokerMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
+            this.securityBrokerMock.VerifyNoOtherCalls();
+            this.securityAuditBrokerMock.VerifyNoOtherCalls();
+            this.auditBrokerMock.VerifyNoOtherCalls();
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
         }
     }
 }

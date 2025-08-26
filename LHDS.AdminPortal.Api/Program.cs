@@ -11,6 +11,8 @@ using Attrify.InvisibleApi.Models;
 using Azure.Core.Pipeline;
 using Azure.Identity;
 using Azure.Storage.Blobs;
+using ISL.Security.Client.Models.Clients;
+using LHDS.Core.Brokers.Audits;
 using LHDS.Core.Brokers.DateTimes;
 using LHDS.Core.Brokers.Hashing;
 using LHDS.Core.Brokers.Identifiers;
@@ -319,7 +321,8 @@ namespace LHDS.AdminPortal.Api
         {
             ValidateAppInsightsCinfiguration(configuration);
             services.AddScoped<IStorageBroker>(service => service.GetRequiredService<StorageBroker>());
-            services.AddSingleton<IConfiguration>(_ => configuration);
+            services.AddSingleton(configuration);
+            services.AddSingleton(new SecurityConfigurations());
             services.AddTransient<IDateTimeBroker, DateTimeBroker>();
             services.AddTransient<IIdentifierBroker, IdentifierBroker>();
             services.AddTransient<ILoggingBroker, LoggingBroker>();
@@ -327,6 +330,8 @@ namespace LHDS.AdminPortal.Api
             services.AddTransient<IHashBroker, HashBroker>();
             services.AddTransient<IAzureBlobClient, AzureBlobClient>();
             services.AddTransient<ISecurityBroker, SecurityBroker>();
+            services.AddTransient<ISecurityAuditBroker, SecurityAuditBroker>();
+            services.AddTransient<IAuditBroker, AuditBroker>();
             services.AddTransient<ITelemetryBroker, TelemetryBroker>();
         }
 

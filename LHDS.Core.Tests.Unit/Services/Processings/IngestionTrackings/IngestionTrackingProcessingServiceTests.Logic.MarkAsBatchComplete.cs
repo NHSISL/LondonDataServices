@@ -55,6 +55,10 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.IngestionTrackings
                 broker.GetCurrentDateTimeOffsetAsync())
                     .ReturnsAsync(currentDateTime);
 
+            this.dateTimeBrokerMock.Setup(broker =>
+                broker.GetCurrentDateTimeOffsetAsync())
+                    .ReturnsAsync(currentDateTime);
+
             setAsBatchCompleteItems.ForEach(batchCompleteIngestionTracking =>
             {
                 batchCompleteIngestionTracking.IsBatchComplete = isBatchComplete;

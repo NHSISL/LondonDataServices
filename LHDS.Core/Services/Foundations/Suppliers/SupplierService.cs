@@ -9,6 +9,7 @@ using LHDS.Core.Brokers.DateTimes;
 using LHDS.Core.Brokers.Loggings;
 using LHDS.Core.Brokers.Securities;
 using LHDS.Core.Brokers.Storages.Sql;
+using LHDS.Core.Models.Foundations.ResolvedAddresses;
 using LHDS.Core.Models.Foundations.Suppliers;
 
 namespace LHDS.Core.Services.Foundations.Suppliers
@@ -113,6 +114,16 @@ namespace LHDS.Core.Services.Foundations.Suppliers
             var auditUser = await this.securityBroker.GetCurrentUserAsync();
             supplier.UpdatedBy = auditUser?.EntraUserId.ToString() ?? string.Empty;
             supplier.UpdatedDate = auditDateTimeOffset;
+
+            return supplier;
+        }
+
+        virtual internal async ValueTask<Supplier> EnsureCreatedAuditPropertiesIsSameAsStorageAsync(
+           Supplier supplier,
+           Supplier maybeSupplier)
+        {
+            supplier.CreatedDate = maybeSupplier.CreatedDate;
+            supplier.CreatedBy = maybeSupplier.CreatedBy;
 
             return supplier;
         }

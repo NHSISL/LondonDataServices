@@ -293,7 +293,7 @@ namespace LHDS.Core.Services.Foundations.IngestionTrackings
                 try
                 {
                     IngestionTracking appliedAuditItem =
-                        await this.securityAuditBroker.ApplyAddAuditValuesAsync(item);
+                        await this.securityAuditBroker.ApplyModifyAuditValuesAsync(item);
 
                     await ValidateIngestionTrackingOnModifyAsync(appliedAuditItem);
                     validatedIngestionTrackings.Add(appliedAuditItem);

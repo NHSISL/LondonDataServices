@@ -44,6 +44,7 @@ namespace LHDS.Core.Tests.Acceptance.Clients.Decryptions
     public partial class DecryptionTests
     {
         private readonly DependencyBroker dependencyBroker;
+        private readonly IStorageBroker storageBroker;
         private readonly IDateTimeBroker dateTimeBroker;
         private readonly IIngestionTrackingService ingestionTrackingService;
         private readonly IDecryptionClient decryptionClient;
@@ -86,15 +87,20 @@ namespace LHDS.Core.Tests.Acceptance.Clients.Decryptions
             }));
 
             serviceCollection
-                .AddDbContext<StorageBroker>()
-                .AddScoped<IStorageBroker>(service => service.GetRequiredService<StorageBroker>())
+                .AddDbContextFactory<StorageBroker>()
                 .AddDecryptionClient(this.dependencyBroker.Configuration, claimsPrincipal)
                 .AddTransient<IDataSetService, DataSetService>()
                 .AddTransient<IDataSetSpecificationService, DataSetSpecificationService>()
                 .AddTransient<ISpecificationObjectService, SpecificationObjectService>()
                 .AddTransient<IObjectColumnService, ObjectColumnService>();
 
-            var serviceProvider = serviceCollection.BuildServiceProvider();
+            var serviceProvider = serviceCollection.BuildServiceProvider(new ServiceProviderOptions
+            {
+                ValidateOnBuild = true,
+                ValidateScopes = true
+            });
+
+            this.storageBroker = serviceProvider.GetService<IStorageBroker>();
             this.ingestionTrackingService = serviceProvider.GetService<IIngestionTrackingService>();
             this.supplierService = serviceProvider.GetService<ISupplierService>();
             this.auditService = serviceProvider.GetService<IIngestionTrackingAuditService>();

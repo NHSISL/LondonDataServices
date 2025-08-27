@@ -40,8 +40,7 @@ namespace LHDS.Core.Tests.Integration.Terminology
                     builder.AddConsole();
                     builder.AddApplicationInsights();
                 })
-                .AddDbContext<StorageBroker>()
-                .AddScoped<IStorageBroker>(service => service.GetRequiredService<StorageBroker>())
+                .AddDbContextFactory<StorageBroker>()
                 .AddTerminologyClient(configuration, claimsPrincipal)
                 .BuildServiceProvider();
 

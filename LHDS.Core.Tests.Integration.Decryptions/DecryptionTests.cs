@@ -48,8 +48,7 @@ namespace LHDS.Core.Tests.Integration.Decryptions
                     builder.AddConsole();
                     builder.AddApplicationInsights();
                 })
-                .AddDbContext<StorageBroker>()
-                .AddScoped<IStorageBroker>(service => service.GetRequiredService<StorageBroker>())
+                .AddDbContextFactory<StorageBroker>()
                 .AddDecryptionClient(configuration, claimsPrincipal)
                 .UseGpgCryptographyProvider(configuration, builder => builder.AddGpgCryptographyProvider())
                 .AddTransient<IDownloadProvider, MockDownloadProvider>()

@@ -53,6 +53,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.IngestionTrackings
                     Times.Never);
 
             this.ingestionTrackingServiceMock.VerifyNoOtherCalls();
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
         }
 
@@ -90,6 +91,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.IngestionTrackings
                     Times.Never);
 
             this.ingestionTrackingServiceMock.VerifyNoOtherCalls();
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
         }
     }

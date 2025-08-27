@@ -22,35 +22,43 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.IngestionTrackings
         {
             // Given
             string batchReference = GetRandomString();
-            List<IngestionTracking> randomIngestionTrackingsFirstBatch = CreateRandomIngestionTrackings();
-            List<IngestionTracking> randomIngestionTrackingsSecondBatch = CreateRandomIngestionTrackings();
-            Guid inputIngestionTrackingId = randomIngestionTrackingsFirstBatch.First().Id;
-            IngestionTracking batchCompleteIngestionTrackingItem = randomIngestionTrackingsFirstBatch.First();
+            DateTimeOffset currentDateTime = GetRandomDateTimeOffset();
+            Guid subscriberAgreementId = Guid.NewGuid();
+            List<IngestionTracking> randomIngestionTrackingFirstBatch = CreateRandomIngestionTrackings();
+            List<IngestionTracking> randomIngestionTrackingSecondBatch = CreateRandomIngestionTrackings();
+
+            randomIngestionTrackingFirstBatch.ForEach(ingestionTracking =>
+            {
+                ingestionTracking.Batch = batchReference;
+                ingestionTracking.SubscriberAgreementId = subscriberAgreementId;
+                ingestionTracking.IsBatchComplete = !isBatchComplete;
+            });
+
+            List<IngestionTracking> randomIngestionTrackingBatch =
+                [.. randomIngestionTrackingFirstBatch, .. randomIngestionTrackingSecondBatch];
+
+            List<IngestionTracking> storageIngestionTrackingItems = randomIngestionTrackingBatch;
+            List<IngestionTracking> setAsBatchCompleteItems = randomIngestionTrackingFirstBatch.DeepClone();
+
+            Guid inputIngestionTrackingId = randomIngestionTrackingFirstBatch.First().Id;
+            IngestionTracking batchCompleteIngestionTrackingItem = randomIngestionTrackingFirstBatch.First();
 
             this.ingestionTrackingServiceMock.Setup(service =>
                 service.RetrieveIngestionTrackingByIdAsync(inputIngestionTrackingId))
                     .ReturnsAsync(batchCompleteIngestionTrackingItem);
 
-            randomIngestionTrackingsFirstBatch.ForEach(ingestionTracking =>
-            {
-                ingestionTracking.Batch = batchReference;
-                ingestionTracking.IsBatchComplete = !isBatchComplete;
-            });
+            this.ingestionTrackingServiceMock.Setup(service =>
+                service.RetrieveAllIngestionTrackingsAsync())
+                    .ReturnsAsync(storageIngestionTrackingItems.AsQueryable());
 
-            List<IngestionTracking> randomIngestionTrackingsBatch =
-                [.. randomIngestionTrackingsFirstBatch, .. randomIngestionTrackingsFirstBatch];
-
-            List<IngestionTracking> storageIngestionTrackings = randomIngestionTrackingsBatch;
-            List<IngestionTracking> setAsBatchCompleteItems = randomIngestionTrackingsFirstBatch.DeepClone();
+            this.dateTimeBrokerMock.Setup(broker =>
+                broker.GetCurrentDateTimeOffsetAsync())
+                    .ReturnsAsync(currentDateTime);
 
             setAsBatchCompleteItems.ForEach(batchCompleteIngestionTracking =>
             {
                 batchCompleteIngestionTracking.IsBatchComplete = isBatchComplete;
-
-                this.ingestionTrackingServiceMock.Setup(service =>
-                    service.ModifyIngestionTrackingAsync(
-                        It.Is(SameIngestionTrackingAs(batchCompleteIngestionTracking))))
-                            .ReturnsAsync(batchCompleteIngestionTracking);
+                batchCompleteIngestionTracking.LastBatchCompleteCheck = currentDateTime;
             });
 
             // When
@@ -66,14 +74,17 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.IngestionTrackings
                 service.RetrieveAllIngestionTrackingsAsync(),
                     Times.Once);
 
-            setAsBatchCompleteItems.ForEach(batchCompleteIngestionTracking =>
-            {
-                this.ingestionTrackingServiceMock.Setup(service =>
-                    service.ModifyIngestionTrackingAsync(It.Is(SameIngestionTrackingAs(batchCompleteIngestionTracking))))
-                        .ReturnsAsync(batchCompleteIngestionTracking);
-            });
+            this.dateTimeBrokerMock.Verify(broker =>
+                broker.GetCurrentDateTimeOffsetAsync(),
+                    Times.Once);
+
+            this.ingestionTrackingServiceMock.Verify(service =>
+                service.BulkModifyIngestionTrackingAsync(
+                    It.Is(SameIngestionTrackingsAs(setAsBatchCompleteItems))),
+                        Times.Once);
 
             this.ingestionTrackingServiceMock.VerifyNoOtherCalls();
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
         }
     }

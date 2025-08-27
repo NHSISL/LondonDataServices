@@ -26,6 +26,7 @@ using LHDS.ConfigImportExportTool.Services.Orchestrations.SchemaConfigs;
 using LHDS.ConfigImportExportTool.Services.Processings.DataSets;
 using LHDS.ConfigImportExportTool.Services.Processings.ObjectColumns;
 using LHDS.ConfigImportExportTool.Services.Processings.SpecificationObjects;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -74,10 +75,18 @@ namespace LHDS.ConfigImportExportTool.Clients.ImportExports
 
             builder.ConfigureServices(services =>
             {
+                services.AddDbContextFactory<StorageBroker>();
+
+                services.AddTransient<IStorageBroker>(sp =>
+                {
+                    var factory = sp.GetRequiredService<IDbContextFactory<StorageBroker>>();
+
+                    return factory.CreateDbContext();
+                });
+
                 services.AddSingleton(configuration);
                 services.AddTransient<ICsvHelperBroker, CsvHelperBroker>();
                 services.AddTransient<IDateTimeBroker, DateTimeBroker>();
-                services.AddScoped<IStorageBroker>(service => service.GetRequiredService<StorageBroker>());
                 services.AddTransient<IIdentifierBroker, IdentifierBroker>();
                 services.AddTransient<ILoggingBroker, LoggingBroker>();
                 services.AddTransient<IFileBroker, FileBroker>();

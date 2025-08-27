@@ -22,9 +22,9 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.IngestionTrackings
             DateTimeOffset randomDateTimeOffset = GetRandomDateTimeOffset();
             EntraUser randomEntraUser = CreateRandomEntraUser();
 
-            IngestionTracking randomIngestionTracking = 
+            IngestionTracking randomIngestionTracking =
                 CreateRandomModifyIngestionTracking(randomDateTimeOffset, randomEntraUser.EntraUserId);
-            
+
             IngestionTracking inputIngestionTracking = randomIngestionTracking;
             IngestionTracking storageIngestionTracking = inputIngestionTracking.DeepClone();
             storageIngestionTracking.UpdatedDate = randomIngestionTracking.CreatedDate;
@@ -73,7 +73,9 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.IngestionTrackings
 
             this.dateTimeBrokerMock.VerifyNoOtherCalls();
             this.storageBrokerMock.VerifyNoOtherCalls();
-            this.storageBrokerMock.VerifyNoOtherCalls();
+            this.securityBrokerMock.VerifyNoOtherCalls();
+            this.securityAuditBrokerMock.VerifyNoOtherCalls();
+            this.auditBrokerMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
         }
     }

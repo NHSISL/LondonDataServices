@@ -50,8 +50,7 @@ namespace LHDS.Core.Tests.Integration.Addresses
                     builder.AddConsole();
                     builder.AddApplicationInsights();
                 })
-                .AddDbContext<StorageBroker>()
-                .AddScoped<IStorageBroker>(service => service.GetRequiredService<StorageBroker>())
+                .AddDbContextFactory<StorageBroker>()
                 .AddAddressClient(configuration, claimsPrincipal)
                 .BuildServiceProvider();
 

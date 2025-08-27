@@ -3,6 +3,7 @@
 // ---------------------------------------------------------
 
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using LHDS.Core.Models.Foundations.IngestionTrackings;
@@ -17,6 +18,7 @@ namespace LHDS.Core.Services.Foundations.IngestionTrackings
         ValueTask<IngestionTracking?> RetrieveIngestionTrackingByEncryptedFileNameAsync(string encryptedFileName);
         ValueTask<IngestionTracking?> RetrieveIngestionTrackingByFileNameAsync(string fileName);
         ValueTask<IngestionTracking> ModifyIngestionTrackingAsync(IngestionTracking ingestionTracking);
+        ValueTask BulkModifyIngestionTrackingAsync(List<IngestionTracking> ingestionTrackingItems);
         ValueTask<IngestionTracking> RemoveIngestionTrackingByIdAsync(Guid ingestionTrackingId);
     }
 }

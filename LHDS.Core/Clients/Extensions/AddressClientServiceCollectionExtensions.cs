@@ -39,6 +39,7 @@ using LHDS.Core.Services.Processings.Assigns;
 using LHDS.Core.Services.Processings.Documents;
 using LHDS.Core.Services.Processings.ResolvedAddresses;
 using Microsoft.AspNetCore.Http;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -148,7 +149,13 @@ namespace LHDS.Core.Clients.Extensions
 
         private static void AddBrokers(IServiceCollection services, ClaimsPrincipal claimsPrincipal)
         {
-            services.AddScoped<IStorageBroker>(service => service.GetRequiredService<StorageBroker>());
+            services.AddTransient<IStorageBroker>(sp =>
+            {
+                var factory = sp.GetRequiredService<IDbContextFactory<StorageBroker>>();
+
+                return factory.CreateDbContext();
+            });
+
             services.AddTransient<IFileBroker, FileBroker>();
             services.AddTransient<IAssignBroker, AssignBroker>();
             services.AddTransient<ILoggingBroker, LoggingBroker>();

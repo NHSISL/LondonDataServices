@@ -15,10 +15,10 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.IngestionTrackings
     public partial class IngestionTrackingServiceTests
     {
         [Fact]
-        public async Task ShouldThrowValidationExceptionOnRetrieveByEncryptedFileNameIfFileNameIsInvalidAndLogItAsync()
+        public async Task ShouldThrowValidationExceptionOnRetrieveByFileNameIfFileNameIsInvalidAndLogItAsync()
         {
             // given
-            string encryptedFileName = String.Empty;
+            string fileName = String.Empty;
 
             var invalidIngestionTrackingException =
                 new InvalidIngestionTrackingException(message: "Invalid ingestion tracking. Please investigate.");
@@ -34,7 +34,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.IngestionTrackings
 
             // when
             ValueTask<IngestionTracking> retrieveIngestionTrackingByFileNameTask =
-                this.ingestionTrackingService.RetrieveIngestionTrackingByEncryptedFileNameAsync(encryptedFileName);
+                this.ingestionTrackingService.RetrieveIngestionTrackingByFileNameAsync(fileName);
 
             IngestionTrackingValidationException actualIngestionTrackingValidationException =
                 await Assert.ThrowsAsync<IngestionTrackingValidationException>(
@@ -56,6 +56,9 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.IngestionTrackings
             this.loggingBrokerMock.VerifyNoOtherCalls();
             this.storageBrokerMock.VerifyNoOtherCalls();
             this.dateTimeBrokerMock.VerifyNoOtherCalls();
+            this.securityBrokerMock.VerifyNoOtherCalls();
+            this.securityAuditBrokerMock.VerifyNoOtherCalls();
+            this.auditBrokerMock.VerifyNoOtherCalls();
         }
     }
 }

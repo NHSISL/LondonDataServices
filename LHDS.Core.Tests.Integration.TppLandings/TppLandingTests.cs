@@ -70,8 +70,7 @@ namespace LHDS.Core.Tests.Integration.TppLandings
                     builder.AddConsole();
                     builder.AddApplicationInsights();
                 })
-                .AddDbContext<StorageBroker>()
-                .AddScoped<IStorageBroker>(service => service.GetRequiredService<StorageBroker>())
+                .AddDbContextFactory<StorageBroker>()
                 .AddTppLandingClient(configuration, claimsPrincipal)
                 .BuildServiceProvider();
 

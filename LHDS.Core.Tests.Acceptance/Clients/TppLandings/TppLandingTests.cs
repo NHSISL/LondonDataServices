@@ -83,11 +83,15 @@ namespace LHDS.Core.Tests.Acceptance.Clients.TppLandings
             }));
 
             serviceCollection
-                .AddDbContext<StorageBroker>()
-                .AddScoped<IStorageBroker>(service => service.GetRequiredService<StorageBroker>())
+                .AddDbContextFactory<StorageBroker>()
                 .AddTppLandingClient(this.dependencyBroker.Configuration, claimsPrincipal);
 
-            var serviceProvider = serviceCollection.BuildServiceProvider();
+            var serviceProvider = serviceCollection.BuildServiceProvider(new ServiceProviderOptions
+            {
+                ValidateOnBuild = true,
+                ValidateScopes = true
+            });
+
             this.ingestionTrackingService = serviceProvider.GetService<IIngestionTrackingService>();
             this.supplierService = serviceProvider.GetService<ISupplierService>();
             this.subscriberAgreementService = serviceProvider.GetService<ISubscriberAgreementService>();

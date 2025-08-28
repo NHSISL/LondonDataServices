@@ -3,12 +3,15 @@
 // ---------------------------------------------------------
 
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using LHDS.Core.Brokers.Audits;
 using LHDS.Core.Brokers.DateTimes;
 using LHDS.Core.Brokers.Loggings;
 using LHDS.Core.Brokers.Securities;
 using LHDS.Core.Brokers.Storages.Sql;
+using LHDS.Core.Models.Foundations.Audits;
 using LHDS.Core.Models.Foundations.IngestionTrackings;
 
 namespace LHDS.Core.Services.Foundations.IngestionTrackings
@@ -18,17 +21,23 @@ namespace LHDS.Core.Services.Foundations.IngestionTrackings
         private readonly IStorageBroker storageBroker;
         private readonly IDateTimeBroker dateTimeBroker;
         private readonly ISecurityBroker securityBroker;
+        private readonly ISecurityAuditBroker securityAuditBroker;
+        private readonly IAuditBroker auditBroker;
         private readonly ILoggingBroker loggingBroker;
 
         public IngestionTrackingService(
             IStorageBroker storageBroker,
             IDateTimeBroker dateTimeBroker,
             ISecurityBroker securityBroker,
+            ISecurityAuditBroker securityAuditBroker,
+            IAuditBroker auditBroker,
             ILoggingBroker loggingBroker)
         {
             this.storageBroker = storageBroker;
             this.dateTimeBroker = dateTimeBroker;
             this.securityBroker = securityBroker;
+            this.securityAuditBroker = securityAuditBroker;
+            this.auditBroker = auditBroker;
             this.loggingBroker = loggingBroker;
         }
 
@@ -89,7 +98,9 @@ namespace LHDS.Core.Services.Foundations.IngestionTrackings
         public ValueTask<IngestionTracking> ModifyIngestionTrackingAsync(IngestionTracking ingestionTracking) =>
             TryCatch(async () =>
             {
-                IngestionTracking ingestionTrackingWithModifyAuditApplied = await ApplyModifyAuditAsync(ingestionTracking);
+                IngestionTracking ingestionTrackingWithModifyAuditApplied =
+                    await ApplyModifyAuditAsync(ingestionTracking);
+
                 await ValidateIngestionTrackingOnModifyAsync(ingestionTrackingWithModifyAuditApplied);
 
                 IngestionTracking maybeIngestionTracking =
@@ -103,6 +114,14 @@ namespace LHDS.Core.Services.Foundations.IngestionTrackings
 
                 return await this.storageBroker.UpdateIngestionTrackingAsync(ingestionTracking);
             });
+
+        public ValueTask BulkModifyIngestionTrackingAsync(List<IngestionTracking> ingestionTrackingItems) =>
+            TryCatch(async () =>
+            {
+                await ValidateOnBulkModifyIngestionTrackingAsync(ingestionTrackingItems);
+                await BulkAddOrModifyBySplittingIntoBatchesAsync(ingestionTrackingItems);
+            });
+
 
         public ValueTask<IngestionTracking> RemoveIngestionTrackingByIdAsync(Guid ingestionTrackingId) =>
             TryCatch(async () =>
@@ -139,6 +158,174 @@ namespace LHDS.Core.Services.Foundations.IngestionTrackings
             ingestionTracking.UpdatedDate = auditDateTimeOffset;
 
             return ingestionTracking;
+        }
+
+        virtual internal async ValueTask BulkAddOrModifyBySplittingIntoBatchesAsync(
+            List<IngestionTracking> ingestionTrackingItems,
+            int batchSize = 10000)
+        {
+            int totalRecords = ingestionTrackingItems.Count;
+            var exceptions = new List<Exception>();
+
+            for (int i = 0; i < totalRecords; i += batchSize)
+            {
+                try
+                {
+                    List<IngestionTracking> batch = ingestionTrackingItems.Skip(i).Take(batchSize).ToList();
+                    List<Guid> batchIds = batch.Select(ingestionTracking => ingestionTracking.Id).ToList();
+
+                    IQueryable<IngestionTracking> storageIngestionTrackings =
+                        (await this.storageBroker.SelectAllIngestionTrackingsAsync())
+                            .Where(ingestionTracking => batchIds.Contains(ingestionTracking.Id));
+
+                    List<Guid> existingIds = storageIngestionTrackings
+                        .Select(ingestionTracking => ingestionTracking.Id).ToList();
+
+                    List<IngestionTracking> existingIngestionTrackings =
+                        batch.Where(ingestionTracking => existingIds.Contains(ingestionTracking.Id)).ToList();
+
+                    List<IngestionTracking> newIngestionTrackings =
+                        batch.Where(ingestionTracking => !existingIds.Contains(ingestionTracking.Id)).ToList();
+
+                    try
+                    {
+                        if (newIngestionTrackings.Count != 0)
+                        {
+                            List<IngestionTracking> validatedAddIngestionTrackings =
+                                await AssignAuditValuesAndValidateOnBulkAddAsync(newIngestionTrackings);
+
+                            await this.storageBroker.BulkInsertIngestionTrackingsAsync(
+                                validatedAddIngestionTrackings);
+                        }
+                    }
+                    catch (Exception insertException)
+                    {
+                        exceptions.Add(insertException);
+                        await this.loggingBroker.LogErrorAsync(insertException);
+                    }
+
+                    try
+                    {
+                        if (existingIngestionTrackings.Count != 0)
+                        {
+                            List<IngestionTracking> validatedModifyIngestionTrackings =
+                                await AssignAuditValuesAndValidateOnBulkModifyAsync(existingIngestionTrackings);
+
+                            await this.storageBroker.BulkUpdateIngestionTrackingsAsync(
+                                validatedModifyIngestionTrackings);
+                        }
+                    }
+                    catch (Exception updateException)
+                    {
+                        exceptions.Add(updateException);
+                        await this.loggingBroker.LogErrorAsync(updateException);
+                    }
+                }
+                catch (Exception exception)
+                {
+                    exceptions.Add(exception);
+                    await this.loggingBroker.LogErrorAsync(exception);
+                }
+            }
+
+            if (exceptions.Any())
+            {
+                throw new AggregateException(
+                    $"Unable to process ingestionTrackings in {exceptions.Count} of the batch(es)",
+                    exceptions);
+            }
+        }
+
+        virtual internal async ValueTask<List<IngestionTracking>> AssignAuditValuesAndValidateOnBulkAddAsync(
+            List<IngestionTracking> ingestionTrackingItems)
+        {
+            List<IngestionTracking> validatedIngestionTrackings = new List<IngestionTracking>();
+            List<Audit> audits = new List<Audit>();
+
+            foreach (IngestionTracking item in ingestionTrackingItems)
+            {
+                try
+                {
+                    IngestionTracking appliedAuditItem =
+                        await this.securityAuditBroker.ApplyAddAuditValuesAsync(item);
+
+                    await ValidateIngestionTrackingOnAddAsync(item);
+                    validatedIngestionTrackings.Add(item);
+                }
+                catch (Exception exception)
+                {
+                    Audit audit = new Audit
+                    {
+                        AuditType = "IngestionTracking",
+                        Title = "Unable to add item",
+
+                        Message =
+                            $"Invalid ingestion tracking item - Id: {item.Id} " +
+                            $"Error: {exception.Message}",
+
+                        LogLevel = "Error",
+                    };
+
+                    audits.Add(audit);
+
+                    await this.loggingBroker.LogWarningAsync(message:
+                            $"Invalid ingestion tracking item - Id: {item.Id} " + Environment.NewLine +
+                            $"Error: {exception.Message}");
+                }
+            }
+
+            if (audits.Any())
+            {
+                await this.auditBroker.BulkLogAsync(audits);
+            }
+
+            return validatedIngestionTrackings;
+        }
+
+        virtual internal async ValueTask<List<IngestionTracking>> AssignAuditValuesAndValidateOnBulkModifyAsync(
+            List<IngestionTracking> ingestionTrackingItems)
+        {
+            List<IngestionTracking> validatedIngestionTrackings = new List<IngestionTracking>();
+            List<Audit> audits = new List<Audit>();
+
+            foreach (IngestionTracking item in ingestionTrackingItems)
+            {
+                try
+                {
+                    IngestionTracking appliedAuditItem =
+                        await this.securityAuditBroker.ApplyModifyAuditValuesAsync(item);
+
+                    await ValidateIngestionTrackingOnModifyAsync(appliedAuditItem);
+                    validatedIngestionTrackings.Add(appliedAuditItem);
+                }
+                catch (Exception exception)
+                {
+                    Audit audit = new Audit
+                    {
+                        AuditType = "IngestionTracking",
+                        Title = "Unable to update item",
+
+                        Message =
+                            $"Invalid ingestion tracking item - Id: {item.Id} " +
+                            $"Error: {exception.Message}",
+
+                        LogLevel = "Error",
+                    };
+
+                    audits.Add(audit);
+
+                    await this.loggingBroker.LogWarningAsync(message:
+                        $"Invalid ingestion tracking item - Id: {item.Id} " + Environment.NewLine +
+                        $"Error: {exception.Message}");
+                }
+            }
+
+            if (audits.Any())
+            {
+                await this.auditBroker.BulkLogAsync(audits);
+            }
+
+            return await ValueTask.FromResult(validatedIngestionTrackings);
         }
     }
 }

@@ -39,7 +39,7 @@ var host = new HostBuilder()
                 setup.AddApplicationInsights();
                 setup.AddConsole();
             })
-            .AddDbContext<StorageBroker>()
+            .AddDbContextFactory<StorageBroker>()
             .AddEmisLandingClient(context.Configuration, accessToken.Token)
             .AddDecryptionClient(context.Configuration, accessToken.Token)
             .UseGpgCryptographyProvider(context.Configuration, builder => builder.AddGpgCryptographyProvider())

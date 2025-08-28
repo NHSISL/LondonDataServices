@@ -85,6 +85,14 @@ namespace LHDS.Core.Services.Orchestrations.Ingress
                     }
                     catch (Exception exception)
                     {
+                        IngestionTracking ingestionTracking = await this.ingestionTrackingProcessingService
+                            .RetrieveIngestionTrackingByIdAsync(ingestionTrackingId);
+
+                        ingestionTracking.LastBatchCompleteCheck =
+                            (await this.dateTimeBroker.GetCurrentDateTimeOffsetAsync()).AddMinutes(15);
+
+                        await this.ingestionTrackingProcessingService.ModifyIngestionTrackingAsync(ingestionTracking);
+
                         exceptions.Add(exception);
                     }
                 }

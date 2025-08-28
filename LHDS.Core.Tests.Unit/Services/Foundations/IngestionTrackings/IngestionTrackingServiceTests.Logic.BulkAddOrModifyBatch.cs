@@ -78,7 +78,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.IngestionTrackings
 
             // when
             await ingestionTrackingServiceMock.Object
-                .BulkAddOrModifyBatchAsync(inputIngestionTrackingItems, inputBatchSize);
+                .BulkAddOrModifyBySplittingIntoBatchesAsync(inputIngestionTrackingItems, inputBatchSize);
 
             // then
             this.storageBrokerMock.Verify(broker =>
@@ -123,7 +123,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.IngestionTrackings
             }
 
             ingestionTrackingServiceMock.Verify(service =>
-                service.BulkAddOrModifyBatchAsync(inputIngestionTrackingItems, inputBatchSize),
+                service.BulkAddOrModifyBySplittingIntoBatchesAsync(inputIngestionTrackingItems, inputBatchSize),
                     Times.Once);
 
             ingestionTrackingServiceMock.VerifyNoOtherCalls();

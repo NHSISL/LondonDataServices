@@ -119,7 +119,7 @@ namespace LHDS.Core.Services.Foundations.IngestionTrackings
             TryCatch(async () =>
             {
                 await ValidateOnBulkModifyIngestionTrackingAsync(ingestionTrackingItems);
-                await BulkAddOrModifyBatchAsync(ingestionTrackingItems);
+                await BulkAddOrModifyBySplittingIntoBatchesAsync(ingestionTrackingItems);
             });
 
 
@@ -160,7 +160,7 @@ namespace LHDS.Core.Services.Foundations.IngestionTrackings
             return ingestionTracking;
         }
 
-        virtual internal async ValueTask BulkAddOrModifyBatchAsync(
+        virtual internal async ValueTask BulkAddOrModifyBySplittingIntoBatchesAsync(
             List<IngestionTracking> ingestionTrackingItems,
             int batchSize = 10000)
         {

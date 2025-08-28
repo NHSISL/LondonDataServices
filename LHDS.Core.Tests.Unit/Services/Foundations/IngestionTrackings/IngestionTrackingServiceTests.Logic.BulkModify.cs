@@ -33,7 +33,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.IngestionTrackings
             };
 
             ingestionTrackingServiceMock.Setup(service =>
-                service.BulkAddOrModifyBatchAsync(inputIngestionTrackingItems, 10000))
+                service.BulkAddOrModifyBySplittingIntoBatchesAsync(inputIngestionTrackingItems, 10000))
                     .Returns(ValueTask.CompletedTask);
 
             // when
@@ -42,7 +42,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.IngestionTrackings
 
             // then
             ingestionTrackingServiceMock.Verify(service =>
-                service.BulkAddOrModifyBatchAsync(inputIngestionTrackingItems, 10000),
+                service.BulkAddOrModifyBySplittingIntoBatchesAsync(inputIngestionTrackingItems, 10000),
                     Times.Exactly(1));
 
             this.dateTimeBrokerMock.VerifyNoOtherCalls();

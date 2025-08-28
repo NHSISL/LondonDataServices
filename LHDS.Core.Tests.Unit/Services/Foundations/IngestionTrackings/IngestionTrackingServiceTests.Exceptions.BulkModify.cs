@@ -51,7 +51,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.IngestionTrackings
                     innerException: failedIngestionTrackingStorageException);
 
             ingestionTrackingServiceMock.Setup(service =>
-                service.BulkAddOrModifyBatchAsync(It.IsAny<List<IngestionTracking>>(), It.IsAny<int>()))
+                service.BulkAddOrModifyBySplittingIntoBatchesAsync(It.IsAny<List<IngestionTracking>>(), It.IsAny<int>()))
                     .ThrowsAsync(sqlException);
 
             // when
@@ -67,7 +67,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.IngestionTrackings
                 .BeEquivalentTo(expectedIngestionTrackingDependencyException);
 
             ingestionTrackingServiceMock.Verify(service =>
-                service.BulkAddOrModifyBatchAsync(It.IsAny<List<IngestionTracking>>(), It.IsAny<int>()),
+                service.BulkAddOrModifyBySplittingIntoBatchesAsync(It.IsAny<List<IngestionTracking>>(), It.IsAny<int>()),
                     Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>
@@ -118,7 +118,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.IngestionTrackings
                     innerException: invalidIngestionTrackingReferenceException);
 
             ingestionTrackingServiceMock.Setup(service =>
-                service.BulkAddOrModifyBatchAsync(It.IsAny<List<IngestionTracking>>(), It.IsAny<int>()))
+                service.BulkAddOrModifyBySplittingIntoBatchesAsync(It.IsAny<List<IngestionTracking>>(), It.IsAny<int>()))
                     .ThrowsAsync(foreignKeyConstraintConflictException);
 
             // when
@@ -134,7 +134,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.IngestionTrackings
                 .BeEquivalentTo(expectedIngestionTrackingDependencyValidationException);
 
             ingestionTrackingServiceMock.Verify(service =>
-                service.BulkAddOrModifyBatchAsync(It.IsAny<List<IngestionTracking>>(), It.IsAny<int>()),
+                service.BulkAddOrModifyBySplittingIntoBatchesAsync(It.IsAny<List<IngestionTracking>>(), It.IsAny<int>()),
                     Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>
@@ -181,7 +181,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.IngestionTrackings
                     innerException: failedIngestionTrackingStorageException);
 
             ingestionTrackingServiceMock.Setup(service =>
-                service.BulkAddOrModifyBatchAsync(It.IsAny<List<IngestionTracking>>(), It.IsAny<int>()))
+                service.BulkAddOrModifyBySplittingIntoBatchesAsync(It.IsAny<List<IngestionTracking>>(), It.IsAny<int>()))
                     .ThrowsAsync(databaseUpdateException);
 
             // when
@@ -197,7 +197,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.IngestionTrackings
                 .BeEquivalentTo(expectedIngestionTrackingDependencyException);
 
             ingestionTrackingServiceMock.Verify(service =>
-                service.BulkAddOrModifyBatchAsync(It.IsAny<List<IngestionTracking>>(), It.IsAny<int>()),
+                service.BulkAddOrModifyBySplittingIntoBatchesAsync(It.IsAny<List<IngestionTracking>>(), It.IsAny<int>()),
                     Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>
@@ -244,7 +244,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.IngestionTrackings
                     innerException: lockedIngestionTrackingException);
 
             ingestionTrackingServiceMock.Setup(service =>
-                service.BulkAddOrModifyBatchAsync(It.IsAny<List<IngestionTracking>>(), It.IsAny<int>()))
+                service.BulkAddOrModifyBySplittingIntoBatchesAsync(It.IsAny<List<IngestionTracking>>(), It.IsAny<int>()))
                     .ThrowsAsync(databaseUpdateConcurrencyException);
 
             // when
@@ -260,7 +260,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.IngestionTrackings
                 .BeEquivalentTo(expectedIngestionTrackingDependencyValidationException);
 
             ingestionTrackingServiceMock.Verify(service =>
-                service.BulkAddOrModifyBatchAsync(It.IsAny<List<IngestionTracking>>(), It.IsAny<int>()),
+                service.BulkAddOrModifyBySplittingIntoBatchesAsync(It.IsAny<List<IngestionTracking>>(), It.IsAny<int>()),
                     Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>
@@ -307,7 +307,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.IngestionTrackings
                     innerException: failedIngestionTrackingServiceException);
 
             ingestionTrackingServiceMock.Setup(service =>
-                service.BulkAddOrModifyBatchAsync(It.IsAny<List<IngestionTracking>>(), It.IsAny<int>()))
+                service.BulkAddOrModifyBySplittingIntoBatchesAsync(It.IsAny<List<IngestionTracking>>(), It.IsAny<int>()))
                     .ThrowsAsync(serviceException);
 
             // when
@@ -323,7 +323,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.IngestionTrackings
                 .BeEquivalentTo(expectedIngestionTrackingServiceException);
 
             ingestionTrackingServiceMock.Verify(service =>
-                service.BulkAddOrModifyBatchAsync(It.IsAny<List<IngestionTracking>>(), It.IsAny<int>()),
+                service.BulkAddOrModifyBySplittingIntoBatchesAsync(It.IsAny<List<IngestionTracking>>(), It.IsAny<int>()),
                     Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>

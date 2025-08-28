@@ -3,11 +3,14 @@
 // ---------------------------------------------------------
 
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using EFxceptions.Models.Exceptions;
 using FluentAssertions;
 using LHDS.Core.Models.Foundations.IngestionTrackings;
 using LHDS.Core.Models.Foundations.IngestionTrackings.Exceptions;
+using LHDS.Core.Services.Foundations.IngestionTrackings;
 using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 using Moq;
@@ -18,10 +21,23 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.IngestionTrackings
     public partial class IngestionTrackingServiceTests
     {
         [Fact]
-        public async Task ShouldThrowCriticalDependencyExceptionOnModifyIfSqlErrorOccursAndLogItAsync()
+        public async Task ShouldThrowCriticalDependencyExceptionOnBulkModifyIfSqlErrorOccursAndLogItAsync()
         {
             // given
-            IngestionTracking randomIngestionTracking = CreateRandomIngestionTracking();
+            List<IngestionTracking> randomIngestionTrackingItems = CreateRandomIngestionTrackings().ToList();
+            List<IngestionTracking> inputIngestionTrackingItems = randomIngestionTrackingItems;
+
+            Mock<IngestionTrackingService> ingestionTrackingServiceMock = new Mock<IngestionTrackingService>(
+                storageBrokerMock.Object,
+                dateTimeBrokerMock.Object,
+                securityBrokerMock.Object,
+                securityAuditBrokerMock.Object,
+                auditBrokerMock.Object,
+                loggingBrokerMock.Object)
+            {
+                CallBase = true
+            };
+
             SqlException sqlException = GetSqlException();
 
             var failedIngestionTrackingStorageException =
@@ -34,49 +50,57 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.IngestionTrackings
                     message: "Failed ingestion tracking storage error occurred, please contact support.",
                     innerException: failedIngestionTrackingStorageException);
 
-            this.dateTimeBrokerMock.Setup(broker =>
-                broker.GetCurrentDateTimeOffsetAsync())
+            ingestionTrackingServiceMock.Setup(service =>
+                service.BulkAddOrModifyBySplittingIntoBatchesAsync(It.IsAny<List<IngestionTracking>>(), It.IsAny<int>()))
                     .ThrowsAsync(sqlException);
 
             // when
-            ValueTask<IngestionTracking> modifyIngestionTrackingTask =
-                this.ingestionTrackingService.ModifyIngestionTrackingAsync(randomIngestionTracking);
+            ValueTask bulkModifyIngestionTrackingTask =
+                ingestionTrackingServiceMock.Object.BulkModifyIngestionTrackingAsync(inputIngestionTrackingItems);
 
             IngestionTrackingDependencyException actualIngestionTrackingDependencyException =
                 await Assert.ThrowsAsync<IngestionTrackingDependencyException>(
-                    modifyIngestionTrackingTask.AsTask);
+                    bulkModifyIngestionTrackingTask.AsTask);
 
             // then
             actualIngestionTrackingDependencyException.Should()
                 .BeEquivalentTo(expectedIngestionTrackingDependencyException);
 
-            this.dateTimeBrokerMock.Verify(broker =>
-                broker.GetCurrentDateTimeOffsetAsync(),
+            ingestionTrackingServiceMock.Verify(service =>
+                service.BulkAddOrModifyBySplittingIntoBatchesAsync(It.IsAny<List<IngestionTracking>>(), It.IsAny<int>()),
                     Times.Once);
-
-            this.storageBrokerMock.Verify(broker =>
-                broker.SelectIngestionTrackingByIdAsync(randomIngestionTracking.Id),
-                    Times.Never);
 
             this.loggingBrokerMock.Verify(broker =>
                 broker.LogCriticalAsync(It.Is(SameExceptionAs(
                     expectedIngestionTrackingDependencyException))),
                         Times.Once);
 
-            this.storageBrokerMock.Verify(broker =>
-                broker.UpdateIngestionTrackingAsync(randomIngestionTracking),
-                    Times.Never);
-
             this.dateTimeBrokerMock.VerifyNoOtherCalls();
             this.storageBrokerMock.VerifyNoOtherCalls();
+            this.securityBrokerMock.VerifyNoOtherCalls();
+            this.securityAuditBrokerMock.VerifyNoOtherCalls();
+            this.auditBrokerMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
         }
 
         [Fact]
-        public async Task ShouldThrowValidationExceptionOnModifyIfReferenceErrorOccursAndLogItAsync()
+        public async Task ShouldThrowValidationExceptionOnBulkModifyIfReferenceErrorOccursAndLogItAsync()
         {
             // given
-            IngestionTracking someIngestionTracking = CreateRandomIngestionTracking();
+            List<IngestionTracking> randomIngestionTrackingItems = CreateRandomIngestionTrackings().ToList();
+            List<IngestionTracking> inputIngestionTrackingItems = randomIngestionTrackingItems;
+
+            Mock<IngestionTrackingService> ingestionTrackingServiceMock = new Mock<IngestionTrackingService>(
+                storageBrokerMock.Object,
+                dateTimeBrokerMock.Object,
+                securityBrokerMock.Object,
+                securityAuditBrokerMock.Object,
+                auditBrokerMock.Object,
+                loggingBrokerMock.Object)
+            {
+                CallBase = true
+            };
+
             string randomMessage = GetRandomMessage();
             string exceptionMessage = randomMessage;
 
@@ -93,48 +117,57 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.IngestionTrackings
                     message: "Ingestion tracking dependency validation occurred, please try again.",
                     innerException: invalidIngestionTrackingReferenceException);
 
-            this.dateTimeBrokerMock.Setup(broker =>
-                broker.GetCurrentDateTimeOffsetAsync())
+            ingestionTrackingServiceMock.Setup(service =>
+                service.BulkAddOrModifyBySplittingIntoBatchesAsync(It.IsAny<List<IngestionTracking>>(), It.IsAny<int>()))
                     .ThrowsAsync(foreignKeyConstraintConflictException);
 
             // when
-            ValueTask<IngestionTracking> modifyIngestionTrackingTask =
-                this.ingestionTrackingService.ModifyIngestionTrackingAsync(someIngestionTracking);
+            ValueTask bulkModifyIngestionTrackingTask =
+                ingestionTrackingServiceMock.Object.BulkModifyIngestionTrackingAsync(inputIngestionTrackingItems);
 
             IngestionTrackingDependencyValidationException actualIngestionTrackingDependencyValidationException =
                 await Assert.ThrowsAsync<IngestionTrackingDependencyValidationException>(
-                    modifyIngestionTrackingTask.AsTask);
+                    bulkModifyIngestionTrackingTask.AsTask);
 
             // then
             actualIngestionTrackingDependencyValidationException.Should()
                 .BeEquivalentTo(expectedIngestionTrackingDependencyValidationException);
 
-            this.dateTimeBrokerMock.Verify(broker =>
-                broker.GetCurrentDateTimeOffsetAsync(),
+            ingestionTrackingServiceMock.Verify(service =>
+                service.BulkAddOrModifyBySplittingIntoBatchesAsync(It.IsAny<List<IngestionTracking>>(), It.IsAny<int>()),
                     Times.Once);
-
-            this.storageBrokerMock.Verify(broker =>
-                broker.SelectIngestionTrackingByIdAsync(someIngestionTracking.Id),
-                    Times.Never);
 
             this.loggingBrokerMock.Verify(broker =>
-                broker.LogErrorAsync(It.Is(SameExceptionAs(expectedIngestionTrackingDependencyValidationException))),
-                    Times.Once);
-
-            this.storageBrokerMock.Verify(broker =>
-                broker.UpdateIngestionTrackingAsync(someIngestionTracking),
-                    Times.Never);
+                broker.LogCriticalAsync(It.Is(SameExceptionAs(
+                    expectedIngestionTrackingDependencyValidationException))),
+                        Times.Once);
 
             this.dateTimeBrokerMock.VerifyNoOtherCalls();
             this.storageBrokerMock.VerifyNoOtherCalls();
+            this.securityBrokerMock.VerifyNoOtherCalls();
+            this.securityAuditBrokerMock.VerifyNoOtherCalls();
+            this.auditBrokerMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
         }
 
         [Fact]
-        public async Task ShouldThrowDependencyExceptionOnModifyIfDatabaseUpdateExceptionOccursAndLogItAsync()
+        public async Task ShouldThrowDependencyExceptionOnBulkModifyIfDatabaseUpdateExceptionOccursAndLogItAsync()
         {
             // given
-            IngestionTracking randomIngestionTracking = CreateRandomIngestionTracking();
+            List<IngestionTracking> randomIngestionTrackingItems = CreateRandomIngestionTrackings().ToList();
+            List<IngestionTracking> inputIngestionTrackingItems = randomIngestionTrackingItems;
+
+            Mock<IngestionTrackingService> ingestionTrackingServiceMock = new Mock<IngestionTrackingService>(
+                storageBrokerMock.Object,
+                dateTimeBrokerMock.Object,
+                securityBrokerMock.Object,
+                securityAuditBrokerMock.Object,
+                auditBrokerMock.Object,
+                loggingBrokerMock.Object)
+            {
+                CallBase = true
+            };
+
             var databaseUpdateException = new DbUpdateException();
 
             var failedIngestionTrackingStorageException =
@@ -147,49 +180,57 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.IngestionTrackings
                     message: "Failed ingestion tracking storage error occurred, please contact support.",
                     innerException: failedIngestionTrackingStorageException);
 
-            this.dateTimeBrokerMock.Setup(broker =>
-                broker.GetCurrentDateTimeOffsetAsync())
+            ingestionTrackingServiceMock.Setup(service =>
+                service.BulkAddOrModifyBySplittingIntoBatchesAsync(It.IsAny<List<IngestionTracking>>(), It.IsAny<int>()))
                     .ThrowsAsync(databaseUpdateException);
 
             // when
-            ValueTask<IngestionTracking> modifyIngestionTrackingTask =
-                this.ingestionTrackingService.ModifyIngestionTrackingAsync(randomIngestionTracking);
+            ValueTask bulkModifyIngestionTrackingTask =
+                ingestionTrackingServiceMock.Object.BulkModifyIngestionTrackingAsync(inputIngestionTrackingItems);
 
             IngestionTrackingDependencyException actualIngestionTrackingDependencyException =
                 await Assert.ThrowsAsync<IngestionTrackingDependencyException>(
-                    modifyIngestionTrackingTask.AsTask);
+                    bulkModifyIngestionTrackingTask.AsTask);
 
             // then
             actualIngestionTrackingDependencyException.Should()
                 .BeEquivalentTo(expectedIngestionTrackingDependencyException);
 
-            this.dateTimeBrokerMock.Verify(broker =>
-                broker.GetCurrentDateTimeOffsetAsync(),
+            ingestionTrackingServiceMock.Verify(service =>
+                service.BulkAddOrModifyBySplittingIntoBatchesAsync(It.IsAny<List<IngestionTracking>>(), It.IsAny<int>()),
                     Times.Once);
-
-            this.storageBrokerMock.Verify(broker =>
-                broker.SelectIngestionTrackingByIdAsync(randomIngestionTracking.Id),
-                    Times.Never);
 
             this.loggingBrokerMock.Verify(broker =>
                 broker.LogErrorAsync(It.Is(SameExceptionAs(
                     expectedIngestionTrackingDependencyException))),
                         Times.Once);
 
-            this.storageBrokerMock.Verify(broker =>
-                broker.UpdateIngestionTrackingAsync(randomIngestionTracking),
-                    Times.Never);
-
             this.dateTimeBrokerMock.VerifyNoOtherCalls();
             this.storageBrokerMock.VerifyNoOtherCalls();
+            this.securityBrokerMock.VerifyNoOtherCalls();
+            this.securityAuditBrokerMock.VerifyNoOtherCalls();
+            this.auditBrokerMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
         }
 
         [Fact]
-        public async Task ShouldThrowDependencyValidationExceptionOnModifyIfDbUpdateConcurrencyErrorOccursAndLogAsync()
+        public async Task ShouldThrowDependencyValidationExceptionOnBulkModifyIfDbUpdateConcurrencyErrorOccursAndLogAsync()
         {
             // given
-            IngestionTracking randomIngestionTracking = CreateRandomIngestionTracking();
+            List<IngestionTracking> randomIngestionTrackingItems = CreateRandomIngestionTrackings().ToList();
+            List<IngestionTracking> inputIngestionTrackingItems = randomIngestionTrackingItems;
+
+            Mock<IngestionTrackingService> ingestionTrackingServiceMock = new Mock<IngestionTrackingService>(
+                storageBrokerMock.Object,
+                dateTimeBrokerMock.Object,
+                securityBrokerMock.Object,
+                securityAuditBrokerMock.Object,
+                auditBrokerMock.Object,
+                loggingBrokerMock.Object)
+            {
+                CallBase = true
+            };
+
             var databaseUpdateConcurrencyException = new DbUpdateConcurrencyException();
 
             var lockedIngestionTrackingException =
@@ -202,49 +243,57 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.IngestionTrackings
                     message: "Ingestion tracking dependency validation occurred, please try again.",
                     innerException: lockedIngestionTrackingException);
 
-            this.dateTimeBrokerMock.Setup(broker =>
-                broker.GetCurrentDateTimeOffsetAsync())
+            ingestionTrackingServiceMock.Setup(service =>
+                service.BulkAddOrModifyBySplittingIntoBatchesAsync(It.IsAny<List<IngestionTracking>>(), It.IsAny<int>()))
                     .ThrowsAsync(databaseUpdateConcurrencyException);
 
             // when
-            ValueTask<IngestionTracking> modifyIngestionTrackingTask =
-                this.ingestionTrackingService.ModifyIngestionTrackingAsync(randomIngestionTracking);
+            ValueTask bulkModifyIngestionTrackingTask =
+                ingestionTrackingServiceMock.Object.BulkModifyIngestionTrackingAsync(inputIngestionTrackingItems);
 
             IngestionTrackingDependencyValidationException actualIngestionTrackingDependencyValidationException =
                 await Assert.ThrowsAsync<IngestionTrackingDependencyValidationException>(
-                    modifyIngestionTrackingTask.AsTask);
+                    bulkModifyIngestionTrackingTask.AsTask);
 
             // then
             actualIngestionTrackingDependencyValidationException.Should()
                 .BeEquivalentTo(expectedIngestionTrackingDependencyValidationException);
 
-            this.dateTimeBrokerMock.Verify(broker =>
-                broker.GetCurrentDateTimeOffsetAsync(),
+            ingestionTrackingServiceMock.Verify(service =>
+                service.BulkAddOrModifyBySplittingIntoBatchesAsync(It.IsAny<List<IngestionTracking>>(), It.IsAny<int>()),
                     Times.Once);
-
-            this.storageBrokerMock.Verify(broker =>
-                broker.SelectIngestionTrackingByIdAsync(randomIngestionTracking.Id),
-                    Times.Never);
 
             this.loggingBrokerMock.Verify(broker =>
                 broker.LogErrorAsync(It.Is(SameExceptionAs(
                     expectedIngestionTrackingDependencyValidationException))),
                         Times.Once);
 
-            this.storageBrokerMock.Verify(broker =>
-                broker.UpdateIngestionTrackingAsync(randomIngestionTracking),
-                    Times.Never);
-
             this.dateTimeBrokerMock.VerifyNoOtherCalls();
             this.storageBrokerMock.VerifyNoOtherCalls();
+            this.securityBrokerMock.VerifyNoOtherCalls();
+            this.securityAuditBrokerMock.VerifyNoOtherCalls();
+            this.auditBrokerMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
         }
 
         [Fact]
-        public async Task ShouldThrowServiceExceptionOnModifyIfServiceErrorOccursAndLogItAsync()
+        public async Task ShouldThrowServiceExceptionOnBulkModifyIfServiceErrorOccursAndLogItAsync()
         {
             // given
-            IngestionTracking randomIngestionTracking = CreateRandomIngestionTracking();
+            List<IngestionTracking> randomIngestionTrackingItems = CreateRandomIngestionTrackings().ToList();
+            List<IngestionTracking> inputIngestionTrackingItems = randomIngestionTrackingItems;
+
+            Mock<IngestionTrackingService> ingestionTrackingServiceMock = new Mock<IngestionTrackingService>(
+                storageBrokerMock.Object,
+                dateTimeBrokerMock.Object,
+                securityBrokerMock.Object,
+                securityAuditBrokerMock.Object,
+                auditBrokerMock.Object,
+                loggingBrokerMock.Object)
+            {
+                CallBase = true
+            };
+
             var serviceException = new Exception();
 
             var failedIngestionTrackingServiceException =
@@ -257,41 +306,36 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.IngestionTrackings
                     message: "Ingestion tracking service error occurred, please contact support.",
                     innerException: failedIngestionTrackingServiceException);
 
-            this.dateTimeBrokerMock.Setup(broker =>
-                broker.GetCurrentDateTimeOffsetAsync())
+            ingestionTrackingServiceMock.Setup(service =>
+                service.BulkAddOrModifyBySplittingIntoBatchesAsync(It.IsAny<List<IngestionTracking>>(), It.IsAny<int>()))
                     .ThrowsAsync(serviceException);
 
             // when
-            ValueTask<IngestionTracking> modifyIngestionTrackingTask =
-                this.ingestionTrackingService.ModifyIngestionTrackingAsync(randomIngestionTracking);
+            ValueTask bulkModifyIngestionTrackingTask =
+                ingestionTrackingServiceMock.Object.BulkModifyIngestionTrackingAsync(inputIngestionTrackingItems);
 
             IngestionTrackingServiceException actualIngestionTrackingServiceException =
                 await Assert.ThrowsAsync<IngestionTrackingServiceException>(
-                    modifyIngestionTrackingTask.AsTask);
+                    bulkModifyIngestionTrackingTask.AsTask);
 
             // then
             actualIngestionTrackingServiceException.Should()
                 .BeEquivalentTo(expectedIngestionTrackingServiceException);
 
-            this.dateTimeBrokerMock.Verify(broker =>
-                broker.GetCurrentDateTimeOffsetAsync(),
+            ingestionTrackingServiceMock.Verify(service =>
+                service.BulkAddOrModifyBySplittingIntoBatchesAsync(It.IsAny<List<IngestionTracking>>(), It.IsAny<int>()),
                     Times.Once);
-
-            this.storageBrokerMock.Verify(broker =>
-                broker.SelectIngestionTrackingByIdAsync(randomIngestionTracking.Id),
-                    Times.Never);
 
             this.loggingBrokerMock.Verify(broker =>
                 broker.LogErrorAsync(It.Is(SameExceptionAs(
                     expectedIngestionTrackingServiceException))),
                         Times.Once);
 
-            this.storageBrokerMock.Verify(broker =>
-                broker.UpdateIngestionTrackingAsync(randomIngestionTracking),
-                    Times.Never);
-
             this.dateTimeBrokerMock.VerifyNoOtherCalls();
             this.storageBrokerMock.VerifyNoOtherCalls();
+            this.securityBrokerMock.VerifyNoOtherCalls();
+            this.securityAuditBrokerMock.VerifyNoOtherCalls();
+            this.auditBrokerMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
         }
     }

@@ -17,7 +17,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.IngestionTrackings
         public async Task ShouldReturnIngestionTrackingsAsync()
         {
             // given
-            IQueryable<IngestionTracking> randomIngestionTrackings = CreateRandomIngestionTrackings();
+            IQueryable<IngestionTracking> randomIngestionTrackings = CreateRandomIngestionTrackings().AsQueryable();
             IQueryable<IngestionTracking> storageIngestionTrackings = randomIngestionTrackings;
             IQueryable<IngestionTracking> expectedIngestionTrackings = storageIngestionTrackings;
 
@@ -38,6 +38,10 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.IngestionTrackings
 
             this.storageBrokerMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
+            this.securityBrokerMock.VerifyNoOtherCalls();
+            this.securityAuditBrokerMock.VerifyNoOtherCalls();
+            this.auditBrokerMock.VerifyNoOtherCalls();
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
         }
     }
 }

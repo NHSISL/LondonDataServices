@@ -184,8 +184,9 @@ namespace LHDS.Core.Services.Processings.IngestionTrackings
             {
                 batchIngestionTracking.IsBatchComplete = isBatchComplete;
                 batchIngestionTracking.LastBatchCompleteCheck = currentDateTime;
-                await this.ingestionTrackingService.ModifyIngestionTrackingAsync(batchIngestionTracking);
             }
+
+            await this.ingestionTrackingService.BulkModifyIngestionTrackingAsync(batchIngestionTrackings);
         });
     }
 }

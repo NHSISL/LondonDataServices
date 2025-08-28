@@ -94,8 +94,7 @@ namespace LHDS.Core.Tests.Acceptance.Clients.EmisLandings
             }));
 
             serviceCollection
-                .AddDbContext<StorageBroker>()
-                .AddScoped<IStorageBroker>(service => service.GetRequiredService<StorageBroker>())
+                .AddDbContextFactory<StorageBroker>()
                 .AddEmisLandingClient(this.dependencyBroker.Configuration, claimsPrincipal);
 
             serviceCollection.Remove(new ServiceDescriptor(typeof(IDownloadProvider), typeof(FtpDownloadProvider)));
@@ -110,7 +109,12 @@ namespace LHDS.Core.Tests.Acceptance.Clients.EmisLandings
                     LocalRootFolder = defaultFolderPath
                 }));
 
-            var serviceProvider = serviceCollection.BuildServiceProvider();
+            var serviceProvider = serviceCollection.BuildServiceProvider(new ServiceProviderOptions
+            {
+                ValidateOnBuild = true,
+                ValidateScopes = true
+            });
+
             this.ingestionTrackingService = serviceProvider.GetService<IIngestionTrackingService>();
             this.supplierService = serviceProvider.GetService<ISupplierService>();
             this.dataSetService = serviceProvider.GetService<IDataSetService>();

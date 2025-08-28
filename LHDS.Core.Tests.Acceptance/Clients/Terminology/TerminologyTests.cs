@@ -69,11 +69,15 @@ namespace LHDS.Core.Tests.Acceptance.Clients.Terminology
             this.dependencyBroker.Configuration["ontologySettings:terminologyServerBaseUrl"] = this.wireMockServer.Url;
 
             serviceCollection
-                .AddDbContext<StorageBroker>()
-                .AddScoped<IStorageBroker>(service => service.GetRequiredService<StorageBroker>())
+                .AddDbContextFactory<StorageBroker>()
                 .AddTerminologyClient(this.dependencyBroker.Configuration, claimsPrincipal);
 
-            var serviceProvider = serviceCollection.BuildServiceProvider();
+            var serviceProvider = serviceCollection.BuildServiceProvider(new ServiceProviderOptions
+            {
+                ValidateOnBuild = true,
+                ValidateScopes = true
+            });
+
             this.dateTimeBroker = serviceProvider.GetService<IDateTimeBroker>();
             terminologyClient = serviceProvider.GetService<ITerminologyClient>();
             ontologyConfiguration = serviceProvider.GetService<OntologyConfiguration>();

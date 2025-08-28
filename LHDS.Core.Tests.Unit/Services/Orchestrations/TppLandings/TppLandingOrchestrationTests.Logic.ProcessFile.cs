@@ -12,6 +12,7 @@ using Force.DeepCloner;
 using LHDS.Core.Models.Foundations.DataSets;
 using LHDS.Core.Models.Foundations.DataSetSpecifications;
 using LHDS.Core.Models.Foundations.IngestionTrackings;
+using LHDS.Core.Models.Foundations.SubscriberAgreements;
 using LHDS.Core.Services.Orchestrations.Tpp;
 using Moq;
 using Xunit;
@@ -30,6 +31,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.TppLandings
             Guid randomSupplierId = Guid.NewGuid();
             Guid inputSupplierId = randomSupplierId;
             List<string> randomFileNames = GetRandomStrings();
+            randomFileNames = randomFileNames.Select(name => name.StartsWith("/") ? name : "/" + name).ToList();
             string randomFileName = randomFileNames.Last();
             string inputFileName = randomFileName;
             Stream randomData = new MemoryStream(Encoding.UTF8.GetBytes(GetRandomString()));
@@ -50,6 +52,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.TppLandings
                 ingestionTrackingProcessingServiceMock.Object,
                 ingestionTrackingProcessingAuditServiceMock.Object,
                 dataSetSpecificationProcessingServiceMock.Object,
+                subscriberAgreementProcessingServiceMock.Object,
                 blobContainers,
                 loggingBrokerMock.Object,
                 dateTimeBrokerMock.Object,
@@ -96,6 +99,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.TppLandings
             this.documentProcessingServiceMock.VerifyNoOtherCalls();
             this.ingestionTrackingProcessingAuditServiceMock.VerifyNoOtherCalls();
             this.dataSetSpecificationProcessingServiceMock.VerifyNoOtherCalls();
+            this.subscriberAgreementProcessingServiceMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
 
         }
@@ -118,11 +122,22 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.TppLandings
             string inputFileName = $"/{resourceGroup}/{batch}/{objectName}.csv";
             string sourceFolderPath = $"/{resourceGroup}/{batch}";
 
+            SubscriberAgreement randomSubscriberAgreement = new SubscriberAgreement
+            {
+                Id = randomGuid,
+                SupplierId = randomSupplierId,
+                SupplierSharingAgreementShortName = resourceGroup,
+                IsActive = true,
+            };
+
+            SubscriberAgreement outputSubscriberAgreement = randomSubscriberAgreement.DeepClone();
+
             var tppOrchestrationServiceMock = new Mock<TppLandingOrchestrationService>(
                 documentProcessingServiceMock.Object,
                 ingestionTrackingProcessingServiceMock.Object,
                 ingestionTrackingProcessingAuditServiceMock.Object,
                 dataSetSpecificationProcessingServiceMock.Object,
+                subscriberAgreementProcessingServiceMock.Object,
                 blobContainers,
                 loggingBrokerMock.Object,
                 dateTimeBrokerMock.Object,
@@ -189,11 +204,16 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.TppLandings
                service.GetActiveDataSetSpecification(randomSupplierId))
                    .Returns(ValueTask.FromResult(randomDataSetSpecification));
 
+            this.subscriberAgreementProcessingServiceMock.Setup(service =>
+                service.RetrieveOrAddSubscriberAgreementByNameAsync(It.Is(SameSubscriberAgreementAs(randomSubscriberAgreement))))
+                    .ReturnsAsync(outputSubscriberAgreement);
+
             IngestionTracking newIngestionTracking =
                 new IngestionTracking
                 {
                     Id = randomGuid,
                     SupplierId = randomSupplierId,
+                    SubscriberAgreementId = randomSubscriberAgreement.Id,
                     FileName = inputFileName,
                     SourceFolderPath = sourceFolderPath,
                     BatchReadyFolderPath = basePath,
@@ -275,7 +295,6 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.TppLandings
                 supplierId: inputSupplierId);
 
             // then
-
             this.ingestionTrackingProcessingServiceMock.Verify(service =>
                service.RetrieveAllIngestionTrackingsAsync(),
                    Times.Once);
@@ -288,9 +307,14 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.TppLandings
                 service.GetActiveDataSetSpecification(randomSupplierId),
                     Times.Once);
 
+            this.subscriberAgreementProcessingServiceMock.Verify(service =>
+                service.RetrieveOrAddSubscriberAgreementByNameAsync(
+                    It.Is(SameSubscriberAgreementAs(randomSubscriberAgreement))),
+                        Times.Once);
+
             this.identifierBrokerMock.Verify(broker =>
                 broker.GetIdentifierAsync(),
-                    Times.Once);
+                    Times.Exactly(2));
 
             tppOrchestrationServiceMock.Verify(service =>
                 service.LogAudit(
@@ -372,6 +396,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.TppLandings
             this.hashBrokerMock.VerifyNoOtherCalls();
             this.dateTimeBrokerMock.VerifyNoOtherCalls();
             this.dataSetSpecificationProcessingServiceMock.VerifyNoOtherCalls();
+            this.subscriberAgreementProcessingServiceMock.VerifyNoOtherCalls();
             this.documentProcessingServiceMock.VerifyNoOtherCalls();
             this.ingestionTrackingProcessingAuditServiceMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
@@ -386,6 +411,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.TppLandings
             int randomNumber = GetRandomNumber();
             Guid randomSupplierId = Guid.NewGuid();
             List<string> randomFileNames = GetRandomStrings();
+            randomFileNames = randomFileNames.Select(name => name.StartsWith("/") ? name : "/" + name).ToList();
             string randomFileName = randomFileNames.Last();
             string inputFileName = randomFileName;
             byte[] inputBytes = Encoding.UTF8.GetBytes(inputFileName);
@@ -396,6 +422,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.TppLandings
                 ingestionTrackingProcessingServiceMock.Object,
                 ingestionTrackingProcessingAuditServiceMock.Object,
                 dataSetSpecificationProcessingServiceMock.Object,
+                subscriberAgreementProcessingServiceMock.Object,
                 blobContainers,
                 loggingBrokerMock.Object,
                 dateTimeBrokerMock.Object,
@@ -570,6 +597,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.TppLandings
             this.hashBrokerMock.VerifyNoOtherCalls();
             this.dateTimeBrokerMock.VerifyNoOtherCalls();
             this.dataSetSpecificationProcessingServiceMock.VerifyNoOtherCalls();
+            this.subscriberAgreementProcessingServiceMock.VerifyNoOtherCalls();
             this.documentProcessingServiceMock.VerifyNoOtherCalls();
             this.ingestionTrackingProcessingAuditServiceMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();

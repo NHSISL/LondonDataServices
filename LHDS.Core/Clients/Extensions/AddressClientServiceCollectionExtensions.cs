@@ -148,12 +148,12 @@ namespace LHDS.Core.Clients.Extensions
 
         private static void AddBrokers(IServiceCollection services, ClaimsPrincipal claimsPrincipal)
         {
+            services.AddScoped<IStorageBroker>(service => service.GetRequiredService<StorageBroker>());
             services.AddTransient<IFileBroker, FileBroker>();
             services.AddTransient<IAssignBroker, AssignBroker>();
             services.AddTransient<ILoggingBroker, LoggingBroker>();
             services.AddTransient<IDateTimeBroker, DateTimeBroker>();
             services.AddTransient<IIdentifierBroker, IdentifierBroker>();
-            services.AddTransient<IStorageBroker, StorageBroker>();
             services.AddTransient<IBlobStorageBroker, BlobStorageBroker>();
             services.AddTransient<IAuditBroker, AuditBroker>();
             services.AddTransient<ICsvHelperBroker, CsvHelperBroker>();

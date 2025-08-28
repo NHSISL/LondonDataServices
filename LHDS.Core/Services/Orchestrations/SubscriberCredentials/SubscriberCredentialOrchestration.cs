@@ -107,6 +107,7 @@ namespace LHDS.Core.Services.Orchestrations.SubscriberCredentials
                     SubscriberCredential subscriberCredential = new SubscriberCredential
                     {
                         Id = subscriberAgreement.Id,
+                        SupplierId = subscriberAgreement.SupplierId,
                         SupplierSharingAgreementShortName = subscriberAgreement.SupplierSharingAgreementShortName,
                         SupplierSharingAgreementGuid = subscriberAgreement.SupplierSharingAgreementGuid,
                         FtpUserName = subscriberAgreement.FtpUserName,
@@ -132,14 +133,16 @@ namespace LHDS.Core.Services.Orchestrations.SubscriberCredentials
                 return subscriberCredentials.AsQueryable();
             });
 
-        public ValueTask<List<Guid>> RetrieveAllActiveSubscriberCredentialIdsAsync() =>
+        public ValueTask<List<Guid>> RetrieveAllActiveSubscriberCredentialIdsAsync(Guid supplierId) =>
             TryCatch(async () =>
             {
                 IQueryable<SubscriberAgreement> retrievedSubscriberAgreements =
                     await this.subscriberAgreementProcessingService.RetrieveAllSubscriberAgreementsAsync();
 
                 List<Guid> retrievedActiveIds = retrievedSubscriberAgreements
-                    .Where(SubscriberAgreement => SubscriberAgreement.IsActive)
+                    .Where(SubscriberAgreement => SubscriberAgreement.IsActive == true
+                        && SubscriberAgreement.SupplierId == supplierId)
+
                     .Select(SubscriberAgreement => SubscriberAgreement.Id).ToList();
 
                 return await ValueTask.FromResult(retrievedActiveIds);
@@ -208,6 +211,7 @@ namespace LHDS.Core.Services.Orchestrations.SubscriberCredentials
             var mappedSubscriberCredential = new SubscriberCredential
             {
                 Id = subscriberAgreement.Id,
+                SupplierId = subscriberAgreement.SupplierId,
                 SupplierSharingAgreementShortName = subscriberAgreement.SupplierSharingAgreementShortName,
                 SupplierSharingAgreementGuid = subscriberAgreement.SupplierSharingAgreementGuid,
                 FtpUserName = subscriberAgreement.FtpUserName,
@@ -237,6 +241,7 @@ namespace LHDS.Core.Services.Orchestrations.SubscriberCredentials
             return new SubscriberCredential
             {
                 Id = subscriberCredential.Id,
+                SupplierId = subscriberCredential.SupplierId,
                 SupplierSharingAgreementShortName = subscriberCredential.SupplierSharingAgreementShortName,
                 SupplierSharingAgreementGuid = subscriberCredential.SupplierSharingAgreementGuid,
                 FtpUserName = subscriberCredential.FtpUserName,
@@ -263,6 +268,7 @@ namespace LHDS.Core.Services.Orchestrations.SubscriberCredentials
             return new SubscriberAgreement
             {
                 Id = subscriberCredential.Id,
+                SupplierId = subscriberCredential.SupplierId,
                 SupplierSharingAgreementShortName = subscriberCredential.SupplierSharingAgreementShortName,
                 SupplierSharingAgreementGuid = subscriberCredential.SupplierSharingAgreementGuid,
                 FtpUserName = subscriberCredential.FtpUserName,

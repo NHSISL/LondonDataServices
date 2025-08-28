@@ -25,6 +25,7 @@ using LHDS.Core.Services.Foundations.IngestionTrackingAudits;
 using LHDS.Core.Services.Foundations.IngestionTrackings;
 using LHDS.Core.Services.Foundations.ObjectColumns;
 using LHDS.Core.Services.Foundations.SpecificationObjects;
+using LHDS.Core.Services.Foundations.SubscriberAgreements;
 using LHDS.Core.Services.Foundations.Suppliers;
 using LHDS.Core.Services.Processings.Documents;
 using LHDS.Core.Tests.Acceptance.Brokers.DependencyBrokers;
@@ -46,6 +47,7 @@ namespace LHDS.Core.Tests.Acceptance.Clients.TppLandings
         private readonly ISpecificationObjectService specificationObjectService;
         private readonly IObjectColumnService objectColumnService;
         private readonly ISupplierService supplierService;
+        private readonly ISubscriberAgreementService subscriberAgreementService;
         private readonly IDataSetService dataSetService;
         private readonly IDocumentProcessingService documentProcessingService;
         private readonly ITppLandingClient tppLandingClient;
@@ -80,11 +82,15 @@ namespace LHDS.Core.Tests.Acceptance.Clients.TppLandings
                 new Claim(ClaimTypes.Role, "ISL.LDS.AdminApi.Configurations")
             }));
 
-            serviceCollection.AddTppLandingClient(this.dependencyBroker.Configuration, claimsPrincipal);
-            serviceCollection.AddSingleton<IStorageBroker, StorageBroker>();
+            serviceCollection
+                .AddDbContext<StorageBroker>()
+                .AddScoped<IStorageBroker>(service => service.GetRequiredService<StorageBroker>())
+                .AddTppLandingClient(this.dependencyBroker.Configuration, claimsPrincipal);
+
             var serviceProvider = serviceCollection.BuildServiceProvider();
             this.ingestionTrackingService = serviceProvider.GetService<IIngestionTrackingService>();
             this.supplierService = serviceProvider.GetService<ISupplierService>();
+            this.subscriberAgreementService = serviceProvider.GetService<ISubscriberAgreementService>();
             this.dataSetService = serviceProvider.GetService<IDataSetService>();
             this.dataSetSpecificationService = serviceProvider.GetService<IDataSetSpecificationService>();
             this.specificationObjectService = serviceProvider.GetService<ISpecificationObjectService>();

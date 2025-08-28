@@ -85,12 +85,15 @@ namespace LHDS.Core.Tests.Acceptance.Clients.Decryptions
                 new Claim(ClaimTypes.Role, "ISL.LDS.AdminApi.Configurations")
             }));
 
-            serviceCollection.AddDecryptionClient(this.dependencyBroker.Configuration, claimsPrincipal);
-            serviceCollection.AddTransient<IDataSetService, DataSetService>();
-            serviceCollection.AddTransient<IDataSetSpecificationService, DataSetSpecificationService>();
-            serviceCollection.AddTransient<ISpecificationObjectService, SpecificationObjectService>();
-            serviceCollection.AddTransient<IObjectColumnService, ObjectColumnService>();
-            serviceCollection.AddSingleton<IStorageBroker, StorageBroker>();
+            serviceCollection
+                .AddDbContext<StorageBroker>()
+                .AddScoped<IStorageBroker>(service => service.GetRequiredService<StorageBroker>())
+                .AddDecryptionClient(this.dependencyBroker.Configuration, claimsPrincipal)
+                .AddTransient<IDataSetService, DataSetService>()
+                .AddTransient<IDataSetSpecificationService, DataSetSpecificationService>()
+                .AddTransient<ISpecificationObjectService, SpecificationObjectService>()
+                .AddTransient<IObjectColumnService, ObjectColumnService>();
+
             var serviceProvider = serviceCollection.BuildServiceProvider();
             this.ingestionTrackingService = serviceProvider.GetService<IIngestionTrackingService>();
             this.supplierService = serviceProvider.GetService<ISupplierService>();

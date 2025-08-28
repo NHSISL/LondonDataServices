@@ -6,6 +6,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using LHDS.Core.Brokers.DateTimes;
 using LHDS.Core.Brokers.Loggings;
 using LHDS.Core.Models.Foundations.IngestionTrackings;
 using LHDS.Core.Services.Foundations.IngestionTrackings;
@@ -15,13 +16,16 @@ namespace LHDS.Core.Services.Processings.IngestionTrackings
     public partial class IngestionTrackingProcessingService : IIngestionTrackingProcessingService
     {
         private readonly IIngestionTrackingService ingestionTrackingService;
+        private readonly IDateTimeBroker dateTimeBroker;
         private readonly ILoggingBroker loggingBroker;
 
         public IngestionTrackingProcessingService(
             IIngestionTrackingService ingestionTrackingService,
+            IDateTimeBroker dateTimeBroker,
             ILoggingBroker loggingBroker)
         {
             this.ingestionTrackingService = ingestionTrackingService;
+            this.dateTimeBroker = dateTimeBroker;
             this.loggingBroker = loggingBroker;
         }
 
@@ -91,11 +95,11 @@ namespace LHDS.Core.Services.Processings.IngestionTrackings
 
         public ValueTask<List<string>> RetrieveObjectsInBatchByBatchReferenceAsync(
             string batchReference,
-            bool? decrypted = null,
-            Guid? subscriberAgreementId = null) =>
+            Guid subscriberAgreementId,
+            bool? decrypted = null) =>
             TryCatch(async () =>
             {
-                ValidateOnRetrieveObjectsInBatchByBatchReference(batchReference);
+                ValidateOnRetrieveObjectsInBatchByBatchReference(batchReference, subscriberAgreementId);
 
                 List<string> objectNames = new List<string>();
 
@@ -103,18 +107,13 @@ namespace LHDS.Core.Services.Processings.IngestionTrackings
                     await this.ingestionTrackingService.RetrieveAllIngestionTrackingsAsync();
 
                 allingestionTrackings = allingestionTrackings
-                    .Where(ingestionTracking => ingestionTracking.Batch == batchReference);
+                    .Where(ingestionTracking => ingestionTracking.Batch == batchReference
+                        && ingestionTracking.SubscriberAgreementId == subscriberAgreementId);
 
                 if (decrypted.HasValue)
                 {
                     allingestionTrackings = allingestionTrackings
                         .Where(ingestionTracking => ingestionTracking.Decrypted == decrypted.Value);
-                }
-
-                if (subscriberAgreementId.HasValue)
-                {
-                    allingestionTrackings = allingestionTrackings
-                        .Where(ingestionTracking => ingestionTracking.SubscriberAgreementId == subscriberAgreementId);
                 }
 
                 List<string?> result = allingestionTrackings
@@ -132,10 +131,11 @@ namespace LHDS.Core.Services.Processings.IngestionTrackings
                 return objectNames;
             });
 
-        public ValueTask<List<string>> RetrieveDecryptedObjectsInBatchByBatchReference(string bacthReference) =>
+        public ValueTask<List<string>> RetrieveDecryptedObjectsInBatchByBatchReference(
+            string batchReference, Guid supplierId) =>
         TryCatch(async () =>
         {
-            ValidateOnRetrieveObjectsInBatchByBatchReference(bacthReference);
+            ValidateOnRetrieveObjectsInBatchByBatchReference(batchReference, supplierId);
 
             List<string> objectNames = new List<string>();
 
@@ -144,7 +144,7 @@ namespace LHDS.Core.Services.Processings.IngestionTrackings
 
             List<string?> result = allingestionTrackings
 
-                .Where(ingestionTracking => ingestionTracking.Batch == bacthReference
+                .Where(ingestionTracking => ingestionTracking.Batch == batchReference
                     && ingestionTracking.Decrypted == true)
 
                 .Select(ingestionTracking => ingestionTracking.ObjectName)
@@ -173,11 +173,17 @@ namespace LHDS.Core.Services.Processings.IngestionTrackings
                 await this.ingestionTrackingService.RetrieveAllIngestionTrackingsAsync();
 
             List<IngestionTracking> batchIngestionTrackings = allIngestionTrackings
-                .Where(ingestionTracking => ingestionTracking.Batch == ingestionTrackingItem.Batch).ToList();
+                .Where(ingestionTracking =>
+                    ingestionTracking.Batch == ingestionTrackingItem.Batch &&
+                    ingestionTracking.SubscriberAgreementId == ingestionTrackingItem.SubscriberAgreementId)
+                .ToList();
+
+            DateTimeOffset currentDateTime = await this.dateTimeBroker.GetCurrentDateTimeOffsetAsync();
 
             foreach (IngestionTracking batchIngestionTracking in batchIngestionTrackings)
             {
                 batchIngestionTracking.IsBatchComplete = isBatchComplete;
+                batchIngestionTracking.LastBatchCompleteCheck = currentDateTime;
                 await this.ingestionTrackingService.ModifyIngestionTrackingAsync(batchIngestionTracking);
             }
         });

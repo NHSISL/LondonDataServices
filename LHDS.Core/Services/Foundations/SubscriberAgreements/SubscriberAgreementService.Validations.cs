@@ -18,6 +18,7 @@ namespace LHDS.Core.Services.Foundations.SubscriberAgreements
 
             Validate(
                 (Rule: IsInvalid(subscriberAgreement.Id), Parameter: nameof(SubscriberAgreement.Id)),
+                (Rule: IsInvalid(subscriberAgreement.SupplierId), Parameter: nameof(SubscriberAgreement.SupplierId)),
 
                 (Rule: IsInvalid(subscriberAgreement.SupplierSharingAgreementShortName),
                     Parameter: nameof(SubscriberAgreement.SupplierSharingAgreementShortName)),
@@ -53,7 +54,8 @@ namespace LHDS.Core.Services.Foundations.SubscriberAgreements
                     secondName: nameof(SubscriberAgreement.CreatedBy)),
                 Parameter: nameof(SubscriberAgreement.UpdatedBy)),
 
-                (Rule: await IsNotRecentAsync(subscriberAgreement.CreatedDate), Parameter: nameof(SubscriberAgreement.CreatedDate)));
+                (Rule: await IsNotRecentAsync(subscriberAgreement.CreatedDate),
+                Parameter: nameof(SubscriberAgreement.CreatedDate)));
         }
 
         private async ValueTask ValidateSubscriberAgreementOnModifyAsync(SubscriberAgreement subscriberAgreement)
@@ -62,6 +64,7 @@ namespace LHDS.Core.Services.Foundations.SubscriberAgreements
 
             Validate(
                 (Rule: IsInvalid(subscriberAgreement.Id), Parameter: nameof(SubscriberAgreement.Id)),
+                (Rule: IsInvalid(subscriberAgreement.SupplierId), Parameter: nameof(SubscriberAgreement.SupplierId)),
 
                 (Rule: IsInvalid(subscriberAgreement.SupplierSharingAgreementShortName),
                     Parameter: nameof(SubscriberAgreement.SupplierSharingAgreementShortName)),

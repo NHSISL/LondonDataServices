@@ -8,6 +8,7 @@ using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using LHDS.Core.Brokers.Audits;
+using LHDS.Core.Brokers.DateTimes;
 using LHDS.Core.Brokers.Loggings;
 using LHDS.Core.Models.Brokers.Storages.Blobs;
 using LHDS.Core.Models.Foundations.IngestionTrackings;
@@ -28,6 +29,7 @@ namespace LHDS.Core.Services.Orchestrations.Ingress
         private readonly BlobContainers blobContainers;
         private readonly ILoggingBroker loggingBroker;
         private readonly IAuditBroker auditBroker;
+        private readonly IDateTimeBroker dateTimeBroker;
 
         public IngressOrchestrationService(
             IIngestionTrackingProcessingService ingestionTrackingProcessingService,
@@ -36,7 +38,8 @@ namespace LHDS.Core.Services.Orchestrations.Ingress
             LandingConfiguration landingConfiguration,
             BlobContainers blobContainers,
             ILoggingBroker loggingBroker,
-            IAuditBroker auditBroker)
+            IAuditBroker auditBroker,
+            IDateTimeBroker dateTimeBroker)
         {
             this.ingestionTrackingProcessingService = ingestionTrackingProcessingService;
             this.specificationObjectProcessingService = specificationObjectProcessingService;
@@ -45,6 +48,7 @@ namespace LHDS.Core.Services.Orchestrations.Ingress
             this.blobContainers = blobContainers;
             this.loggingBroker = loggingBroker;
             this.auditBroker = auditBroker;
+            this.dateTimeBroker = dateTimeBroker;
         }
 
         public ValueTask ProcessDecryptedItemsForBatchCompleteAsync() =>
@@ -52,12 +56,15 @@ namespace LHDS.Core.Services.Orchestrations.Ingress
             {
                 List<Exception> exceptions = new List<Exception>();
                 Guid ingestionTrackingId;
+                var dateTimeCheck = (await this.dateTimeBroker.GetCurrentDateTimeOffsetAsync()).AddMinutes(-15);
 
                 while ((ingestionTrackingId = (await this.ingestionTrackingProcessingService
                     .RetrieveAllIngestionTrackingsAsync())
 
                     .Where(ingestionTracking =>
-                        ingestionTracking.IsBatchComplete == false)
+                        ingestionTracking.IsBatchComplete == false &&
+                            (ingestionTracking.LastBatchCompleteCheck == null
+                                || ingestionTracking.LastBatchCompleteCheck <= dateTimeCheck))
 
                     .GroupBy(ingestionTracking =>
                         new { ingestionTracking.Batch, ingestionTracking.SubscriberAgreementId })
@@ -70,6 +77,7 @@ namespace LHDS.Core.Services.Orchestrations.Ingress
                 {
                     try
                     {
+                        Console.WriteLine($"Checking batch completion for IngestionTrackingId: {ingestionTrackingId}");
                         await this.CheckForBatchCompleteAsync(ingestionTrackingId);
                     }
                     catch (Exception exception)
@@ -116,8 +124,8 @@ namespace LHDS.Core.Services.Orchestrations.Ingress
             List<string> decryptedIngestiontrackingObjects = await this.ingestionTrackingProcessingService
                 .RetrieveObjectsInBatchByBatchReferenceAsync(
                     batchReference: ingestionTracking.Batch,
-                    decrypted: true,
-                    subscriberAgreementId: ingestionTracking.SubscriberAgreementId);
+                    subscriberAgreementId: ingestionTracking.SubscriberAgreementId.Value,
+                    decrypted: true);
 
             List<string> missingSpecificationObjectIds = specificationObjectIds
                 .Except(decryptedIngestiontrackingObjects).ToList();
@@ -125,6 +133,15 @@ namespace LHDS.Core.Services.Orchestrations.Ingress
             if (missingSpecificationObjectIds.Any())
             {
                 isBatchComplete = false;
+
+                string message =
+                    $"Checking IngestionTrackingId {ingestionTrackingId} for subscriber agreement " +
+                    $"'{ingestionTracking.SubscriberAgreementId}' and batch '{ingestionTracking.Batch}' " +
+                    $"Batch is not complete. " +
+                    $"Missing specification object files: {string.Join(", ", missingSpecificationObjectIds)}";
+
+                Console.WriteLine(message);
+                await this.loggingBroker.LogInformationAsync(message);
             }
 
             string batchReadyFileName = this.landingConfiguration.BatchReadyFile;
@@ -140,7 +157,18 @@ namespace LHDS.Core.Services.Orchestrations.Ingress
                         $"'{ingestionTracking.SubscriberAgreementId}' and batch '{ingestionTracking.Batch}' " +
                             $"as defined in Dataset Specification Id: '{ingestionTracking.DataSetSpecificationId}'.";
 
+                Console.WriteLine(batchComplete);
+                await this.loggingBroker.LogInformationAsync(batchComplete);
                 Stream data = new MemoryStream(System.Text.Encoding.UTF8.GetBytes(batchComplete));
+
+                try
+                {
+                    await this.documentProcessingService.RemoveDocumentByFileNameAsync(
+                        fileName: batchCompleteFileName,
+                        container: this.blobContainers.Ingress);
+                }
+                catch (Exception)
+                { }
 
                 await this.documentProcessingService.AddDocumentAsync(
                     input: data,
@@ -160,6 +188,11 @@ namespace LHDS.Core.Services.Orchestrations.Ingress
                     message: batchComplete,
                     fileName: batchCompleteFileName,
                     correlationId: ingestionTracking.Batch);
+            }
+            else
+            {
+                await this.ingestionTrackingProcessingService
+                    .MarkAsBatchCompleteAsync(ingestionTrackingId, isBatchComplete: false);
             }
         });
 

@@ -12,6 +12,7 @@ using LHDS.Core.Brokers.DateTimes;
 using LHDS.Core.Brokers.Mesh;
 using LHDS.Core.Brokers.Securities;
 using LHDS.Core.Brokers.Storages.Blobs;
+using LHDS.Core.Brokers.Storages.Sql;
 using LHDS.Core.Clients;
 using LHDS.Core.Clients.Extensions;
 using LHDS.Core.Models.Brokers.Mesh;
@@ -75,6 +76,8 @@ namespace LHDS.Core.Tests.Acceptance.Clients.OptOuts
             serviceCollection.AddSingleton<BlobContainers>(blobStorageSettings.BlobContainers);
 
             serviceCollection
+                .AddDbContext<StorageBroker>()
+                .AddScoped<IStorageBroker>(service => service.GetRequiredService<StorageBroker>())
                 .AddTransient<IMeshBroker>(serviceProvider => meshBrokerMock.Object)
                 .AddTransient<IBlobStorageBroker>(serviceProvider => blobStorageBrokerMock.Object);
 

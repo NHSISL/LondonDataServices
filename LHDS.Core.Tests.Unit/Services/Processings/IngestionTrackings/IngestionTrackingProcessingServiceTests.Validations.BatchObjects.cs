@@ -2,6 +2,7 @@
 // Copyright (c) North East London ICB. All rights reserved.
 // ---------------------------------------------------------
 
+using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using FluentAssertions;
@@ -22,6 +23,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.IngestionTrackings
         {
             // given
             string invalidBatchReference = invalidText;
+            Guid invalidSubscriberAgreementId = Guid.Empty;
 
             var invalidArgumentIngestionTrackingProcessingException =
                 new InvalidArgumentIngestionTrackingProcessingException(
@@ -31,6 +33,10 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.IngestionTrackings
                 key: "batchReference",
                 values: "Text is required");
 
+            invalidArgumentIngestionTrackingProcessingException.AddData(
+                key: "subscriberAgreementId",
+                values: "Id is required");
+
             var expectedIngestionTrackingProcessingValidationException =
                 new IngestionTrackingProcessingValidationException(
                     message: "IngestionTracking processing validation error occurred, please try again.",
@@ -38,7 +44,9 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.IngestionTrackings
 
             // when
             ValueTask<List<string>> RetrieveIngestionTrackingTask =
-                this.ingestionTrackingProcessingService.RetrieveObjectsInBatchByBatchReferenceAsync(invalidBatchReference);
+                this.ingestionTrackingProcessingService.RetrieveObjectsInBatchByBatchReferenceAsync(
+                    invalidBatchReference,
+                    invalidSubscriberAgreementId);
 
             IngestionTrackingProcessingValidationException actualIngestionTrackingProcessingValidationException =
                 await Assert.ThrowsAsync<IngestionTrackingProcessingValidationException>(
@@ -54,6 +62,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.IngestionTrackings
                         Times.Once);
 
             this.ingestionTrackingServiceMock.VerifyNoOtherCalls();
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
         }
     }

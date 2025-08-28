@@ -16,12 +16,13 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.SubscriberCredentials
     public partial class SubscriberCredentialOrchestrationServiceTests
     {
         [Fact]
-        public async Task ShouldRetireiveAllActiveSubscriberCredentialIdsAndLogAsync()
+        public async Task ShouldRetrieveAllActiveSubscriberCredentialIdsAndLogAsync()
         {
             // Given
+            Guid inputSupplierId = Guid.NewGuid();
             DateTimeOffset randomDateTimeOffset = GetRandomDateTimeOffset();
 
-            List<SubscriberAgreement> storageSubscriberAgreements = CreateRandomSubscriberAgreements();
+            List<SubscriberAgreement> storageSubscriberAgreements = CreateRandomSubscriberAgreements(inputSupplierId);
             List<Guid> expectedSubscriberCredentialIds = new List<Guid>();
 
             foreach (SubscriberAgreement subscriberAgreement in storageSubscriberAgreements)
@@ -38,7 +39,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.SubscriberCredentials
 
             // When
             List<Guid> actualSubscriberCredentialIds = await this.subscriberCredentialOrchestration
-                .RetrieveAllActiveSubscriberCredentialIdsAsync();
+                .RetrieveAllActiveSubscriberCredentialIdsAsync(inputSupplierId);
 
             // Then
             actualSubscriberCredentialIds.Should().BeEquivalentTo(expectedSubscriberCredentialIds);

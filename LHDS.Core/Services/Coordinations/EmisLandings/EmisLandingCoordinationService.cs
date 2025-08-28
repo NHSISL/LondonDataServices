@@ -36,7 +36,7 @@ namespace LHDS.Core.Services.Coordinations.EmisLandings
                 ValidateProcessArgs(supplierId);
 
                 List<Guid> subscriberAgreementIds = await this.subscriberCredentialOrchestration
-                    .RetrieveAllActiveSubscriberCredentialIdsAsync();
+                    .RetrieveAllActiveSubscriberCredentialIdsAsync(supplierId);
 
                 List<string> processedPaths = new List<string>();
                 var exceptions = new List<Exception>();

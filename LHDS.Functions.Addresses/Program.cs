@@ -4,9 +4,9 @@
 
 using System;
 using System.IO;
-using System.Security.Claims;
 using Azure.Core;
 using Azure.Identity;
+using LHDS.Core.Brokers.Storages.Sql;
 using LHDS.Core.Clients.Extensions;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -41,7 +41,8 @@ var host = new HostBuilder()
                 setup.AddApplicationInsights();
                 setup.AddConsole();
             })
-           .AddAddressClient(context.Configuration, accessToken.Token);
+            .AddDbContext<StorageBroker>()
+            .AddAddressClient(context.Configuration, accessToken.Token);
     })
     .UseDefaultServiceProvider(options => options.ValidateScopes = false)
     .ConfigureFunctionsWorkerDefaults()

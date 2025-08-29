@@ -47,6 +47,15 @@ namespace LHDS.Core.Services.Foundations.DecisionPolls
 
                 throw await CreateAndLogDependencyValidationExceptionAsync(alreadyExistsDecisionPollException);
             }
+            catch (ForeignKeyConstraintConflictException foreignKeyConstraintConflictException)
+            {
+                var invalidDecisionPollReferenceException =
+                    new InvalidDecisionPollReferenceException(
+                        message: "Invalid decisionPoll reference error occurred.",
+                        innerException: foreignKeyConstraintConflictException);
+
+                throw await CreateAndLogDependencyValidationExceptionAsync(invalidDecisionPollReferenceException);
+            }
         }
 
         private async ValueTask<DecisionPollValidationException> CreateAndLogValidationExceptionAsync(Xeption exception)

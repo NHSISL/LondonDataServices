@@ -7,6 +7,7 @@ using EFxceptions.Models.Exceptions;
 using LHDS.Core.Models.Foundations.DecisionPolls;
 using LHDS.Core.Models.Foundations.DecisionPolls.Exceptions;
 using Microsoft.Data.SqlClient;
+using Microsoft.EntityFrameworkCore;
 using Xeptions;
 
 namespace LHDS.Core.Services.Foundations.DecisionPolls
@@ -56,6 +57,15 @@ namespace LHDS.Core.Services.Foundations.DecisionPolls
 
                 throw await CreateAndLogDependencyValidationExceptionAsync(invalidDecisionPollReferenceException);
             }
+            catch (DbUpdateException databaseUpdateException)
+            {
+                var failedDecisionPollStorageException =
+                    new FailedDecisionPollStorageException(
+                        message: "Failed decisionPoll storage error occurred, please contact support.",
+                        innerException: databaseUpdateException);
+
+                throw await CreateAndLogDependencyExceptionAsync(failedDecisionPollStorageException);
+            }
         }
 
         private async ValueTask<DecisionPollValidationException> CreateAndLogValidationExceptionAsync(Xeption exception)
@@ -94,6 +104,18 @@ namespace LHDS.Core.Services.Foundations.DecisionPolls
             await this.loggingBroker.LogErrorAsync(decisionPollDependencyValidationException);
 
             return decisionPollDependencyValidationException;
+        }
+
+        private async ValueTask<DecisionPollDependencyException> CreateAndLogDependencyExceptionAsync(Xeption exception)
+        {
+            var decisionPollDependencyException =
+                new DecisionPollDependencyException(
+                    message: "DecisionPoll dependency error occurred, please contact support.",
+                    innerException: exception);
+
+            await this.loggingBroker.LogErrorAsync(decisionPollDependencyException);
+
+            return decisionPollDependencyException;
         }
     }
 }

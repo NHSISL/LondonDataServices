@@ -23,6 +23,10 @@ namespace LHDS.Core.Services.Foundations.DecisionPolls
             {
                 throw await CreateAndLogValidationExceptionAsync(nullDecisionPollException);
             }
+            catch (InvalidDecisionPollException invalidDecisionPollException)
+            {
+                throw await CreateAndLogValidationExceptionAsync(invalidDecisionPollException);
+            }
         }
 
         private async ValueTask<DecisionPollValidationException> CreateAndLogValidationExceptionAsync(Xeption exception)

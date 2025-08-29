@@ -29,16 +29,18 @@ namespace LHDS.Core.Services.Foundations.DecisionPolls
             this.loggingBroker = loggingBroker;
         }
 
-        public async ValueTask<DecisionPoll> AddDecisionPollAsync(DecisionPoll decisionPoll)
-        {
-            DecisionPoll decisionPollWithAddAuditApplied = await ApplyAddDecisionPollAsync(decisionPoll);
-            await ValidateDecisionPollOnAddAsync(decisionPollWithAddAuditApplied);
+        public ValueTask<DecisionPoll> AddDecisionPollAsync(DecisionPoll decisionPoll) =>
+            TryCatch(async () =>
+            {
+                DecisionPoll decisionPollWithAddAuditApplied = await ApplyAddDecisionPollAsync(decisionPoll);
+                await ValidateDecisionPollOnAddAsync(decisionPollWithAddAuditApplied);
 
-            return await this.storageBroker.InsertDecisionPollAsync(decisionPollWithAddAuditApplied);
-        }
+                return await this.storageBroker.InsertDecisionPollAsync(decisionPollWithAddAuditApplied);
+            });
 
         virtual internal async ValueTask<DecisionPoll> ApplyAddDecisionPollAsync(DecisionPoll decisionPoll)
         {
+            ValidateDecisionPollIsNotNull(decisionPoll);
             var auditDateTimeOffset = await this.dateTimeBroker.GetCurrentDateTimeOffsetAsync();
             var auditUser = await this.securityBroker.GetCurrentUserAsync();
             decisionPoll.CreatedBy = auditUser?.EntraUserId ?? string.Empty;

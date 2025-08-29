@@ -29,9 +29,24 @@ namespace LHDS.Core.Services.Foundations.DecisionPolls
             this.loggingBroker = loggingBroker;
         }
 
-        public ValueTask<DecisionPoll> AddDecisionPollAsync(DecisionPoll decisionPoll)
+        public async ValueTask<DecisionPoll> AddDecisionPollAsync(DecisionPoll decisionPoll)
         {
-            throw new System.NotImplementedException();
+            DecisionPoll decisionPollWithAddAuditApplied = await ApplyAddDecisionPollAsync(decisionPoll);
+            await ValidateDecisionPollOnAddAsync(decisionPollWithAddAuditApplied);
+
+            return await this.storageBroker.InsertDecisionPollAsync(decisionPollWithAddAuditApplied);
+        }
+
+        virtual internal async ValueTask<DecisionPoll> ApplyAddDecisionPollAsync(DecisionPoll decisionPoll)
+        {
+            var auditDateTimeOffset = await this.dateTimeBroker.GetCurrentDateTimeOffsetAsync();
+            var auditUser = await this.securityBroker.GetCurrentUserAsync();
+            decisionPoll.CreatedBy = auditUser?.EntraUserId ?? string.Empty;
+            decisionPoll.CreatedDate = auditDateTimeOffset;
+            decisionPoll.UpdatedBy = auditUser?.EntraUserId ?? string.Empty;
+            decisionPoll.UpdatedDate = auditDateTimeOffset;
+
+            return decisionPoll;
         }
     }
 }

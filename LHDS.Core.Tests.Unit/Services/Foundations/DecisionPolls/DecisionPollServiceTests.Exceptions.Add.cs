@@ -2,6 +2,7 @@
 // Copyright (c) North East London ICB. All rights reserved.
 // ---------------------------------------------------------
 
+using System;
 using System.Threading.Tasks;
 using EFxceptions.Models.Exceptions;
 using FluentAssertions;
@@ -223,6 +224,57 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.DecisionPolls
             this.loggingBrokerMock.Verify(broker =>
                 broker.LogErrorAsync(It.Is(SameExceptionAs(
                     expectedDecisionPollDependencyException))),
+                        Times.Once);
+
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
+            this.storageBrokerMock.VerifyNoOtherCalls();
+            this.loggingBrokerMock.VerifyNoOtherCalls();
+        }
+
+        [Fact]
+        public async Task ShouldThrowServiceExceptionOnAddIfServiceErrorOccursAndLogItAsync()
+        {
+            // given
+            DecisionPoll someDecisionPoll = CreateRandomDecisionPoll();
+            var serviceException = new Exception();
+
+            var failedDecisionPollServiceException =
+                new FailedDecisionPollServiceException(
+                    message: "Failed decisionPoll service error occurred, please contact support.",
+                    innerException: serviceException);
+
+            var expectedDecisionPollServiceException =
+                new DecisionPollServiceException(
+                    message: "DecisionPoll service error occurred, please contact support.",
+                    innerException: failedDecisionPollServiceException);
+
+            this.dateTimeBrokerMock.Setup(broker =>
+                broker.GetCurrentDateTimeOffsetAsync())
+                    .ThrowsAsync(serviceException);
+
+            // when
+            ValueTask<DecisionPoll> addDecisionPollTask =
+                this.decisionPollService.AddDecisionPollAsync(someDecisionPoll);
+
+            DecisionPollServiceException actualDecisionPollServiceException =
+                await Assert.ThrowsAsync<DecisionPollServiceException>(
+                    addDecisionPollTask.AsTask);
+
+            // then
+            actualDecisionPollServiceException.Should()
+                .BeEquivalentTo(expectedDecisionPollServiceException);
+
+            this.dateTimeBrokerMock.Verify(broker =>
+                broker.GetCurrentDateTimeOffsetAsync(),
+                    Times.Once);
+
+            this.storageBrokerMock.Verify(broker =>
+                broker.InsertDecisionPollAsync(It.IsAny<DecisionPoll>()),
+                    Times.Never);
+
+            this.loggingBrokerMock.Verify(broker =>
+                broker.LogErrorAsync(It.Is(SameExceptionAs(
+                    expectedDecisionPollServiceException))),
                         Times.Once);
 
             this.dateTimeBrokerMock.VerifyNoOtherCalls();

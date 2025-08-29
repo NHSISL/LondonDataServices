@@ -2,6 +2,7 @@
 // Copyright (c) North East London ICB. All rights reserved.
 // ---------------------------------------------------------
 
+using System;
 using System.Threading.Tasks;
 using EFxceptions.Models.Exceptions;
 using LHDS.Core.Models.Foundations.DecisionPolls;
@@ -66,6 +67,15 @@ namespace LHDS.Core.Services.Foundations.DecisionPolls
 
                 throw await CreateAndLogDependencyExceptionAsync(failedDecisionPollStorageException);
             }
+            catch (Exception exception)
+            {
+                var failedDecisionPollServiceException =
+                    new FailedDecisionPollServiceException(
+                        message: "Failed decisionPoll service error occurred, please contact support.",
+                        innerException: exception);
+
+                throw await CreateAndLogServiceExceptionAsync(failedDecisionPollServiceException);
+            }
         }
 
         private async ValueTask<DecisionPollValidationException> CreateAndLogValidationExceptionAsync(Xeption exception)
@@ -116,6 +126,18 @@ namespace LHDS.Core.Services.Foundations.DecisionPolls
             await this.loggingBroker.LogErrorAsync(decisionPollDependencyException);
 
             return decisionPollDependencyException;
+        }
+
+        private async ValueTask<DecisionPollServiceException> CreateAndLogServiceExceptionAsync(Xeption exception)
+        {
+            var decisionPollServiceException =
+                new DecisionPollServiceException(
+                    message: "DecisionPoll service error occurred, please contact support.",
+                    innerException: exception);
+
+            await this.loggingBroker.LogErrorAsync(decisionPollServiceException);
+
+            return decisionPollServiceException;
         }
     }
 }

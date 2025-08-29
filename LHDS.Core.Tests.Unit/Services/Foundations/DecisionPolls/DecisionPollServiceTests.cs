@@ -4,7 +4,6 @@
 
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Linq.Expressions;
 using System.Runtime.CompilerServices;
 using LHDS.Core.Brokers.DateTimes;
@@ -50,9 +49,6 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.DecisionPolls
         private static string GetRandomString() =>
             new MnemonicString(wordCount: GetRandomNumber()).GetValue();
 
-        private static string GetRandomString(int length) =>
-            new MnemonicString(wordCount: 1, wordMinLength: length, wordMaxLength: length).GetValue();
-
         private static string GetRandomStringWithLengthOf(int length)
         {
             string result = new MnemonicString(wordCount: 1, wordMinLength: length, wordMaxLength: length).GetValue();
@@ -71,7 +67,6 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.DecisionPolls
                 randomNegativeNumber
             };
         }
-
         private static SqlException GetSqlException() =>
             (SqlException)RuntimeHelpers.GetUninitializedObject(typeof(SqlException));
 
@@ -84,31 +79,8 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.DecisionPolls
         private static DateTimeOffset GetRandomDateTimeOffset() =>
             new DateTimeRange(earliestDate: new DateTime()).GetValue();
 
-        private static DecisionPoll CreateRandomModifyDecisionPoll(
-            DateTimeOffset dateTimeOffset,
-            string userId)
-        {
-            int randomDaysInPast = GetRandomNegativeNumber();
-            DecisionPoll randomDecisionPoll = CreateRandomDecisionPoll(dateTimeOffset, userId);
-
-            randomDecisionPoll.CreatedDate =
-                randomDecisionPoll.CreatedDate.AddDays(randomDaysInPast);
-
-            return randomDecisionPoll;
-        }
-
-        private static IQueryable<DecisionPoll> CreateRandomDecisionPolls()
-        {
-            return CreateDecisionPollFiller(dateTimeOffset: GetRandomDateTimeOffset())
-                .Create(count: GetRandomNumber())
-                    .AsQueryable();
-        }
-
         private static DecisionPoll CreateRandomDecisionPoll() =>
             CreateDecisionPollFiller(dateTimeOffset: GetRandomDateTimeOffset()).Create();
-
-        private static DecisionPoll CreateRandomDecisionPoll(DateTimeOffset dateTimeOffset) =>
-            CreateDecisionPollFiller(dateTimeOffset).Create();
 
         private static Filler<DecisionPoll> CreateDecisionPollFiller(DateTimeOffset dateTimeOffset)
         {
@@ -159,7 +131,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.DecisionPolls
 
                 claims: new List<System.Security.Claims.Claim>
                 {
-                    new System.Security.Claims.Claim(type: GetRandomString(), value: GetRandomString())
+                    new(type: GetRandomString(), value: GetRandomString())
                 });
         }
     }

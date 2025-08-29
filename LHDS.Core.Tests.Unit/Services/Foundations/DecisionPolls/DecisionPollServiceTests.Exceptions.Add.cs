@@ -3,6 +3,7 @@
 // ---------------------------------------------------------
 
 using System.Threading.Tasks;
+using EFxceptions.Models.Exceptions;
 using FluentAssertions;
 using LHDS.Core.Models.Foundations.DecisionPolls;
 using LHDS.Core.Models.Foundations.DecisionPolls.Exceptions;
@@ -58,6 +59,61 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.DecisionPolls
             this.loggingBrokerMock.Verify(broker =>
                 broker.LogCriticalAsync(It.Is(SameExceptionAs(
                     expectedDecisionPollDependencyException))),
+                        Times.Once);
+
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
+            this.storageBrokerMock.VerifyNoOtherCalls();
+            this.loggingBrokerMock.VerifyNoOtherCalls();
+        }
+
+        [Fact]
+        public async Task ShouldThrowDependencyValidationExceptionOnAddIfDecisionPollAlreadyExistsAndLogItAsync()
+        {
+            // given
+            DecisionPoll randomDecisionPoll = CreateRandomDecisionPoll();
+            DecisionPoll alreadyExistsDecisionPoll = randomDecisionPoll;
+            string randomMessage = GetRandomString();
+
+            var duplicateKeyException =
+                new DuplicateKeyException(randomMessage);
+
+            var alreadyExistsDecisionPollException =
+                new AlreadyExistsDecisionPollException(
+                    message: "DecisionPoll with the same Id already exists.",
+                    innerException: duplicateKeyException);
+
+            var expectedDecisionPollDependencyValidationException =
+                new DecisionPollDependencyValidationException(
+                    message: "DecisionPoll dependency validation occurred, please try again.",
+                    innerException: alreadyExistsDecisionPollException);
+
+            this.dateTimeBrokerMock.Setup(broker =>
+                broker.GetCurrentDateTimeOffsetAsync())
+                    .ThrowsAsync(duplicateKeyException);
+
+            // when
+            ValueTask<DecisionPoll> addDecisionPollTask =
+                this.decisionPollService.AddDecisionPollAsync(alreadyExistsDecisionPoll);
+
+            // then
+            DecisionPollDependencyValidationException actualDecisionPollDependencyValidationException =
+                await Assert.ThrowsAsync<DecisionPollDependencyValidationException>(
+                    addDecisionPollTask.AsTask);
+
+            actualDecisionPollDependencyValidationException.Should()
+                .BeEquivalentTo(expectedDecisionPollDependencyValidationException);
+
+            this.dateTimeBrokerMock.Verify(broker =>
+                broker.GetCurrentDateTimeOffsetAsync(),
+                    Times.Once);
+
+            this.storageBrokerMock.Verify(broker =>
+                broker.InsertDecisionPollAsync(It.IsAny<DecisionPoll>()),
+                    Times.Never);
+
+            this.loggingBrokerMock.Verify(broker =>
+                broker.LogErrorAsync(It.Is(SameExceptionAs(
+                    expectedDecisionPollDependencyValidationException))),
                         Times.Once);
 
             this.dateTimeBrokerMock.VerifyNoOtherCalls();

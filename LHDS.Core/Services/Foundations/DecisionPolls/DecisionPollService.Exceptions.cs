@@ -3,6 +3,7 @@
 // ---------------------------------------------------------
 
 using System.Threading.Tasks;
+using EFxceptions.Models.Exceptions;
 using LHDS.Core.Models.Foundations.DecisionPolls;
 using LHDS.Core.Models.Foundations.DecisionPolls.Exceptions;
 using Microsoft.Data.SqlClient;
@@ -37,6 +38,15 @@ namespace LHDS.Core.Services.Foundations.DecisionPolls
 
                 throw await CreateAndLogCriticalDependencyExceptionAsync(failedDecisionPollStorageException);
             }
+            catch (DuplicateKeyException duplicateKeyException)
+            {
+                var alreadyExistsDecisionPollException =
+                    new AlreadyExistsDecisionPollException(
+                        message: "DecisionPoll with the same Id already exists.",
+                        innerException: duplicateKeyException);
+
+                throw await CreateAndLogDependencyValidationExceptionAsync(alreadyExistsDecisionPollException);
+            }
         }
 
         private async ValueTask<DecisionPollValidationException> CreateAndLogValidationExceptionAsync(Xeption exception)
@@ -62,6 +72,19 @@ namespace LHDS.Core.Services.Foundations.DecisionPolls
             await this.loggingBroker.LogCriticalAsync(decisionPollDependencyException);
 
             return decisionPollDependencyException;
+        }
+
+        private async ValueTask<DecisionPollDependencyValidationException>
+            CreateAndLogDependencyValidationExceptionAsync(Xeption exception)
+        {
+            var decisionPollDependencyValidationException =
+                new DecisionPollDependencyValidationException(
+                    message: "DecisionPoll dependency validation occurred, please try again.",
+                    innerException: exception);
+
+            await this.loggingBroker.LogErrorAsync(decisionPollDependencyValidationException);
+
+            return decisionPollDependencyValidationException;
         }
     }
 }

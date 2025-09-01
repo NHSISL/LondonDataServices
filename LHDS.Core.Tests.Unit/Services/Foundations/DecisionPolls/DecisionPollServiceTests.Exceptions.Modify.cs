@@ -2,6 +2,7 @@
 // Copyright (c) North East London ICB. All rights reserved.
 // ---------------------------------------------------------
 
+using System;
 using System.Threading.Tasks;
 using EFxceptions.Models.Exceptions;
 using FluentAssertions;
@@ -228,6 +229,61 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.DecisionPolls
             this.loggingBrokerMock.Verify(broker =>
                 broker.LogErrorAsync(It.Is(SameExceptionAs(
                     expectedDecisionPollDependencyValidationException))),
+                        Times.Once);
+
+            this.storageBrokerMock.Verify(broker =>
+                broker.UpdateDecisionPollAsync(randomDecisionPoll),
+                    Times.Never);
+
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
+            this.storageBrokerMock.VerifyNoOtherCalls();
+            this.loggingBrokerMock.VerifyNoOtherCalls();
+        }
+
+        [Fact]
+        public async Task ShouldThrowServiceExceptionOnModifyIfServiceErrorOccursAndLogItAsync()
+        {
+            // given
+            DecisionPoll randomDecisionPoll = CreateRandomDecisionPoll();
+            var serviceException = new Exception();
+
+            var failedDecisionPollServiceException =
+                new FailedDecisionPollServiceException(
+                    message: "Failed decisionPoll service error occurred, please contact support.",
+                    innerException: serviceException);
+
+            var expectedDecisionPollServiceException =
+                new DecisionPollServiceException(
+                    message: "DecisionPoll service error occurred, please contact support.",
+                    innerException: failedDecisionPollServiceException);
+
+            this.dateTimeBrokerMock.Setup(broker =>
+                broker.GetCurrentDateTimeOffsetAsync())
+                    .ThrowsAsync(serviceException);
+
+            // when
+            ValueTask<DecisionPoll> modifyDecisionPollTask =
+                this.decisionPollService.ModifyDecisionPollAsync(randomDecisionPoll);
+
+            DecisionPollServiceException actualDecisionPollServiceException =
+                await Assert.ThrowsAsync<DecisionPollServiceException>(
+                    modifyDecisionPollTask.AsTask);
+
+            // then
+            actualDecisionPollServiceException.Should()
+                .BeEquivalentTo(expectedDecisionPollServiceException);
+
+            this.dateTimeBrokerMock.Verify(broker =>
+                broker.GetCurrentDateTimeOffsetAsync(),
+                    Times.Once);
+
+            this.storageBrokerMock.Verify(broker =>
+                broker.SelectDecisionPollByIdAsync(randomDecisionPoll.Id),
+                    Times.Never);
+
+            this.loggingBrokerMock.Verify(broker =>
+                broker.LogErrorAsync(It.Is(SameExceptionAs(
+                    expectedDecisionPollServiceException))),
                         Times.Once);
 
             this.storageBrokerMock.Verify(broker =>

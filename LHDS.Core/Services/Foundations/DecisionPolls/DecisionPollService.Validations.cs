@@ -45,6 +45,14 @@ namespace LHDS.Core.Services.Foundations.DecisionPolls
                 (Rule: await IsNotRecentAsync(decisionPoll.CreatedDate), Parameter: nameof(DecisionPoll.CreatedDate)));
         }
 
+        private async ValueTask ValidateDecisionPollOnModifyAsync(DecisionPoll decisionPoll)
+        {
+            EntraUser currentUser = await this.securityBroker.GetCurrentUserAsync();
+
+            Validate(
+                (Rule: await IsNotRecentAsync(decisionPoll.UpdatedDate), Parameter: nameof(decisionPoll.UpdatedDate)));
+        }
+
         private static void ValidateDecisionPollIsNotNull(DecisionPoll decisionPoll)
         {
             if (decisionPoll is null)

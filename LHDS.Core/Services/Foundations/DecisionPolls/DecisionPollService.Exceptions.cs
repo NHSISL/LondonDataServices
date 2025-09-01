@@ -62,6 +62,15 @@ namespace LHDS.Core.Services.Foundations.DecisionPolls
 
                 throw await CreateAndLogDependencyValidationExceptionAsync(invalidDecisionPollReferenceException);
             }
+            catch (DbUpdateConcurrencyException dbUpdateConcurrencyException)
+            {
+                var lockedDecisionPollException =
+                    new LockedDecisionPollException(
+                        message: "Locked decisionPoll record exception, please try again later",
+                        innerException: dbUpdateConcurrencyException);
+
+                throw await CreateAndLogDependencyValidationExceptionAsync(lockedDecisionPollException);
+            }
             catch (DbUpdateException databaseUpdateException)
             {
                 var failedDecisionPollStorageException =

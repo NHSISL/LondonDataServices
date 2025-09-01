@@ -183,5 +183,60 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.DecisionPolls
             this.storageBrokerMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
         }
+
+        [Fact]
+        public async Task ShouldThrowDependencyValidationExceptionOnModifyIfDbUpdateConcurrencyErrorOccursAndLogAsync()
+        {
+            // given
+            DecisionPoll randomDecisionPoll = CreateRandomDecisionPoll();
+            var databaseUpdateConcurrencyException = new DbUpdateConcurrencyException();
+
+            var lockedDecisionPollException =
+                new LockedDecisionPollException(
+                    message: "Locked decisionPoll record exception, please try again later",
+                    innerException: databaseUpdateConcurrencyException);
+
+            var expectedDecisionPollDependencyValidationException =
+                new DecisionPollDependencyValidationException(
+                    message: "DecisionPoll dependency validation occurred, please try again.",
+                    innerException: lockedDecisionPollException);
+
+            this.dateTimeBrokerMock.Setup(broker =>
+                broker.GetCurrentDateTimeOffsetAsync())
+                    .ThrowsAsync(databaseUpdateConcurrencyException);
+
+            // when
+            ValueTask<DecisionPoll> modifyDecisionPollTask =
+                this.decisionPollService.ModifyDecisionPollAsync(randomDecisionPoll);
+
+            DecisionPollDependencyValidationException actualDecisionPollDependencyValidationException =
+                await Assert.ThrowsAsync<DecisionPollDependencyValidationException>(
+                    modifyDecisionPollTask.AsTask);
+
+            // then
+            actualDecisionPollDependencyValidationException.Should()
+                .BeEquivalentTo(expectedDecisionPollDependencyValidationException);
+
+            this.dateTimeBrokerMock.Verify(broker =>
+                broker.GetCurrentDateTimeOffsetAsync(),
+                    Times.Once);
+
+            this.storageBrokerMock.Verify(broker =>
+                broker.SelectDecisionPollByIdAsync(randomDecisionPoll.Id),
+                    Times.Never);
+
+            this.loggingBrokerMock.Verify(broker =>
+                broker.LogErrorAsync(It.Is(SameExceptionAs(
+                    expectedDecisionPollDependencyValidationException))),
+                        Times.Once);
+
+            this.storageBrokerMock.Verify(broker =>
+                broker.UpdateDecisionPollAsync(randomDecisionPoll),
+                    Times.Never);
+
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
+            this.storageBrokerMock.VerifyNoOtherCalls();
+            this.loggingBrokerMock.VerifyNoOtherCalls();
+        }
     }
 }

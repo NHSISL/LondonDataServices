@@ -109,6 +109,15 @@ namespace LHDS.Core.Services.Foundations.DecisionPolls
 
                 throw await CreateAndLogCriticalDependencyExceptionAsync(failedDecisionPollStorageException);
             }
+            catch (Exception exception)
+            {
+                var failedDecisionPollServiceException =
+                    new FailedDecisionPollServiceException(
+                        message: "Failed decisionPoll service error occurred, please contact support.",
+                        innerException: exception);
+
+                throw await CreateAndLogServiceExceptionAsync(failedDecisionPollServiceException);
+            }
         }
 
         private async ValueTask<DecisionPollValidationException> CreateAndLogValidationExceptionAsync(Xeption exception)

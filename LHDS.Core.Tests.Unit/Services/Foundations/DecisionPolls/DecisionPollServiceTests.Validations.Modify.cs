@@ -532,5 +532,112 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.DecisionPolls
             this.storageBrokerMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
         }
+
+        [Fact]
+        public async Task ShouldThrowValidationExceptionOnModifyIfCreatedUserDoesntMatchStorageAndLogItAsync()
+        {
+            // given
+            DateTimeOffset randomDateTimeOffset = GetRandomDateTimeOffset();
+            EntraUser randomEntraUser = CreateRandomEntraUser();
+
+            DecisionPoll randomDecisionPoll =
+                CreateRandomModifyDecisionPoll(randomDateTimeOffset, randomEntraUser.EntraUserId);
+
+            DecisionPoll invalidDecisionPoll = randomDecisionPoll.DeepClone();
+            DecisionPoll storageDecisionPoll = invalidDecisionPoll.DeepClone();
+            invalidDecisionPoll.CreatedBy = Guid.NewGuid().ToString();
+            storageDecisionPoll.UpdatedDate = storageDecisionPoll.CreatedDate;
+
+            var invalidDecisionPollException =
+                new InvalidDecisionPollException(
+                    message: "Invalid decisionPoll. Please correct the errors and try again.");
+
+            invalidDecisionPollException.AddData(
+                key: nameof(DecisionPoll.CreatedBy),
+                values: $"Text is not the same as {nameof(DecisionPoll.CreatedBy)}");
+
+            var expectedDecisionPollValidationException =
+                new DecisionPollValidationException(
+                    message: "DecisionPoll validation errors occurred, please try again.",
+                    innerException: invalidDecisionPollException);
+
+            var decisionPollServiceMock = new Mock<DecisionPollService>(
+                storageBrokerMock.Object,
+                dateTimeBrokerMock.Object,
+                securityBrokerMock.Object,
+                loggingBrokerMock.Object)
+            {
+                CallBase = true
+            };
+
+            decisionPollServiceMock.Setup(service =>
+                service.ApplyModifyDecisionPollAsync(invalidDecisionPoll))
+                    .ReturnsAsync(invalidDecisionPoll);
+
+            this.dateTimeBrokerMock.Setup(broker =>
+                broker.GetCurrentDateTimeOffsetAsync())
+                    .ReturnsAsync(randomDateTimeOffset);
+
+            this.securityBrokerMock.Setup(broker =>
+                broker.GetCurrentUserAsync())
+                    .ReturnsAsync(randomEntraUser);
+
+            this.storageBrokerMock.Setup(broker =>
+                broker.SelectDecisionPollByIdAsync(invalidDecisionPoll.Id))
+                    .ReturnsAsync(storageDecisionPoll);
+
+            decisionPollServiceMock.Setup(service =>
+                service.EnsureCreatedAuditPropertiesIsSameAsStorageAsync(
+                    invalidDecisionPoll, storageDecisionPoll))
+                        .ReturnsAsync(invalidDecisionPoll);
+
+            decisionPollServiceMock.Setup(service =>
+                service.EnsureCreatedAuditPropertiesIsSameAsStorageAsync(
+                    invalidDecisionPoll, storageDecisionPoll))
+                        .ReturnsAsync(invalidDecisionPoll);
+
+            // when
+            ValueTask<DecisionPoll> modifyDecisionPollTask =
+                decisionPollServiceMock.Object.ModifyDecisionPollAsync(invalidDecisionPoll);
+
+            DecisionPollValidationException actualDecisionPollValidationException =
+                await Assert.ThrowsAsync<DecisionPollValidationException>(
+                    modifyDecisionPollTask.AsTask);
+
+            // then
+            actualDecisionPollValidationException.Should().BeEquivalentTo(expectedDecisionPollValidationException);
+
+            decisionPollServiceMock.Verify(service =>
+                service.ApplyModifyDecisionPollAsync(invalidDecisionPoll),
+                    Times.Once());
+
+            this.dateTimeBrokerMock.Verify(broker =>
+                broker.GetCurrentDateTimeOffsetAsync(),
+                    Times.Once);
+
+            this.securityBrokerMock.Verify(broker =>
+                broker.GetCurrentUserAsync(),
+                    Times.Once);
+
+            this.storageBrokerMock.Verify(broker =>
+                broker.SelectDecisionPollByIdAsync(invalidDecisionPoll.Id),
+                    Times.Once);
+
+            decisionPollServiceMock.Verify(service =>
+                service.EnsureCreatedAuditPropertiesIsSameAsStorageAsync(
+                    invalidDecisionPoll, storageDecisionPoll),
+                        Times.Once());
+
+            this.loggingBrokerMock.Verify(broker =>
+               broker.LogErrorAsync(It.Is(SameExceptionAs(
+                   expectedDecisionPollValidationException))),
+                       Times.Once);
+
+            decisionPollServiceMock.VerifyNoOtherCalls();
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
+            this.securityBrokerMock.VerifyNoOtherCalls();
+            this.loggingBrokerMock.VerifyNoOtherCalls();
+            this.storageBrokerMock.VerifyNoOtherCalls();
+        }
     }
 }

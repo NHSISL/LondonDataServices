@@ -57,6 +57,10 @@ namespace LHDS.Core.Services.Foundations.DecisionPolls
                         decisionPollWithModifyAuditApplied,
                         maybeDecisionPoll);
 
+                ValidateAgainstStorageDecisionPollOnModify(
+                    inputDecisionPoll: decisionPoll,
+                    storageDecisionPoll: maybeDecisionPoll);
+
                 return await this.storageBroker.UpdateDecisionPollAsync(decisionPollWithModifyAuditApplied);
             });
 

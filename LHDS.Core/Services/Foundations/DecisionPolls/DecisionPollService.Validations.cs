@@ -89,6 +89,30 @@ namespace LHDS.Core.Services.Foundations.DecisionPolls
             }
         }
 
+        private static void ValidateAgainstStorageDecisionPollOnModify(
+            DecisionPoll inputDecisionPoll,
+            DecisionPoll storageDecisionPoll)
+        {
+            Validate(
+                (Rule: IsNotSame(
+                        firstDate: inputDecisionPoll.CreatedDate,
+                        secondDate: storageDecisionPoll.CreatedDate,
+                        secondDateName: nameof(DecisionPoll.CreatedDate)),
+                    Parameter: nameof(DecisionPoll.CreatedDate)),
+
+                (Rule: IsNotSame(
+                        first: inputDecisionPoll.CreatedBy,
+                        second: storageDecisionPoll.CreatedBy,
+                        secondName: nameof(DecisionPoll.CreatedBy)),
+                    Parameter: nameof(DecisionPoll.CreatedBy)),
+
+                (Rule: IsSame(
+                        firstDate: inputDecisionPoll.UpdatedDate,
+                        secondDate: storageDecisionPoll.UpdatedDate,
+                        secondDateName: nameof(DecisionPoll.UpdatedDate)),
+                    Parameter: nameof(DecisionPoll.UpdatedDate)));
+        }
+
         private static dynamic IsInvalid(Guid id) => new
         {
             Condition = id == Guid.Empty,

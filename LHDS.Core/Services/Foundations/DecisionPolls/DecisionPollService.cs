@@ -52,6 +52,11 @@ namespace LHDS.Core.Services.Foundations.DecisionPolls
 
                 ValidateStorageDecisionPoll(maybeDecisionPoll, decisionPoll.Id);
 
+                DecisionPoll decisionPollWithModifyAuditAppliedEnsured =
+                    await EnsureCreatedAuditPropertiesIsSameAsStorageAsync(
+                        decisionPollWithModifyAuditApplied,
+                        maybeDecisionPoll);
+
                 return await this.storageBroker.UpdateDecisionPollAsync(decisionPollWithModifyAuditApplied);
             });
 
@@ -75,6 +80,16 @@ namespace LHDS.Core.Services.Foundations.DecisionPolls
             var auditUser = await this.securityBroker.GetCurrentUserAsync();
             decisionPoll.UpdatedBy = auditUser?.EntraUserId ?? string.Empty;
             decisionPoll.UpdatedDate = auditDateTimeOffset;
+
+            return decisionPoll;
+        }
+
+        virtual internal async ValueTask<DecisionPoll> EnsureCreatedAuditPropertiesIsSameAsStorageAsync(
+            DecisionPoll decisionPoll,
+            DecisionPoll maybeDecisionPoll)
+        {
+            decisionPoll.CreatedDate = maybeDecisionPoll.CreatedDate;
+            decisionPoll.CreatedBy = maybeDecisionPoll.CreatedBy;
 
             return decisionPoll;
         }

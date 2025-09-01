@@ -40,6 +40,10 @@ namespace LHDS.Core.Services.Foundations.DecisionPolls
 
                 throw await CreateAndLogCriticalDependencyExceptionAsync(failedDecisionPollStorageException);
             }
+            catch (NotFoundDecisionPollException notFoundDecisionPollException)
+            {
+                throw await CreateAndLogValidationExceptionAsync(notFoundDecisionPollException);
+            }
             catch (DuplicateKeyException duplicateKeyException)
             {
                 var alreadyExistsDecisionPollException =

@@ -71,6 +71,16 @@ namespace LHDS.Core.Services.Foundations.DecisionPolls
                 (Rule: await IsNotRecentAsync(decisionPoll.UpdatedDate), Parameter: nameof(decisionPoll.UpdatedDate)));
         }
 
+        private static void ValidateStorageDecisionPoll(
+            DecisionPoll maybeDecisionPoll,
+            Guid decisionPollId)
+        {
+            if (maybeDecisionPoll is null)
+            {
+                throw new NotFoundDecisionPollException(decisionPollId);
+            }
+        }
+
         private static void ValidateDecisionPollIsNotNull(DecisionPoll decisionPoll)
         {
             if (decisionPoll is null)

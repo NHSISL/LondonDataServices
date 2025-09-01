@@ -42,10 +42,8 @@ namespace LHDS.Core.Services.Foundations.DecisionPolls
                 return await this.storageBroker.InsertDecisionPollAsync(decisionPoll);
             });
 
-        public async ValueTask<IQueryable<DecisionPoll>> RetrieveAllDecisionPollsAsync()
-        {
-            return await this.storageBroker.SelectAllDecisionPollsAsync();
-        }
+        public ValueTask<IQueryable<DecisionPoll>> RetrieveAllDecisionPollsAsync() =>
+            TryCatch(async () => await this.storageBroker.SelectAllDecisionPollsAsync());
 
         public ValueTask<DecisionPoll> ModifyDecisionPollAsync(DecisionPoll decisionPoll) =>
             TryCatch(async () =>

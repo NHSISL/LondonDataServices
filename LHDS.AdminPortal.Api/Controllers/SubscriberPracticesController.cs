@@ -42,16 +42,158 @@ namespace LHDS.AdminPortal.Api.Controllers
                 return BadRequest(subscriberPracticeValidationException.InnerException);
             }
             catch (SubscriberPracticeDependencyValidationException subscriberPracticeValidationException)
-                when (subscriberPracticeValidationException.InnerException is 
+                when (subscriberPracticeValidationException.InnerException is
                 InvalidSubscriberPracticeReferenceException)
             {
                 return FailedDependency(subscriberPracticeValidationException.InnerException);
             }
             catch (SubscriberPracticeDependencyValidationException subscriberPracticeDependencyValidationException)
-               when (subscriberPracticeDependencyValidationException.InnerException is 
+               when (subscriberPracticeDependencyValidationException.InnerException is
                AlreadyExistsSubscriberPracticeException)
             {
                 return Conflict(subscriberPracticeDependencyValidationException.InnerException);
+            }
+            catch (SubscriberPracticeDependencyException subscriberPracticeDependencyException)
+            {
+                return InternalServerError(subscriberPracticeDependencyException);
+            }
+            catch (SubscriberPracticeServiceException subscriberPracticeServiceException)
+            {
+                return InternalServerError(subscriberPracticeServiceException);
+            }
+        }
+
+        [Authorize(Roles = "ISL.LDS.AdminApi.Administrators, ISL.LDS.AdminApi.Configurations, ISL.LDS.AdminApi.ReadOnly")]
+        [HttpGet]
+#if !DEBUG
+        [EnableQuery(PageSize = 50)]
+#endif
+#if DEBUG
+        [EnableQuery(PageSize = 5000)]
+#endif
+        public async ValueTask<ActionResult<IQueryable<SubscriberPractice>>> Get()
+        {
+            try
+            {
+                IQueryable<SubscriberPractice> retrievedSubscriberPractices =
+                    await this.subscriberPracticeService.RetrieveAllSubscriberPracticesAsync();
+
+                return Ok(retrievedSubscriberPractices);
+            }
+            catch (SubscriberPracticeDependencyException SubscriberPracticeDependencyException)
+            {
+                return InternalServerError(SubscriberPracticeDependencyException);
+            }
+            catch (SubscriberPracticeServiceException SubscriberPracticeServiceException)
+            {
+                return InternalServerError(SubscriberPracticeServiceException);
+            }
+        }
+
+        [Authorize(Roles = "ISL.LDS.AdminApi.Administrators, ISL.LDS.AdminApi.Configurations, ISL.LDS.AdminApi.ReadOnly")]
+        [HttpGet("{subscriberPracticeId}")]
+        public async ValueTask<ActionResult<SubscriberPractice>> GetSubscriberPracticeByIdAsync(
+            Guid subscriberPracticeId)
+        {
+            try
+            {
+                SubscriberPractice subscriberPractice =
+                    await this.subscriberPracticeService.RetrieveSubscriberPracticeByIdAsync(subscriberPracticeId);
+
+                return Ok(subscriberPractice);
+            }
+            catch (SubscriberPracticeValidationException subscriberPracticeValidationException)
+                when (subscriberPracticeValidationException.InnerException is NotFoundSubscriberPracticeException)
+            {
+                return NotFound(subscriberPracticeValidationException.InnerException);
+            }
+            catch (SubscriberPracticeValidationException subscriberPracticeValidationException)
+            {
+                return BadRequest(subscriberPracticeValidationException.InnerException);
+            }
+            catch (SubscriberPracticeDependencyException subscriberPracticeDependencyException)
+            {
+                return InternalServerError(subscriberPracticeDependencyException);
+            }
+            catch (SubscriberPracticeServiceException subscriberPracticeServiceException)
+            {
+                return InternalServerError(subscriberPracticeServiceException);
+            }
+        }
+
+        [Authorize(Roles = "ISL.LDS.AdminApi.Administrators, ISL.LDS.AdminApi.Configurations")]
+        [HttpPut]
+        public async ValueTask<ActionResult<SubscriberPractice>> PutSubscriberPracticeAsync(
+            SubscriberPractice subscriberPractice)
+        {
+            try
+            {
+                SubscriberPractice modifiedSubscriberPractice =
+                    await this.subscriberPracticeService.ModifySubscriberPracticeAsync(subscriberPractice);
+
+                return Ok(modifiedSubscriberPractice);
+            }
+            catch (SubscriberPracticeValidationException subscriberPracticeValidationException)
+                when (subscriberPracticeValidationException.InnerException is NotFoundSubscriberPracticeException)
+            {
+                return NotFound(subscriberPracticeValidationException.InnerException);
+            }
+            catch (SubscriberPracticeValidationException subscriberPracticeValidationException)
+            {
+                return BadRequest(subscriberPracticeValidationException.InnerException);
+            }
+            catch (SubscriberPracticeDependencyValidationException subscriberPracticeValidationException)
+                when (subscriberPracticeValidationException.InnerException is
+                InvalidSubscriberPracticeReferenceException)
+            {
+                return FailedDependency(subscriberPracticeValidationException.InnerException);
+            }
+            catch (SubscriberPracticeDependencyValidationException subscriberPracticeDependencyValidationException)
+               when (subscriberPracticeDependencyValidationException.InnerException is
+               AlreadyExistsSubscriberPracticeException)
+            {
+                return Conflict(subscriberPracticeDependencyValidationException.InnerException);
+            }
+            catch (SubscriberPracticeDependencyException subscriberPracticeDependencyException)
+            {
+                return InternalServerError(subscriberPracticeDependencyException);
+            }
+            catch (SubscriberPracticeServiceException subscriberPracticeServiceException)
+            {
+                return InternalServerError(subscriberPracticeServiceException);
+            }
+        }
+
+        [Authorize(Roles = "ISL.LDS.AdminApi.Administrators, ISL.LDS.AdminApi.Configurations")]
+        [HttpDelete("{subscriberPracticeId}")]
+        public async ValueTask<ActionResult<SubscriberPractice>> DeleteSubscriberPracticeByIdAsync(
+            Guid subscriberPracticeId)
+        {
+            try
+            {
+                SubscriberPractice deletedSubscriberPractice =
+                    await this.subscriberPracticeService.RemoveSubscriberPracticeByIdAsync(subscriberPracticeId);
+
+                return Ok(deletedSubscriberPractice);
+            }
+            catch (SubscriberPracticeValidationException subscriberPracticeValidationException)
+                when (subscriberPracticeValidationException.InnerException is NotFoundSubscriberPracticeException)
+            {
+                return NotFound(subscriberPracticeValidationException.InnerException);
+            }
+            catch (SubscriberPracticeValidationException subscriberPracticeValidationException)
+            {
+                return BadRequest(subscriberPracticeValidationException.InnerException);
+            }
+            catch (SubscriberPracticeDependencyValidationException subscriberPracticeDependencyValidationException)
+                when (subscriberPracticeDependencyValidationException.InnerException is
+                LockedSubscriberPracticeException)
+            {
+                return Locked(subscriberPracticeDependencyValidationException.InnerException);
+            }
+            catch (SubscriberPracticeDependencyValidationException subscriberPracticeDependencyValidationException)
+            {
+                return BadRequest(subscriberPracticeDependencyValidationException.InnerException);
             }
             catch (SubscriberPracticeDependencyException subscriberPracticeDependencyException)
             {

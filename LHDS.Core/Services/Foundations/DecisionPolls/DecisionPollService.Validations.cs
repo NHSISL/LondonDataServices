@@ -50,6 +50,24 @@ namespace LHDS.Core.Services.Foundations.DecisionPolls
             EntraUser currentUser = await this.securityBroker.GetCurrentUserAsync();
 
             Validate(
+                (Rule: IsInvalid(decisionPoll.Id), Parameter: nameof(DecisionPoll.Id)),
+                (Rule: IsInvalid(decisionPoll.LastPoll), Parameter: nameof(DecisionPoll.LastPoll)),
+                (Rule: IsInvalid(decisionPoll.CreatedDate), Parameter: nameof(DecisionPoll.CreatedDate)),
+                (Rule: IsInvalid(decisionPoll.CreatedBy), Parameter: nameof(DecisionPoll.CreatedBy)),
+                (Rule: IsInvalid(decisionPoll.UpdatedDate), Parameter: nameof(DecisionPoll.UpdatedDate)),
+                (Rule: IsInvalid(decisionPoll.UpdatedBy), Parameter: nameof(DecisionPoll.UpdatedBy)),
+
+                (Rule: IsNotSame(
+                        first: currentUser.EntraUserId,
+                        second: decisionPoll.UpdatedBy),
+                    Parameter: nameof(DecisionPoll.UpdatedBy)),
+
+                (Rule: IsSame(
+                        firstDate: decisionPoll.UpdatedDate,
+                        secondDate: decisionPoll.CreatedDate,
+                        secondDateName: nameof(DecisionPoll.CreatedDate)),
+                    Parameter: nameof(DecisionPoll.UpdatedDate)),
+
                 (Rule: await IsNotRecentAsync(decisionPoll.UpdatedDate), Parameter: nameof(decisionPoll.UpdatedDate)));
         }
 
@@ -78,6 +96,16 @@ namespace LHDS.Core.Services.Foundations.DecisionPolls
             Condition = date == default,
             Message = "Date is required"
         };
+
+        private static dynamic IsSame(
+            DateTimeOffset firstDate,
+            DateTimeOffset secondDate,
+            string secondDateName) => new
+            {
+                Condition = firstDate == secondDate,
+                Message = $"Date is the same as {secondDateName}"
+            };
+
 
         private static dynamic IsNotSame(
             DateTimeOffset firstDate,

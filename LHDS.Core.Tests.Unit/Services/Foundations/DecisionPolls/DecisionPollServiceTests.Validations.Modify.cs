@@ -114,7 +114,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.DecisionPolls
                     [
                         "Date is required",
                         "Date is the same as CreatedDate",
-                        $"Date is not recent"
+                        "Date is not recent"
                     ]);
 
             invalidDecisionPollException.AddData(

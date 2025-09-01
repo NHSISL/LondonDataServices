@@ -50,6 +50,8 @@ namespace LHDS.Core.Services.Foundations.DecisionPolls
                 DecisionPoll maybeDecisionPoll =
                     await this.storageBroker.SelectDecisionPollByIdAsync(decisionPoll.Id);
 
+                ValidateStorageDecisionPoll(maybeDecisionPoll, decisionPoll.Id);
+
                 return await this.storageBroker.UpdateDecisionPollAsync(decisionPollWithModifyAuditApplied);
             });
 

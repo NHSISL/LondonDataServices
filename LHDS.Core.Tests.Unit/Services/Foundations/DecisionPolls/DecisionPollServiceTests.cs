@@ -4,6 +4,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Linq.Expressions;
 using System.Runtime.CompilerServices;
 using LHDS.Core.Brokers.DateTimes;
@@ -96,6 +97,13 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.DecisionPolls
                 randomDecisionPoll.CreatedDate.AddDays(randomDaysInPast);
 
             return randomDecisionPoll;
+        }
+
+        private static IQueryable<DecisionPoll> CreateRandomDecisionPolls()
+        {
+            return CreateDecisionPollFiller(dateTimeOffset: GetRandomDateTimeOffset())
+                .Create(count: GetRandomNumber())
+                .AsQueryable();
         }
 
         private static Filler<DecisionPoll> CreateDecisionPollFiller(DateTimeOffset dateTimeOffset)

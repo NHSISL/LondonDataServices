@@ -41,9 +41,15 @@ namespace LHDS.Core.Services.Foundations.DecisionPolls
                 return await this.storageBroker.InsertDecisionPollAsync(decisionPoll);
             });
 
-        public ValueTask<DecisionPoll> ModifyDecisionPollAsync(DecisionPoll decisionPoll)
+        public async ValueTask<DecisionPoll> ModifyDecisionPollAsync(DecisionPoll decisionPoll)
         {
-            throw new System.NotImplementedException();
+            DecisionPoll decisionPollWithModifyAuditApplied = await ApplyModifyDecisionPollAsync(decisionPoll);
+            await ValidateDecisionPollOnModifyAsync(decisionPollWithModifyAuditApplied);
+
+            DecisionPoll maybeDecisionPoll =
+                await this.storageBroker.SelectDecisionPollByIdAsync(decisionPoll.Id);
+
+            return await this.storageBroker.UpdateDecisionPollAsync(decisionPollWithModifyAuditApplied);
         }
 
         virtual internal async ValueTask<DecisionPoll> ApplyAddDecisionPollAsync(DecisionPoll decisionPoll)
@@ -53,6 +59,17 @@ namespace LHDS.Core.Services.Foundations.DecisionPolls
             var auditUser = await this.securityBroker.GetCurrentUserAsync();
             decisionPoll.CreatedBy = auditUser?.EntraUserId ?? string.Empty;
             decisionPoll.CreatedDate = auditDateTimeOffset;
+            decisionPoll.UpdatedBy = auditUser?.EntraUserId ?? string.Empty;
+            decisionPoll.UpdatedDate = auditDateTimeOffset;
+
+            return decisionPoll;
+        }
+
+        virtual internal async ValueTask<DecisionPoll> ApplyModifyDecisionPollAsync(DecisionPoll decisionPoll)
+        {
+            ValidateDecisionPollIsNotNull(decisionPoll);
+            var auditDateTimeOffset = await this.dateTimeBroker.GetCurrentDateTimeOffsetAsync();
+            var auditUser = await this.securityBroker.GetCurrentUserAsync();
             decisionPoll.UpdatedBy = auditUser?.EntraUserId ?? string.Empty;
             decisionPoll.UpdatedDate = auditDateTimeOffset;
 

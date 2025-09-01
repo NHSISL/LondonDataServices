@@ -41,16 +41,17 @@ namespace LHDS.Core.Services.Foundations.DecisionPolls
                 return await this.storageBroker.InsertDecisionPollAsync(decisionPoll);
             });
 
-        public async ValueTask<DecisionPoll> ModifyDecisionPollAsync(DecisionPoll decisionPoll)
-        {
-            DecisionPoll decisionPollWithModifyAuditApplied = await ApplyModifyDecisionPollAsync(decisionPoll);
-            await ValidateDecisionPollOnModifyAsync(decisionPollWithModifyAuditApplied);
+        public ValueTask<DecisionPoll> ModifyDecisionPollAsync(DecisionPoll decisionPoll) =>
+            TryCatch(async () =>
+            {
+                DecisionPoll decisionPollWithModifyAuditApplied = await ApplyModifyDecisionPollAsync(decisionPoll);
+                await ValidateDecisionPollOnModifyAsync(decisionPollWithModifyAuditApplied);
 
-            DecisionPoll maybeDecisionPoll =
-                await this.storageBroker.SelectDecisionPollByIdAsync(decisionPoll.Id);
+                DecisionPoll maybeDecisionPoll =
+                    await this.storageBroker.SelectDecisionPollByIdAsync(decisionPoll.Id);
 
-            return await this.storageBroker.UpdateDecisionPollAsync(decisionPollWithModifyAuditApplied);
-        }
+                return await this.storageBroker.UpdateDecisionPollAsync(decisionPollWithModifyAuditApplied);
+            });
 
         virtual internal async ValueTask<DecisionPoll> ApplyAddDecisionPollAsync(DecisionPoll decisionPoll)
         {

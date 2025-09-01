@@ -2,6 +2,7 @@
 // Copyright (c) North East London ICB. All rights reserved.
 // ---------------------------------------------------------
 
+using System;
 using System.Linq;
 using System.Threading.Tasks;
 using FluentAssertions;
@@ -59,6 +60,52 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.DecisionPolls
             this.storageBrokerMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
             this.dateTimeBrokerMock.VerifyNoOtherCalls();
+        }
+
+        [Fact]
+        public async Task ShouldThrowServiceExceptionOnRetrieveAllIfServiceErrorOccursAndLogItAsync()
+        {
+            // given
+            string exceptionMessage = GetRandomString();
+            var serviceException = new Exception(exceptionMessage);
+
+            var failedDecisionPollServiceException =
+                new FailedDecisionPollServiceException(
+                    message: "Failed decisionPoll service error occurred, please contact support.",
+                    innerException: serviceException);
+
+            var expectedDecisionPollServiceException =
+                new DecisionPollServiceException(
+                    message: "DecisionPoll service error occurred, please contact support.",
+                    innerException: failedDecisionPollServiceException);
+
+            this.storageBrokerMock.Setup(broker =>
+                broker.SelectAllDecisionPollsAsync())
+                    .ThrowsAsync(serviceException);
+
+            // when
+            ValueTask<IQueryable<DecisionPoll>> retrieveAllDecisionPollsTask =
+                this.decisionPollService.RetrieveAllDecisionPollsAsync();
+
+            DecisionPollServiceException actualDecisionPollServiceException =
+                await Assert.ThrowsAsync<DecisionPollServiceException>(
+                    testCode: retrieveAllDecisionPollsTask.AsTask);
+
+            // then
+            actualDecisionPollServiceException.Should()
+                .BeEquivalentTo(expectedDecisionPollServiceException);
+
+            this.storageBrokerMock.Verify(broker =>
+                broker.SelectAllDecisionPollsAsync(),
+                    Times.Once);
+
+            this.loggingBrokerMock.Verify(broker =>
+                broker.LogErrorAsync(It.Is(SameExceptionAs(
+                    expectedDecisionPollServiceException))),
+                        Times.Once);
+
+            this.storageBrokerMock.VerifyNoOtherCalls();
+            this.loggingBrokerMock.VerifyNoOtherCalls();
         }
     }
 }

@@ -256,5 +256,96 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.DecisionPolls
             this.loggingBrokerMock.VerifyNoOtherCalls();
             this.storageBrokerMock.VerifyNoOtherCalls();
         }
+
+        [Theory]
+        [MemberData(nameof(MinutesBeforeOrAfter))]
+        public async Task ShouldThrowValidationExceptionOnModifyIfUpdatedDateIsNotRecentAndLogItAsync(int minutes)
+        {
+            // given
+            DateTimeOffset randomDateTimeOffset = GetRandomDateTimeOffset();
+            EntraUser randomEntraUser = CreateRandomEntraUser();
+
+            DecisionPoll invalidDecisionPoll =
+                CreateRandomDecisionPoll(randomDateTimeOffset, randomEntraUser.EntraUserId);
+
+            invalidDecisionPoll.UpdatedDate = randomDateTimeOffset.AddMinutes(minutes);
+
+            var decisionPollServiceMock = new Mock<DecisionPollService>(
+                storageBrokerMock.Object,
+                dateTimeBrokerMock.Object,
+                securityBrokerMock.Object,
+                loggingBrokerMock.Object)
+            {
+                CallBase = true
+            };
+
+            decisionPollServiceMock.Setup(service =>
+                service.ApplyModifyDecisionPollAsync(invalidDecisionPoll))
+                    .ReturnsAsync(invalidDecisionPoll);
+
+            this.dateTimeBrokerMock.Setup(broker =>
+                broker.GetCurrentDateTimeOffsetAsync())
+                    .ReturnsAsync(randomDateTimeOffset);
+
+            this.securityBrokerMock.Setup(broker =>
+                broker.GetCurrentUserAsync())
+                    .ReturnsAsync(randomEntraUser);
+
+            var invalidDecisionPollException =
+                new InvalidDecisionPollException(
+                    message: "Invalid decisionPoll. Please correct the errors and try again.");
+
+            invalidDecisionPollException.AddData(
+                key: nameof(DecisionPoll.UpdatedDate),
+                values: "Date is not recent");
+
+            var expectedDecisionPollValidationException =
+                new DecisionPollValidationException(
+                    message: "DecisionPoll validation errors occurred, please try again.",
+                    innerException: invalidDecisionPollException);
+
+            this.dateTimeBrokerMock.Setup(broker =>
+                broker.GetCurrentDateTimeOffsetAsync())
+                .ReturnsAsync(randomDateTimeOffset);
+
+            // when
+            ValueTask<DecisionPoll> modifyDecisionPollTask =
+                decisionPollServiceMock.Object.ModifyDecisionPollAsync(invalidDecisionPoll);
+
+            DecisionPollValidationException actualDecisionPollValidationException =
+                await Assert.ThrowsAsync<DecisionPollValidationException>(
+                    modifyDecisionPollTask.AsTask);
+
+            // then
+            actualDecisionPollValidationException.Should()
+                .BeEquivalentTo(expectedDecisionPollValidationException);
+
+            decisionPollServiceMock.Verify(service =>
+                service.ApplyModifyDecisionPollAsync(invalidDecisionPoll),
+                    Times.Once());
+
+            this.dateTimeBrokerMock.Verify(broker =>
+                broker.GetCurrentDateTimeOffsetAsync(),
+                    Times.Once);
+
+            this.securityBrokerMock.Verify(broker =>
+                broker.GetCurrentUserAsync(),
+                    Times.Once);
+
+            this.loggingBrokerMock.Verify(broker =>
+                broker.LogErrorAsync(It.Is(SameExceptionAs(
+                    expectedDecisionPollValidationException))),
+                        Times.Once);
+
+            this.storageBrokerMock.Verify(broker =>
+                broker.SelectDecisionPollByIdAsync(It.IsAny<Guid>()),
+                    Times.Never);
+
+            decisionPollServiceMock.VerifyNoOtherCalls();
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
+            this.securityBrokerMock.VerifyNoOtherCalls();
+            this.loggingBrokerMock.VerifyNoOtherCalls();
+            this.storageBrokerMock.VerifyNoOtherCalls();
+        }
     }
 }

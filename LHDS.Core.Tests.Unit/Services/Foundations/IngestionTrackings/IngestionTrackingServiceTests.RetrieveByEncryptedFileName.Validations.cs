@@ -1,4 +1,4 @@
-// ---------------------------------------------------------
+﻿// ---------------------------------------------------------
 // Copyright (c) North East London ICB. All rights reserved.
 // ---------------------------------------------------------
 
@@ -15,18 +15,17 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.IngestionTrackings
     public partial class IngestionTrackingServiceTests
     {
         [Fact]
-        public async Task ShouldThrowValidationExceptionOnRemoveIfIdIsInvalidAndLogItAsync()
+        public async Task ShouldThrowValidationExceptionOnRetrieveByEncryptedFileNameIfFileNameIsInvalidAndLogItAsync()
         {
             // given
-            Guid invalidIngestionTrackingId = Guid.Empty;
+            string encryptedFileName = String.Empty;
 
             var invalidIngestionTrackingException =
-                new InvalidIngestionTrackingException(
-                    message: "Invalid ingestion tracking. Please investigate.");
+                new InvalidIngestionTrackingException(message: "Invalid ingestion tracking. Please investigate.");
 
             invalidIngestionTrackingException.AddData(
-                key: nameof(IngestionTracking.Id),
-                values: "Id is required");
+                key: nameof(IngestionTracking.FileName),
+                values: "Text is required");
 
             var expectedIngestionTrackingValidationException =
                 new IngestionTrackingValidationException(
@@ -34,12 +33,12 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.IngestionTrackings
                     innerException: invalidIngestionTrackingException);
 
             // when
-            ValueTask<IngestionTracking> removeIngestionTrackingByIdTask =
-                this.ingestionTrackingService.RemoveIngestionTrackingByIdAsync(invalidIngestionTrackingId);
+            ValueTask<IngestionTracking> retrieveIngestionTrackingByFileNameTask =
+                this.ingestionTrackingService.RetrieveIngestionTrackingByEncryptedFileNameAsync(encryptedFileName);
 
             IngestionTrackingValidationException actualIngestionTrackingValidationException =
                 await Assert.ThrowsAsync<IngestionTrackingValidationException>(
-                    removeIngestionTrackingByIdTask.AsTask);
+                    retrieveIngestionTrackingByFileNameTask.AsTask);
 
             // then
             actualIngestionTrackingValidationException.Should()
@@ -51,13 +50,15 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.IngestionTrackings
                         Times.Once);
 
             this.storageBrokerMock.Verify(broker =>
-                broker.DeleteIngestionTrackingAsync(It.IsAny<IngestionTracking>()),
+                broker.SelectAllIngestionTrackingsAsync(),
                     Times.Never);
 
             this.loggingBrokerMock.VerifyNoOtherCalls();
             this.storageBrokerMock.VerifyNoOtherCalls();
             this.dateTimeBrokerMock.VerifyNoOtherCalls();
             this.securityBrokerMock.VerifyNoOtherCalls();
+            this.securityAuditBrokerMock.VerifyNoOtherCalls();
+            this.auditBrokerMock.VerifyNoOtherCalls();
         }
     }
 }

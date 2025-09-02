@@ -66,8 +66,7 @@ namespace LHDS.Core.Tests.Integration.EmisLandings
                     builder.AddConsole();
                     builder.AddApplicationInsights();
                 })
-                .AddDbContext<StorageBroker>()
-                .AddScoped<IStorageBroker>(service => service.GetRequiredService<StorageBroker>())
+                .AddDbContextFactory<StorageBroker>()
                 .AddEmisLandingClient(configuration, claimsPrincipal)
                 .AddDecryptionClient(configuration, claimsPrincipal)
                 .UseFtpDownloadProvider(configuration, builder => builder.AddFtpDownloadProvider())

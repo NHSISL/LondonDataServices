@@ -24,20 +24,19 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Ingress
         {
             // given
             DateTimeOffset randomDateTime = GetRandomDateTimeOffset();
-            IngestionTracking randomIngestionTrackingOne = CreateRandomIngestionTracking();
-            randomIngestionTrackingOne.LastBatchCompleteCheck = randomDateTime.AddMinutes(-15);
-            randomIngestionTrackingOne.Decrypted = true;
-            randomIngestionTrackingOne.IsDownloaded = true;
-            randomIngestionTrackingOne.IsBatchComplete = false;
-
-            IngestionTracking randomIngestionTrackingTwo = randomIngestionTrackingOne.DeepClone();
-            randomIngestionTrackingTwo.Id = Guid.NewGuid();
+            IngestionTracking randomIngestionTracking = CreateRandomIngestionTracking();
+            randomIngestionTracking.LastBatchCompleteCheck = randomDateTime.AddMinutes(-15);
+            randomIngestionTracking.Decrypted = true;
+            randomIngestionTracking.IsDownloaded = true;
+            randomIngestionTracking.IsBatchComplete = false;
 
             List<IngestionTracking> storageIngestionTrackings = new List<IngestionTracking>
             {
-                randomIngestionTrackingOne,
-                randomIngestionTrackingTwo
+                randomIngestionTracking
             };
+
+            IngestionTracking failedToUpdateIngestionTracking = randomIngestionTracking.DeepClone();
+            failedToUpdateIngestionTracking.LastBatchCompleteCheck = randomDateTime.AddMinutes(15);
 
             var ingressOrchestrationServiceMock = new Mock<IngressOrchestrationService>(
                 this.ingestionTrackingProcessingServiceMock.Object,
@@ -56,6 +55,10 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Ingress
                 .SetupSequence(service => service.RetrieveAllIngestionTrackingsAsync())
                     .ReturnsAsync(storageIngestionTrackings.AsQueryable())
                         .ReturnsAsync(new List<IngestionTracking>().AsQueryable());
+
+            this.ingestionTrackingProcessingServiceMock.Setup(service =>
+                service.RetrieveIngestionTrackingByIdAsync(randomIngestionTracking.Id))
+                    .ReturnsAsync(randomIngestionTracking);
 
             Exception someException = new Exception(message: GetRandomString());
 
@@ -93,7 +96,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Ingress
 
             this.dateTimeBrokerMock.Verify(service =>
                 service.GetCurrentDateTimeOffsetAsync(),
-                    Times.Once);
+                    Times.Exactly(2));
 
             this.ingestionTrackingProcessingServiceMock
                 .Verify(service => service.RetrieveAllIngestionTrackingsAsync(),
@@ -107,6 +110,14 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Ingress
                 broker.LogErrorAsync(It.Is(SameExceptionAs(
                     expectedDependencyException))),
                         Times.Once);
+
+            this.ingestionTrackingProcessingServiceMock.Verify(service =>
+                service.RetrieveIngestionTrackingByIdAsync(randomIngestionTracking.Id),
+                    Times.Once);
+
+            this.ingestionTrackingProcessingServiceMock.Verify(service =>
+                service.ModifyIngestionTrackingAsync(It.Is(SameIngestionTrackingAs(failedToUpdateIngestionTracking))),
+                    Times.Once);
 
             this.ingestionTrackingProcessingServiceMock.VerifyNoOtherCalls();
             this.specificationObjectProcessingServiceMock.VerifyNoOtherCalls();

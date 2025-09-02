@@ -69,16 +69,18 @@ namespace LHDS.Core.Tests.Acceptance.Clients.Pds
                 .GetSection("blobStorage").Get<BlobStorageSettings>();
 
             serviceCollection
-                .AddDbContext<StorageBroker>()
-                .AddScoped<IStorageBroker>(service => service.GetRequiredService<StorageBroker>())
-                .AddSingleton<BlobContainers>(blobStorageSettings.BlobContainers);
-
-            serviceCollection
+                .AddDbContextFactory<StorageBroker>()
+                .AddSingleton<BlobContainers>(blobStorageSettings.BlobContainers)
                 .AddTransient<IMeshBroker>(serviceProvider => meshBrokerMock.Object)
-                .AddTransient<IBlobStorageBroker>(serviceProvider => blobStorageBrokerMock.Object);
+                .AddTransient<IBlobStorageBroker>(serviceProvider => blobStorageBrokerMock.Object)
+                .AddPdsClientForAcceptance(this.dependencyBroker.Configuration, claimsPrincipal);
 
-            serviceCollection.AddPdsClientForAcceptance(this.dependencyBroker.Configuration, claimsPrincipal);
-            var serviceProvider = serviceCollection.BuildServiceProvider();
+            var serviceProvider = serviceCollection.BuildServiceProvider(new ServiceProviderOptions
+            {
+                ValidateOnBuild = true,
+                ValidateScopes = true
+            });
+
             this.pdsConfiguration = serviceProvider.GetService<PdsConfiguration>();
             this.pdsClient = serviceProvider.GetService<IPdsClient>();
             this.securityBroker = serviceProvider.GetService<ISecurityBroker>();

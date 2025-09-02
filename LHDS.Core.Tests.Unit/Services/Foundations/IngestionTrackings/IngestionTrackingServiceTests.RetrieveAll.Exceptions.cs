@@ -3,6 +3,7 @@
 // ---------------------------------------------------------
 
 using System;
+using System.Linq;
 using System.Threading.Tasks;
 using FluentAssertions;
 using LHDS.Core.Models.Foundations.IngestionTrackings;
@@ -16,13 +17,12 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.IngestionTrackings
     public partial class IngestionTrackingServiceTests
     {
         [Fact]
-        public async Task ShouldThrowCriticalDependencyExceptionOnRetrieveByIdIfSqlErrorOccursAndLogItAsync()
+        public async Task ShouldThrowCriticalDependencyExceptionOnRetrieveAllWhenSqlExceptionOccursAndLogIt()
         {
             // given
-            Guid someId = Guid.NewGuid();
             SqlException sqlException = GetSqlException();
 
-            var failedIngestionTrackingStorageException =
+            var failedStorageException =
                 new FailedIngestionTrackingStorageException(
                     message: "Failed ingestion tracking storage error occurred, please contact support.",
                     innerException: sqlException);
@@ -30,26 +30,26 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.IngestionTrackings
             var expectedIngestionTrackingDependencyException =
                 new IngestionTrackingDependencyException(
                     message: "Failed ingestion tracking storage error occurred, please contact support.",
-                    innerException: failedIngestionTrackingStorageException);
+                    innerException: failedStorageException);
 
             this.storageBrokerMock.Setup(broker =>
-                broker.SelectIngestionTrackingByIdAsync(It.IsAny<Guid>()))
+                broker.SelectAllIngestionTrackingsAsync())
                     .ThrowsAsync(sqlException);
 
             // when
-            ValueTask<IngestionTracking> retrieveIngestionTrackingByIdTask =
-                this.ingestionTrackingService.RetrieveIngestionTrackingByIdAsync(someId);
+            ValueTask<IQueryable<IngestionTracking>> retrieveAllIngestionTrackingsTask =
+                this.ingestionTrackingService.RetrieveAllIngestionTrackingsAsync();
 
             IngestionTrackingDependencyException actualIngestionTrackingDependencyException =
                 await Assert.ThrowsAsync<IngestionTrackingDependencyException>(
-                    retrieveIngestionTrackingByIdTask.AsTask);
+                    retrieveAllIngestionTrackingsTask.AsTask);
 
             // then
             actualIngestionTrackingDependencyException.Should()
                 .BeEquivalentTo(expectedIngestionTrackingDependencyException);
 
             this.storageBrokerMock.Verify(broker =>
-                broker.SelectIngestionTrackingByIdAsync(It.IsAny<Guid>()),
+                broker.SelectAllIngestionTrackingsAsync(),
                     Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>
@@ -59,15 +59,18 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.IngestionTrackings
 
             this.storageBrokerMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
+            this.securityBrokerMock.VerifyNoOtherCalls();
+            this.securityAuditBrokerMock.VerifyNoOtherCalls();
+            this.auditBrokerMock.VerifyNoOtherCalls();
             this.dateTimeBrokerMock.VerifyNoOtherCalls();
         }
 
         [Fact]
-        public async Task ShouldThrowServiceExceptionOnRetrieveByIdIfServiceErrorOccursAndLogItAsync()
+        public async Task ShouldThrowServiceExceptionOnRetrieveAllIfServiceErrorOccursAndLogItAsync()
         {
             // given
-            Guid someId = Guid.NewGuid();
-            var serviceException = new Exception();
+            string exceptionMessage = GetRandomMessage();
+            var serviceException = new Exception(exceptionMessage);
 
             var failedIngestionTrackingServiceException =
                 new FailedIngestionTrackingServiceException(
@@ -80,32 +83,34 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.IngestionTrackings
                     innerException: failedIngestionTrackingServiceException);
 
             this.storageBrokerMock.Setup(broker =>
-                broker.SelectIngestionTrackingByIdAsync(It.IsAny<Guid>()))
+                broker.SelectAllIngestionTrackingsAsync())
                     .ThrowsAsync(serviceException);
 
             // when
-            ValueTask<IngestionTracking> retrieveIngestionTrackingByIdTask =
-                this.ingestionTrackingService.RetrieveIngestionTrackingByIdAsync(someId);
+            ValueTask<IQueryable<IngestionTracking>> retrieveAllIngestionTrackingsTask =
+                this.ingestionTrackingService.RetrieveAllIngestionTrackingsAsync();
 
             IngestionTrackingServiceException actualIngestionTrackingServiceException =
-                await Assert.ThrowsAsync<IngestionTrackingServiceException>(
-                    retrieveIngestionTrackingByIdTask.AsTask);
+                await Assert.ThrowsAsync<IngestionTrackingServiceException>(retrieveAllIngestionTrackingsTask.AsTask);
 
             // then
             actualIngestionTrackingServiceException.Should()
                 .BeEquivalentTo(expectedIngestionTrackingServiceException);
 
             this.storageBrokerMock.Verify(broker =>
-                broker.SelectIngestionTrackingByIdAsync(It.IsAny<Guid>()),
+                broker.SelectAllIngestionTrackingsAsync(),
                     Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>
-               broker.LogErrorAsync(It.Is(SameExceptionAs(
-                   expectedIngestionTrackingServiceException))),
+                broker.LogErrorAsync(It.Is(SameExceptionAs(
+                    expectedIngestionTrackingServiceException))),
                         Times.Once);
 
             this.storageBrokerMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
+            this.securityBrokerMock.VerifyNoOtherCalls();
+            this.securityAuditBrokerMock.VerifyNoOtherCalls();
+            this.auditBrokerMock.VerifyNoOtherCalls();
             this.dateTimeBrokerMock.VerifyNoOtherCalls();
         }
     }

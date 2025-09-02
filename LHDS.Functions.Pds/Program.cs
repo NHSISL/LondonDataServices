@@ -41,7 +41,7 @@ var host = new HostBuilder()
                 setup.AddApplicationInsights();
                 setup.AddConsole();
             })
-            .AddDbContext<StorageBroker>()
+            .AddDbContextFactory<StorageBroker>()
             .AddPdsClient(configuration: context.Configuration, accessToken: accessToken.Token, acceptanceTest: false);
     })
     .UseDefaultServiceProvider(options => options.ValidateScopes = false)

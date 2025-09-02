@@ -56,6 +56,9 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.IngestionTrackings
             this.loggingBrokerMock.VerifyNoOtherCalls();
             this.storageBrokerMock.VerifyNoOtherCalls();
             this.dateTimeBrokerMock.VerifyNoOtherCalls();
+            this.securityBrokerMock.VerifyNoOtherCalls();
+            this.securityAuditBrokerMock.VerifyNoOtherCalls();
+            this.auditBrokerMock.VerifyNoOtherCalls();
         }
 
         [Fact]
@@ -86,7 +89,8 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.IngestionTrackings
                     retrieveIngestionTrackingByIdTask.AsTask);
 
             //then
-            actualIngestionTrackingValidationException.Should().BeEquivalentTo(expectedIngestionTrackingValidationException);
+            actualIngestionTrackingValidationException.Should()
+                .BeEquivalentTo(expectedIngestionTrackingValidationException);
 
             this.storageBrokerMock.Verify(broker =>
                 broker.SelectIngestionTrackingByIdAsync(It.IsAny<Guid>()),
@@ -100,6 +104,9 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.IngestionTrackings
             this.storageBrokerMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
             this.dateTimeBrokerMock.VerifyNoOtherCalls();
+            this.securityBrokerMock.VerifyNoOtherCalls();
+            this.securityAuditBrokerMock.VerifyNoOtherCalls();
+            this.auditBrokerMock.VerifyNoOtherCalls();
         }
     }
 }

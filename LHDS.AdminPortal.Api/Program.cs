@@ -11,6 +11,7 @@ using Attrify.InvisibleApi.Models;
 using Azure.Core.Pipeline;
 using Azure.Identity;
 using Azure.Storage.Blobs;
+using ISL.Security.Client.Models.Clients;
 using LHDS.Core.Brokers.DateTimes;
 using LHDS.Core.Brokers.Hashing;
 using LHDS.Core.Brokers.Identifiers;
@@ -105,6 +106,12 @@ namespace LHDS.AdminPortal.Api
         {
             var builder = WebApplication.CreateBuilder(args);
 
+            builder.Host.UseDefaultServiceProvider(options =>
+            {
+                options.ValidateOnBuild = true;
+                options.ValidateScopes = true;
+            });
+
             builder.Configuration
                 .AddJsonFile("appsettings.json")
                 .AddJsonFile(path: $"appsettings.{Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT")}.json", optional: true)
@@ -129,7 +136,6 @@ namespace LHDS.AdminPortal.Api
         {
             builder.Services.AddRazorPages();
             builder.Services.AddLogging();
-            builder.Services.AddHttpContextAccessor();
 
             builder.Services.Configure<ForwardedHeadersOptions>(options =>
             {
@@ -172,7 +178,8 @@ namespace LHDS.AdminPortal.Api
             });
 
             builder.Services.AddSingleton(invisibleApiKey);
-            builder.Services.AddDbContext<StorageBroker>();
+            builder.Services.AddDbContextFactory<StorageBroker>();
+            builder.Services.AddHttpContextAccessor();
             AddHealthApi(builder.Services, builder.Configuration);
             AddProviders(builder.Services, builder.Configuration);
             AddBrokers(builder.Services, builder.Configuration);
@@ -318,7 +325,17 @@ namespace LHDS.AdminPortal.Api
         private static void AddBrokers(IServiceCollection services, IConfiguration configuration)
         {
             ValidateAppInsightsCinfiguration(configuration);
-            services.AddScoped<IStorageBroker>(service => service.GetRequiredService<StorageBroker>());
+
+            services.AddTransient<IStorageBroker>(sp =>
+            {
+                var factory = sp.GetRequiredService<IDbContextFactory<StorageBroker>>();
+
+                return factory.CreateDbContext();
+            });
+
+            services.AddTransient(_ => new SecurityConfigurations());
+            services.AddTransient<ISecurityBroker, SecurityBroker>();
+            services.AddTransient<ISecurityAuditBroker, SecurityAuditBroker>();
             services.AddSingleton<IConfiguration>(_ => configuration);
             services.AddTransient<IDateTimeBroker, DateTimeBroker>();
             services.AddTransient<IIdentifierBroker, IdentifierBroker>();

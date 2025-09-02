@@ -16,7 +16,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.IngestionTrackings
     public partial class IngestionTrackingServiceTests
     {
         [Fact]
-        public async Task ShouldRetrieveIngestionTrackingByFileNameAsync()
+        public async Task ShouldRetrieveIngestionTrackingByEncryptedFileNameAsync()
         {
             // given
             IngestionTracking randomIngestionTracking = CreateRandomIngestionTracking();
@@ -34,7 +34,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.IngestionTrackings
             // when
             IngestionTracking actualIngestionTracking =
                 await this.ingestionTrackingService
-                    .RetrieveIngestionTrackingByFileNameAsync(inputIngestionTracking.FileName);
+                    .RetrieveIngestionTrackingByEncryptedFileNameAsync(inputIngestionTracking.EncryptedFileName);
 
             // then
             actualIngestionTracking.Should().BeEquivalentTo(expectedIngestionTracking);
@@ -46,6 +46,9 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.IngestionTrackings
             this.storageBrokerMock.VerifyNoOtherCalls();
             this.dateTimeBrokerMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
+            this.securityBrokerMock.VerifyNoOtherCalls();
+            this.securityAuditBrokerMock.VerifyNoOtherCalls();
+            this.auditBrokerMock.VerifyNoOtherCalls();
         }
     }
 }

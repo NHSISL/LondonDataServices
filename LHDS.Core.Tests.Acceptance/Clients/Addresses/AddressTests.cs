@@ -75,25 +75,29 @@ namespace LHDS.Core.Tests.Acceptance.Clients.Addresses
                 new Claim(ClaimTypes.Role, "ISL.LDS.AdminApi.Configurations")
             }));
 
-            serviceCollection
-                .AddDbContext<StorageBroker>()
-                .AddScoped<IStorageBroker>(service => service.GetRequiredService<StorageBroker>())
-                .AddTransient<IAddressOrchestrationService, AddressOrchestrationService>()
-                .AddTransient<IResolvedAddressOrchestrationService, ResolvedAddressOrchestrationService>()
-                .AddTransient<IResolvedAddressProcessingService, ResolvedAddressProcessingService>()
-                .AddTransient<IDocumentService, DocumentService>()
-                .AddTransient<ICsvHelperBroker, CsvHelperBroker>()
-                .AddTransient<IAddressService, AddressService>()
-                .AddTransient<IDocumentService, DocumentService>();
-
             serviceCollection.AddLogging(builder =>
             {
                 builder.AddConsole();
             });
 
             this.dependencyBroker.Configuration["assignConfiguration:apiUrl"] = this.wireMockServer.Url;
-            serviceCollection.AddAddressClient(this.dependencyBroker.Configuration, claimsPrincipal);
-            var serviceProvider = serviceCollection.BuildServiceProvider();
+
+            serviceCollection
+                .AddDbContextFactory<StorageBroker>()
+                .AddTransient<IAddressOrchestrationService, AddressOrchestrationService>()
+                .AddTransient<IResolvedAddressOrchestrationService, ResolvedAddressOrchestrationService>()
+                .AddTransient<IResolvedAddressProcessingService, ResolvedAddressProcessingService>()
+                .AddTransient<IDocumentService, DocumentService>()
+                .AddTransient<ICsvHelperBroker, CsvHelperBroker>()
+                .AddTransient<IAddressService, AddressService>()
+                .AddTransient<IDocumentService, DocumentService>()
+                .AddAddressClient(this.dependencyBroker.Configuration, claimsPrincipal);
+
+            var serviceProvider = serviceCollection.BuildServiceProvider(new ServiceProviderOptions
+            {
+                ValidateOnBuild = true,
+                ValidateScopes = true
+            });
 
             this.addressOrchestrationService =
                 serviceProvider.GetService<IAddressOrchestrationService>();

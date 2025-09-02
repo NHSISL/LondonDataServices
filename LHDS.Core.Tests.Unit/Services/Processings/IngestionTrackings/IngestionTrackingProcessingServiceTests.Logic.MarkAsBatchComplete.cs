@@ -59,11 +59,6 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.IngestionTrackings
             {
                 batchCompleteIngestionTracking.IsBatchComplete = isBatchComplete;
                 batchCompleteIngestionTracking.LastBatchCompleteCheck = currentDateTime;
-
-                this.ingestionTrackingServiceMock.Setup(service =>
-                    service.ModifyIngestionTrackingAsync(
-                        It.Is(SameIngestionTrackingAs(batchCompleteIngestionTracking))))
-                            .ReturnsAsync(batchCompleteIngestionTracking);
             });
 
             // When
@@ -83,13 +78,10 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.IngestionTrackings
                 broker.GetCurrentDateTimeOffsetAsync(),
                     Times.Once);
 
-            setAsBatchCompleteItems.ForEach(batchCompleteIngestionTracking =>
-            {
-                this.ingestionTrackingServiceMock.Verify(service =>
-                    service.ModifyIngestionTrackingAsync(
-                        It.Is(SameIngestionTrackingAs(batchCompleteIngestionTracking))),
-                            Times.Once);
-            });
+            this.ingestionTrackingServiceMock.Verify(service =>
+                service.BulkModifyIngestionTrackingAsync(
+                    It.Is(SameIngestionTrackingsAs(setAsBatchCompleteItems))),
+                        Times.Once);
 
             this.ingestionTrackingServiceMock.VerifyNoOtherCalls();
             this.dateTimeBrokerMock.VerifyNoOtherCalls();

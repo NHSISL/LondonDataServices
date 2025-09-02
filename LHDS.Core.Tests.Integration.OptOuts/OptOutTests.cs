@@ -59,8 +59,7 @@ namespace LHDS.Core.Tests.Integration.OptOuts
                     builder.AddConsole();
                     builder.AddApplicationInsights();
                 })
-                .AddDbContext<StorageBroker>()
-                .AddScoped<IStorageBroker>(service => service.GetRequiredService<StorageBroker>())
+                .AddDbContextFactory<StorageBroker>()
                 .AddOptOutClient(configuration, claimsPrincipal)
                 .BuildServiceProvider();
 

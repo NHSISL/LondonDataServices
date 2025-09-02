@@ -110,7 +110,8 @@ namespace LHDS.Core.Services.Foundations.SubscriberPractices
         {
             if (maybeSubscriberPractice is null)
             {
-                throw new NotFoundSubscriberPracticeException(subscriberPracticeId);
+                throw new NotFoundSubscriberPracticeException(
+                    message: $"Couldn't find subscriberPractice with subscriberPracticeId: {subscriberPracticeId}.");
             }
         }
 

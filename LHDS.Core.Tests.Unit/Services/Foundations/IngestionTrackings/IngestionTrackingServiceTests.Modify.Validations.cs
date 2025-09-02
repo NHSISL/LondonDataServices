@@ -58,6 +58,8 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.IngestionTrackings
             this.loggingBrokerMock.VerifyNoOtherCalls();
             this.dateTimeBrokerMock.VerifyNoOtherCalls();
             this.securityBrokerMock.VerifyNoOtherCalls();
+            this.securityAuditBrokerMock.VerifyNoOtherCalls();
+            this.auditBrokerMock.VerifyNoOtherCalls();
             this.storageBrokerMock.VerifyNoOtherCalls();
         }
 
@@ -83,6 +85,8 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.IngestionTrackings
                 storageBrokerMock.Object,
                 dateTimeBrokerMock.Object,
                 securityBrokerMock.Object,
+                securityAuditBrokerMock.Object,
+                auditBrokerMock.Object,
                 loggingBrokerMock.Object)
             {
                 CallBase = true
@@ -186,6 +190,8 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.IngestionTrackings
 
             this.dateTimeBrokerMock.VerifyNoOtherCalls();
             this.securityBrokerMock.VerifyNoOtherCalls();
+            this.securityAuditBrokerMock.VerifyNoOtherCalls();
+            this.auditBrokerMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
             this.storageBrokerMock.VerifyNoOtherCalls();
         }
@@ -197,7 +203,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.IngestionTrackings
             DateTimeOffset randomDateTimeOffset = GetRandomDateTimeOffset();
             EntraUser randomEntraUser = CreateRandomEntraUser();
 
-            IngestionTracking randomIngestionTracking = 
+            IngestionTracking randomIngestionTracking =
                 CreateRandomIngestionTracking(randomDateTimeOffset, randomEntraUser.EntraUserId);
 
             IngestionTracking invalidIngestionTracking = randomIngestionTracking;
@@ -206,6 +212,8 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.IngestionTrackings
                 storageBrokerMock.Object,
                 dateTimeBrokerMock.Object,
                 securityBrokerMock.Object,
+                securityAuditBrokerMock.Object,
+                auditBrokerMock.Object,
                 loggingBrokerMock.Object)
             {
                 CallBase = true
@@ -278,7 +286,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.IngestionTrackings
             DateTimeOffset randomDateTimeOffset = GetRandomDateTimeOffset();
             EntraUser randomEntraUser = CreateRandomEntraUser();
 
-            IngestionTracking randomIngestionTracking = 
+            IngestionTracking randomIngestionTracking =
                 CreateRandomIngestionTracking(randomDateTimeOffset, randomEntraUser.EntraUserId);
 
             randomIngestionTracking.UpdatedDate = randomDateTimeOffset.AddMinutes(minutes);
@@ -287,6 +295,8 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.IngestionTrackings
                 storageBrokerMock.Object,
                 dateTimeBrokerMock.Object,
                 securityBrokerMock.Object,
+                securityAuditBrokerMock.Object,
+                auditBrokerMock.Object,
                 loggingBrokerMock.Object)
             {
                 CallBase = true
@@ -362,7 +372,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.IngestionTrackings
             DateTimeOffset randomDateTimeOffset = GetRandomDateTimeOffset();
             EntraUser randomEntraUser = CreateRandomEntraUser();
 
-            IngestionTracking randomIngestionTracking = 
+            IngestionTracking randomIngestionTracking =
                 CreateRandomModifyIngestionTracking(randomDateTimeOffset, randomEntraUser.EntraUserId);
 
             IngestionTracking nonExistIngestionTracking = randomIngestionTracking;
@@ -375,6 +385,8 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.IngestionTrackings
                 storageBrokerMock.Object,
                 dateTimeBrokerMock.Object,
                 securityBrokerMock.Object,
+                securityAuditBrokerMock.Object,
+                auditBrokerMock.Object,
                 loggingBrokerMock.Object)
             {
                 CallBase = true
@@ -445,7 +457,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.IngestionTrackings
             DateTimeOffset randomDateTimeOffset = GetRandomDateTimeOffset();
             EntraUser randomEntraUser = CreateRandomEntraUser();
 
-            IngestionTracking randomIngestionTracking = 
+            IngestionTracking randomIngestionTracking =
                 CreateRandomModifyIngestionTracking(randomDateTimeOffset, randomEntraUser.EntraUserId);
 
             IngestionTracking invalidIngestionTracking = randomIngestionTracking.DeepClone();
@@ -457,6 +469,8 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.IngestionTrackings
                 storageBrokerMock.Object,
                 dateTimeBrokerMock.Object,
                 securityBrokerMock.Object,
+                securityAuditBrokerMock.Object,
+                auditBrokerMock.Object,
                 loggingBrokerMock.Object)
             {
                 CallBase = true
@@ -532,7 +546,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.IngestionTrackings
             DateTimeOffset randomDateTimeOffset = GetRandomDateTimeOffset();
             EntraUser randomEntraUser = CreateRandomEntraUser();
 
-            IngestionTracking randomIngestionTracking = 
+            IngestionTracking randomIngestionTracking =
                 CreateRandomModifyIngestionTracking(randomDateTimeOffset, randomEntraUser.EntraUserId);
 
             IngestionTracking invalidIngestionTracking = randomIngestionTracking.DeepClone();
@@ -544,6 +558,8 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.IngestionTrackings
                 storageBrokerMock.Object,
                 dateTimeBrokerMock.Object,
                 securityBrokerMock.Object,
+                securityAuditBrokerMock.Object,
+                auditBrokerMock.Object,
                 loggingBrokerMock.Object)
             {
                 CallBase = true
@@ -618,7 +634,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.IngestionTrackings
             DateTimeOffset randomDateTimeOffset = GetRandomDateTimeOffset();
             EntraUser randomEntraUser = CreateRandomEntraUser();
 
-            IngestionTracking randomIngestionTracking = 
+            IngestionTracking randomIngestionTracking =
                 CreateRandomModifyIngestionTracking(randomDateTimeOffset, randomEntraUser.EntraUserId);
 
             IngestionTracking invalidIngestionTracking = randomIngestionTracking;
@@ -628,6 +644,8 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.IngestionTrackings
                 storageBrokerMock.Object,
                 dateTimeBrokerMock.Object,
                 securityBrokerMock.Object,
+                securityAuditBrokerMock.Object,
+                auditBrokerMock.Object,
                 loggingBrokerMock.Object)
             {
                 CallBase = true

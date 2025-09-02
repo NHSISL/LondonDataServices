@@ -58,8 +58,7 @@ namespace LHDS.Core.Tests.Integration.Pds
                     builder.AddConsole();
                     builder.AddApplicationInsights();
                 })
-                .AddDbContext<StorageBroker>()
-                .AddScoped<IStorageBroker>(service => service.GetRequiredService<StorageBroker>())
+                .AddDbContextFactory<StorageBroker>()
                 .AddPdsClient(configuration, claimsPrincipal)
                 .BuildServiceProvider();
 

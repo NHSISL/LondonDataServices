@@ -172,7 +172,10 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.ResolvedAddresses
             // Given
             Guid identifier = Guid.NewGuid();
             DateTimeOffset randomDateTimeOffset = GetRandomDateTimeOffset();
-            List<ResolvedAddress> randomResolvedAddresses = CreateRandomUnmatchedAddresses(count: 1);
+
+            List<ResolvedAddress> randomResolvedAddresses =
+                CreateRandomUnmatchedAddresses(count: 1, dateTimeOffset: randomDateTimeOffset);
+
             List<Exception> exceptions = new List<Exception>();
 
             this.identifierBrokerMock.Setup(broker =>
@@ -254,7 +257,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.ResolvedAddresses
 
             this.dateTimeBrokerMock.Verify(broker =>
                 broker.GetCurrentDateTimeOffsetAsync(),
-                    Times.Exactly(randomResolvedAddresses.Count * 4));
+                    Times.Exactly((randomResolvedAddresses.Count * 4) + 1));
 
             foreach (ResolvedAddress unMatchedResolvedAddress in randomResolvedAddresses)
             {
@@ -323,7 +326,10 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.ResolvedAddresses
             // Given
             Guid identifier = Guid.NewGuid();
             DateTimeOffset randomDateTimeOffset = GetRandomDateTimeOffset();
-            List<ResolvedAddress> randomResolvedAddresses = CreateRandomUnmatchedAddresses(count: 1);
+
+            List<ResolvedAddress> randomResolvedAddresses =
+                CreateRandomUnmatchedAddresses(count: 1, dateTimeOffset: randomDateTimeOffset);
+
             List<Exception> exceptions = new List<Exception>();
 
             this.identifierBrokerMock.Setup(broker =>
@@ -404,7 +410,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.ResolvedAddresses
 
             this.dateTimeBrokerMock.Verify(broker =>
                 broker.GetCurrentDateTimeOffsetAsync(),
-                    Times.Exactly(randomResolvedAddresses.Count * 4));
+                    Times.Exactly((randomResolvedAddresses.Count * 4) + 1));
 
             foreach (ResolvedAddress unMatchedResolvedAddress in randomResolvedAddresses)
             {
@@ -469,7 +475,10 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.ResolvedAddresses
             // Given
             Guid identifier = Guid.NewGuid();
             DateTimeOffset randomDateTimeOffset = GetRandomDateTimeOffset();
-            List<ResolvedAddress> randomResolvedAddresses = CreateRandomUnmatchedAddresses(count: 1);
+
+            List<ResolvedAddress> randomResolvedAddresses =
+                CreateRandomUnmatchedAddresses(count: 1, dateTimeOffset: randomDateTimeOffset);
+
             List<Exception> exceptions = new List<Exception>();
             var serviceException = new Exception();
 
@@ -557,7 +566,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.ResolvedAddresses
 
             this.dateTimeBrokerMock.Verify(broker =>
                 broker.GetCurrentDateTimeOffsetAsync(),
-                    Times.Exactly(randomResolvedAddresses.Count * 4));
+                    Times.Exactly((randomResolvedAddresses.Count * 4) + 1));
 
             foreach (ResolvedAddress unMatchedResolvedAddress in randomResolvedAddresses)
             {
@@ -585,7 +594,8 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.ResolvedAddresses
                     processing.ModifyResolvedAddressAsync(It.Is(SameResolvedAddressAs(
                         cleanedUnMatchedResolvedAddress))),
                             Times.Once);
-            };
+            }
+            ;
 
             this.loggingBrokerMock.Verify(broker =>
                 broker.LogErrorAsync(It.Is(SameExceptionAs(

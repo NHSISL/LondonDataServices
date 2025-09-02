@@ -41,12 +41,15 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.ResolvedAddresses
                 {
                     Addresses = "addresses"
                 })
-                { CallBase = true };
+            { CallBase = true };
 
             Guid identifier = Guid.NewGuid();
             EntraUser randomEntraUser = CreateRandomEntraUser();
             DateTimeOffset randomDateTimeOffset = GetRandomDateTimeOffset();
-            List<ResolvedAddress> randomResolvedAddresses = CreateRandomUnmatchedAddresses(count: 1);
+
+            List<ResolvedAddress> randomResolvedAddresses =
+                CreateRandomUnmatchedAddresses(count: 1, dateTimeOffset: randomDateTimeOffset);
+
             List<ResolvedAddress> unmatchedResolvedAddresses = randomResolvedAddresses;
             List<Exception> exceptions = new List<Exception>();
 
@@ -167,7 +170,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.ResolvedAddresses
 
             this.dateTimeBrokerMock.Verify(broker =>
               broker.GetCurrentDateTimeOffsetAsync(),
-                  Times.Exactly(4));
+                  Times.Exactly(5));
 
             this.resolvedAddressProcessingServiceMock.Verify(processing =>
                 processing.ModifyResolvedAddressAsync(It.Is(SameResolvedAddressAs(lockedResolvedAddress))),

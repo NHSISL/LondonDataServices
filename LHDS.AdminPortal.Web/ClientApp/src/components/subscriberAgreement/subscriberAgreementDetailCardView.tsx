@@ -12,6 +12,7 @@ import moment from "moment";
 import { SubscriberCredentialView } from "../../models/views/components/subscriberCredentials/subscriberCredentialView";
 import JSZip from "jszip";
 import { Alert } from "react-bootstrap";
+
 interface SubscriberAgreementDetailCardViewProps {
     subscriberCredential: SubscriberCredentialView;
     onDelete: (subscriberCredential: SubscriberCredentialView) => void;
@@ -32,14 +33,13 @@ const SubscriberAgreementDetailCardView: FunctionComponent<SubscriberAgreementDe
     const [ftpKeyCopied, setFtpKeyCopied] = React.useState<boolean>(false);
     const [gpgKeyCopied, setGpgKeyCopied] = React.useState<boolean>(false);
     const [confirmed, setConfirmed] = useState(false);
+    const isEmisSupplier = subscriberCredential.supplierId.toString().toUpperCase() === "67680F17-9D0C-4474-8B35-56CA8F9DF1F6";
 
     const decodeBase64 = (base64String: string) => {
-        try 
-        {
+        try {
             return atob(base64String);
-        } 
-        catch (error) 
-        {
+        }
+        catch (error) {
             console.error('Failed to decode base64 string', error);
             return '';
         }
@@ -90,82 +90,90 @@ const SubscriberAgreementDetailCardView: FunctionComponent<SubscriberAgreementDe
                         {subscriberCredential.supplierSharingAgreementShortName}
                     </SummaryListBaseValue>
                 </SummaryListBaseRow>
-                <SummaryListBaseRow>
-                    <SummaryListBaseKey>Supplier Sharing Agreement Guid</SummaryListBaseKey>
-                    <SummaryListBaseValue>
-                        {subscriberCredential.supplierSharingAgreementGuid!.toString()}
-                    </SummaryListBaseValue>
-                </SummaryListBaseRow>
-                <SummaryListBaseRow>
-                    <SummaryListBaseKey>Ftp UserName</SummaryListBaseKey>
-                    <SummaryListBaseValue>
-                        {subscriberCredential.ftpUserName}
-                    </SummaryListBaseValue>
-                </SummaryListBaseRow>
 
-                <SummaryListBaseRow>
-                    <SummaryListBaseKey>Ftp Public Key&nbsp;</SummaryListBaseKey>
-                    <SummaryListBaseValue>
-                        {ftpKeyCopied ?
-                            <FontAwesomeIcon icon={faCheck} className="text-secondary" />
-                            : <FontAwesomeIcon icon={faCopy} title="Copy Public Key" style={{ cursor: "pointer"}}
-                                onClick={() => {
-                                    const publicKey = decodeBase64(subscriberCredential.ftpPublicKey ?? "");
-                                    navigator.clipboard.writeText(publicKey);
-                                    setFtpKeyCopied(true);
+                {isEmisSupplier && (
+                    <SummaryListBaseRow>
+                        <SummaryListBaseKey>Supplier Sharing Agreement Guid</SummaryListBaseKey>
+                        <SummaryListBaseValue>
+                            {subscriberCredential.supplierSharingAgreementGuid!.toString()}
+                        </SummaryListBaseValue>
+                    </SummaryListBaseRow>
+                )}
+
+                {isEmisSupplier && (
+                    <SummaryListBaseRow>
+                        <SummaryListBaseKey>Ftp UserName</SummaryListBaseKey>
+                        <SummaryListBaseValue>
+                            {subscriberCredential.ftpUserName}
+                        </SummaryListBaseValue>
+                    </SummaryListBaseRow>
+                )}
+                {isEmisSupplier && (
+                    <SummaryListBaseRow>
+                        <SummaryListBaseKey>Ftp Public Key&nbsp;</SummaryListBaseKey>
+                        <SummaryListBaseValue>
+                            {ftpKeyCopied ?
+                                <FontAwesomeIcon icon={faCheck} className="text-secondary" />
+                                : <FontAwesomeIcon icon={faCopy} title="Copy Public Key" style={{ cursor: "pointer" }}
+                                    onClick={() => {
+                                        const publicKey = decodeBase64(subscriberCredential.ftpPublicKey ?? "");
+                                        navigator.clipboard.writeText(publicKey);
+                                        setFtpKeyCopied(true);
+                                    }}
+                                />
+                            }  <span className="d-none">&nbsp;
+                                {decodeBase64(subscriberCredential.ftpPublicKey ?? "")}</span>
+                        </SummaryListBaseValue>
+                    </SummaryListBaseRow>
+                )}
+                {isEmisSupplier && (
+                    <SummaryListBaseRow>
+                        <SummaryListBaseKey>Gpg Public Key&nbsp;
+                        </SummaryListBaseKey>
+                        <SummaryListBaseValue>
+                            {gpgKeyCopied ?
+                                <FontAwesomeIcon icon={faCheck} className="text-secondary" />
+                                : <FontAwesomeIcon icon={faCopy} title="Copy GPG Key" style={{ cursor: "pointer" }}
+                                    onClick={() => {
+                                        const gpgPublicKey = decodeBase64(subscriberCredential.gpgPublicKey ?? "");
+                                        navigator.clipboard.writeText(gpgPublicKey);
+                                        setGpgKeyCopied(true);
+                                    }}
+                                />
+                            } <span className="d-none"> &nbsp;
+                                {decodeBase64(subscriberCredential.gpgPublicKey ?? "")}</span>
+                        </SummaryListBaseValue>
+                    </SummaryListBaseRow>
+                )}
+                {isEmisSupplier && (
+                    <SummaryListBaseRow>
+                        <SummaryListBaseKey>Keys to send Emis Zip</SummaryListBaseKey>
+                        <SummaryListBaseValue>
+                            <ButtonBase
+                                onClick={async () => {
+                                    const zip = new JSZip();
+                                    const ftpPublicKey = decodeBase64(subscriberCredential.ftpPublicKey ?? "");
+                                    const gpgPublicKey = decodeBase64(subscriberCredential.gpgPublicKey ?? "");
+
+                                    zip.file("ftpPublicKey.ssh", ftpPublicKey);
+                                    zip.file("gpgPublicKey.asc", gpgPublicKey);
+
+                                    const zipBlob = await zip.generateAsync({ type: "blob" });
+
+                                    const url = URL.createObjectURL(zipBlob);
+                                    const link = document.createElement("a");
+                                    link.href = url;
+                                    link.download = subscriberCredential.supplierSharingAgreementShortName + "_keys.zip";
+                                    link.click();
+                                    URL.revokeObjectURL(url);
                                 }}
-                            />
-                        }  <span className="d-none">&nbsp;
-                            {decodeBase64(subscriberCredential.ftpPublicKey ?? "")}</span>
-                    </SummaryListBaseValue>
-                </SummaryListBaseRow>
-
-                <SummaryListBaseRow>
-                    <SummaryListBaseKey>Gpg Public Key&nbsp;
-                    </SummaryListBaseKey>
-                    <SummaryListBaseValue>
-                        {gpgKeyCopied ?
-                            <FontAwesomeIcon icon={faCheck} className="text-secondary" />
-                            : <FontAwesomeIcon icon={faCopy} title="Copy GPG Key" style={{ cursor: "pointer" }}
-                                onClick={() => {
-                                    const gpgPublicKey = decodeBase64(subscriberCredential.gpgPublicKey ?? ""); 
-                                    navigator.clipboard.writeText(gpgPublicKey);
-                                    setGpgKeyCopied(true);
-                                }}
-                            />
-                        } <span className="d-none"> &nbsp;
-                            {decodeBase64(subscriberCredential.gpgPublicKey ?? "")}</span>
-                    </SummaryListBaseValue>
-                </SummaryListBaseRow>
-
-                <SummaryListBaseRow>
-                    <SummaryListBaseKey>Keys to send Emis Zip</SummaryListBaseKey>
-                    <SummaryListBaseValue>
-                        <ButtonBase
-                            onClick={async () => {
-                                const zip = new JSZip();
-                                const ftpPublicKey = decodeBase64(subscriberCredential.ftpPublicKey ?? "");
-                                const gpgPublicKey = decodeBase64(subscriberCredential.gpgPublicKey ?? "");
-
-                                zip.file("ftpPublicKey.ssh", ftpPublicKey);
-                                zip.file("gpgPublicKey.asc", gpgPublicKey);
-
-                                const zipBlob = await zip.generateAsync({ type: "blob" });
-
-                                const url = URL.createObjectURL(zipBlob);
-                                const link = document.createElement("a");
-                                link.href = url;
-                                link.download = subscriberCredential.supplierSharingAgreementShortName +  "_keys.zip";
-                                link.click();
-                                URL.revokeObjectURL(url);
-                            }}
-                            view
-                        >
-                            Download Key Zip
-                        </ButtonBase>
-                    </SummaryListBaseValue>
-                </SummaryListBaseRow>
-
+                                view
+                            >
+                                Download Key Zip
+                            </ButtonBase>
+                        </SummaryListBaseValue>
+                    </SummaryListBaseRow>
+                )}
                 <SummaryListBaseRow>
                     <SummaryListBaseKey>Is Active</SummaryListBaseKey>
                     <SummaryListBaseValue>
@@ -215,8 +223,7 @@ const SubscriberAgreementDetailCardView: FunctionComponent<SubscriberAgreementDe
                     </SecuredComponents>
                     </>
                 }
-
-                {mode === 'VIEW' &&
+                {mode === 'VIEW' && isEmisSupplier &&
                     <span className="float-end">
                         <SecuredComponents allowedRoles={securityPoints.subscriberAgreement.edit}>
                             <ButtonBase onClick={() => onModeChange('CONFIRMREGEN')} info title={"Re-Generate Keys"}>
@@ -236,12 +243,12 @@ const SubscriberAgreementDetailCardView: FunctionComponent<SubscriberAgreementDe
                                     permanently lost and cannot be recovered.
                                 </strong>
                                 <br /><br />
-                            <label>
-                                <input
-                                    type="checkbox"
-                                    onChange={(e) => setConfirmed(e.target.checked)}
-                                />
-                                &nbsp;I confirm that I understand and accept this outcome.
+                                <label>
+                                    <input
+                                        type="checkbox"
+                                        onChange={(e) => setConfirmed(e.target.checked)}
+                                    />
+                                    &nbsp;I confirm that I understand and accept this outcome.
                                 </label>
                             </Alert>
                             <ButtonBase onClick={() => onModeChange('VIEW')} cancel>Cancel</ButtonBase>
@@ -249,7 +256,7 @@ const SubscriberAgreementDetailCardView: FunctionComponent<SubscriberAgreementDe
                             {confirmed && (
                                 <ButtonBase onClick={() => onRegenerate(subscriberCredential)} view>Yes, Re-Generate</ButtonBase>
                             )}
-                           
+
                         </>
                     </SecuredComponents>
                 }

@@ -175,7 +175,10 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.ResolvedAddresses
         {
             // Given
             DateTimeOffset randomDateTimeOffset = GetRandomDateTimeOffset();
-            List<ResolvedAddress> randomResolvedAddresses = CreateRandomUnmatchedAddresses(count: 2);
+
+            List<ResolvedAddress> randomResolvedAddresses =
+                CreateRandomUnmatchedAddresses(count: 2, dateTimeOffset: randomDateTimeOffset);
+
             List<ResolvedAddress> storageResolvedAddresses = randomResolvedAddresses.DeepClone();
             storageResolvedAddresses.ForEach(address => address.IsProcessed = true);
             List<ResolvedAddress> storageBatchResolvedAddresses = randomResolvedAddresses.DeepClone();
@@ -339,7 +342,10 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.ResolvedAddresses
         {
             // Given
             DateTimeOffset randomDateTimeOffset = GetRandomDateTimeOffset();
-            List<ResolvedAddress> randomResolvedAddresses = CreateRandomUnmatchedAddresses(count: 2);
+
+            List<ResolvedAddress> randomResolvedAddresses =
+                CreateRandomUnmatchedAddresses(count: 2, dateTimeOffset: randomDateTimeOffset);
+
             List<ResolvedAddress> storageResolvedAddresses = randomResolvedAddresses.DeepClone();
             storageResolvedAddresses.ForEach(address => address.IsProcessed = true);
             List<ResolvedAddress> storageBatchResolvedAddresses = randomResolvedAddresses.DeepClone();
@@ -500,7 +506,10 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.ResolvedAddresses
         {
             // Given
             DateTimeOffset randomDateTimeOffset = GetRandomDateTimeOffset();
-            List<ResolvedAddress> randomResolvedAddresses = CreateRandomUnmatchedAddresses(count: 2);
+
+            List<ResolvedAddress> randomResolvedAddresses =
+                CreateRandomUnmatchedAddresses(count: 2, dateTimeOffset: randomDateTimeOffset);
+
             List<ResolvedAddress> storageResolvedAddresses = randomResolvedAddresses.DeepClone();
             storageResolvedAddresses.ForEach(address => address.IsProcessed = true);
             List<ResolvedAddress> storageBatchResolvedAddresses = randomResolvedAddresses.DeepClone();

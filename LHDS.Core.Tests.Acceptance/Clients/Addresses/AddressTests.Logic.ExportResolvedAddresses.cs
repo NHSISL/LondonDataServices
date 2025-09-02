@@ -19,7 +19,11 @@ namespace LHDS.Core.Tests.Acceptance.Clients.Addresses
         public async Task ShouldExportResolvedAddressesAsync()
         {
             //Given
-            List<ResolvedAddress> randomResolvedAddresses = CreateRandomUnmatchedAddresses(GetRandomNumber());
+            DateTimeOffset randomDateTimeOffset = await this.dateTimeBroker.GetCurrentDateTimeOffsetAsync();
+
+            List<ResolvedAddress> randomResolvedAddresses =
+                CreateRandomUnmatchedAddresses(count: GetRandomNumber(), dateTimeOffset: randomDateTimeOffset);
+
             randomResolvedAddresses.ForEach(address => address.IsProcessed = true);
 
             foreach (ResolvedAddress resolvedAddress in randomResolvedAddresses)

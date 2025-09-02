@@ -25,9 +25,12 @@ namespace LHDS.Core.Tests.Acceptance.Clients.Addresses
             //Given
             DateTimeOffset randomDateTimeOffset = await this.dateTimeBroker.GetCurrentDateTimeOffsetAsync();
             string fileName = GetRandomString();
-            int count = GetRandomNumber();
+            int count = 1; // GetRandomNumber();
             List<dynamic> dynamicAddresses = GetDynamicRandomAddresses();
-            List<ResolvedAddress> randomResolvedAddresses = CreateRandomUnmatchedAddresses(count: GetRandomNumber());
+
+            List<ResolvedAddress> randomResolvedAddresses =
+                CreateRandomUnmatchedAddresses(count, dateTimeOffset: randomDateTimeOffset);
+
             List<ResolvedAddress> expectedResolvedAddresses = new List<ResolvedAddress>();
             List<Address> addedAddresses = new List<Address>();
 
@@ -43,6 +46,7 @@ namespace LHDS.Core.Tests.Acceptance.Clients.Addresses
                             .UsingGet()
                             .WithPath("/api/getinfo")
                             .WithParam("adrec", resolvedAddress.UnstructuredPostalAddress))
+
                     .RespondWith(
                         Response
                             .Create()

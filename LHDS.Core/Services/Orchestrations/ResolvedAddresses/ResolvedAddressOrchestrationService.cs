@@ -158,7 +158,6 @@ namespace LHDS.Core.Services.Orchestrations.ResolvedAddresses
                         };
 
                         audits.Add(resolvedAddressMatchingAudit);
-
                         unMatchedResolvedAddress.IsProcessing = true;
                         unMatchedResolvedAddress.RetryCount += 1;
                         unMatchedResolvedAddress.UpdatedDate = await dateTimeBroker.GetCurrentDateTimeOffsetAsync();

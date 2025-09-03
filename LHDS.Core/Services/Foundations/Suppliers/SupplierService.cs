@@ -9,7 +9,6 @@ using LHDS.Core.Brokers.DateTimes;
 using LHDS.Core.Brokers.Loggings;
 using LHDS.Core.Brokers.Securities;
 using LHDS.Core.Brokers.Storages.Sql;
-using LHDS.Core.Models.Foundations.ResolvedAddresses;
 using LHDS.Core.Models.Foundations.Suppliers;
 
 namespace LHDS.Core.Services.Foundations.Suppliers
@@ -66,19 +65,29 @@ namespace LHDS.Core.Services.Foundations.Suppliers
                 return maybeSupplier;
             });
 
-        public ValueTask<Supplier> ModifySupplierAsync(Supplier supplier) =>
+        public ValueTask<Supplier> ModifySupplierAsync(Supplier Supplier) =>
             TryCatch(async () =>
             {
-                Supplier supplierWithModifyAuditApplied = await ApplyModifyAuditAsync(supplier);
-                await ValidateSupplierOnModifyAsync(supplierWithModifyAuditApplied);
+                Supplier SupplierWithModifyAuditApplied =
+                    await ApplyModifyAuditAsync(Supplier);
+
+                await ValidateSupplierOnModifyAsync(SupplierWithModifyAuditApplied);
 
                 Supplier maybeSupplier =
-                    await this.storageBroker.SelectSupplierByIdAsync(supplier.Id);
+                    await this.storageBroker.SelectSupplierByIdAsync(Supplier.Id);
 
-                ValidateStorageSupplier(maybeSupplier, supplier.Id);
-                ValidateAgainstStorageSupplierOnModify(inputSupplier: supplier, storageSupplier: maybeSupplier);
+                ValidateStorageSupplier(maybeSupplier, supplierId: Supplier.Id);
 
-                return await this.storageBroker.UpdateSupplierAsync(supplier);
+                Supplier SupplierWithModifyAuditAppliedEnsured =
+                  await EnsureCreatedAuditPropertiesIsSameAsStorageAsync(
+                      SupplierWithModifyAuditApplied,
+                      maybeSupplier);
+
+                ValidateAgainstStorageSupplierOnModify(
+                    inputSupplier: SupplierWithModifyAuditApplied,
+                    storageSupplier: maybeSupplier);
+
+                return await this.storageBroker.UpdateSupplierAsync(SupplierWithModifyAuditApplied);
             });
 
         public ValueTask<Supplier> RemoveSupplierByIdAsync(Guid supplierId) =>

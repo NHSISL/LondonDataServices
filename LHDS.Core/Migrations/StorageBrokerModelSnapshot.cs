@@ -453,6 +453,36 @@ namespace LHDS.Core.Migrations
                             }));
                 });
 
+            modelBuilder.Entity("LHDS.Core.Models.Foundations.DecisionPolls.DecisionPoll", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("CreatedBy")
+                        .IsRequired()
+                        .HasMaxLength(255)
+                        .HasColumnType("nvarchar(255)");
+
+                    b.Property<DateTimeOffset>("CreatedDate")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<DateTimeOffset>("LastPoll")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<string>("UpdatedBy")
+                        .IsRequired()
+                        .HasMaxLength(255)
+                        .HasColumnType("nvarchar(255)");
+
+                    b.Property<DateTimeOffset>("UpdatedDate")
+                        .HasColumnType("datetimeoffset");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("DecisionPolls", "Decision");
+                });
+
             modelBuilder.Entity("LHDS.Core.Models.Foundations.IngestionTrackingAudits.IngestionTrackingAudit", b =>
                 {
                     b.Property<Guid>("Id")

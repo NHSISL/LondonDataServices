@@ -32,6 +32,7 @@ using LHDS.Core.Services.Processings.Documents;
 using LHDS.Core.Services.Processings.Ontologies;
 using LHDS.Core.Services.Processings.TerminologyArtifacts;
 using LHDS.Core.Services.Processings.TerminologyPolls;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -99,11 +100,17 @@ namespace LHDS.Core.Clients.Extensions
             ClaimsPrincipal claimsPrincipal,
             IConfiguration configuration)
         {
+            services.AddTransient<IStorageBroker>(sp =>
+            {
+                var factory = sp.GetRequiredService<IDbContextFactory<StorageBroker>>();
+
+                return factory.CreateDbContext();
+            });
+
             services.AddTransient<IBlobStorageBroker, BlobStorageBroker>();
             services.AddTransient<ILoggingBroker, LoggingBroker>();
             services.AddTransient<IDateTimeBroker, DateTimeBroker>();
             services.AddTransient<IIdentifierBroker, IdentifierBroker>();
-            services.AddTransient<IStorageBroker, StorageBroker>();
             services.AddTransient<IOntologyBroker, OntologyBroker>();
 
             OntologyConfiguration? ontologyConfiguration =

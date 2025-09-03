@@ -67,7 +67,9 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.SubscriberPractices
             SubscriberPractice noSubscriberPractice = null;
 
             var notFoundSubscriberPracticeException =
-                new NotFoundSubscriberPracticeException(someSubscriberPracticeId);
+                new NotFoundSubscriberPracticeException(
+                    message: $"Couldn't find subscriberPractice with " +
+                    $"subscriberPracticeId: {someSubscriberPracticeId}.");
 
             var expectedSubscriberPracticeValidationException =
                 new SubscriberPracticeValidationException(

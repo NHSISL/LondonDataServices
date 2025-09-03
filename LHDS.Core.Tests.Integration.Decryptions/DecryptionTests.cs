@@ -4,6 +4,7 @@
 
 using System.Security.Claims;
 using System.Security.Principal;
+using LHDS.Core.Brokers.Storages.Sql;
 using LHDS.Core.Clients;
 using LHDS.Core.Clients.Extensions;
 using LHDS.Core.Providers.Cryptography.Extensions;
@@ -47,6 +48,7 @@ namespace LHDS.Core.Tests.Integration.Decryptions
                     builder.AddConsole();
                     builder.AddApplicationInsights();
                 })
+                .AddDbContextFactory<StorageBroker>()
                 .AddDecryptionClient(configuration, claimsPrincipal)
                 .UseGpgCryptographyProvider(configuration, builder => builder.AddGpgCryptographyProvider())
                 .AddTransient<IDownloadProvider, MockDownloadProvider>()

@@ -21,7 +21,11 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.ResolvedAddresses
         public async Task ShouldExportResolvedAddressAsync()
         {
             // Given
-            List<ResolvedAddress> randomResolvedAddresses = CreateRandomUnmatchedAddresses(count: 2);
+            DateTimeOffset randomDateTimeOffset = GetRandomDateTimeOffset();
+
+            List<ResolvedAddress> randomResolvedAddresses =
+                CreateRandomUnmatchedAddresses(count: 2, dateTimeOffset: randomDateTimeOffset);
+
             List<ResolvedAddress> storageResolvedAddresses = randomResolvedAddresses.DeepClone();
             storageResolvedAddresses.ForEach(address => address.IsProcessed = true);
             List<ResolvedAddress> processingResolvedAddresses = storageResolvedAddresses.DeepClone();

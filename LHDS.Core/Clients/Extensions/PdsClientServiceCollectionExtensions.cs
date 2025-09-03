@@ -15,6 +15,8 @@ using System.Text;
 using Azure.Core.Pipeline;
 using Azure.Identity;
 using Azure.Storage.Blobs;
+using ISL.Security.Client.Models.Clients;
+using LHDS.Core.Brokers.Audits;
 using LHDS.Core.Brokers.CsvHelpers;
 using LHDS.Core.Brokers.DateTimes;
 using LHDS.Core.Brokers.Identifiers;
@@ -27,12 +29,14 @@ using LHDS.Core.Models.Brokers.Mesh;
 using LHDS.Core.Models.Brokers.Storages.Blobs;
 using LHDS.Core.Models.Configurations;
 using LHDS.Core.Models.Orchestrations.Pds;
+using LHDS.Core.Services.Foundations.Audits;
 using LHDS.Core.Services.Foundations.Documents;
 using LHDS.Core.Services.Foundations.IngestionTrackingAudits;
 using LHDS.Core.Services.Foundations.IngestionTrackings;
 using LHDS.Core.Services.Foundations.Mesh;
 using LHDS.Core.Services.Foundations.PdsAudits;
 using LHDS.Core.Services.Orchestrations.Pds;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -207,17 +211,38 @@ namespace LHDS.Core.Clients.Extensions
                 services.AddSingleton(pdsConfiguration);
             }
 
+            services.AddTransient<IAuditClient, AuditClient>();
             services.AddTransient<IPdsClient, PdsClient>();
             services.AddTransient<IAzureBlobClient, AzureBlobClient>();
         }
 
         private static void AddBrokers(IServiceCollection services, ClaimsPrincipal claimsPrincipal, bool acceptanceTest)
         {
+            if (claimsPrincipal != null)
+            {
+                services.AddTransient<ISecurityBroker>(_ => new SecurityBroker(claimsPrincipal));
+
+                services.AddTransient<ISecurityAuditBroker>(_ =>
+                    new SecurityAuditBroker(claimsPrincipal, new SecurityConfigurations()));
+            }
+            else
+            {
+                services.AddTransient<ISecurityBroker, SecurityBroker>();
+                services.AddTransient<ISecurityAuditBroker, SecurityAuditBroker>();
+            }
+
+            services.AddTransient<IStorageBroker>(sp =>
+            {
+                var factory = sp.GetRequiredService<IDbContextFactory<StorageBroker>>();
+
+                return factory.CreateDbContext();
+            });
+
             services.AddTransient<ILoggingBroker, LoggingBroker>();
             services.AddTransient<ICsvHelperBroker, CsvHelperBroker>();
             services.AddTransient<IDateTimeBroker, DateTimeBroker>();
             services.AddTransient<IIdentifierBroker, IdentifierBroker>();
-            services.AddTransient<IStorageBroker, StorageBroker>();
+            services.AddTransient<IAuditBroker, AuditBroker>();
 
             if (!acceptanceTest)
             {
@@ -248,6 +273,7 @@ namespace LHDS.Core.Clients.Extensions
             services.AddTransient<IIngestionTrackingService, IngestionTrackingService>();
             services.AddTransient<IMeshService, MeshService>();
             services.AddTransient<IPdsAuditService, PdsAuditService>();
+            services.AddTransient<IAuditService, AuditService>();
         }
 
         public static X509Certificate2 LoadCertificate(byte[] certBytes, string password)

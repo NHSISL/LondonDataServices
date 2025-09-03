@@ -362,7 +362,11 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.SubscriberPractices
                 CreateRandomModifySubscriberPractice(randomDateTimeOffset, randomEntraUser.EntraUserId);
 
             SubscriberPractice nonExistSubscriberPractice = invalidSubscriberPractice;
-            var notFoundSubscriberPracticeException = new NotFoundSubscriberPracticeException(nonExistSubscriberPractice.Id);
+
+            var notFoundSubscriberPracticeException = 
+                new NotFoundSubscriberPracticeException(
+                    message: $"Couldn't find subscriberPractice with " +
+                    $"subscriberPracticeId: {nonExistSubscriberPractice.Id}.");
 
             var expectedSubscriberPracticeValidationException =
                 new SubscriberPracticeValidationException(

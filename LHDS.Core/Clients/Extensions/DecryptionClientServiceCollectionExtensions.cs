@@ -12,6 +12,7 @@ using System.Text;
 using Azure.Core.Pipeline;
 using Azure.Identity;
 using Azure.Storage.Blobs;
+using ISL.Security.Client.Models.Clients;
 using LHDS.Core.Brokers.Audits;
 using LHDS.Core.Brokers.Cryptographies;
 using LHDS.Core.Brokers.CryptographyKeys;
@@ -56,6 +57,7 @@ using LHDS.Core.Services.Processings.SecureDatas;
 using LHDS.Core.Services.Processings.SpecificationObjects;
 using LHDS.Core.Services.Processings.SubscriberAgreements;
 using Microsoft.AspNetCore.Http;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -192,14 +194,32 @@ namespace LHDS.Core.Clients.Extensions
             ClaimsPrincipal claimsPrincipal,
             bool acceptanceTest)
         {
-            services.AddTransient<IStorageBroker, StorageBroker>();
+            if (claimsPrincipal != null)
+            {
+                services.AddTransient<ISecurityBroker>(_ => new SecurityBroker(claimsPrincipal));
+
+                services.AddTransient<ISecurityAuditBroker>(_ =>
+                    new SecurityAuditBroker(claimsPrincipal, new SecurityConfigurations()));
+            }
+            else
+            {
+                services.AddTransient<ISecurityBroker, SecurityBroker>();
+                services.AddTransient<ISecurityAuditBroker, SecurityAuditBroker>();
+            }
+
+            services.AddTransient<IStorageBroker>(sp =>
+            {
+                var factory = sp.GetRequiredService<IDbContextFactory<StorageBroker>>();
+
+                return factory.CreateDbContext();
+            });
+
             services.AddTransient<ICryptographyBroker, CryptographyBroker>();
             services.AddTransient<ICryptographyKeyBroker, GpgKeyBroker>();
             services.AddTransient<ICryptographyKeyBroker, SshKeyBroker>();
             services.AddTransient<ILoggingBroker, LoggingBroker>();
             services.AddTransient<IDateTimeBroker, DateTimeBroker>();
             services.AddTransient<IIdentifierBroker, IdentifierBroker>();
-            services.AddTransient<ISecurityBroker, SecurityBroker>();
             services.AddTransient<IHashBroker, HashBroker>();
             services.AddTransient<IAuditBroker, AuditBroker>();
 
@@ -245,16 +265,6 @@ namespace LHDS.Core.Clients.Extensions
                 }
 
                 services.AddTransient<IAzureBlobClient, AzureBlobClient>();
-            }
-
-            if (claimsPrincipal != null)
-            {
-                var securityBroker = new SecurityBroker(claimsPrincipal);
-                services.AddTransient<ISecurityBroker>(_ => securityBroker);
-            }
-            else
-            {
-                services.AddTransient<ISecurityBroker, SecurityBroker>();
             }
         }
 

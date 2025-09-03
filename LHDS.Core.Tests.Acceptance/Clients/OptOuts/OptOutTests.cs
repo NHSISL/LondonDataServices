@@ -12,6 +12,7 @@ using LHDS.Core.Brokers.DateTimes;
 using LHDS.Core.Brokers.Mesh;
 using LHDS.Core.Brokers.Securities;
 using LHDS.Core.Brokers.Storages.Blobs;
+using LHDS.Core.Brokers.Storages.Sql;
 using LHDS.Core.Clients;
 using LHDS.Core.Clients.Extensions;
 using LHDS.Core.Models.Brokers.Mesh;
@@ -75,11 +76,17 @@ namespace LHDS.Core.Tests.Acceptance.Clients.OptOuts
             serviceCollection.AddSingleton<BlobContainers>(blobStorageSettings.BlobContainers);
 
             serviceCollection
+                .AddDbContextFactory<StorageBroker>()
                 .AddTransient<IMeshBroker>(serviceProvider => meshBrokerMock.Object)
-                .AddTransient<IBlobStorageBroker>(serviceProvider => blobStorageBrokerMock.Object);
+                .AddTransient<IBlobStorageBroker>(serviceProvider => blobStorageBrokerMock.Object)
+                .AddOptOutClientForAcceptance(this.dependencyBroker.Configuration, claimsPrincipal);
 
-            serviceCollection.AddOptOutClientForAcceptance(this.dependencyBroker.Configuration, claimsPrincipal);
-            var serviceProvider = serviceCollection.BuildServiceProvider();
+            var serviceProvider = serviceCollection.BuildServiceProvider(new ServiceProviderOptions
+            {
+                ValidateOnBuild = true,
+                ValidateScopes = true
+            });
+
             this.optOutConfiguration = serviceProvider.GetService<OptOutConfiguration>();
             this.meshConfiguration = serviceProvider.GetService<MeshConfiguration>();
             this.csvHelperBroker = serviceProvider.GetService<ICsvHelperBroker>();

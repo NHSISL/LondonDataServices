@@ -93,7 +93,10 @@ namespace LHDS.Core.Tests.Acceptance.Clients.EmisLandings
                 new Claim(ClaimTypes.Role, "ISL.LDS.AdminApi.Configurations")
             }));
 
-            serviceCollection.AddEmisLandingClient(this.dependencyBroker.Configuration, claimsPrincipal);
+            serviceCollection
+                .AddDbContextFactory<StorageBroker>()
+                .AddEmisLandingClient(this.dependencyBroker.Configuration, claimsPrincipal);
+
             serviceCollection.Remove(new ServiceDescriptor(typeof(IDownloadProvider), typeof(FtpDownloadProvider)));
 
             string assemblyPath = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
@@ -106,8 +109,12 @@ namespace LHDS.Core.Tests.Acceptance.Clients.EmisLandings
                     LocalRootFolder = defaultFolderPath
                 }));
 
-            serviceCollection.AddSingleton<IStorageBroker, StorageBroker>();
-            var serviceProvider = serviceCollection.BuildServiceProvider();
+            var serviceProvider = serviceCollection.BuildServiceProvider(new ServiceProviderOptions
+            {
+                ValidateOnBuild = true,
+                ValidateScopes = true
+            });
+
             this.ingestionTrackingService = serviceProvider.GetService<IIngestionTrackingService>();
             this.supplierService = serviceProvider.GetService<ISupplierService>();
             this.dataSetService = serviceProvider.GetService<IDataSetService>();

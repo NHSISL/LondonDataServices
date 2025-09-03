@@ -15,6 +15,8 @@ using System.Text;
 using Azure.Core.Pipeline;
 using Azure.Identity;
 using Azure.Storage.Blobs;
+using ISL.Security.Client.Models.Clients;
+using LHDS.Core.Brokers.Audits;
 using LHDS.Core.Brokers.CsvHelpers;
 using LHDS.Core.Brokers.DateTimes;
 using LHDS.Core.Brokers.Identifiers;
@@ -27,6 +29,7 @@ using LHDS.Core.Models.Brokers.Mesh;
 using LHDS.Core.Models.Brokers.Storages.Blobs;
 using LHDS.Core.Models.Configurations;
 using LHDS.Core.Models.Orchestrations.OptOuts;
+using LHDS.Core.Services.Foundations.Audits;
 using LHDS.Core.Services.Foundations.Documents;
 using LHDS.Core.Services.Foundations.IngestionTrackingAudits;
 using LHDS.Core.Services.Foundations.IngestionTrackings;
@@ -36,6 +39,7 @@ using LHDS.Core.Services.Orchestrations.OptOuts;
 using LHDS.Core.Services.Processings.Documents;
 using LHDS.Core.Services.Processings.Mesh;
 using LHDS.Core.Services.Processings.OptOuts;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -177,26 +181,36 @@ namespace LHDS.Core.Clients.Extensions
 
         private static void AddBrokers(IServiceCollection services, ClaimsPrincipal claimsPrincipal, bool acceptanceTest)
         {
+            if (claimsPrincipal != null)
+            {
+                services.AddTransient<ISecurityBroker>(_ => new SecurityBroker(claimsPrincipal));
+
+                services.AddTransient<ISecurityAuditBroker>(_ =>
+                    new SecurityAuditBroker(claimsPrincipal, new SecurityConfigurations()));
+            }
+            else
+            {
+                services.AddTransient<ISecurityBroker, SecurityBroker>();
+                services.AddTransient<ISecurityAuditBroker, SecurityAuditBroker>();
+            }
+
+            services.AddTransient<IStorageBroker>(sp =>
+            {
+                var factory = sp.GetRequiredService<IDbContextFactory<StorageBroker>>();
+
+                return factory.CreateDbContext();
+            });
+
+            services.AddTransient<IAuditBroker, AuditBroker>();
             services.AddTransient<ILoggingBroker, LoggingBroker>();
             services.AddTransient<ICsvHelperBroker, CsvHelperBroker>();
             services.AddTransient<IDateTimeBroker, DateTimeBroker>();
             services.AddTransient<IIdentifierBroker, IdentifierBroker>();
-            services.AddTransient<IStorageBroker, StorageBroker>();
 
             if (!acceptanceTest)
             {
                 services.AddTransient<IBlobStorageBroker, BlobStorageBroker>();
                 services.AddTransient<IMeshBroker, MeshBroker>();
-            }
-
-            if (claimsPrincipal != null)
-            {
-                var securityBroker = new SecurityBroker(claimsPrincipal);
-                services.AddTransient<ISecurityBroker>(_ => securityBroker);
-            }
-            else
-            {
-                services.AddTransient<ISecurityBroker, SecurityBroker>();
             }
         }
 
@@ -207,6 +221,7 @@ namespace LHDS.Core.Clients.Extensions
             services.AddTransient<IIngestionTrackingService, IngestionTrackingService>();
             services.AddTransient<IMeshService, MeshService>();
             services.AddTransient<IOptOutService, OptOutService>();
+            services.AddTransient<IAuditService, AuditService>();
         }
 
         private static void AddProcessingServices(IServiceCollection services)
@@ -256,6 +271,7 @@ namespace LHDS.Core.Clients.Extensions
                 services.AddSingleton(optOptOutConfiguration);
             }
 
+            services.AddTransient<IAuditClient, AuditClient>();
             services.AddTransient<IOptOutClient, OptOutClient>();
             services.AddTransient<IAzureBlobClient, AzureBlobClient>();
         }

@@ -135,7 +135,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Ingress
 
             this.ingestionTrackingProcessingServiceMock
                 .Setup(service => service.RetrieveIngestionTrackingByIdAsync(ingestionTrackingId))
-                .ReturnsAsync(storageIngestionTracking);
+                    .ReturnsAsync(storageIngestionTracking);
 
             this.specificationObjectProcessingServiceMock.Setup(service =>
                 service.RetrieveSpecificationObjectsByDataSetSpecificationIdAsync(datasetSpecificationId))
@@ -160,6 +160,12 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Ingress
             {
                 CallBase = true
             };
+
+            this.documentProcessingServiceMock
+                .Setup(service => service.RemoveDocumentByFileNameAsync(
+                    batchReadyFilePath,
+                    blobContainers.Ingress))
+                .Returns(ValueTask.CompletedTask);
 
             this.documentProcessingServiceMock
                 .Setup(service => service.AddDocumentAsync(
@@ -195,6 +201,10 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Ingress
                     storageIngestionTracking.SubscriberAgreementId.Value,
                     true),
                         Times.Once);
+
+            this.documentProcessingServiceMock.Verify(service =>
+                service.RemoveDocumentByFileNameAsync(batchReadyFilePath, blobContainers.Ingress),
+                    Times.Once);
 
             this.documentProcessingServiceMock.Verify(service =>
                 service.AddDocumentAsync(

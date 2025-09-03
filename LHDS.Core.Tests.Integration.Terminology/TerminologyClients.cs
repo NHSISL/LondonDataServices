@@ -4,6 +4,7 @@
 
 using System.Security.Claims;
 using System.Security.Principal;
+using LHDS.Core.Brokers.Storages.Sql;
 using LHDS.Core.Clients;
 using LHDS.Core.Clients.Extensions;
 using Microsoft.Extensions.Configuration;
@@ -39,6 +40,7 @@ namespace LHDS.Core.Tests.Integration.Terminology
                     builder.AddConsole();
                     builder.AddApplicationInsights();
                 })
+                .AddDbContextFactory<StorageBroker>()
                 .AddTerminologyClient(configuration, claimsPrincipal)
                 .BuildServiceProvider();
 

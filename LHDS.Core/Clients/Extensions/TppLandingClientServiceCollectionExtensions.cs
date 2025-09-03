@@ -12,6 +12,7 @@ using System.Text;
 using Azure.Core.Pipeline;
 using Azure.Identity;
 using Azure.Storage.Blobs;
+using ISL.Security.Client.Models.Clients;
 using LHDS.Core.Brokers.Audits;
 using LHDS.Core.Brokers.DateTimes;
 using LHDS.Core.Brokers.Files;
@@ -43,10 +44,10 @@ using LHDS.Core.Services.Processings.DataSetSpecifications;
 using LHDS.Core.Services.Processings.Documents;
 using LHDS.Core.Services.Processings.IngestionTrackingAudits;
 using LHDS.Core.Services.Processings.IngestionTrackings;
-using LHDS.Core.Services.Processings.OptOuts;
 using LHDS.Core.Services.Processings.SpecificationObjects;
 using LHDS.Core.Services.Processings.SubscriberAgreements;
 using Microsoft.AspNetCore.Http;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -114,14 +115,32 @@ namespace LHDS.Core.Clients.Extensions
             IConfiguration configuration,
             ClaimsPrincipal claimsPrincipal)
         {
+            if (claimsPrincipal != null)
+            {
+                services.AddTransient<ISecurityBroker>(_ => new SecurityBroker(claimsPrincipal));
+
+                services.AddTransient<ISecurityAuditBroker>(_ =>
+                    new SecurityAuditBroker(claimsPrincipal, new SecurityConfigurations()));
+            }
+            else
+            {
+                services.AddTransient<ISecurityBroker, SecurityBroker>();
+                services.AddTransient<ISecurityAuditBroker, SecurityAuditBroker>();
+            }
+
+            services.AddTransient<IStorageBroker>(sp =>
+            {
+                var factory = sp.GetRequiredService<IDbContextFactory<StorageBroker>>();
+
+                return factory.CreateDbContext();
+            });
+
             services.AddTransient<ILoggingBroker, LoggingBroker>();
             services.AddTransient<IDateTimeBroker, DateTimeBroker>();
             services.AddTransient<IIdentifierBroker, IdentifierBroker>();
-            services.AddTransient<ISecurityBroker, SecurityBroker>();
             services.AddTransient<IHashBroker, HashBroker>();
             services.AddTransient<IAuditBroker, AuditBroker>();
             services.AddTransient<IFileBroker, FileBroker>();
-            services.AddTransient<IStorageBroker, StorageBroker>();
 
             LandingConfiguration landingConfiguration =
                 configuration.GetSection("landingSettings").Get<LandingConfiguration>();
@@ -176,14 +195,13 @@ namespace LHDS.Core.Clients.Extensions
             services.AddTransient<IDataSetService, DataSetService>();
             services.AddTransient<IDataSetSpecificationService, DataSetSpecificationService>();
             services.AddTransient<IIngestionTrackingAuditService, IngestionTrackingAuditService>();
-            services.AddSingleton<ISpecificationObjectService, SpecificationObjectService>();
-            services.AddSingleton<IObjectColumnService, ObjectColumnService>();
-            services.AddSingleton<ISubscriberAgreementService, SubscriberAgreementService>();
+            services.AddTransient<ISpecificationObjectService, SpecificationObjectService>();
+            services.AddTransient<IObjectColumnService, ObjectColumnService>();
+            services.AddTransient<ISubscriberAgreementService, SubscriberAgreementService>();
         }
 
         private static void AddProcessingServices(IServiceCollection services)
         {
-            services.AddTransient<IOptOutProcessingService, OptOutProcessingService>();
             services.AddTransient<IDataSetSpecificationProcessingService, DataSetSpecificationProcessingService>();
             services.AddTransient<IDataSetProcessingService, DataSetProcessingService>();
             services.AddTransient<IDocumentProcessingService, DocumentProcessingService>();

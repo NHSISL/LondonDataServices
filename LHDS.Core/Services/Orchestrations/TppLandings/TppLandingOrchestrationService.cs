@@ -116,11 +116,15 @@ namespace LHDS.Core.Services.Orchestrations.Tpp
         {
             ValidateArgumentsOnProcess(fileName, supplierId);
 
+            var filename = fileName.StartsWith('/')
+                ? fileName
+                : "/" + fileName;
+
             IQueryable<IngestionTracking> allIngestionTrackings =
                 await this.ingestionTrackingProcessingService.RetrieveAllIngestionTrackingsAsync();
 
             IngestionTracking? maybeIngestionTracking = allIngestionTrackings
-                    .FirstOrDefault(ingestionTracking => ingestionTracking.FileName == fileName);
+                    .FirstOrDefault(ingestionTracking => ingestionTracking.FileName == filename);
 
             if (maybeIngestionTracking == null)
             {
@@ -128,10 +132,6 @@ namespace LHDS.Core.Services.Orchestrations.Tpp
 
                 DataSetSpecification retrievedDataSetSpecification = await
                     this.dataSetSpecificationProcessingService.GetActiveDataSetSpecification(supplierId);
-
-                var filename = fileName.StartsWith('/')
-                    ? fileName
-                    : "/" + fileName;
 
                 string[] segments = filename.Split('/');
                 var resourceGroup = segments[1];
@@ -186,7 +186,7 @@ namespace LHDS.Core.Services.Orchestrations.Tpp
                     {
                         Id = await this.identifierBroker.GetIdentifierAsync(),
                         SupplierId = supplierId,
-                        SubscriberAgreementId = subscriberAgreementId,
+                        SubscriberAgreementId = subscriberAgreement.Id,
                         FileName = filename,
                         SourceFolderPath = sourceFolderPath,
                         BatchReadyFolderPath = baseFolder,

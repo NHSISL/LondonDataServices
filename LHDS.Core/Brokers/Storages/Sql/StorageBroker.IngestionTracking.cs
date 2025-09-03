@@ -3,6 +3,7 @@
 // ---------------------------------------------------------
 
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using LHDS.Core.Models.Foundations.IngestionTrackings;
@@ -14,14 +15,20 @@ namespace LHDS.Core.Brokers.Storages.Sql
     {
         public DbSet<IngestionTracking> IngestionTrackings { get; set; }
 
+        public async ValueTask BulkInsertIngestionTrackingsAsync(List<IngestionTracking> ingestionTrackingItems) =>
+            await BulkInsertAsync(ingestionTrackingItems);
+
         public async ValueTask<IngestionTracking> InsertIngestionTrackingAsync(IngestionTracking ingestionTracking) =>
             await InsertAsync(ingestionTracking);
 
-        public async ValueTask<IQueryable<IngestionTracking>> SelectAllIngestionTrackingsAsync() => 
+        public async ValueTask<IQueryable<IngestionTracking>> SelectAllIngestionTrackingsAsync() =>
             await SelectAllAsync<IngestionTracking>();
 
         public async ValueTask<IngestionTracking> SelectIngestionTrackingByIdAsync(Guid ingestionTrackingId) =>
             await SelectAsync<IngestionTracking>(ingestionTrackingId);
+
+        public async ValueTask BulkUpdateIngestionTrackingsAsync(List<IngestionTracking> ingestionTrackingItems) =>
+            await BulkUpdateAsync(ingestionTrackingItems);
 
         public async ValueTask<IngestionTracking> UpdateIngestionTrackingAsync(IngestionTracking ingestionTracking) =>
             await UpdateAsync(ingestionTracking);

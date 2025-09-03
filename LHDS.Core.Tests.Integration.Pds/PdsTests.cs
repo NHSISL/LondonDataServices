@@ -8,6 +8,7 @@ using System.Security.Claims;
 using System.Security.Principal;
 using LHDS.Core.Brokers.Identifiers;
 using LHDS.Core.Brokers.Storages.Blobs;
+using LHDS.Core.Brokers.Storages.Sql;
 using LHDS.Core.Clients;
 using LHDS.Core.Clients.Extensions;
 using LHDS.Core.Models.Brokers.Mesh;
@@ -57,6 +58,7 @@ namespace LHDS.Core.Tests.Integration.Pds
                     builder.AddConsole();
                     builder.AddApplicationInsights();
                 })
+                .AddDbContextFactory<StorageBroker>()
                 .AddPdsClient(configuration, claimsPrincipal)
                 .BuildServiceProvider();
 

@@ -18,7 +18,6 @@ using LHDS.Core.Models.Brokers.Securities;
 using LHDS.Core.Models.Brokers.Storages.Blobs;
 using LHDS.Core.Models.Foundations.Addresses;
 using LHDS.Core.Models.Foundations.AssignAddresses;
-using LHDS.Core.Models.Foundations.Audits;
 using LHDS.Core.Models.Foundations.Documents;
 using LHDS.Core.Models.Foundations.ResolvedAddresses;
 using LHDS.Core.Models.Processings.Documents.Exceptions;
@@ -218,10 +217,12 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.ResolvedAddresses
             return filler;
         }
 
-        private static List<ResolvedAddress> CreateRandomUnmatchedAddresses(int count)
+        private static List<ResolvedAddress> CreateRandomUnmatchedAddresses(
+            int count,
+            DateTimeOffset dateTimeOffset)
         {
             var fillers = Enumerable.Range(1, count)
-                .Select(_ => CreateUnmatchedAddressFiller())
+                .Select(_ => CreateUnmatchedAddressFiller(dateTimeOffset))
                     .ToList();
 
             var result = fillers.Select(filler => filler.Create()).ToList();
@@ -229,11 +230,9 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.ResolvedAddresses
             return result.ToList();
         }
 
-        private static Filler<ResolvedAddress> CreateUnmatchedAddressFiller()
+        private static Filler<ResolvedAddress> CreateUnmatchedAddressFiller(DateTimeOffset dateTimeOffset)
         {
             string user = Guid.NewGuid().ToString();
-            DateTimeOffset dateTimeOffset = DateTimeOffset.Now;
-
             var filler = new Filler<ResolvedAddress>();
 
             filler.Setup()
@@ -244,7 +243,9 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.ResolvedAddresses
                 .OnProperty(resolvedAddress => resolvedAddress.IsExported).Use(false)
                 .OnProperty(resolvedAddress => resolvedAddress.RetryCount).Use(0)
                 .OnProperty(resolvedAddress => resolvedAddress.CreatedBy).Use(user)
-                .OnProperty(resolvedAddress => resolvedAddress.UpdatedBy).Use(user);
+                .OnProperty(resolvedAddress => resolvedAddress.CreatedDate).Use(dateTimeOffset.AddMinutes(-5))
+                .OnProperty(resolvedAddress => resolvedAddress.UpdatedBy).Use(user)
+                .OnProperty(resolvedAddress => resolvedAddress.UpdatedDate).Use(dateTimeOffset.AddMinutes(-5));
 
             return filler;
         }

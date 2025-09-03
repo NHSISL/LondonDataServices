@@ -6,7 +6,7 @@ using System;
 using System.IO;
 using Azure.Core;
 using Azure.Identity;
-using LHDS.Core.Brokers.Securities;
+using LHDS.Core.Brokers.Storages.Sql;
 using LHDS.Core.Clients.Extensions;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -41,7 +41,8 @@ var host = new HostBuilder()
                 setup.AddApplicationInsights();
                 setup.AddConsole();
             })
-           .AddTerminologyClient(context.Configuration, accessToken.Token);
+            .AddDbContextFactory<StorageBroker>()
+            .AddTerminologyClient(context.Configuration, accessToken.Token);
     })
     .UseDefaultServiceProvider(options => options.ValidateScopes = false)
     .ConfigureFunctionsWorkerDefaults()

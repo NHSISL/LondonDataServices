@@ -96,6 +96,13 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.IngestionTrackings
                 IsSameIngestionTracking(exprectedIngestionTracking, actualIngestionTracking);
         }
 
+        private Expression<Func<List<IngestionTracking>, bool>> SameIngestionTrackingsAs(
+            List<IngestionTracking> expectedIngestionTrackings)
+        {
+            return actualIngestionTrackings =>
+                IsSameIngestionTrackings(expectedIngestionTrackings, actualIngestionTrackings);
+        }
+
         private bool IsSameIngestionTracking(
             IngestionTracking expectedIngestionTracking,
             IngestionTracking actualIngestionTracking)
@@ -110,6 +117,22 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.IngestionTrackings
             }
 
             return new CompareLogic().Compare(expectedIngestionTracking, actualIngestionTracking).AreEqual;
+        }
+
+        private bool IsSameIngestionTrackings(
+            List<IngestionTracking> expectedIngestionTrackings,
+            List<IngestionTracking> actualIngestionTrackings)
+        {
+            try
+            {
+                actualIngestionTrackings.Should().BeEquivalentTo(expectedIngestionTrackings);
+            }
+            catch (Exception exception)
+            {
+                output.WriteLine(exception.Message);
+            }
+
+            return new CompareLogic().Compare(expectedIngestionTrackings, actualIngestionTrackings).AreEqual;
         }
 
         private static IngestionTracking CreateRandomIngestionTracking() =>

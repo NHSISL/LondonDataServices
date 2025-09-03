@@ -6,133 +6,133 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using FluentAssertions;
-using LHDS.AdminPortal.Api.Tests.Acceptance.Models.SubscriberAgreements;
+using LHDS.Core.Models.Foundations.SubscriberPractices;
 using RESTFulSense.Exceptions;
 using Xunit;
 
-namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.SubscriberAgreements
+namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.SubscriberPractices
 {
-    public partial class SubscriberAgreementsApiTests
+    public partial class SubscriberPracticesApiTests
     {
         [Fact]
-        public async Task ShouldPostSubscriberAgreementAsync()
+        public async Task ShouldPostSubscriberPracticeAsync()
         {
             // given
-            SubscriberAgreement randomSubscriberAgreement = CreateRandomSubscriberAgreement();
-            SubscriberAgreement inputSubscriberAgreement = randomSubscriberAgreement;
-            SubscriberAgreement expectedSubscriberAgreement = inputSubscriberAgreement;
+            SubscriberPractice randomSubscriberPractice = CreateRandomSubscriberPractice();
+            SubscriberPractice inputSubscriberPractice = randomSubscriberPractice;
+            SubscriberPractice expectedSubscriberPractice = inputSubscriberPractice;
 
             // when 
-            await this.apiBroker.PostSubscriberAgreementAsync(inputSubscriberAgreement);
+            await this.apiBroker.PostSubscriberPracticeAsync(inputSubscriberPractice);
 
-            SubscriberAgreement actualSubscriberAgreement =
-                await this.apiBroker.GetSubscriberAgreementByIdAsync(inputSubscriberAgreement.Id);
+            SubscriberPractice actualSubscriberPractice =
+                await this.apiBroker.GetSubscriberPracticeByIdAsync(inputSubscriberPractice.Id);
 
             // then
-            actualSubscriberAgreement.Should().BeEquivalentTo(expectedSubscriberAgreement, options => options
+            actualSubscriberPractice.Should().BeEquivalentTo(expectedSubscriberPractice, options => options
                 .Excluding(property => property.CreatedBy)
                 .Excluding(property => property.CreatedDate)
                 .Excluding(property => property.UpdatedBy)
                 .Excluding(property => property.UpdatedDate));
 
-            await this.apiBroker.DeleteSubscriberAgreementByIdAsync(actualSubscriberAgreement.Id);
+            await this.apiBroker.DeleteSubscriberPracticeByIdAsync(actualSubscriberPractice.Id);
         }
 
         [Fact]
-        public async Task ShouldGetAllSubscriberAgreementsAsync()
+        public async Task ShouldGetAllSubscriberPracticesAsync()
         {
             // given
-            List<SubscriberAgreement> randomSubscriberAgreements = await PostRandomSubscriberAgreementsAsync();
-            List<SubscriberAgreement> expectedSubscriberAgreements = randomSubscriberAgreements;
+            List<SubscriberPractice> randomSubscriberPractices = await PostRandomSubscriberPracticesAsync();
+            List<SubscriberPractice> expectedSubscriberPractices = randomSubscriberPractices;
 
             // when
-            List<SubscriberAgreement> actualSubscriberAgreements = 
-                await this.apiBroker.GetAllSubscriberAgreementsAsync();
+            List<SubscriberPractice> actualSubscriberPractices =
+                await this.apiBroker.GetAllSubscriberPracticesAsync();
 
             // then
-            foreach (SubscriberAgreement expectedSubscriberAgreement in expectedSubscriberAgreements)
+            foreach (SubscriberPractice expectedSubscriberPractice in expectedSubscriberPractices)
             {
-                SubscriberAgreement actualSubscriberAgreement = 
-                    actualSubscriberAgreements.Single(approval => approval.Id == expectedSubscriberAgreement.Id);
+                SubscriberPractice actualSubscriberPractice =
+                    actualSubscriberPractices.Single(approval => approval.Id == expectedSubscriberPractice.Id);
 
-                actualSubscriberAgreement.Should().BeEquivalentTo(expectedSubscriberAgreement, options => options
+                actualSubscriberPractice.Should().BeEquivalentTo(expectedSubscriberPractice, options => options
                     .Excluding(property => property.CreatedBy)
                     .Excluding(property => property.CreatedDate)
                     .Excluding(property => property.UpdatedBy)
                     .Excluding(property => property.UpdatedDate));
-                    
-                await this.apiBroker.DeleteSubscriberAgreementByIdAsync(actualSubscriberAgreement.Id);
+
+                await this.apiBroker.DeleteSubscriberPracticeByIdAsync(actualSubscriberPractice.Id);
             }
         }
 
         [Fact]
-        public async Task ShouldGetSubscriberAgreementAsync()
+        public async Task ShouldGetSubscriberPracticeAsync()
         {
             // given
-            SubscriberAgreement randomSubscriberAgreement = await PostRandomSubscriberAgreementAsync();
-            SubscriberAgreement expectedSubscriberAgreement = randomSubscriberAgreement;
+            SubscriberPractice randomSubscriberPractice = await PostRandomSubscriberPracticeAsync();
+            SubscriberPractice expectedSubscriberPractice = randomSubscriberPractice;
 
             // when
-            SubscriberAgreement actualSubscriberAgreement = 
-                await this.apiBroker.GetSubscriberAgreementByIdAsync(randomSubscriberAgreement.Id);
+            SubscriberPractice actualSubscriberPractice =
+                await this.apiBroker.GetSubscriberPracticeByIdAsync(randomSubscriberPractice.Id);
 
             // then
-            actualSubscriberAgreement.Should().BeEquivalentTo(expectedSubscriberAgreement, options => options
+            actualSubscriberPractice.Should().BeEquivalentTo(expectedSubscriberPractice, options => options
                 .Excluding(property => property.CreatedBy)
                 .Excluding(property => property.CreatedDate)
                 .Excluding(property => property.UpdatedBy)
                 .Excluding(property => property.UpdatedDate));
 
-            await this.apiBroker.DeleteSubscriberAgreementByIdAsync(actualSubscriberAgreement.Id);
+            await this.apiBroker.DeleteSubscriberPracticeByIdAsync(actualSubscriberPractice.Id);
         }
 
         [Fact]
-        public async Task ShouldPutSubscriberAgreementAsync()
+        public async Task ShouldPutSubscriberPracticeAsync()
         {
             // given
-            SubscriberAgreement randomSubscriberAgreement = await PostRandomSubscriberAgreementAsync();
+            SubscriberPractice randomSubscriberPractice = await PostRandomSubscriberPracticeAsync();
 
-            SubscriberAgreement modifiedSubscriberAgreement = 
-                UpdateSubscriberAgreementWithRandomValues(randomSubscriberAgreement);
+            SubscriberPractice modifiedSubscriberPractice =
+                UpdateSubscriberPracticeWithRandomValues(randomSubscriberPractice);
 
             // when
-            await this.apiBroker.PutSubscriberAgreementAsync(modifiedSubscriberAgreement);
+            await this.apiBroker.PutSubscriberPracticeAsync(modifiedSubscriberPractice);
 
-            SubscriberAgreement actualSubscriberAgreement = 
-                await this.apiBroker.GetSubscriberAgreementByIdAsync(randomSubscriberAgreement.Id);
+            SubscriberPractice actualSubscriberPractice =
+                await this.apiBroker.GetSubscriberPracticeByIdAsync(randomSubscriberPractice.Id);
 
             // then
-            actualSubscriberAgreement.Should().BeEquivalentTo(modifiedSubscriberAgreement, options => options
+            actualSubscriberPractice.Should().BeEquivalentTo(modifiedSubscriberPractice, options => options
                 .Excluding(property => property.CreatedBy)
                 .Excluding(property => property.CreatedDate)
                 .Excluding(property => property.UpdatedBy)
                 .Excluding(property => property.UpdatedDate));
-            await this.apiBroker.DeleteSubscriberAgreementByIdAsync(actualSubscriberAgreement.Id);
+            await this.apiBroker.DeleteSubscriberPracticeByIdAsync(actualSubscriberPractice.Id);
         }
 
         [Fact]
-        public async Task ShouldDeleteSubscriberAgreementAsync()
+        public async Task ShouldDeleteSubscriberPracticeAsync()
         {
             // given
-            SubscriberAgreement randomSubscriberAgreement = await PostRandomSubscriberAgreementAsync();
-            SubscriberAgreement inputSubscriberAgreement = randomSubscriberAgreement;
-            SubscriberAgreement expectedSubscriberAgreement = inputSubscriberAgreement;
+            SubscriberPractice randomSubscriberPractice = await PostRandomSubscriberPracticeAsync();
+            SubscriberPractice inputSubscriberPractice = randomSubscriberPractice;
+            SubscriberPractice expectedSubscriberPractice = inputSubscriberPractice;
 
             // when
-            SubscriberAgreement deletedSubscriberAgreement =
-                await this.apiBroker.DeleteSubscriberAgreementByIdAsync(inputSubscriberAgreement.Id);
+            SubscriberPractice deletedSubscriberPractice =
+                await this.apiBroker.DeleteSubscriberPracticeByIdAsync(inputSubscriberPractice.Id);
 
-            ValueTask<SubscriberAgreement> getSubscriberAgreementbyIdTask =
-                this.apiBroker.GetSubscriberAgreementByIdAsync(inputSubscriberAgreement.Id);
+            ValueTask<SubscriberPractice> getSubscriberPracticebyIdTask =
+                this.apiBroker.GetSubscriberPracticeByIdAsync(inputSubscriberPractice.Id);
 
             // then
-            deletedSubscriberAgreement.Should().BeEquivalentTo(expectedSubscriberAgreement, options => options
+            deletedSubscriberPractice.Should().BeEquivalentTo(expectedSubscriberPractice, options => options
                 .Excluding(property => property.CreatedBy)
                 .Excluding(property => property.CreatedDate)
                 .Excluding(property => property.UpdatedBy)
                 .Excluding(property => property.UpdatedDate));
 
-            await Assert.ThrowsAsync<HttpResponseNotFoundException>(getSubscriberAgreementbyIdTask.AsTask);
+            await Assert.ThrowsAsync<HttpResponseNotFoundException>(getSubscriberPracticebyIdTask.AsTask);
         }
     }
 }

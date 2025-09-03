@@ -45,6 +45,7 @@ namespace LHDS.Core.Tests.Acceptance.Clients.Addresses
         private readonly IDocumentService documentService;
         private readonly IAddressService addressService;
         private readonly IResolvedAddressService resolvedAddressService;
+        private readonly IStorageBroker storageBroker;
         private readonly ICsvHelperBroker csvHelperBroker;
         private readonly IAddressClient addressClient;
         private readonly ICompareLogic compareLogic;
@@ -87,6 +88,7 @@ namespace LHDS.Core.Tests.Acceptance.Clients.Addresses
                 .AddTransient<IAddressOrchestrationService, AddressOrchestrationService>()
                 .AddTransient<IResolvedAddressOrchestrationService, ResolvedAddressOrchestrationService>()
                 .AddTransient<IResolvedAddressProcessingService, ResolvedAddressProcessingService>()
+                .AddTransient<IStorageBroker, StorageBroker>()
                 .AddTransient<IDocumentService, DocumentService>()
                 .AddTransient<ICsvHelperBroker, CsvHelperBroker>()
                 .AddTransient<IAddressService, AddressService>()
@@ -107,6 +109,7 @@ namespace LHDS.Core.Tests.Acceptance.Clients.Addresses
 
             this.addressService = serviceProvider.GetService<IAddressService>();
             this.resolvedAddressService = serviceProvider.GetService<IResolvedAddressService>();
+            this.storageBroker = serviceProvider.GetService<IStorageBroker>();
 
             this.resolvedAddressProcessingService =
                 serviceProvider.GetService<IResolvedAddressProcessingService>();
@@ -249,33 +252,36 @@ namespace LHDS.Core.Tests.Acceptance.Clients.Addresses
             return address;
         }
 
-        private static List<ResolvedAddress> CreateRandomUnmatchedAddresses(int count)
+        private static List<ResolvedAddress> CreateRandomUnmatchedAddresses(int count, DateTimeOffset dateTimeOffset)
         {
-            var fillers = Enumerable.Range(1, count)
-                                    .Select(_ => CreateUnmatchedAddressFiller())
-                                    .ToList();
+            var fillers = Enumerable
+                .Range(1, count)
+                .Select(_ => CreateUnmatchedAddressFiller(dateTimeOffset))
+                .ToList();
 
             var result = fillers.Select(filler => filler.Create()).ToList();
 
             return result.ToList();
         }
 
-        private static Filler<ResolvedAddress> CreateUnmatchedAddressFiller()
+        private static Filler<ResolvedAddress> CreateUnmatchedAddressFiller(DateTimeOffset? dateTimeOffset = null)
         {
             string user = Guid.NewGuid().ToString();
-            DateTimeOffset dateTimeOffset = DateTimeOffset.Now;
+            DateTimeOffset timestamp = (dateTimeOffset ?? DateTimeOffset.Now).AddMinutes(-5);
 
             var filler = new Filler<ResolvedAddress>();
 
             filler.Setup()
-                .OnType<DateTimeOffset>().Use(dateTimeOffset)
-                .OnType<DateTimeOffset?>().Use(dateTimeOffset)
+                .OnType<DateTimeOffset>().Use(timestamp)
+                .OnType<DateTimeOffset?>().Use(timestamp)
                 .OnProperty(resolvedAddress => resolvedAddress.IsProcessed).Use(false)
                 .OnProperty(resolvedAddress => resolvedAddress.IsProcessing).Use(false)
                 .OnProperty(resolvedAddress => resolvedAddress.IsExported).Use(false)
-                .OnProperty(resolvedAddress => resolvedAddress.RetryCount).Use(3)
+                .OnProperty(resolvedAddress => resolvedAddress.RetryCount).Use(1)
                 .OnProperty(resolvedAddress => resolvedAddress.CreatedBy).Use(user)
-                .OnProperty(resolvedAddress => resolvedAddress.UpdatedBy).Use(user);
+                .OnProperty(resolvedAddress => resolvedAddress.CreatedDate).Use(timestamp)
+                .OnProperty(resolvedAddress => resolvedAddress.UpdatedBy).Use(user)
+                .OnProperty(resolvedAddress => resolvedAddress.UpdatedDate).Use(timestamp);
 
             return filler;
         }

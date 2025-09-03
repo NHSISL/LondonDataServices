@@ -112,6 +112,8 @@ namespace LHDS.Core.Services.Orchestrations.ResolvedAddresses
         {
             Guid correlationId = await this.identifierBroker.GetIdentifierAsync();
             var auditUser = await this.securityBroker.GetCurrentUserAsync();
+            var currentDateTime = await this.dateTimeBroker.GetCurrentDateTimeOffsetAsync();
+
             ResolvedAddress? unMatchedResolvedAddress;
             var exceptions = new List<Exception>();
 
@@ -125,7 +127,8 @@ namespace LHDS.Core.Services.Orchestrations.ResolvedAddresses
                     .FirstOrDefault(address =>
                         address.IsProcessed == false &&
                         address.IsProcessing == false &&
-                        address.RetryCount < 4);
+                        address.RetryCount < 4 &&
+                        address.UpdatedDate <= currentDateTime.AddMinutes(-5));
 
                 if (unMatchedResolvedAddress is null)
                 {
@@ -136,7 +139,8 @@ namespace LHDS.Core.Services.Orchestrations.ResolvedAddresses
                 {
                     await TryCatch(async () =>
                     {
-                        DateTimeOffset matchingDateTimeOffset = await this.dateTimeBroker.GetCurrentDateTimeOffsetAsync();
+                        DateTimeOffset matchingDateTimeOffset =
+                            await this.dateTimeBroker.GetCurrentDateTimeOffsetAsync();
 
                         Audit resolvedAddressMatchingAudit = new Audit
                         {
@@ -154,7 +158,6 @@ namespace LHDS.Core.Services.Orchestrations.ResolvedAddresses
                         };
 
                         audits.Add(resolvedAddressMatchingAudit);
-
                         unMatchedResolvedAddress.IsProcessing = true;
                         unMatchedResolvedAddress.RetryCount += 1;
                         unMatchedResolvedAddress.UpdatedDate = await dateTimeBroker.GetCurrentDateTimeOffsetAsync();
@@ -190,14 +193,15 @@ namespace LHDS.Core.Services.Orchestrations.ResolvedAddresses
                         await resolvedAddressProcessingService
                             .ModifyResolvedAddressAsync(newResolvedAddress);
 
-                        DateTimeOffset matchingCompleteDateTimeOffset = await this.dateTimeBroker.GetCurrentDateTimeOffsetAsync();
+                        DateTimeOffset matchingCompleteDateTimeOffset =
+                            await this.dateTimeBroker.GetCurrentDateTimeOffsetAsync();
 
                         Audit resolvedAddressMatchingCompleteAudit = new Audit
                         {
                             Id = await this.identifierBroker.GetIdentifierAsync(),
                             AuditType = "Resolved Address Match",
 
-                            Title = newResolvedAddress.MatchedWithAssign ? 
+                            Title = newResolvedAddress.MatchedWithAssign ?
                                 "Resolved Address Successful Match" : "Resolved Address Unsuccessful Match",
 
                             Message = $"Resolved address matching complete for {newResolvedAddress.UniqueReference}",
@@ -217,10 +221,8 @@ namespace LHDS.Core.Services.Orchestrations.ResolvedAddresses
                 }
                 catch (Exception ex)
                 {
-                    ResolvedAddress failedToProcessClean = unMatchedResolvedAddress.DeepClone();
-
                     ResolvedAddress failedToProcess = await this.resolvedAddressProcessingService
-                        .RetrieveResolvedAddressByIdAsync(failedToProcessClean.Id);
+                        .RetrieveResolvedAddressByIdAsync(unMatchedResolvedAddress.Id);
 
                     failedToProcess.IsProcessing = false;
                     failedToProcess.UpdatedDate = await dateTimeBroker.GetCurrentDateTimeOffsetAsync();
@@ -231,7 +233,7 @@ namespace LHDS.Core.Services.Orchestrations.ResolvedAddresses
 
                     exceptions.Add(ex);
 
-                    DateTimeOffset matchingFailedDateTimeOffset = 
+                    DateTimeOffset matchingFailedDateTimeOffset =
                         await this.dateTimeBroker.GetCurrentDateTimeOffsetAsync();
 
                     Audit resolvedAddressMatchingFailedAudit = new Audit

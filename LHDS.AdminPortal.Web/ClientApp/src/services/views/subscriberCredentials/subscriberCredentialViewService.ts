@@ -20,6 +20,9 @@ export const subscriberCredentialViewService = {
     useCreateSubscriberCredential: () => {
        return subscriberCredentialService.useCreateSubscriberCredential();
     },
+    useCreateSubscriberCredentialNoKeys: () => {
+        return subscriberCredentialService.useCreateSubscriberCredentialNoKeys();
+    },
 
     useRegenerateKeysSubscriberCredential: () => {
         return subscriberCredentialService.useRegenerateKeysSubscriberCredential();
@@ -27,7 +30,7 @@ export const subscriberCredentialViewService = {
 
     useGetAllSubscriberCredentials: (searchTerm?: string): SubscriberCredentialViewServiceResponse => {
         try {
-            let query = `?$orderby=createdDate desc`;
+            let query = `?$orderby=createdDate desc,supplierId asc`;
 
             if (searchTerm) {
                 query = query + `&$filter=contains(supplierSharingAgreementShortName,'${searchTerm}')`;

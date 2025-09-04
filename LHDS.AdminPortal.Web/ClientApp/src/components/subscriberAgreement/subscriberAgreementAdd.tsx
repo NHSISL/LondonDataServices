@@ -13,6 +13,7 @@ import { subscriberCredentialViewService } from "../../services/views/subscriber
 import { SubscriberCredentialView } from "../../models/views/components/subscriberCredentials/subscriberCredentialView";
 import { Guid } from "guid-typescript";
 import { SpinnerBase } from "../bases/spinner/SpinnerBase";
+import { supplierViewService } from "../../services/views/suppliers/supplierViewService";
 
 interface SubscriberAgreementAddProps {
     children?: React.ReactNode;
@@ -25,15 +26,34 @@ const SubscriberAgreementAdd: FunctionComponent<SubscriberAgreementAddProps> = (
     const [setAddApiError] = useState<any>({});
     const [loading, setLoading] = useState<boolean>(false);
 
+    const { mappedSuppliers: suppliersRetrieved, isLoading } =
+        supplierViewService.useGetAllSuppliers();
+
+    const [selectedSupplierId, setSelectedSupplierId] = useState<string>("");
+
     const [subscriberCredential] =
         useState<SubscriberCredentialView>(new SubscriberCredentialView(Guid.create()));
 
     const addSubscriberCredential = subscriberCredentialViewService.useCreateSubscriberCredential();
+    const addSubscriberCredentialNoKeys = subscriberCredentialViewService.useCreateSubscriberCredentialNoKeys();
 
     const handleAddNew = () => {
         setLoading(true);
         subscriberCredential.supplierSharingAgreementShortName = subscriberAgreementShortName;
-        addSubscriberCredential.mutate(subscriberCredential, {
+        subscriberCredential.supplierId = selectedSupplierId;
+
+        // Find selected supplier object to check its name
+        const selectedSupplier = suppliersRetrieved?.find(
+            (supplier: any) => supplier.id?.toString() === selectedSupplierId
+        );
+
+        const isEmis = selectedSupplier?.name?.toLowerCase() === "emis";
+
+        const mutation = isEmis
+            ? addSubscriberCredential
+            : addSubscriberCredentialNoKeys;
+
+        mutation.mutate(subscriberCredential, {
             onSuccess: () => {
                 navigate('/subscriberAgreements');
             },
@@ -67,18 +87,41 @@ const SubscriberAgreementAdd: FunctionComponent<SubscriberAgreementAddProps> = (
                             />
 
                             <br />
+
+
+                            <Form.Group controlId="SupplierSelect">
+                                <Form.Label>Supplier</Form.Label>
+                                <Form.Select
+                                    value={selectedSupplierId}
+                                    onChange={e => setSelectedSupplierId(e.target.value)}
+                                    disabled={isLoading}
+                                >
+                                    <option value="">Select a supplier...</option>
+                                    {suppliersRetrieved &&
+                                        suppliersRetrieved
+                                            .filter((supplier: any) => supplier.isIngestionTracked === true || supplier.isIngestionTracked === 1)
+                                            .map((supplier: any) => (
+                                                <option key={supplier.id} value={supplier.id}>
+                                                    {supplier.name}
+                                                </option>
+                                            ))}
+                                </Form.Select>
+                            </Form.Group>
+
+                            <br />
+
                             <ButtonBase onClick={handleAddNew} add>
                                 Create Subscriber Agreement and Generate Keys &nbsp;
                                 <FontAwesomeIcon icon={faKey} title="required" />
                             </ButtonBase>
 
                             <br /><br />
-                                <div className="p-3 mb-2 bg-dark text-white">
-                                    <strong>NOTE:</strong>
-                                    <br />
+                            <div className="p-3 mb-2 bg-dark text-white">
+                                <strong>NOTE:</strong>
+                                <br />
                                 <p>When you click the generate button, our system will begin generating
-                                        custom Azure Key Vault secrets for
-                                        all the necessary keys required to land data from EMIS.  
+                                    custom Azure Key Vault secrets for
+                                    all the necessary keys required to land data from EMIS.
 
                                     This process may take a minute or so,
                                     as we want to ensure each secret is created accurately and securely.

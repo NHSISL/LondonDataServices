@@ -48,13 +48,13 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.DecisionPolls
                 .BeEquivalentTo(expectedDecisionPollValidationException);
 
             this.loggingBrokerMock.Verify(broker =>
-                    broker.LogErrorAsync(It.Is(SameExceptionAs(
-                        expectedDecisionPollValidationException))),
-                Times.Once);
+                broker.LogErrorAsync(It.Is(SameExceptionAs(
+                    expectedDecisionPollValidationException))),
+                        Times.Once);
 
             this.storageBrokerMock.Verify(broker =>
-                    broker.DeleteDecisionPollAsync(It.IsAny<DecisionPoll>()),
-                Times.Never);
+                broker.DeleteDecisionPollAsync(It.IsAny<DecisionPoll>()),
+                    Times.Never);
 
             this.loggingBrokerMock.VerifyNoOtherCalls();
             this.storageBrokerMock.VerifyNoOtherCalls();

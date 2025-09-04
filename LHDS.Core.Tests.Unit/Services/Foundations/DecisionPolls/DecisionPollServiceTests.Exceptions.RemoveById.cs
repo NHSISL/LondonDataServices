@@ -170,5 +170,52 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.DecisionPolls
             this.loggingBrokerMock.VerifyNoOtherCalls();
             this.dateTimeBrokerMock.VerifyNoOtherCalls();
         }
+
+        [Fact]
+        public async Task ShouldThrowServiceExceptionOnRemoveIfServiceErrorOccursAndLogItAsync()
+        {
+            // given
+            Guid someDecisionPollId = Guid.NewGuid();
+            var serviceException = new Exception();
+
+            var failedDecisionPollServiceException =
+                new FailedDecisionPollServiceException(
+                    message: "Failed decisionPoll service error occurred, please contact support.",
+                    innerException: serviceException);
+
+            var expectedDecisionPollServiceException =
+                new DecisionPollServiceException(
+                    message: "DecisionPoll service error occurred, please contact support.",
+                    innerException: failedDecisionPollServiceException);
+
+            this.storageBrokerMock.Setup(broker =>
+                broker.SelectDecisionPollByIdAsync(It.IsAny<Guid>()))
+                    .ThrowsAsync(serviceException);
+
+            // when
+            ValueTask<DecisionPoll> removeDecisionPollByIdTask =
+                this.decisionPollService.RemoveDecisionPollByIdAsync(someDecisionPollId);
+
+            DecisionPollServiceException actualDecisionPollServiceException =
+                await Assert.ThrowsAsync<DecisionPollServiceException>(
+                    removeDecisionPollByIdTask.AsTask);
+
+            // then
+            actualDecisionPollServiceException.Should()
+                .BeEquivalentTo(expectedDecisionPollServiceException);
+
+            this.storageBrokerMock.Verify(broker =>
+                broker.SelectDecisionPollByIdAsync(It.IsAny<Guid>()),
+                        Times.Once());
+
+            this.loggingBrokerMock.Verify(broker =>
+                broker.LogErrorAsync(It.Is(SameExceptionAs(
+                    expectedDecisionPollServiceException))),
+                        Times.Once);
+
+            this.storageBrokerMock.VerifyNoOtherCalls();
+            this.loggingBrokerMock.VerifyNoOtherCalls();
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
+        }
     }
 }

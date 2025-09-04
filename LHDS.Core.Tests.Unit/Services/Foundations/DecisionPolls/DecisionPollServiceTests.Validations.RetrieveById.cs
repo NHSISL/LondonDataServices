@@ -46,17 +46,19 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.DecisionPolls
                 .BeEquivalentTo(expectedDecisionPollValidationException);
 
             this.loggingBrokerMock.Verify(broker =>
-                    broker.LogErrorAsync(It.Is(SameExceptionAs(
-                        expectedDecisionPollValidationException))),
-                Times.Once);
+                broker.LogErrorAsync(It.Is(SameExceptionAs(
+                    expectedDecisionPollValidationException))),
+                        Times.Once);
 
             this.storageBrokerMock.Verify(broker =>
-                    broker.SelectDecisionPollByIdAsync(It.IsAny<Guid>()),
-                Times.Never);
+                broker.SelectDecisionPollByIdAsync(It.IsAny<Guid>()),
+                    Times.Never);
 
             this.loggingBrokerMock.VerifyNoOtherCalls();
-            this.storageBrokerMock.VerifyNoOtherCalls();
+            this.securityAuditBrokerMock.VerifyNoOtherCalls();
+            this.securityBrokerMock.VerifyNoOtherCalls();
             this.dateTimeBrokerMock.VerifyNoOtherCalls();
+            this.storageBrokerMock.VerifyNoOtherCalls();
         }
 
         [Fact]
@@ -90,17 +92,19 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.DecisionPolls
             actualDecisionPollValidationException.Should().BeEquivalentTo(expectedDecisionPollValidationException);
 
             this.storageBrokerMock.Verify(broker =>
-                    broker.SelectDecisionPollByIdAsync(It.IsAny<Guid>()),
-                Times.Once());
+                broker.SelectDecisionPollByIdAsync(It.IsAny<Guid>()),
+                    Times.Once());
 
             this.loggingBrokerMock.Verify(broker =>
-                    broker.LogErrorAsync(It.Is(SameExceptionAs(
-                        expectedDecisionPollValidationException))),
-                Times.Once);
+                broker.LogErrorAsync(It.Is(SameExceptionAs(
+                    expectedDecisionPollValidationException))),
+                        Times.Once);
 
-            this.storageBrokerMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
+            this.securityAuditBrokerMock.VerifyNoOtherCalls();
+            this.securityBrokerMock.VerifyNoOtherCalls();
             this.dateTimeBrokerMock.VerifyNoOtherCalls();
+            this.storageBrokerMock.VerifyNoOtherCalls();
         }
     }
 }

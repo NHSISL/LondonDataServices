@@ -58,15 +58,15 @@ namespace LHDS.Core.Services.Foundations.DecisionPolls
                 (Rule: IsInvalid(decisionPoll.UpdatedBy), Parameter: nameof(DecisionPoll.UpdatedBy)),
 
                 (Rule: IsNotSame(
-                        first: currentUser.EntraUserId,
-                        second: decisionPoll.UpdatedBy),
-                    Parameter: nameof(DecisionPoll.UpdatedBy)),
+                    first: currentUser.EntraUserId,
+                    second: decisionPoll.UpdatedBy),
+                Parameter: nameof(DecisionPoll.UpdatedBy)),
 
                 (Rule: IsSame(
-                        firstDate: decisionPoll.UpdatedDate,
-                        secondDate: decisionPoll.CreatedDate,
-                        secondDateName: nameof(DecisionPoll.CreatedDate)),
-                    Parameter: nameof(DecisionPoll.UpdatedDate)),
+                    firstDate: decisionPoll.UpdatedDate,
+                    secondDate: decisionPoll.CreatedDate,
+                    secondDateName: nameof(DecisionPoll.CreatedDate)),
+                Parameter: nameof(DecisionPoll.UpdatedDate)),
 
                 (Rule: await IsNotRecentAsync(decisionPoll.UpdatedDate), Parameter: nameof(decisionPoll.UpdatedDate)));
         }
@@ -95,22 +95,22 @@ namespace LHDS.Core.Services.Foundations.DecisionPolls
         {
             Validate(
                 (Rule: IsNotSame(
-                        firstDate: inputDecisionPoll.CreatedDate,
-                        secondDate: storageDecisionPoll.CreatedDate,
-                        secondDateName: nameof(DecisionPoll.CreatedDate)),
-                    Parameter: nameof(DecisionPoll.CreatedDate)),
+                    firstDate: inputDecisionPoll.CreatedDate,
+                    secondDate: storageDecisionPoll.CreatedDate,
+                    secondDateName: nameof(DecisionPoll.CreatedDate)),
+                Parameter: nameof(DecisionPoll.CreatedDate)),
 
                 (Rule: IsNotSame(
-                        first: inputDecisionPoll.CreatedBy,
-                        second: storageDecisionPoll.CreatedBy,
-                        secondName: nameof(DecisionPoll.CreatedBy)),
-                    Parameter: nameof(DecisionPoll.CreatedBy)),
+                    first: inputDecisionPoll.CreatedBy,
+                    second: storageDecisionPoll.CreatedBy,
+                    secondName: nameof(DecisionPoll.CreatedBy)),
+                Parameter: nameof(DecisionPoll.CreatedBy)),
 
                 (Rule: IsSame(
-                        firstDate: inputDecisionPoll.UpdatedDate,
-                        secondDate: storageDecisionPoll.UpdatedDate,
-                        secondDateName: nameof(DecisionPoll.UpdatedDate)),
-                    Parameter: nameof(DecisionPoll.UpdatedDate)));
+                    firstDate: inputDecisionPoll.UpdatedDate,
+                    secondDate: storageDecisionPoll.UpdatedDate,
+                    secondDateName: nameof(DecisionPoll.UpdatedDate)),
+                Parameter: nameof(DecisionPoll.UpdatedDate)));
         }
 
         private static dynamic IsInvalid(Guid id) => new

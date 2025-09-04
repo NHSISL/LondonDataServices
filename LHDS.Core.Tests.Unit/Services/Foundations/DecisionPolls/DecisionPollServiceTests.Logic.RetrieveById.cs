@@ -23,8 +23,8 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.DecisionPolls
             DecisionPoll expectedDecisionPoll = storageDecisionPoll.DeepClone();
 
             this.storageBrokerMock.Setup(broker =>
-                    broker.SelectDecisionPollByIdAsync(inputDecisionPoll.Id))
-                .ReturnsAsync(storageDecisionPoll);
+                broker.SelectDecisionPollByIdAsync(inputDecisionPoll.Id))
+                    .ReturnsAsync(storageDecisionPoll);
 
             // when
             DecisionPoll actualDecisionPoll =
@@ -34,8 +34,8 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.DecisionPolls
             actualDecisionPoll.Should().BeEquivalentTo(expectedDecisionPoll);
 
             this.storageBrokerMock.Verify(broker =>
-                    broker.SelectDecisionPollByIdAsync(inputDecisionPoll.Id),
-                Times.Once);
+                broker.SelectDecisionPollByIdAsync(inputDecisionPoll.Id),
+                    Times.Once);
 
             this.storageBrokerMock.VerifyNoOtherCalls();
             this.dateTimeBrokerMock.VerifyNoOtherCalls();

@@ -46,9 +46,14 @@ namespace LHDS.Core.Services.Foundations.DecisionPolls
         public ValueTask<IQueryable<DecisionPoll>> RetrieveAllDecisionPollsAsync() =>
             TryCatch(async () => await this.storageBroker.SelectAllDecisionPollsAsync());
 
-        public ValueTask<DecisionPoll> RetrieveDecisionPollByIdAsync(Guid decisionPollId)
+        public async ValueTask<DecisionPoll> RetrieveDecisionPollByIdAsync(Guid decisionPollId)
         {
-            throw new NotImplementedException();
+            ValidateDecisionPollId(decisionPollId);
+
+            DecisionPoll maybeDecisionPoll = await this.storageBroker
+                .SelectDecisionPollByIdAsync(decisionPollId);
+
+            return maybeDecisionPoll;
         }
 
         public ValueTask<DecisionPoll> ModifyDecisionPollAsync(DecisionPoll decisionPoll) =>

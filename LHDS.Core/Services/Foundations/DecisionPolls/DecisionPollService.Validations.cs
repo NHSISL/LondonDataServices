@@ -72,6 +72,9 @@ namespace LHDS.Core.Services.Foundations.DecisionPolls
                 (Rule: await IsNotRecentAsync(decisionPoll.UpdatedDate), Parameter: nameof(decisionPoll.UpdatedDate)));
         }
 
+        public void ValidateDecisionPollId(Guid decisionPollId) =>
+            Validate((Rule: IsInvalid(decisionPollId), Parameter: nameof(DecisionPoll.Id)));
+
         private static void ValidateStorageDecisionPoll(
             DecisionPoll maybeDecisionPoll,
             Guid decisionPollId)

@@ -2,6 +2,7 @@
 // Copyright (c) North East London ICB. All rights reserved.
 // ---------------------------------------------------------
 
+using System;
 using System.Linq;
 using System.Threading.Tasks;
 using LHDS.Core.Brokers.DateTimes;
@@ -44,6 +45,11 @@ namespace LHDS.Core.Services.Foundations.DecisionPolls
 
         public ValueTask<IQueryable<DecisionPoll>> RetrieveAllDecisionPollsAsync() =>
             TryCatch(async () => await this.storageBroker.SelectAllDecisionPollsAsync());
+
+        public ValueTask<DecisionPoll> RetrieveDecisionPollByIdAsync(Guid decisionPollId)
+        {
+            throw new NotImplementedException();
+        }
 
         public ValueTask<DecisionPoll> ModifyDecisionPollAsync(DecisionPoll decisionPoll) =>
             TryCatch(async () =>

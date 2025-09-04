@@ -58,5 +58,57 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.DecisionPolls
             this.storageBrokerMock.VerifyNoOtherCalls();
             this.dateTimeBrokerMock.VerifyNoOtherCalls();
         }
+
+        [Fact]
+        public async Task ShouldThrowValidationExceptionOnRemoveIfDecisionPollDoesNotExistAndLogItAsync()
+        {
+            // given
+            Guid someDecisionPollId = Guid.NewGuid();
+            DecisionPoll nullDecisionPoll = null;
+            var notFoundDecisionPollException = new NotFoundDecisionPollException(someDecisionPollId);
+
+            var expectedDecisionPollValidationException =
+                new DecisionPollValidationException(
+                    message: "DecisionPoll validation errors occurred, please try again.",
+                    innerException: notFoundDecisionPollException);
+
+            this.storageBrokerMock.Setup(broker =>
+                broker.SelectDecisionPollByIdAsync(someDecisionPollId))
+                    .ReturnsAsync(nullDecisionPoll);
+
+            // when
+            ValueTask<DecisionPoll> removeDecisionPollByIdTask =
+                this.decisionPollService.RemoveDecisionPollByIdAsync(someDecisionPollId);
+
+            DecisionPollValidationException actualDecisionPollValidationException =
+                await Assert.ThrowsAsync<DecisionPollValidationException>(
+                    removeDecisionPollByIdTask.AsTask);
+
+            // then
+            actualDecisionPollValidationException.Should()
+                .BeEquivalentTo(expectedDecisionPollValidationException);
+
+            this.storageBrokerMock.Verify(broker =>
+                broker.SelectDecisionPollByIdAsync(someDecisionPollId),
+                    Times.Once);
+
+            this.loggingBrokerMock.Verify(broker =>
+                broker.LogErrorAsync(It.Is(SameExceptionAs(
+                    expectedDecisionPollValidationException))),
+                        Times.Once);
+
+            this.storageBrokerMock.Verify(broker =>
+                broker.UpdateDecisionPollAsync(It.IsAny<DecisionPoll>()),
+                    Times.Never);
+
+            this.storageBrokerMock.Verify(broker =>
+                broker.DeleteDecisionPollAsync(It.IsAny<DecisionPoll>()),
+                    Times.Never);
+
+            this.storageBrokerMock.VerifyNoOtherCalls();
+            this.loggingBrokerMock.VerifyNoOtherCalls();
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
+            this.securityBrokerMock.VerifyNoOtherCalls();
+        }
     }
 }

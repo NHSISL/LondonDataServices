@@ -36,8 +36,8 @@ const SubscriberAgreementDetailCardEdit: FunctionComponent<SubscriberAgreementDe
     } = props;
 
     const [editSubscriberCredential, setEditSubscriberCredential] = useState<SubscriberCredentialView>({ ...subscriberCredential });
-
     const { errors, enableValidationMessages, processApiErrors, validate } = useValidation(subscriberAgreementErrors, subscriberAgreementValidation, editSubscriberCredential)
+    const isEmisSupplier = subscriberCredential.supplierId.toString().toUpperCase() === "67680F17-9D0C-4474-8B35-56CA8F9DF1F6";
 
     const handleChange = (event: ChangeEvent<HTMLInputElement> | ChangeEvent<HTMLTextAreaElement> | ChangeEvent<HTMLSelectElement>) => {
         console.log("Handling change...");
@@ -115,43 +115,50 @@ const SubscriberAgreementDetailCardEdit: FunctionComponent<SubscriberAgreementDe
                     </SummaryListBaseValue>
                 </SummaryListBaseRow>
 
-                <SummaryListBaseRow>
-                    <SummaryListBaseKey>Supplier Sharing Agreement Guid</SummaryListBaseKey>
-                    <SummaryListBaseValue>
-                        <TextInputBase
-                            id="supplierSharingAgreementGuid"
-                            name="supplierSharingAgreementGuid"
-                            placeholder="Supplier Sharing Agreement Guid"
-                            value={editSubscriberCredential.supplierSharingAgreementGuid!.toString()}
-                            onChange={handleChange} />
-                    </SummaryListBaseValue>
-                </SummaryListBaseRow>
+                {isEmisSupplier && (
+                    <SummaryListBaseRow>
+                        <SummaryListBaseKey>Supplier Sharing Agreement Guid</SummaryListBaseKey>
+                        <SummaryListBaseValue>
+                            <TextInputBase
+                                id="supplierSharingAgreementGuid"
+                                name="supplierSharingAgreementGuid"
+                                placeholder="Supplier Sharing Agreement Guid"
+                                value={editSubscriberCredential.supplierSharingAgreementGuid!.toString()}
+                                onChange={handleChange} />
+                        </SummaryListBaseValue>
+                    </SummaryListBaseRow>
+                )}
+                {isEmisSupplier && (
+                    <SummaryListBaseRow>
+                        <SummaryListBaseKey>FTP User Name</SummaryListBaseKey>
+                        <SummaryListBaseValue>
+                            <TextInputBase
+                                id="ftpUserName"
+                                name="ftpUserName"
+                                placeholder="Ftp User Name"
+                                value={editSubscriberCredential.ftpUserName}
+                                onChange={handleChange} />
+                        </SummaryListBaseValue>
+                    </SummaryListBaseRow>
+                )}
 
-                <SummaryListBaseRow>
-                    <SummaryListBaseKey>FTP User Name</SummaryListBaseKey>
-                    <SummaryListBaseValue>
-                        <TextInputBase
-                            id="ftpUserName"
-                            name="ftpUserName"
-                            placeholder="Ftp User Name"
-                            value={editSubscriberCredential.ftpUserName}
-                            onChange={handleChange} />
-                    </SummaryListBaseValue>
-                </SummaryListBaseRow>
+                {isEmisSupplier && (
+                    <SummaryListBaseRow>
+                        <SummaryListBaseKey>FTP Public Key</SummaryListBaseKey>
+                        <SummaryListBaseValue>
+                            {editSubscriberCredential.ftpPublicKey}
+                        </SummaryListBaseValue>
+                    </SummaryListBaseRow>
+                )}
 
-                <SummaryListBaseRow>
-                    <SummaryListBaseKey>FTP Public Key</SummaryListBaseKey>
-                    <SummaryListBaseValue>
-                        {editSubscriberCredential.ftpPublicKey}
-                    </SummaryListBaseValue>
-                </SummaryListBaseRow>
-
-                <SummaryListBaseRow>
-                    <SummaryListBaseKey>GPG Public Key</SummaryListBaseKey>
-                    <SummaryListBaseValue>
-                        {editSubscriberCredential.gpgPublicKey}
-                    </SummaryListBaseValue>
-                </SummaryListBaseRow>
+                {isEmisSupplier && (
+                    <SummaryListBaseRow>
+                        <SummaryListBaseKey>GPG Public Key</SummaryListBaseKey>
+                        <SummaryListBaseValue>
+                            {editSubscriberCredential.gpgPublicKey}
+                        </SummaryListBaseValue>
+                    </SummaryListBaseRow>
+                )}
 
                 <SummaryListBaseRow>
                     <SummaryListBaseKey>Is Active</SummaryListBaseKey>

@@ -25,21 +25,21 @@ namespace LHDS.Core.Services.Foundations.DecisionPolls
                 (Rule: IsInvalid(decisionPoll.UpdatedBy), Parameter: nameof(DecisionPoll.UpdatedBy)),
 
                 (Rule: IsNotSame(
-                        first: currentUser.EntraUserId,
-                        second: decisionPoll.CreatedBy),
-                    Parameter: nameof(DecisionPoll.CreatedBy)),
+                    first: currentUser.EntraUserId,
+                    second: decisionPoll.CreatedBy),
+                Parameter: nameof(DecisionPoll.CreatedBy)),
 
                 (Rule: IsNotSame(
-                        firstDate: decisionPoll.UpdatedDate,
-                        secondDate: decisionPoll.CreatedDate,
-                        secondDateName: nameof(DecisionPoll.CreatedDate)),
-                    Parameter: nameof(DecisionPoll.UpdatedDate)),
+                    firstDate: decisionPoll.UpdatedDate,
+                    secondDate: decisionPoll.CreatedDate,
+                    secondDateName: nameof(DecisionPoll.CreatedDate)),
+                Parameter: nameof(DecisionPoll.UpdatedDate)),
 
                 (Rule: IsNotSame(
-                        first: decisionPoll.UpdatedBy,
-                        second: decisionPoll.CreatedBy,
-                        secondName: nameof(DecisionPoll.CreatedBy)),
-                    Parameter: nameof(DecisionPoll.UpdatedBy)),
+                    first: decisionPoll.UpdatedBy,
+                    second: decisionPoll.CreatedBy,
+                    secondName: nameof(DecisionPoll.CreatedBy)),
+                Parameter: nameof(DecisionPoll.UpdatedBy)),
 
                 (Rule: await IsNotRecentAsync(decisionPoll.CreatedDate), Parameter: nameof(DecisionPoll.CreatedDate)));
         }

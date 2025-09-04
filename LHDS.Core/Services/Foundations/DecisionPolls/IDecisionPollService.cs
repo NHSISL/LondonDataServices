@@ -15,5 +15,6 @@ namespace LHDS.Core.Services.Foundations.DecisionPolls
         ValueTask<IQueryable<DecisionPoll>> RetrieveAllDecisionPollsAsync();
         ValueTask<DecisionPoll> RetrieveDecisionPollByIdAsync(Guid decisionPollId);
         ValueTask<DecisionPoll> ModifyDecisionPollAsync(DecisionPoll decisionPoll);
+        ValueTask<DecisionPoll> RemoveDecisionPollByIdAsync(Guid decisionPollId);
     }
 }

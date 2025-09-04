@@ -44,7 +44,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.DecisionPolls
             this.loggingBrokerMock.Verify(broker =>
                     broker.LogErrorAsync(It.Is(SameExceptionAs(
                         expectedDecisionPollValidationException))),
-                Times.Once);
+                            Times.Once);
 
             this.loggingBrokerMock.VerifyNoOtherCalls();
             this.dateTimeBrokerMock.VerifyNoOtherCalls();

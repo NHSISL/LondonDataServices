@@ -22,8 +22,8 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.DecisionPolls
             IQueryable<DecisionPoll> expectedDecisionPolls = storageDecisionPolls;
 
             this.storageBrokerMock.Setup(broker =>
-                    broker.SelectAllDecisionPollsAsync())
-                .ReturnsAsync(storageDecisionPolls);
+                broker.SelectAllDecisionPollsAsync())
+                    .ReturnsAsync(storageDecisionPolls);
 
             // when
             IQueryable<DecisionPoll> actualDecisionPolls =

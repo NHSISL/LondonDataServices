@@ -26,6 +26,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.DecisionPolls
         private readonly Mock<IStorageBroker> storageBrokerMock;
         private readonly Mock<IDateTimeBroker> dateTimeBrokerMock;
         private readonly Mock<ISecurityBroker> securityBrokerMock;
+        private readonly Mock<ISecurityAuditBroker> securityAuditBrokerMock;
         private readonly Mock<ILoggingBroker> loggingBrokerMock;
         private readonly IDecisionPollService decisionPollService;
 
@@ -34,12 +35,14 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.DecisionPolls
             this.storageBrokerMock = new Mock<IStorageBroker>();
             this.dateTimeBrokerMock = new Mock<IDateTimeBroker>();
             this.securityBrokerMock = new Mock<ISecurityBroker>();
+            this.securityAuditBrokerMock = new Mock<ISecurityAuditBroker>();
             this.loggingBrokerMock = new Mock<ILoggingBroker>();
 
             this.decisionPollService = new DecisionPollService(
                 storageBroker: this.storageBrokerMock.Object,
                 dateTimeBroker: this.dateTimeBrokerMock.Object,
                 securityBroker: this.securityBrokerMock.Object,
+                securityAuditBroker: this.securityAuditBrokerMock.Object,
                 loggingBroker: this.loggingBrokerMock.Object);
         }
 

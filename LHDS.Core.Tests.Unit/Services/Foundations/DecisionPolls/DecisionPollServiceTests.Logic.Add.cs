@@ -20,11 +20,24 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.DecisionPolls
         {
             // given
             DateTimeOffset randomDateTimeOffset = GetRandomDateTimeOffset();
-            EntraUser randomEntraUser = CreateRandomEntraUser();
-            DecisionPoll randomDecisionPoll = CreateRandomDecisionPoll(randomDateTimeOffset, randomEntraUser.EntraUserId);
+            string randomUserId = GetRandomString();
+            EntraUser randomEntraUser = CreateRandomEntraUser(entraUserId: randomUserId);
+
+            DecisionPoll randomDecisionPoll =
+                CreateRandomDecisionPoll(randomDateTimeOffset, randomEntraUser.EntraUserId);
+
             DecisionPoll inputDecisionPoll = randomDecisionPoll;
-            DecisionPoll storageDecisionPoll = inputDecisionPoll;
+            DecisionPoll auditAppliedDecisionPoll = inputDecisionPoll.DeepClone();
+            auditAppliedDecisionPoll.CreatedBy = randomUserId;
+            auditAppliedDecisionPoll.CreatedDate = randomDateTimeOffset;
+            auditAppliedDecisionPoll.UpdatedBy = randomUserId;
+            auditAppliedDecisionPoll.UpdatedDate = randomDateTimeOffset;
+            DecisionPoll storageDecisionPoll = auditAppliedDecisionPoll.DeepClone();
             DecisionPoll expectedDecisionPoll = storageDecisionPoll.DeepClone();
+
+            this.securityAuditBrokerMock.Setup(broker =>
+                broker.ApplyAddAuditValuesAsync(inputDecisionPoll))
+                    .ReturnsAsync(auditAppliedDecisionPoll);
 
             this.dateTimeBrokerMock.Setup(broker =>
                 broker.GetCurrentDateTimeOffsetAsync())
@@ -35,28 +48,33 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.DecisionPolls
                     .ReturnsAsync(randomEntraUser);
 
             this.storageBrokerMock.Setup(broker =>
-                broker.InsertDecisionPollAsync(inputDecisionPoll))
+                broker.InsertDecisionPollAsync(auditAppliedDecisionPoll))
                     .ReturnsAsync(storageDecisionPoll);
 
             // when
-            DecisionPoll actualDecisionPoll = await this.decisionPollService
-                .AddDecisionPollAsync(inputDecisionPoll);
+            DecisionPoll actualDecisionPoll =
+                await this.decisionPollService.AddDecisionPollAsync(inputDecisionPoll);
 
             // then
             actualDecisionPoll.Should().BeEquivalentTo(expectedDecisionPoll);
 
+            this.securityAuditBrokerMock.Verify(broker =>
+                broker.ApplyAddAuditValuesAsync(inputDecisionPoll),
+                    Times.Once);
+
             this.dateTimeBrokerMock.Verify(broker =>
                 broker.GetCurrentDateTimeOffsetAsync(),
-                    Times.Exactly(2));
+                    Times.Once);
 
             this.securityBrokerMock.Verify(broker =>
                 broker.GetCurrentUserAsync(),
-                    Times.Exactly(2));
-
-            this.storageBrokerMock.Verify(broker =>
-                broker.InsertDecisionPollAsync(inputDecisionPoll),
                     Times.Once);
 
+            this.storageBrokerMock.Verify(broker =>
+                broker.InsertDecisionPollAsync(auditAppliedDecisionPoll),
+                    Times.Once);
+
+            this.securityAuditBrokerMock.VerifyNoOtherCalls();
             this.dateTimeBrokerMock.VerifyNoOtherCalls();
             this.securityBrokerMock.VerifyNoOtherCalls();
             this.storageBrokerMock.VerifyNoOtherCalls();

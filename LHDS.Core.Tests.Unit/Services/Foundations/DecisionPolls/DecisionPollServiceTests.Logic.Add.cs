@@ -28,10 +28,6 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.DecisionPolls
 
             DecisionPoll inputDecisionPoll = randomDecisionPoll;
             DecisionPoll auditAppliedDecisionPoll = inputDecisionPoll.DeepClone();
-            auditAppliedDecisionPoll.CreatedBy = randomUserId;
-            auditAppliedDecisionPoll.CreatedDate = randomDateTimeOffset;
-            auditAppliedDecisionPoll.UpdatedBy = randomUserId;
-            auditAppliedDecisionPoll.UpdatedDate = randomDateTimeOffset;
             DecisionPoll storageDecisionPoll = auditAppliedDecisionPoll.DeepClone();
             DecisionPoll expectedDecisionPoll = storageDecisionPoll.DeepClone();
 

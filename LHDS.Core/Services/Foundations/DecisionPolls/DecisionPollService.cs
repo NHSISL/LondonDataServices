@@ -16,39 +16,29 @@ namespace LHDS.Core.Services.Foundations.DecisionPolls
         private readonly IStorageBroker storageBroker;
         private readonly IDateTimeBroker dateTimeBroker;
         private readonly ISecurityBroker securityBroker;
+        private readonly ISecurityAuditBroker securityAuditBroker;
         private readonly ILoggingBroker loggingBroker;
         public DecisionPollService(
             IStorageBroker storageBroker,
             IDateTimeBroker dateTimeBroker,
             ISecurityBroker securityBroker,
+            ISecurityAuditBroker securityAuditBroker,
             ILoggingBroker loggingBroker)
         {
             this.storageBroker = storageBroker;
             this.dateTimeBroker = dateTimeBroker;
             this.securityBroker = securityBroker;
+            this.securityAuditBroker = securityAuditBroker;
             this.loggingBroker = loggingBroker;
         }
 
         public ValueTask<DecisionPoll> AddDecisionPollAsync(DecisionPoll decisionPoll) =>
             TryCatch(async () =>
             {
-                DecisionPoll decisionPollWithAddAuditApplied = await ApplyAddDecisionPollAsync(decisionPoll);
-                await ValidateDecisionPollOnAddAsync(decisionPollWithAddAuditApplied);
+                decisionPoll = await this.securityAuditBroker.ApplyAddAuditValuesAsync(decisionPoll);
+                await ValidateDecisionPollOnAddAsync(decisionPoll);
 
-                return await this.storageBroker.InsertDecisionPollAsync(decisionPollWithAddAuditApplied);
+                return await this.storageBroker.InsertDecisionPollAsync(decisionPoll);
             });
-
-        virtual internal async ValueTask<DecisionPoll> ApplyAddDecisionPollAsync(DecisionPoll decisionPoll)
-        {
-            ValidateDecisionPollIsNotNull(decisionPoll);
-            var auditDateTimeOffset = await this.dateTimeBroker.GetCurrentDateTimeOffsetAsync();
-            var auditUser = await this.securityBroker.GetCurrentUserAsync();
-            decisionPoll.CreatedBy = auditUser?.EntraUserId ?? string.Empty;
-            decisionPoll.CreatedDate = auditDateTimeOffset;
-            decisionPoll.UpdatedBy = auditUser?.EntraUserId ?? string.Empty;
-            decisionPoll.UpdatedDate = auditDateTimeOffset;
-
-            return decisionPoll;
-        }
     }
 }

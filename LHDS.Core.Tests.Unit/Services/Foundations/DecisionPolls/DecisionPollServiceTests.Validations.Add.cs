@@ -5,10 +5,10 @@
 using System;
 using System.Threading.Tasks;
 using FluentAssertions;
+using Force.DeepCloner;
 using LHDS.Core.Models.Brokers.Securities;
 using LHDS.Core.Models.Foundations.DecisionPolls;
 using LHDS.Core.Models.Foundations.DecisionPolls.Exceptions;
-using LHDS.Core.Services.Foundations.DecisionPolls;
 using Moq;
 using Xunit;
 
@@ -30,6 +30,10 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.DecisionPolls
                     message: "DecisionPoll validation errors occurred, please try again.",
                     innerException: nullDecisionPollException);
 
+            this.securityAuditBrokerMock.Setup(broker =>
+                broker.ApplyAddAuditValuesAsync(nullDecisionPoll))
+                    .ReturnsAsync(nullDecisionPoll);
+
             // when
             ValueTask<DecisionPoll> addDecisionPollTask =
                 this.decisionPollService.AddDecisionPollAsync(nullDecisionPoll);
@@ -41,11 +45,17 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.DecisionPolls
             actualDecisionPollValidationException.Should()
                 .BeEquivalentTo(expectedDecisionPollValidationException);
 
+            this.securityAuditBrokerMock.Verify(broker =>
+                broker.ApplyAddAuditValuesAsync(nullDecisionPoll),
+                    Times.Once);
+
             this.loggingBrokerMock.Verify(broker =>
                     broker.LogErrorAsync(It.Is(SameExceptionAs(
                         expectedDecisionPollValidationException))),
                             Times.Once);
 
+            this.securityAuditBrokerMock.VerifyNoOtherCalls();
+            this.securityBrokerMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
             this.dateTimeBrokerMock.VerifyNoOtherCalls();
             this.storageBrokerMock.VerifyNoOtherCalls();
@@ -56,30 +66,10 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.DecisionPolls
         {
             // given
             DateTimeOffset randomDataTimeOffset = GetRandomDateTimeOffset();
-            EntraUser randomEntraUser = CreateRandomEntraUser();
+            string randomUserId = GetRandomString();
+            EntraUser randomEntraUser = CreateRandomEntraUser(entraUserId: randomUserId);
 
             var invalidDecisionPoll = new DecisionPoll();
-
-            var decisionPollServiceMock = new Mock<DecisionPollService>(
-                storageBrokerMock.Object,
-                dateTimeBrokerMock.Object,
-                securityBrokerMock.Object,
-                loggingBrokerMock.Object)
-            {
-                CallBase = true
-            };
-
-            decisionPollServiceMock.Setup(service =>
-                service.ApplyAddDecisionPollAsync(invalidDecisionPoll))
-                    .ReturnsAsync(invalidDecisionPoll);
-
-            this.dateTimeBrokerMock.Setup(broker =>
-                broker.GetCurrentDateTimeOffsetAsync())
-                    .ReturnsAsync(randomDataTimeOffset);
-
-            this.securityBrokerMock.Setup(broker =>
-                broker.GetCurrentUserAsync())
-                    .ReturnsAsync(randomEntraUser);
 
             var invalidDecisionPollException =
                 new InvalidDecisionPollException(
@@ -95,11 +85,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.DecisionPolls
 
             invalidDecisionPollException.AddData(
                  key: nameof(DecisionPoll.CreatedDate),
-                 values:
-                 [
-                    "Date is required",
-                    $"Date is not recent"
-                 ]);
+                 values: "Date is required");
 
             invalidDecisionPollException.AddData(
                 key: nameof(DecisionPoll.CreatedBy),
@@ -122,9 +108,17 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.DecisionPolls
                     message: "DecisionPoll validation errors occurred, please try again.",
                     innerException: invalidDecisionPollException);
 
+            this.securityAuditBrokerMock.Setup(broker =>
+                    broker.ApplyAddAuditValuesAsync(invalidDecisionPoll))
+                .ReturnsAsync(invalidDecisionPoll);
+
+            this.securityBrokerMock.Setup(broker =>
+                    broker.GetCurrentUserAsync())
+                .ReturnsAsync(randomEntraUser);
+
             // when
             ValueTask<DecisionPoll> addDecisionPollTask =
-                decisionPollServiceMock.Object.AddDecisionPollAsync(invalidDecisionPoll);
+                this.decisionPollService.AddDecisionPollAsync(invalidDecisionPoll);
 
             DecisionPollValidationException actualDecisionPollValidationException =
                 await Assert.ThrowsAsync<DecisionPollValidationException>(addDecisionPollTask.AsTask);
@@ -133,9 +127,9 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.DecisionPolls
             actualDecisionPollValidationException.Should()
                 .BeEquivalentTo(expectedDecisionPollValidationException);
 
-            decisionPollServiceMock.Verify(service =>
-                service.ApplyAddDecisionPollAsync(invalidDecisionPoll),
-                    Times.Once());
+            this.securityAuditBrokerMock.Verify(broker =>
+                broker.ApplyAddAuditValuesAsync(invalidDecisionPoll),
+                    Times.Once);
 
             this.dateTimeBrokerMock.Verify(broker =>
                 broker.GetCurrentDateTimeOffsetAsync(),
@@ -154,7 +148,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.DecisionPolls
                 broker.InsertDecisionPollAsync(It.IsAny<DecisionPoll>()),
                     Times.Never);
 
-            decisionPollServiceMock.VerifyNoOtherCalls();
+            this.securityAuditBrokerMock.VerifyNoOtherCalls();
             this.dateTimeBrokerMock.VerifyNoOtherCalls();
             this.securityBrokerMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
@@ -167,14 +161,16 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.DecisionPolls
             // given
             int randomNumber = GetRandomNumber();
             DateTimeOffset randomDateTimeOffset = GetRandomDateTimeOffset();
-            EntraUser randomEntraUser = CreateRandomEntraUser();
+            string randomUserId = GetRandomString();
+            EntraUser randomEntraUser = CreateRandomEntraUser(entraUserId: randomUserId);
 
             DecisionPoll randomDecisionPoll =
                 CreateRandomDecisionPoll(randomDateTimeOffset, randomEntraUser.EntraUserId);
 
             DecisionPoll invalidDecisionPoll = randomDecisionPoll;
-            invalidDecisionPoll.CreatedDate = GetRandomDateTimeOffset();
-            invalidDecisionPoll.UpdatedDate = GetRandomDateTimeOffset();
+
+            invalidDecisionPoll.UpdatedDate =
+                invalidDecisionPoll.CreatedDate.AddDays(randomNumber);
 
             var invalidDecisionPollException =
                 new InvalidDecisionPollException(
@@ -184,26 +180,13 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.DecisionPolls
                 key: nameof(DecisionPoll.UpdatedDate),
                 values: $"Date is not the same as {nameof(DecisionPoll.CreatedDate)}");
 
-            invalidDecisionPollException.AddData(
-                key: nameof(DecisionPoll.CreatedDate),
-                values: "Date is not recent");
-
             var expectedDecisionPollValidationException =
                 new DecisionPollValidationException(
                     message: "DecisionPoll validation errors occurred, please try again.",
                     innerException: invalidDecisionPollException);
 
-            var decisionPollServiceMock = new Mock<DecisionPollService>(
-                storageBrokerMock.Object,
-                dateTimeBrokerMock.Object,
-                securityBrokerMock.Object,
-                loggingBrokerMock.Object)
-            {
-                CallBase = true
-            };
-
-            decisionPollServiceMock.Setup(service =>
-                service.ApplyAddDecisionPollAsync(invalidDecisionPoll))
+            this.securityAuditBrokerMock.Setup(broker =>
+                broker.ApplyAddAuditValuesAsync(invalidDecisionPoll))
                     .ReturnsAsync(invalidDecisionPoll);
 
             this.dateTimeBrokerMock.Setup(broker =>
@@ -216,7 +199,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.DecisionPolls
 
             // when
             ValueTask<DecisionPoll> addDecisionPollTask =
-                decisionPollServiceMock.Object.AddDecisionPollAsync(invalidDecisionPoll);
+                this.decisionPollService.AddDecisionPollAsync(invalidDecisionPoll);
 
             DecisionPollValidationException actualDecisionPollValidationException =
                 await Assert.ThrowsAsync<DecisionPollValidationException>(addDecisionPollTask.AsTask);
@@ -225,9 +208,9 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.DecisionPolls
             actualDecisionPollValidationException.Should()
                 .BeEquivalentTo(expectedDecisionPollValidationException);
 
-            decisionPollServiceMock.Verify(service =>
-                service.ApplyAddDecisionPollAsync(invalidDecisionPoll),
-                    Times.Once());
+            this.securityAuditBrokerMock.Verify(broker =>
+                broker.ApplyAddAuditValuesAsync(invalidDecisionPoll),
+                    Times.Once);
 
             this.dateTimeBrokerMock.Verify(broker =>
                 broker.GetCurrentDateTimeOffsetAsync(),
@@ -246,7 +229,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.DecisionPolls
                 broker.InsertDecisionPollAsync(It.IsAny<DecisionPoll>()),
                     Times.Never);
 
-            decisionPollServiceMock.VerifyNoOtherCalls();
+            this.securityAuditBrokerMock.VerifyNoOtherCalls();
             this.dateTimeBrokerMock.VerifyNoOtherCalls();
             this.securityBrokerMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
@@ -258,23 +241,18 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.DecisionPolls
         {
             // given
             DateTimeOffset randomDateTimeOffset = GetRandomDateTimeOffset();
-            EntraUser randomEntraUser = CreateRandomEntraUser();
+            string randomUserId = GetRandomString();
+            EntraUser randomEntraUser = CreateRandomEntraUser(entraUserId: randomUserId);
 
-            DecisionPoll randomDecisionPoll =
-                CreateRandomDecisionPoll(randomDateTimeOffset, randomEntraUser.EntraUserId);
+            DecisionPoll randomDecisionPoll = CreateRandomDecisionPoll(
+                randomDateTimeOffset, userId: randomUserId);
 
-            DecisionPoll invalidDecisionPoll = randomDecisionPoll;
-            invalidDecisionPoll.CreatedBy = GetRandomString();
-            invalidDecisionPoll.UpdatedBy = GetRandomString();
+            DecisionPoll invalidDecisionPoll = randomDecisionPoll.DeepClone();
+            invalidDecisionPoll.UpdatedBy = Guid.NewGuid().ToString();
 
             var invalidDecisionPollException =
                 new InvalidDecisionPollException(
                     message: "Invalid decisionPoll. Please correct the errors and try again.");
-
-            invalidDecisionPollException.AddData(
-                key: nameof(DecisionPoll.CreatedBy),
-                values: $"Expected value to be '{randomEntraUser.EntraUserId}' " +
-                    $"but found '{invalidDecisionPoll.CreatedBy}'.");
 
             invalidDecisionPollException.AddData(
                 key: nameof(DecisionPoll.UpdatedBy),
@@ -285,17 +263,8 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.DecisionPolls
                     message: "DecisionPoll validation errors occurred, please try again.",
                     innerException: invalidDecisionPollException);
 
-            var decisionPollServiceMock = new Mock<DecisionPollService>(
-                storageBrokerMock.Object,
-                dateTimeBrokerMock.Object,
-                securityBrokerMock.Object,
-                loggingBrokerMock.Object)
-            {
-                CallBase = true
-            };
-
-            decisionPollServiceMock.Setup(service =>
-                service.ApplyAddDecisionPollAsync(invalidDecisionPoll))
+            this.securityAuditBrokerMock.Setup(broker =>
+                broker.ApplyAddAuditValuesAsync(invalidDecisionPoll))
                     .ReturnsAsync(invalidDecisionPoll);
 
             this.dateTimeBrokerMock.Setup(broker =>
@@ -308,18 +277,19 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.DecisionPolls
 
             // when
             ValueTask<DecisionPoll> addDecisionPollTask =
-                decisionPollServiceMock.Object.AddDecisionPollAsync(invalidDecisionPoll);
+                this.decisionPollService.AddDecisionPollAsync(invalidDecisionPoll);
 
             DecisionPollValidationException actualDecisionPollValidationException =
-                await Assert.ThrowsAsync<DecisionPollValidationException>(addDecisionPollTask.AsTask);
+                await Assert.ThrowsAsync<DecisionPollValidationException>(() =>
+                    addDecisionPollTask.AsTask());
 
             // then
             actualDecisionPollValidationException.Should()
                 .BeEquivalentTo(expectedDecisionPollValidationException);
 
-            decisionPollServiceMock.Verify(service =>
-                service.ApplyAddDecisionPollAsync(invalidDecisionPoll),
-                    Times.Once());
+            this.securityAuditBrokerMock.Verify(broker =>
+                broker.ApplyAddAuditValuesAsync(invalidDecisionPoll),
+                    Times.Once);
 
             this.dateTimeBrokerMock.Verify(broker =>
                 broker.GetCurrentDateTimeOffsetAsync(),
@@ -327,7 +297,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.DecisionPolls
 
             this.securityBrokerMock.Verify(broker =>
                 broker.GetCurrentUserAsync(),
-                    Times.Once());
+                    Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>
                 broker.LogErrorAsync(It.Is(SameExceptionAs(
@@ -338,9 +308,9 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.DecisionPolls
                 broker.InsertDecisionPollAsync(It.IsAny<DecisionPoll>()),
                     Times.Never);
 
-            decisionPollServiceMock.VerifyNoOtherCalls();
-            this.dateTimeBrokerMock.VerifyNoOtherCalls();
+            this.securityAuditBrokerMock.VerifyNoOtherCalls();
             this.securityBrokerMock.VerifyNoOtherCalls();
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
             this.storageBrokerMock.VerifyNoOtherCalls();
         }
@@ -352,12 +322,16 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.DecisionPolls
         {
             // given
             DateTimeOffset randomDateTimeOffset = GetRandomDateTimeOffset();
-            EntraUser randomEntraUser = CreateRandomEntraUser();
-            DateTimeOffset invalidDateTime = randomDateTimeOffset.AddMinutes(minutesBeforeOrAfter);
 
-            DecisionPoll randomDecisionPoll =
-                CreateRandomDecisionPoll(invalidDateTime, randomEntraUser.EntraUserId);
+            DateTimeOffset invalidDateTime =
+                randomDateTimeOffset.AddMinutes(minutesBeforeOrAfter);
 
+            DateTimeOffset invalidDate = randomDateTimeOffset.AddMinutes(minutesBeforeOrAfter);
+            DateTimeOffset startDate = randomDateTimeOffset.AddSeconds(-90);
+            DateTimeOffset endDate = randomDateTimeOffset.AddSeconds(0);
+            string randomEntraUserId = GetRandomString();
+            EntraUser randomEntraUser = CreateRandomEntraUser(entraUserId: randomEntraUserId);
+            DecisionPoll randomDecisionPoll = CreateRandomDecisionPoll(invalidDateTime, userId: randomEntraUserId);
             DecisionPoll invalidDecisionPoll = randomDecisionPoll;
 
             var invalidDecisionPollException =
@@ -366,24 +340,16 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.DecisionPolls
 
             invalidDecisionPollException.AddData(
                 key: nameof(DecisionPoll.CreatedDate),
-                values: "Date is not recent");
+                values:
+                    $"Date is not recent. Expected a value between {startDate} and {endDate} but found {invalidDate}");
 
             var expectedDecisionPollValidationException =
                 new DecisionPollValidationException(
                     message: "DecisionPoll validation errors occurred, please try again.",
                     innerException: invalidDecisionPollException);
 
-            var decisionPollServiceMock = new Mock<DecisionPollService>(
-                storageBrokerMock.Object,
-                dateTimeBrokerMock.Object,
-                securityBrokerMock.Object,
-                loggingBrokerMock.Object)
-            {
-                CallBase = true
-            };
-
-            decisionPollServiceMock.Setup(service =>
-                service.ApplyAddDecisionPollAsync(invalidDecisionPoll))
+            this.securityAuditBrokerMock.Setup(broker =>
+                broker.ApplyAddAuditValuesAsync(invalidDecisionPoll))
                     .ReturnsAsync(invalidDecisionPoll);
 
             this.dateTimeBrokerMock.Setup(broker =>
@@ -396,18 +362,19 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.DecisionPolls
 
             // when
             ValueTask<DecisionPoll> addDecisionPollTask =
-                decisionPollServiceMock.Object.AddDecisionPollAsync(invalidDecisionPoll);
+                this.decisionPollService.AddDecisionPollAsync(invalidDecisionPoll);
 
             DecisionPollValidationException actualDecisionPollValidationException =
-                await Assert.ThrowsAsync<DecisionPollValidationException>(addDecisionPollTask.AsTask);
+                await Assert.ThrowsAsync<DecisionPollValidationException>(() =>
+                    addDecisionPollTask.AsTask());
 
             // then
             actualDecisionPollValidationException.Should()
                 .BeEquivalentTo(expectedDecisionPollValidationException);
 
-            decisionPollServiceMock.Verify(service =>
-                service.ApplyAddDecisionPollAsync(invalidDecisionPoll),
-                    Times.Once());
+            this.securityAuditBrokerMock.Verify(broker =>
+                broker.ApplyAddAuditValuesAsync(invalidDecisionPoll),
+                    Times.Once);
 
             this.dateTimeBrokerMock.Verify(broker =>
                 broker.GetCurrentDateTimeOffsetAsync(),
@@ -415,7 +382,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.DecisionPolls
 
             this.securityBrokerMock.Verify(broker =>
                 broker.GetCurrentUserAsync(),
-                    Times.Once());
+                    Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>
                 broker.LogErrorAsync(It.Is(SameExceptionAs(
@@ -426,9 +393,9 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.DecisionPolls
                 broker.InsertDecisionPollAsync(It.IsAny<DecisionPoll>()),
                     Times.Never);
 
-            decisionPollServiceMock.VerifyNoOtherCalls();
-            this.dateTimeBrokerMock.VerifyNoOtherCalls();
+            this.securityAuditBrokerMock.VerifyNoOtherCalls();
             this.securityBrokerMock.VerifyNoOtherCalls();
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
             this.storageBrokerMock.VerifyNoOtherCalls();
         }

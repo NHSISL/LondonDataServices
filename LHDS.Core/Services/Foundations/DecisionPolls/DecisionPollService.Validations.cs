@@ -47,6 +47,7 @@ namespace LHDS.Core.Services.Foundations.DecisionPolls
 
         private async ValueTask ValidateDecisionPollOnModifyAsync(DecisionPoll decisionPoll)
         {
+            ValidateDecisionPollIsNotNull(decisionPoll);
             EntraUser currentUser = await this.securityBroker.GetCurrentUserAsync();
 
             Validate(

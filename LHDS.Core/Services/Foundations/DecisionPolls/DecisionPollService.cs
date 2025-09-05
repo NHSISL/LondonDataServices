@@ -44,58 +44,22 @@ namespace LHDS.Core.Services.Foundations.DecisionPolls
         public ValueTask<DecisionPoll> ModifyDecisionPollAsync(DecisionPoll decisionPoll) =>
             TryCatch(async () =>
             {
-                DecisionPoll decisionPollWithModifyAuditApplied = await ApplyModifyDecisionPollAsync(decisionPoll);
-                await ValidateDecisionPollOnModifyAsync(decisionPollWithModifyAuditApplied);
+                decisionPoll = await this.securityAuditBroker.ApplyModifyAuditValuesAsync(decisionPoll);
+                await ValidateDecisionPollOnModifyAsync(decisionPoll);
 
                 DecisionPoll maybeDecisionPoll =
                     await this.storageBroker.SelectDecisionPollByIdAsync(decisionPoll.Id);
 
                 ValidateStorageDecisionPoll(maybeDecisionPoll, decisionPoll.Id);
 
-                DecisionPoll decisionPollWithModifyAuditAppliedEnsured =
-                    await EnsureCreatedAuditPropertiesIsSameAsStorageAsync(
-                        decisionPollWithModifyAuditApplied,
-                        maybeDecisionPoll);
+                decisionPoll = await this.securityAuditBroker
+                    .EnsureAddAuditValuesRemainsUnchangedOnModifyAsync(decisionPoll, maybeDecisionPoll);
 
                 ValidateAgainstStorageDecisionPollOnModify(
                     inputDecisionPoll: decisionPoll,
                     storageDecisionPoll: maybeDecisionPoll);
 
-                return await this.storageBroker.UpdateDecisionPollAsync(decisionPollWithModifyAuditApplied);
+                return await this.storageBroker.UpdateDecisionPollAsync(decisionPoll);
             });
-
-        virtual internal async ValueTask<DecisionPoll> ApplyAddDecisionPollAsync(DecisionPoll decisionPoll)
-        {
-            ValidateDecisionPollIsNotNull(decisionPoll);
-            var auditDateTimeOffset = await this.dateTimeBroker.GetCurrentDateTimeOffsetAsync();
-            var auditUser = await this.securityBroker.GetCurrentUserAsync();
-            decisionPoll.CreatedBy = auditUser?.EntraUserId ?? string.Empty;
-            decisionPoll.CreatedDate = auditDateTimeOffset;
-            decisionPoll.UpdatedBy = auditUser?.EntraUserId ?? string.Empty;
-            decisionPoll.UpdatedDate = auditDateTimeOffset;
-
-            return decisionPoll;
-        }
-
-        virtual internal async ValueTask<DecisionPoll> ApplyModifyDecisionPollAsync(DecisionPoll decisionPoll)
-        {
-            ValidateDecisionPollIsNotNull(decisionPoll);
-            var auditDateTimeOffset = await this.dateTimeBroker.GetCurrentDateTimeOffsetAsync();
-            var auditUser = await this.securityBroker.GetCurrentUserAsync();
-            decisionPoll.UpdatedBy = auditUser?.EntraUserId ?? string.Empty;
-            decisionPoll.UpdatedDate = auditDateTimeOffset;
-
-            return decisionPoll;
-        }
-
-        virtual internal async ValueTask<DecisionPoll> EnsureCreatedAuditPropertiesIsSameAsStorageAsync(
-            DecisionPoll decisionPoll,
-            DecisionPoll maybeDecisionPoll)
-        {
-            decisionPoll.CreatedDate = maybeDecisionPoll.CreatedDate;
-            decisionPoll.CreatedBy = maybeDecisionPoll.CreatedBy;
-
-            return decisionPoll;
-        }
     }
 }

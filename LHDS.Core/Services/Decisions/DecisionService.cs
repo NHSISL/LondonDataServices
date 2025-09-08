@@ -37,7 +37,10 @@ namespace LHDS.Core.Services.Decisions
 
         public async ValueTask<List<Decision>> GetPatientDecisions(DateTimeOffset? lastPollDate)
         {
-            throw new NotImplementedException();
+            List<Decision> maybeDecisions =
+                await this.decisionBroker.GetPatientDecisions(lastPollDate);
+
+            return maybeDecisions;
         }
     }
 }

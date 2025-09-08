@@ -13,7 +13,7 @@ using LHDS.Core.Models.Foundations.Decisions;
 
 namespace LHDS.Core.Services.Decisions
 {
-    public class DecisionService : IDecisionService
+    public partial class DecisionService : IDecisionService
     {
         private readonly IDecisionBroker decisionBroker;
         private readonly IDateTimeBroker dateTimeBroker;
@@ -35,12 +35,15 @@ namespace LHDS.Core.Services.Decisions
             this.loggingBroker = loggingBroker;
         }
 
-        public async ValueTask<List<Decision>> GetPatientDecisions(DateTimeOffset? lastPollDate)
-        {
-            List<Decision> maybeDecisions =
-                await this.decisionBroker.GetPatientDecisions(lastPollDate);
+        public ValueTask<List<Decision>> GetPatientDecisions(DateTimeOffset? lastPollDate) =>
+            TryCatch(async () =>
+            {
+                List<Decision> maybeDecisions =
+                    await this.decisionBroker.GetPatientDecisions(lastPollDate);
 
-            return maybeDecisions;
-        }
+                ValidateDecisions(maybeDecisions);
+
+                return maybeDecisions;
+            });
     }
 }

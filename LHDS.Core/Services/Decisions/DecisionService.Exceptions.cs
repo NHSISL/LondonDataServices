@@ -6,6 +6,8 @@ using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using LHDS.Core.Models.Foundations.Decisions;
+using LHDS.Core.Models.Foundations.Decisions.Exceptions;
+using Xeptions;
 
 namespace LHDS.Core.Services.Decisions
 {
@@ -19,10 +21,26 @@ namespace LHDS.Core.Services.Decisions
             {
                 return await returningDecisionsFunction();
             }
+            catch (NullDecisionsException nullDecisionsException)
+            {
+                throw await CreateAndLogValidationException(nullDecisionsException);
+            }
             catch (Exception exception)
             {
                 throw exception;
             }
+        }
+
+        private async ValueTask<DecisionValidationException> CreateAndLogValidationException(Xeption exception)
+        {
+            var decisionValidationException =
+                new DecisionValidationException(
+                    message: "Decision validation errors occurred, please try again.",
+                    innerException: exception);
+
+            await this.loggingBroker.LogErrorAsync(decisionValidationException);
+
+            return decisionValidationException;
         }
     }
 }

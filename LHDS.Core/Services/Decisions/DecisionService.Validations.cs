@@ -4,8 +4,11 @@
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using LHDS.Core.Models.Foundations.Decisions;
 using LHDS.Core.Models.Foundations.Decisions.Exceptions;
+using LHDS.Core.Models.Foundations.DecisionTypes;
+using LHDS.Core.Models.Foundations.Patients;
 using Xeptions;
 
 namespace LHDS.Core.Services.Decisions
@@ -16,20 +19,17 @@ namespace LHDS.Core.Services.Decisions
         {
             ValidateDecisionsIsNotNull(maybeDecisions);
 
-            Validate<InvalidDecisionsException>(
-                message: "Invalid decisions. Please correct the errors and try again",
-                (Rule: IsNotNull(maybeDecisions, nameof(maybeDecisions)), Parameter: nameof(maybeDecisions)),
-                (Rule: new
+            var validations = maybeDecisions
+                .SelectMany(decision => new[]
                 {
-                    Condition = maybeDecisions.Exists(decision => decision is null),
-                    Message = "One or more decisions in the list are null."
-                }, Parameter: "Decisions"),
-                (Rule: maybeDecisions.Exists(decision =>
-                        IsNotNull(decision.DecisionType, nameof(Decision.DecisionType)).Condition),
-                    Parameter: "DecisionType"),
-                (Rule: maybeDecisions.Exists(decision =>
-                        IsNotNull(decision.Patient, nameof(Decision.Patient)).Condition),
-                    Parameter: "Patient")
+                    (Rule: IsNotNull(decision.DecisionType), Parameter: nameof(Decision.DecisionType)),
+                    (Rule: IsNotNull(decision.Patient), Parameter: nameof(Decision.Patient))
+                })
+                .ToArray();
+
+            Validate<InvalidDecisionsException>(
+                message: "Invalid decisions. Please correct the errors and try again.",
+                validations: validations
             );
         }
 
@@ -41,10 +41,16 @@ namespace LHDS.Core.Services.Decisions
             }
         }
 
-        private static dynamic IsNotNull(object value, string parameterName) => new
+        private static dynamic IsNotNull(DecisionType decisionType) => new
         {
-            Condition = value is null,
-            Message = $"{parameterName} is required"
+            Condition = decisionType is null,
+            Message = "DecisionType is required"
+        };
+
+        private static dynamic IsNotNull(Patient patient) => new
+        {
+            Condition = patient is null,
+            Message = "Patient is required"
         };
 
         private static void Validate<T>(string message, params (dynamic Rule, string Parameter)[] validations)

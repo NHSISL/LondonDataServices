@@ -79,5 +79,18 @@ namespace LHDS.Core.Services.Foundations.DecisionPolls
 
                 return await this.storageBroker.UpdateDecisionPollAsync(decisionPoll);
             });
+
+        public ValueTask<DecisionPoll> RemoveDecisionPollByIdAsync(Guid decisionPollId) =>
+            TryCatch(async () =>
+            {
+                ValidateDecisionPollId(decisionPollId);
+
+                DecisionPoll maybeDecisionPoll = await this.storageBroker
+                    .SelectDecisionPollByIdAsync(decisionPollId);
+
+                ValidateStorageDecisionPoll(maybeDecisionPoll, decisionPollId);
+
+                return await this.storageBroker.DeleteDecisionPollAsync(maybeDecisionPoll);
+            });
     }
 }

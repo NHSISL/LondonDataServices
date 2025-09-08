@@ -35,7 +35,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.DecisionPolls
 
             this.storageBrokerMock.Setup(broker =>
                 broker.SelectDecisionPollByIdAsync(randomDecisionPoll.Id))
-                    .ThrowsAsync(sqlException);
+                    .Throws(sqlException);
 
             // when
             ValueTask<DecisionPoll> addDecisionPollTask =
@@ -66,9 +66,11 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.DecisionPolls
                 broker.GetCurrentDateTimeOffsetAsync(),
                     Times.Never);
 
-            this.storageBrokerMock.VerifyNoOtherCalls();
+            this.securityAuditBrokerMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
             this.dateTimeBrokerMock.VerifyNoOtherCalls();
+            this.storageBrokerMock.VerifyNoOtherCalls();
+            this.securityBrokerMock.VerifyNoOtherCalls();
         }
 
         [Fact]
@@ -119,9 +121,11 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.DecisionPolls
                 broker.DeleteDecisionPollAsync(It.IsAny<DecisionPoll>()),
                     Times.Never);
 
-            this.storageBrokerMock.VerifyNoOtherCalls();
+            this.securityAuditBrokerMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
             this.dateTimeBrokerMock.VerifyNoOtherCalls();
+            this.storageBrokerMock.VerifyNoOtherCalls();
+            this.securityBrokerMock.VerifyNoOtherCalls();
         }
 
         [Fact]
@@ -166,9 +170,11 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.DecisionPolls
                     expectedDecisionPollDependencyException))),
                         Times.Once);
 
-            this.storageBrokerMock.VerifyNoOtherCalls();
+            this.securityAuditBrokerMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
             this.dateTimeBrokerMock.VerifyNoOtherCalls();
+            this.storageBrokerMock.VerifyNoOtherCalls();
+            this.securityBrokerMock.VerifyNoOtherCalls();
         }
 
         [Fact]
@@ -206,16 +212,18 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.DecisionPolls
 
             this.storageBrokerMock.Verify(broker =>
                 broker.SelectDecisionPollByIdAsync(It.IsAny<Guid>()),
-                        Times.Once());
+                    Times.Once());
 
             this.loggingBrokerMock.Verify(broker =>
                 broker.LogErrorAsync(It.Is(SameExceptionAs(
                     expectedDecisionPollServiceException))),
-                        Times.Once);
+                        Times.Once());
 
-            this.storageBrokerMock.VerifyNoOtherCalls();
+            this.securityAuditBrokerMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
             this.dateTimeBrokerMock.VerifyNoOtherCalls();
+            this.storageBrokerMock.VerifyNoOtherCalls();
+            this.securityBrokerMock.VerifyNoOtherCalls();
         }
     }
 }

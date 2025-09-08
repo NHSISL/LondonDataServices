@@ -25,6 +25,10 @@ namespace LHDS.Core.Services.Decisions
             {
                 throw await CreateAndLogValidationException(nullDecisionsException);
             }
+            catch (InvalidDecisionsException invalidDecisionsException)
+            {
+                throw await CreateAndLogValidationException(invalidDecisionsException);
+            }
             catch (Exception exception)
             {
                 throw exception;

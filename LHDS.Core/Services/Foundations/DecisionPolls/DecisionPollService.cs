@@ -40,5 +40,26 @@ namespace LHDS.Core.Services.Foundations.DecisionPolls
 
                 return await this.storageBroker.InsertDecisionPollAsync(decisionPoll);
             });
+
+        public ValueTask<DecisionPoll> ModifyDecisionPollAsync(DecisionPoll decisionPoll) =>
+            TryCatch(async () =>
+            {
+                decisionPoll = await this.securityAuditBroker.ApplyModifyAuditValuesAsync(decisionPoll);
+                await ValidateDecisionPollOnModifyAsync(decisionPoll);
+
+                DecisionPoll maybeDecisionPoll =
+                    await this.storageBroker.SelectDecisionPollByIdAsync(decisionPoll.Id);
+
+                ValidateStorageDecisionPoll(maybeDecisionPoll, decisionPoll.Id);
+
+                decisionPoll = await this.securityAuditBroker
+                    .EnsureAddAuditValuesRemainsUnchangedOnModifyAsync(decisionPoll, maybeDecisionPoll);
+
+                ValidateAgainstStorageDecisionPollOnModify(
+                    inputDecisionPoll: decisionPoll,
+                    storageDecisionPoll: maybeDecisionPoll);
+
+                return await this.storageBroker.UpdateDecisionPollAsync(decisionPoll);
+            });
     }
 }

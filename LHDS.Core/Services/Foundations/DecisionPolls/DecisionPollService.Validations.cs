@@ -45,12 +45,73 @@ namespace LHDS.Core.Services.Foundations.DecisionPolls
                 (Rule: await IsNotRecentAsync(decisionPoll.CreatedDate), Parameter: nameof(DecisionPoll.CreatedDate)));
         }
 
+        private async ValueTask ValidateDecisionPollOnModifyAsync(DecisionPoll decisionPoll)
+        {
+            ValidateDecisionPollIsNotNull(decisionPoll);
+            EntraUser currentUser = await this.securityBroker.GetCurrentUserAsync();
+
+            Validate(
+                (Rule: IsInvalid(decisionPoll.Id), Parameter: nameof(DecisionPoll.Id)),
+                (Rule: IsInvalid(decisionPoll.LastPoll), Parameter: nameof(DecisionPoll.LastPoll)),
+                (Rule: IsInvalid(decisionPoll.CreatedDate), Parameter: nameof(DecisionPoll.CreatedDate)),
+                (Rule: IsInvalid(decisionPoll.CreatedBy), Parameter: nameof(DecisionPoll.CreatedBy)),
+                (Rule: IsInvalid(decisionPoll.UpdatedDate), Parameter: nameof(DecisionPoll.UpdatedDate)),
+                (Rule: IsInvalid(decisionPoll.UpdatedBy), Parameter: nameof(DecisionPoll.UpdatedBy)),
+
+                (Rule: IsNotSame(
+                    first: currentUser.EntraUserId,
+                    second: decisionPoll.UpdatedBy),
+                Parameter: nameof(DecisionPoll.UpdatedBy)),
+
+                (Rule: IsSame(
+                    firstDate: decisionPoll.UpdatedDate,
+                    secondDate: decisionPoll.CreatedDate,
+                    secondDateName: nameof(DecisionPoll.CreatedDate)),
+                Parameter: nameof(DecisionPoll.UpdatedDate)),
+
+                (Rule: await IsNotRecentAsync(decisionPoll.UpdatedDate), Parameter: nameof(decisionPoll.UpdatedDate)));
+        }
+
+        private static void ValidateStorageDecisionPoll(
+            DecisionPoll maybeDecisionPoll,
+            Guid decisionPollId)
+        {
+            if (maybeDecisionPoll is null)
+            {
+                throw new NotFoundDecisionPollException(decisionPollId);
+            }
+        }
+
         private static void ValidateDecisionPollIsNotNull(DecisionPoll decisionPoll)
         {
             if (decisionPoll is null)
             {
                 throw new NullDecisionPollException(message: "DecisionPoll is null.");
             }
+        }
+
+        private static void ValidateAgainstStorageDecisionPollOnModify(
+            DecisionPoll inputDecisionPoll,
+            DecisionPoll storageDecisionPoll)
+        {
+            Validate(
+                (Rule: IsNotSame(
+                    firstDate: inputDecisionPoll.CreatedDate,
+                    secondDate: storageDecisionPoll.CreatedDate,
+                    secondDateName: nameof(DecisionPoll.CreatedDate)),
+                Parameter: nameof(DecisionPoll.CreatedDate)),
+
+                (Rule: IsNotSame(
+                    first: inputDecisionPoll.CreatedBy,
+                    second: storageDecisionPoll.CreatedBy,
+                    secondName: nameof(DecisionPoll.CreatedBy)),
+                Parameter: nameof(DecisionPoll.CreatedBy)),
+
+                (Rule: IsSame(
+                    firstDate: inputDecisionPoll.UpdatedDate,
+                    secondDate: storageDecisionPoll.UpdatedDate,
+                    secondDateName: nameof(DecisionPoll.UpdatedDate)),
+                Parameter: nameof(DecisionPoll.UpdatedDate)));
         }
 
         private static dynamic IsInvalid(Guid id) => new
@@ -70,6 +131,16 @@ namespace LHDS.Core.Services.Foundations.DecisionPolls
             Condition = date == default,
             Message = "Date is required"
         };
+
+        private static dynamic IsSame(
+            DateTimeOffset firstDate,
+            DateTimeOffset secondDate,
+            string secondDateName) => new
+            {
+                Condition = firstDate == secondDate,
+                Message = $"Date is the same as {secondDateName}"
+            };
+
 
         private static dynamic IsNotSame(
             DateTimeOffset firstDate,

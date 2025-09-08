@@ -37,6 +37,9 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.DecisionPolls
                     Times.Once);
 
             this.storageBrokerMock.VerifyNoOtherCalls();
+            this.securityAuditBrokerMock.VerifyNoOtherCalls();
+            this.securityBrokerMock.VerifyNoOtherCalls();
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
         }
     }

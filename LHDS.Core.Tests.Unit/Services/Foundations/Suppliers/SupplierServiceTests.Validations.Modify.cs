@@ -532,7 +532,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Suppliers
             storageSupplier.CreatedDate = storageSupplier.CreatedDate.AddMinutes(randomMinutes);
             storageSupplier.UpdatedDate = storageSupplier.UpdatedDate.AddMinutes(randomMinutes);
 
-            var supplierServiceMock = new Mock<SupplierService>(
+            var SupplierServiceMock = new Mock<SupplierService>(
                 storageBrokerMock.Object,
                 dateTimeBrokerMock.Object,
                 securityBrokerMock.Object,
@@ -541,7 +541,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Suppliers
                 CallBase = true
             };
 
-            supplierServiceMock.Setup(service =>
+            SupplierServiceMock.Setup(service =>
                 service.ApplyModifyAuditAsync(invalidSupplier))
                     .ReturnsAsync(invalidSupplier);
 
@@ -553,9 +553,8 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Suppliers
                 broker.GetCurrentUserAsync())
                     .ReturnsAsync(randomEntraUser);
 
-            var invalidSupplierException =
-                new InvalidSupplierException(
-                    message: "Invalid supplier. Please correct the errors and try again.");
+            var invalidSupplierException = new InvalidSupplierException(
+                message: "Invalid supplier. Please correct the errors and try again.");
 
             invalidSupplierException.AddData(
                 key: nameof(Supplier.CreatedDate),
@@ -568,11 +567,15 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Suppliers
 
             this.storageBrokerMock.Setup(broker =>
                 broker.SelectSupplierByIdAsync(invalidSupplier.Id))
-                    .ReturnsAsync(storageSupplier);
+                .ReturnsAsync(storageSupplier);
 
+            SupplierServiceMock.Setup(service =>
+                service.EnsureCreatedAuditPropertiesIsSameAsStorageAsync(
+                    invalidSupplier, storageSupplier))
+                        .ReturnsAsync(invalidSupplier);
             // when
             ValueTask<Supplier> modifySupplierTask =
-                supplierServiceMock.Object.ModifySupplierAsync(invalidSupplier);
+                SupplierServiceMock.Object.ModifySupplierAsync(invalidSupplier);
 
             SupplierValidationException actualSupplierValidationException =
                 await Assert.ThrowsAsync<SupplierValidationException>(
@@ -582,6 +585,10 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Suppliers
             actualSupplierValidationException.Should()
                 .BeEquivalentTo(expectedSupplierValidationException);
 
+            this.storageBrokerMock.Verify(broker =>
+                broker.SelectSupplierByIdAsync(invalidSupplier.Id),
+                    Times.Once);
+
             this.dateTimeBrokerMock.Verify(broker =>
                 broker.GetCurrentDateTimeOffsetAsync(),
                     Times.Once);
@@ -590,9 +597,10 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Suppliers
                 broker.GetCurrentUserAsync(),
                     Times.Once);
 
-            this.storageBrokerMock.Verify(broker =>
-                broker.SelectSupplierByIdAsync(invalidSupplier.Id),
-                    Times.Once);
+            SupplierServiceMock.Verify(service =>
+                service.EnsureCreatedAuditPropertiesIsSameAsStorageAsync(
+                    invalidSupplier, storageSupplier),
+                        Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>
                broker.LogErrorAsync(It.Is(SameExceptionAs(
@@ -601,12 +609,12 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Suppliers
 
             this.dateTimeBrokerMock.VerifyNoOtherCalls();
             this.securityBrokerMock.VerifyNoOtherCalls();
-            this.storageBrokerMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
+            this.storageBrokerMock.VerifyNoOtherCalls();
         }
 
         [Fact]
-        public async Task ShouldThrowValidationExceptionOnModifyIfCreatedUserDontMatchStorageAndLogItAsync()
+        public async Task ShouldThrowValidationExceptionOnModifyIfCreatedUserIdDontMatchStorageAndLogItAsync()
         {
             // given
             DateTimeOffset randomDateTimeOffset = GetRandomDateTimeOffset();
@@ -620,20 +628,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Suppliers
             invalidSupplier.CreatedBy = Guid.NewGuid().ToString();
             storageSupplier.UpdatedDate = storageSupplier.CreatedDate;
 
-            var invalidSupplierException =
-                new InvalidSupplierException(
-                    message: "Invalid supplier. Please correct the errors and try again.");
-
-            invalidSupplierException.AddData(
-                key: nameof(Supplier.CreatedBy),
-                values: $"Text is not the same as {nameof(Supplier.CreatedBy)}");
-
-            var expectedSupplierValidationException =
-                new SupplierValidationException(
-                    message: "Supplier validation errors occurred, please try again.",
-                    innerException: invalidSupplierException);
-
-            var supplierServiceMock = new Mock<SupplierService>(
+            var SupplierServiceMock = new Mock<SupplierService>(
                 storageBrokerMock.Object,
                 dateTimeBrokerMock.Object,
                 securityBrokerMock.Object,
@@ -642,7 +637,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Suppliers
                 CallBase = true
             };
 
-            supplierServiceMock.Setup(service =>
+            SupplierServiceMock.Setup(service =>
                 service.ApplyModifyAuditAsync(invalidSupplier))
                     .ReturnsAsync(invalidSupplier);
 
@@ -654,13 +649,30 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Suppliers
                 broker.GetCurrentUserAsync())
                     .ReturnsAsync(randomEntraUser);
 
+            var invalidSupplierException = new InvalidSupplierException(
+                message: "Invalid supplier. Please correct the errors and try again.");
+
+            invalidSupplierException.AddData(
+                key: nameof(Supplier.CreatedBy),
+                values: $"Text is not the same as {nameof(Supplier.CreatedBy)}");
+
+            var expectedSupplierValidationException =
+                new SupplierValidationException(
+                    message: "Supplier validation errors occurred, please try again.",
+                    innerException: invalidSupplierException);
+
             this.storageBrokerMock.Setup(broker =>
                 broker.SelectSupplierByIdAsync(invalidSupplier.Id))
-                    .ReturnsAsync(storageSupplier);
+                .ReturnsAsync(storageSupplier);
+
+            SupplierServiceMock.Setup(service =>
+                service.EnsureCreatedAuditPropertiesIsSameAsStorageAsync(
+                    invalidSupplier, storageSupplier))
+                        .ReturnsAsync(invalidSupplier);
 
             // when
             ValueTask<Supplier> modifySupplierTask =
-                supplierServiceMock.Object.ModifySupplierAsync(invalidSupplier);
+                SupplierServiceMock.Object.ModifySupplierAsync(invalidSupplier);
 
             SupplierValidationException actualSupplierValidationException =
                 await Assert.ThrowsAsync<SupplierValidationException>(
@@ -668,6 +680,10 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Suppliers
 
             // then
             actualSupplierValidationException.Should().BeEquivalentTo(expectedSupplierValidationException);
+
+            this.storageBrokerMock.Verify(broker =>
+                broker.SelectSupplierByIdAsync(invalidSupplier.Id),
+                    Times.Once);
 
             this.dateTimeBrokerMock.Verify(broker =>
                 broker.GetCurrentDateTimeOffsetAsync(),
@@ -677,9 +693,10 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Suppliers
                 broker.GetCurrentUserAsync(),
                     Times.Once);
 
-            this.storageBrokerMock.Verify(broker =>
-                broker.SelectSupplierByIdAsync(invalidSupplier.Id),
-                    Times.Once);
+            SupplierServiceMock.Verify(service =>
+                service.EnsureCreatedAuditPropertiesIsSameAsStorageAsync(
+                    invalidSupplier, storageSupplier),
+                        Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>
                broker.LogErrorAsync(It.Is(SameExceptionAs(

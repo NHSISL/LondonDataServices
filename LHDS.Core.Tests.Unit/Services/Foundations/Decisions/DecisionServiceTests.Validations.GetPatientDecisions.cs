@@ -47,6 +47,10 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Decisions
             actualDecisionValidationException.Should()
                 .BeEquivalentTo(expectedDecisionValidationException);
 
+            this.decisionBrokerMock.Verify(broker =>
+                broker.GetPatientDecisions(inputDateTimeOffset),
+                    Times.Once);
+
             this.loggingBrokerMock.Verify(broker =>
                 broker.LogErrorAsync(It.Is(SameExceptionAs(
                     expectedDecisionValidationException))),

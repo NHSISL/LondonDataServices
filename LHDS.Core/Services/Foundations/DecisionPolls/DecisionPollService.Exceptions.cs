@@ -3,6 +3,7 @@
 // ---------------------------------------------------------
 
 using System;
+using System.Linq;
 using System.Threading.Tasks;
 using EFxceptions.Models.Exceptions;
 using LHDS.Core.Models.Foundations.DecisionPolls;
@@ -16,6 +17,7 @@ namespace LHDS.Core.Services.Foundations.DecisionPolls
     public partial class DecisionPollService
     {
         private delegate ValueTask<DecisionPoll> ReturningDecisionPollFunction();
+        private delegate ValueTask<IQueryable<DecisionPoll>> ReturningDecisionPollsFunction();
 
         private async ValueTask<DecisionPoll> TryCatch(ReturningDecisionPollFunction returningDecisionPollFunction)
         {
@@ -79,6 +81,33 @@ namespace LHDS.Core.Services.Foundations.DecisionPolls
                         innerException: databaseUpdateException);
 
                 throw await CreateAndLogDependencyExceptionAsync(failedDecisionPollStorageException);
+            }
+            catch (Exception exception)
+            {
+                var failedDecisionPollServiceException =
+                    new FailedDecisionPollServiceException(
+                        message: "Failed decisionPoll service error occurred, please contact support.",
+                        innerException: exception);
+
+                throw await CreateAndLogServiceExceptionAsync(failedDecisionPollServiceException);
+            }
+        }
+
+        private async ValueTask<IQueryable<DecisionPoll>> TryCatch(
+            ReturningDecisionPollsFunction returningDecisionPollsFunction)
+        {
+            try
+            {
+                return await returningDecisionPollsFunction();
+            }
+            catch (SqlException sqlException)
+            {
+                var failedDecisionPollStorageException =
+                    new FailedDecisionPollStorageException(
+                        message: "Failed decisionPoll storage error occurred, please contact support.",
+                        innerException: sqlException);
+
+                throw await CreateAndLogCriticalDependencyExceptionAsync(failedDecisionPollStorageException);
             }
             catch (Exception exception)
             {

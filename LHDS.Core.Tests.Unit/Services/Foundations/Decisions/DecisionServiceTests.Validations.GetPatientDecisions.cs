@@ -62,5 +62,70 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Decisions
             this.loggingBrokerMock.VerifyNoOtherCalls();
             this.decisionBrokerMock.VerifyNoOtherCalls();
         }
+
+        [Fact]
+        public async Task ShouldThrowValidationExceptionOnGetPatientDecisionsIfDecisionsIsInvalidAndLogItAsync()
+        {
+            // given
+            DateTimeOffset randomDateTimeOffset = GetRandomDateTimeOffset();
+            DateTimeOffset inputDateTimeOffset = randomDateTimeOffset;
+
+            var invalidDecisions = new List<Decision>
+            {
+                new()
+                {
+                    DecisionType = null,
+                    Patient = null
+                }
+            };
+
+            var invalidDecisionException =
+                new InvalidDecisionsException(
+                    message: "Invalid decisions. Please correct the errors and try again.");
+
+            invalidDecisionException.AddData(
+                key: nameof(Decision.DecisionType),
+                values: "DecisionType is required");
+
+            invalidDecisionException.AddData(
+                key: nameof(Decision.Patient),
+                values: "Patient is required");
+
+            var expectedDecisionValidationException =
+                new DecisionValidationException(
+                    message: "Decision validation errors occurred, please try again.",
+                    innerException: invalidDecisionException);
+
+            this.decisionBrokerMock.Setup(broker =>
+                broker.GetPatientDecisions(inputDateTimeOffset))
+                    .ReturnsAsync(invalidDecisions);
+
+            // when
+            ValueTask<List<Decision>> addDecisionTask =
+                this.decisionService.GetPatientDecisions(inputDateTimeOffset);
+
+            DecisionValidationException actualDecisionValidationException =
+                await Assert.ThrowsAsync<DecisionValidationException>(() =>
+                    addDecisionTask.AsTask());
+
+            // then
+            actualDecisionValidationException.Should()
+                .BeEquivalentTo(expectedDecisionValidationException);
+
+            this.decisionBrokerMock.Verify(broker =>
+                broker.GetPatientDecisions(inputDateTimeOffset),
+                    Times.Once);
+
+            this.loggingBrokerMock.Verify(broker =>
+                broker.LogErrorAsync(It.Is(SameExceptionAs(
+                    expectedDecisionValidationException))),
+                        Times.Once);
+
+            this.securityAuditBrokerMock.VerifyNoOtherCalls();
+            this.securityBrokerMock.VerifyNoOtherCalls();
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
+            this.loggingBrokerMock.VerifyNoOtherCalls();
+            this.decisionBrokerMock.VerifyNoOtherCalls();
+        }
     }
 }

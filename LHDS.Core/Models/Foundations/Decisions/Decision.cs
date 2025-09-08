@@ -3,8 +3,8 @@
 // ---------------------------------------------------------
 
 using System;
-using Hl7.Fhir.Model;
 using LHDS.Core.Models.Foundations.DecisionTypes;
+using LHDS.Core.Models.Foundations.Patients;
 
 namespace LHDS.Core.Models.Foundations.Decisions
 {

@@ -85,6 +85,19 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.DecisionPolls
         private static DecisionPoll CreateRandomDecisionPoll() =>
             CreateDecisionPollFiller(dateTimeOffset: GetRandomDateTimeOffset()).Create();
 
+        private static DecisionPoll CreateRandomModifyDecisionPoll(
+            DateTimeOffset dateTimeOffset,
+            string userId)
+        {
+            int randomDaysInPast = GetRandomNegativeNumber();
+            DecisionPoll randomDecisionPoll = CreateRandomDecisionPoll(dateTimeOffset, userId);
+
+            randomDecisionPoll.CreatedDate =
+                randomDecisionPoll.CreatedDate.AddDays(randomDaysInPast);
+
+            return randomDecisionPoll;
+        }
+
         private static Filler<DecisionPoll> CreateDecisionPollFiller(DateTimeOffset dateTimeOffset)
         {
             string user = Guid.NewGuid().ToString();

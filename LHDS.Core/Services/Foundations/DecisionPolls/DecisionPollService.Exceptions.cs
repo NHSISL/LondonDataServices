@@ -40,6 +40,10 @@ namespace LHDS.Core.Services.Foundations.DecisionPolls
 
                 throw await CreateAndLogCriticalDependencyExceptionAsync(failedDecisionPollStorageException);
             }
+            catch (NotFoundDecisionPollException notFoundDecisionPollException)
+            {
+                throw await CreateAndLogValidationExceptionAsync(notFoundDecisionPollException);
+            }
             catch (DuplicateKeyException duplicateKeyException)
             {
                 var alreadyExistsDecisionPollException =
@@ -57,6 +61,15 @@ namespace LHDS.Core.Services.Foundations.DecisionPolls
                         innerException: foreignKeyConstraintConflictException);
 
                 throw await CreateAndLogDependencyValidationExceptionAsync(invalidDecisionPollReferenceException);
+            }
+            catch (DbUpdateConcurrencyException dbUpdateConcurrencyException)
+            {
+                var lockedDecisionPollException =
+                    new LockedDecisionPollException(
+                        message: "Locked decisionPoll record exception, please try again later",
+                        innerException: dbUpdateConcurrencyException);
+
+                throw await CreateAndLogDependencyValidationExceptionAsync(lockedDecisionPollException);
             }
             catch (DbUpdateException databaseUpdateException)
             {

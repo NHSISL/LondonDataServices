@@ -35,7 +35,7 @@ namespace LHDS.Core.Services.Foundations.Suppliers
         public ValueTask<Supplier> AddSupplierAsync(Supplier supplier) =>
             TryCatch(async () =>
             {
-                Supplier supplierWithAddAuditApplied = await ApplyAddSupplierAsync(supplier);
+                Supplier supplierWithAddAuditApplied = await ApplyAddAuditAsync(supplier);
                 await ValidateSupplierOnAddAsync(supplierWithAddAuditApplied);
 
                 Supplier maybeSupplier =
@@ -65,19 +65,29 @@ namespace LHDS.Core.Services.Foundations.Suppliers
                 return maybeSupplier;
             });
 
-        public ValueTask<Supplier> ModifySupplierAsync(Supplier supplier) =>
+        public ValueTask<Supplier> ModifySupplierAsync(Supplier Supplier) =>
             TryCatch(async () =>
             {
-                Supplier supplierWithModifyAuditApplied = await ApplyModifyAuditAsync(supplier);
-                await ValidateSupplierOnModifyAsync(supplierWithModifyAuditApplied);
+                Supplier SupplierWithModifyAuditApplied =
+                    await ApplyModifyAuditAsync(Supplier);
+
+                await ValidateSupplierOnModifyAsync(SupplierWithModifyAuditApplied);
 
                 Supplier maybeSupplier =
-                    await this.storageBroker.SelectSupplierByIdAsync(supplier.Id);
+                    await this.storageBroker.SelectSupplierByIdAsync(Supplier.Id);
 
-                ValidateStorageSupplier(maybeSupplier, supplier.Id);
-                ValidateAgainstStorageSupplierOnModify(inputSupplier: supplier, storageSupplier: maybeSupplier);
+                ValidateStorageSupplier(maybeSupplier, supplierId: Supplier.Id);
 
-                return await this.storageBroker.UpdateSupplierAsync(supplier);
+                Supplier SupplierWithModifyAuditAppliedEnsured =
+                  await EnsureCreatedAuditPropertiesIsSameAsStorageAsync(
+                      SupplierWithModifyAuditApplied,
+                      maybeSupplier);
+
+                ValidateAgainstStorageSupplierOnModify(
+                    inputSupplier: SupplierWithModifyAuditApplied,
+                    storageSupplier: maybeSupplier);
+
+                return await this.storageBroker.UpdateSupplierAsync(SupplierWithModifyAuditApplied);
             });
 
         public ValueTask<Supplier> RemoveSupplierByIdAsync(Guid supplierId) =>
@@ -93,7 +103,7 @@ namespace LHDS.Core.Services.Foundations.Suppliers
                  return await this.storageBroker.DeleteSupplierAsync(maybeSupplier);
              });
 
-        virtual internal async ValueTask<Supplier> ApplyAddSupplierAsync(Supplier supplier)
+        virtual internal async ValueTask<Supplier> ApplyAddAuditAsync(Supplier supplier)
         {
             ValidateSupplierIsNotNull(supplier);
             var auditDateTimeOffset = await this.dateTimeBroker.GetCurrentDateTimeOffsetAsync();
@@ -113,6 +123,16 @@ namespace LHDS.Core.Services.Foundations.Suppliers
             var auditUser = await this.securityBroker.GetCurrentUserAsync();
             supplier.UpdatedBy = auditUser?.EntraUserId.ToString() ?? string.Empty;
             supplier.UpdatedDate = auditDateTimeOffset;
+
+            return supplier;
+        }
+
+        virtual internal async ValueTask<Supplier> EnsureCreatedAuditPropertiesIsSameAsStorageAsync(
+           Supplier supplier,
+           Supplier maybeSupplier)
+        {
+            supplier.CreatedDate = maybeSupplier.CreatedDate;
+            supplier.CreatedBy = maybeSupplier.CreatedBy;
 
             return supplier;
         }

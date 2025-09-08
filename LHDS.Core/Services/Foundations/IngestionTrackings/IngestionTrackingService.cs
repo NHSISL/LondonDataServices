@@ -47,7 +47,7 @@ namespace LHDS.Core.Services.Foundations.IngestionTrackings
                 IngestionTracking ingestionTrackingWithAddAuditApplied = await ApplyAddAuditAsync(ingestionTracking);
                 await ValidateIngestionTrackingOnAddAsync(ingestionTrackingWithAddAuditApplied);
 
-                return await this.storageBroker.InsertIngestionTrackingAsync(ingestionTracking);
+                return await this.storageBroker.InsertIngestionTrackingAsync(ingestionTrackingWithAddAuditApplied);
             });
 
         public ValueTask<IQueryable<IngestionTracking>> RetrieveAllIngestionTrackingsAsync() =>
@@ -108,11 +108,16 @@ namespace LHDS.Core.Services.Foundations.IngestionTrackings
 
                 ValidateStorageIngestionTracking(maybeIngestionTracking, ingestionTrackingId: ingestionTracking.Id);
 
+                IngestionTracking IngestionTrackingWithModifyAuditAppliedEnsured =
+                  await EnsureCreatedAuditPropertiesIsSameAsStorageAsync(
+                      ingestionTrackingWithModifyAuditApplied,
+                      maybeIngestionTracking);
+
                 ValidateAgainstStorageIngestionTrackingOnModify(
-                    inputIngestionTracking: ingestionTracking,
+                    inputIngestionTracking: ingestionTrackingWithModifyAuditApplied,
                     storageIngestionTracking: maybeIngestionTracking);
 
-                return await this.storageBroker.UpdateIngestionTrackingAsync(ingestionTracking);
+                return await this.storageBroker.UpdateIngestionTrackingAsync(ingestionTrackingWithModifyAuditApplied);
             });
 
         public ValueTask BulkModifyIngestionTrackingAsync(List<IngestionTracking> ingestionTrackingItems) =>
@@ -326,6 +331,16 @@ namespace LHDS.Core.Services.Foundations.IngestionTrackings
             }
 
             return await ValueTask.FromResult(validatedIngestionTrackings);
+        }
+
+        virtual internal async ValueTask<IngestionTracking> EnsureCreatedAuditPropertiesIsSameAsStorageAsync(
+           IngestionTracking ingestionTracking,
+           IngestionTracking maybeIngestionTracking)
+        {
+            ingestionTracking.CreatedDate = maybeIngestionTracking.CreatedDate;
+            ingestionTracking.CreatedBy = maybeIngestionTracking.CreatedBy;
+
+            return ingestionTracking;
         }
     }
 }

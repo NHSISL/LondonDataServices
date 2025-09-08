@@ -48,6 +48,7 @@ using LHDS.Core.Services.Foundations.Cryptographies;
 using LHDS.Core.Services.Foundations.DataSets;
 using LHDS.Core.Services.Foundations.DataSetSpecifications;
 using LHDS.Core.Services.Foundations.DataTypes;
+using LHDS.Core.Services.Foundations.DecisionPolls;
 using LHDS.Core.Services.Foundations.Documents;
 using LHDS.Core.Services.Foundations.HealthChecks;
 using LHDS.Core.Services.Foundations.HealthChecks.IngestionTracking;
@@ -367,6 +368,7 @@ namespace LHDS.AdminPortal.Api
             services.AddTransient<ISecureDataService, SecureDataService>();
             services.AddTransient<IAddressService, AddressService>();
             services.AddTransient<IResolvedAddressService, ResolvedAddressService>();
+            services.AddTransient<IDecisionPollService, DecisionPollService>();
 
             var blobStorageSettings = configuration.GetSection("blobStorage")
                 .Get<BlobStorageSettings>();

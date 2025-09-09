@@ -12,5 +12,6 @@ namespace LHDS.Core.Services.Decisions
     public interface IDecisionService
     {
         ValueTask<List<Decision>> GetPatientDecisions(DateTimeOffset? lastPollDate);
+        ValueTask RecordAdoption(List<Decision> decisionsAdopted);
     }
 }

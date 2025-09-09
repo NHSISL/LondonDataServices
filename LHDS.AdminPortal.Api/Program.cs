@@ -13,6 +13,7 @@ using Azure.Identity;
 using Azure.Storage.Blobs;
 using ISL.Security.Client.Models.Clients;
 using LHDS.Core.Brokers.DateTimes;
+using LHDS.Core.Brokers.Decisions;
 using LHDS.Core.Brokers.Hashing;
 using LHDS.Core.Brokers.Identifiers;
 using LHDS.Core.Brokers.Loggings;
@@ -347,6 +348,7 @@ namespace LHDS.AdminPortal.Api
             services.AddTransient<IAzureBlobClient, AzureBlobClient>();
             services.AddTransient<ISecurityBroker, SecurityBroker>();
             services.AddTransient<ITelemetryBroker, TelemetryBroker>();
+            services.AddTransient<IDecisionBroker, DecisionBroker>();
         }
 
         private static void AddFoundationServices(IServiceCollection services, IConfiguration configuration)

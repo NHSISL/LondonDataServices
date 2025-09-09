@@ -33,22 +33,18 @@ namespace LHDS.Core.Services.Foundations.Decisions
                 })
                 .ToArray();
 
-            Validate<InvalidDecisionsException>(() =>
-                    new InvalidDecisionsException("Invalid decisions. Please correct the errors and try again."),
+            Validate<InvalidDecisionsException>(
+                () => new InvalidDecisionsException(
+                    "Invalid decisions. Please correct the errors and try again."),
                 validations
             );
         }
 
         private void ValidateDecisionsAdopted(List<Decision> decisionsAdopted)
         {
-            if (decisionsAdopted is null)
+            if (decisionsAdopted is null || !decisionsAdopted.Any())
             {
-                throw new NullDecisionsException("DecisionsAdopted is null.");
-            }
-
-            if (!decisionsAdopted.Any())
-            {
-                throw new InvalidDecisionsException("DecisionsAdopted is empty.");
+                throw new InvalidDecisionsException("Decisions required");
             }
         }
 

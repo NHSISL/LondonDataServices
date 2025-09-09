@@ -40,7 +40,6 @@ namespace LHDS.Core.Services.Foundations.Decisions
             TryCatch(async () =>
             {
                 ValidateDecisionsAdopted(decisionsAdopted);
-
                 await this.decisionBroker.RecordAdoption(decisionsAdopted);
             });
     }

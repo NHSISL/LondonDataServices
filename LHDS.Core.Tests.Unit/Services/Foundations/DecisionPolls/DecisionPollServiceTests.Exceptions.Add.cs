@@ -59,8 +59,8 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.DecisionPolls
                     expectedDecisionPollDependencyException))),
                         Times.Once);
 
-            this.securityBrokerMock.Verify(broker =>
-                broker.GetCurrentUserAsync(),
+            this.securityAuditBrokerMock.Verify(broker =>
+                broker.GetCurrentUserIdAsync(),
                     Times.Never);
 
             this.dateTimeBrokerMock.Verify(broker =>
@@ -75,7 +75,6 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.DecisionPolls
             this.loggingBrokerMock.VerifyNoOtherCalls();
             this.dateTimeBrokerMock.VerifyNoOtherCalls();
             this.storageBrokerMock.VerifyNoOtherCalls();
-            this.securityBrokerMock.VerifyNoOtherCalls();
         }
 
         [Fact]
@@ -124,8 +123,8 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.DecisionPolls
                     expectedDecisionPollDependencyValidationException))),
                         Times.Once);
 
-            this.securityBrokerMock.Verify(broker =>
-                broker.GetCurrentUserAsync(),
+            this.securityAuditBrokerMock.Verify(broker =>
+                broker.GetCurrentUserIdAsync(),
                     Times.Never);
 
             this.dateTimeBrokerMock.Verify(broker =>
@@ -140,7 +139,6 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.DecisionPolls
             this.loggingBrokerMock.VerifyNoOtherCalls();
             this.dateTimeBrokerMock.VerifyNoOtherCalls();
             this.storageBrokerMock.VerifyNoOtherCalls();
-            this.securityBrokerMock.VerifyNoOtherCalls();
         }
 
         [Fact]
@@ -189,8 +187,8 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.DecisionPolls
                     expectedDecisionPollValidationException))),
                         Times.Once);
 
-            this.securityBrokerMock.Verify(broker =>
-                broker.GetCurrentUserAsync(),
+            this.securityAuditBrokerMock.Verify(broker =>
+                broker.GetCurrentUserIdAsync(),
                     Times.Never);
 
             this.dateTimeBrokerMock.Verify(broker =>
@@ -205,7 +203,6 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.DecisionPolls
             this.loggingBrokerMock.VerifyNoOtherCalls();
             this.dateTimeBrokerMock.VerifyNoOtherCalls();
             this.storageBrokerMock.VerifyNoOtherCalls();
-            this.securityBrokerMock.VerifyNoOtherCalls();
         }
 
         [Fact]
@@ -255,7 +252,6 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.DecisionPolls
             this.loggingBrokerMock.VerifyNoOtherCalls();
             this.dateTimeBrokerMock.VerifyNoOtherCalls();
             this.storageBrokerMock.VerifyNoOtherCalls();
-            this.securityBrokerMock.VerifyNoOtherCalls();
         }
 
         [Fact]
@@ -308,7 +304,6 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.DecisionPolls
             this.loggingBrokerMock.VerifyNoOtherCalls();
             this.dateTimeBrokerMock.VerifyNoOtherCalls();
             this.storageBrokerMock.VerifyNoOtherCalls();
-            this.securityBrokerMock.VerifyNoOtherCalls();
         }
     }
 }

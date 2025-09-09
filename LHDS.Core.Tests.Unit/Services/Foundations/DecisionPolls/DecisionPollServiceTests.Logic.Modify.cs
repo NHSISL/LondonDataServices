@@ -6,7 +6,6 @@ using System;
 using System.Threading.Tasks;
 using FluentAssertions;
 using Force.DeepCloner;
-using LHDS.Core.Models.Brokers.Securities;
 using LHDS.Core.Models.Foundations.DecisionPolls;
 using Moq;
 using Xunit;
@@ -21,11 +20,10 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.DecisionPolls
             // given
             DateTimeOffset randomDateTimeOffset = GetRandomDateTimeOffset();
             string randomUserId = GetRandomString();
-            EntraUser randomEntraUser = CreateRandomEntraUser(entraUserId: randomUserId);
 
             DecisionPoll randomDecisionPoll = CreateRandomModifyDecisionPoll(
                 randomDateTimeOffset,
-                randomEntraUser.EntraUserId);
+                randomUserId);
 
             DecisionPoll inputDecisionPoll = randomDecisionPoll;
             DecisionPoll storageDecisionPoll = inputDecisionPoll.DeepClone();
@@ -42,9 +40,9 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.DecisionPolls
                 broker.ApplyModifyAuditValuesAsync(inputDecisionPoll))
                     .ReturnsAsync(auditAppliedDecisionPoll);
 
-            this.securityBrokerMock.Setup(broker =>
-                broker.GetCurrentUserAsync())
-                    .ReturnsAsync(randomEntraUser);
+            this.securityAuditBrokerMock.Setup(broker =>
+                broker.GetCurrentUserIdAsync())
+                    .ReturnsAsync(randomUserId);
 
             this.dateTimeBrokerMock.Setup(broker =>
                 broker.GetCurrentDateTimeOffsetAsync())
@@ -75,8 +73,8 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.DecisionPolls
                 broker.ApplyModifyAuditValuesAsync(inputDecisionPoll),
                     Times.Once);
 
-            this.securityBrokerMock.Verify(broker =>
-                broker.GetCurrentUserAsync(),
+            this.securityAuditBrokerMock.Verify(broker =>
+                broker.GetCurrentUserIdAsync(),
                     Times.Once);
 
             this.dateTimeBrokerMock.Verify(broker =>
@@ -98,7 +96,6 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.DecisionPolls
                     Times.Once);
 
             this.securityAuditBrokerMock.VerifyNoOtherCalls();
-            this.securityBrokerMock.VerifyNoOtherCalls();
             this.dateTimeBrokerMock.VerifyNoOtherCalls();
             this.storageBrokerMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();

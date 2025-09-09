@@ -43,6 +43,7 @@ using LHDS.Core.Providers.Downloads;
 using LHDS.Core.Providers.Downloads.Extensions;
 using LHDS.Core.Providers.Downloads.MockDownloads;
 using LHDS.Core.Services.Coordinations.Decryptions;
+using LHDS.Core.Services.Decisions;
 using LHDS.Core.Services.Foundations.Addresses;
 using LHDS.Core.Services.Foundations.Cryptographies;
 using LHDS.Core.Services.Foundations.DataSets;
@@ -369,6 +370,7 @@ namespace LHDS.AdminPortal.Api
             services.AddTransient<IAddressService, AddressService>();
             services.AddTransient<IResolvedAddressService, ResolvedAddressService>();
             services.AddTransient<IDecisionPollService, DecisionPollService>();
+            services.AddTransient<IDecisionService, DecisionService>();
 
             var blobStorageSettings = configuration.GetSection("blobStorage")
                 .Get<BlobStorageSettings>();

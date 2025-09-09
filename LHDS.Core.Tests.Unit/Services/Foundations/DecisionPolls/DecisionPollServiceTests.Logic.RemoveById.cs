@@ -27,12 +27,12 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.DecisionPolls
             DecisionPoll expectedDecisionPoll = deletedDecisionPoll.DeepClone();
 
             this.storageBrokerMock.Setup(broker =>
-                    broker.SelectDecisionPollByIdAsync(inputDecisionPollId))
-                .ReturnsAsync(storageDecisionPoll);
+                broker.SelectDecisionPollByIdAsync(inputDecisionPollId))
+                    .ReturnsAsync(storageDecisionPoll);
 
             this.storageBrokerMock.Setup(broker =>
-                    broker.DeleteDecisionPollAsync(expectedInputDecisionPoll))
-                .ReturnsAsync(deletedDecisionPoll);
+                broker.DeleteDecisionPollAsync(expectedInputDecisionPoll))
+                    .ReturnsAsync(deletedDecisionPoll);
 
             // when
             DecisionPoll actualDecisionPoll = await this.decisionPollService
@@ -42,12 +42,12 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.DecisionPolls
             actualDecisionPoll.Should().BeEquivalentTo(expectedDecisionPoll);
 
             this.storageBrokerMock.Verify(broker =>
-                    broker.SelectDecisionPollByIdAsync(inputDecisionPollId),
-                Times.Once);
+                broker.SelectDecisionPollByIdAsync(inputDecisionPollId),
+                    Times.Once);
 
             this.storageBrokerMock.Verify(broker =>
-                    broker.DeleteDecisionPollAsync(expectedInputDecisionPoll),
-                Times.Once);
+                broker.DeleteDecisionPollAsync(expectedInputDecisionPoll),
+                    Times.Once);
 
             this.storageBrokerMock.VerifyNoOtherCalls();
             this.dateTimeBrokerMock.VerifyNoOtherCalls();

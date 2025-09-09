@@ -6,7 +6,6 @@ using System;
 using System.Threading.Tasks;
 using FluentAssertions;
 using Force.DeepCloner;
-using LHDS.Core.Models.Brokers.Securities;
 using LHDS.Core.Models.Foundations.DecisionPolls;
 using LHDS.Core.Models.Foundations.DecisionPolls.Exceptions;
 using Moq;
@@ -62,7 +61,6 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.DecisionPolls
                     Times.Never);
 
             this.securityAuditBrokerMock.VerifyNoOtherCalls();
-            this.securityBrokerMock.VerifyNoOtherCalls();
             this.dateTimeBrokerMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
             this.storageBrokerMock.VerifyNoOtherCalls();
@@ -72,8 +70,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.DecisionPolls
         public async Task ShouldThrowValidationExceptionOnModifyIfDecisionPollIsInvalidAndLogItAsync()
         {
             // given 
-            string randomEntraUserId = GetRandomString();
-            EntraUser randomEntraUser = CreateRandomEntraUser(entraUserId: randomEntraUserId);
+            string randomUserId = GetRandomString();
 
             var invalidDecisionPoll = new DecisionPoll();
 
@@ -110,7 +107,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.DecisionPolls
                 values:
                 [
                     "Text is required",
-                    $"Expected value to be '{randomEntraUserId}' but found '{invalidDecisionPoll.UpdatedBy}'."
+                    $"Expected value to be '{randomUserId}' but found '{invalidDecisionPoll.UpdatedBy}'."
                 ]);
 
             var expectedDecisionPollValidationException =
@@ -122,9 +119,9 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.DecisionPolls
                 broker.ApplyModifyAuditValuesAsync(invalidDecisionPoll))
                     .ReturnsAsync(invalidDecisionPoll);
 
-            this.securityBrokerMock.Setup(broker =>
-                broker.GetCurrentUserAsync())
-                    .ReturnsAsync(randomEntraUser);
+            this.securityAuditBrokerMock.Setup(broker =>
+                broker.GetCurrentUserIdAsync())
+                    .ReturnsAsync(randomUserId);
 
             // when
             ValueTask<DecisionPoll> modifyDecisionPollTask =
@@ -146,8 +143,8 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.DecisionPolls
                 broker.GetCurrentDateTimeOffsetAsync(),
                     Times.Once);
 
-            this.securityBrokerMock.Verify(broker =>
-                broker.GetCurrentUserAsync(),
+            this.securityAuditBrokerMock.Verify(broker =>
+                broker.GetCurrentUserIdAsync(),
                     Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>
@@ -160,7 +157,6 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.DecisionPolls
                     Times.Never);
 
             this.securityAuditBrokerMock.VerifyNoOtherCalls();
-            this.securityBrokerMock.VerifyNoOtherCalls();
             this.dateTimeBrokerMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
             this.storageBrokerMock.VerifyNoOtherCalls();
@@ -171,11 +167,10 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.DecisionPolls
         {
             // given
             DateTimeOffset randomDateTimeOffset = GetRandomDateTimeOffset();
-            string randomEntraUserId = GetRandomString();
-            EntraUser randomEntraUser = CreateRandomEntraUser(entraUserId: randomEntraUserId);
+            string randomUserId = GetRandomString();
 
             DecisionPoll randomDecisionPoll =
-                CreateRandomDecisionPoll(dateTimeOffset: randomDateTimeOffset, userId: randomEntraUserId);
+                CreateRandomDecisionPoll(dateTimeOffset: randomDateTimeOffset, userId: randomUserId);
 
             DecisionPoll invalidDecisionPoll = randomDecisionPoll;
 
@@ -200,9 +195,9 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.DecisionPolls
                 broker.GetCurrentDateTimeOffsetAsync())
                     .ReturnsAsync(randomDateTimeOffset);
 
-            this.securityBrokerMock.Setup(broker =>
-                broker.GetCurrentUserAsync())
-                    .ReturnsAsync(randomEntraUser);
+            this.securityAuditBrokerMock.Setup(broker =>
+                broker.GetCurrentUserIdAsync())
+                    .ReturnsAsync(randomUserId);
 
             // when
             ValueTask<DecisionPoll> modifyDecisionPollTask =
@@ -224,8 +219,8 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.DecisionPolls
                 broker.GetCurrentDateTimeOffsetAsync(),
                     Times.Once);
 
-            this.securityBrokerMock.Verify(broker =>
-                broker.GetCurrentUserAsync(),
+            this.securityAuditBrokerMock.Verify(broker =>
+                broker.GetCurrentUserIdAsync(),
                     Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>
@@ -238,7 +233,6 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.DecisionPolls
                     Times.Never);
 
             this.securityAuditBrokerMock.VerifyNoOtherCalls();
-            this.securityBrokerMock.VerifyNoOtherCalls();
             this.dateTimeBrokerMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
             this.storageBrokerMock.VerifyNoOtherCalls();
@@ -253,11 +247,10 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.DecisionPolls
             DateTimeOffset invalidDate = randomDateTimeOffset.AddMinutes(minutes);
             DateTimeOffset startDate = randomDateTimeOffset.AddSeconds(-90);
             DateTimeOffset endDate = randomDateTimeOffset.AddSeconds(0);
-            string randomEntraUserId = GetRandomString();
-            EntraUser randomEntraUser = CreateRandomEntraUser(entraUserId: randomEntraUserId);
+            string randomUserId = GetRandomString();
 
             DecisionPoll randomDecisionPoll =
-                CreateRandomDecisionPoll(dateTimeOffset: randomDateTimeOffset, userId: randomEntraUserId);
+                CreateRandomDecisionPoll(dateTimeOffset: randomDateTimeOffset, userId: randomUserId);
 
             randomDecisionPoll.UpdatedDate = randomDateTimeOffset.AddMinutes(minutes);
 
@@ -283,9 +276,9 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.DecisionPolls
                 broker.GetCurrentDateTimeOffsetAsync())
                 .ReturnsAsync(randomDateTimeOffset);
 
-            this.securityBrokerMock.Setup(broker =>
-                broker.GetCurrentUserAsync())
-                    .ReturnsAsync(randomEntraUser);
+            this.securityAuditBrokerMock.Setup(broker =>
+                broker.GetCurrentUserIdAsync())
+                    .ReturnsAsync(randomUserId);
 
             // when
             ValueTask<DecisionPoll> modifyDecisionPollTask =
@@ -316,12 +309,11 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.DecisionPolls
                 broker.SelectDecisionPollByIdAsync(It.IsAny<Guid>()),
                     Times.Never);
 
-            this.securityBrokerMock.Verify(broker =>
-                broker.GetCurrentUserAsync(),
+            this.securityAuditBrokerMock.Verify(broker =>
+                broker.GetCurrentUserIdAsync(),
                     Times.Once);
 
             this.securityAuditBrokerMock.VerifyNoOtherCalls();
-            this.securityBrokerMock.VerifyNoOtherCalls();
             this.dateTimeBrokerMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
             this.storageBrokerMock.VerifyNoOtherCalls();
@@ -332,11 +324,10 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.DecisionPolls
         {
             // given
             DateTimeOffset randomDateTimeOffset = GetRandomDateTimeOffset();
-            string randomEntraUserId = GetRandomString();
-            EntraUser randomEntraUser = CreateRandomEntraUser(entraUserId: randomEntraUserId);
+            string randomUserId = GetRandomString();
 
             DecisionPoll randomDecisionPoll = CreateRandomModifyDecisionPoll(
-                dateTimeOffset: randomDateTimeOffset, userId: randomEntraUserId);
+                dateTimeOffset: randomDateTimeOffset, userId: randomUserId);
 
             DecisionPoll nonExistDecisionPoll = randomDecisionPoll;
             DecisionPoll nullDecisionPoll = null;
@@ -360,9 +351,9 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.DecisionPolls
                 broker.GetCurrentDateTimeOffsetAsync())
                     .ReturnsAsync(randomDateTimeOffset);
 
-            this.securityBrokerMock.Setup(broker =>
-                broker.GetCurrentUserAsync())
-                    .ReturnsAsync(randomEntraUser);
+            this.securityAuditBrokerMock.Setup(broker =>
+                broker.GetCurrentUserIdAsync())
+                    .ReturnsAsync(randomUserId);
 
             // when 
             ValueTask<DecisionPoll> modifyDecisionPollTask =
@@ -388,8 +379,8 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.DecisionPolls
                 broker.GetCurrentDateTimeOffsetAsync(),
                     Times.Once);
 
-            this.securityBrokerMock.Verify(broker =>
-                broker.GetCurrentUserAsync(),
+            this.securityAuditBrokerMock.Verify(broker =>
+                broker.GetCurrentUserIdAsync(),
                     Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>
@@ -398,7 +389,6 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.DecisionPolls
                         Times.Once);
 
             this.securityAuditBrokerMock.VerifyNoOtherCalls();
-            this.securityBrokerMock.VerifyNoOtherCalls();
             this.dateTimeBrokerMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
             this.storageBrokerMock.VerifyNoOtherCalls();
@@ -411,11 +401,10 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.DecisionPolls
             int randomNumber = GetRandomNegativeNumber();
             int randomMinutes = randomNumber;
             DateTimeOffset randomDateTimeOffset = GetRandomDateTimeOffset();
-            string randomEntraUserId = GetRandomString();
-            EntraUser randomEntraUser = CreateRandomEntraUser(entraUserId: randomEntraUserId);
+            string randomUserId = GetRandomString();
 
             DecisionPoll randomDecisionPoll = CreateRandomModifyDecisionPoll(
-                dateTimeOffset: randomDateTimeOffset, userId: randomEntraUserId);
+                dateTimeOffset: randomDateTimeOffset, userId: randomUserId);
 
             DecisionPoll invalidDecisionPoll = randomDecisionPoll.DeepClone();
             DecisionPoll storageDecisionPoll = invalidDecisionPoll.DeepClone();
@@ -447,9 +436,9 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.DecisionPolls
                 broker.GetCurrentDateTimeOffsetAsync())
                     .ReturnsAsync(randomDateTimeOffset);
 
-            this.securityBrokerMock.Setup(broker =>
-                broker.GetCurrentUserAsync())
-                    .ReturnsAsync(randomEntraUser);
+            this.securityAuditBrokerMock.Setup(broker =>
+                broker.GetCurrentUserIdAsync())
+                    .ReturnsAsync(randomUserId);
 
             this.securityAuditBrokerMock.Setup(broker =>
                 broker.EnsureAddAuditValuesRemainsUnchangedOnModifyAsync(invalidDecisionPoll, storageDecisionPoll))
@@ -479,8 +468,8 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.DecisionPolls
                 broker.GetCurrentDateTimeOffsetAsync(),
                     Times.Once);
 
-            this.securityBrokerMock.Verify(broker =>
-                broker.GetCurrentUserAsync(),
+            this.securityAuditBrokerMock.Verify(broker =>
+                broker.GetCurrentUserIdAsync(),
                     Times.Once);
 
             this.securityAuditBrokerMock.Verify(broker =>
@@ -493,7 +482,6 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.DecisionPolls
                        Times.Once);
 
             this.securityAuditBrokerMock.VerifyNoOtherCalls();
-            this.securityBrokerMock.VerifyNoOtherCalls();
             this.dateTimeBrokerMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
             this.storageBrokerMock.VerifyNoOtherCalls();
@@ -504,11 +492,10 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.DecisionPolls
         {
             // given
             DateTimeOffset randomDateTimeOffset = GetRandomDateTimeOffset();
-            string randomEntraUserId = GetRandomString();
-            EntraUser randomEntraUser = CreateRandomEntraUser(entraUserId: randomEntraUserId);
+            string randomUserId = GetRandomString();
 
             DecisionPoll randomDecisionPoll =
-                CreateRandomModifyDecisionPoll(dateTimeOffset: randomDateTimeOffset, userId: randomEntraUserId);
+                CreateRandomModifyDecisionPoll(dateTimeOffset: randomDateTimeOffset, userId: randomUserId);
 
             DecisionPoll invalidDecisionPoll = randomDecisionPoll.DeepClone();
             DecisionPoll storageDecisionPoll = invalidDecisionPoll.DeepClone();
@@ -540,9 +527,9 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.DecisionPolls
                 broker.GetCurrentDateTimeOffsetAsync())
                     .ReturnsAsync(randomDateTimeOffset);
 
-            this.securityBrokerMock.Setup(broker =>
-                broker.GetCurrentUserAsync())
-                    .ReturnsAsync(randomEntraUser);
+            this.securityAuditBrokerMock.Setup(broker =>
+                broker.GetCurrentUserIdAsync())
+                    .ReturnsAsync(randomUserId);
 
             this.securityAuditBrokerMock.Setup(broker =>
                 broker.EnsureAddAuditValuesRemainsUnchangedOnModifyAsync(invalidDecisionPoll, storageDecisionPoll))
@@ -571,8 +558,8 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.DecisionPolls
                 broker.GetCurrentDateTimeOffsetAsync(),
                     Times.Once);
 
-            this.securityBrokerMock.Verify(broker =>
-                broker.GetCurrentUserAsync(),
+            this.securityAuditBrokerMock.Verify(broker =>
+                broker.GetCurrentUserIdAsync(),
                     Times.Once);
 
             this.securityAuditBrokerMock.Verify(broker =>
@@ -585,7 +572,6 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.DecisionPolls
                        Times.Once);
 
             this.securityAuditBrokerMock.VerifyNoOtherCalls();
-            this.securityBrokerMock.VerifyNoOtherCalls();
             this.dateTimeBrokerMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
             this.storageBrokerMock.VerifyNoOtherCalls();
@@ -596,11 +582,10 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.DecisionPolls
         {
             // given
             DateTimeOffset randomDateTimeOffset = GetRandomDateTimeOffset();
-            string randomEntraUserId = GetRandomString();
-            EntraUser randomEntraUser = CreateRandomEntraUser(entraUserId: randomEntraUserId);
+            string randomUserId = GetRandomString();
 
             DecisionPoll randomDecisionPoll =
-                CreateRandomModifyDecisionPoll(dateTimeOffset: randomDateTimeOffset, userId: randomEntraUserId);
+                CreateRandomModifyDecisionPoll(dateTimeOffset: randomDateTimeOffset, userId: randomUserId);
 
             DecisionPoll invalidDecisionPoll = randomDecisionPoll;
             DecisionPoll storageDecisionPoll = randomDecisionPoll.DeepClone();
@@ -630,9 +615,9 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.DecisionPolls
                 broker.GetCurrentDateTimeOffsetAsync())
                     .ReturnsAsync(randomDateTimeOffset);
 
-            this.securityBrokerMock.Setup(broker =>
-                broker.GetCurrentUserAsync())
-                    .ReturnsAsync(randomEntraUser);
+            this.securityAuditBrokerMock.Setup(broker =>
+                broker.GetCurrentUserIdAsync())
+                    .ReturnsAsync(randomUserId);
 
             this.securityAuditBrokerMock.Setup(broker =>
                 broker.EnsureAddAuditValuesRemainsUnchangedOnModifyAsync(invalidDecisionPoll, storageDecisionPoll))
@@ -654,8 +639,8 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.DecisionPolls
                 broker.GetCurrentDateTimeOffsetAsync(),
                     Times.Once);
 
-            this.securityBrokerMock.Verify(broker =>
-                broker.GetCurrentUserAsync(),
+            this.securityAuditBrokerMock.Verify(broker =>
+                broker.GetCurrentUserIdAsync(),
                     Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>
@@ -672,7 +657,6 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.DecisionPolls
                     Times.Once);
 
             this.securityAuditBrokerMock.VerifyNoOtherCalls();
-            this.securityBrokerMock.VerifyNoOtherCalls();
             this.dateTimeBrokerMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
             this.storageBrokerMock.VerifyNoOtherCalls();

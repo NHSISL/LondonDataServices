@@ -15,5 +15,10 @@ namespace LHDS.Core.Brokers.Decisions
         {
             throw new NotImplementedException();
         }
+
+        public ValueTask RecordAdoption(List<Decision> decisionsAdopted)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

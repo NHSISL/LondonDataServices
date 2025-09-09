@@ -35,5 +35,10 @@ namespace LHDS.Core.Services.Decisions
 
                 return maybeDecisions;
             });
+
+        public ValueTask RecordAdoption(List<Decision> decisionsAdopted)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

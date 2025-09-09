@@ -17,13 +17,19 @@ namespace LHDS.Core.Services.Decisions
     {
         private void ValidateDecisions(List<Decision> maybeDecisions)
         {
-            ValidateDecisionsIsNotNull(maybeDecisions);
+            if (!maybeDecisions.Any())
+            {
+                return;
+            }
 
             var validations = maybeDecisions
-                .SelectMany(decision => new[]
+                .SelectMany((decision, i) => new[]
                 {
-                    (Rule: IsNotNull(decision.DecisionType), Parameter: nameof(Decision.DecisionType)),
-                    (Rule: IsNotNull(decision.Patient), Parameter: nameof(Decision.Patient))
+                    (Rule: IsNotNull(decision.DecisionType),
+                        Parameter: $"Decisions[{i}].{nameof(Decision.DecisionType)} - Id: {decision.Id}"),
+
+                    (Rule: IsNotNull(decision.Patient),
+                        Parameter: $"Decisions[{i}].{nameof(Decision.Patient)} - Id: {decision.Id}")
                 })
                 .ToArray();
 
@@ -31,14 +37,6 @@ namespace LHDS.Core.Services.Decisions
                 message: "Invalid decisions. Please correct the errors and try again.",
                 validations: validations
             );
-        }
-
-        private static void ValidateDecisionsIsNotNull(List<Decision> decision)
-        {
-            if (decision is null)
-            {
-                throw new NullDecisionsException(message: "Decisions is null.");
-            }
         }
 
         private static dynamic IsNotNull(DecisionType decisionType) => new

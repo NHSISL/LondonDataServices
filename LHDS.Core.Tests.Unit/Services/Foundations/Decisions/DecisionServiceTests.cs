@@ -9,6 +9,8 @@ using System.Linq.Expressions;
 using LHDS.Core.Brokers.Decisions;
 using LHDS.Core.Brokers.Loggings;
 using LHDS.Core.Models.Foundations.Decisions;
+using LHDS.Core.Models.Foundations.DecisionTypes;
+using LHDS.Core.Models.Foundations.Patients;
 using LHDS.Core.Services.Decisions;
 using Moq;
 using Tynamix.ObjectFiller;
@@ -74,6 +76,17 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Decisions
         private static Filler<Decision> CreateDecisionFiller(DateTimeOffset dateTimeOffset, string userId = "")
         {
             userId = string.IsNullOrEmpty(userId) ? Guid.NewGuid().ToString() : userId;
+
+            DecisionType decisionType = new()
+            {
+                Id = Guid.NewGuid()
+            };
+
+            Patient patient = new()
+            {
+                Id = Guid.NewGuid()
+            };
+
             var filler = new Filler<Decision>();
 
             filler.Setup()
@@ -82,8 +95,8 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Decisions
                 .OnProperty(decision => decision.DecisionChoice).Use(GetRandomStringWithLengthOf(255))
                 .OnProperty(decision => decision.CreatedBy).Use(userId)
                 .OnProperty(decision => decision.UpdatedBy).Use(userId)
-                .OnProperty(decision => decision.DecisionType).IgnoreIt()
-                .OnProperty(decision => decision.Patient).IgnoreIt();
+                .OnProperty(decision => decision.DecisionType).Use(decisionType)
+                .OnProperty(decision => decision.Patient).Use(patient);
 
             return filler;
         }

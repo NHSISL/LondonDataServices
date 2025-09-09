@@ -15,11 +15,11 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Decisions
     public partial class DecisionServiceTests
     {
         [Fact]
-        public async Task ShouldThrowNullDecisionsExceptionOnRecordAdoptionIfDecisionsIsNullAndLogItAsync()
+        public async Task ShouldThrowNullDecisionsExceptionOnRecordAdoptionIfDecisionsAdoptedIsNullAndLogItAsync()
         {
             // given
 
-            List<Decision> nullDecisions = null;
+            List<Decision> nullDecisionsAdopted = null;
 
             var nullDecisionException =
                 new NullDecisionsException(message: "DecisionsAdopted is null.");
@@ -30,7 +30,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Decisions
                     innerException: nullDecisionException);
 
             // when
-            ValueTask recordAdoptionTask = this.decisionService.RecordAdoption(nullDecisions);
+            ValueTask recordAdoptionTask = this.decisionService.RecordAdoption(nullDecisionsAdopted);
 
             DecisionValidationException actualDecisionValidationException =
                 await Assert.ThrowsAsync<DecisionValidationException>(() =>
@@ -41,7 +41,46 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Decisions
                 .BeEquivalentTo(expectedDecisionValidationException);
 
             this.decisionBrokerMock.Verify(broker =>
-                broker.RecordAdoption(nullDecisions),
+                broker.RecordAdoption(nullDecisionsAdopted),
+                    Times.Never);
+
+            this.loggingBrokerMock.Verify(broker =>
+                broker.LogErrorAsync(It.Is(SameExceptionAs(
+                    expectedDecisionValidationException))),
+                        Times.Once);
+
+            this.loggingBrokerMock.VerifyNoOtherCalls();
+            this.decisionBrokerMock.VerifyNoOtherCalls();
+        }
+
+        [Fact]
+        public async Task ShouldThrowInvalidDecisionsExceptionOnRecordAdoptionIfDecisionsAdoptedIsEmptyAndLogItAsync()
+        {
+            // given
+
+            List<Decision> emptyDecisionsAdopted = new List<Decision>();
+
+            var nullDecisionException =
+                new InvalidDecisionsException(message: "DecisionsAdopted is empty.");
+
+            var expectedDecisionValidationException =
+                new DecisionValidationException(
+                    message: "Decision validation errors occurred, please try again.",
+                    innerException: nullDecisionException);
+
+            // when
+            ValueTask recordAdoptionTask = this.decisionService.RecordAdoption(emptyDecisionsAdopted);
+
+            DecisionValidationException actualDecisionValidationException =
+                await Assert.ThrowsAsync<DecisionValidationException>(() =>
+                    recordAdoptionTask.AsTask());
+
+            // then
+            actualDecisionValidationException.Should()
+                .BeEquivalentTo(expectedDecisionValidationException);
+
+            this.decisionBrokerMock.Verify(broker =>
+                broker.RecordAdoption(emptyDecisionsAdopted),
                     Times.Never);
 
             this.loggingBrokerMock.Verify(broker =>

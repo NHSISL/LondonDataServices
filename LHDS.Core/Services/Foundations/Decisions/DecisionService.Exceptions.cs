@@ -37,15 +37,11 @@ namespace LHDS.Core.Services.Foundations.Decisions
             }
         }
 
-        private async ValueTask TryCatch(ReturningNothingFunction returbingNothingFunction)
+        private async ValueTask TryCatch(ReturningNothingFunction returningNothingFunction)
         {
             try
             {
-                await returbingNothingFunction();
-            }
-            catch (NullDecisionsException nullDecisionsException)
-            {
-                throw await CreateAndLogValidationException(nullDecisionsException);
+                await returningNothingFunction();
             }
             catch (InvalidDecisionsException invalidDecisionsException)
             {

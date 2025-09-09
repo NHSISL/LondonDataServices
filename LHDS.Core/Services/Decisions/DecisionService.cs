@@ -28,8 +28,9 @@ namespace LHDS.Core.Services.Decisions
             TryCatch(async () =>
             {
                 List<Decision> maybeDecisions =
-                    await this.decisionBroker.GetPatientDecisions(lastPollDate);
+                    await this.decisionBroker.GetPatientDecisions(lastPollDate) ?? new List<Decision>();
 
+                maybeDecisions.RemoveAll(decision => decision is null);
                 ValidateDecisions(maybeDecisions);
 
                 return maybeDecisions;

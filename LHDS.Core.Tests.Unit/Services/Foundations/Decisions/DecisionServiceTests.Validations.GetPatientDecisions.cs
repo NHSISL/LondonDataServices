@@ -16,54 +16,10 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Decisions
     public partial class DecisionServiceTests
     {
         [Fact]
-        public async Task ShouldThrowNullDecisionsExceptionOnGetPatientDecisionsIfDecisionsIsNullAndLogItAsync()
-        {
-            // given
-            DateTimeOffset randomDateTimeOffset = GetRandomDateTimeOffset();
-            DateTimeOffset inputDateTimeOffset = randomDateTimeOffset;
-            List<Decision> nullDecisions = null;
-
-            var nullDecisionException =
-                new NullDecisionsException(message: "Decisions is null.");
-
-            var expectedDecisionValidationException =
-                new DecisionValidationException(
-                    message: "Decision validation errors occurred, please try again.",
-                    innerException: nullDecisionException);
-
-            this.decisionBrokerMock.Setup(broker =>
-                broker.GetPatientDecisions(inputDateTimeOffset))
-                    .ReturnsAsync(nullDecisions);
-
-            // when
-            ValueTask<List<Decision>> getPatientDecisionsTask =
-                this.decisionService.GetPatientDecisions(inputDateTimeOffset);
-
-            DecisionValidationException actualDecisionValidationException =
-                await Assert.ThrowsAsync<DecisionValidationException>(() =>
-                    getPatientDecisionsTask.AsTask());
-
-            // then
-            actualDecisionValidationException.Should()
-                .BeEquivalentTo(expectedDecisionValidationException);
-
-            this.decisionBrokerMock.Verify(broker =>
-                broker.GetPatientDecisions(inputDateTimeOffset),
-                    Times.Once);
-
-            this.loggingBrokerMock.Verify(broker =>
-                broker.LogErrorAsync(It.Is(SameExceptionAs(
-                    expectedDecisionValidationException))),
-                        Times.Once);
-
-            this.loggingBrokerMock.VerifyNoOtherCalls();
-            this.decisionBrokerMock.VerifyNoOtherCalls();
-        }
-
-        [Fact]
         public async Task ShouldThrowValidationExceptionOnGetPatientDecisionsIfDecisionsIsInvalidAndLogItAsync()
         {
             // given
+            Guid someDecisionId = Guid.NewGuid();
             DateTimeOffset randomDateTimeOffset = GetRandomDateTimeOffset();
             DateTimeOffset inputDateTimeOffset = randomDateTimeOffset;
 
@@ -71,6 +27,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Decisions
             {
                 new()
                 {
+                    Id = someDecisionId,
                     DecisionType = null,
                     Patient = null
                 }
@@ -81,11 +38,11 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Decisions
                     message: "Invalid decisions. Please correct the errors and try again.");
 
             invalidDecisionException.AddData(
-                key: nameof(Decision.DecisionType),
+                key: $"Decisions[0].{nameof(Decision.DecisionType)} - Id: {someDecisionId}",
                 values: "DecisionType is required");
 
             invalidDecisionException.AddData(
-                key: nameof(Decision.Patient),
+                key: $"Decisions[0].{nameof(Decision.Patient)} - Id: {someDecisionId}",
                 values: "Patient is required");
 
             var expectedDecisionValidationException =

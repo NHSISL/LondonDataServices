@@ -12,5 +12,6 @@ namespace LHDS.Core.Brokers.Decisions
     public interface IDecisionBroker
     {
         ValueTask<List<Decision>> GetPatientDecisions(DateTimeOffset? lastPollDate);
+        ValueTask RecordAdoption(List<Decision> decisionsAdopted);
     }
 }

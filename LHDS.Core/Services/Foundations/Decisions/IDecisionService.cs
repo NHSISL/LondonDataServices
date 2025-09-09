@@ -7,10 +7,11 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using LHDS.Core.Models.Foundations.Decisions;
 
-namespace LHDS.Core.Services.Decisions
+namespace LHDS.Core.Services.Foundations.Decisions
 {
     public interface IDecisionService
     {
         ValueTask<List<Decision>> GetPatientDecisions(DateTimeOffset? lastPollDate);
+        ValueTask RecordAdoption(List<Decision> decisionsAdopted);
     }
 }

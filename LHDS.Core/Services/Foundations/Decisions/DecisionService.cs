@@ -9,7 +9,7 @@ using LHDS.Core.Brokers.Decisions;
 using LHDS.Core.Brokers.Loggings;
 using LHDS.Core.Models.Foundations.Decisions;
 
-namespace LHDS.Core.Services.Decisions
+namespace LHDS.Core.Services.Foundations.Decisions
 {
     public partial class DecisionService : IDecisionService
     {
@@ -34,6 +34,13 @@ namespace LHDS.Core.Services.Decisions
                 ValidateDecisions(maybeDecisions);
 
                 return maybeDecisions;
+            });
+
+        public ValueTask RecordAdoption(List<Decision> decisionsAdopted) =>
+            TryCatch(async () =>
+            {
+                ValidateDecisionsAdopted(decisionsAdopted);
+                await this.decisionBroker.RecordAdoption(decisionsAdopted);
             });
     }
 }

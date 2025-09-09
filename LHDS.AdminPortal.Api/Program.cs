@@ -13,6 +13,7 @@ using Azure.Identity;
 using Azure.Storage.Blobs;
 using ISL.Security.Client.Models.Clients;
 using LHDS.Core.Brokers.DateTimes;
+using LHDS.Core.Brokers.Decisions;
 using LHDS.Core.Brokers.Hashing;
 using LHDS.Core.Brokers.Identifiers;
 using LHDS.Core.Brokers.Loggings;
@@ -43,13 +44,13 @@ using LHDS.Core.Providers.Downloads;
 using LHDS.Core.Providers.Downloads.Extensions;
 using LHDS.Core.Providers.Downloads.MockDownloads;
 using LHDS.Core.Services.Coordinations.Decryptions;
-using LHDS.Core.Services.Decisions;
 using LHDS.Core.Services.Foundations.Addresses;
 using LHDS.Core.Services.Foundations.Cryptographies;
 using LHDS.Core.Services.Foundations.DataSets;
 using LHDS.Core.Services.Foundations.DataSetSpecifications;
 using LHDS.Core.Services.Foundations.DataTypes;
 using LHDS.Core.Services.Foundations.DecisionPolls;
+using LHDS.Core.Services.Foundations.Decisions;
 using LHDS.Core.Services.Foundations.Documents;
 using LHDS.Core.Services.Foundations.HealthChecks;
 using LHDS.Core.Services.Foundations.HealthChecks.IngestionTracking;
@@ -347,6 +348,7 @@ namespace LHDS.AdminPortal.Api
             services.AddTransient<IAzureBlobClient, AzureBlobClient>();
             services.AddTransient<ISecurityBroker, SecurityBroker>();
             services.AddTransient<ITelemetryBroker, TelemetryBroker>();
+            services.AddTransient<IDecisionBroker, DecisionBroker>();
         }
 
         private static void AddFoundationServices(IServiceCollection services, IConfiguration configuration)

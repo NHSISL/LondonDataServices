@@ -9,17 +9,39 @@ using LHDS.Core.Models.Foundations.Decisions;
 using LHDS.Core.Models.Foundations.Decisions.Exceptions;
 using Xeptions;
 
-namespace LHDS.Core.Services.Decisions
+namespace LHDS.Core.Services.Foundations.Decisions
 {
     public partial class DecisionService
     {
         private delegate ValueTask<List<Decision>> ReturningDecisionsFunction();
+        private delegate ValueTask ReturningNothingFunction();
 
         private async ValueTask<List<Decision>> TryCatch(ReturningDecisionsFunction returningDecisionsFunction)
         {
             try
             {
                 return await returningDecisionsFunction();
+            }
+            catch (InvalidDecisionsException invalidDecisionsException)
+            {
+                throw await CreateAndLogValidationException(invalidDecisionsException);
+            }
+            catch (Exception exception)
+            {
+                var failedDecisionServiceException =
+                    new FailedDecisionServiceException(
+                        message: "Failed decision service occurred, please contact support",
+                        innerException: exception);
+
+                throw await CreateAndLogServiceException(failedDecisionServiceException);
+            }
+        }
+
+        private async ValueTask TryCatch(ReturningNothingFunction returningNothingFunction)
+        {
+            try
+            {
+                await returningNothingFunction();
             }
             catch (InvalidDecisionsException invalidDecisionsException)
             {

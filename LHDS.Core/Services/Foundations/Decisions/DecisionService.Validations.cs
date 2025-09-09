@@ -44,7 +44,7 @@ namespace LHDS.Core.Services.Foundations.Decisions
         {
             if (decisionsAdopted is null || !decisionsAdopted.Any())
             {
-                throw new InvalidDecisionsException("Decisions required");
+                throw new InvalidDecisionsException("Decisions required.");
             }
         }
 

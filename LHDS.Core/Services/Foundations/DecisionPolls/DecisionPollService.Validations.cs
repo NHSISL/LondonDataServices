@@ -72,6 +72,9 @@ namespace LHDS.Core.Services.Foundations.DecisionPolls
                 (Rule: await IsNotRecentAsync(decisionPoll.UpdatedDate), Parameter: nameof(decisionPoll.UpdatedDate)));
         }
 
+        public void ValidateDecisionPollId(Guid decisionPollId) =>
+            Validate((Rule: IsInvalid(decisionPollId), Parameter: nameof(DecisionPoll.Id)));
+
         private static void ValidateStorageDecisionPoll(
             DecisionPoll maybeDecisionPoll,
             Guid decisionPollId)
@@ -112,6 +115,39 @@ namespace LHDS.Core.Services.Foundations.DecisionPolls
                     secondDate: storageDecisionPoll.UpdatedDate,
                     secondDateName: nameof(DecisionPoll.UpdatedDate)),
                 Parameter: nameof(DecisionPoll.UpdatedDate)));
+        }
+
+        private async ValueTask ValidateAgainstStorageDecisionPollOnDeleteAsync(
+            DecisionPoll decisionPoll,
+            DecisionPoll maybeDecisionPoll)
+        {
+            EntraUser auditUser = await this.securityBroker.GetCurrentUserAsync();
+
+            Validate(
+                (Rule: IsNotSame(
+                    decisionPoll.CreatedDate,
+                    maybeDecisionPoll.CreatedDate,
+                    nameof(maybeDecisionPoll.CreatedDate)),
+                Parameter: nameof(DecisionPoll.CreatedDate)),
+
+                (Rule: IsNotSame(
+                    decisionPoll.CreatedBy,
+                    maybeDecisionPoll.CreatedBy,
+                    nameof(maybeDecisionPoll.CreatedBy)),
+                Parameter: nameof(DecisionPoll.CreatedBy)),
+
+                (Rule: IsNotSame(
+                    maybeDecisionPoll.UpdatedDate,
+                    decisionPoll.UpdatedDate,
+                    nameof(DecisionPoll.UpdatedDate)),
+                Parameter: nameof(DecisionPoll.UpdatedDate)),
+
+                (Rule: IsNotSame(
+                    auditUser.EntraUserId,
+                    decisionPoll.UpdatedBy,
+                    nameof(DecisionPoll.UpdatedBy)),
+                Parameter: nameof(DecisionPoll.UpdatedBy))
+            );
         }
 
         private static dynamic IsInvalid(Guid id) => new

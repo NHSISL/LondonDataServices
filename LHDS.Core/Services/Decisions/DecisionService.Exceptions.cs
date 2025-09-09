@@ -31,7 +31,12 @@ namespace LHDS.Core.Services.Decisions
             }
             catch (Exception exception)
             {
-                throw exception;
+                var failedDecisionServiceException =
+                    new FailedDecisionServiceException(
+                        message: "Failed decision service occurred, please contact support",
+                        innerException: exception);
+
+                throw await CreateAndLogServiceException(failedDecisionServiceException);
             }
         }
 
@@ -45,6 +50,19 @@ namespace LHDS.Core.Services.Decisions
             await this.loggingBroker.LogErrorAsync(decisionValidationException);
 
             return decisionValidationException;
+        }
+
+        private async ValueTask<DecisionServiceException> CreateAndLogServiceException(
+            Xeption exception)
+        {
+            var decisionServiceException =
+                new DecisionServiceException(
+                    message: "Decision service error occurred, contact support.",
+                    innerException: exception);
+
+            await this.loggingBroker.LogErrorAsync(decisionServiceException);
+
+            return decisionServiceException;
         }
     }
 }

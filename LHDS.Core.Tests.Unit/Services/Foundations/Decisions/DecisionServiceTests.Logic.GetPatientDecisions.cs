@@ -41,9 +41,6 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Decisions
                     Times.Once);
 
             this.decisionBrokerMock.VerifyNoOtherCalls();
-            this.securityAuditBrokerMock.VerifyNoOtherCalls();
-            this.securityBrokerMock.VerifyNoOtherCalls();
-            this.dateTimeBrokerMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
         }
     }

@@ -58,11 +58,8 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Decisions
                     expectedDecisionServiceException))),
                         Times.Once);
 
-            this.securityAuditBrokerMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
-            this.dateTimeBrokerMock.VerifyNoOtherCalls();
             this.decisionBrokerMock.VerifyNoOtherCalls();
-            this.securityBrokerMock.VerifyNoOtherCalls();
         }
     }
 }

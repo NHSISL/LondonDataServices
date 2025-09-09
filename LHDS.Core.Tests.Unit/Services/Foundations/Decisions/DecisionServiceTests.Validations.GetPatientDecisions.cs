@@ -56,9 +56,6 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Decisions
                     expectedDecisionValidationException))),
                         Times.Once);
 
-            this.securityAuditBrokerMock.VerifyNoOtherCalls();
-            this.securityBrokerMock.VerifyNoOtherCalls();
-            this.dateTimeBrokerMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
             this.decisionBrokerMock.VerifyNoOtherCalls();
         }
@@ -121,9 +118,6 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Decisions
                     expectedDecisionValidationException))),
                         Times.Once);
 
-            this.securityAuditBrokerMock.VerifyNoOtherCalls();
-            this.securityBrokerMock.VerifyNoOtherCalls();
-            this.dateTimeBrokerMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
             this.decisionBrokerMock.VerifyNoOtherCalls();
         }

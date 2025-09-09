@@ -9,7 +9,7 @@ using LHDS.Core.Models.Foundations.Decisions;
 using LHDS.Core.Models.Foundations.Decisions.Exceptions;
 using Xeptions;
 
-namespace LHDS.Core.Services.Decisions
+namespace LHDS.Core.Services.Foundations.Decisions
 {
     public partial class DecisionService
     {

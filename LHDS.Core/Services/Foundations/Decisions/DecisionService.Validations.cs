@@ -11,7 +11,7 @@ using LHDS.Core.Models.Foundations.DecisionTypes;
 using LHDS.Core.Models.Foundations.Patients;
 using Xeptions;
 
-namespace LHDS.Core.Services.Decisions
+namespace LHDS.Core.Services.Foundations.Decisions
 {
     public partial class DecisionService
     {
@@ -33,9 +33,9 @@ namespace LHDS.Core.Services.Decisions
                 })
                 .ToArray();
 
-            Validate<InvalidDecisionsException>(
-                message: "Invalid decisions. Please correct the errors and try again.",
-                validations: validations
+            Validate<InvalidDecisionsException>(() =>
+                    new InvalidDecisionsException("Invalid decisions. Please correct the errors and try again."),
+                validations
             );
         }
 
@@ -64,10 +64,12 @@ namespace LHDS.Core.Services.Decisions
             Message = "Patient is required"
         };
 
-        private static void Validate<T>(string message, params (dynamic Rule, string Parameter)[] validations)
+        internal virtual void Validate<T>(
+            Func<T> exceptionFactory,
+            params (dynamic Rule, string Parameter)[] validations)
             where T : Xeption
         {
-            var invalidDataException = (T)Activator.CreateInstance(typeof(T), message);
+            T invalidDataException = exceptionFactory();
 
             foreach ((dynamic rule, string parameter) in validations)
             {

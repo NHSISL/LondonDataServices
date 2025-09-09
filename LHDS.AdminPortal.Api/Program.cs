@@ -50,6 +50,7 @@ using LHDS.Core.Services.Foundations.DataSets;
 using LHDS.Core.Services.Foundations.DataSetSpecifications;
 using LHDS.Core.Services.Foundations.DataTypes;
 using LHDS.Core.Services.Foundations.DecisionPolls;
+using LHDS.Core.Services.Foundations.Decisions;
 using LHDS.Core.Services.Foundations.Documents;
 using LHDS.Core.Services.Foundations.HealthChecks;
 using LHDS.Core.Services.Foundations.HealthChecks.IngestionTracking;

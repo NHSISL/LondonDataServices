@@ -22,7 +22,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Decisions
             List<Decision> nullDecisions = null;
 
             var nullDecisionException =
-                new NullDecisionsException(message: "Decisions is null.");
+                new NullDecisionsException(message: "DecisionsAdopted is null.");
 
             var expectedDecisionValidationException =
                 new DecisionValidationException(
@@ -42,7 +42,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Decisions
 
             this.decisionBrokerMock.Verify(broker =>
                 broker.RecordAdoption(nullDecisions),
-                    Times.Once);
+                    Times.Never);
 
             this.loggingBrokerMock.Verify(broker =>
                 broker.LogErrorAsync(It.Is(SameExceptionAs(

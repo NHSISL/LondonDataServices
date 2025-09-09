@@ -14,12 +14,38 @@ namespace LHDS.Core.Services.Decisions
     public partial class DecisionService
     {
         private delegate ValueTask<List<Decision>> ReturningDecisionsFunction();
+        private delegate ValueTask ReturningNothingFunction();
 
         private async ValueTask<List<Decision>> TryCatch(ReturningDecisionsFunction returningDecisionsFunction)
         {
             try
             {
                 return await returningDecisionsFunction();
+            }
+            catch (InvalidDecisionsException invalidDecisionsException)
+            {
+                throw await CreateAndLogValidationException(invalidDecisionsException);
+            }
+            catch (Exception exception)
+            {
+                var failedDecisionServiceException =
+                    new FailedDecisionServiceException(
+                        message: "Failed decision service occurred, please contact support",
+                        innerException: exception);
+
+                throw await CreateAndLogServiceException(failedDecisionServiceException);
+            }
+        }
+
+        private async ValueTask TryCatch(ReturningNothingFunction returbingNothingFunction)
+        {
+            try
+            {
+                await returbingNothingFunction();
+            }
+            catch (NullDecisionsException nullDecisionsException)
+            {
+                throw await CreateAndLogValidationException(nullDecisionsException);
             }
             catch (InvalidDecisionsException invalidDecisionsException)
             {

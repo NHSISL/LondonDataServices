@@ -38,6 +38,7 @@ namespace LHDS.Core.Services.Decisions
 
         public async ValueTask RecordAdoption(List<Decision> decisionsAdopted)
         {
+            ValidateDecisionsAdopted(decisionsAdopted);
             await this.decisionBroker.RecordAdoption(decisionsAdopted);
         }
     }

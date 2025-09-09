@@ -36,10 +36,12 @@ namespace LHDS.Core.Services.Decisions
                 return maybeDecisions;
             });
 
-        public async ValueTask RecordAdoption(List<Decision> decisionsAdopted)
-        {
-            ValidateDecisionsAdopted(decisionsAdopted);
-            await this.decisionBroker.RecordAdoption(decisionsAdopted);
-        }
+        public ValueTask RecordAdoption(List<Decision> decisionsAdopted) =>
+            TryCatch(async () =>
+            {
+                ValidateDecisionsAdopted(decisionsAdopted);
+
+                await this.decisionBroker.RecordAdoption(decisionsAdopted);
+            });
     }
 }

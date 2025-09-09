@@ -4,7 +4,6 @@
 
 using System;
 using System.Threading.Tasks;
-using LHDS.Core.Models.Brokers.Securities;
 using LHDS.Core.Models.Foundations.DecisionPolls;
 using LHDS.Core.Models.Foundations.DecisionPolls.Exceptions;
 
@@ -15,7 +14,7 @@ namespace LHDS.Core.Services.Foundations.DecisionPolls
         private async ValueTask ValidateDecisionPollOnAddAsync(DecisionPoll decisionPoll)
         {
             ValidateDecisionPollIsNotNull(decisionPoll);
-            EntraUser currentUser = await this.securityBroker.GetCurrentUserAsync();
+            string currentUserId = await this.securityAuditBroker.GetCurrentUserIdAsync();
 
             Validate(
                 (Rule: IsInvalid(decisionPoll.Id), Parameter: nameof(DecisionPoll.Id)),
@@ -26,7 +25,7 @@ namespace LHDS.Core.Services.Foundations.DecisionPolls
                 (Rule: IsInvalid(decisionPoll.UpdatedBy), Parameter: nameof(DecisionPoll.UpdatedBy)),
 
                 (Rule: IsNotSame(
-                    first: currentUser.EntraUserId,
+                    first: currentUserId,
                     second: decisionPoll.CreatedBy),
                 Parameter: nameof(DecisionPoll.CreatedBy)),
 
@@ -48,7 +47,7 @@ namespace LHDS.Core.Services.Foundations.DecisionPolls
         private async ValueTask ValidateDecisionPollOnModifyAsync(DecisionPoll decisionPoll)
         {
             ValidateDecisionPollIsNotNull(decisionPoll);
-            EntraUser currentUser = await this.securityBroker.GetCurrentUserAsync();
+            string currentUserId = await this.securityAuditBroker.GetCurrentUserIdAsync();
 
             Validate(
                 (Rule: IsInvalid(decisionPoll.Id), Parameter: nameof(DecisionPoll.Id)),
@@ -59,7 +58,7 @@ namespace LHDS.Core.Services.Foundations.DecisionPolls
                 (Rule: IsInvalid(decisionPoll.UpdatedBy), Parameter: nameof(DecisionPoll.UpdatedBy)),
 
                 (Rule: IsNotSame(
-                    first: currentUser.EntraUserId,
+                    first: currentUserId,
                     second: decisionPoll.UpdatedBy),
                 Parameter: nameof(DecisionPoll.UpdatedBy)),
 
@@ -121,7 +120,7 @@ namespace LHDS.Core.Services.Foundations.DecisionPolls
             DecisionPoll decisionPoll,
             DecisionPoll maybeDecisionPoll)
         {
-            EntraUser auditUser = await this.securityBroker.GetCurrentUserAsync();
+            string currentUserId = await this.securityAuditBroker.GetCurrentUserIdAsync();
 
             Validate(
                 (Rule: IsNotSame(
@@ -143,7 +142,7 @@ namespace LHDS.Core.Services.Foundations.DecisionPolls
                 Parameter: nameof(DecisionPoll.UpdatedDate)),
 
                 (Rule: IsNotSame(
-                    auditUser.EntraUserId,
+                    currentUserId,
                     decisionPoll.UpdatedBy,
                     nameof(DecisionPoll.UpdatedBy)),
                 Parameter: nameof(DecisionPoll.UpdatedBy))

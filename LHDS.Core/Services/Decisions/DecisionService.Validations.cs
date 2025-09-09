@@ -39,6 +39,19 @@ namespace LHDS.Core.Services.Decisions
             );
         }
 
+        private void ValidateDecisionsAdopted(List<Decision> decisionsAdopted)
+        {
+            if (decisionsAdopted is null)
+            {
+                throw new NullDecisionsException("DecisionsAdopted is null.");
+            }
+
+            if (!decisionsAdopted.Any())
+            {
+                throw new InvalidDecisionsException("DecisionsAdopted is empty.");
+            }
+        }
+
         private static dynamic IsNotNull(DecisionType decisionType) => new
         {
             Condition = decisionType is null,

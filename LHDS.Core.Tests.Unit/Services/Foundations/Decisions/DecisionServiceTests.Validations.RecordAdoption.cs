@@ -22,7 +22,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Decisions
             List<Decision> emptyDecisionsAdopted = new List<Decision>();
 
             var nullDecisionException =
-                new InvalidDecisionsException(message: "DecisionsAdopted is empty.");
+                new InvalidDecisionsException(message: "Decisions required.");
 
             var expectedDecisionValidationException =
                 new DecisionValidationException(

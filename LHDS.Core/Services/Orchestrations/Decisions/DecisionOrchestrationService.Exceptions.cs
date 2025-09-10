@@ -44,6 +44,26 @@ namespace LHDS.Core.Services.Orchestrations.Decisions
             {
                 throw await CreateAndLogDependencyValidationExceptionAsync(decisionPollValidationException);
             }
+            catch (DecisionServiceException decisionServiceException)
+            {
+                throw await CreateAndLogDependencyExceptionAsync(decisionServiceException);
+            }
+            catch (DocumentDependencyException documentDependencyException)
+            {
+                throw await CreateAndLogDependencyExceptionAsync(documentDependencyException);
+            }
+            catch (DocumentServiceException documentServiceException)
+            {
+                throw await CreateAndLogDependencyExceptionAsync(documentServiceException);
+            }
+            catch (DecisionPollDependencyException decisionPollDependencyException)
+            {
+                throw await CreateAndLogDependencyExceptionAsync(decisionPollDependencyException);
+            }
+            catch (DecisionPollServiceException decisionPollServiceException)
+            {
+                throw await CreateAndLogDependencyExceptionAsync(decisionPollServiceException);
+            }
         }
 
         private async ValueTask<DecisionOrchestrationValidationException>
@@ -71,6 +91,19 @@ namespace LHDS.Core.Services.Orchestrations.Decisions
             await this.loggingBroker.LogErrorAsync(decryptionOrchestrationDependencyValidationException);
 
             return decryptionOrchestrationDependencyValidationException;
+        }
+
+        private async ValueTask<DecisionOrchestrationDependencyException> CreateAndLogDependencyExceptionAsync(
+            Xeption exception)
+        {
+            var decisionOrchestrationDependencyException =
+                new DecisionOrchestrationDependencyException(
+                    message: "Decision orchestration dependency error occurred, fix the errors and try again.",
+                    innerException: exception.InnerException as Xeption);
+
+            await this.loggingBroker.LogErrorAsync(decisionOrchestrationDependencyException);
+
+            return decisionOrchestrationDependencyException;
         }
     }
 }

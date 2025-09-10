@@ -24,6 +24,11 @@ namespace LHDS.Core.Services.Orchestrations.Decisions
             {
                 throw await CreateAndLogValidationExceptionAsync(nullBlobContainersDecisionOrchestrationException);
             }
+            catch (InvalidDecisionPollsDecisionOrchestrationException
+                invalidDecisionPollsDecisionOrchestrationException)
+            {
+                throw await CreateAndLogValidationExceptionAsync(invalidDecisionPollsDecisionOrchestrationException);
+            }
         }
 
         private async ValueTask<DecisionOrchestrationValidationException>

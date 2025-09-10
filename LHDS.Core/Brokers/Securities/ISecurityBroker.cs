@@ -12,7 +12,8 @@ namespace LHDS.Core.Brokers.Securities
         ValueTask<EntraUser> GetCurrentUserAsync();
         ValueTask<bool> IsCurrentUserAuthenticatedAsync();
         ValueTask<bool> IsInRoleAsync(string roleName);
-        ValueTask<bool> HasClaimTypeAsync(string claimType, string claimValue);
-        ValueTask<bool> HasClaimTypeAsync(string claimType);
+        ValueTask<bool> HasClaimAsync(string claimType, string claimValue);
+        ValueTask<bool> HasClaimAsync(string claimType);
+        ValueTask<string> GetUserIdAsync();
     }
 }

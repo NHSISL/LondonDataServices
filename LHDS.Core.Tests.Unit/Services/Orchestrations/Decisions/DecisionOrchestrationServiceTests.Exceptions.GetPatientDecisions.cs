@@ -57,5 +57,48 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Decisions
             this.documentServiceMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
         }
+
+        [Theory]
+        [MemberData(nameof(DecisionDependencyExceptions))]
+        public async Task ShouldThrowDependencyExceptionOnGetPatientDecisionsIfDependencyExceptionOccursAndLogItAsync(
+            Xeption dependencyException)
+        {
+            // given
+            var expectedDependencyException =
+                new DecisionOrchestrationDependencyException(
+                    message:
+                    "Decision orchestration dependency error occurred, fix the errors and try again.",
+                    innerException: dependencyException.InnerException as Xeption);
+
+            this.decisionPollServiceMock.Setup(service =>
+                service.RetrieveAllDecisionPollsAsync())
+                    .ThrowsAsync(dependencyException);
+
+            // when
+            ValueTask<List<Decision>> getPatientDecisionsTask =
+                this.decisionOrchestrationService.GetPatientDecisions();
+
+            DecisionOrchestrationDependencyException actualException =
+                await Assert.ThrowsAsync<DecisionOrchestrationDependencyException>(
+                    getPatientDecisionsTask.AsTask);
+
+            // then
+            actualException.Should()
+                .BeEquivalentTo(expectedDependencyException);
+
+            this.decisionPollServiceMock.Verify(service =>
+                service.RetrieveAllDecisionPollsAsync(),
+                    Times.Once);
+
+            this.loggingBrokerMock.Verify(broker =>
+                broker.LogErrorAsync(It.Is(SameExceptionAs(
+                    expectedDependencyException))),
+                        Times.Once);
+
+            this.decisionPollServiceMock.VerifyNoOtherCalls();
+            this.decisionServiceMock.VerifyNoOtherCalls();
+            this.documentServiceMock.VerifyNoOtherCalls();
+            this.loggingBrokerMock.VerifyNoOtherCalls();
+        }
     }
 }

@@ -14,5 +14,6 @@ namespace LHDS.Core.Models.Brokers.Storages.Blobs
         public string Terminology { get; set; } = string.Empty;
         public string TppLanding { get; set; } = string.Empty;
         public string Addresses { get; set; } = string.Empty;
+        public string Decisions { get; set; } = string.Empty;
     }
 }

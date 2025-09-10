@@ -50,6 +50,8 @@ namespace LHDS.Core.Services.Orchestrations.Decisions
                 IQueryable<DecisionPoll> decisionPolls =
                     await this.decisionPollService.RetrieveAllDecisionPollsAsync();
 
+                ValidateDecisionPolls(decisionPolls);
+
                 DateTimeOffset? lastPollDate = decisionPolls
                     .OrderByDescending(decisionPoll => decisionPoll.LastPoll)
                     .Select(decisionPoll => decisionPoll.LastPoll)
@@ -65,7 +67,8 @@ namespace LHDS.Core.Services.Orchestrations.Decisions
                 string container = this.blobContainers.Decisions;
                 using var documentStream = new MemoryStream(Encoding.UTF8.GetBytes(serializedDecisions));
 
-                await this.documentService.AddDocumentAsync(documentStream, fileName, container);
+                await this.documentService
+                    .AddDocumentAsync(documentStream, fileName, container);
 
                 var newDecisionPoll = new DecisionPoll
                 {

@@ -176,8 +176,13 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.ResolvedAddresses
             // Given
             DateTimeOffset randomDateTimeOffset = GetRandomDateTimeOffset();
 
-            List<ResolvedAddress> randomResolvedAddresses =
-                CreateRandomUnmatchedAddresses(count: 2, dateTimeOffset: randomDateTimeOffset);
+            List<ResolvedAddress> randomResolvedAddresses = CreateRandomResolvedAddresses(
+                count: 2,
+                dateTimeOffset: randomDateTimeOffset,
+                isExported: false,
+                isProcessed: true,
+                isProcessing: false,
+                retryCount: 1);
 
             List<ResolvedAddress> storageResolvedAddresses = randomResolvedAddresses.DeepClone();
             storageResolvedAddresses.ForEach(address => address.IsProcessed = true);
@@ -343,8 +348,13 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.ResolvedAddresses
             // Given
             DateTimeOffset randomDateTimeOffset = GetRandomDateTimeOffset();
 
-            List<ResolvedAddress> randomResolvedAddresses =
-                CreateRandomUnmatchedAddresses(count: 2, dateTimeOffset: randomDateTimeOffset);
+            List<ResolvedAddress> randomResolvedAddresses = CreateRandomResolvedAddresses(
+                count: 2,
+                dateTimeOffset: randomDateTimeOffset,
+                isExported: false,
+                isProcessed: true,
+                isProcessing: false,
+                retryCount: 1);
 
             List<ResolvedAddress> storageResolvedAddresses = randomResolvedAddresses.DeepClone();
             storageResolvedAddresses.ForEach(address => address.IsProcessed = true);
@@ -507,8 +517,13 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.ResolvedAddresses
             // Given
             DateTimeOffset randomDateTimeOffset = GetRandomDateTimeOffset();
 
-            List<ResolvedAddress> randomResolvedAddresses =
-                CreateRandomUnmatchedAddresses(count: 2, dateTimeOffset: randomDateTimeOffset);
+            List<ResolvedAddress> randomResolvedAddresses = CreateRandomResolvedAddresses(
+                count: 2,
+                dateTimeOffset: randomDateTimeOffset,
+                isExported: false,
+                isProcessed: true,
+                isProcessing: false,
+                retryCount: 1);
 
             List<ResolvedAddress> storageResolvedAddresses = randomResolvedAddresses.DeepClone();
             storageResolvedAddresses.ForEach(address => address.IsProcessed = true);

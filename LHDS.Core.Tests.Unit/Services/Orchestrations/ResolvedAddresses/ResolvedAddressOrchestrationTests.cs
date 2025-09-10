@@ -121,7 +121,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.ResolvedAddresses
            List<ResolvedAddress> expectedResolvedAddressList)
         {
             return actualResolvedAddressList =>
-                CompareObjects(expectedResolvedAddressList, actualResolvedAddressList);
+                this.compareLogic.Compare(expectedResolvedAddressList, actualResolvedAddressList).AreEqual;
         }
 
         private bool CompareObjects(object expected, object actual)

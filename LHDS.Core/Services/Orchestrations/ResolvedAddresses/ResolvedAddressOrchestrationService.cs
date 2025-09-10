@@ -331,27 +331,27 @@ namespace LHDS.Core.Services.Orchestrations.ResolvedAddresses
             for (int i = 0; i < totalBatches; i++)
             {
                 List<Guid> batchIds = idsInScope
-                    .Skip(i * batchCount)
-                    .Take(batchCount)
-                    .ToList();
-
-                IQueryable<ResolvedAddress> notExportedResolvedAddresses = await resolvedAddressProcessingService
-                    .RetrieveAllResolvedAddressesAsync();
-
-                List<ResolvedAddress> notExportedResolvedAddressesList = notExportedResolvedAddresses
-                    .Where(address => batchIds.Contains(address.Id))
-                    .ToList();
-
-                if (notExportedResolvedAddressesList.Count == 0)
-                {
-                    break;
-                }
+                .Skip(i * batchCount)
+                .Take(batchCount)
+                .ToList();
 
                 Guid batchReference = await this.identifierBroker.GetIdentifierAsync();
                 batchReferenceIds.Add(batchReference);
 
                 try
                 {
+                    IQueryable<ResolvedAddress> notExportedResolvedAddresses = await resolvedAddressProcessingService
+                        .RetrieveAllResolvedAddressesAsync();
+
+                    List<ResolvedAddress> notExportedResolvedAddressesList = notExportedResolvedAddresses
+                        .Where(address => batchIds.Contains(address.Id))
+                        .ToList();
+
+                    if (notExportedResolvedAddressesList.Count == 0)
+                    {
+                        break;
+                    }
+
                     await this.auditBroker.LogAsync(
                         auditType: "Resolved Address Export",
                         title: "Exporting Resolved Addresses",
@@ -445,6 +445,7 @@ namespace LHDS.Core.Services.Orchestrations.ResolvedAddresses
                 {
                     exceptions.Add(ex);
                     batchReferenceIds.Remove(batchReference);
+                    List<Audit> audits = new List<Audit>();
 
                     IQueryable<ResolvedAddress> failedResolvedAddresses = await resolvedAddressProcessingService
                         .RetrieveAllResolvedAddressesAsync();
@@ -457,10 +458,24 @@ namespace LHDS.Core.Services.Orchestrations.ResolvedAddresses
                     {
                         resolvedAddress.IsProcessing = false;
                         resolvedAddress.IsExported = false;
+
+                        Audit audit = new Audit
+                        {
+                            AuditType = "Resolved Address Export",
+                            Title = "Resolved Address Export Failed",
+                            Message = $"Resolved address export failed for item with Id: {resolvedAddress.Id}",
+                            CorrelationId = batchReference.ToString(),
+                            FileName = $"{batchReference}.csv",
+                            LogLevel = "Error"
+                        };
+
+                        audits.Add(audit);
                     });
 
                     await resolvedAddressProcessingService
                         .BulkModifyResolvedAddressesAsync(failedToExport);
+
+                    await auditBroker.BulkLogAsync(audits);
                 }
             }
 

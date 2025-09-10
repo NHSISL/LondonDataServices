@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 using LHDS.Core.Models.Brokers.Securities;
 using LHDS.Core.Models.Foundations.Addresses;
 using LHDS.Core.Models.Foundations.Addresses.Exceptions;
+using Xeptions;
 
 namespace LHDS.Core.Services.Foundations.Addresses
 {
@@ -18,7 +19,9 @@ namespace LHDS.Core.Services.Foundations.Addresses
             ValidateAddressIsNotNull(address);
             EntraUser currentUser = await this.securityBroker.GetCurrentUserAsync();
 
-            Validate(
+            Validate<InvalidAddressException>(
+                createException: () => new InvalidAddressException(
+                    message: "Invalid address. Please correct the errors and try again."),
                 (Rule: IsInvalid(address.Id), Parameter: nameof(Address.Id)),
                 (Rule: IsInvalid(address.CreatedDate), Parameter: nameof(Address.CreatedDate)),
                 (Rule: IsInvalid(address.CreatedBy), Parameter: nameof(Address.CreatedBy)),
@@ -47,14 +50,20 @@ namespace LHDS.Core.Services.Foundations.Addresses
 
         private void ValidateOnBulkAddAddresses(List<Address> addresses, string fileName)
         {
-            Validate(
+            Validate<InvalidAddressException>(
+                createException: () => new InvalidAddressException(
+                    message: "Invalid address. Please correct the errors and try again."),
+
                 (Rule: IsInvalid(addresses), Parameter: nameof(addresses)),
                 (Rule: IsInvalid(fileName), Parameter: nameof(fileName)));
         }
 
         private void ValidateOnBulkModifyAddresses(List<Address> addresses, string fileName)
         {
-            Validate(
+            Validate<InvalidAddressException>(
+                createException: () => new InvalidAddressException(
+                    message: "Invalid address. Please correct the errors and try again."),
+
                 (Rule: IsInvalid(addresses), Parameter: nameof(addresses)),
                 (Rule: IsInvalid(fileName), Parameter: nameof(fileName)));
         }
@@ -64,7 +73,10 @@ namespace LHDS.Core.Services.Foundations.Addresses
             ValidateAddressIsNotNull(address);
             EntraUser currentUser = await this.securityBroker.GetCurrentUserAsync();
 
-            Validate(
+            Validate<InvalidAddressException>(
+                createException: () => new InvalidAddressException(
+                    message: "Invalid address. Please correct the errors and try again."),
+
                 (Rule: IsInvalid(address.Id), Parameter: nameof(Address.Id)),
                 (Rule: IsInvalid(address.CreatedDate), Parameter: nameof(Address.CreatedDate)),
                 (Rule: IsInvalid(address.CreatedBy), Parameter: nameof(Address.CreatedBy)),
@@ -85,11 +97,23 @@ namespace LHDS.Core.Services.Foundations.Addresses
                 (Rule: await IsNotRecentAsync(address.UpdatedDate), Parameter: nameof(address.UpdatedDate)));
         }
 
-        public void ValidateAddressId(Guid addressId) =>
-            Validate((Rule: IsInvalid(addressId), Parameter: nameof(Address.Id)));
+        public void ValidateAddressId(Guid addressId)
+        {
+            Validate<InvalidAddressException>(
+                createException: () => new InvalidAddressException(
+                    message: "Invalid address. Please correct the errors and try again."), 
 
-        public void ValidatePostCode(string postCode) =>
-            Validate((Rule: IsInvalid(postCode), Parameter: "postCode"));
+                (Rule: IsInvalid(addressId), Parameter: nameof(Address.Id)));
+        }
+
+        public void ValidatePostCode(string postCode) 
+        { 
+            Validate<InvalidAddressException>(
+                createException: () => new InvalidAddressException(
+                    message: "Invalid address. Please correct the errors and try again."), 
+
+                (Rule: IsInvalid(postCode), Parameter: "postCode"));
+        }
 
         private static void ValidateStorageAddress(Address maybeAddress, Guid addressId)
         {
@@ -107,9 +131,12 @@ namespace LHDS.Core.Services.Foundations.Addresses
             }
         }
 
-        private static void ValidateAgainstStorageAddressOnModify(Address inputAddress, Address storageAddress)
+        private void ValidateAgainstStorageAddressOnModify(Address inputAddress, Address storageAddress)
         {
-            Validate(
+            Validate<InvalidAddressException>(
+                createException: () => new InvalidAddressException(
+                    message: "Invalid address. Please correct the errors and try again."),
+                    
                 (Rule: IsNotSame(
                     firstDate: inputAddress.CreatedDate,
                     secondDate: storageAddress.CreatedDate,
@@ -214,23 +241,24 @@ namespace LHDS.Core.Services.Foundations.Addresses
             return timeDifference.Duration() > oneMinute;
         }
 
-        private static void Validate(params (dynamic Rule, string Parameter)[] validations)
+        private static void Validate<T>(
+            Func<T> createException,
+            params (dynamic Rule, string Parameter)[] validations)
+            where T : Xeption
         {
-            var invalidAddressException =
-                new InvalidAddressException(
-                    message: "Invalid address. Please correct the errors and try again.");
+            T invalidDataException = createException();
 
             foreach ((dynamic rule, string parameter) in validations)
             {
                 if (rule.Condition)
                 {
-                    invalidAddressException.UpsertDataList(
+                    invalidDataException.UpsertDataList(
                         key: parameter,
                         value: rule.Message);
                 }
             }
 
-            invalidAddressException.ThrowIfContainsErrors();
+            invalidDataException.ThrowIfContainsErrors();
         }
     }
 }

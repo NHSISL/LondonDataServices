@@ -2,6 +2,7 @@
 // Copyright (c) North East London ICB. All rights reserved.
 // ---------------------------------------------------------
 
+using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using LHDS.Core.Models.Foundations.DecisionPolls.Exceptions;
@@ -64,6 +65,15 @@ namespace LHDS.Core.Services.Orchestrations.Decisions
             {
                 throw await CreateAndLogDependencyExceptionAsync(decisionPollServiceException);
             }
+            catch (Exception exception)
+            {
+                var failedDecryptServiceException =
+                    new FailedDecisionOrchestrationServiceException(
+                        message: "Failed decision orchestration service error occurred, please contact support.",
+                        innerException: exception);
+
+                throw await CreateAndLogServiceExceptionAsync(failedDecryptServiceException);
+            }
         }
 
         private async ValueTask<DecisionOrchestrationValidationException>
@@ -104,6 +114,19 @@ namespace LHDS.Core.Services.Orchestrations.Decisions
             await this.loggingBroker.LogErrorAsync(decisionOrchestrationDependencyException);
 
             return decisionOrchestrationDependencyException;
+        }
+
+        private async ValueTask<DecisionOrchestrationServiceException> CreateAndLogServiceExceptionAsync(
+            Xeption exception)
+        {
+            var decisionServiceException =
+                new DecisionOrchestrationServiceException(
+                    message: "Decision orchestration service error occurred, please contact support.",
+                    innerException: exception);
+
+            await this.loggingBroker.LogErrorAsync(decisionServiceException);
+
+            return decisionServiceException;
         }
     }
 }

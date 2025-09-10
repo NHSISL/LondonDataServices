@@ -1,0 +1,61 @@
+﻿// ---------------------------------------------------------
+// Copyright (c) North East London ICB. All rights reserved.
+// ---------------------------------------------------------
+
+using System.Collections.Generic;
+using System.Threading.Tasks;
+using FluentAssertions;
+using LHDS.Core.Models.Foundations.Decisions;
+using LHDS.Core.Models.Orchestrations.Decisions.Exceptions;
+using Moq;
+using Xeptions;
+using Xunit;
+
+namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Decisions
+{
+    public partial class DecisionOrchestrationServiceTests
+    {
+        [Theory]
+        [MemberData(nameof(DecisionDependencyValidationExceptions))]
+        public async Task ShouldThrowDependencyValidationOnGetPatientDecisionsIfDependencyValidationOccursAndLogItAsync(
+            Xeption dependencyValidationException)
+        {
+            // given
+            var expectedDependencyException =
+                new DecisionOrchestrationDependencyValidationException(
+                    message:
+                    "Decision orchestration dependency validation error occurred, fix the errors and try again.",
+                    innerException: dependencyValidationException.InnerException as Xeption);
+
+            this.decisionPollServiceMock.Setup(service =>
+                service.RetrieveAllDecisionPollsAsync())
+                    .ThrowsAsync(dependencyValidationException);
+
+            // when
+            ValueTask<List<Decision>> getPatientDecisionsTask =
+                this.decisionOrchestrationService.GetPatientDecisions();
+
+            DecisionOrchestrationDependencyValidationException actualException =
+                await Assert.ThrowsAsync<DecisionOrchestrationDependencyValidationException>(
+                    getPatientDecisionsTask.AsTask);
+
+            // then
+            actualException.Should()
+                .BeEquivalentTo(expectedDependencyException);
+
+            this.decisionPollServiceMock.Verify(service =>
+                service.RetrieveAllDecisionPollsAsync(),
+                    Times.Once);
+
+            this.loggingBrokerMock.Verify(broker =>
+                broker.LogErrorAsync(It.Is(SameExceptionAs(
+                    expectedDependencyException))),
+                        Times.Once);
+
+            this.decisionPollServiceMock.VerifyNoOtherCalls();
+            this.decisionServiceMock.VerifyNoOtherCalls();
+            this.documentServiceMock.VerifyNoOtherCalls();
+            this.loggingBrokerMock.VerifyNoOtherCalls();
+        }
+    }
+}

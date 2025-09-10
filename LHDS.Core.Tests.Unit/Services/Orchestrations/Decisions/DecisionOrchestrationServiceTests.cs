@@ -7,13 +7,15 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Linq.Expressions;
-using FluentAssertions;
 using KellermanSoftware.CompareNetObjects;
 using LHDS.Core.Brokers.Loggings;
 using LHDS.Core.Models.Brokers.Storages.Blobs;
 using LHDS.Core.Models.Foundations.DecisionPolls;
+using LHDS.Core.Models.Foundations.DecisionPolls.Exceptions;
 using LHDS.Core.Models.Foundations.Decisions;
+using LHDS.Core.Models.Foundations.Decisions.Exceptions;
 using LHDS.Core.Models.Foundations.DecisionTypes;
+using LHDS.Core.Models.Foundations.Documents.Exceptions;
 using LHDS.Core.Models.Foundations.Patients;
 using LHDS.Core.Services.Foundations.DecisionPolls;
 using LHDS.Core.Services.Foundations.Decisions;
@@ -91,29 +93,29 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Decisions
         private static DateTimeOffset GetRandomDateTimeOffset() =>
             new DateTimeRange(earliestDate: new DateTime()).GetValue();
 
-        private Expression<Func<DecisionPoll, bool>> SameDecisionPollAs(
-            DecisionPoll expectedDecisionPoll)
-        {
-            return actualDecisionPoll =>
-                IsSameDecisionPoll(expectedDecisionPoll, actualDecisionPoll);
-        }
+        private static string GetRandomString() =>
+            new MnemonicString().GetValue();
 
-        private bool IsSameDecisionPoll(DecisionPoll expected, DecisionPoll actual)
+        public static TheoryData<Xeption> DecisionDependencyValidationExceptions()
         {
-            try
-            {
-                actual.Should().BeEquivalentTo(expected, options => options
-                    .Excluding(poll => poll.Id));
-            }
-            catch (Exception exception)
-            {
-                output.WriteLine(exception.Message);
-            }
+            string randomMessage = GetRandomString();
+            string exceptionMessage = randomMessage;
+            var innerException = new Xeption(exceptionMessage);
 
-            return new CompareLogic(new ComparisonConfig
+            return new TheoryData<Xeption>
             {
-                MembersToIgnore = new List<string> { "Id" }
-            }).Compare(expected, actual).AreEqual;
+                new DecisionValidationException(
+                    message: "Decision validation errors occurred, please try again.",
+                    innerException),
+
+                new DocumentValidationException(
+                    message: "Document validation errors occured, please try again",
+                    innerException),
+
+                new DecisionPollValidationException(
+                    message: "DecisionPoll validation errors occurred, please try again.",
+                    innerException)
+            };
         }
 
         private static List<Decision> CreateRandomDecisions()

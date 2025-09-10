@@ -3,9 +3,11 @@
 // ---------------------------------------------------------
 
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using FluentAssertions;
 using LHDS.Core.Models.Brokers.Storages.Blobs;
+using LHDS.Core.Models.Foundations.DecisionPolls;
 using LHDS.Core.Models.Foundations.Decisions;
 using LHDS.Core.Models.Orchestrations.Decisions.Exceptions;
 using LHDS.Core.Services.Orchestrations.Decisions;
@@ -49,6 +51,47 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Decisions
             // then
             actualException.Should()
                     .BeEquivalentTo(expectedDecisionOrchestrationValidationException);
+
+            this.loggingBrokerMock.Verify(broker =>
+                broker.LogErrorAsync(It.Is(SameExceptionAs(
+                    expectedDecisionOrchestrationValidationException))),
+                        Times.Once);
+
+            this.decisionPollServiceMock.VerifyNoOtherCalls();
+            this.decisionServiceMock.VerifyNoOtherCalls();
+            this.documentServiceMock.VerifyNoOtherCalls();
+            this.loggingBrokerMock.VerifyNoOtherCalls();
+        }
+
+        [Fact]
+        public async Task
+            ShouldThrowInvalidDecisionsExceptionOnRecordAdoptionIfDecisionsAdoptedIsNullOrEmptyAndLogItAsync()
+        {
+            // given
+            IQueryable<DecisionPoll> emptyDecisionPolls = Enumerable.Empty<DecisionPoll>().AsQueryable();
+
+            var invalidDecisionPollsDecisionOrchestrationException =
+                new InvalidDecisionPollsDecisionOrchestrationException(message: "DecisionPolls required.");
+
+            var expectedDecisionOrchestrationValidationException =
+                new DecisionOrchestrationValidationException(
+                    message: "Decision orchestration validation errors occurred, please try again.",
+                    innerException: invalidDecisionPollsDecisionOrchestrationException);
+
+            this.decisionPollServiceMock.Setup(service =>
+                service.RetrieveAllDecisionPollsAsync())
+                    .ReturnsAsync(emptyDecisionPolls);
+
+            // when
+            ValueTask<List<Decision>> getPatientDecisionsTask =
+                this.decisionOrchestrationService.GetPatientDecisions();
+
+            DecisionOrchestrationValidationException actualDecisionOrchestrationValidationException =
+                await Assert.ThrowsAsync<DecisionOrchestrationValidationException>(getPatientDecisionsTask.AsTask);
+
+            // then
+            actualDecisionOrchestrationValidationException.Should()
+                .BeEquivalentTo(invalidDecisionPollsDecisionOrchestrationException);
 
             this.loggingBrokerMock.Verify(broker =>
                 broker.LogErrorAsync(It.Is(SameExceptionAs(

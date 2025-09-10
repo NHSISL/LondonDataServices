@@ -4,7 +4,10 @@
 
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using LHDS.Core.Models.Foundations.DecisionPolls.Exceptions;
 using LHDS.Core.Models.Foundations.Decisions;
+using LHDS.Core.Models.Foundations.Decisions.Exceptions;
+using LHDS.Core.Models.Foundations.Documents.Exceptions;
 using LHDS.Core.Models.Orchestrations.Decisions.Exceptions;
 using Xeptions;
 
@@ -25,9 +28,21 @@ namespace LHDS.Core.Services.Orchestrations.Decisions
                 throw await CreateAndLogValidationExceptionAsync(nullBlobContainersDecisionOrchestrationException);
             }
             catch (InvalidDecisionPollsDecisionOrchestrationException
-                invalidDecisionPollsDecisionOrchestrationException)
+                   invalidDecisionPollsDecisionOrchestrationException)
             {
                 throw await CreateAndLogValidationExceptionAsync(invalidDecisionPollsDecisionOrchestrationException);
+            }
+            catch (DecisionValidationException decisionValidationException)
+            {
+                throw await CreateAndLogDependencyValidationExceptionAsync(decisionValidationException);
+            }
+            catch (DocumentValidationException documentValidationException)
+            {
+                throw await CreateAndLogDependencyValidationExceptionAsync(documentValidationException);
+            }
+            catch (DecisionPollValidationException decisionPollValidationException)
+            {
+                throw await CreateAndLogDependencyValidationExceptionAsync(decisionPollValidationException);
             }
         }
 
@@ -42,6 +57,20 @@ namespace LHDS.Core.Services.Orchestrations.Decisions
             await this.loggingBroker.LogErrorAsync(decisionOrchestrationValidationException);
 
             return decisionOrchestrationValidationException;
+        }
+
+        private async ValueTask<DecisionOrchestrationDependencyValidationException>
+            CreateAndLogDependencyValidationExceptionAsync(Xeption exception)
+        {
+            var decryptionOrchestrationDependencyValidationException =
+                new DecisionOrchestrationDependencyValidationException(
+                    message:
+                        "Decision orchestration dependency validation error occurred, fix the errors and try again.",
+                    innerException: exception.InnerException as Xeption);
+
+            await this.loggingBroker.LogErrorAsync(decryptionOrchestrationDependencyValidationException);
+
+            return decryptionOrchestrationDependencyValidationException;
         }
     }
 }

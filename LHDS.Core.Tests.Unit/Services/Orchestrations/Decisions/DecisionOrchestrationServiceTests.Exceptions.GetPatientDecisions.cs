@@ -2,6 +2,7 @@
 // Copyright (c) North East London ICB. All rights reserved.
 // ---------------------------------------------------------
 
+using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using FluentAssertions;
@@ -93,6 +94,53 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Decisions
             this.loggingBrokerMock.Verify(broker =>
                 broker.LogErrorAsync(It.Is(SameExceptionAs(
                     expectedDependencyException))),
+                        Times.Once);
+
+            this.decisionPollServiceMock.VerifyNoOtherCalls();
+            this.decisionServiceMock.VerifyNoOtherCalls();
+            this.documentServiceMock.VerifyNoOtherCalls();
+            this.loggingBrokerMock.VerifyNoOtherCalls();
+        }
+
+        [Fact]
+        public async Task ShouldThrowServiceExceptionOnGetPatientDecisionsIfServiceErrorOccursAndLogItAsync()
+        {
+            // given
+            var serviceException = new Exception();
+
+            var failedDecisionOrchestrationServiceException =
+                new FailedDecisionOrchestrationServiceException(
+                    message: "Failed decision orchestration service error occurred, please contact support.",
+                    innerException: serviceException);
+
+            var expectedDecryptionOrchestrationServiceException =
+                new DecisionOrchestrationServiceException(
+                    message: "Decision orchestration service error occurred, please contact support.",
+                    innerException: failedDecisionOrchestrationServiceException);
+
+            this.decisionPollServiceMock.Setup(service =>
+                service.RetrieveAllDecisionPollsAsync())
+                    .ThrowsAsync(serviceException);
+
+            // when
+            ValueTask<List<Decision>> getPatientDecisionsTask =
+                this.decisionOrchestrationService.GetPatientDecisions();
+
+            DecisionOrchestrationServiceException actualException =
+                await Assert.ThrowsAsync<DecisionOrchestrationServiceException>(
+                    getPatientDecisionsTask.AsTask);
+
+            // then
+            actualException.Should()
+                .BeEquivalentTo(expectedDecryptionOrchestrationServiceException);
+
+            this.decisionPollServiceMock.Verify(service =>
+                service.RetrieveAllDecisionPollsAsync(),
+                    Times.Once);
+
+            this.loggingBrokerMock.Verify(broker =>
+                broker.LogErrorAsync(It.Is(SameExceptionAs(
+                    expectedDecryptionOrchestrationServiceException))),
                         Times.Once);
 
             this.decisionPollServiceMock.VerifyNoOtherCalls();

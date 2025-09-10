@@ -40,7 +40,41 @@ namespace LHDS.Core.Services.Orchestrations.Decisions
 
         public async ValueTask<List<Decision>> GetPatientDecisions()
         {
-            throw new NotImplementedException();
+            IQueryable<DecisionPoll> decisionPolls =
+                await this.decisionPollService.RetrieveAllDecisionPollsAsync();
+
+            DateTimeOffset? lastPollDate = decisionPolls
+                .OrderByDescending(decisionPoll => decisionPoll.LastPoll)
+                .Select(decisionPoll => decisionPoll.LastPoll)
+                .FirstOrDefault();
+
+            DateTimeOffset currentPollDate = DateTimeOffset.UtcNow;
+
+            List<Decision> decisions =
+                await this.decisionService.GetPatientDecisions(lastPollDate);
+
+            string serializedDecisions = JsonSerializer.Serialize(decisions);
+            string fileName = $"IDecide_{currentPollDate:HHmm_ddMMyyyy}";
+            string container = this.blobContainers.Decisions;
+            using var documentStream = new MemoryStream(Encoding.UTF8.GetBytes(serializedDecisions));
+
+            await this.documentService.
+                AddDocumentAsync(documentStream, fileName, container);
+
+            var newDecisionPoll = new DecisionPoll
+            {
+                Id = Guid.NewGuid(),
+                LastPoll = currentPollDate,
+                CreatedBy = "system",
+                CreatedDate = currentPollDate,
+                UpdatedBy = "system",
+                UpdatedDate = currentPollDate
+            };
+
+            await this.decisionPollService.AddDecisionPollAsync(newDecisionPoll);
+            await this.decisionService.RecordAdoption(decisions);
+
+            return decisions;
         }
     }
 }

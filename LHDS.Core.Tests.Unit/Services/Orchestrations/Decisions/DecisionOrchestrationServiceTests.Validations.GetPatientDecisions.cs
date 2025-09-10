@@ -8,6 +8,7 @@ using FluentAssertions;
 using LHDS.Core.Models.Brokers.Storages.Blobs;
 using LHDS.Core.Models.Foundations.Decisions;
 using LHDS.Core.Models.Orchestrations.Decisions.Exceptions;
+using LHDS.Core.Services.Orchestrations.Decisions;
 using Moq;
 using Xunit;
 
@@ -31,16 +32,23 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Decisions
 
             BlobContainers invalidBlobContainers = null;
 
+            var invalidDecisionOrchestrationService = new DecisionOrchestrationService(
+                decisionPollService: this.decisionPollServiceMock.Object,
+                decisionService: this.decisionServiceMock.Object,
+                documentService: this.documentServiceMock.Object,
+                loggingBroker: this.loggingBrokerMock.Object,
+                blobContainers: invalidBlobContainers);
+
             // when
             ValueTask<List<Decision>> getPatientDecisionsTask =
-                this.decisionOrchestrationService.GetPatientDecisions();
+                invalidDecisionOrchestrationService.GetPatientDecisions();
 
             DecisionOrchestrationValidationException actualException =
                 await Assert.ThrowsAsync<DecisionOrchestrationValidationException>(getPatientDecisionsTask.AsTask);
 
             // then
             actualException.Should()
-                .BeEquivalentTo(expectedDecisionOrchestrationValidationException);
+                    .BeEquivalentTo(expectedDecisionOrchestrationValidationException);
 
             this.loggingBrokerMock.Verify(broker =>
                 broker.LogErrorAsync(It.Is(SameExceptionAs(

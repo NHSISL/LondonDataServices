@@ -91,7 +91,11 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Decisions
 
             // then
             actualDecisionOrchestrationValidationException.Should()
-                .BeEquivalentTo(invalidDecisionPollsDecisionOrchestrationException);
+                .BeEquivalentTo(expectedDecisionOrchestrationValidationException);
+
+            this.decisionPollServiceMock.Verify(service =>
+                service.RetrieveAllDecisionPollsAsync(),
+                Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>
                 broker.LogErrorAsync(It.Is(SameExceptionAs(

@@ -9,6 +9,7 @@ using System.Linq;
 using System.Text;
 using System.Text.Json;
 using System.Threading.Tasks;
+using LHDS.Core.Brokers.Loggings;
 using LHDS.Core.Models.Brokers.Storages.Blobs;
 using LHDS.Core.Models.Foundations.DecisionPolls;
 using LHDS.Core.Models.Foundations.Decisions;
@@ -23,18 +24,21 @@ namespace LHDS.Core.Services.Orchestrations.Decisions
         private readonly IDecisionPollService decisionPollService;
         private readonly IDecisionService decisionService;
         private readonly IDocumentService documentService;
+        private readonly ILoggingBroker loggingBroker;
         private readonly BlobContainers blobContainers;
 
         public DecisionOrchestrationService(
             IDecisionPollService decisionPollService,
             IDecisionService decisionService,
             IDocumentService documentService,
+            ILoggingBroker loggingBroker,
             BlobContainers blobContainers
             )
         {
             this.decisionPollService = decisionPollService;
             this.decisionService = decisionService;
             this.documentService = documentService;
+            this.loggingBroker = loggingBroker;
             this.blobContainers = blobContainers;
         }
 

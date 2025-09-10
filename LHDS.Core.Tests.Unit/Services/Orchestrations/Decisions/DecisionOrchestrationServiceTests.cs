@@ -9,6 +9,7 @@ using System.Linq;
 using System.Linq.Expressions;
 using FluentAssertions;
 using KellermanSoftware.CompareNetObjects;
+using LHDS.Core.Brokers.Loggings;
 using LHDS.Core.Models.Brokers.Storages.Blobs;
 using LHDS.Core.Models.Foundations.DecisionPolls;
 using LHDS.Core.Models.Foundations.Decisions;
@@ -32,6 +33,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Decisions
         private readonly Mock<IDecisionService> decisionServiceMock;
         private readonly Mock<IDocumentService> documentServiceMock;
         private readonly IDecisionOrchestrationService decisionOrchestrationService;
+        private readonly Mock<ILoggingBroker> loggingBrokerMock;
         private readonly BlobContainers blobContainers;
         private readonly ITestOutputHelper output;
         private readonly ICompareLogic compareLogic;
@@ -43,6 +45,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Decisions
             this.decisionPollServiceMock = new Mock<IDecisionPollService>();
             this.decisionServiceMock = new Mock<IDecisionService>();
             this.documentServiceMock = new Mock<IDocumentService>();
+            this.loggingBrokerMock = new Mock<ILoggingBroker>();
 
             this.blobContainers = new BlobContainers
             {
@@ -53,6 +56,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Decisions
                 decisionPollService: this.decisionPollServiceMock.Object,
                 decisionService: this.decisionServiceMock.Object,
                 documentService: this.documentServiceMock.Object,
+                loggingBroker: this.loggingBrokerMock.Object,
                 blobContainers: this.blobContainers);
         }
 

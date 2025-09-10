@@ -16,7 +16,7 @@ namespace LHDS.Core.Services.Orchestrations.Decisions
             {
                 throw new NullBlobContainersDecisionOrchestrationException(
                     message: "Null blob container decision orchestration exception, " +
-                             "please correct the errors and try again.");
+                        "please correct the errors and try again.");
             }
         }
 

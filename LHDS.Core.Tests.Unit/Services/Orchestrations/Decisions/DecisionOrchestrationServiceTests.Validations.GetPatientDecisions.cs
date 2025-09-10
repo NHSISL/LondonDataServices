@@ -50,7 +50,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Decisions
 
             // then
             actualException.Should()
-                    .BeEquivalentTo(expectedDecisionOrchestrationValidationException);
+                .BeEquivalentTo(expectedDecisionOrchestrationValidationException);
 
             this.loggingBrokerMock.Verify(broker =>
                 broker.LogErrorAsync(It.Is(SameExceptionAs(

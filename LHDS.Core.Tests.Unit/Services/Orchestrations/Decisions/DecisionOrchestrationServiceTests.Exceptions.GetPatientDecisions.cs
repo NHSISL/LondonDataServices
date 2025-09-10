@@ -41,8 +41,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Decisions
                     getPatientDecisionsTask.AsTask);
 
             // then
-            actualException.Should()
-                .BeEquivalentTo(expectedDependencyException);
+            actualException.Should().BeEquivalentTo(expectedDependencyException);
 
             this.decisionPollServiceMock.Verify(service =>
                 service.RetrieveAllDecisionPollsAsync(),
@@ -84,8 +83,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Decisions
                     getPatientDecisionsTask.AsTask);
 
             // then
-            actualException.Should()
-                .BeEquivalentTo(expectedDependencyException);
+            actualException.Should().BeEquivalentTo(expectedDependencyException);
 
             this.decisionPollServiceMock.Verify(service =>
                 service.RetrieveAllDecisionPollsAsync(),
@@ -131,8 +129,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Decisions
                     getPatientDecisionsTask.AsTask);
 
             // then
-            actualException.Should()
-                .BeEquivalentTo(expectedDecryptionOrchestrationServiceException);
+            actualException.Should().BeEquivalentTo(expectedDecryptionOrchestrationServiceException);
 
             this.decisionPollServiceMock.Verify(service =>
                 service.RetrieveAllDecisionPollsAsync(),

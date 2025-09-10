@@ -25,7 +25,6 @@ using Moq;
 using Tynamix.ObjectFiller;
 using Xeptions;
 using Xunit;
-using Xunit.Abstractions;
 
 namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Decisions
 {
@@ -37,12 +36,10 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Decisions
         private readonly IDecisionOrchestrationService decisionOrchestrationService;
         private readonly Mock<ILoggingBroker> loggingBrokerMock;
         private readonly BlobContainers blobContainers;
-        private readonly ITestOutputHelper output;
         private readonly ICompareLogic compareLogic;
 
-        public DecisionOrchestrationServiceTests(ITestOutputHelper output)
+        public DecisionOrchestrationServiceTests()
         {
-            this.output = output;
             this.compareLogic = new CompareLogic();
             this.decisionPollServiceMock = new Mock<IDecisionPollService>();
             this.decisionServiceMock = new Mock<IDecisionService>();
@@ -200,26 +197,6 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Decisions
                 .OnType<DateTimeOffset?>().Use(dateTimeOffset)
                 .OnProperty(decisionPoll => decisionPoll.CreatedBy).Use(user)
                 .OnProperty(decisionPoll => decisionPoll.UpdatedBy).Use(user);
-
-            return filler;
-        }
-
-        private static DecisionPoll CreateRandomDecisionPoll(
-            DateTimeOffset dateTimeOffset,
-            string userId) =>
-            CreateDecisionPollFiller(dateTimeOffset, userId).Create();
-
-        private static Filler<DecisionPoll> CreateDecisionPollFiller(
-            DateTimeOffset dateTimeOffset,
-            string userId)
-        {
-            var filler = new Filler<DecisionPoll>();
-
-            filler.Setup()
-                .OnType<DateTimeOffset>().Use(dateTimeOffset)
-                .OnType<DateTimeOffset?>().Use(dateTimeOffset)
-                .OnProperty(decisionPoll => decisionPoll.CreatedBy).Use(userId)
-                .OnProperty(decisionPoll => decisionPoll.UpdatedBy).Use(userId);
 
             return filler;
         }

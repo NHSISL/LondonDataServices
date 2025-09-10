@@ -126,13 +126,25 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Decisions
 
             return new TheoryData<Xeption>
             {
+                new DecisionServiceException(
+                    message: "Decision service error occurred, please contact support.",
+                    innerException),
+
                 new DocumentDependencyException(
                     message: "Document service error occured, please contact support.",
                     innerException),
 
+                new DocumentServiceException(
+                    message: "Document service error occurred, please contact support.",
+                    innerException),
+
                 new DecisionPollDependencyException(
                     message: "DecisionPoll dependency error occurred, please contact support.",
-                    innerException)
+                    innerException),
+
+                new DecisionPollServiceException(
+                message: "DecisionPoll dependency error occurred, please contact support.",
+                innerException)
             };
         }
 

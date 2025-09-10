@@ -8,6 +8,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Force.DeepCloner;
 using LHDS.Core.Brokers.Audits;
 using LHDS.Core.Brokers.CsvHelpers;
 using LHDS.Core.Brokers.DateTimes;
@@ -307,10 +308,10 @@ namespace LHDS.Core.Services.Orchestrations.ResolvedAddresses
             List<Guid> batchReferenceIds = new List<Guid>();
             var exceptions = new List<Exception>();
 
-            IQueryable<ResolvedAddress> allResolvedAddresses = await resolvedAddressProcessingService
+            IQueryable<ResolvedAddress> scopedResolvedAddress = await resolvedAddressProcessingService
                 .RetrieveAllResolvedAddressesAsync();
 
-            IQueryable<ResolvedAddress> scopedResolvedAddress = allResolvedAddresses.Where(resolvedAddress =>
+            scopedResolvedAddress = scopedResolvedAddress.Where(resolvedAddress =>
                 resolvedAddress.IsExported == false &&
                 resolvedAddress.IsProcessed == true &&
                 resolvedAddress.IsProcessing == false &&
@@ -334,11 +335,14 @@ namespace LHDS.Core.Services.Orchestrations.ResolvedAddresses
                     .Take(batchCount)
                     .ToList();
 
-                List<ResolvedAddress> notExportedResolvedAddresses = allResolvedAddresses
+                IQueryable<ResolvedAddress> notExportedResolvedAddresses = await resolvedAddressProcessingService
+                    .RetrieveAllResolvedAddressesAsync();
+
+                List<ResolvedAddress> notExportedResolvedAddressesList = notExportedResolvedAddresses
                     .Where(address => batchIds.Contains(address.Id))
                     .ToList();
 
-                if (notExportedResolvedAddresses.Count == 0)
+                if (notExportedResolvedAddressesList.Count == 0)
                 {
                     break;
                 }
@@ -355,15 +359,18 @@ namespace LHDS.Core.Services.Orchestrations.ResolvedAddresses
                         fileName: $"{batchReference}.csv",
                         correlationId: batchReference.ToString());
 
-                    notExportedResolvedAddresses.ForEach(setProcessing =>
+                    List<ResolvedAddress> processingResolvedAddressesList =
+                        notExportedResolvedAddressesList.DeepClone();
+
+                    processingResolvedAddressesList.ForEach(resolvedAddress =>
                     {
-                        setProcessing.IsProcessing = true;
-                        setProcessing.RetryCount += 1;
-                        setProcessing.BatchReference = batchReference;
+                        resolvedAddress.IsProcessing = true;
+                        resolvedAddress.RetryCount += 1;
+                        resolvedAddress.BatchReference = batchReference;
                     });
 
                     await resolvedAddressProcessingService
-                        .BulkModifyResolvedAddressesAsync(notExportedResolvedAddresses);
+                        .BulkModifyResolvedAddressesAsync(processingResolvedAddressesList);
 
                     Dictionary<string, int> fieldMappings = new Dictionary<string, int>
                         {
@@ -397,7 +404,7 @@ namespace LHDS.Core.Services.Orchestrations.ResolvedAddresses
 
                     string processedData = await this.csvHelperBroker
                        .MapObjectToCsvAsync(
-                        @object: notExportedResolvedAddresses,
+                        @object: processingResolvedAddressesList,
                         addHeaderRecord: true,
                         fieldMappings: fieldMappings,
                         shouldAddTrailingComma: false);
@@ -414,19 +421,18 @@ namespace LHDS.Core.Services.Orchestrations.ResolvedAddresses
                             container: blobContainers.Addresses);
                     }
 
-                    List<ResolvedAddress> exportedResolvedAddresses = notExportedResolvedAddresses;
+                    List<ResolvedAddress> exportedResolvedAddressesList = processingResolvedAddressesList.DeepClone();
 
-                    exportedResolvedAddresses.ForEach(setFinishedProcessing =>
+                    exportedResolvedAddressesList.ForEach(setFinishedProcessing =>
                     {
                         setFinishedProcessing.BatchReference = batchReference;
                         setFinishedProcessing.IsProcessing = false;
                         setFinishedProcessing.RetryCount = 0;
                         setFinishedProcessing.IsExported = true;
-                        setFinishedProcessing.IsProcessed = true;
                     });
 
                     await resolvedAddressProcessingService
-                        .BulkModifyResolvedAddressesAsync(exportedResolvedAddresses);
+                        .BulkModifyResolvedAddressesAsync(exportedResolvedAddressesList);
 
                     await this.auditBroker.LogAsync(
                          auditType: "Resolved Address Export",
@@ -440,7 +446,10 @@ namespace LHDS.Core.Services.Orchestrations.ResolvedAddresses
                     exceptions.Add(ex);
                     batchReferenceIds.Remove(batchReference);
 
-                    List<ResolvedAddress> failedToExport = allResolvedAddresses
+                    IQueryable<ResolvedAddress> failedResolvedAddresses = await resolvedAddressProcessingService
+                        .RetrieveAllResolvedAddressesAsync();
+
+                    List<ResolvedAddress> failedToExport = failedResolvedAddresses
                         .Where(address => batchIds.Contains(address.Id))
                         .ToList();
 
@@ -448,7 +457,6 @@ namespace LHDS.Core.Services.Orchestrations.ResolvedAddresses
                     {
                         resolvedAddress.IsProcessing = false;
                         resolvedAddress.IsExported = false;
-                        resolvedAddress.IsProcessed = false;
                     });
 
                     await resolvedAddressProcessingService

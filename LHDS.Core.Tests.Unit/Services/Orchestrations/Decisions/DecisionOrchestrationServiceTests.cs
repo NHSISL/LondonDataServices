@@ -118,6 +118,24 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Decisions
             };
         }
 
+        public static TheoryData<Xeption> DecisionDependencyExceptions()
+        {
+            string randomMessage = GetRandomString();
+            string exceptionMessage = randomMessage;
+            var innerException = new Xeption(exceptionMessage);
+
+            return new TheoryData<Xeption>
+            {
+                new DocumentDependencyException(
+                    message: "Document service error occured, please contact support.",
+                    innerException),
+
+                new DecisionPollDependencyException(
+                    message: "DecisionPoll dependency error occurred, please contact support.",
+                    innerException)
+            };
+        }
+
         private static List<Decision> CreateRandomDecisions()
         {
             return CreateDecisionFiller(dateTimeOffset: GetRandomDateTimeOffset())

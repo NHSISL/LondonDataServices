@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Linq.Expressions;
+using FluentAssertions;
 using KellermanSoftware.CompareNetObjects;
 using LHDS.Core.Brokers.Audits;
 using LHDS.Core.Brokers.CsvHelpers;
@@ -105,8 +106,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.ResolvedAddresses
            ResolvedAddress expectedResolvedAddress)
         {
             return actualResolvedAddress =>
-                this.compareLogic.Compare(expectedResolvedAddress, actualResolvedAddress)
-                    .AreEqual;
+                CompareObjects(expectedResolvedAddress, actualResolvedAddress);
         }
 
         private Expression<Func<AssignAddress, bool>> SameAssignAddressAs(
@@ -121,7 +121,22 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.ResolvedAddresses
            List<ResolvedAddress> expectedResolvedAddressList)
         {
             return actualResolvedAddressList =>
-                this.compareLogic.Compare(expectedResolvedAddressList, actualResolvedAddressList).AreEqual;
+                CompareObjects(expectedResolvedAddressList, actualResolvedAddressList);
+        }
+
+        private bool CompareObjects(object expected, object actual)
+        {
+            try
+            {
+                actual.Should().BeEquivalentTo(expected);
+            }
+            catch (Exception exception)
+            {
+                output.WriteLine(exception.Message);
+            }
+
+            return this.compareLogic.Compare(expected, actual)
+                    .AreEqual;
         }
 
         private static byte[] ReadAllBytesFromStream(Stream stream)
@@ -198,23 +213,48 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.ResolvedAddresses
                     .AreEqual;
         }
 
-        private static ResolvedAddress CreateRandomResolvedAddress() =>
-            CreateResolvedAddressFiller(dateTimeOffset: GetRandomDateTimeOffset()).Create();
-
-        private static ResolvedAddress CreateRandomResolvedAddress(DateTimeOffset dateTimeOffset) =>
-            CreateResolvedAddressFiller(dateTimeOffset).Create();
-
-        private static Filler<ResolvedAddress> CreateResolvedAddressFiller(DateTimeOffset dateTimeOffset)
+        private static Filler<ResolvedAddress> CreateResolvedAddressFiller(
+            DateTimeOffset dateTimeOffset,
+            bool isExported = false,
+            bool isProcessed = false,
+            bool isProcessing = false,
+            int retryCount = 0)
         {
             string user = Guid.NewGuid().ToString();
             var filler = new Filler<ResolvedAddress>();
 
             filler.Setup()
                 .OnType<DateTimeOffset>().Use(dateTimeOffset)
+                .OnProperty(resolvedAddress => resolvedAddress.IsExported).Use(isExported)
+                .OnProperty(resolvedAddress => resolvedAddress.IsProcessed).Use(isProcessed)
+                .OnProperty(resolvedAddress => resolvedAddress.IsProcessing).Use(isProcessing)
+                .OnProperty(resolvedAddress => resolvedAddress.RetryCount).Use(retryCount)
                 .OnProperty(resolvedAddress => resolvedAddress.CreatedBy).Use(user)
                 .OnProperty(resolvedAddress => resolvedAddress.UpdatedBy).Use(user);
 
             return filler;
+        }
+
+        private static List<ResolvedAddress> CreateRandomResolvedAddresses(
+            int count,
+            DateTimeOffset dateTimeOffset,
+            bool isExported = false,
+            bool isProcessed = false,
+            bool isProcessing = false,
+            int retryCount = 0)
+        {
+            var fillers = Enumerable.Range(1, count)
+                .Select(_ => CreateResolvedAddressFiller(
+                    dateTimeOffset,
+                    isExported,
+                    isProcessed,
+                    isProcessing,
+                    retryCount))
+                .ToList();
+
+            var result = fillers.Select(filler => filler.Create()).ToList();
+
+            return result.ToList();
         }
 
         private static List<ResolvedAddress> CreateRandomUnmatchedAddresses(
@@ -238,9 +278,9 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.ResolvedAddresses
             filler.Setup()
                 .OnType<DateTimeOffset>().Use(dateTimeOffset)
                 .OnType<DateTimeOffset?>().Use(dateTimeOffset)
+                .OnProperty(resolvedAddress => resolvedAddress.IsExported).Use(false)
                 .OnProperty(resolvedAddress => resolvedAddress.IsProcessed).Use(false)
                 .OnProperty(resolvedAddress => resolvedAddress.IsProcessing).Use(false)
-                .OnProperty(resolvedAddress => resolvedAddress.IsExported).Use(false)
                 .OnProperty(resolvedAddress => resolvedAddress.RetryCount).Use(0)
                 .OnProperty(resolvedAddress => resolvedAddress.CreatedBy).Use(user)
                 .OnProperty(resolvedAddress => resolvedAddress.CreatedDate).Use(dateTimeOffset.AddMinutes(-5))

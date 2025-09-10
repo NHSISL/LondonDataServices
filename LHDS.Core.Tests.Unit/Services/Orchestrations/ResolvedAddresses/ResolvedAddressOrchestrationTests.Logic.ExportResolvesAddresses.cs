@@ -24,13 +24,37 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.ResolvedAddresses
             DateTimeOffset randomDateTimeOffset = GetRandomDateTimeOffset();
             Guid identifier = Guid.NewGuid();
 
-            List<ResolvedAddress> randomUnmatchedResolvedAddresses =
-                CreateRandomUnmatchedAddresses(count: 2, dateTimeOffset: randomDateTimeOffset);
+            List<ResolvedAddress> randomUnmatchedResolvedAddresses = CreateRandomResolvedAddresses(
+                count: 2,
+                dateTimeOffset: randomDateTimeOffset,
+                isExported: false,
+                isProcessed: true,
+                isProcessing: false,
+                retryCount: 1);
 
             List<ResolvedAddress> storageResolvedAddresses = randomUnmatchedResolvedAddresses.DeepClone();
+            List<ResolvedAddress> processingResolvedAddresses = storageResolvedAddresses.DeepClone();
 
-            this.resolvedAddressProcessingServiceMock.Setup(service =>
+            processingResolvedAddresses.ForEach(resolvedAddress =>
+            {
+                resolvedAddress.IsProcessing = true;
+                resolvedAddress.RetryCount += 1;
+                resolvedAddress.BatchReference = identifier;
+            });
+
+            List<ResolvedAddress> processedResolvedAddresses = processingResolvedAddresses.DeepClone();
+
+            processedResolvedAddresses.ForEach(resolvedAddress =>
+            {
+                resolvedAddress.BatchReference = identifier;
+                resolvedAddress.IsProcessing = false;
+                resolvedAddress.RetryCount = 0;
+                resolvedAddress.IsExported = true;
+            });
+
+            this.resolvedAddressProcessingServiceMock.SetupSequence(service =>
                 service.RetrieveAllResolvedAddressesAsync())
+                    .ReturnsAsync(storageResolvedAddresses.AsQueryable())
                     .ReturnsAsync(storageResolvedAddresses.AsQueryable());
 
             this.identifierBrokerMock.Setup(broker =>
@@ -43,17 +67,8 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.ResolvedAddresses
             string exportedAuditTitle = "Exported Resolved Addresses";
             string exportedAuditMessage = $"Exported resolved addresses with correlation id {identifier}";
 
-            List<ResolvedAddress> processingResolvedAddresses = storageResolvedAddresses.DeepClone();
-
-            processingResolvedAddresses.ForEach(resolvedAddress =>
-            {
-                resolvedAddress.IsProcessing = true;
-                resolvedAddress.RetryCount += 1;
-                resolvedAddress.BatchReference = identifier;
-            });
-
             this.resolvedAddressProcessingServiceMock.Setup(service =>
-                service.BulkModifyResolvedAddressesAsync(processingResolvedAddresses))
+                service.BulkModifyResolvedAddressesAsync(It.Is(SameResolvedAddressListAs(processingResolvedAddresses))))
                     .Returns(ValueTask.CompletedTask);
 
             Dictionary<string, int> fieldMappings = new Dictionary<string, int>
@@ -115,19 +130,8 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.ResolvedAddresses
                    })
                    .Returns(ValueTask.CompletedTask);
 
-            List<ResolvedAddress> processedResolvedAddresses = processingResolvedAddresses.DeepClone();
-
-            processedResolvedAddresses.ForEach(resolvedAddress =>
-            {
-                resolvedAddress.BatchReference = identifier;
-                resolvedAddress.IsProcessing = false;
-                resolvedAddress.RetryCount = 0;
-                resolvedAddress.IsExported = true;
-                resolvedAddress.IsProcessed = true;
-            });
-
             this.resolvedAddressProcessingServiceMock.Setup(service =>
-                service.BulkModifyResolvedAddressesAsync(processedResolvedAddresses))
+                service.BulkModifyResolvedAddressesAsync(It.Is(SameResolvedAddressListAs(processedResolvedAddresses))))
                     .Returns(ValueTask.CompletedTask);
 
 
@@ -137,15 +141,11 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.ResolvedAddresses
             // Then
             this.resolvedAddressProcessingServiceMock.Verify(service =>
                 service.RetrieveAllResolvedAddressesAsync(),
-                    Times.Once);
+                    Times.Exactly(2));
 
             this.identifierBrokerMock.Verify(broker =>
                 broker.GetIdentifierAsync(),
                     Times.Once);
-
-            this.resolvedAddressProcessingServiceMock.Verify(service =>
-                service.RetrieveAllResolvedAddressesAsync(),
-                    Times.Exactly(2));
 
             this.auditBrokerMock.Verify(service =>
                 service.LogAsync(

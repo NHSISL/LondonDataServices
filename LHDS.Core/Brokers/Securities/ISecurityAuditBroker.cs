@@ -56,14 +56,14 @@ namespace LHDS.Core.Brokers.Securities
         /// </summary>
         /// <returns>The user identifier string.</returns>
         /// <remarks>
-        /// If no valid user identifier is found, a fallback (such as <c>"Anonymous"</c>) may be returned.
+        /// If no valid user identifier is found, a fallback (such as <c>"anonymous"</c>) may be returned.
         /// </remarks>
         /// <example>
         /// <code>
-        /// string userId = await auditClient.GetCurrentUserIdAsync(User);
-        /// // e.g. "Alice" or "Anonymous"
+        /// string userId = await auditClient.GetUserIdAsync();
+        /// // e.g. "Alice" or "anonymous"
         /// </code>
         /// </example>
-        ValueTask<string> GetCurrentUserIdAsync();
+        ValueTask<string> GetUserIdAsync();
     }
 }

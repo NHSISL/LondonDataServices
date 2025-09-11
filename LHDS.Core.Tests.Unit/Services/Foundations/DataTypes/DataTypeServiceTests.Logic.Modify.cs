@@ -20,8 +20,8 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.DataTypes
         {
             // given
             DateTimeOffset randomDateTimeOffset = GetRandomDateTimeOffset();
-            EntraUser randomEntraUser = CreateRandomEntraUser();
-            DataType randomDataType = CreateRandomModifyDataType(randomDateTimeOffset, randomEntraUser.EntraUserId);
+            string randomEntraUserId = GetRandomStringWithLengthOf(50);
+            DataType randomDataType = CreateRandomModifyDataType(randomDateTimeOffset, randomEntraUserId);
             DataType inputDataType = randomDataType;
             DataType storageDataType = inputDataType.DeepClone();
             storageDataType.UpdatedDate = randomDataType.CreatedDate;
@@ -33,9 +33,9 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.DataTypes
                 broker.GetCurrentDateTimeOffsetAsync())
                     .ReturnsAsync(randomDateTimeOffset);
 
-            this.securityBrokerMock.Setup(brokers =>
-                brokers.GetCurrentUserAsync())
-                    .ReturnsAsync(randomEntraUser);
+            this.securityAuditBrokerMock.Setup(brokers =>
+                brokers.GetCurrentUserIdAsync())
+                    .ReturnsAsync(randomEntraUserId);
 
             this.storageBrokerMock.Setup(broker =>
                 broker.SelectDataTypeByIdAsync(dataTypeId))
@@ -56,8 +56,8 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.DataTypes
                 broker.GetCurrentDateTimeOffsetAsync(),
                     Times.Exactly(2));
 
-            this.securityBrokerMock.Verify(broker =>
-                broker.GetCurrentUserAsync(),
+            this.securityAuditBrokerMock.Verify(broker =>
+                broker.GetCurrentUserIdAsync(),
                     Times.Exactly(2));
 
             this.storageBrokerMock.Verify(broker =>
@@ -69,7 +69,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.DataTypes
                     Times.Once);
 
             this.dateTimeBrokerMock.VerifyNoOtherCalls();
-            this.securityBrokerMock.VerifyNoOtherCalls();
+            this.securityAuditBrokerMock.VerifyNoOtherCalls();
             this.storageBrokerMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
         }

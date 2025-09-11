@@ -4,8 +4,6 @@
 
 using System;
 using System.Threading.Tasks;
-using LHDS.Core.Models.Brokers.Securities;
-using LHDS.Core.Models.Foundations.Addresses.Exceptions;
 using LHDS.Core.Models.Foundations.DataTypes;
 using LHDS.Core.Models.Foundations.DataTypes.Exceptions;
 using Xeptions;
@@ -17,7 +15,7 @@ namespace LHDS.Core.Services.Foundations.DataTypes
         private async ValueTask ValidateDataTypeOnAddAsync(DataType dataType)
         {
             ValidateDataTypeIsNotNull(dataType);
-            EntraUser currentUser = await this.securityBroker.GetCurrentUserAsync();
+            string currentUserId = await this.securityAuditBroker.GetCurrentUserIdAsync();
 
             Validate<InvalidDataTypeException>(
                 createException: () => new InvalidDataTypeException(
@@ -33,7 +31,7 @@ namespace LHDS.Core.Services.Foundations.DataTypes
                     dataType.Name, 50), Parameter: nameof(DataType.Name)),
 
                 (Rule: IsNotSame(
-                    first: currentUser.EntraUserId,
+                    first: currentUserId,
                     second: dataType.CreatedBy),
                 Parameter: nameof(DataType.CreatedBy)),
 
@@ -55,7 +53,7 @@ namespace LHDS.Core.Services.Foundations.DataTypes
         private async ValueTask ValidateDataTypeOnModifyAsync(DataType dataType)
         {
             ValidateDataTypeIsNotNull(dataType);
-            EntraUser currentUser = await this.securityBroker.GetCurrentUserAsync();
+            string currentUserId = await this.securityAuditBroker.GetCurrentUserIdAsync();
 
             Validate<InvalidDataTypeException>(
                 createException: () => new InvalidDataTypeException(
@@ -71,7 +69,7 @@ namespace LHDS.Core.Services.Foundations.DataTypes
                     dataType.Name, 50), Parameter: nameof(DataType.Name)),
 
                 (Rule: IsNotSame(
-                    first: currentUser.EntraUserId,
+                    first: currentUserId,
                     second: dataType.UpdatedBy),
                 Parameter: nameof(DataType.UpdatedBy)),
 
@@ -88,7 +86,7 @@ namespace LHDS.Core.Services.Foundations.DataTypes
         {
             Validate<InvalidDataTypeException>(
                 createException: () => new InvalidDataTypeException(
-                    message: "Invalid dataType. Please correct the errors and try again."), 
+                    message: "Invalid dataType. Please correct the errors and try again."),
                 (Rule: IsInvalid(dataTypeId), Parameter: nameof(DataType.Id)));
         }
 
@@ -134,7 +132,7 @@ namespace LHDS.Core.Services.Foundations.DataTypes
 
         private async ValueTask ValidateAgainstStorageDataTypeOnDeleteAsync(DataType dataType, DataType maybeDataType)
         {
-            EntraUser auditUser = await this.securityBroker.GetCurrentUserAsync();
+            string auditUserId = await this.securityAuditBroker.GetCurrentUserIdAsync();
 
             Validate<InvalidDataTypeException>(
                 createException: () => new InvalidDataTypeException(
@@ -158,7 +156,7 @@ namespace LHDS.Core.Services.Foundations.DataTypes
                  Parameter: nameof(DataType.UpdatedDate)),
 
                 (Rule: IsNotSame(
-                    auditUser.EntraUserId.ToString(),
+                    auditUserId.ToString(),
                     dataType.UpdatedBy,
                     nameof(DataType.UpdatedBy)),
                  Parameter: nameof(DataType.UpdatedBy))

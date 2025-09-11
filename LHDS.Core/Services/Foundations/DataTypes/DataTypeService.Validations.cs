@@ -5,8 +5,10 @@
 using System;
 using System.Threading.Tasks;
 using LHDS.Core.Models.Brokers.Securities;
+using LHDS.Core.Models.Foundations.Addresses.Exceptions;
 using LHDS.Core.Models.Foundations.DataTypes;
 using LHDS.Core.Models.Foundations.DataTypes.Exceptions;
+using Xeptions;
 
 namespace LHDS.Core.Services.Foundations.DataTypes
 {
@@ -17,7 +19,9 @@ namespace LHDS.Core.Services.Foundations.DataTypes
             ValidateDataTypeIsNotNull(dataType);
             EntraUser currentUser = await this.securityBroker.GetCurrentUserAsync();
 
-            Validate(
+            Validate<InvalidDataTypeException>(
+                createException: () => new InvalidDataTypeException(
+                    message: "Invalid dataType. Please correct the errors and try again."),
                 (Rule: IsInvalid(dataType.Id), Parameter: nameof(DataType.Id)),
                 (Rule: IsInvalid(dataType.Name), Parameter: nameof(DataType.Name)),
                 (Rule: IsInvalid(dataType.CreatedDate), Parameter: nameof(DataType.CreatedDate)),
@@ -53,7 +57,9 @@ namespace LHDS.Core.Services.Foundations.DataTypes
             ValidateDataTypeIsNotNull(dataType);
             EntraUser currentUser = await this.securityBroker.GetCurrentUserAsync();
 
-            Validate(
+            Validate<InvalidDataTypeException>(
+                createException: () => new InvalidDataTypeException(
+                    message: "Invalid dataType. Please correct the errors and try again."),
                 (Rule: IsInvalid(dataType.Id), Parameter: nameof(DataType.Id)),
                 (Rule: IsInvalid(dataType.Name), Parameter: nameof(DataType.Name)),
                 (Rule: IsInvalid(dataType.CreatedDate), Parameter: nameof(DataType.CreatedDate)),
@@ -78,8 +84,13 @@ namespace LHDS.Core.Services.Foundations.DataTypes
                 (Rule: await IsNotRecentAsync(dataType.UpdatedDate), Parameter: nameof(dataType.UpdatedDate)));
         }
 
-        public void ValidateDataTypeId(Guid dataTypeId) =>
-            Validate((Rule: IsInvalid(dataTypeId), Parameter: nameof(DataType.Id)));
+        public void ValidateDataTypeId(Guid dataTypeId)
+        {
+            Validate<InvalidDataTypeException>(
+                createException: () => new InvalidDataTypeException(
+                    message: "Invalid dataType. Please correct the errors and try again."), 
+                (Rule: IsInvalid(dataTypeId), Parameter: nameof(DataType.Id)));
+        }
 
         private static void ValidateStorageDataType(DataType maybeDataType, Guid dataTypeId)
         {
@@ -99,7 +110,9 @@ namespace LHDS.Core.Services.Foundations.DataTypes
 
         private static void ValidateAgainstStorageDataTypeOnModify(DataType inputDataType, DataType storageDataType)
         {
-            Validate(
+            Validate<InvalidDataTypeException>(
+                createException: () => new InvalidDataTypeException(
+                    message: "Invalid dataType. Please correct the errors and try again."),
                 (Rule: IsNotSame(
                     firstDate: inputDataType.CreatedDate,
                     secondDate: storageDataType.CreatedDate,
@@ -123,7 +136,9 @@ namespace LHDS.Core.Services.Foundations.DataTypes
         {
             EntraUser auditUser = await this.securityBroker.GetCurrentUserAsync();
 
-            Validate(
+            Validate<InvalidDataTypeException>(
+                createException: () => new InvalidDataTypeException(
+                    message: "Invalid dataType. Please correct the errors and try again."),
                 (Rule: IsNotSame(
                     dataType.CreatedDate,
                     maybeDataType.CreatedDate,
@@ -235,23 +250,24 @@ namespace LHDS.Core.Services.Foundations.DataTypes
             return timeDifference.Duration() > oneMinute;
         }
 
-        private static void Validate(params (dynamic Rule, string Parameter)[] validations)
+        private static void Validate<T>(
+            Func<T> createException,
+            params (dynamic Rule, string Parameter)[] validations)
+            where T : Xeption
         {
-            var invalidDataTypeException =
-                new InvalidDataTypeException(
-                    message: "Invalid dataType. Please correct the errors and try again.");
+            T invalidDataException = createException();
 
             foreach ((dynamic rule, string parameter) in validations)
             {
                 if (rule.Condition)
                 {
-                    invalidDataTypeException.UpsertDataList(
+                    invalidDataException.UpsertDataList(
                         key: parameter,
                         value: rule.Message);
                 }
             }
 
-            invalidDataTypeException.ThrowIfContainsErrors();
+            invalidDataException.ThrowIfContainsErrors();
         }
     }
 }

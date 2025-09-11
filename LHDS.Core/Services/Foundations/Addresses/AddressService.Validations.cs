@@ -53,6 +53,7 @@ namespace LHDS.Core.Services.Foundations.Addresses
             Validate<InvalidAddressException>(
                 createException: () => new InvalidAddressException(
                     message: "Invalid address. Please correct the errors and try again."),
+
                 (Rule: IsInvalid(addresses), Parameter: nameof(addresses)),
                 (Rule: IsInvalid(fileName), Parameter: nameof(fileName)));
         }
@@ -62,6 +63,7 @@ namespace LHDS.Core.Services.Foundations.Addresses
             Validate<InvalidAddressException>(
                 createException: () => new InvalidAddressException(
                     message: "Invalid address. Please correct the errors and try again."),
+
                 (Rule: IsInvalid(addresses), Parameter: nameof(addresses)),
                 (Rule: IsInvalid(fileName), Parameter: nameof(fileName)));
         }
@@ -74,6 +76,7 @@ namespace LHDS.Core.Services.Foundations.Addresses
             Validate<InvalidAddressException>(
                 createException: () => new InvalidAddressException(
                     message: "Invalid address. Please correct the errors and try again."),
+
                 (Rule: IsInvalid(address.Id), Parameter: nameof(Address.Id)),
                 (Rule: IsInvalid(address.CreatedDate), Parameter: nameof(Address.CreatedDate)),
                 (Rule: IsInvalid(address.CreatedBy), Parameter: nameof(Address.CreatedBy)),
@@ -99,6 +102,7 @@ namespace LHDS.Core.Services.Foundations.Addresses
             Validate<InvalidAddressException>(
                 createException: () => new InvalidAddressException(
                     message: "Invalid address. Please correct the errors and try again."), 
+
                 (Rule: IsInvalid(addressId), Parameter: nameof(Address.Id)));
         }
 
@@ -107,6 +111,7 @@ namespace LHDS.Core.Services.Foundations.Addresses
             Validate<InvalidAddressException>(
                 createException: () => new InvalidAddressException(
                     message: "Invalid address. Please correct the errors and try again."), 
+
                 (Rule: IsInvalid(postCode), Parameter: "postCode"));
         }
 
@@ -131,6 +136,7 @@ namespace LHDS.Core.Services.Foundations.Addresses
             Validate<InvalidAddressException>(
                 createException: () => new InvalidAddressException(
                     message: "Invalid address. Please correct the errors and try again."),
+                    
                 (Rule: IsNotSame(
                     firstDate: inputAddress.CreatedDate,
                     secondDate: storageAddress.CreatedDate,

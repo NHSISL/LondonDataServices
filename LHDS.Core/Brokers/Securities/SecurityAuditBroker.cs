@@ -32,7 +32,7 @@ namespace LHDS.Core.Brokers.Securities
             SecurityConfigurations securityConfigurations)
         {
             claimsPrincipal = httpContextAccessor.HttpContext?.User ?? new ClaimsPrincipal();
-            securityClient = new SecurityClient();
+            this.securityClient = new SecurityClient();
             this.securityConfigurations = securityConfigurations;
         }
 
@@ -44,8 +44,8 @@ namespace LHDS.Core.Brokers.Securities
         /// <param name="securityConfigurations">Contains information of the audit properties to target.</param>
         public SecurityAuditBroker(string accessToken, SecurityConfigurations securityConfigurations)
         {
-            claimsPrincipal = GetClaimsPrincipalFromToken(accessToken);
-            securityClient = new SecurityClient();
+            this.claimsPrincipal = GetClaimsPrincipalFromToken(accessToken);
+            this.securityClient = new SecurityClient();
             this.securityConfigurations = securityConfigurations;
         }
 
@@ -60,7 +60,7 @@ namespace LHDS.Core.Brokers.Securities
         {
             this.claimsPrincipal = claimsPrincipal;
             this.securityConfigurations = securityConfigurations;
-            securityClient = new SecurityClient();
+            this.securityClient = new SecurityClient();
         }
 
         /// <summary>
@@ -85,7 +85,7 @@ namespace LHDS.Core.Brokers.Securities
         /// <param name="entity">The entity to audit.</param>
         /// <returns>The audited entity with add metadata applied.</returns>
         public async ValueTask<T> ApplyAddAuditValuesAsync<T>(T entity) =>
-            await securityClient.Audits.ApplyAddAuditValuesAsync(entity, claimsPrincipal, securityConfigurations);
+            await this.securityClient.Audits.ApplyAddAuditValuesAsync(entity, claimsPrincipal, securityConfigurations);
 
         /// <summary>
         /// Applies auditing metadata for a modify operation to the specified entity.
@@ -95,7 +95,7 @@ namespace LHDS.Core.Brokers.Securities
         /// <param name="entity">The entity to audit.</param>
         /// <returns>The audited entity with modify metadata applied.</returns>
         public async ValueTask<T> ApplyModifyAuditValuesAsync<T>(T entity) =>
-                await securityClient.Audits.ApplyModifyAuditValuesAsync(entity, claimsPrincipal, securityConfigurations);
+            await this.securityClient.Audits.ApplyModifyAuditValuesAsync(entity, claimsPrincipal, securityConfigurations);
 
         /// <summary>
         /// Applies auditing metadata for a remove (soft delete) operation to the specified entity.
@@ -104,7 +104,7 @@ namespace LHDS.Core.Brokers.Securities
         /// <param name="entity">The entity to audit for removal.</param>
         /// <returns>The audited entity with remove metadata applied.</returns>
         public async ValueTask<T> ApplyRemoveAuditValuesAsync<T>(T entity) =>
-                await securityClient.Audits.ApplyRemoveAuditValuesAsync(entity, claimsPrincipal, securityConfigurations);
+            await this.securityClient.Audits.ApplyRemoveAuditValuesAsync(entity, claimsPrincipal, securityConfigurations);
 
         /// <summary>
         /// Ensures that add audit values (e.g., created by/date) remain unchanged during modify operations.
@@ -116,7 +116,7 @@ namespace LHDS.Core.Brokers.Securities
         public async ValueTask<T> EnsureAddAuditValuesRemainsUnchangedOnModifyAsync<T>(
             T entity,
             T storageEntity) =>
-                await securityClient.Audits
+                await this.securityClient.Audits
                     .EnsureAddAuditValuesRemainsUnchangedOnModifyAsync(entity, storageEntity, securityConfigurations);
 
         /// <summary>
@@ -124,15 +124,15 @@ namespace LHDS.Core.Brokers.Securities
         /// </summary>
         /// <returns>The user identifier string.</returns>
         /// <remarks>
-        /// If no valid user identifier is found, a fallback (such as <c>"Anonymous"</c>) may be returned.
+        /// If no valid user identifier is found, a fallback (such as <c>"anonymous"</c>) may be returned.
         /// </remarks>
         /// <example>
         /// <code>
-        /// string userId = await auditClient.GetCurrentUserIdAsync(User);
-        /// // e.g. "Alice" or "Anonymous"
+        /// string userId = await auditClient.GetUserIdAsync();
+        /// // e.g. "Alice" or "anonymous"
         /// </code>
         /// </example>
-        public async ValueTask<string> GetCurrentUserIdAsync() =>
-            await securityClient.Audits.GetCurrentUserIdAsync(claimsPrincipal);
+        public async ValueTask<string> GetUserIdAsync() =>
+            await this.securityClient.Audits.GetUserIdAsync(claimsPrincipal);
     }
 }

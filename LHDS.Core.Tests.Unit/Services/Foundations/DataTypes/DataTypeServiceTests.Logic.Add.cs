@@ -26,12 +26,16 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.DataTypes
             DataType storageDataType = inputDataType;
             DataType expectedDataType = storageDataType.DeepClone();
 
-            this.dateTimeBrokerMock.Setup(broker =>
+            this.securityAuditBrokerMock.Setup(broker =>
+				broker.ApplyAddAuditValuesAsync(inputDataType))
+					.ReturnsAsync(inputDataType);
+
+			this.dateTimeBrokerMock.Setup(broker =>
                 broker.GetCurrentDateTimeOffsetAsync())
                     .ReturnsAsync(randomDateTimeOffset);
 
             this.securityAuditBrokerMock.Setup(broker =>
-                broker.GetCurrentUserIdAsync())
+                broker.GetUserIdAsync())
                     .ReturnsAsync(randomEntraUserId);
 
             this.storageBrokerMock.Setup(broker =>
@@ -44,20 +48,24 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.DataTypes
             // then
             actualDataType.Should().BeEquivalentTo(expectedDataType);
 
-            this.dateTimeBrokerMock.Verify(broker =>
+            this.securityAuditBrokerMock.Verify(broker =>
+				broker.ApplyAddAuditValuesAsync(inputDataType),
+					Times.Once);
+
+			this.dateTimeBrokerMock.Verify(broker =>
                 broker.GetCurrentDateTimeOffsetAsync(),
-                    Times.Exactly(2));
+                    Times.Once);
 
             this.securityAuditBrokerMock.Verify(broker =>
-                broker.GetCurrentUserIdAsync(),
-                    Times.Exactly(2));
+                broker.GetUserIdAsync(),
+                    Times.Once);
 
             this.storageBrokerMock.Verify(broker =>
                 broker.InsertDataTypeAsync(inputDataType),
                     Times.Once);
 
-            this.dateTimeBrokerMock.VerifyNoOtherCalls();
             this.securityAuditBrokerMock.VerifyNoOtherCalls();
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
             this.storageBrokerMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
         }

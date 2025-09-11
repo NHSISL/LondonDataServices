@@ -31,20 +31,24 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.DataTypes
             DataType deletedDataType = updatedDataType;
             DataType expectedDataType = deletedDataType.DeepClone();
 
-            this.dateTimeBrokerMock.Setup(broker =>
+			this.dateTimeBrokerMock.Setup(broker =>
                 broker.GetCurrentDateTimeOffsetAsync())
                     .ReturnsAsync(randomDateTimeOffset);
 
             this.securityAuditBrokerMock.Setup(broker =>
-                broker.GetCurrentUserIdAsync())
+                broker.GetUserIdAsync())
                     .ReturnsAsync(randomEntraUserId);
 
             this.storageBrokerMock.Setup(broker =>
                 broker.SelectDataTypeByIdAsync(inputDataTypeId))
                     .ReturnsAsync(storageDataType);
 
+            this.securityAuditBrokerMock.Setup(broker =>
+				broker.ApplyRemoveAuditValuesAsync(storageDataType))
+					.ReturnsAsync(dataSetWithDeleteAuditApplied);
+
             this.storageBrokerMock.Setup(broker =>
-                broker.UpdateDataTypeAsync(randomDataType))
+                broker.UpdateDataTypeAsync(dataSetWithDeleteAuditApplied))
                     .ReturnsAsync(updatedDataType);
 
             this.storageBrokerMock.Setup(broker =>
@@ -61,16 +65,16 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.DataTypes
                 broker.SelectDataTypeByIdAsync(inputDataTypeId),
                     Times.Once);
 
-            this.dateTimeBrokerMock.Verify(broker =>
-                broker.GetCurrentDateTimeOffsetAsync(),
-                    Times.Once);
+            this.securityAuditBrokerMock.Verify(broker =>
+                broker.ApplyRemoveAuditValuesAsync(storageDataType),
+					Times.Once);
 
             this.securityAuditBrokerMock.Verify(broker =>
-                broker.GetCurrentUserIdAsync(),
-                    Times.Exactly(2));
+                broker.GetUserIdAsync(),
+                    Times.Once);
 
             this.storageBrokerMock.Verify(broker =>
-                broker.UpdateDataTypeAsync(randomDataType),
+                broker.UpdateDataTypeAsync(dataSetWithDeleteAuditApplied),
                     Times.Once);
 
             this.storageBrokerMock.Verify(broker =>

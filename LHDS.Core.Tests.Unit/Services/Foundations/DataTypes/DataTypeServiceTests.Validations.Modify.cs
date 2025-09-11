@@ -29,8 +29,12 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.DataTypes
                     message: "DataType validation errors occurred, please try again.",
                     innerException: nullDataTypeException);
 
-            // when
-            ValueTask<DataType> modifyDataTypeTask =
+            this.securityAuditBrokerMock.Setup(broker =>
+				broker.ApplyModifyAuditValuesAsync(nullDataType))
+					.ThrowsAsync(nullDataTypeException);
+
+			// when
+			ValueTask<DataType> modifyDataTypeTask =
                 this.dataTypeService.ModifyDataTypeAsync(nullDataType);
 
             DataTypeValidationException actualDataTypeValidationException =
@@ -41,7 +45,11 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.DataTypes
             actualDataTypeValidationException.Should()
                 .BeEquivalentTo(expectedDataTypeValidationException);
 
-            this.loggingBrokerMock.Verify(broker =>
+            this.securityAuditBrokerMock.Verify(broker =>
+                broker.ApplyModifyAuditValuesAsync(nullDataType),
+				    Times.Once);
+
+			this.loggingBrokerMock.Verify(broker =>
                 broker.LogErrorAsync(It.Is(SameExceptionAs(
                     expectedDataTypeValidationException))),
                         Times.Once);
@@ -54,8 +62,8 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.DataTypes
                 broker.UpdateDataTypeAsync(It.IsAny<DataType>()),
                     Times.Never);
 
-            this.loggingBrokerMock.VerifyNoOtherCalls();
             this.securityAuditBrokerMock.VerifyNoOtherCalls();
+            this.loggingBrokerMock.VerifyNoOtherCalls();
             this.dateTimeBrokerMock.VerifyNoOtherCalls();
             this.storageBrokerMock.VerifyNoOtherCalls();
         }
@@ -120,15 +128,6 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.DataTypes
                     message: "DataType validation errors occurred, please try again.",
                     innerException: invalidDataTypeException);
 
-            var dataTypeServiceMock = new Mock<DataTypeService>(
-                storageBrokerMock.Object,
-                dateTimeBrokerMock.Object,
-                securityAuditBrokerMock.Object,
-                loggingBrokerMock.Object)
-            {
-                CallBase = true
-            };
-
             securityAuditBrokerMock.Setup(service =>
                 service.ApplyModifyAuditValuesAsync(invalidDataType))
                     .ReturnsAsync(invalidDataType);
@@ -138,7 +137,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.DataTypes
                     .ReturnsAsync(randomDateOffset);
 
             this.securityAuditBrokerMock.Setup(broker =>
-                broker.GetCurrentUserIdAsync())
+                broker.GetUserIdAsync())
                     .ReturnsAsync(randomEntraUserId);
 
             // when
@@ -153,12 +152,16 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.DataTypes
             actualDataTypeValidationException.Should()
                 .BeEquivalentTo(expectedDataTypeValidationException);
 
-            this.dateTimeBrokerMock.Verify(broker =>
+            this.securityAuditBrokerMock.Verify(broker =>
+                broker.ApplyModifyAuditValuesAsync(invalidDataType),
+				    Times.Once);
+
+			this.dateTimeBrokerMock.Verify(broker =>
                 broker.GetCurrentDateTimeOffsetAsync(),
                     Times.Once);
 
             this.securityAuditBrokerMock.Verify(broker =>
-                broker.GetCurrentUserIdAsync(),
+                broker.GetUserIdAsync(),
                     Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>
@@ -170,8 +173,8 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.DataTypes
                 broker.UpdateDataTypeAsync(It.IsAny<DataType>()),
                     Times.Never);
 
-            this.dateTimeBrokerMock.VerifyNoOtherCalls();
             this.securityAuditBrokerMock.VerifyNoOtherCalls();
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
             this.storageBrokerMock.VerifyNoOtherCalls();
         }
@@ -199,15 +202,6 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.DataTypes
                     message: "DataType validation errors occurred, please try again.",
                     innerException: invalidDataTypeException);
 
-            var dataTypeServiceMock = new Mock<DataTypeService>(
-                storageBrokerMock.Object,
-                dateTimeBrokerMock.Object,
-                securityAuditBrokerMock.Object,
-                loggingBrokerMock.Object)
-            {
-                CallBase = true
-            };
-
             securityAuditBrokerMock.Setup(service =>
                 service.ApplyModifyAuditValuesAsync(invalidDataType))
                     .ReturnsAsync(invalidDataType);
@@ -217,7 +211,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.DataTypes
                     .ReturnsAsync(randomDateTimeOffset);
 
             this.securityAuditBrokerMock.Setup(broker =>
-                broker.GetCurrentUserIdAsync())
+                broker.GetUserIdAsync())
                     .ReturnsAsync(randomEntraUserId);
 
             // when
@@ -232,12 +226,16 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.DataTypes
             actualDataTypeValidationException.Should()
                 .BeEquivalentTo(expectedDataTypeValidationException);
 
-            this.dateTimeBrokerMock.Verify(broker =>
+            this.securityAuditBrokerMock.Verify(broker =>
+				broker.ApplyModifyAuditValuesAsync(invalidDataType),
+				    Times.Once);
+
+			this.dateTimeBrokerMock.Verify(broker =>
                 broker.GetCurrentDateTimeOffsetAsync(),
                     Times.Once);
 
             this.securityAuditBrokerMock.Verify(broker =>
-                broker.GetCurrentUserIdAsync(),
+                broker.GetUserIdAsync(),
                     Times.Once());
 
             this.loggingBrokerMock.Verify(broker =>
@@ -249,8 +247,8 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.DataTypes
                 broker.UpdateDataTypeAsync(It.IsAny<DataType>()),
                     Times.Never);
 
-            this.dateTimeBrokerMock.VerifyNoOtherCalls();
             this.securityAuditBrokerMock.VerifyNoOtherCalls();
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
             this.storageBrokerMock.VerifyNoOtherCalls();
         }
@@ -277,15 +275,6 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.DataTypes
                     message: "DataType validation errors occurred, please try again.",
                     innerException: invalidDataTypeException);
 
-            var dataTypeServiceMock = new Mock<DataTypeService>(
-                storageBrokerMock.Object,
-                dateTimeBrokerMock.Object,
-                securityAuditBrokerMock.Object,
-                loggingBrokerMock.Object)
-            {
-                CallBase = true
-            };
-
             securityAuditBrokerMock.Setup(service =>
                 service.ApplyModifyAuditValuesAsync(invalidDataType))
                     .ReturnsAsync(invalidDataType);
@@ -295,7 +284,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.DataTypes
                     .ReturnsAsync(randomDateTimeOffset);
 
             this.securityAuditBrokerMock.Setup(broker =>
-                broker.GetCurrentUserIdAsync())
+                broker.GetUserIdAsync())
                     .ReturnsAsync(randomEntraUserId);
 
             // when
@@ -310,12 +299,16 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.DataTypes
             actualDataTypeValidationException.Should()
                 .BeEquivalentTo(expectedDataTypeValidationException);
 
-            this.dateTimeBrokerMock.Verify(broker =>
+            this.securityAuditBrokerMock.Verify(broker =>
+                broker.ApplyModifyAuditValuesAsync(invalidDataType),
+					Times.Once);
+
+			this.dateTimeBrokerMock.Verify(broker =>
                 broker.GetCurrentDateTimeOffsetAsync(),
                     Times.Once);
 
             this.securityAuditBrokerMock.Verify(broker =>
-                broker.GetCurrentUserIdAsync(),
+                broker.GetUserIdAsync(),
                     Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>
@@ -327,8 +320,8 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.DataTypes
                 broker.SelectDataTypeByIdAsync(invalidDataType.Id),
                     Times.Never);
 
-            this.dateTimeBrokerMock.VerifyNoOtherCalls();
             this.securityAuditBrokerMock.VerifyNoOtherCalls();
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
             this.storageBrokerMock.VerifyNoOtherCalls();
         }
@@ -356,15 +349,6 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.DataTypes
                     message: "DataType validation errors occurred, please try again.",
                     innerException: invalidDataTypeException);
 
-            var dataTypeServiceMock = new Mock<DataTypeService>(
-                storageBrokerMock.Object,
-                dateTimeBrokerMock.Object,
-                securityAuditBrokerMock.Object,
-                loggingBrokerMock.Object)
-            {
-                CallBase = true
-            };
-
             securityAuditBrokerMock.Setup(service =>
                 service.ApplyModifyAuditValuesAsync(randomDataType))
                     .ReturnsAsync(randomDataType);
@@ -374,7 +358,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.DataTypes
                     .ReturnsAsync(randomDateTimeOffset);
 
             this.securityAuditBrokerMock.Setup(broker =>
-                broker.GetCurrentUserIdAsync())
+                broker.GetUserIdAsync())
                     .ReturnsAsync(randomEntraUserId);
 
             // when
@@ -389,12 +373,16 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.DataTypes
             actualDataTypeValidationException.Should()
                 .BeEquivalentTo(expectedDataTypeValidatonException);
 
-            this.dateTimeBrokerMock.Verify(broker =>
+            this.securityAuditBrokerMock.Verify(broker =>
+                broker.ApplyModifyAuditValuesAsync(randomDataType),
+					Times.Once);
+
+			this.dateTimeBrokerMock.Verify(broker =>
                 broker.GetCurrentDateTimeOffsetAsync(),
                     Times.Once);
 
             this.securityAuditBrokerMock.Verify(broker =>
-                broker.GetCurrentUserIdAsync(),
+                broker.GetUserIdAsync(),
                     Times.Once());
 
             this.loggingBrokerMock.Verify(broker =>
@@ -406,8 +394,8 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.DataTypes
                 broker.SelectDataTypeByIdAsync(It.IsAny<Guid>()),
                     Times.Never);
 
-            this.dateTimeBrokerMock.VerifyNoOtherCalls();
             this.securityAuditBrokerMock.VerifyNoOtherCalls();
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
             this.storageBrokerMock.VerifyNoOtherCalls();
         }
@@ -430,15 +418,6 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.DataTypes
                     message: "DataType validation errors occurred, please try again.",
                     innerException: notFoundDataTypeException);
 
-            var dataTypeServiceMock = new Mock<DataTypeService>(
-                storageBrokerMock.Object,
-                dateTimeBrokerMock.Object,
-                securityAuditBrokerMock.Object,
-                loggingBrokerMock.Object)
-            {
-                CallBase = true
-            };
-
             securityAuditBrokerMock.Setup(service =>
                 service.ApplyModifyAuditValuesAsync(nonExistDataType))
                     .ReturnsAsync(nonExistDataType);
@@ -448,7 +427,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.DataTypes
                     .ReturnsAsync(randomDateTimeOffset);
 
             this.securityAuditBrokerMock.Setup(broker =>
-                broker.GetCurrentUserIdAsync())
+                broker.GetUserIdAsync())
                     .ReturnsAsync(randomEntraUserId);
 
             this.storageBrokerMock.Setup(broker =>
@@ -467,7 +446,11 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.DataTypes
             actualDataTypeValidationException.Should()
                 .BeEquivalentTo(expectedDataTypeValidationException);
 
-            this.storageBrokerMock.Verify(broker =>
+            this.securityAuditBrokerMock.Verify(Brokers =>
+				Brokers.ApplyModifyAuditValuesAsync(nonExistDataType),
+					Times.Once);
+
+			this.storageBrokerMock.Verify(broker =>
                 broker.SelectDataTypeByIdAsync(nonExistDataType.Id),
                     Times.Once);
 
@@ -476,7 +459,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.DataTypes
                     Times.Once);
 
             this.securityAuditBrokerMock.Verify(broker =>
-                broker.GetCurrentUserIdAsync(),
+                broker.GetUserIdAsync(),
                     Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>
@@ -484,8 +467,8 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.DataTypes
                     expectedDataTypeValidationException))),
                         Times.Once);
 
-            this.dateTimeBrokerMock.VerifyNoOtherCalls();
             this.securityAuditBrokerMock.VerifyNoOtherCalls();
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
             this.storageBrokerMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
         }
@@ -517,15 +500,6 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.DataTypes
                     message: "DataType validation errors occurred, please try again.",
                     innerException: invalidDataTypeException);
 
-            var dataTypeServiceMock = new Mock<DataTypeService>(
-                storageBrokerMock.Object,
-                dateTimeBrokerMock.Object,
-                securityAuditBrokerMock.Object,
-                loggingBrokerMock.Object)
-            {
-                CallBase = true
-            };
-
             securityAuditBrokerMock.Setup(service =>
                 service.ApplyModifyAuditValuesAsync(invalidDataType))
                     .ReturnsAsync(invalidDataType);
@@ -535,7 +509,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.DataTypes
                     .ReturnsAsync(randomDateTimeOffset);
 
             this.securityAuditBrokerMock.Setup(broker =>
-                broker.GetCurrentUserIdAsync())
+                broker.GetUserIdAsync())
                     .ReturnsAsync(randomEntraUserId);
 
             this.storageBrokerMock.Setup(broker =>
@@ -554,7 +528,11 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.DataTypes
             actualDataTypeValidationException.Should()
                 .BeEquivalentTo(expectedDataTypeValidationException);
 
-            this.storageBrokerMock.Verify(broker =>
+            this.securityAuditBrokerMock.Verify(broker =>
+                broker.ApplyModifyAuditValuesAsync(invalidDataType),
+					Times.Once);
+
+			this.storageBrokerMock.Verify(broker =>
                 broker.SelectDataTypeByIdAsync(invalidDataType.Id),
                     Times.Once);
 
@@ -563,7 +541,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.DataTypes
                     Times.Once);
 
             this.securityAuditBrokerMock.Verify(broker =>
-                broker.GetCurrentUserIdAsync(),
+                broker.GetUserIdAsync(),
                     Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>
@@ -571,8 +549,8 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.DataTypes
                    expectedDataTypeValidationException))),
                        Times.Once);
 
-            this.dateTimeBrokerMock.VerifyNoOtherCalls();
             this.securityAuditBrokerMock.VerifyNoOtherCalls();
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
             this.storageBrokerMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
         }
@@ -602,15 +580,6 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.DataTypes
                     message: "DataType validation errors occurred, please try again.",
                     innerException: invalidDataTypeException);
 
-            var dataTypeServiceMock = new Mock<DataTypeService>(
-                storageBrokerMock.Object,
-                dateTimeBrokerMock.Object,
-                securityAuditBrokerMock.Object,
-                loggingBrokerMock.Object)
-            {
-                CallBase = true
-            };
-
             securityAuditBrokerMock.Setup(service =>
                 service.ApplyModifyAuditValuesAsync(invalidDataType))
                     .ReturnsAsync(invalidDataType);
@@ -620,7 +589,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.DataTypes
                     .ReturnsAsync(randomDateTimeOffset);
 
             this.securityAuditBrokerMock.Setup(broker =>
-                broker.GetCurrentUserIdAsync())
+                broker.GetUserIdAsync())
                     .ReturnsAsync(randomEntraUserId);
 
             this.storageBrokerMock.Setup(broker =>
@@ -638,7 +607,11 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.DataTypes
             // then
             actualDataTypeValidationException.Should().BeEquivalentTo(expectedDataTypeValidationException);
 
-            this.storageBrokerMock.Verify(broker =>
+            this.securityAuditBrokerMock.Verify(broker =>
+				broker.ApplyModifyAuditValuesAsync(invalidDataType),
+				    Times.Once);
+
+			this.storageBrokerMock.Verify(broker =>
                 broker.SelectDataTypeByIdAsync(invalidDataType.Id),
                     Times.Once);
 
@@ -647,7 +620,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.DataTypes
                     Times.Once);
 
             this.securityAuditBrokerMock.Verify(broker =>
-                broker.GetCurrentUserIdAsync(),
+                broker.GetUserIdAsync(),
                     Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>
@@ -684,15 +657,6 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.DataTypes
                     message: "DataType validation errors occurred, please try again.",
                     innerException: invalidDataTypeException);
 
-            var dataTypeServiceMock = new Mock<DataTypeService>(
-                storageBrokerMock.Object,
-                dateTimeBrokerMock.Object,
-                securityAuditBrokerMock.Object,
-                loggingBrokerMock.Object)
-            {
-                CallBase = true
-            };
-
             securityAuditBrokerMock.Setup(service =>
                 service.ApplyModifyAuditValuesAsync(invalidDataType))
                     .ReturnsAsync(invalidDataType);
@@ -702,7 +666,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.DataTypes
                     .ReturnsAsync(randomDateTimeOffset);
 
             this.securityAuditBrokerMock.Setup(broker =>
-                broker.GetCurrentUserIdAsync())
+                broker.GetUserIdAsync())
                     .ReturnsAsync(randomEntraUserId);
 
             this.storageBrokerMock.Setup(broker =>
@@ -717,12 +681,16 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.DataTypes
             await Assert.ThrowsAsync<DataTypeValidationException>(
                 modifyDataTypeTask.AsTask);
 
-            this.dateTimeBrokerMock.Verify(broker =>
+            this.securityAuditBrokerMock.Verify(broker =>
+                broker.ApplyModifyAuditValuesAsync(invalidDataType),
+				    Times.Once);
+
+			this.dateTimeBrokerMock.Verify(broker =>
                 broker.GetCurrentDateTimeOffsetAsync(),
                     Times.Once);
 
             this.securityAuditBrokerMock.Verify(broker =>
-                broker.GetCurrentUserIdAsync(),
+                broker.GetUserIdAsync(),
                     Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>
@@ -734,8 +702,8 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.DataTypes
                 broker.SelectDataTypeByIdAsync(invalidDataType.Id),
                     Times.Once);
 
-            this.dateTimeBrokerMock.VerifyNoOtherCalls();
             this.securityAuditBrokerMock.VerifyNoOtherCalls();
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
             this.storageBrokerMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
         }

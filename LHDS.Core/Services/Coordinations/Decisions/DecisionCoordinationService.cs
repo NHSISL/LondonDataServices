@@ -23,9 +23,7 @@ namespace LHDS.Core.Services.Coordinations.Decisions
             this.loggingBroker = loggingBroker;
         }
 
-        public async ValueTask<List<Decision>> GetPatientDecisions()
-        {
-            return await this.decisionOrchestrationService.GetPatientDecisions();
-        }
+        public ValueTask<List<Decision>> GetPatientDecisions() =>
+            TryCatch(async () => await this.decisionOrchestrationService.GetPatientDecisions());
     }
 }

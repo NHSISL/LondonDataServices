@@ -11,7 +11,6 @@ namespace LHDS.Core.Brokers.Hashing
 {
     public class HashBroker : IHashBroker
     {
-
         public async ValueTask<string> GenerateMd5HashAsync(Stream? data)
         {
             if (data == null)

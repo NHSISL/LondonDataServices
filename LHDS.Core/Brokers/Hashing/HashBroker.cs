@@ -29,7 +29,7 @@ namespace LHDS.Core.Brokers.Hashing
             }
         }
 
-        public async ValueTask<string> GenerateSha256HashAsync(Stream? data)
+        public async ValueTask<string> GenerateSha256HashAsync(Stream? data, string? pepper = null)
         {
             if (data == null)
             {

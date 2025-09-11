@@ -2,6 +2,7 @@
 // Copyright (c) North East London ICB. All rights reserved.
 // ---------------------------------------------------------
 
+using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using LHDS.Core.Models.Coordinations.Decisions.Exceptions;
@@ -39,6 +40,15 @@ namespace LHDS.Core.Services.Coordinations.Decisions
             {
                 throw await CreateAndLogDependencyExceptionAsync(decisionOrchestrationServiceException);
             }
+            catch (Exception exception)
+            {
+                var failedDecisionCoordinationServiceException =
+                    new FailedDecisionCoordinationServiceException(
+                        message: "Failed decision coordination service error occurred, please contact support.",
+                        innerException: exception);
+
+                throw await CreateAndLogServiceExceptionAsync(failedDecisionCoordinationServiceException);
+            }
         }
 
         private async ValueTask<DecisionCoordinationDependencyValidationException>
@@ -65,6 +75,19 @@ namespace LHDS.Core.Services.Coordinations.Decisions
             await this.loggingBroker.LogErrorAsync(decisionCoordinationDependencyException);
 
             return decisionCoordinationDependencyException;
+        }
+
+        private async ValueTask<DecisionCoordinationServiceException> CreateAndLogServiceExceptionAsync(
+            Xeption exception)
+        {
+            var decisionCoordinationServiceException =
+                new DecisionCoordinationServiceException(
+                    message: "Decision coordination service error occurred, please contact support.",
+                    innerException: exception);
+
+            await this.loggingBroker.LogErrorAsync(decisionCoordinationServiceException);
+
+            return decisionCoordinationServiceException;
         }
     }
 }

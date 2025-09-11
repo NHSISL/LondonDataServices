@@ -7,7 +7,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 using LHDS.Core.Brokers.Loggings;
-using LHDS.Core.Models.Foundations.DecisionPolls;
 using LHDS.Core.Models.Foundations.Decisions;
 using LHDS.Core.Models.Foundations.DecisionTypes;
 using LHDS.Core.Models.Foundations.Patients;
@@ -47,23 +46,8 @@ namespace LHDS.Core.Tests.Unit.Services.Coordinations.Decisions
             return result.Length > length ? result.Substring(0, length) : result;
         }
 
-        public static TheoryData<int> MinutesBeforeOrAfter()
-        {
-            int randomNumber = GetRandomNumber();
-            int randomNegativeNumber = GetRandomNegativeNumber();
-
-            return new TheoryData<int>
-            {
-                randomNumber,
-                randomNegativeNumber
-            };
-        }
-
         private static int GetRandomNumber() =>
             new IntRange(min: 2, max: 10).GetValue();
-
-        private static int GetRandomNegativeNumber() =>
-            -1 * new IntRange(min: 2, max: 10).GetValue();
 
         private static DateTimeOffset GetRandomDateTimeOffset() =>
             new DateTimeRange(earliestDate: new DateTime()).GetValue();
@@ -138,27 +122,6 @@ namespace LHDS.Core.Tests.Unit.Services.Coordinations.Decisions
                 .OnProperty(decision => decision.UpdatedBy).Use(userId)
                 .OnProperty(decision => decision.DecisionType).Use(decisionType)
                 .OnProperty(decision => decision.Patient).Use(patient);
-
-            return filler;
-        }
-
-        private static IQueryable<DecisionPoll> CreateRandomDecisionPolls()
-        {
-            return CreateDecisionPollFiller(dateTimeOffset: GetRandomDateTimeOffset())
-                .Create(count: GetRandomNumber())
-                .AsQueryable();
-        }
-
-        private static Filler<DecisionPoll> CreateDecisionPollFiller(DateTimeOffset dateTimeOffset)
-        {
-            string user = Guid.NewGuid().ToString();
-            var filler = new Filler<DecisionPoll>();
-
-            filler.Setup()
-                .OnType<DateTimeOffset>().Use(dateTimeOffset)
-                .OnType<DateTimeOffset?>().Use(dateTimeOffset)
-                .OnProperty(decisionPoll => decisionPoll.CreatedBy).Use(user)
-                .OnProperty(decisionPoll => decisionPoll.UpdatedBy).Use(user);
 
             return filler;
         }

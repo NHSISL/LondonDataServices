@@ -144,11 +144,15 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Addresses
                 .BeEquivalentTo(expectedAddressValidationException);
 
             this.securityAuditBrokerMock.Verify(service =>
-                service.ApplyModifyAuditValuesAsync(invalidAddress),
+                service.ApplyAddAuditValuesAsync(invalidAddress),
                     Times.Once());
 
             this.dateTimeBrokerMock.Verify(broker =>
                 broker.GetCurrentDateTimeOffsetAsync(),
+                    Times.Once());
+
+            this.securityAuditBrokerMock.Verify(broker =>
+                broker.GetCurrentUserIdAsync(),
                     Times.Once());
 
             this.loggingBrokerMock.Verify(broker =>

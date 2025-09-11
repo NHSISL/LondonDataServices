@@ -38,7 +38,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.DecisionPolls
                     .ReturnsAsync(randomDateTimeOffset);
 
             this.securityAuditBrokerMock.Setup(broker =>
-                broker.GetCurrentUserIdAsync())
+                broker.GetUserIdAsync())
                     .ReturnsAsync(randomUserId);
 
             this.storageBrokerMock.Setup(broker =>
@@ -61,7 +61,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.DecisionPolls
                     Times.Once);
 
             this.securityAuditBrokerMock.Verify(broker =>
-                broker.GetCurrentUserIdAsync(),
+                broker.GetUserIdAsync(),
                     Times.Once);
 
             this.storageBrokerMock.Verify(broker =>

@@ -34,6 +34,10 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Addresses
                     message: "Address dependency error occurred, please contact support.",
                     innerException: failedAddressStorageException);
 
+            this.securityAuditBrokerMock.Setup(service =>
+                service.ApplyAddAuditValuesAsync(someAddress))
+                    .ReturnsAsync(someAddress);
+
             this.dateTimeBrokerMock.Setup(broker =>
                 broker.GetCurrentDateTimeOffsetAsync())
                     .ThrowsAsync(sqlException);
@@ -50,9 +54,17 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Addresses
             actualAddressDependencyException.Should()
                 .BeEquivalentTo(expectedAddressDependencyException);
 
+            this.securityAuditBrokerMock.Verify(service =>
+               service.ApplyAddAuditValuesAsync(someAddress),
+                    Times.Once());
+
             this.dateTimeBrokerMock.Verify(broker =>
                 broker.GetCurrentDateTimeOffsetAsync(),
                     Times.Once);
+
+            this.securityAuditBrokerMock.Verify(service =>
+               service.GetCurrentUserIdAsync(),
+                    Times.Once());
 
             this.storageBrokerMock.Verify(broker =>
                 broker.InsertAddressAsync(It.IsAny<Address>()),
@@ -63,6 +75,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Addresses
                     expectedAddressDependencyException))),
                         Times.Once);
 
+            this.securityAuditBrokerMock.VerifyNoOtherCalls();
             this.dateTimeBrokerMock.VerifyNoOtherCalls();
             this.storageBrokerMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
@@ -89,6 +102,10 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Addresses
                     message: "Address dependency validation occurred, please try again.",
                     innerException: alreadyExistsAddressException);
 
+            this.securityAuditBrokerMock.Setup(service =>
+                service.ApplyAddAuditValuesAsync(randomAddress))
+                    .ReturnsAsync(randomAddress);
+
             this.dateTimeBrokerMock.Setup(broker =>
                 broker.GetCurrentDateTimeOffsetAsync())
                     .ThrowsAsync(duplicateKeyException);
@@ -105,9 +122,17 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Addresses
             actualAddressDependencyValidationException.Should()
                 .BeEquivalentTo(expectedAddressDependencyValidationException);
 
+            this.securityAuditBrokerMock.Verify(service =>
+                service.ApplyAddAuditValuesAsync(randomAddress),
+                    Times.Once());
+
             this.dateTimeBrokerMock.Verify(broker =>
                 broker.GetCurrentDateTimeOffsetAsync(),
                     Times.Once);
+
+            this.securityAuditBrokerMock.Verify(service =>
+               service.GetCurrentUserIdAsync(),
+                    Times.Once());
 
             this.storageBrokerMock.Verify(broker =>
                 broker.InsertAddressAsync(It.IsAny<Address>()),
@@ -118,6 +143,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Addresses
                     expectedAddressDependencyValidationException))),
                         Times.Once);
 
+            this.securityAuditBrokerMock.VerifyNoOtherCalls();
             this.dateTimeBrokerMock.VerifyNoOtherCalls();
             this.storageBrokerMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
@@ -144,6 +170,10 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Addresses
                     message: "Address dependency validation occurred, please try again.",
                     innerException: invalidAddressReferenceException);
 
+            this.securityAuditBrokerMock.Setup(service =>
+                service.ApplyAddAuditValuesAsync(someAddress))
+                    .ReturnsAsync(someAddress);
+
             this.dateTimeBrokerMock.Setup(broker =>
                 broker.GetCurrentDateTimeOffsetAsync())
                     .ThrowsAsync(foreignKeyConstraintConflictException);
@@ -160,8 +190,16 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Addresses
             actualAddressDependencyValidationException.Should()
                 .BeEquivalentTo(expectedAddressValidationException);
 
+            this.securityAuditBrokerMock.Verify(service =>
+               service.ApplyAddAuditValuesAsync(someAddress),
+                    Times.Once());
+
             this.dateTimeBrokerMock.Verify(broker =>
                 broker.GetCurrentDateTimeOffsetAsync(),
+                    Times.Once());
+
+            this.securityAuditBrokerMock.Verify(service =>
+                service.GetCurrentUserIdAsync(),
                     Times.Once());
 
             this.loggingBrokerMock.Verify(broker =>
@@ -173,6 +211,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Addresses
                 broker.InsertAddressAsync(someAddress),
                     Times.Never());
 
+            this.securityAuditBrokerMock.VerifyNoOtherCalls();
             this.dateTimeBrokerMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
             this.storageBrokerMock.VerifyNoOtherCalls();
@@ -197,6 +236,10 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Addresses
                     message: "Address dependency error occurred, please contact support.",
                     innerException: failedAddressStorageException);
 
+            this.securityAuditBrokerMock.Setup(service =>
+                service.ApplyAddAuditValuesAsync(someAddress))
+                    .ReturnsAsync(someAddress);
+
             this.dateTimeBrokerMock.Setup(broker =>
                 broker.GetCurrentDateTimeOffsetAsync())
                     .ThrowsAsync(databaseUpdateException);
@@ -213,9 +256,17 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Addresses
             actualAddressDependencyException.Should()
                 .BeEquivalentTo(expectedAddressDependencyException);
 
+            this.securityAuditBrokerMock.Verify(service =>
+               service.ApplyAddAuditValuesAsync(someAddress),
+                    Times.Once());
+
             this.dateTimeBrokerMock.Verify(broker =>
                 broker.GetCurrentDateTimeOffsetAsync(),
                     Times.Once);
+
+            this.securityAuditBrokerMock.Verify(service =>
+               service.GetCurrentUserIdAsync(),
+                    Times.Once());
 
             this.storageBrokerMock.Verify(broker =>
                 broker.InsertAddressAsync(It.IsAny<Address>()),
@@ -226,6 +277,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Addresses
                     expectedAddressDependencyException))),
                         Times.Once);
 
+            this.securityAuditBrokerMock.VerifyNoOtherCalls();
             this.dateTimeBrokerMock.VerifyNoOtherCalls();
             this.storageBrokerMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
@@ -248,6 +300,10 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Addresses
                     message: "Address service error occurred, please contact support.",
                     innerException: failedAddressServiceException);
 
+            this.securityAuditBrokerMock.Setup(service =>
+                service.ApplyAddAuditValuesAsync(someAddress))
+                    .ReturnsAsync(someAddress);
+
             this.dateTimeBrokerMock.Setup(broker =>
                 broker.GetCurrentDateTimeOffsetAsync())
                     .ThrowsAsync(serviceException);
@@ -264,9 +320,17 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Addresses
             actualAddressServiceException.Should()
                 .BeEquivalentTo(expectedAddressServiceException);
 
+            this.securityAuditBrokerMock.Verify(service =>
+               service.ApplyAddAuditValuesAsync(someAddress),
+                    Times.Once());
+
             this.dateTimeBrokerMock.Verify(broker =>
                 broker.GetCurrentDateTimeOffsetAsync(),
                     Times.Once);
+
+            this.securityAuditBrokerMock.Verify(service =>
+               service.GetCurrentUserIdAsync(),
+                    Times.Once());
 
             this.storageBrokerMock.Verify(broker =>
                 broker.InsertAddressAsync(It.IsAny<Address>()),
@@ -277,6 +341,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Addresses
                     expectedAddressServiceException))),
                         Times.Once);
 
+            this.securityAuditBrokerMock.VerifyNoOtherCalls();
             this.dateTimeBrokerMock.VerifyNoOtherCalls();
             this.storageBrokerMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();

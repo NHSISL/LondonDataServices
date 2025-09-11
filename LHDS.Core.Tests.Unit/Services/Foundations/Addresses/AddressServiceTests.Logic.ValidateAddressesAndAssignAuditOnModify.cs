@@ -7,7 +7,6 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using FluentAssertions;
 using Force.DeepCloner;
-using LHDS.Core.Models.Brokers.Securities;
 using LHDS.Core.Models.Foundations.Addresses;
 using LHDS.Core.Services.Foundations.Addresses;
 using Moq;
@@ -22,14 +21,14 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Addresses
         {
             // Given
             DateTimeOffset randomDateTimeOffset = GetRandomDateTimeOffset();
-            EntraUser randomEntraUser = CreateRandomEntraUser();
+            string randomEntraUserId = GetRandomStringWithLengthOf(50);
             int randomCount = GetRandomNumber();
 
             List<Address> randomAddresses =
                 CreateRandomAddresses(
                     count: randomCount,
                     dateTimeOffset: randomDateTimeOffset.AddMinutes(-10),
-                    userId: randomEntraUser.EntraUserId);
+                    userId: randomEntraUserId);
 
             List<Address> inputAddresses = randomAddresses;
             string inputFilename = GetRandomString();
@@ -38,7 +37,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Addresses
 
             foreach (Address address in outputAddresses)
             {
-                address.UpdatedBy = randomEntraUser.EntraUserId;
+                address.UpdatedBy = randomEntraUserId;
                 address.UpdatedDate = randomDateTimeOffset;
             }
 
@@ -47,7 +46,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Addresses
             var addressServiceMock = new Mock<AddressService>(
                 this.storageBrokerMock.Object,
                 this.dateTimeBrokerMock.Object,
-                this.securityBrokerMock.Object,
+                this.securityAuditBrokerMock.Object,
                 this.identifierBrokerMock.Object,
                 this.loggingBrokerMock.Object,
                 this.auditBrokerMock.Object)
@@ -59,13 +58,14 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Addresses
                 broker.GetCurrentDateTimeOffsetAsync())
                     .ReturnsAsync(randomDateTimeOffset);
 
-            this.securityBrokerMock.Setup(broker =>
-                broker.GetCurrentUserAsync())
-                    .ReturnsAsync(randomEntraUser);
+            this.securityAuditBrokerMock.Setup(broker =>
+                broker.GetCurrentUserIdAsync())
+                    .ReturnsAsync(randomEntraUserId);
 
             // When
-            List<Address> actualAddresses = await addressServiceMock.Object
-                .ValidateAddressesAndAssignAuditOnModifyAsync(inputAddresses, inputFilename);
+            List<Address> actualAddresses =
+                await addressServiceMock.Object.ValidateAddressesAndAssignAuditOnModifyAsync(
+                    inputAddresses, inputFilename);
 
             // Then
             actualAddresses.Should().BeEquivalentTo(expectedAddresses);
@@ -74,8 +74,8 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Addresses
                 broker.GetCurrentDateTimeOffsetAsync(),
                     Times.Exactly(randomCount * 2));
 
-            this.securityBrokerMock.Verify(broker =>
-                broker.GetCurrentUserAsync(),
+            this.securityAuditBrokerMock.Verify(broker =>
+                broker.GetCurrentUserIdAsync(),
                     Times.Exactly(randomCount * 2));
 
             addressServiceMock.Verify(service =>

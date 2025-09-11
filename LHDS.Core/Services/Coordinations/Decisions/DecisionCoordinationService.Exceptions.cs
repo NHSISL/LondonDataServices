@@ -31,19 +31,40 @@ namespace LHDS.Core.Services.Coordinations.Decisions
                 throw await CreateAndLogDependencyValidationExceptionAsync(
                     decisionOrchestrationDependencyValidationException);
             }
+            catch (DecisionOrchestrationDependencyException decisionOrchestrationDependencyException)
+            {
+                throw await CreateAndLogDependencyExceptionAsync(decisionOrchestrationDependencyException);
+            }
+            catch (DecisionOrchestrationServiceException decisionOrchestrationServiceException)
+            {
+                throw await CreateAndLogDependencyExceptionAsync(decisionOrchestrationServiceException);
+            }
         }
 
         private async ValueTask<DecisionCoordinationDependencyValidationException>
             CreateAndLogDependencyValidationExceptionAsync(Xeption exception)
         {
-            var addressCoordinationDependencyValidationException =
+            var decisionCoordinationDependencyValidationException =
                 new DecisionCoordinationDependencyValidationException(
                     message: "Decision coordination dependency validation error occurred, please try again.",
                     innerException: exception.InnerException as Xeption);
 
-            await this.loggingBroker.LogErrorAsync(addressCoordinationDependencyValidationException);
+            await this.loggingBroker.LogErrorAsync(decisionCoordinationDependencyValidationException);
 
-            return addressCoordinationDependencyValidationException;
+            return decisionCoordinationDependencyValidationException;
+        }
+
+        private async ValueTask<DecisionCoordinationDependencyException> CreateAndLogDependencyExceptionAsync(
+            Xeption exception)
+        {
+            var decisionCoordinationDependencyException =
+                new DecisionCoordinationDependencyException(
+                    message: "Decision coordination dependency error occurred, please try again.",
+                    innerException: exception.InnerException as Xeption);
+
+            await this.loggingBroker.LogErrorAsync(decisionCoordinationDependencyException);
+
+            return decisionCoordinationDependencyException;
         }
     }
 }

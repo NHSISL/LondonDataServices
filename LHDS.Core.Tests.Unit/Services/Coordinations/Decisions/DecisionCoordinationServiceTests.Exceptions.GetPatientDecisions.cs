@@ -7,7 +7,6 @@ using System.Threading.Tasks;
 using FluentAssertions;
 using LHDS.Core.Models.Coordinations.Decisions.Exceptions;
 using LHDS.Core.Models.Foundations.Decisions;
-using LHDS.Core.Models.Orchestrations.Decisions.Exceptions;
 using Moq;
 using Xeptions;
 using Xunit;
@@ -64,7 +63,7 @@ namespace LHDS.Core.Tests.Unit.Services.Coordinations.Decisions
             var expectedDependencyException =
                 new DecisionCoordinationDependencyException(
                     message:
-                    "Decision orchestration dependency error occurred, fix the errors and try again.",
+                    "Decision coordination dependency error occurred, please try again.",
                     innerException: dependencyException.InnerException as Xeption);
 
             this.decisionOrchestrationServiceMock.Setup(service =>
@@ -75,8 +74,8 @@ namespace LHDS.Core.Tests.Unit.Services.Coordinations.Decisions
             ValueTask<List<Decision>> getPatientDecisionsTask =
                 this.decisionCoordinationService.GetPatientDecisions();
 
-            DecisionOrchestrationDependencyException actualException =
-                await Assert.ThrowsAsync<DecisionOrchestrationDependencyException>(
+            DecisionCoordinationDependencyException actualException =
+                await Assert.ThrowsAsync<DecisionCoordinationDependencyException>(
                     getPatientDecisionsTask.AsTask);
 
             // then

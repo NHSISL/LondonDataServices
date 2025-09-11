@@ -23,9 +23,9 @@ namespace LHDS.Core.Services.Coordinations.Decisions
             this.loggingBroker = loggingBroker;
         }
 
-        public ValueTask<List<Decision>> GetPatientDecisions()
+        public async ValueTask<List<Decision>> GetPatientDecisions()
         {
-            throw new System.NotImplementedException();
+            return await this.decisionOrchestrationService.GetPatientDecisions();
         }
     }
 }

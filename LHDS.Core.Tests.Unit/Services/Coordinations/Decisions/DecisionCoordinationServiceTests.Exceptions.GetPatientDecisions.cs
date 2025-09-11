@@ -2,6 +2,7 @@
 // Copyright (c) North East London ICB. All rights reserved.
 // ---------------------------------------------------------
 
+using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using FluentAssertions;
@@ -88,6 +89,49 @@ namespace LHDS.Core.Tests.Unit.Services.Coordinations.Decisions
             this.loggingBrokerMock.Verify(broker =>
                 broker.LogErrorAsync(It.Is(SameExceptionAs(
                     expectedDependencyException))),
+                        Times.Once);
+
+            this.decisionOrchestrationServiceMock.VerifyNoOtherCalls();
+            this.loggingBrokerMock.VerifyNoOtherCalls();
+        }
+
+        [Fact]
+        public async Task ShouldThrowServiceExceptionOnMatchDecisionDataIfServiceErrorOccursAndLogItAsync()
+        {
+            // given
+            var serviceException = new Exception();
+
+            var failedDecisionCoordinationServiceException =
+                new FailedDecisionCoordinationServiceException(
+                    message: "Failed decision coordination service error occurred, please contact support.",
+                    innerException: serviceException);
+
+            var expectedDecisionCoordinationServiceException =
+                new DecisionCoordinationServiceException(
+                    message: "Decision coordination service error occurred, please contact support.",
+                    innerException: failedDecisionCoordinationServiceException);
+
+            this.decisionOrchestrationServiceMock.Setup(service =>
+                service.GetPatientDecisions())
+                    .ThrowsAsync(serviceException);
+
+            // when
+            ValueTask<List<Decision>> getPatientDecisionsTask =
+                this.decisionCoordinationService.GetPatientDecisions();
+
+            DecisionCoordinationServiceException actualException =
+                await Assert.ThrowsAsync<DecisionCoordinationServiceException>(getPatientDecisionsTask.AsTask);
+
+            // then
+            actualException.Should().BeEquivalentTo(expectedDecisionCoordinationServiceException);
+
+            this.decisionOrchestrationServiceMock.Verify(service =>
+                service.GetPatientDecisions(),
+                    Times.Once);
+
+            this.loggingBrokerMock.Verify(broker =>
+                broker.LogErrorAsync(It.Is(SameExceptionAs(
+                    expectedDecisionCoordinationServiceException))),
                         Times.Once);
 
             this.decisionOrchestrationServiceMock.VerifyNoOtherCalls();

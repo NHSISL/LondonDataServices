@@ -15,7 +15,7 @@ namespace LHDS.Core.Services.Foundations.DataTypes
         private async ValueTask ValidateDataTypeOnAddAsync(DataType dataType)
         {
             ValidateDataTypeIsNotNull(dataType);
-            string currentUserId = await this.securityAuditBroker.GetCurrentUserIdAsync();
+            string currentUserId = await this.securityAuditBroker.GetUserIdAsync();
 
             Validate<InvalidDataTypeException>(
                 createException: () => new InvalidDataTypeException(
@@ -53,7 +53,7 @@ namespace LHDS.Core.Services.Foundations.DataTypes
         private async ValueTask ValidateDataTypeOnModifyAsync(DataType dataType)
         {
             ValidateDataTypeIsNotNull(dataType);
-            string currentUserId = await this.securityAuditBroker.GetCurrentUserIdAsync();
+            string currentUserId = await this.securityAuditBroker.GetUserIdAsync();
 
             Validate<InvalidDataTypeException>(
                 createException: () => new InvalidDataTypeException(
@@ -132,7 +132,7 @@ namespace LHDS.Core.Services.Foundations.DataTypes
 
         private async ValueTask ValidateAgainstStorageDataTypeOnDeleteAsync(DataType dataType, DataType maybeDataType)
         {
-            string auditUserId = await this.securityAuditBroker.GetCurrentUserIdAsync();
+            string auditUserId = await this.securityAuditBroker.GetUserIdAsync();
 
             Validate<InvalidDataTypeException>(
                 createException: () => new InvalidDataTypeException(

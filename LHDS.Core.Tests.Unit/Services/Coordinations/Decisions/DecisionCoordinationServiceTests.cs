@@ -8,12 +8,10 @@ using System.Linq;
 using System.Linq.Expressions;
 using LHDS.Core.Brokers.Loggings;
 using LHDS.Core.Models.Foundations.DecisionPolls;
-using LHDS.Core.Models.Foundations.DecisionPolls.Exceptions;
 using LHDS.Core.Models.Foundations.Decisions;
-using LHDS.Core.Models.Foundations.Decisions.Exceptions;
 using LHDS.Core.Models.Foundations.DecisionTypes;
-using LHDS.Core.Models.Foundations.Documents.Exceptions;
 using LHDS.Core.Models.Foundations.Patients;
+using LHDS.Core.Models.Orchestrations.Decisions.Exceptions;
 using LHDS.Core.Services.Coordinations.Decisions;
 using LHDS.Core.Services.Orchestrations.Decisions;
 using Moq;
@@ -73,7 +71,7 @@ namespace LHDS.Core.Tests.Unit.Services.Coordinations.Decisions
         private static string GetRandomString() =>
             new MnemonicString().GetValue();
 
-        public static TheoryData<Xeption> DecisionDependencyValidationExceptions()
+        public static TheoryData<Xeption> DecisionCoordinationDependencyValidationExceptions()
         {
             string randomMessage = GetRandomString();
             string exceptionMessage = randomMessage;
@@ -81,21 +79,17 @@ namespace LHDS.Core.Tests.Unit.Services.Coordinations.Decisions
 
             return new TheoryData<Xeption>
             {
-                new DecisionValidationException(
-                    message: "Decision validation errors occurred, please try again.",
+                new DecisionOrchestrationValidationException(
+                    message: "Decision orchestration validation errors occurred, please try again.",
                     innerException),
 
-                new DocumentValidationException(
-                    message: "Document validation errors occured, please try again",
-                    innerException),
-
-                new DecisionPollValidationException(
-                    message: "DecisionPoll validation errors occurred, please try again.",
-                    innerException)
+                new DecisionOrchestrationDependencyValidationException(
+                message: "Decision orchestration dependency validation errors occurred, please try again.",
+                innerException)
             };
         }
 
-        public static TheoryData<Xeption> DecisionDependencyExceptions()
+        public static TheoryData<Xeption> DecisionCoordinationDependencyExceptions()
         {
             string randomMessage = GetRandomString();
             string exceptionMessage = randomMessage;
@@ -103,25 +97,13 @@ namespace LHDS.Core.Tests.Unit.Services.Coordinations.Decisions
 
             return new TheoryData<Xeption>
             {
-                new DecisionServiceException(
-                    message: "Decision service error occurred, please contact support.",
+                new DecisionOrchestrationDependencyException(
+                    message: "Decision orchestration dependency error occurred, please contact support.",
                     innerException),
 
-                new DocumentDependencyException(
-                    message: "Document service error occured, please contact support.",
-                    innerException),
-
-                new DocumentServiceException(
-                    message: "Document service error occurred, please contact support.",
-                    innerException),
-
-                new DecisionPollDependencyException(
-                    message: "DecisionPoll dependency error occurred, please contact support.",
-                    innerException),
-
-                new DecisionPollServiceException(
-                message: "DecisionPoll dependency error occurred, please contact support.",
-                innerException)
+                new DecisionOrchestrationServiceException(
+                    message: "Decision orchestration service error occured, please contact support.",
+                    innerException)
             };
         }
 

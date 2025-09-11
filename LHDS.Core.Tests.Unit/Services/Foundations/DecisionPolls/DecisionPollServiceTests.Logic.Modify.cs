@@ -41,7 +41,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.DecisionPolls
                     .ReturnsAsync(auditAppliedDecisionPoll);
 
             this.securityAuditBrokerMock.Setup(broker =>
-                broker.GetCurrentUserIdAsync())
+                broker.GetUserIdAsync())
                     .ReturnsAsync(randomUserId);
 
             this.dateTimeBrokerMock.Setup(broker =>
@@ -74,7 +74,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.DecisionPolls
                     Times.Once);
 
             this.securityAuditBrokerMock.Verify(broker =>
-                broker.GetCurrentUserIdAsync(),
+                broker.GetUserIdAsync(),
                     Times.Once);
 
             this.dateTimeBrokerMock.Verify(broker =>

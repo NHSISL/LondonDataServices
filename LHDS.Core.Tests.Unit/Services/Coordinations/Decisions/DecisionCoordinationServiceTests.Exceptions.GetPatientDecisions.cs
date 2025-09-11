@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using FluentAssertions;
 using LHDS.Core.Models.Coordinations.Decisions.Exceptions;
 using LHDS.Core.Models.Foundations.Decisions;
+using LHDS.Core.Models.Orchestrations.Decisions.Exceptions;
 using Moq;
 using Xeptions;
 using Xunit;
@@ -36,6 +37,46 @@ namespace LHDS.Core.Tests.Unit.Services.Coordinations.Decisions
 
             DecisionCoordinationDependencyValidationException actualException =
                 await Assert.ThrowsAsync<DecisionCoordinationDependencyValidationException>(
+                    getPatientDecisionsTask.AsTask);
+
+            // then
+            actualException.Should().BeEquivalentTo(expectedDependencyException);
+
+            this.decisionOrchestrationServiceMock.Verify(service =>
+                service.GetPatientDecisions(),
+                    Times.Once);
+
+            this.loggingBrokerMock.Verify(broker =>
+                broker.LogErrorAsync(It.Is(SameExceptionAs(
+                    expectedDependencyException))),
+                        Times.Once);
+
+            this.decisionOrchestrationServiceMock.VerifyNoOtherCalls();
+            this.loggingBrokerMock.VerifyNoOtherCalls();
+        }
+
+        [Theory]
+        [MemberData(nameof(DecisionCoordinationDependencyExceptions))]
+        public async Task ShouldThrowDependencyExceptionOnGetPatientDecisionsIfDependencyErrorOccursAndLogItAsync(
+            Xeption dependencyException)
+        {
+            // given
+            var expectedDependencyException =
+                new DecisionCoordinationDependencyException(
+                    message:
+                    "Decision orchestration dependency error occurred, fix the errors and try again.",
+                    innerException: dependencyException.InnerException as Xeption);
+
+            this.decisionOrchestrationServiceMock.Setup(service =>
+                service.GetPatientDecisions())
+                    .ThrowsAsync(dependencyException);
+
+            // when
+            ValueTask<List<Decision>> getPatientDecisionsTask =
+                this.decisionCoordinationService.GetPatientDecisions();
+
+            DecisionOrchestrationDependencyException actualException =
+                await Assert.ThrowsAsync<DecisionOrchestrationDependencyException>(
                     getPatientDecisionsTask.AsTask);
 
             // then

@@ -14,7 +14,7 @@ namespace LHDS.Core.Services.Foundations.DecisionPolls
         private async ValueTask ValidateDecisionPollOnAddAsync(DecisionPoll decisionPoll)
         {
             ValidateDecisionPollIsNotNull(decisionPoll);
-            string currentUserId = await this.securityAuditBroker.GetCurrentUserIdAsync();
+            string currentUserId = await this.securityAuditBroker.GetUserIdAsync();
 
             Validate(
                 (Rule: IsInvalid(decisionPoll.Id), Parameter: nameof(DecisionPoll.Id)),
@@ -47,7 +47,7 @@ namespace LHDS.Core.Services.Foundations.DecisionPolls
         private async ValueTask ValidateDecisionPollOnModifyAsync(DecisionPoll decisionPoll)
         {
             ValidateDecisionPollIsNotNull(decisionPoll);
-            string currentUserId = await this.securityAuditBroker.GetCurrentUserIdAsync();
+            string currentUserId = await this.securityAuditBroker.GetUserIdAsync();
 
             Validate(
                 (Rule: IsInvalid(decisionPoll.Id), Parameter: nameof(DecisionPoll.Id)),
@@ -120,7 +120,7 @@ namespace LHDS.Core.Services.Foundations.DecisionPolls
             DecisionPoll decisionPoll,
             DecisionPoll maybeDecisionPoll)
         {
-            string currentUserId = await this.securityAuditBroker.GetCurrentUserIdAsync();
+            string currentUserId = await this.securityAuditBroker.GetUserIdAsync();
 
             Validate(
                 (Rule: IsNotSame(

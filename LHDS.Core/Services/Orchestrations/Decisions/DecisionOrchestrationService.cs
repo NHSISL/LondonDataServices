@@ -68,7 +68,6 @@ namespace LHDS.Core.Services.Orchestrations.Decisions
                     .FirstOrDefault();
 
                 ValidateDecisionPolls(decisionPolls);
-
                 DateTimeOffset currentPollDate = DateTimeOffset.UtcNow;
 
                 List<Decision> decisions =
@@ -108,6 +107,7 @@ namespace LHDS.Core.Services.Orchestrations.Decisions
                 string fileName = $"IDecide_{currentPollDate:HHmm_ddMMyyyy}";
                 string container = this.blobContainers.Decisions;
                 string tempFile = Path.GetTempFileName();
+                ValidateDocumentRequirements(processedData);
 
                 try
                 {

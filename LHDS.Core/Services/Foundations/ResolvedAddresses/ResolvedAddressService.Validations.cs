@@ -114,12 +114,10 @@ namespace LHDS.Core.Services.Foundations.ResolvedAddresses
         public void ValidateResolvedAddressId(Guid resolvedAddressId)
         {
             Validate(
-
                 createException: () => new InvalidResolvedAddressException(
                     message: "Invalid resolved address. Please correct the errors and try again."),
 
                 (Rule: IsInvalid(resolvedAddressId), Parameter: nameof(ResolvedAddress.Id)));
-
         }
 
         private static void ValidateStorageResolvedAddress(ResolvedAddress maybeResolvedAddress, Guid resolvedAddressId)

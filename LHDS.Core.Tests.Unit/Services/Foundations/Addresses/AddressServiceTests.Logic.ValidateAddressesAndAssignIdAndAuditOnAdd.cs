@@ -60,7 +60,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Addresses
                     .ReturnsAsync(randomId);
 
             this.securityAuditBrokerMock.Setup(broker =>
-                broker.GetCurrentUserIdAsync())
+                broker.GetUserIdAsync())
                     .ReturnsAsync(randomEntraUserId);
 
             // When
@@ -79,7 +79,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Addresses
                     Times.Exactly(inputAddresses.Count));
 
             this.securityAuditBrokerMock.Verify(broker =>
-                broker.GetCurrentUserIdAsync(),
+                broker.GetUserIdAsync(),
                     Times.Exactly(inputAddresses.Count * 2));
 
             addressServiceMock.Verify(service =>

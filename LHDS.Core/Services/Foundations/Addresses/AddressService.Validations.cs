@@ -17,7 +17,7 @@ namespace LHDS.Core.Services.Foundations.Addresses
         private async ValueTask ValidateAddressOnAddAsync(Address address)
         {
             ValidateAddressIsNotNull(address);
-            string currentUserId = await this.securityAuditBroker.GetCurrentUserIdAsync();
+            string currentUserId = await this.securityAuditBroker.GetUserIdAsync();
 
             Validate<InvalidAddressException>(
                 createException: () => new InvalidAddressException(
@@ -71,7 +71,7 @@ namespace LHDS.Core.Services.Foundations.Addresses
         private async ValueTask ValidateAddressOnModifyAsync(Address address)
         {
             ValidateAddressIsNotNull(address);
-            string currentUserId = await this.securityAuditBroker.GetCurrentUserIdAsync();
+            string currentUserId = await this.securityAuditBroker.GetUserIdAsync();
 
             Validate<InvalidAddressException>(
                 createException: () => new InvalidAddressException(

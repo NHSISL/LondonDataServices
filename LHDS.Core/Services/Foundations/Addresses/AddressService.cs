@@ -144,7 +144,7 @@ namespace LHDS.Core.Services.Foundations.Addresses
             {
                 try
                 {
-                    string currentUserId = await this.securityAuditBroker.GetCurrentUserIdAsync();
+                    string currentUserId = await this.securityAuditBroker.GetUserIdAsync();
                     var currentDateTime = await this.dateTimeBroker.GetCurrentDateTimeOffsetAsync();
                     address.Id = await this.identifierBroker.GetIdentifierAsync();
                     address.CreatedDate = currentDateTime;
@@ -200,7 +200,7 @@ namespace LHDS.Core.Services.Foundations.Addresses
             {
                 try
                 {
-                    string currentUserId = await this.securityAuditBroker.GetCurrentUserIdAsync();
+                    string currentUserId = await this.securityAuditBroker.GetUserIdAsync();
                     var currentDateTime = await this.dateTimeBroker.GetCurrentDateTimeOffsetAsync();
                     address.UpdatedDate = currentDateTime;
                     address.UpdatedBy = currentUserId;

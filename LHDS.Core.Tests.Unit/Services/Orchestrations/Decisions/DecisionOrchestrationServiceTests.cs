@@ -25,6 +25,7 @@ using LHDS.Core.Services.Foundations.Decisions;
 using LHDS.Core.Services.Foundations.Documents;
 using LHDS.Core.Services.Orchestrations.Decisions;
 using Moq;
+using NHSISL.CsvHelperClient.Models.Clients.CsvHelpers.Exceptions;
 using Tynamix.ObjectFiller;
 using Xeptions;
 using Xunit;
@@ -125,9 +126,19 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Decisions
                     message: "Document validation errors occured, please try again",
                     innerException),
 
+                new DocumentDependencyValidationException(
+                    message: "Document dependency validation occurred, please try again.",
+                    innerException),
+
                 new DecisionPollValidationException(
                     message: "DecisionPoll validation errors occurred, please try again.",
-                    innerException)
+                    innerException),
+
+                new DecisionPollDependencyValidationException(
+                    message: "DecisionPoll dependency validation occurred, please try again.",
+                    innerException),
+
+                new CsvHelperClientValidationException(innerException)
             };
         }
 
@@ -157,7 +168,10 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Decisions
 
                 new DecisionPollServiceException(
                 message: "DecisionPoll dependency error occurred, please contact support.",
-                innerException)
+                innerException),
+
+                new CsvHelperClientDependencyException(innerException),
+                new CsvHelperClientServiceException(innerException)
             };
         }
 

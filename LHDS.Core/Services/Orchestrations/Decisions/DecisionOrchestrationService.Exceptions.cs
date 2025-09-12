@@ -10,6 +10,7 @@ using LHDS.Core.Models.Foundations.Decisions;
 using LHDS.Core.Models.Foundations.Decisions.Exceptions;
 using LHDS.Core.Models.Foundations.Documents.Exceptions;
 using LHDS.Core.Models.Orchestrations.Decisions.Exceptions;
+using NHSISL.CsvHelperClient.Models.Clients.CsvHelpers.Exceptions;
 using Xeptions;
 
 namespace LHDS.Core.Services.Orchestrations.Decisions
@@ -51,9 +52,21 @@ namespace LHDS.Core.Services.Orchestrations.Decisions
             {
                 throw await CreateAndLogDependencyValidationExceptionAsync(documentValidationException);
             }
+            catch (DocumentDependencyValidationException documentDependencyValidationException)
+            {
+                throw await CreateAndLogDependencyValidationExceptionAsync(documentDependencyValidationException);
+            }
             catch (DecisionPollValidationException decisionPollValidationException)
             {
                 throw await CreateAndLogDependencyValidationExceptionAsync(decisionPollValidationException);
+            }
+            catch (DecisionPollDependencyValidationException decisionPollDependencyValidationException)
+            {
+                throw await CreateAndLogDependencyValidationExceptionAsync(decisionPollDependencyValidationException);
+            }
+            catch (CsvHelperClientValidationException csvHelperClientValidationException)
+            {
+                throw await CreateAndLogDependencyValidationExceptionAsync(csvHelperClientValidationException);
             }
             catch (DecisionServiceException decisionServiceException)
             {
@@ -75,14 +88,22 @@ namespace LHDS.Core.Services.Orchestrations.Decisions
             {
                 throw await CreateAndLogDependencyExceptionAsync(decisionPollServiceException);
             }
+            catch (CsvHelperClientDependencyException csvHelperClientDependencyException)
+            {
+                throw await CreateAndLogDependencyExceptionAsync(csvHelperClientDependencyException);
+            }
+            catch (CsvHelperClientServiceException csvHelperClientServiceException)
+            {
+                throw await CreateAndLogDependencyExceptionAsync(csvHelperClientServiceException);
+            }
             catch (Exception exception)
             {
-                var failedDecryptServiceException =
+                var failedDecisionOrchestrationServiceException =
                     new FailedDecisionOrchestrationServiceException(
                         message: "Failed decision orchestration service error occurred, please contact support.",
                         innerException: exception);
 
-                throw await CreateAndLogServiceExceptionAsync(failedDecryptServiceException);
+                throw await CreateAndLogServiceExceptionAsync(failedDecisionOrchestrationServiceException);
             }
         }
 
@@ -102,15 +123,15 @@ namespace LHDS.Core.Services.Orchestrations.Decisions
         private async ValueTask<DecisionOrchestrationDependencyValidationException>
             CreateAndLogDependencyValidationExceptionAsync(Xeption exception)
         {
-            var decryptionOrchestrationDependencyValidationException =
+            var decisionOrchestrationDependencyValidationException =
                 new DecisionOrchestrationDependencyValidationException(
                     message:
                         "Decision orchestration dependency validation error occurred, fix the errors and try again.",
                     innerException: exception.InnerException as Xeption);
 
-            await this.loggingBroker.LogErrorAsync(decryptionOrchestrationDependencyValidationException);
+            await this.loggingBroker.LogErrorAsync(decisionOrchestrationDependencyValidationException);
 
-            return decryptionOrchestrationDependencyValidationException;
+            return decisionOrchestrationDependencyValidationException;
         }
 
         private async ValueTask<DecisionOrchestrationDependencyException> CreateAndLogDependencyExceptionAsync(

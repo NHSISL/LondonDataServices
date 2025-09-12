@@ -115,7 +115,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Decisions
                     message: "Failed decision orchestration service error occurred, please contact support.",
                     innerException: serviceException);
 
-            var expectedDecryptionOrchestrationServiceException =
+            var expectedDecisionOrchestrationServiceException =
                 new DecisionOrchestrationServiceException(
                     message: "Decision orchestration service error occurred, please contact support.",
                     innerException: failedDecisionOrchestrationServiceException);
@@ -133,7 +133,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Decisions
                     getPatientDecisionsTask.AsTask);
 
             // then
-            actualException.Should().BeEquivalentTo(expectedDecryptionOrchestrationServiceException);
+            actualException.Should().BeEquivalentTo(expectedDecisionOrchestrationServiceException);
 
             this.decisionPollServiceMock.Verify(service =>
                 service.RetrieveAllDecisionPollsAsync(),
@@ -141,7 +141,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Decisions
 
             this.loggingBrokerMock.Verify(broker =>
                 broker.LogErrorAsync(It.Is(SameExceptionAs(
-                    expectedDecryptionOrchestrationServiceException))),
+                    expectedDecisionOrchestrationServiceException))),
                         Times.Once);
 
             this.decisionPollServiceMock.VerifyNoOtherCalls();

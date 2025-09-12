@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using LHDS.Core.Models.Brokers.Securities;
 using LHDS.Core.Models.Foundations.ObjectColumns;
 using LHDS.Core.Models.Foundations.ObjectColumns.Exceptions;
+using Xeptions;
 
 namespace LHDS.Core.Services.Foundations.ObjectColumns
 {
@@ -16,9 +17,16 @@ namespace LHDS.Core.Services.Foundations.ObjectColumns
         {
             EntraUser currentUser = await this.securityBroker.GetCurrentUserAsync();
 
-            Validate(
+            Validate<InvalidObjectColumnException>(
+
+                createException: () => new InvalidObjectColumnException(
+                    message: "Invalid objectColumn. Please correct the errors and try again."),
+
                 (Rule: IsInvalid(objectColumn.Id), Parameter: nameof(ObjectColumn.Id)),
-                (Rule: IsInvalid(objectColumn.SpecificationObjectId), Parameter: nameof(ObjectColumn.SpecificationObjectId)),
+
+                (Rule: IsInvalid(objectColumn.SpecificationObjectId), 
+                Parameter: nameof(ObjectColumn.SpecificationObjectId)),
+
                 (Rule: IsInvalid(objectColumn.SupplierColumnName), Parameter: nameof(ObjectColumn.SupplierColumnName)),
                 (Rule: IsInvalid(objectColumn.OurColumnName), Parameter: nameof(ObjectColumn.OurColumnName)),
                 (Rule: IsInvalid(objectColumn.SqlDataType), Parameter: nameof(ObjectColumn.SqlDataType)),
@@ -92,9 +100,16 @@ namespace LHDS.Core.Services.Foundations.ObjectColumns
         {
             EntraUser currentUser = await this.securityBroker.GetCurrentUserAsync();
 
-            Validate(
+            Validate<InvalidObjectColumnException>(
+
+                createException: () => new InvalidObjectColumnException(
+                    message: "Invalid objectColumn. Please correct the errors and try again."),
+
                 (Rule: IsInvalid(objectColumn.Id), Parameter: nameof(ObjectColumn.Id)),
-                (Rule: IsInvalid(objectColumn.SpecificationObjectId), Parameter: nameof(ObjectColumn.SpecificationObjectId)),
+
+                (Rule: IsInvalid(objectColumn.SpecificationObjectId), 
+                Parameter: nameof(ObjectColumn.SpecificationObjectId)),
+
                 (Rule: IsInvalid(objectColumn.SupplierColumnName), Parameter: nameof(ObjectColumn.SupplierColumnName)),
                 (Rule: IsInvalid(objectColumn.OurColumnName), Parameter: nameof(ObjectColumn.OurColumnName)),
                 (Rule: IsInvalid(objectColumn.SqlDataType), Parameter: nameof(ObjectColumn.SqlDataType)),
@@ -158,8 +173,16 @@ namespace LHDS.Core.Services.Foundations.ObjectColumns
                 (Rule: await IsNotRecentAsync(objectColumn.UpdatedDate), Parameter: nameof(objectColumn.UpdatedDate)));
         }
 
-        public void ValidateObjectColumnId(Guid objectColumnId) =>
-            Validate((Rule: IsInvalid(objectColumnId), Parameter: nameof(ObjectColumn.Id)));
+        public void ValidateObjectColumnId(Guid objectColumnId)
+        {
+
+            Validate<InvalidObjectColumnException>(
+
+                createException: () => new InvalidObjectColumnException(
+                    message: "Invalid objectColumn. Please correct the errors and try again."),
+                
+                (Rule: IsInvalid(objectColumnId), Parameter: nameof(ObjectColumn.Id)));
+        }
 
         private static void ValidateStorageObjectColumn(ObjectColumn maybeObjectColumn, Guid objectColumnId)
         {
@@ -181,7 +204,11 @@ namespace LHDS.Core.Services.Foundations.ObjectColumns
             ObjectColumn inputObjectColumn,
             ObjectColumn storageObjectColumn)
         {
-            Validate(
+            Validate<InvalidObjectColumnException>(
+
+                createException: () => new InvalidObjectColumnException(
+                    message: "Invalid objectColumn. Please correct the errors and try again."),
+
                 (Rule: IsNotSame(
                     firstDate: inputObjectColumn.CreatedDate,
                     secondDate: storageObjectColumn.CreatedDate,
@@ -207,7 +234,11 @@ namespace LHDS.Core.Services.Foundations.ObjectColumns
         {
             EntraUser auditUser = await this.securityBroker.GetCurrentUserAsync();
 
-            Validate(
+            Validate<InvalidObjectColumnException>(
+
+                createException: () => new InvalidObjectColumnException(
+                    message: "Invalid objectColumn. Please correct the errors and try again."),
+
                 (Rule: IsNotSame(
                     objectColumn.CreatedDate,
                     maybeObjectColumn.CreatedDate,
@@ -319,23 +350,24 @@ namespace LHDS.Core.Services.Foundations.ObjectColumns
             return timeDifference.Duration() > oneMinute;
         }
 
-        private static void Validate(params (dynamic Rule, string Parameter)[] validations)
+        private static void Validate<T>(
+            Func<T> createException,
+            params (dynamic Rule, string Parameter)[] validations)
+            where T : Xeption
         {
-            var invalidObjectColumnException =
-                new InvalidObjectColumnException(
-                    message: "Invalid objectColumn. Please correct the errors and try again.");
+            T invalidDataException = createException();
 
             foreach ((dynamic rule, string parameter) in validations)
             {
                 if (rule.Condition)
                 {
-                    invalidObjectColumnException.UpsertDataList(
+                    invalidDataException.UpsertDataList(
                         key: parameter,
                         value: rule.Message);
                 }
             }
 
-            invalidObjectColumnException.ThrowIfContainsErrors();
+            invalidDataException.ThrowIfContainsErrors();
         }
     }
 }

@@ -18,7 +18,6 @@ namespace LHDS.Core.Services.Foundations.ObjectColumns
             EntraUser currentUser = await this.securityBroker.GetCurrentUserAsync();
 
             Validate<InvalidObjectColumnException>(
-
                 createException: () => new InvalidObjectColumnException(
                     message: "Invalid objectColumn. Please correct the errors and try again."),
 
@@ -101,7 +100,6 @@ namespace LHDS.Core.Services.Foundations.ObjectColumns
             EntraUser currentUser = await this.securityBroker.GetCurrentUserAsync();
 
             Validate<InvalidObjectColumnException>(
-
                 createException: () => new InvalidObjectColumnException(
                     message: "Invalid objectColumn. Please correct the errors and try again."),
 
@@ -205,7 +203,6 @@ namespace LHDS.Core.Services.Foundations.ObjectColumns
             ObjectColumn storageObjectColumn)
         {
             Validate<InvalidObjectColumnException>(
-
                 createException: () => new InvalidObjectColumnException(
                     message: "Invalid objectColumn. Please correct the errors and try again."),
 
@@ -235,7 +232,6 @@ namespace LHDS.Core.Services.Foundations.ObjectColumns
             EntraUser auditUser = await this.securityBroker.GetCurrentUserAsync();
 
             Validate<InvalidObjectColumnException>(
-
                 createException: () => new InvalidObjectColumnException(
                     message: "Invalid objectColumn. Please correct the errors and try again."),
 

@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 using LHDS.Core.Models.Brokers.Securities;
 using LHDS.Core.Models.Foundations.ResolvedAddresses;
 using LHDS.Core.Models.Foundations.ResolvedAddresses.Exceptions;
+using Xeptions;
 
 namespace LHDS.Core.Services.Foundations.ResolvedAddresses
 {
@@ -18,6 +19,10 @@ namespace LHDS.Core.Services.Foundations.ResolvedAddresses
             EntraUser currentUser = await this.securityBroker.GetCurrentUserAsync();
 
             Validate(
+
+                createException: () => new InvalidResolvedAddressException(
+                    message: "Invalid resolved address. Please correct the errors and try again."),
+
                 (Rule: IsInvalid(resolvedAddress.Id), Parameter: nameof(ResolvedAddress.Id)),
                 (Rule: IsInvalid(resolvedAddress.UniqueReference), Parameter: nameof(ResolvedAddress.UniqueReference)),
 
@@ -53,6 +58,10 @@ namespace LHDS.Core.Services.Foundations.ResolvedAddresses
         private void ValidateOnBulkAddResolvedAddresses(List<ResolvedAddress> resolvedAddresses, string fileName)
         {
             Validate(
+
+                createException: () => new InvalidResolvedAddressException(
+                    message: "Invalid resolved address. Please correct the errors and try again."),
+
                 (Rule: IsInvalid(resolvedAddresses), Parameter: nameof(resolvedAddresses)),
                 (Rule: IsInvalid(fileName), Parameter: nameof(fileName)));
         }
@@ -60,6 +69,10 @@ namespace LHDS.Core.Services.Foundations.ResolvedAddresses
         private void ValidateOnBulkModifyResolvedAddresses(List<ResolvedAddress> resolvedAddresses)
         {
             Validate(
+
+                createException: () => new InvalidResolvedAddressException(
+                    message: "Invalid resolved address. Please correct the errors and try again."),
+
                 (Rule: IsInvalid(resolvedAddresses), Parameter: nameof(resolvedAddresses)));
         }
 
@@ -68,6 +81,10 @@ namespace LHDS.Core.Services.Foundations.ResolvedAddresses
             EntraUser currentUser = await this.securityBroker.GetCurrentUserAsync();
 
             Validate(
+
+                createException: () => new InvalidResolvedAddressException(
+                    message: "Invalid resolved address. Please correct the errors and try again."),
+
                 (Rule: IsInvalid(resolvedAddress.Id), Parameter: nameof(ResolvedAddress.Id)),
                 (Rule: IsInvalid(resolvedAddress.UniqueReference), Parameter: nameof(ResolvedAddress.UniqueReference)),
 
@@ -90,11 +107,18 @@ namespace LHDS.Core.Services.Foundations.ResolvedAddresses
                     secondDateName: nameof(ResolvedAddress.CreatedDate)),
                 Parameter: nameof(ResolvedAddress.UpdatedDate)),
 
-                (Rule: await IsNotRecentAsync(resolvedAddress.UpdatedDate), Parameter: nameof(resolvedAddress.UpdatedDate)));
+                (Rule: await IsNotRecentAsync(resolvedAddress.UpdatedDate),
+                    Parameter: nameof(resolvedAddress.UpdatedDate)));
         }
 
-        public void ValidateResolvedAddressId(Guid resolvedAddressId) =>
-            Validate((Rule: IsInvalid(resolvedAddressId), Parameter: nameof(ResolvedAddress.Id)));
+        public void ValidateResolvedAddressId(Guid resolvedAddressId)
+        {
+            Validate(
+                createException: () => new InvalidResolvedAddressException(
+                    message: "Invalid resolved address. Please correct the errors and try again."),
+
+                (Rule: IsInvalid(resolvedAddressId), Parameter: nameof(ResolvedAddress.Id)));
+        }
 
         private static void ValidateStorageResolvedAddress(ResolvedAddress maybeResolvedAddress, Guid resolvedAddressId)
         {
@@ -115,6 +139,10 @@ namespace LHDS.Core.Services.Foundations.ResolvedAddresses
         private static void ValidateAgainstStorageResolvedAddressOnModify(ResolvedAddress inputResolvedAddress, ResolvedAddress storageResolvedAddress)
         {
             Validate(
+
+                createException: () => new InvalidResolvedAddressException(
+                    message: "Invalid resolved address. Please correct the errors and try again."),
+
                 (Rule: IsNotSame(
                     firstDate: inputResolvedAddress.CreatedDate,
                     secondDate: storageResolvedAddress.CreatedDate,
@@ -141,6 +169,10 @@ namespace LHDS.Core.Services.Foundations.ResolvedAddresses
             EntraUser auditUser = await this.securityBroker.GetCurrentUserAsync();
 
             Validate(
+
+                createException: () => new InvalidResolvedAddressException(
+                    message: "Invalid resolved address. Please correct the errors and try again."),
+
                 (Rule: IsNotSame(
                     resolvedAddress.CreatedDate,
                     maybeResolvedAddress.CreatedDate,
@@ -253,23 +285,24 @@ namespace LHDS.Core.Services.Foundations.ResolvedAddresses
             return timeDifference.Duration() > oneMinute;
         }
 
-        private static void Validate(params (dynamic Rule, string Parameter)[] validations)
+        private static void Validate<T>(
+            Func<T> createException,
+            params (dynamic Rule, string Parameter)[] validations)
+            where T : Xeption
         {
-            var invalidResolvedAddressException =
-                new InvalidResolvedAddressException(
-                    message: "Invalid resolved address. Please correct the errors and try again.");
+            T invalidDataException = createException();
 
             foreach ((dynamic rule, string parameter) in validations)
             {
                 if (rule.Condition)
                 {
-                    invalidResolvedAddressException.UpsertDataList(
+                    invalidDataException.UpsertDataList(
                         key: parameter,
                         value: rule.Message);
                 }
             }
 
-            invalidResolvedAddressException.ThrowIfContainsErrors();
+            invalidDataException.ThrowIfContainsErrors();
         }
     }
 }

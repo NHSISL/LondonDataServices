@@ -63,7 +63,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Addresses
                     Times.Once);
 
             this.securityAuditBrokerMock.Verify(service =>
-               service.GetCurrentUserIdAsync(),
+               service.GetUserIdAsync(),
                     Times.Once());
 
             this.storageBrokerMock.Verify(broker =>
@@ -131,7 +131,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Addresses
                     Times.Once);
 
             this.securityAuditBrokerMock.Verify(service =>
-               service.GetCurrentUserIdAsync(),
+               service.GetUserIdAsync(),
                     Times.Once());
 
             this.storageBrokerMock.Verify(broker =>
@@ -199,7 +199,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Addresses
                     Times.Once());
 
             this.securityAuditBrokerMock.Verify(service =>
-                service.GetCurrentUserIdAsync(),
+                service.GetUserIdAsync(),
                     Times.Once());
 
             this.loggingBrokerMock.Verify(broker =>
@@ -265,7 +265,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Addresses
                     Times.Once);
 
             this.securityAuditBrokerMock.Verify(service =>
-               service.GetCurrentUserIdAsync(),
+               service.GetUserIdAsync(),
                     Times.Once());
 
             this.storageBrokerMock.Verify(broker =>
@@ -329,7 +329,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Addresses
                     Times.Once);
 
             this.securityAuditBrokerMock.Verify(service =>
-               service.GetCurrentUserIdAsync(),
+               service.GetUserIdAsync(),
                     Times.Once());
 
             this.storageBrokerMock.Verify(broker =>

@@ -18,8 +18,10 @@ namespace LHDS.Core.Services.Foundations.DataTypes
             string currentUserId = await this.securityAuditBroker.GetUserIdAsync();
 
             Validate<InvalidDataTypeException>(
+
                 createException: () => new InvalidDataTypeException(
                     message: "Invalid dataType. Please correct the errors and try again."),
+
                 (Rule: IsInvalid(dataType.Id), Parameter: nameof(DataType.Id)),
                 (Rule: IsInvalid(dataType.Name), Parameter: nameof(DataType.Name)),
                 (Rule: IsInvalid(dataType.CreatedDate), Parameter: nameof(DataType.CreatedDate)),
@@ -56,8 +58,10 @@ namespace LHDS.Core.Services.Foundations.DataTypes
             string currentUserId = await this.securityAuditBroker.GetUserIdAsync();
 
             Validate<InvalidDataTypeException>(
+
                 createException: () => new InvalidDataTypeException(
                     message: "Invalid dataType. Please correct the errors and try again."),
+
                 (Rule: IsInvalid(dataType.Id), Parameter: nameof(DataType.Id)),
                 (Rule: IsInvalid(dataType.Name), Parameter: nameof(DataType.Name)),
                 (Rule: IsInvalid(dataType.CreatedDate), Parameter: nameof(DataType.CreatedDate)),
@@ -135,8 +139,10 @@ namespace LHDS.Core.Services.Foundations.DataTypes
             string auditUserId = await this.securityAuditBroker.GetUserIdAsync();
 
             Validate<InvalidDataTypeException>(
+
                 createException: () => new InvalidDataTypeException(
                     message: "Invalid dataType. Please correct the errors and try again."),
+
                 (Rule: IsNotSame(
                     dataType.CreatedDate,
                     maybeDataType.CreatedDate,
@@ -156,7 +162,7 @@ namespace LHDS.Core.Services.Foundations.DataTypes
                  Parameter: nameof(DataType.UpdatedDate)),
 
                 (Rule: IsNotSame(
-                    auditUserId.ToString(),
+                    auditUserId,
                     dataType.UpdatedBy,
                     nameof(DataType.UpdatedBy)),
                  Parameter: nameof(DataType.UpdatedBy))

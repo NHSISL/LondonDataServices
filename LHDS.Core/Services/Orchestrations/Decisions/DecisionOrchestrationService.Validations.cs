@@ -20,6 +20,16 @@ namespace LHDS.Core.Services.Orchestrations.Decisions
             }
         }
 
+        private void ValidateDecisionConfigurationIsNotNull()
+        {
+            if (this.decisionConfiguration is null)
+            {
+                throw new NullDecisionConfigurationDecisionOrchestrationException(
+                    message: "Null decision configuration decision orchestration exception, " +
+                        "please correct the errors and try again.");
+            }
+        }
+
         private void ValidateDecisionPolls(IQueryable<DecisionPoll> decisionPolls)
         {
             if (decisionPolls is null || !decisionPolls.Any())

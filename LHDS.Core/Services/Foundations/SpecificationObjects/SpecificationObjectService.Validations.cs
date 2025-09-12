@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using LHDS.Core.Models.Brokers.Securities;
 using LHDS.Core.Models.Foundations.SpecificationObjects;
 using LHDS.Core.Models.Foundations.SpecificationObjects.Exceptions;
+using Xeptions;
 
 namespace LHDS.Core.Services.Foundations.SpecificationObjects
 {
@@ -17,29 +18,44 @@ namespace LHDS.Core.Services.Foundations.SpecificationObjects
             EntraUser currentUser = await this.securityBroker.GetCurrentUserAsync();
 
             Validate(
+
+                createException: () => new InvalidSpecificationObjectException(
+                    message: "Invalid specificationObject. Please correct the errors and try again."),
+
                 (Rule: IsInvalid(specificationObject.Id), Parameter: nameof(SpecificationObject.Id)),
-                (Rule: IsInvalid(specificationObject.DataSetSpecificationId), Parameter: nameof(specificationObject.DataSetSpecificationId)),
-                (Rule: IsInvalid(specificationObject.SupplierObjectName), Parameter: nameof(specificationObject.SupplierObjectName)),
-                (Rule: IsInvalid(specificationObject.OurObjectName), Parameter: nameof(specificationObject.OurObjectName)),
+
+                (Rule: IsInvalid(specificationObject.DataSetSpecificationId), 
+                Parameter: nameof(specificationObject.DataSetSpecificationId)),
+
+                (Rule: IsInvalid(specificationObject.SupplierObjectName), 
+                Parameter: nameof(specificationObject.SupplierObjectName)),
+
+                (Rule: IsInvalid(specificationObject.OurObjectName), 
+                Parameter: nameof(specificationObject.OurObjectName)),
+
                 (Rule: IsInvalid(specificationObject.CreatedDate), Parameter: nameof(SpecificationObject.CreatedDate)),
                 (Rule: IsInvalid(specificationObject.CreatedBy), Parameter: nameof(SpecificationObject.CreatedBy)),
                 (Rule: IsInvalid(specificationObject.UpdatedDate), Parameter: nameof(SpecificationObject.UpdatedDate)),
                 (Rule: IsInvalid(specificationObject.UpdatedBy), Parameter: nameof(SpecificationObject.UpdatedBy)),
 
                 (Rule: IsEqualOrSmallerThan(
-                    specificationObject.SupplierObjectName, 255), Parameter: nameof(specificationObject.SupplierObjectName)),
+                    specificationObject.SupplierObjectName, 255), 
+                Parameter: nameof(specificationObject.SupplierObjectName)),
 
                 (Rule: IsEqualOrSmallerThan(
                     specificationObject.OurObjectName, 255), Parameter: nameof(specificationObject.OurObjectName)),
 
                 (Rule: IsEqualOrSmallerThan(
-                    specificationObject.ObjectDescription, 500), Parameter: nameof(specificationObject.ObjectDescription)),
+                    specificationObject.ObjectDescription, 500), 
+                Parameter: nameof(specificationObject.ObjectDescription)),
 
                 (Rule: IsEqualOrSmallerThan(
-                    specificationObject.InterchangeProtocol, 255), Parameter: nameof(specificationObject.InterchangeProtocol)),
+                    specificationObject.InterchangeProtocol, 255), 
+                Parameter: nameof(specificationObject.InterchangeProtocol)),
 
                 (Rule: IsEqualOrSmallerThan(
-                    specificationObject.DeletionHandling, 255), Parameter: nameof(specificationObject.DeletionHandling)),
+                    specificationObject.DeletionHandling, 255), 
+                Parameter: nameof(specificationObject.DeletionHandling)),
 
                 (Rule: IsEqualOrSmallerThan(
                     specificationObject.CreatedBy, 255), Parameter: nameof(specificationObject.CreatedBy)),
@@ -64,7 +80,8 @@ namespace LHDS.Core.Services.Foundations.SpecificationObjects
                     secondName: nameof(SpecificationObject.CreatedBy)),
                 Parameter: nameof(SpecificationObject.UpdatedBy)),
 
-                (Rule: await IsNotRecentAsync(specificationObject.CreatedDate), Parameter: nameof(SpecificationObject.CreatedDate)));
+                (Rule: await IsNotRecentAsync(specificationObject.CreatedDate), 
+                Parameter: nameof(SpecificationObject.CreatedDate)));
         }
 
         private async ValueTask ValidateSpecificationObjectOnModifyAsync(SpecificationObject specificationObject)
@@ -72,29 +89,44 @@ namespace LHDS.Core.Services.Foundations.SpecificationObjects
             EntraUser currentUser = await this.securityBroker.GetCurrentUserAsync();
 
             Validate(
+
+                createException: () => new InvalidSpecificationObjectException(
+                    message: "Invalid specificationObject. Please correct the errors and try again."),
+
                 (Rule: IsInvalid(specificationObject.Id), Parameter: nameof(SpecificationObject.Id)),
-                (Rule: IsInvalid(specificationObject.DataSetSpecificationId), Parameter: nameof(specificationObject.DataSetSpecificationId)),
-                (Rule: IsInvalid(specificationObject.SupplierObjectName), Parameter: nameof(specificationObject.SupplierObjectName)),
-                (Rule: IsInvalid(specificationObject.OurObjectName), Parameter: nameof(specificationObject.OurObjectName)),
+                (Rule: IsInvalid(specificationObject.DataSetSpecificationId), 
+                Parameter: nameof(specificationObject.DataSetSpecificationId)),
+
+                (Rule: IsInvalid(specificationObject.SupplierObjectName), 
+                Parameter: nameof(specificationObject.SupplierObjectName)),
+
+                (Rule: IsInvalid(specificationObject.OurObjectName), 
+                Parameter: nameof(specificationObject.OurObjectName)),
+
                 (Rule: IsInvalid(specificationObject.CreatedDate), Parameter: nameof(SpecificationObject.CreatedDate)),
                 (Rule: IsInvalid(specificationObject.CreatedBy), Parameter: nameof(SpecificationObject.CreatedBy)),
                 (Rule: IsInvalid(specificationObject.UpdatedDate), Parameter: nameof(SpecificationObject.UpdatedDate)),
                 (Rule: IsInvalid(specificationObject.UpdatedBy), Parameter: nameof(SpecificationObject.UpdatedBy)),
 
                 (Rule: IsEqualOrSmallerThan(
-                    specificationObject.SupplierObjectName, 255), Parameter: nameof(specificationObject.SupplierObjectName)),
+                    specificationObject.SupplierObjectName, 255), 
+                Parameter: nameof(specificationObject.SupplierObjectName)),
 
                 (Rule: IsEqualOrSmallerThan(
-                    specificationObject.OurObjectName, 255), Parameter: nameof(specificationObject.OurObjectName)),
+                    specificationObject.OurObjectName, 255), 
+                Parameter: nameof(specificationObject.OurObjectName)),
 
                 (Rule: IsEqualOrSmallerThan(
-                    specificationObject.ObjectDescription, 500), Parameter: nameof(specificationObject.ObjectDescription)),
+                    specificationObject.ObjectDescription, 500), 
+                Parameter: nameof(specificationObject.ObjectDescription)),
 
                 (Rule: IsEqualOrSmallerThan(
-                    specificationObject.InterchangeProtocol, 255), Parameter: nameof(specificationObject.InterchangeProtocol)),
+                    specificationObject.InterchangeProtocol, 255), 
+                Parameter: nameof(specificationObject.InterchangeProtocol)),
 
                 (Rule: IsEqualOrSmallerThan(
-                    specificationObject.DeletionHandling, 255), Parameter: nameof(specificationObject.DeletionHandling)),
+                    specificationObject.DeletionHandling, 255), 
+                Parameter: nameof(specificationObject.DeletionHandling)),
 
                 (Rule: IsEqualOrSmallerThan(
                     specificationObject.CreatedBy, 255), Parameter: nameof(specificationObject.CreatedBy)),
@@ -113,14 +145,20 @@ namespace LHDS.Core.Services.Foundations.SpecificationObjects
                     secondDateName: nameof(SpecificationObject.CreatedDate)),
                 Parameter: nameof(SpecificationObject.UpdatedDate)),
 
-                (Rule: await IsNotRecentAsync(specificationObject.UpdatedDate), Parameter: nameof(specificationObject.UpdatedDate)));
+                (Rule: await IsNotRecentAsync(specificationObject.UpdatedDate), 
+                Parameter: nameof(specificationObject.UpdatedDate)));
         }
 
-        private async ValueTask ValidateAgainstStorageSpecificationObjectOnDeleteAsync(SpecificationObject dataSet, SpecificationObject maybeSpecificationObject)
+        private async ValueTask ValidateAgainstStorageSpecificationObjectOnDeleteAsync(
+            SpecificationObject dataSet, SpecificationObject maybeSpecificationObject)
         {
             EntraUser auditUser = await this.securityBroker.GetCurrentUserAsync();
 
             Validate(
+
+                createException: () => new InvalidSpecificationObjectException(
+                    message: "Invalid specificationObject. Please correct the errors and try again."),
+
                 (Rule: IsNotSame(
                     dataSet.CreatedDate,
                     maybeSpecificationObject.CreatedDate,
@@ -147,10 +185,18 @@ namespace LHDS.Core.Services.Foundations.SpecificationObjects
             );
         }
 
-        public void ValidateSpecificationObjectId(Guid specificationObjectId) =>
-            Validate((Rule: IsInvalid(specificationObjectId), Parameter: nameof(SpecificationObject.Id)));
+        public void ValidateSpecificationObjectId(Guid specificationObjectId)
+        {
+            Validate(
 
-        private static void ValidateStorageSpecificationObject(SpecificationObject maybeSpecificationObject, Guid specificationObjectId)
+                createException: () => new InvalidSpecificationObjectException(
+                    message: "Invalid specificationObject. Please correct the errors and try again."),
+
+                (Rule: IsInvalid(specificationObjectId), Parameter: nameof(SpecificationObject.Id)));
+        }
+
+        private static void ValidateStorageSpecificationObject(
+            SpecificationObject maybeSpecificationObject, Guid specificationObjectId)
         {
             if (maybeSpecificationObject is null)
             {
@@ -166,9 +212,14 @@ namespace LHDS.Core.Services.Foundations.SpecificationObjects
             }
         }
 
-        private static void ValidateAgainstStorageSpecificationObjectOnModify(SpecificationObject inputSpecificationObject, SpecificationObject storageSpecificationObject)
+        private static void ValidateAgainstStorageSpecificationObjectOnModify(
+            SpecificationObject inputSpecificationObject, SpecificationObject storageSpecificationObject)
         {
             Validate(
+
+                createException: () => new InvalidSpecificationObjectException(
+                    message: "Invalid specificationObject. Please correct the errors and try again."),
+
                 (Rule: IsNotSame(
                     firstDate: inputSpecificationObject.CreatedDate,
                     secondDate: storageSpecificationObject.CreatedDate,
@@ -273,23 +324,24 @@ namespace LHDS.Core.Services.Foundations.SpecificationObjects
             return timeDifference.Duration() > oneMinute;
         }
 
-        private static void Validate(params (dynamic Rule, string Parameter)[] validations)
+        private static void Validate<T>(
+            Func<T> createException,
+            params (dynamic Rule, string Parameter)[] validations)
+            where T : Xeption
         {
-            var invalidSpecificationObjectException =
-                new InvalidSpecificationObjectException(
-                    message: "Invalid specificationObject. Please correct the errors and try again.");
+            T invalidDataException = createException();
 
             foreach ((dynamic rule, string parameter) in validations)
             {
                 if (rule.Condition)
                 {
-                    invalidSpecificationObjectException.UpsertDataList(
+                    invalidDataException.UpsertDataList(
                         key: parameter,
                         value: rule.Message);
                 }
             }
 
-            invalidSpecificationObjectException.ThrowIfContainsErrors();
+            invalidDataException.ThrowIfContainsErrors();
         }
     }
 }

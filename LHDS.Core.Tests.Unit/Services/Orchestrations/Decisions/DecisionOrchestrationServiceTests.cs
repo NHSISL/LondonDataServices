@@ -8,7 +8,10 @@ using System.IO;
 using System.Linq;
 using System.Linq.Expressions;
 using KellermanSoftware.CompareNetObjects;
+using LHDS.Core.Brokers.CsvHelpers;
+using LHDS.Core.Brokers.Hashing;
 using LHDS.Core.Brokers.Loggings;
+using LHDS.Core.Models.Brokers.DecisionConfigurations;
 using LHDS.Core.Models.Brokers.Storages.Blobs;
 using LHDS.Core.Models.Foundations.DecisionPolls;
 using LHDS.Core.Models.Foundations.DecisionPolls.Exceptions;
@@ -30,13 +33,16 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Decisions
 {
     public partial class DecisionOrchestrationServiceTests
     {
+        private readonly ICompareLogic compareLogic;
         private readonly Mock<IDecisionPollService> decisionPollServiceMock;
         private readonly Mock<IDecisionService> decisionServiceMock;
         private readonly Mock<IDocumentService> documentServiceMock;
-        private readonly IDecisionOrchestrationService decisionOrchestrationService;
+        private readonly Mock<ICsvHelperBroker> csvHelperBrokerMock;
+        private readonly Mock<IHashBroker> hashBrokerMock;
         private readonly Mock<ILoggingBroker> loggingBrokerMock;
         private readonly BlobContainers blobContainers;
-        private readonly ICompareLogic compareLogic;
+        private readonly DecisionConfiguration decisionConfiguration;
+        private readonly IDecisionOrchestrationService decisionOrchestrationService;
 
         public DecisionOrchestrationServiceTests()
         {
@@ -44,6 +50,8 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Decisions
             this.decisionPollServiceMock = new Mock<IDecisionPollService>();
             this.decisionServiceMock = new Mock<IDecisionService>();
             this.documentServiceMock = new Mock<IDocumentService>();
+            this.csvHelperBrokerMock = new Mock<ICsvHelperBroker>();
+            this.hashBrokerMock = new Mock<IHashBroker>();
             this.loggingBrokerMock = new Mock<ILoggingBroker>();
 
             this.blobContainers = new BlobContainers
@@ -51,12 +59,20 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Decisions
                 Decisions = "decisions"
             };
 
+            this.decisionConfiguration = new DecisionConfiguration
+            {
+                HashPepper = "hashPepper"
+            };
+
             this.decisionOrchestrationService = new DecisionOrchestrationService(
                 decisionPollService: this.decisionPollServiceMock.Object,
                 decisionService: this.decisionServiceMock.Object,
                 documentService: this.documentServiceMock.Object,
+                csvHelperBroker: this.csvHelperBrokerMock.Object,
+                hashBroker: this.hashBrokerMock.Object,
                 loggingBroker: this.loggingBrokerMock.Object,
-                blobContainers: this.blobContainers);
+                blobContainers: this.blobContainers,
+                decisionConfiguration: this.decisionConfiguration);
         }
 
         private static Expression<Func<Xeption, bool>> SameExceptionAs(Xeption expectedException) =>

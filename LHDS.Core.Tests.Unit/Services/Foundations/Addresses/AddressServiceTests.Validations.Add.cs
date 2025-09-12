@@ -368,6 +368,10 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Addresses
             actualAddressValidationException.Should()
                 .BeEquivalentTo(expectedAddressValidationException);
 
+            this.securityAuditBrokerMock.Verify(service =>
+               service.ApplyAddAuditValuesAsync(invalidAddress),
+                    Times.Once());
+
             this.dateTimeBrokerMock.Verify(broker =>
                 broker.GetCurrentDateTimeOffsetAsync(),
                     Times.Once());

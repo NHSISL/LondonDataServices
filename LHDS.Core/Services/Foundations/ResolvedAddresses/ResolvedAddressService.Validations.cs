@@ -107,8 +107,8 @@ namespace LHDS.Core.Services.Foundations.ResolvedAddresses
                     secondDateName: nameof(ResolvedAddress.CreatedDate)),
                 Parameter: nameof(ResolvedAddress.UpdatedDate)),
 
-                (Rule: await IsNotRecentAsync(resolvedAddress.UpdatedDate), 
-                Parameter: nameof(resolvedAddress.UpdatedDate)));
+                (Rule: await IsNotRecentAsync(resolvedAddress.UpdatedDate),
+                    Parameter: nameof(resolvedAddress.UpdatedDate)));
         }
 
         public void ValidateResolvedAddressId(Guid resolvedAddressId)

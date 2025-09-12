@@ -57,6 +57,7 @@ namespace LHDS.Core.Services.Orchestrations.Decisions
             TryCatch(async () =>
             {
                 ValidateBlobContainersIsNotNull();
+                ValidateDecisionConfigurationIsNotNull();
 
                 IQueryable<DecisionPoll> decisionPolls =
                     await this.decisionPollService.RetrieveAllDecisionPollsAsync();

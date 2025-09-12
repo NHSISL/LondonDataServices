@@ -7,7 +7,6 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
-using System.Text.Json;
 using System.Threading.Tasks;
 using FluentAssertions;
 using LHDS.Core.Models.Foundations.DecisionPolls;
@@ -27,12 +26,14 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Decisions
             IQueryable<DecisionPoll> decisionPolls = randomDecisionPolls;
             DateTimeOffset lastPollDate = decisionPolls.Max(poll => poll.LastPoll);
             List<Decision> expectedDecisions = CreateRandomDecisions();
-            string expectedDecisionsSerialized = JsonSerializer.Serialize(expectedDecisions);
-            byte[] expectedDocumentBytes = Encoding.UTF8.GetBytes(expectedDecisionsSerialized);
             string expectedContainer = this.blobContainers.Decisions;
             DateTimeOffset currentPollDate = DateTimeOffset.UtcNow;
             string systemUser = "system";
             string expectedFileName = $"IDecide_{currentPollDate:HHmm_ddMMyyyy}";
+            string expectedHash = GetRandomString();
+            string expectedCsvProcessedData = GetRandomString();
+            byte[] expectedDocumentBytes = Encoding.UTF8.GetBytes(expectedCsvProcessedData);
+            var documentStream = new MemoryStream();
 
             DecisionPoll actualDecisionPoll = null;
 
@@ -44,7 +45,19 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Decisions
                 .Setup(service => service.GetPatientDecisions(lastPollDate))
                 .ReturnsAsync(expectedDecisions);
 
-            MemoryStream documentStream = new MemoryStream();
+            this.hashBrokerMock
+                .Setup(broker => broker.GenerateSha256HashAsync(
+                    It.IsAny<string>(),
+                    this.decisionConfiguration.HashPepper))
+                .ReturnsAsync(expectedHash);
+
+            this.csvHelperBrokerMock
+                .Setup(broker => broker.MapObjectToCsvAsync(
+                    It.IsAny<List<DecisionCsv>>(),
+                    true,
+                    It.IsAny<Dictionary<string, int>>(),
+                    false))
+                .ReturnsAsync(expectedCsvProcessedData);
 
             this.documentServiceMock
                 .Setup(service => service.AddDocumentAsync(
@@ -56,14 +69,14 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Decisions
                 })
                 .Returns(ValueTask.CompletedTask);
 
+            this.decisionServiceMock
+                .Setup(service => service.RecordAdoption(expectedDecisions))
+                .Returns(ValueTask.CompletedTask);
+
             this.decisionPollServiceMock
                 .Setup(service => service.AddDecisionPollAsync(It.IsAny<DecisionPoll>()))
                 .Callback<DecisionPoll>(poll => actualDecisionPoll = poll)
                 .ReturnsAsync((DecisionPoll poll) => poll);
-
-            this.decisionServiceMock
-                .Setup(service => service.RecordAdoption(expectedDecisions))
-                .Returns(ValueTask.CompletedTask);
 
             // when
             List<Decision> actualDecisions =
@@ -79,15 +92,28 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Decisions
             this.decisionServiceMock.Verify(service =>
                 service.GetPatientDecisions(lastPollDate), Times.Once);
 
+            this.hashBrokerMock.Verify(broker =>
+                    broker.GenerateSha256HashAsync(It.IsAny<string>(), this.decisionConfiguration.HashPepper),
+                Times.Exactly(expectedDecisions.Count));
+
+            this.csvHelperBrokerMock.Verify(broker =>
+                broker.MapObjectToCsvAsync(
+                    It.IsAny<List<DecisionCsv>>(),
+                    true,
+                    It.IsAny<Dictionary<string, int>>(),
+                    false),
+                    Times.Once);
+
             this.documentServiceMock.Verify(service =>
                 service.AddDocumentAsync(It.IsAny<Stream>(), expectedFileName, expectedContainer), Times.Once);
-
-            this.decisionPollServiceMock.Verify(service =>
-                service.AddDecisionPollAsync(It.IsAny<DecisionPoll>()), Times.Once);
 
             this.decisionServiceMock.Verify(service =>
                 service.RecordAdoption(expectedDecisions), Times.Once);
 
+            this.decisionPollServiceMock.Verify(service =>
+                service.AddDecisionPollAsync(It.IsAny<DecisionPoll>()), Times.Once);
+
+            documentStream.Position = 0;
             ReadAllBytesFromStream(documentStream).Should().BeEquivalentTo(expectedDocumentBytes);
             actualDecisionPoll.Should().NotBeNull();
             actualDecisionPoll.CreatedBy.Should().Be(systemUser);
@@ -99,6 +125,8 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Decisions
             this.decisionPollServiceMock.VerifyNoOtherCalls();
             this.decisionServiceMock.VerifyNoOtherCalls();
             this.documentServiceMock.VerifyNoOtherCalls();
+            this.hashBrokerMock.VerifyNoOtherCalls();
+            this.csvHelperBrokerMock.VerifyNoOtherCalls();
         }
     }
 }

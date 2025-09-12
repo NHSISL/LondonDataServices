@@ -38,8 +38,11 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Decisions
                 decisionPollService: this.decisionPollServiceMock.Object,
                 decisionService: this.decisionServiceMock.Object,
                 documentService: this.documentServiceMock.Object,
+                csvHelperBroker: this.csvHelperBrokerMock.Object,
+                hashBroker: this.hashBrokerMock.Object,
                 loggingBroker: this.loggingBrokerMock.Object,
-                blobContainers: invalidBlobContainers);
+                blobContainers: invalidBlobContainers,
+                decisionConfiguration: this.decisionConfiguration);
 
             // when
             ValueTask<List<Decision>> getPatientDecisionsTask =

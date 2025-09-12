@@ -11,7 +11,6 @@ using LHDS.Core.Brokers.Identifiers;
 using LHDS.Core.Brokers.Loggings;
 using LHDS.Core.Brokers.Securities;
 using LHDS.Core.Brokers.Storages.Sql;
-using LHDS.Core.Models.Brokers.Securities;
 using LHDS.Core.Models.Foundations.Audits;
 
 namespace LHDS.Core.Services.Foundations.Audits
@@ -21,20 +20,20 @@ namespace LHDS.Core.Services.Foundations.Audits
         private readonly IStorageBroker storageBroker;
         private readonly IIdentifierBroker identifierBroker;
         private readonly IDateTimeBroker dateTimeBroker;
-        private readonly ISecurityBroker securityBroker;
+        private readonly ISecurityAuditBroker securityAuditBroker;
         private readonly ILoggingBroker loggingBroker;
 
         public AuditService(
             IStorageBroker storageBroker,
             IIdentifierBroker identifierBroker,
             IDateTimeBroker dateTimeBroker,
-            ISecurityBroker securityBroker,
+            ISecurityAuditBroker securityAuditBroker,
             ILoggingBroker loggingBroker)
         {
             this.storageBroker = storageBroker;
             this.identifierBroker = identifierBroker;
             this.dateTimeBroker = dateTimeBroker;
-            this.securityBroker = securityBroker;
+            this.securityAuditBroker = securityAuditBroker;
             this.loggingBroker = loggingBroker;
         }
 
@@ -48,7 +47,7 @@ namespace LHDS.Core.Services.Foundations.Audits
         TryCatch(async () =>
         {
             DateTimeOffset dateTimeOffset = await this.dateTimeBroker.GetCurrentDateTimeOffsetAsync();
-            var auditUser = await this.securityBroker.GetCurrentUserAsync();
+            var auditUserId = await this.securityAuditBroker.GetUserIdAsync();
 
             Audit audit = new Audit
             {
@@ -59,9 +58,9 @@ namespace LHDS.Core.Services.Foundations.Audits
                 CorrelationId = correlationId,
                 FileName = fileName,
                 LogLevel = logLevel,
-                CreatedBy = auditUser?.EntraUserId.ToString() ?? string.Empty,
+                CreatedBy = auditUserId ?? string.Empty,
                 CreatedDate = dateTimeOffset,
-                UpdatedBy = auditUser?.EntraUserId.ToString() ?? string.Empty,
+                UpdatedBy = auditUserId ?? string.Empty,
                 UpdatedDate = dateTimeOffset,
             };
 
@@ -165,10 +164,10 @@ namespace LHDS.Core.Services.Foundations.Audits
         {
             ValidateAuditIsNotNull(audit);
             var auditDateTimeOffset = await this.dateTimeBroker.GetCurrentDateTimeOffsetAsync();
-            var auditUser = await this.securityBroker.GetCurrentUserAsync();
-            audit.CreatedBy = auditUser?.EntraUserId.ToString() ?? string.Empty;
+            var auditUserId = await this.securityAuditBroker.GetUserIdAsync();
+            audit.CreatedBy = auditUserId ?? string.Empty;
             audit.CreatedDate = auditDateTimeOffset;
-            audit.UpdatedBy = auditUser?.EntraUserId.ToString() ?? string.Empty;
+            audit.UpdatedBy = auditUserId ?? string.Empty;
             audit.UpdatedDate = auditDateTimeOffset;
 
             return audit;
@@ -178,8 +177,8 @@ namespace LHDS.Core.Services.Foundations.Audits
         {
             ValidateAuditIsNotNull(audit);
             var auditDateTimeOffset = await this.dateTimeBroker.GetCurrentDateTimeOffsetAsync();
-            var auditUser = await this.securityBroker.GetCurrentUserAsync();
-            audit.UpdatedBy = auditUser?.EntraUserId.ToString() ?? string.Empty;
+            var auditUserId = await this.securityAuditBroker.GetUserIdAsync();
+            audit.UpdatedBy = auditUserId ?? string.Empty;
             audit.UpdatedDate = auditDateTimeOffset;
 
             return audit;
@@ -189,8 +188,8 @@ namespace LHDS.Core.Services.Foundations.Audits
         {
             ValidateAuditIsNotNull(audit);
             var auditDateTimeOffset = await this.dateTimeBroker.GetCurrentDateTimeOffsetAsync();
-            var auditUser = await this.securityBroker.GetCurrentUserAsync();
-            audit.UpdatedBy = auditUser?.EntraUserId.ToString() ?? string.Empty;
+            var auditUserId = await this.securityAuditBroker.GetUserIdAsync();
+            audit.UpdatedBy = auditUserId ?? string.Empty;
             audit.UpdatedDate = auditDateTimeOffset;
 
             return audit;
@@ -204,13 +203,13 @@ namespace LHDS.Core.Services.Foundations.Audits
             {
                 try
                 {
-                    EntraUser currentUser = await this.securityBroker.GetCurrentUserAsync();
+                    var auditUserId = await this.securityAuditBroker.GetUserIdAsync();
                     var currentDateTime = await this.dateTimeBroker.GetCurrentDateTimeOffsetAsync();
                     address.Id = await this.identifierBroker.GetIdentifierAsync();
                     address.CreatedDate = currentDateTime;
-                    address.CreatedBy = currentUser.EntraUserId;
+                    address.CreatedBy = auditUserId;
                     address.UpdatedDate = address.CreatedDate;
-                    address.UpdatedBy = address.CreatedBy;
+                    address.UpdatedBy = auditUserId;
                     await ValidateAuditOnAddAsync(address);
                     validatedAudites.Add(address);
                 }
@@ -220,7 +219,7 @@ namespace LHDS.Core.Services.Foundations.Audits
                 }
             }
 
-            return await ValueTask.FromResult(validatedAudites);
+            return validatedAudites;
         }
     }
 }

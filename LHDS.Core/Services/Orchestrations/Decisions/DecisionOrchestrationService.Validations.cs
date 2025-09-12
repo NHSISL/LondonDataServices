@@ -2,9 +2,11 @@
 // Copyright (c) North East London ICB. All rights reserved.
 // ---------------------------------------------------------
 
+using System;
 using System.Linq;
 using LHDS.Core.Models.Foundations.DecisionPolls;
 using LHDS.Core.Models.Orchestrations.Decisions.Exceptions;
+using Xeptions;
 
 namespace LHDS.Core.Services.Orchestrations.Decisions
 {
@@ -36,6 +38,40 @@ namespace LHDS.Core.Services.Orchestrations.Decisions
             {
                 throw new InvalidDecisionPollsDecisionOrchestrationException(message: "DecisionPolls required.");
             }
+        }
+
+        private void ValidateDocumentRequirements(string content)
+        {
+            Validate<InvalidArgumentDecisionOrchestrationException>(
+                () => new InvalidArgumentDecisionOrchestrationException(
+                    "Invalid Decision orchestration argument(s), please correct the errors and try again."),
+                (Rule: IsInvalid(content), Parameter: "Content"));
+        }
+
+        private static dynamic IsInvalid(string? text) => new
+        {
+            Condition = string.IsNullOrWhiteSpace(text),
+            Message = "Text is required"
+        };
+
+        internal virtual void Validate<T>(
+            Func<T> exceptionFactory,
+            params (dynamic Rule, string Parameter)[] validations)
+            where T : Xeption
+        {
+            T invalidDataException = exceptionFactory();
+
+            foreach ((dynamic rule, string parameter) in validations)
+            {
+                if (rule.Condition)
+                {
+                    invalidDataException.UpsertDataList(
+                        key: parameter,
+                        value: rule.Message);
+                }
+            }
+
+            invalidDataException.ThrowIfContainsErrors();
         }
     }
 }

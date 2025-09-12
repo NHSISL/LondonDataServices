@@ -183,6 +183,10 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Decisions
                 new InvalidArgumentDecisionOrchestrationException(
                     message: "Invalid Decision orchestration argument(s), please correct the errors and try again.");
 
+            invalidArgumentDecisionOrchestrationException.AddData(
+                key: "Content",
+                values: "Text is required");
+
             var expectedDecisionOrchestrationValidationException =
                 new DecisionOrchestrationValidationException(
                     message: "Decision orchestration validation errors occurred, please try again.",
@@ -228,8 +232,8 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Decisions
                 service.GetPatientDecisions(lastPollDate), Times.Once);
 
             this.hashBrokerMock.Verify(broker =>
-                    broker.GenerateSha256HashAsync(It.IsAny<string>(), this.decisionConfiguration.HashPepper),
-                Times.Exactly(expectedDecisions.Count));
+                broker.GenerateSha256HashAsync(It.IsAny<string>(), this.decisionConfiguration.HashPepper),
+                    Times.Exactly(expectedDecisions.Count));
 
             this.csvHelperBrokerMock.Verify(broker =>
                 broker.MapObjectToCsvAsync(
@@ -238,6 +242,11 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Decisions
                     It.IsAny<Dictionary<string, int>>(),
                     false),
                     Times.Once);
+
+            this.loggingBrokerMock.Verify(broker =>
+                broker.LogErrorAsync(It.Is(SameExceptionAs(
+                    expectedDecisionOrchestrationValidationException))),
+                        Times.Once);
 
             this.decisionPollServiceMock.VerifyNoOtherCalls();
             this.decisionServiceMock.VerifyNoOtherCalls();

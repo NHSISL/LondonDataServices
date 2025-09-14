@@ -2,14 +2,23 @@
 // Copyright (c) North East London ICB. All rights reserved.
 // ---------------------------------------------------------
 
+using System;
+using LHDS.Core.Models.Foundations.Downloads.Exceptions;
 using LHDS.Core.Models.Foundations.Ontologies.Exceptions;
+using Xeptions;
 
 namespace LHDS.Core.Services.Foundations.Ontologies
 {
     public partial class OntologyService
     {
-        public void ValidateArgs(string relativeUrl) =>
-            Validate((Rule: IsInvalid(relativeUrl), Parameter: "relativeUrl"));
+        public async void ValidateArgs(string relativeUrl)
+        {
+            Validate<InvalidArgumentOntologyException>(
+                createException: () => new InvalidArgumentOntologyException(
+                message: "Invalid ontology arguments. Please correct the error and try again."),
+
+                (Rule: IsInvalid(relativeUrl), Parameter: "relativeUrl"));
+        }
 
         private static dynamic IsInvalid(string? text) => new
         {
@@ -17,22 +26,24 @@ namespace LHDS.Core.Services.Foundations.Ontologies
             Message = "Text is required"
         };
 
-        private static void Validate(params (dynamic Rule, string Parameter)[] validations)
+        private static void Validate<T>(
+            Func<T> createException,
+            params (dynamic Rule, string Parameter)[] validations)
+            where T : Xeption
         {
-            var invalidDownloadException = new InvalidArgumentOntologyException(
-                message: "Invalid ontology arguments. Please correct the error and try again.");
+            T invalidDataException = createException();
 
             foreach ((dynamic rule, string parameter) in validations)
             {
                 if (rule.Condition)
                 {
-                    invalidDownloadException.UpsertDataList(
+                    invalidDataException.UpsertDataList(
                         key: parameter,
                         value: rule.Message);
                 }
             }
 
-            invalidDownloadException.ThrowIfContainsErrors();
+            invalidDataException.ThrowIfContainsErrors();
         }
     }
 }

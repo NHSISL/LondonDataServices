@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using LHDS.Core.Models.Brokers.Securities;
 using LHDS.Core.Models.Foundations.DataSetSpecifications;
 using LHDS.Core.Models.Foundations.DataSetSpecifications.Exceptions;
+using Xeptions;
 
 namespace LHDS.Core.Services.Foundations.DataSetSpecifications
 {
@@ -17,7 +18,10 @@ namespace LHDS.Core.Services.Foundations.DataSetSpecifications
             ValidateDataSetSpecificationIsNotNull(dataSetSpecification);
             EntraUser currentUser = await this.securityBroker.GetCurrentUserAsync();
 
-            Validate(
+            Validate<InvalidDataSetSpecificationException>(
+                createException: () => new InvalidDataSetSpecificationException(
+                    message: "Invalid dataSetSpecification. Please correct the errors and try again."),
+
                 (Rule: IsInvalid(dataSetSpecification.Id), Parameter: nameof(DataSetSpecification.Id)),
                 (Rule: IsInvalid(dataSetSpecification.DataSetId), Parameter: nameof(DataSetSpecification.DataSetId)),
 
@@ -76,7 +80,10 @@ namespace LHDS.Core.Services.Foundations.DataSetSpecifications
             ValidateDataSetSpecificationIsNotNull(dataSetSpecification);
             EntraUser currentUser = await this.securityBroker.GetCurrentUserAsync();
 
-            Validate(
+            Validate<InvalidDataSetSpecificationException>(
+                createException: () => new InvalidDataSetSpecificationException(
+                    message: "Invalid dataSetSpecification. Please correct the errors and try again."),
+
                 (Rule: IsInvalid(dataSetSpecification.Id), Parameter: nameof(DataSetSpecification.Id)),
                 (Rule: IsInvalid(dataSetSpecification.DataSetId), Parameter: nameof(DataSetSpecification.DataSetId)),
 
@@ -129,7 +136,10 @@ namespace LHDS.Core.Services.Foundations.DataSetSpecifications
             ValidateDataSetSpecificationIsNotNull(dataSetSpecification);
             EntraUser currentUser = await this.securityBroker.GetCurrentUserAsync();
 
-            Validate(
+            Validate<InvalidDataSetSpecificationException>(
+                createException: () => new InvalidDataSetSpecificationException(
+                    message: "Invalid dataSetSpecification. Please correct the errors and try again."),
+
                 (Rule: IsInvalid(dataSetSpecification.Id),
                     Parameter: nameof(DataSetSpecification.Id)),
 
@@ -150,7 +160,10 @@ namespace LHDS.Core.Services.Foundations.DataSetSpecifications
             DataSetSpecification storageDataSetSpecification,
             string currentUserId)
                 {
-                    Validate(
+                    Validate<InvalidDataSetSpecificationException>(
+                        createException: () => new InvalidDataSetSpecificationException(
+                            message: "Invalid dataSetSpecification. Please correct the errors and try again."),
+
                         (Rule: IsInvalid(
                             storageDataSetSpecification.CreatedBy), 
                             Parameter: nameof(DataSetSpecification.CreatedBy)),
@@ -173,8 +186,14 @@ namespace LHDS.Core.Services.Foundations.DataSetSpecifications
                     );
                 }
 
-        public void ValidateDataSetSpecificationId(Guid dataSetSpecificationId) =>
-            Validate((Rule: IsInvalid(dataSetSpecificationId), Parameter: nameof(DataSetSpecification.Id)));
+        public void ValidateDataSetSpecificationId(Guid dataSetSpecificationId)
+        {
+            Validate<InvalidDataSetSpecificationException>(
+                createException: () => new InvalidDataSetSpecificationException(
+                    message: "Invalid dataSetSpecification. Please correct the errors and try again."),
+
+                (Rule: IsInvalid(dataSetSpecificationId), Parameter: nameof(DataSetSpecification.Id)));
+        }
 
         private static void ValidateStorageDataSetSpecification(
             DataSetSpecification maybeDataSetSpecification,
@@ -198,8 +217,11 @@ namespace LHDS.Core.Services.Foundations.DataSetSpecifications
         DataSetSpecification inputDataSetSpecification,
         DataSetSpecification storageDataSetSpecification)
             {
-                Validate(
-                    (Rule: IsNotSame(
+                Validate<InvalidDataSetSpecificationException>(
+                    createException: () => new InvalidDataSetSpecificationException(
+                        message: "Invalid dataSetSpecification. Please correct the errors and try again."),
+
+                (Rule: IsNotSame(
                         first: inputDataSetSpecification.CreatedBy,
                         second: storageDataSetSpecification.CreatedBy,
                         secondName: nameof(DataSetSpecification.CreatedBy)),
@@ -312,23 +334,24 @@ namespace LHDS.Core.Services.Foundations.DataSetSpecifications
             return (isNotRecent, startDate, endDate);
         }
 
-        private static void Validate(params (dynamic Rule, string Parameter)[] validations)
+        private static void Validate<T>(
+            Func<T> createException,
+            params (dynamic Rule, string Parameter)[] validations)
+            where T : Xeption
         {
-            var invalidDataSetSpecificationException =
-                new InvalidDataSetSpecificationException(
-                    message: "Invalid dataSetSpecification. Please correct the errors and try again.");
+            T invalidDataException = createException();
 
             foreach ((dynamic rule, string parameter) in validations)
             {
                 if (rule.Condition)
                 {
-                    invalidDataSetSpecificationException.UpsertDataList(
+                    invalidDataException.UpsertDataList(
                         key: parameter,
                         value: rule.Message);
                 }
             }
 
-            invalidDataSetSpecificationException.ThrowIfContainsErrors();
+            invalidDataException.ThrowIfContainsErrors();
         }
     }
 }

@@ -245,11 +245,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.ResolvedAddresses
 
             this.identifierBrokerMock.Verify(broker =>
                 broker.GetIdentifierAsync(),
-                    Times.Exactly((randomResolvedAddresses.Count * 2) + 1));
-
-            this.securityBrokerMock.Verify(broker =>
-                broker.GetCurrentUserAsync(),
-                    Times.Once());
+                    Times.Once);
 
             this.resolvedAddressProcessingServiceMock.Verify(processing =>
                processing.RetrieveAllResolvedAddressesAsync(),

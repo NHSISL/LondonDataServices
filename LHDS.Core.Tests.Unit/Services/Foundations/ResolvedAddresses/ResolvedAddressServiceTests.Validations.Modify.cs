@@ -154,7 +154,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.ResolvedAddresses
                 .BeEquivalentTo(expectedResolvedAddressValidationException);
 
             this.securityAuditBrokerMock.Verify(broker =>
-                broker.ApplyAddAuditValuesAsync(invalidResolvedAddress),
+                broker.ApplyModifyAuditValuesAsync(invalidResolvedAddress),
                     Times.Once());
 
             this.dateTimeBrokerMock.Verify(broker =>

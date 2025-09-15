@@ -264,7 +264,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.ResolvedAddresses
                     innerException: failedResolvedAddressServiceException);
 
             // when
-            ValueTask addResolvedAddressTask = this.resolvedAddressService
+            ValueTask addResolvedAddressTask = resolvedAddressServiceMock.Object
                 .BulkAddResolvedAddressesAsync(resolvedAddresses: someResolvedAddresses, fileName: someFileName);
 
             ResolvedAddressServiceException actualResolvedAddressServiceException =

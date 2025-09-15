@@ -5,7 +5,6 @@
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using LHDS.Core.Models.Brokers.Securities;
 using LHDS.Core.Models.Foundations.ResolvedAddresses;
 using LHDS.Core.Models.Foundations.ResolvedAddresses.Exceptions;
 using Xeptions;
@@ -19,7 +18,6 @@ namespace LHDS.Core.Services.Foundations.ResolvedAddresses
             string currentEntraUserId = await this.securityAuditBroker.GetUserIdAsync();
 
             Validate(
-
                 createException: () => new InvalidResolvedAddressException(
                     message: "Invalid resolved address. Please correct the errors and try again."),
 
@@ -51,14 +49,13 @@ namespace LHDS.Core.Services.Foundations.ResolvedAddresses
                     secondName: nameof(ResolvedAddress.CreatedBy)),
                 Parameter: nameof(ResolvedAddress.UpdatedBy)),
 
-                (Rule: await IsNotRecentAsync(resolvedAddress.CreatedDate), 
+                (Rule: await IsNotRecentAsync(resolvedAddress.CreatedDate),
                 Parameter: nameof(ResolvedAddress.CreatedDate)));
         }
 
         private void ValidateOnBulkAddResolvedAddresses(List<ResolvedAddress> resolvedAddresses, string fileName)
         {
             Validate(
-
                 createException: () => new InvalidResolvedAddressException(
                     message: "Invalid resolved address. Please correct the errors and try again."),
 
@@ -81,7 +78,6 @@ namespace LHDS.Core.Services.Foundations.ResolvedAddresses
             string currentEntraUserId = await this.securityAuditBroker.GetUserIdAsync();
 
             Validate(
-
                 createException: () => new InvalidResolvedAddressException(
                     message: "Invalid resolved address. Please correct the errors and try again."),
 

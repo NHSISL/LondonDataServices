@@ -16,7 +16,7 @@ namespace LHDS.Core.Services.Foundations.ResolvedAddresses
     {
         private async ValueTask ValidateResolvedAddressOnAddAsync(ResolvedAddress resolvedAddress)
         {
-            EntraUser currentUser = await this.securityBroker.GetCurrentUserAsync();
+            string currentEntraUserId = await this.securityAuditBroker.GetUserIdAsync();
 
             Validate(
 
@@ -35,7 +35,7 @@ namespace LHDS.Core.Services.Foundations.ResolvedAddresses
                 (Rule: IsInvalid(resolvedAddress.UpdatedBy), Parameter: nameof(ResolvedAddress.UpdatedBy)),
 
                 (Rule: IsNotSame(
-                    first: currentUser.EntraUserId,
+                    first: currentEntraUserId,
                     second: resolvedAddress.CreatedBy),
                 Parameter: nameof(ResolvedAddress.CreatedBy)),
 
@@ -78,7 +78,7 @@ namespace LHDS.Core.Services.Foundations.ResolvedAddresses
 
         private async ValueTask ValidateResolvedAddressOnModifyAsync(ResolvedAddress resolvedAddress)
         {
-            EntraUser currentUser = await this.securityBroker.GetCurrentUserAsync();
+            string currentEntraUserId = await this.securityAuditBroker.GetUserIdAsync();
 
             Validate(
 
@@ -97,7 +97,7 @@ namespace LHDS.Core.Services.Foundations.ResolvedAddresses
                 (Rule: IsInvalid(resolvedAddress.UpdatedBy), Parameter: nameof(ResolvedAddress.UpdatedBy)),
 
                 (Rule: IsNotSame(
-                    first: currentUser.EntraUserId,
+                    first: currentEntraUserId,
                     second: resolvedAddress.UpdatedBy),
                 Parameter: nameof(ResolvedAddress.UpdatedBy)),
 
@@ -166,7 +166,7 @@ namespace LHDS.Core.Services.Foundations.ResolvedAddresses
             ResolvedAddress resolvedAddress,
             ResolvedAddress maybeResolvedAddress)
         {
-            EntraUser auditUser = await this.securityBroker.GetCurrentUserAsync();
+            string auditUserId = await this.securityAuditBroker.GetUserIdAsync();
 
             Validate(
 
@@ -192,7 +192,7 @@ namespace LHDS.Core.Services.Foundations.ResolvedAddresses
                  Parameter: nameof(ResolvedAddress.UpdatedDate)),
 
                 (Rule: IsNotSame(
-                    auditUser.EntraUserId.ToString(),
+                    auditUserId,
                     resolvedAddress.UpdatedBy,
                     nameof(ResolvedAddress.UpdatedBy)),
                  Parameter: nameof(ResolvedAddress.UpdatedBy))

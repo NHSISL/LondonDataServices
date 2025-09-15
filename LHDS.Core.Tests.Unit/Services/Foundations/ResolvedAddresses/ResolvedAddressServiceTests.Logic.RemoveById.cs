@@ -20,15 +20,15 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.ResolvedAddresses
         {
             // given
             DateTimeOffset randomDateTimeOffset = GetRandomDateTimeOffset();
-            EntraUser randomEntraUser = CreateRandomEntraUser();
+            string randomEntraUserId = GetRandomStringWithLengthOf(50);
 
             ResolvedAddress randomResolvedAddress = 
-                CreateRandomResolvedAddress(randomDateTimeOffset, randomEntraUser.EntraUserId);
+                CreateRandomResolvedAddress(randomDateTimeOffset, randomEntraUserId);
 
             Guid inputResolvedAddressId = randomResolvedAddress.Id;
             ResolvedAddress storageResolvedAddress = randomResolvedAddress;
             ResolvedAddress ingestionTrackingWithDeleteAuditApplied = storageResolvedAddress.DeepClone();
-            ingestionTrackingWithDeleteAuditApplied.UpdatedBy = randomEntraUser.EntraUserId.ToString();
+            ingestionTrackingWithDeleteAuditApplied.UpdatedBy = randomEntraUserId.ToString();
             ingestionTrackingWithDeleteAuditApplied.UpdatedDate = randomDateTimeOffset;
             ResolvedAddress updatedResolvedAddress = storageResolvedAddress;
             ResolvedAddress deletedResolvedAddress = updatedResolvedAddress;
@@ -38,9 +38,9 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.ResolvedAddresses
                 broker.GetCurrentDateTimeOffsetAsync())
                     .ReturnsAsync(randomDateTimeOffset);
 
-            this.securityBrokerMock.Setup(broker =>
-                broker.GetCurrentUserAsync())
-                    .ReturnsAsync(randomEntraUser);
+            this.securityAuditBrokerMock.Setup(broker =>
+                broker.GetUserIdAsync())
+                    .ReturnsAsync(randomEntraUserId);
 
             this.storageBrokerMock.Setup(broker =>
                 broker.SelectResolvedAddressByIdAsync(inputResolvedAddressId))
@@ -69,8 +69,8 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.ResolvedAddresses
                 broker.GetCurrentDateTimeOffsetAsync(),
                     Times.Once);
 
-            this.securityBrokerMock.Verify(broker =>
-                broker.GetCurrentUserAsync(),
+            this.securityAuditBrokerMock.Verify(broker =>
+                broker.GetUserIdAsync(),
                     Times.Exactly(2));
 
             this.storageBrokerMock.Verify(broker =>
@@ -83,7 +83,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.ResolvedAddresses
 
             this.storageBrokerMock.VerifyNoOtherCalls();
             this.dateTimeBrokerMock.VerifyNoOtherCalls();
-            this.securityBrokerMock.VerifyNoOtherCalls();
+            this.securityAuditBrokerMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
         }
     }

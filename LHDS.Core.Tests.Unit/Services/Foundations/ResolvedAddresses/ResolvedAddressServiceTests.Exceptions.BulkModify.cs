@@ -235,7 +235,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.ResolvedAddresses
                 this.storageBrokerMock.Object,
                 this.identifierBrokerMock.Object,
                 this.dateTimeBrokerMock.Object,
-                this.securityBrokerMock.Object,
+                this.securityAuditBrokerMock.Object,
                 this.loggingBrokerMock.Object,
                 this.auditBrokerMock.Object)
             {
@@ -262,7 +262,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.ResolvedAddresses
                     innerException: failedResolvedAddressServiceException);
 
             // when
-            ValueTask updateResolvedAddressTask = resolvedAddressServiceMock.Object
+            ValueTask updateResolvedAddressTask = this.resolvedAddressService
                 .BulkModifyResolvedAddressesAsync(resolvedAddresses: someResolvedAddresses);
 
             ResolvedAddressServiceException actualResolvedAddressServiceException =
@@ -282,10 +282,9 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.ResolvedAddresses
                     expectedResolvedAddressServiceException))),
                         Times.Once);
 
-            resolvedAddressServiceMock.VerifyNoOtherCalls();
+            this.securityAuditBrokerMock.VerifyNoOtherCalls();
             this.identifierBrokerMock.VerifyNoOtherCalls();
             this.dateTimeBrokerMock.VerifyNoOtherCalls();
-            this.securityBrokerMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
             this.auditBrokerMock.VerifyNoOtherCalls();
         }

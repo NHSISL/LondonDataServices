@@ -6,7 +6,6 @@ using System;
 using System.Threading.Tasks;
 using FluentAssertions;
 using Force.DeepCloner;
-using LHDS.Core.Models.Brokers.Securities;
 using LHDS.Core.Models.Foundations.ResolvedAddresses;
 using Moq;
 using Xunit;
@@ -29,6 +28,10 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.ResolvedAddresses
             ResolvedAddress storageResolvedAddress = inputResolvedAddress;
             ResolvedAddress expectedResolvedAddress = storageResolvedAddress.DeepClone();
 
+            this.securityAuditBrokerMock.Setup(broker =>
+                broker.ApplyAddAuditValuesAsync(inputResolvedAddress))
+                    .ReturnsAsync(inputResolvedAddress);
+
             this.dateTimeBrokerMock.Setup(broker =>
                 broker.GetCurrentDateTimeOffsetAsync())
                     .ReturnsAsync(randomDateTimeOffset);
@@ -48,20 +51,24 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.ResolvedAddresses
             // then
             actualResolvedAddress.Should().BeEquivalentTo(expectedResolvedAddress);
 
+            this.securityAuditBrokerMock.Verify(broker =>
+                broker.ApplyAddAuditValuesAsync(inputResolvedAddress),
+                    Times.Once);
+
             this.dateTimeBrokerMock.Verify(broker =>
                 broker.GetCurrentDateTimeOffsetAsync(),
-                    Times.Exactly(2));
+                    Times.Once);
 
             this.securityAuditBrokerMock.Verify(broker =>
                 broker.GetUserIdAsync(),
-                    Times.Exactly(2));
+                    Times.Once);
 
             this.storageBrokerMock.Verify(broker =>
                 broker.InsertResolvedAddressAsync(inputResolvedAddress),
                     Times.Once);
 
-            this.dateTimeBrokerMock.VerifyNoOtherCalls();
             this.securityAuditBrokerMock.VerifyNoOtherCalls();
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
             this.storageBrokerMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
         }

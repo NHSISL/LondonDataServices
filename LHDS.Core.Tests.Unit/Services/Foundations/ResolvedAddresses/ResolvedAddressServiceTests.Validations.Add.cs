@@ -30,6 +30,10 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.ResolvedAddresses
                     message: "Resolved address validation errors occurred, please try again.",
                     innerException: nullResolvedAddressException);
 
+            this.securityAuditBrokerMock.Setup(broker =>
+                broker.ApplyAddAuditValuesAsync(nullResolvedAddress))
+                    .ThrowsAsync(nullResolvedAddressException);
+
             // when
             ValueTask<ResolvedAddress> addResolvedAddressTask =
                 this.resolvedAddressService.AddResolvedAddressAsync(nullResolvedAddress);
@@ -41,11 +45,16 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.ResolvedAddresses
             actualResolvedAddressValidationException.Should()
                 .BeEquivalentTo(expectedResolvedAddressValidationException);
 
+            this.securityAuditBrokerMock.Verify(broker =>
+                broker.ApplyAddAuditValuesAsync(nullResolvedAddress),
+                    Times.Once());
+
             this.loggingBrokerMock.Verify(broker =>
                 broker.LogErrorAsync(It.Is(SameExceptionAs(
                     expectedResolvedAddressValidationException))),
                         Times.Once);
 
+            this.securityAuditBrokerMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
             this.dateTimeBrokerMock.VerifyNoOtherCalls();
             this.storageBrokerMock.VerifyNoOtherCalls();
@@ -159,7 +168,6 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.ResolvedAddresses
 
             this.securityAuditBrokerMock.VerifyNoOtherCalls();
             this.dateTimeBrokerMock.VerifyNoOtherCalls();
-            this.securityAuditBrokerMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
             this.storageBrokerMock.VerifyNoOtherCalls();
         }

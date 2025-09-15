@@ -28,26 +28,26 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.ResolvedAddresses
             Guid inputResolvedAddressId = randomResolvedAddress.Id;
             ResolvedAddress storageResolvedAddress = randomResolvedAddress;
             ResolvedAddress ingestionTrackingWithDeleteAuditApplied = storageResolvedAddress.DeepClone();
-            ingestionTrackingWithDeleteAuditApplied.UpdatedBy = randomEntraUserId.ToString();
+            ingestionTrackingWithDeleteAuditApplied.UpdatedBy = randomEntraUserId;
             ingestionTrackingWithDeleteAuditApplied.UpdatedDate = randomDateTimeOffset;
             ResolvedAddress updatedResolvedAddress = storageResolvedAddress;
             ResolvedAddress deletedResolvedAddress = updatedResolvedAddress;
             ResolvedAddress expectedResolvedAddress = deletedResolvedAddress.DeepClone();
 
-            this.dateTimeBrokerMock.Setup(broker =>
-                broker.GetCurrentDateTimeOffsetAsync())
-                    .ReturnsAsync(randomDateTimeOffset);
+            this.storageBrokerMock.Setup(broker =>
+                broker.SelectResolvedAddressByIdAsync(inputResolvedAddressId))
+                    .ReturnsAsync(storageResolvedAddress);
+
+            this.securityAuditBrokerMock.Setup(broker =>
+                broker.ApplyRemoveAuditValuesAsync(storageResolvedAddress))
+                    .ReturnsAsync(ingestionTrackingWithDeleteAuditApplied);
 
             this.securityAuditBrokerMock.Setup(broker =>
                 broker.GetUserIdAsync())
                     .ReturnsAsync(randomEntraUserId);
 
             this.storageBrokerMock.Setup(broker =>
-                broker.SelectResolvedAddressByIdAsync(inputResolvedAddressId))
-                    .ReturnsAsync(storageResolvedAddress);
-
-            this.storageBrokerMock.Setup(broker =>
-                broker.UpdateResolvedAddressAsync(randomResolvedAddress))
+                broker.UpdateResolvedAddressAsync(ingestionTrackingWithDeleteAuditApplied))
                     .ReturnsAsync(updatedResolvedAddress);
 
             this.storageBrokerMock.Setup(broker =>
@@ -61,26 +61,27 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.ResolvedAddresses
             // then
             actualResolvedAddress.Should().BeEquivalentTo(expectedResolvedAddress);
 
+            this.securityAuditBrokerMock.Verify(broker =>
+                broker.ApplyRemoveAuditValuesAsync(storageResolvedAddress),
+                    Times.Once);
+
             this.storageBrokerMock.Verify(broker =>
                 broker.SelectResolvedAddressByIdAsync(inputResolvedAddressId),
                     Times.Once);
 
-            this.dateTimeBrokerMock.Verify(broker =>
-                broker.GetCurrentDateTimeOffsetAsync(),
-                    Times.Once);
-
             this.securityAuditBrokerMock.Verify(broker =>
                 broker.GetUserIdAsync(),
-                    Times.Exactly(2));
+                    Times.Once);
 
             this.storageBrokerMock.Verify(broker =>
-                broker.UpdateResolvedAddressAsync(randomResolvedAddress),
+                broker.UpdateResolvedAddressAsync(ingestionTrackingWithDeleteAuditApplied),
                     Times.Once);
 
             this.storageBrokerMock.Verify(broker =>
                 broker.DeleteResolvedAddressAsync(updatedResolvedAddress),
                     Times.Once);
 
+            this.securityAuditBrokerMock.VerifyNoOtherCalls();
             this.storageBrokerMock.VerifyNoOtherCalls();
             this.dateTimeBrokerMock.VerifyNoOtherCalls();
             this.securityAuditBrokerMock.VerifyNoOtherCalls();

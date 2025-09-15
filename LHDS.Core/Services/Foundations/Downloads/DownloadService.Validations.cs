@@ -35,7 +35,6 @@ namespace LHDS.Core.Services.Foundations.Downloads
                      message: "Invalid download. Please correct the errors and try again."),
 
                 (Rule: IsInvalid(document.FileName), Parameter: nameof(Document.FileName)));
-
         }
 
         private static void ValidateStorageDownload(Download maybeDownload, string fileName)

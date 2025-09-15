@@ -384,20 +384,20 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.ResolvedAddresses
                     message: "Document processing dependency error occurred, please contact support.",
                     innerException),
 
-                //new DocumentProcessingServiceException(
-                //    message: "Document processing service error occurred, please contact support.",
-                //    innerException),
+                new DocumentProcessingServiceException(
+                    message: "Document processing service error occurred, please contact support.",
+                    innerException),
 
-                //new ResolvedAddressProcessingDependencyException(
-                //    message: "Resolved address processing dependency error occurred, please contact support.",
-                //    innerException),
+                new ResolvedAddressProcessingDependencyException(
+                    message: "Resolved address processing dependency error occurred, please contact support.",
+                    innerException),
 
-                //new ResolvedAddressProcessingServiceException(
-                //    message: "Resolved address processing service error occurred, please contact support.",
-                //    innerException),
+                new ResolvedAddressProcessingServiceException(
+                    message: "Resolved address processing service error occurred, please contact support.",
+                    innerException),
 
-                //new CsvHelperClientDependencyException(innerException),
-                //new CsvHelperClientServiceException(innerException)
+                new CsvHelperClientDependencyException(innerException),
+                new CsvHelperClientServiceException(innerException)
             };
         }
 

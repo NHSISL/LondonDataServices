@@ -8,6 +8,7 @@ using LHDS.Core.Models.Foundations.Documents;
 using LHDS.Core.Models.Foundations.Downloads;
 using LHDS.Core.Models.Foundations.Downloads.Exceptions;
 using LHDS.Core.Models.Processings.SubscriberCredentials;
+using Xeptions;
 
 namespace LHDS.Core.Services.Foundations.Downloads
 {
@@ -27,8 +28,15 @@ namespace LHDS.Core.Services.Foundations.Downloads
             ValidateDocument(download.Document);
         }
 
-        private void ValidateDocument(Document document) =>
-            Validate((Rule: IsInvalid(document.FileName), Parameter: nameof(Document.FileName)));
+        private void ValidateDocument(Document document)
+        {
+            Validate<InvalidDownloadException>(
+                createException: () => new InvalidDownloadException(
+                     message: "Invalid download. Please correct the errors and try again."),
+
+                (Rule: IsInvalid(document.FileName), Parameter: nameof(Document.FileName)));
+
+        }
 
         private static void ValidateStorageDownload(Download maybeDownload, string fileName)
         {
@@ -109,22 +117,24 @@ namespace LHDS.Core.Services.Foundations.Downloads
             return timeDifference.Duration() > oneMinute;
         }
 
-        private static void Validate(params (dynamic Rule, string Parameter)[] validations)
+        private static void Validate<T>(
+            Func<T> createException,
+            params (dynamic Rule, string Parameter)[] validations)
+            where T : Xeption
         {
-            var invalidDownloadException = new InvalidDownloadException(
-                message: "Invalid download. Please correct the errors and try again.");
+            T invalidDataException = createException();
 
             foreach ((dynamic rule, string parameter) in validations)
             {
                 if (rule.Condition)
                 {
-                    invalidDownloadException.UpsertDataList(
+                    invalidDataException.UpsertDataList(
                         key: parameter,
                         value: rule.Message);
                 }
             }
 
-            invalidDownloadException.ThrowIfContainsErrors();
+            invalidDataException.ThrowIfContainsErrors();
         }
     }
 }

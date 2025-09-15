@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using LHDS.Core.Models.Brokers.Securities;
 using LHDS.Core.Models.Foundations.DataSets;
 using LHDS.Core.Models.Foundations.DataSets.Exceptions;
+using Xeptions;
 
 namespace LHDS.Core.Services.Foundations.DataSets
 {
@@ -17,7 +18,10 @@ namespace LHDS.Core.Services.Foundations.DataSets
             ValidateDataSetIsNotNull(dataSet);
             EntraUser currentUser = await this.securityBroker.GetCurrentUserAsync();
 
-            Validate(
+            Validate<InvalidDataSetException>(
+                createException: () => new InvalidDataSetException(
+                    message: "Invalid dataSet. Please correct the errors and try again."),
+
                 (Rule: IsInvalid(dataSet.Id), Parameter: nameof(DataSet.Id)),
                 (Rule: IsInvalid(dataSet.SupplierId), Parameter: nameof(DataSet.SupplierId)),
                 (Rule: IsInvalid(dataSet.DataSetName), Parameter: nameof(DataSet.DataSetName)),
@@ -73,7 +77,10 @@ namespace LHDS.Core.Services.Foundations.DataSets
         {
             ValidateDataSetIsNotNull(dataSet);
 
-            Validate(
+            Validate<InvalidDataSetException>(
+                createException: () => new InvalidDataSetException(
+                    message: "Invalid dataSet. Please correct the errors and try again."),
+
                 (Rule: IsInvalid(dataSet.Id), Parameter: nameof(DataSet.Id)),
                 (Rule: IsInvalid(dataSet.SupplierId), Parameter: nameof(DataSet.SupplierId)),
                 (Rule: IsInvalid(dataSet.DataSetName), Parameter: nameof(DataSet.DataSetName)),
@@ -114,8 +121,14 @@ namespace LHDS.Core.Services.Foundations.DataSets
                 (Rule: await IsNotRecentAsync(dataSet.UpdatedDate), Parameter: nameof(dataSet.UpdatedDate)));
         }
 
-        public void ValidateDataSetId(Guid dataSetId) =>
-            Validate((Rule: IsInvalid(dataSetId), Parameter: nameof(DataSet.Id)));
+        public void ValidateDataSetId(Guid dataSetId)
+        {
+            Validate<InvalidDataSetException>(
+                createException: () => new InvalidDataSetException(
+                    message: "Invalid dataSet. Please correct the errors and try again."), 
+                
+                (Rule: IsInvalid(dataSetId), Parameter: nameof(DataSet.Id)));
+        }
 
         private static void ValidateStorageDataSet(DataSet maybeDataSet, Guid dataSetId)
         {
@@ -135,7 +148,10 @@ namespace LHDS.Core.Services.Foundations.DataSets
 
         private static void ValidateAgainstStorageDataSetOnModify(DataSet inputDataSet, DataSet storageDataSet)
         {
-            Validate(
+            Validate<InvalidDataSetException>(
+                createException: () => new InvalidDataSetException(
+                    message: "Invalid dataSet. Please correct the errors and try again."),
+
                 (Rule: IsNotSame(
                     firstDate: inputDataSet.CreatedDate,
                     secondDate: storageDataSet.CreatedDate,
@@ -159,7 +175,10 @@ namespace LHDS.Core.Services.Foundations.DataSets
         {
             EntraUser auditUser = await this.securityBroker.GetCurrentUserAsync();
 
-            Validate(
+            Validate<InvalidDataSetException>(
+                createException: () => new InvalidDataSetException(
+                    message: "Invalid dataSet. Please correct the errors and try again."),
+
                 (Rule: IsNotSame(
                     dataSet.CreatedDate,
                     maybeDataSet.CreatedDate,
@@ -271,23 +290,24 @@ namespace LHDS.Core.Services.Foundations.DataSets
             return timeDifference.Duration() > oneMinute;
         }
 
-        private static void Validate(params (dynamic Rule, string Parameter)[] validations)
+        private static void Validate<T>(
+            Func<T> createException,
+            params (dynamic Rule, string Parameter)[] validations)
+            where T : Xeption
         {
-            var invalidDataSetException =
-                new InvalidDataSetException(
-                    message: "Invalid dataSet. Please correct the errors and try again.");
+            T invalidDataException = createException();
 
             foreach ((dynamic rule, string parameter) in validations)
             {
                 if (rule.Condition)
                 {
-                    invalidDataSetException.UpsertDataList(
+                    invalidDataException.UpsertDataList(
                         key: parameter,
                         value: rule.Message);
                 }
             }
 
-            invalidDataSetException.ThrowIfContainsErrors();
+            invalidDataException.ThrowIfContainsErrors();
         }
     }
 }

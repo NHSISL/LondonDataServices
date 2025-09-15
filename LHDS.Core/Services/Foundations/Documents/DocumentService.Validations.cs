@@ -5,6 +5,7 @@
 using System;
 using System.IO;
 using LHDS.Core.Models.Foundations.Documents.Exceptions;
+using Xeptions;
 
 namespace LHDS.Core.Services.Foundations.Documents
 {
@@ -13,6 +14,9 @@ namespace LHDS.Core.Services.Foundations.Documents
         private static void ValidateDocumentOnAdd(Stream input, string fileName, string container)
         {
             Validate(
+                createException: () => new InvalidDocumentException(
+                    message: "Invalid document. Please correct the errors and try again."),
+
                 (Rule: IsInvalidInputStream(input), Parameter: "Input"),
                 (Rule: IsInvalid(fileName), Parameter: "FileName"),
                 (Rule: IsInvalid(container), Parameter: "Container"));
@@ -21,6 +25,9 @@ namespace LHDS.Core.Services.Foundations.Documents
         private static void ValidateArgumentsOnRetrieve(Stream output, string fileName, string container)
         {
             Validate(
+                createException: () => new InvalidDocumentException(
+                    message: "Invalid document. Please correct the errors and try again."),
+
                 (Rule: IsInvalidOutputStream(output), Parameter: "Output"),
                 (Rule: IsInvalid(container), Parameter: "Container"),
                 (Rule: IsInvalid(fileName), Parameter: "FileName"));
@@ -29,6 +36,9 @@ namespace LHDS.Core.Services.Foundations.Documents
         private void ValidateDeleteArguments(string fileName, string container)
         {
             Validate(
+                createException: () => new InvalidDocumentException(
+                    message: "Invalid document. Please correct the errors and try again."),
+
                (Rule: IsInvalid(container), Parameter: "Container"),
                (Rule: IsInvalid(fileName), Parameter: "FileName"));
         }
@@ -36,6 +46,9 @@ namespace LHDS.Core.Services.Foundations.Documents
         private void ValidateGetDownloadLinkArguments(string fileName, string container)
         {
             Validate(
+                createException: () => new InvalidDocumentException(
+                    message: "Invalid document. Please correct the errors and try again."),
+
                (Rule: IsInvalid(container), Parameter: "Container"),
                (Rule: IsInvalid(fileName), Parameter: "FileName"));
         }
@@ -68,22 +81,24 @@ namespace LHDS.Core.Services.Foundations.Documents
             Message = "Text is required"
         };
 
-        private static void Validate(params (dynamic Rule, string Parameter)[] validations)
+        private static void Validate<T>(
+            Func<T> createException,
+            params (dynamic Rule, string Parameter)[] validations)
+            where T : Xeption
         {
-            var invalidDocumentException = new InvalidDocumentException(
-                message: "Invalid document. Please correct the errors and try again.");
+            T invalidDataException = createException();
 
             foreach ((dynamic rule, string parameter) in validations)
             {
                 if (rule.Condition)
                 {
-                    invalidDocumentException.UpsertDataList(
+                    invalidDataException.UpsertDataList(
                         key: parameter,
                         value: rule.Message);
                 }
             }
 
-            invalidDocumentException.ThrowIfContainsErrors();
+            invalidDataException.ThrowIfContainsErrors();
         }
     }
 }

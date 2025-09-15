@@ -256,24 +256,6 @@ namespace LHDS.Core.Services.Foundations.IngestionTrackings
             Message = "Items is required"
         };
 
-        private static void Validate(params (dynamic Rule, string Parameter)[] validations)
-        {
-            var invalidIngestionTrackingException = new InvalidIngestionTrackingException(
-                message: "Invalid ingestion tracking. Please investigate.");
-
-            foreach ((dynamic rule, string parameter) in validations)
-            {
-                if (rule.Condition)
-                {
-                    invalidIngestionTrackingException.UpsertDataList(
-                        key: parameter,
-                        value: rule.Message);
-                }
-            }
-
-            invalidIngestionTrackingException.ThrowIfContainsErrors();
-        }
-
         private static void Validate<T>(
             Func<T> createException,
             params (dynamic Rule, string Parameter)[] validations)

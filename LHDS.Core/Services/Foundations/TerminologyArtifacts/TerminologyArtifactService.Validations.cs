@@ -46,7 +46,8 @@ namespace LHDS.Core.Services.Foundations.TerminologyArtifacts
                     secondName: nameof(TerminologyArtifact.CreatedBy)),
                 Parameter: nameof(TerminologyArtifact.UpdatedBy)),
 
-                (Rule: await IsNotRecentAsync(terminologyArtifact.CreatedDate), Parameter: nameof(TerminologyArtifact.CreatedDate)));
+                (Rule: await IsNotRecentAsync(terminologyArtifact.CreatedDate), 
+                Parameter: nameof(TerminologyArtifact.CreatedDate)));
         }
 
         private async ValueTask ValidateTerminologyArtifactOnModifyAsync(TerminologyArtifact terminologyArtifact)

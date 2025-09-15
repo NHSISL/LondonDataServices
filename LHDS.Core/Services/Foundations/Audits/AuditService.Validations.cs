@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using LHDS.Core.Models.Foundations.Audits;
 using LHDS.Core.Models.Foundations.Audits.Exceptions;
+using Xeptions;
 
 namespace LHDS.Core.Services.Foundations.Audits
 {
@@ -17,6 +18,9 @@ namespace LHDS.Core.Services.Foundations.Audits
             string currentUserId = await this.securityAuditBroker.GetUserIdAsync();
 
             Validate(
+                createException: () => new InvalidAuditException(
+                    message: "Invalid audit. Please correct the errors and try again."),
+
                 (Rule: IsInvalid(audit.Id), Parameter: nameof(Audit.Id)),
                 (Rule: IsInvalid(audit.AuditType), Parameter: nameof(Audit.AuditType)),
                 (Rule: IsInvalid(audit.Title), Parameter: nameof(Audit.Title)),
@@ -58,6 +62,9 @@ namespace LHDS.Core.Services.Foundations.Audits
             string currentUserId = await this.securityAuditBroker.GetUserIdAsync();
 
             Validate(
+                createException: () => new InvalidAuditException(
+                    message: "Invalid audit. Please correct the errors and try again."),
+
                 (Rule: IsInvalid(audit.Id), Parameter: nameof(Audit.Id)),
                 (Rule: IsInvalid(audit.AuditType), Parameter: nameof(Audit.AuditType)),
                 (Rule: IsInvalid(audit.Title), Parameter: nameof(Audit.Title)),
@@ -87,6 +94,9 @@ namespace LHDS.Core.Services.Foundations.Audits
             string currentUserId = await this.securityAuditBroker.GetUserIdAsync();
 
             Validate(
+                createException: () => new InvalidAuditException(
+                    message: "Invalid audit. Please correct the errors and try again."),
+
                 (Rule: IsNotSame(
                     audit.CreatedDate,
                     maybeAudit.CreatedDate,
@@ -113,8 +123,14 @@ namespace LHDS.Core.Services.Foundations.Audits
             );
         }
 
-        public void ValidateAuditId(Guid auditId) =>
-            Validate((Rule: IsInvalid(auditId), Parameter: nameof(Audit.Id)));
+        public void ValidateAuditId(Guid auditId)
+        {
+            Validate(
+                createException: () => new InvalidAuditException(
+                    message: "Invalid audit. Please correct the errors and try again."),
+
+                (Rule: IsInvalid(auditId), Parameter: nameof(Audit.Id)));
+        }
 
         private static void ValidateStorageAudit(Audit maybeAudit, Guid auditId)
         {
@@ -135,6 +151,9 @@ namespace LHDS.Core.Services.Foundations.Audits
         private static void ValidateAgainstStorageAuditOnModify(Audit inputAudit, Audit storageAudit)
         {
             Validate(
+                createException: () => new InvalidAuditException(
+                    message: "Invalid audit. Please correct the errors and try again."),
+
                 (Rule: IsNotSame(
                     firstDate: inputAudit.CreatedDate,
                     secondDate: storageAudit.CreatedDate,
@@ -239,23 +258,24 @@ namespace LHDS.Core.Services.Foundations.Audits
             return timeDifference.Duration() > oneMinute;
         }
 
-        private static void Validate(params (dynamic Rule, string Parameter)[] validations)
+        private static void Validate<T>(
+            Func<T> createException,
+            params (dynamic Rule, string Parameter)[] validations)
+            where T : Xeption
         {
-            var invalidAuditException =
-                new InvalidAuditException(
-                    message: "Invalid audit. Please correct the errors and try again.");
+            T invalidDataException = createException();
 
             foreach ((dynamic rule, string parameter) in validations)
             {
                 if (rule.Condition)
                 {
-                    invalidAuditException.UpsertDataList(
+                    invalidDataException.UpsertDataList(
                         key: parameter,
                         value: rule.Message);
                 }
             }
 
-            invalidAuditException.ThrowIfContainsErrors();
+            invalidDataException.ThrowIfContainsErrors();
         }
     }
 }

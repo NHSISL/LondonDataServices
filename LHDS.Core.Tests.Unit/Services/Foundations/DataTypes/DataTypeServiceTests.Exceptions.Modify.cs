@@ -38,10 +38,6 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.DataTypes
                 broker.ApplyModifyAuditValuesAsync(randomDataType))
                     .ReturnsAsync(randomDataType);
 
-            this.dateTimeBrokerMock.Setup(broker =>
-                broker.GetCurrentDateTimeOffsetAsync())
-                    .ThrowsAsync(sqlException);
-
             // when
             ValueTask<DataType> modifyDataTypeTask =
                 this.dataTypeService.ModifyDataTypeAsync(randomDataType);

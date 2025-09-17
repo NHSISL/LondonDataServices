@@ -196,7 +196,9 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Addresses
                 claims: new List<System.Security.Claims.Claim>
                 {
                     new System.Security.Claims.Claim(type: GetRandomString(), value: GetRandomString())
-                });
+                },
+
+                authenticationType: "Custom");
         }
 
         int GetBatchSize(int count, int batchSize)

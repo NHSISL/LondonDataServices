@@ -195,7 +195,9 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.ResolvedAddresses
                 claims: new List<System.Security.Claims.Claim>
                 {
                     new System.Security.Claims.Claim(type: GetRandomString(), value: GetRandomString())
-                });
+                },
+
+                authenticationType: "Custom");
         }
 
         private Expression<Func<List<ResolvedAddressReturn>, bool>> SameResolvedAddressReturnsAs(

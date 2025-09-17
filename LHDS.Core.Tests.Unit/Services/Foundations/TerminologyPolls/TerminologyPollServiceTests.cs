@@ -85,7 +85,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.TerminologyPolls
             new DateTimeRange(earliestDate: new DateTime()).GetValue();
 
         private static TerminologyPoll CreateRandomModifyTerminologyPoll(
-            DateTimeOffset dateTimeOffset, 
+            DateTimeOffset dateTimeOffset,
             string userId)
         {
             int randomDaysInPast = GetRandomNegativeNumber();
@@ -160,7 +160,9 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.TerminologyPolls
                 claims: new List<System.Security.Claims.Claim>
                 {
                     new System.Security.Claims.Claim(type: GetRandomString(), value: GetRandomString())
-                });
+                },
+
+                authenticationType: "Custom");
         }
     }
 }

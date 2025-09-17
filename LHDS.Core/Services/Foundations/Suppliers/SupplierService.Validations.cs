@@ -19,7 +19,7 @@ namespace LHDS.Core.Services.Foundations.Suppliers
 
             Validate(
                 createException: () => new InvalidSupplierException(
-                    message: "Invalid supplier. Please correct the errors and try again."),
+                message: "Invalid supplier. Please correct the errors and try again."),
 
                 (Rule: IsInvalid(supplier.Id), Parameter: nameof(Supplier.Id)),
                 (Rule: IsInvalid(supplier.Name), Parameter: nameof(Supplier.Name)),

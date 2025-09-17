@@ -36,7 +36,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.DataTypes
 
             this.securityAuditBrokerMock.Setup(broker =>
                 broker.ApplyAddAuditValuesAsync(someDataType))
-                    .ReturnsAsync(someDataType);
+                    .ThrowsAsync(sqlException);
 
             // when
             ValueTask<DataType> addDataTypeTask =
@@ -52,14 +52,6 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.DataTypes
 
             this.securityAuditBrokerMock.Verify(broker =>
                 broker.ApplyAddAuditValuesAsync(someDataType),
-                    Times.Once);
-
-            this.dateTimeBrokerMock.Verify(broker =>
-                broker.GetCurrentDateTimeOffsetAsync(),
-                    Times.Once);
-
-            this.securityAuditBrokerMock.Verify(broker =>
-                broker.GetUserIdAsync(),
                     Times.Once);
 
             this.storageBrokerMock.Verify(broker =>

@@ -20,8 +20,8 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Addresses
         {
             // given
             DateTimeOffset randomDateTimeOffset = GetRandomDateTimeOffset();
-            EntraUser randomEntraUser = CreateRandomEntraUser();
-            Address randomAddress = CreateRandomModifyAddress(randomDateTimeOffset, randomEntraUser.EntraUserId);
+            string randomEntraUserId = GetRandomStringWithLengthOf(50);
+            Address randomAddress = CreateRandomModifyAddress(randomDateTimeOffset, randomEntraUserId);
             Address inputAddress = randomAddress;
             Address storageAddress = inputAddress.DeepClone();
             storageAddress.UpdatedDate = randomAddress.CreatedDate;
@@ -29,13 +29,17 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Addresses
             Address expectedAddress = updatedAddress.DeepClone();
             Guid addressId = inputAddress.Id;
 
+            this.securityAuditBrokerMock.Setup(service =>
+                service.ApplyModifyAuditValuesAsync(randomAddress))
+                    .ReturnsAsync(randomAddress);
+
             this.dateTimeBrokerMock.Setup(broker =>
                 broker.GetCurrentDateTimeOffsetAsync())
                     .ReturnsAsync(randomDateTimeOffset);
 
-            this.securityBrokerMock.Setup(broker =>
-                broker.GetCurrentUserAsync())
-                    .ReturnsAsync(randomEntraUser);
+            this.securityAuditBrokerMock.Setup(broker =>
+                broker.GetUserIdAsync())
+                    .ReturnsAsync(randomEntraUserId);
 
             this.storageBrokerMock.Setup(broker =>
                 broker.SelectAddressByIdAsync(addressId))
@@ -52,13 +56,17 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Addresses
             // then
             actualAddress.Should().BeEquivalentTo(expectedAddress);
 
+            this.securityAuditBrokerMock.Verify(service =>
+               service.ApplyModifyAuditValuesAsync(inputAddress),
+                    Times.Once());
+
             this.dateTimeBrokerMock.Verify(broker =>
                 broker.GetCurrentDateTimeOffsetAsync(),
-                    Times.Exactly(2));
+                    Times.Once);
 
-            this.securityBrokerMock.Verify(brokers =>
-                brokers.GetCurrentUserAsync(),
-                    Times.Exactly(2));
+            this.securityAuditBrokerMock.Verify(brokers =>
+                brokers.GetUserIdAsync(),
+                    Times.Once);
 
             this.storageBrokerMock.Verify(broker =>
                 broker.SelectAddressByIdAsync(inputAddress.Id),
@@ -68,9 +76,10 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Addresses
                 broker.UpdateAddressAsync(inputAddress),
                     Times.Once);
 
+            this.securityAuditBrokerMock.VerifyNoOtherCalls();
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
             this.storageBrokerMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
-            this.dateTimeBrokerMock.VerifyNoOtherCalls();
         }
     }
 }

@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using LHDS.Core.Models.Brokers.Securities;
 using LHDS.Core.Models.Foundations.TerminologyArtifacts;
 using LHDS.Core.Models.Foundations.TerminologyArtifacts.Exceptions;
+using Xeptions;
 
 namespace LHDS.Core.Services.Foundations.TerminologyArtifacts
 {
@@ -17,6 +18,9 @@ namespace LHDS.Core.Services.Foundations.TerminologyArtifacts
             EntraUser currentUser = await this.securityBroker.GetCurrentUserAsync();
 
             Validate(
+                createException: () => new InvalidTerminologyArtifactException(
+                    message: "Invalid terminologyArtifact. Please correct the errors and try again."),
+
                 (Rule: IsInvalid(terminologyArtifact.Id), Parameter: nameof(TerminologyArtifact.Id)),
                 (Rule: IsInvalid(terminologyArtifact.FullUrl), Parameter: nameof(TerminologyArtifact.FullUrl)),
                 (Rule: IsInvalid(terminologyArtifact.ResourceType), Parameter: nameof(TerminologyArtifact.ResourceType)),
@@ -42,7 +46,8 @@ namespace LHDS.Core.Services.Foundations.TerminologyArtifacts
                     secondName: nameof(TerminologyArtifact.CreatedBy)),
                 Parameter: nameof(TerminologyArtifact.UpdatedBy)),
 
-                (Rule: await IsNotRecentAsync(terminologyArtifact.CreatedDate), Parameter: nameof(TerminologyArtifact.CreatedDate)));
+                (Rule: await IsNotRecentAsync(terminologyArtifact.CreatedDate), 
+                Parameter: nameof(TerminologyArtifact.CreatedDate)));
         }
 
         private async ValueTask ValidateTerminologyArtifactOnModifyAsync(TerminologyArtifact terminologyArtifact)
@@ -50,6 +55,9 @@ namespace LHDS.Core.Services.Foundations.TerminologyArtifacts
             EntraUser currentUser = await this.securityBroker.GetCurrentUserAsync();
 
             Validate(
+                createException: () => new InvalidTerminologyArtifactException(
+                    message: "Invalid terminologyArtifact. Please correct the errors and try again."),
+
                 (Rule: IsInvalid(terminologyArtifact.Id), Parameter: nameof(TerminologyArtifact.Id)),
                 (Rule: IsInvalid(terminologyArtifact.FullUrl), Parameter: nameof(TerminologyArtifact.FullUrl)),
                 (Rule: IsInvalid(terminologyArtifact.ResourceType), Parameter: nameof(TerminologyArtifact.ResourceType)),
@@ -72,8 +80,14 @@ namespace LHDS.Core.Services.Foundations.TerminologyArtifacts
                 (Rule: await IsNotRecentAsync(terminologyArtifact.UpdatedDate), Parameter: nameof(terminologyArtifact.UpdatedDate)));
         }
 
-        public void ValidateTerminologyArtifactId(Guid terminologyArtifactId) =>
-            Validate((Rule: IsInvalid(terminologyArtifactId), Parameter: nameof(TerminologyArtifact.Id)));
+        public void ValidateTerminologyArtifactId(Guid terminologyArtifactId)
+        {
+            Validate(
+                createException: () => new InvalidTerminologyArtifactException(
+                    message: "Invalid terminologyArtifact. Please correct the errors and try again."),
+
+                (Rule: IsInvalid(terminologyArtifactId), Parameter: nameof(TerminologyArtifact.Id)));
+        }
 
         private static void ValidateStorageTerminologyArtifact(
             TerminologyArtifact maybeTerminologyArtifact,
@@ -98,6 +112,9 @@ namespace LHDS.Core.Services.Foundations.TerminologyArtifacts
             TerminologyArtifact storageTerminologyArtifact)
         {
             Validate(
+                createException: () => new InvalidTerminologyArtifactException(
+                    message: "Invalid terminologyArtifact. Please correct the errors and try again."),
+
                 (Rule: IsNotSame(
                     firstDate: inputTerminologyArtifact.CreatedDate,
                     secondDate: storageTerminologyArtifact.CreatedDate,
@@ -117,11 +134,15 @@ namespace LHDS.Core.Services.Foundations.TerminologyArtifacts
                 Parameter: nameof(TerminologyArtifact.UpdatedDate)));
         }
 
-        private async ValueTask ValidateAgainstStorageTerminologyArtifactOnDeleteAsync(TerminologyArtifact terminologyArtifact, TerminologyArtifact maybeTerminologyArtifact)
+        private async ValueTask ValidateAgainstStorageTerminologyArtifactOnDeleteAsync(
+            TerminologyArtifact terminologyArtifact, TerminologyArtifact maybeTerminologyArtifact)
         {
             EntraUser auditUser = await this.securityBroker.GetCurrentUserAsync();
 
             Validate(
+                createException: () => new InvalidTerminologyArtifactException(
+                    message: "Invalid terminologyArtifact. Please correct the errors and try again."),
+
                 (Rule: IsNotSame(
                     terminologyArtifact.CreatedDate,
                     maybeTerminologyArtifact.CreatedDate,
@@ -227,23 +248,24 @@ namespace LHDS.Core.Services.Foundations.TerminologyArtifacts
             return timeDifference.Duration() > oneMinute;
         }
 
-        private static void Validate(params (dynamic Rule, string Parameter)[] validations)
+        private static void Validate<T>(
+            Func<T> createException,
+            params (dynamic Rule, string Parameter)[] validations)
+            where T : Xeption
         {
-            var invalidTerminologyArtifactException =
-                new InvalidTerminologyArtifactException(
-                    message: "Invalid terminologyArtifact. Please correct the errors and try again.");
+            T invalidDataException = createException();
 
             foreach ((dynamic rule, string parameter) in validations)
             {
                 if (rule.Condition)
                 {
-                    invalidTerminologyArtifactException.UpsertDataList(
+                    invalidDataException.UpsertDataList(
                         key: parameter,
                         value: rule.Message);
                 }
             }
 
-            invalidTerminologyArtifactException.ThrowIfContainsErrors();
+            invalidDataException.ThrowIfContainsErrors();
         }
     }
 }

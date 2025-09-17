@@ -50,7 +50,7 @@ namespace LHDS.Core.Tests.Acceptance.Clients.Addresses
         private readonly IAddressClient addressClient;
         private readonly ICompareLogic compareLogic;
         private readonly IDateTimeBroker dateTimeBroker;
-        private readonly ISecurityBroker securityBroker;
+        private readonly ISecurityAuditBroker securityAuditBroker;
         private readonly AddressConfiguration addressConfiguration;
         private readonly BlobContainers blobContainers;
         private readonly WireMockServer wireMockServer;
@@ -93,6 +93,7 @@ namespace LHDS.Core.Tests.Acceptance.Clients.Addresses
                 .AddTransient<ICsvHelperBroker, CsvHelperBroker>()
                 .AddTransient<IAddressService, AddressService>()
                 .AddTransient<IDocumentService, DocumentService>()
+                .AddTransient<ISecurityAuditBroker, SecurityAuditBroker>()
                 .AddAddressClient(this.dependencyBroker.Configuration, claimsPrincipal);
 
             var serviceProvider = serviceCollection.BuildServiceProvider(new ServiceProviderOptions
@@ -110,6 +111,7 @@ namespace LHDS.Core.Tests.Acceptance.Clients.Addresses
             this.addressService = serviceProvider.GetService<IAddressService>();
             this.resolvedAddressService = serviceProvider.GetService<IResolvedAddressService>();
             this.storageBroker = serviceProvider.GetService<IStorageBroker>();
+            this.securityAuditBroker = serviceProvider.GetService<ISecurityAuditBroker>();
 
             this.resolvedAddressProcessingService =
                 serviceProvider.GetService<IResolvedAddressProcessingService>();
@@ -123,7 +125,7 @@ namespace LHDS.Core.Tests.Acceptance.Clients.Addresses
             this.addressConfiguration = serviceProvider.GetService<AddressConfiguration>();
             this.blobContainers = serviceProvider.GetService<BlobContainers>();
             this.dateTimeBroker = serviceProvider.GetService<IDateTimeBroker>();
-            this.securityBroker = serviceProvider.GetService<ISecurityBroker>();
+            this.securityAuditBroker = serviceProvider.GetService<ISecurityAuditBroker>();
             addressClient = serviceProvider.GetService<IAddressClient>();
         }
 

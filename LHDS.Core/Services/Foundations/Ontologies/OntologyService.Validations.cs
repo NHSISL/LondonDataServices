@@ -3,7 +3,7 @@
 // ---------------------------------------------------------
 
 using System;
-using LHDS.Core.Models.Foundations.Downloads.Exceptions;
+using System.Threading.Tasks;
 using LHDS.Core.Models.Foundations.Ontologies.Exceptions;
 using Xeptions;
 
@@ -11,11 +11,11 @@ namespace LHDS.Core.Services.Foundations.Ontologies
 {
     public partial class OntologyService
     {
-        public async void ValidateArgs(string relativeUrl)
+        public async ValueTask ValidateArgs(string relativeUrl)
         {
-            Validate<InvalidArgumentOntologyException>(
+            Validate(
                 createException: () => new InvalidArgumentOntologyException(
-                message: "Invalid ontology arguments. Please correct the error and try again."),
+                    message: "Invalid ontology arguments. Please correct the error and try again."),
 
                 (Rule: IsInvalid(relativeUrl), Parameter: "relativeUrl"));
         }

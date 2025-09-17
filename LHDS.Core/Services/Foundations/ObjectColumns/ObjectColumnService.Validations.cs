@@ -173,7 +173,6 @@ namespace LHDS.Core.Services.Foundations.ObjectColumns
 
         public void ValidateObjectColumnId(Guid objectColumnId)
         {
-
             Validate<InvalidObjectColumnException>(
 
                 createException: () => new InvalidObjectColumnException(

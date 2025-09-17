@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using LHDS.Core.Models.Brokers.Securities;
 using LHDS.Core.Models.Foundations.TerminologyPolls;
 using LHDS.Core.Models.Foundations.TerminologyPolls.Exceptions;
+using Xeptions;
 
 namespace LHDS.Core.Services.Foundations.TerminologyPolls
 {
@@ -17,6 +18,9 @@ namespace LHDS.Core.Services.Foundations.TerminologyPolls
             EntraUser currentUser = await this.securityBroker.GetCurrentUserAsync();
 
             Validate(
+                createException: () => new InvalidTerminologyPollException(
+                    message: "Invalid terminologyPoll. Please correct the errors and try again."),
+
                 (Rule: IsInvalid(terminologyPoll.Id), Parameter: nameof(TerminologyPoll.Id)),
                 (Rule: IsInvalid(terminologyPoll.ResourceType), Parameter: nameof(TerminologyPoll.ResourceType)),
                 (Rule: IsInvalid(terminologyPoll.LastPoll), Parameter: nameof(TerminologyPoll.LastPoll)),
@@ -50,6 +54,9 @@ namespace LHDS.Core.Services.Foundations.TerminologyPolls
             EntraUser currentUser = await this.securityBroker.GetCurrentUserAsync();
 
             Validate(
+                createException: () => new InvalidTerminologyPollException(
+                    message: "Invalid terminologyPoll. Please correct the errors and try again."),
+
                 (Rule: IsInvalid(terminologyPoll.Id), Parameter: nameof(TerminologyPoll.Id)),
                 (Rule: IsInvalid(terminologyPoll.ResourceType), Parameter: nameof(TerminologyPoll.ResourceType)),
                 (Rule: IsInvalid(terminologyPoll.LastPoll), Parameter: nameof(TerminologyPoll.LastPoll)),
@@ -72,8 +79,14 @@ namespace LHDS.Core.Services.Foundations.TerminologyPolls
                 (Rule: await IsNotRecentAsync(terminologyPoll.UpdatedDate), Parameter: nameof(terminologyPoll.UpdatedDate)));
         }
 
-        public void ValidateTerminologyPollId(Guid terminologyPollId) =>
-            Validate((Rule: IsInvalid(terminologyPollId), Parameter: nameof(TerminologyPoll.Id)));
+        public void ValidateTerminologyPollId(Guid terminologyPollId)
+        {
+            Validate(
+                createException: () => new InvalidTerminologyPollException(
+                    message: "Invalid terminologyPoll. Please correct the errors and try again."),
+
+                (Rule: IsInvalid(terminologyPollId), Parameter: nameof(TerminologyPoll.Id)));
+        }
 
         private static void ValidateStorageTerminologyPoll(
             TerminologyPoll maybeTerminologyPoll,
@@ -98,6 +111,9 @@ namespace LHDS.Core.Services.Foundations.TerminologyPolls
             TerminologyPoll storageTerminologyPoll)
         {
             Validate(
+                createException: () => new InvalidTerminologyPollException(
+                    message: "Invalid terminologyPoll. Please correct the errors and try again."),
+
                 (Rule: IsNotSame(
                     firstDate: inputTerminologyPoll.CreatedDate,
                     secondDate: storageTerminologyPoll.CreatedDate,
@@ -124,6 +140,9 @@ namespace LHDS.Core.Services.Foundations.TerminologyPolls
             EntraUser auditUser = await this.securityBroker.GetCurrentUserAsync();
 
             Validate(
+                createException: () => new InvalidTerminologyPollException(
+                    message: "Invalid terminologyPoll. Please correct the errors and try again."),
+
                 (Rule: IsNotSame(
                     terminologyPoll.CreatedDate,
                     maybeTerminologyPoll.CreatedDate,
@@ -229,23 +248,24 @@ namespace LHDS.Core.Services.Foundations.TerminologyPolls
             return timeDifference.Duration() > oneMinute;
         }
 
-        private static void Validate(params (dynamic Rule, string Parameter)[] validations)
+        private static void Validate<T>(
+            Func<T> createException,
+            params (dynamic Rule, string Parameter)[] validations)
+            where T : Xeption
         {
-            var invalidTerminologyPollException =
-                new InvalidTerminologyPollException(
-                    message: "Invalid terminologyPoll. Please correct the errors and try again.");
+            T invalidDataException = createException();
 
             foreach ((dynamic rule, string parameter) in validations)
             {
                 if (rule.Condition)
                 {
-                    invalidTerminologyPollException.UpsertDataList(
+                    invalidDataException.UpsertDataList(
                         key: parameter,
                         value: rule.Message);
                 }
             }
 
-            invalidTerminologyPollException.ThrowIfContainsErrors();
+            invalidDataException.ThrowIfContainsErrors();
         }
     }
 }

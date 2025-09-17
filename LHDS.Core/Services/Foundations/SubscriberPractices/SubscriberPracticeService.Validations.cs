@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using LHDS.Core.Models.Brokers.Securities;
 using LHDS.Core.Models.Foundations.SubscriberPractices;
 using LHDS.Core.Models.Foundations.SubscriberPractices.Exceptions;
+using Xeptions;
 
 namespace LHDS.Core.Services.Foundations.SubscriberPractices
 {
@@ -17,6 +18,9 @@ namespace LHDS.Core.Services.Foundations.SubscriberPractices
             EntraUser currentUser = await this.securityBroker.GetCurrentUserAsync();
 
             Validate(
+                createException: () => new InvalidSubscriberPracticeException(
+                    message: "Invalid subscriberPractice. Please correct the errors and try again."),
+
                 (Rule: IsInvalid(subscriberPractice.Id), Parameter: nameof(SubscriberPractice.Id)),
 
                 (Rule: IsInvalid(subscriberPractice.SubscriberAgreementId), 
@@ -64,6 +68,9 @@ namespace LHDS.Core.Services.Foundations.SubscriberPractices
             EntraUser currentUser = await this.securityBroker.GetCurrentUserAsync();
 
             Validate(
+                createException: () => new InvalidSubscriberPracticeException(
+                    message: "Invalid subscriberPractice. Please correct the errors and try again."),
+
                 (Rule: IsInvalid(subscriberPractice.Id), Parameter: nameof(SubscriberPractice.Id)),
 
                 (Rule: IsInvalid(subscriberPractice.SubscriberAgreementId),
@@ -101,8 +108,14 @@ namespace LHDS.Core.Services.Foundations.SubscriberPractices
                     Parameter: nameof(subscriberPractice.UpdatedDate)));
         }
 
-        public void ValidateSubscriberPracticeId(Guid subscriberPracticeId) =>
-            Validate((Rule: IsInvalid(subscriberPracticeId), Parameter: nameof(SubscriberPractice.Id)));
+        public void ValidateSubscriberPracticeId(Guid subscriberPracticeId)
+        {
+            Validate(
+                createException: () => new InvalidSubscriberPracticeException(
+                    message: "Invalid subscriberPractice. Please correct the errors and try again."), 
+                
+                (Rule: IsInvalid(subscriberPracticeId), Parameter: nameof(SubscriberPractice.Id)));
+        }
 
         private static void ValidateStorageSubscriberPractice(
             SubscriberPractice maybeSubscriberPractice,
@@ -128,6 +141,9 @@ namespace LHDS.Core.Services.Foundations.SubscriberPractices
             SubscriberPractice storageSubscriberPractice)
         {
             Validate(
+                createException: () => new InvalidSubscriberPracticeException(
+                    message: "Invalid subscriberPractice. Please correct the errors and try again."),
+
                 (Rule: IsNotSame(
                     firstDate: inputSubscriberPractice.CreatedDate,
                     secondDate: storageSubscriberPractice.CreatedDate,
@@ -252,6 +268,26 @@ namespace LHDS.Core.Services.Foundations.SubscriberPractices
             }
 
             invalidSubscriberPracticeException.ThrowIfContainsErrors();
+        }
+
+        private static void Validate<T>(
+            Func<T> createException,
+            params (dynamic Rule, string Parameter)[] validations)
+            where T : Xeption
+        {
+            T invalidDataException = createException();
+
+            foreach ((dynamic rule, string parameter) in validations)
+            {
+                if (rule.Condition)
+                {
+                    invalidDataException.UpsertDataList(
+                        key: parameter,
+                        value: rule.Message);
+                }
+            }
+
+            invalidDataException.ThrowIfContainsErrors();
         }
     }
 }

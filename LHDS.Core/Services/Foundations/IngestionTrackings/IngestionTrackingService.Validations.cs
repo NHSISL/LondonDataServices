@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 using LHDS.Core.Models.Brokers.Securities;
 using LHDS.Core.Models.Foundations.IngestionTrackings;
 using LHDS.Core.Models.Foundations.IngestionTrackings.Exceptions;
+using Xeptions;
 
 namespace LHDS.Core.Services.Foundations.IngestionTrackings
 {
@@ -18,6 +19,9 @@ namespace LHDS.Core.Services.Foundations.IngestionTrackings
             EntraUser currentUser = await this.securityBroker.GetCurrentUserAsync();
 
             Validate(
+                createException: () => new InvalidIngestionTrackingException(
+                    message: "Invalid ingestion tracking. Please investigate."),
+
                 (Rule: IsInvalid(ingestionTracking.Id), Parameter: nameof(IngestionTracking.Id)),
                 (Rule: IsInvalid(ingestionTracking.FileName), Parameter: nameof(IngestionTracking.FileName)),
                 (Rule: IsInvalid(ingestionTracking.SupplierId), Parameter: nameof(IngestionTracking.SupplierId)),
@@ -55,6 +59,9 @@ namespace LHDS.Core.Services.Foundations.IngestionTrackings
             EntraUser currentUser = await this.securityBroker.GetCurrentUserAsync();
 
             Validate(
+                createException: () => new InvalidIngestionTrackingException(
+                    message: "Invalid ingestion tracking. Please investigate."),
+
                 (Rule: IsInvalid(ingestionTracking.Id), Parameter: nameof(IngestionTracking.Id)),
                 (Rule: IsInvalid(ingestionTracking.FileName), Parameter: nameof(IngestionTracking.FileName)),
                 (Rule: IsInvalid(ingestionTracking.SupplierId), Parameter: nameof(IngestionTracking.SupplierId)),
@@ -85,14 +92,29 @@ namespace LHDS.Core.Services.Foundations.IngestionTrackings
             List<IngestionTracking> ingestionTrackingItems)
         {
             Validate(
+                createException: () => new InvalidIngestionTrackingException(
+                    message: "Invalid ingestion tracking. Please investigate."),
+
                 (Rule: IsInvalid(ingestionTrackingItems), Parameter: nameof(ingestionTrackingItems)));
         }
 
-        public void ValidateIngestionTrackingId(Guid ingestionTrackingId) =>
-            Validate((Rule: IsInvalid(ingestionTrackingId), Parameter: nameof(IngestionTracking.Id)));
+        public void ValidateIngestionTrackingId(Guid ingestionTrackingId)
+        {
+            Validate(
+                createException: () => new InvalidIngestionTrackingException(
+                    message: "Invalid ingestion tracking. Please investigate."), 
+                
+                (Rule: IsInvalid(ingestionTrackingId), Parameter: nameof(IngestionTracking.Id)));
+        }
 
-        public void ValidateIngestionTrackingFileName(string fileName) =>
-            Validate((Rule: IsInvalid(fileName), Parameter: nameof(IngestionTracking.FileName)));
+        public void ValidateIngestionTrackingFileName(string fileName)
+        {
+            Validate(
+                createException: () => new InvalidIngestionTrackingException(
+                    message: "Invalid ingestion tracking. Please investigate."), 
+                
+                (Rule: IsInvalid(fileName), Parameter: nameof(IngestionTracking.FileName)));
+        }
 
         private static void ValidateStorageIngestionTracking(
             IngestionTracking maybeIngestionTracking,
@@ -127,6 +149,9 @@ namespace LHDS.Core.Services.Foundations.IngestionTrackings
             IngestionTracking storageIngestionTracking)
         {
             Validate(
+                createException: () => new InvalidIngestionTrackingException(
+                    message: "Invalid ingestion tracking. Please investigate."),
+
                 (Rule: IsNotSame(
                     firstDate: inputIngestionTracking.CreatedDate,
                     secondDate: storageIngestionTracking.CreatedDate,
@@ -231,22 +256,24 @@ namespace LHDS.Core.Services.Foundations.IngestionTrackings
             Message = "Items is required"
         };
 
-        private static void Validate(params (dynamic Rule, string Parameter)[] validations)
+        private static void Validate<T>(
+            Func<T> createException,
+            params (dynamic Rule, string Parameter)[] validations)
+            where T : Xeption
         {
-            var invalidIngestionTrackingException = new InvalidIngestionTrackingException(
-                message: "Invalid ingestion tracking. Please investigate.");
+            T invalidDataException = createException();
 
             foreach ((dynamic rule, string parameter) in validations)
             {
                 if (rule.Condition)
                 {
-                    invalidIngestionTrackingException.UpsertDataList(
+                    invalidDataException.UpsertDataList(
                         key: parameter,
                         value: rule.Message);
                 }
             }
 
-            invalidIngestionTrackingException.ThrowIfContainsErrors();
+            invalidDataException.ThrowIfContainsErrors();
         }
     }
 }

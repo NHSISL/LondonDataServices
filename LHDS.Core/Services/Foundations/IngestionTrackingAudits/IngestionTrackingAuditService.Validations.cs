@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using LHDS.Core.Models.Brokers.Securities;
 using LHDS.Core.Models.Foundations.IngestionTrackingAudits;
 using LHDS.Core.Models.Foundations.IngestionTrackingAudits.Exceptions;
+using Xeptions;
 
 namespace LHDS.Core.Services.Foundations.IngestionTrackingAudits
 {
@@ -17,6 +18,9 @@ namespace LHDS.Core.Services.Foundations.IngestionTrackingAudits
             EntraUser currentUser = await this.securityBroker.GetCurrentUserAsync();
 
             Validate(
+                createException: () => new InvalidIngestionTrackingAuditException(
+                    message: "Invalid IngestionTrackingAudit. Please correct the errors and try again."),
+
                 (Rule: IsInvalid(ingestionTrackingAudit.Id), Parameter: nameof(IngestionTrackingAudit.Id)),
 
                 (Rule: IsInvalid(ingestionTrackingAudit.IngestionTrackingId),
@@ -69,6 +73,9 @@ namespace LHDS.Core.Services.Foundations.IngestionTrackingAudits
             ValidateIngestionTrackingAuditIsNotNull(ingestionTrackingAudit);
 
             Validate(
+                createException: () => new InvalidIngestionTrackingAuditException(
+                    message: "Invalid IngestionTrackingAudit. Please correct the errors and try again."),
+
                 (Rule: IsInvalid(ingestionTrackingAudit.Id), Parameter: nameof(IngestionTrackingAudit.Id)),
 
                 (Rule: IsInvalid(ingestionTrackingAudit.IngestionTrackingId),
@@ -105,8 +112,14 @@ namespace LHDS.Core.Services.Foundations.IngestionTrackingAudits
                     Parameter: nameof(ingestionTrackingAudit.UpdatedDate)));
         }
 
-        public void ValidateIngestionTrackingAuditId(Guid ingestionTrackingAuditId) =>
-            Validate((Rule: IsInvalid(ingestionTrackingAuditId), Parameter: nameof(IngestionTrackingAudit.Id)));
+        public void ValidateIngestionTrackingAuditId(Guid ingestionTrackingAuditId)
+        {
+            Validate(
+                createException: () => new InvalidIngestionTrackingAuditException(
+                    message: "Invalid IngestionTrackingAudit. Please correct the errors and try again."),
+
+            (Rule: IsInvalid(ingestionTrackingAuditId), Parameter: nameof(IngestionTrackingAudit.Id)));
+        }
 
         private static void ValidateStorageIngestionTrackingAudit(
             IngestionTrackingAudit maybeIngestionTrackingAudit,
@@ -141,6 +154,9 @@ namespace LHDS.Core.Services.Foundations.IngestionTrackingAudits
             IngestionTrackingAudit storageIngestionTrackingAudit)
         {
             Validate(
+                createException: () => new InvalidIngestionTrackingAuditException(
+                    message: "Invalid IngestionTrackingAudit. Please correct the errors and try again."),
+
                 (Rule: IsNotSame(
                     firstDate: inputIngestionTrackingAudit.CreatedDate,
                     secondDate: storageIngestionTrackingAudit.CreatedDate,
@@ -245,22 +261,24 @@ namespace LHDS.Core.Services.Foundations.IngestionTrackingAudits
             return timeDifference.Duration() > oneMinute;
         }
 
-        private static void Validate(params (dynamic Rule, string Parameter)[] validations)
+        private static void Validate<T>(
+            Func<T> createException,
+            params (dynamic Rule, string Parameter)[] validations)
+            where T : Xeption
         {
-            var invalidIngestionTrackingAuditException = new InvalidIngestionTrackingAuditException(
-                message: "Invalid IngestionTrackingAudit. Please correct the errors and try again.");
+            T invalidDataException = createException();
 
             foreach ((dynamic rule, string parameter) in validations)
             {
                 if (rule.Condition)
                 {
-                    invalidIngestionTrackingAuditException.UpsertDataList(
+                    invalidDataException.UpsertDataList(
                         key: parameter,
                         value: rule.Message);
                 }
             }
 
-            invalidIngestionTrackingAuditException.ThrowIfContainsErrors();
+            invalidDataException.ThrowIfContainsErrors();
         }
     }
 }

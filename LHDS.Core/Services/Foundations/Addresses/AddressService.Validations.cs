@@ -22,6 +22,7 @@ namespace LHDS.Core.Services.Foundations.Addresses
             Validate<InvalidAddressException>(
                 createException: () => new InvalidAddressException(
                     message: "Invalid address. Please correct the errors and try again."),
+
                 (Rule: IsInvalid(address.Id), Parameter: nameof(Address.Id)),
                 (Rule: IsInvalid(address.CreatedDate), Parameter: nameof(Address.CreatedDate)),
                 (Rule: IsInvalid(address.CreatedBy), Parameter: nameof(Address.CreatedBy)),

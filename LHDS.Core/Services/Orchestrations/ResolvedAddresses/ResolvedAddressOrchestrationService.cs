@@ -111,7 +111,6 @@ namespace LHDS.Core.Services.Orchestrations.ResolvedAddresses
         TryCatch(async () =>
         {
             Guid correlationId = await this.identifierBroker.GetIdentifierAsync();
-            var auditUser = await this.securityBroker.GetCurrentUserAsync();
             var currentDateTime = await this.dateTimeBroker.GetCurrentDateTimeOffsetAsync();
 
             ResolvedAddress? unMatchedResolvedAddress;
@@ -144,17 +143,12 @@ namespace LHDS.Core.Services.Orchestrations.ResolvedAddresses
 
                         Audit resolvedAddressMatchingAudit = new Audit
                         {
-                            Id = await this.identifierBroker.GetIdentifierAsync(),
                             AuditType = "Resolved Address Match",
                             Title = "Matching Resolved Address",
                             Message = $"Matching resolved address for {unMatchedResolvedAddress.UniqueReference}",
                             CorrelationId = correlationId.ToString(),
                             FileName = null,
-                            LogLevel = "Information",
-                            CreatedBy = auditUser?.EntraUserId.ToString() ?? string.Empty,
-                            CreatedDate = matchingDateTimeOffset,
-                            UpdatedBy = auditUser?.EntraUserId.ToString() ?? string.Empty,
-                            UpdatedDate = matchingDateTimeOffset,
+                            LogLevel = "Information"
                         };
 
                         audits.Add(resolvedAddressMatchingAudit);
@@ -198,7 +192,6 @@ namespace LHDS.Core.Services.Orchestrations.ResolvedAddresses
 
                         Audit resolvedAddressMatchingCompleteAudit = new Audit
                         {
-                            Id = await this.identifierBroker.GetIdentifierAsync(),
                             AuditType = "Resolved Address Match",
 
                             Title = newResolvedAddress.MatchedWithAssign ?
@@ -208,10 +201,6 @@ namespace LHDS.Core.Services.Orchestrations.ResolvedAddresses
                             CorrelationId = correlationId.ToString(),
                             FileName = null,
                             LogLevel = "Information",
-                            CreatedBy = auditUser?.EntraUserId.ToString() ?? string.Empty,
-                            CreatedDate = matchingCompleteDateTimeOffset,
-                            UpdatedBy = auditUser?.EntraUserId.ToString() ?? string.Empty,
-                            UpdatedDate = matchingCompleteDateTimeOffset,
                         };
 
                         audits.Add(resolvedAddressMatchingCompleteAudit);
@@ -238,17 +227,12 @@ namespace LHDS.Core.Services.Orchestrations.ResolvedAddresses
 
                     Audit resolvedAddressMatchingFailedAudit = new Audit
                     {
-                        Id = await this.identifierBroker.GetIdentifierAsync(),
                         AuditType = "Resolved Address Match",
                         Title = "Resolved Address Matching Failed",
                         Message = $"Resolved address matching failed for {failedToProcess.UniqueReference}",
                         CorrelationId = correlationId.ToString(),
                         FileName = null,
-                        LogLevel = "Information",
-                        CreatedBy = auditUser?.EntraUserId.ToString() ?? string.Empty,
-                        CreatedDate = matchingFailedDateTimeOffset,
-                        UpdatedBy = auditUser?.EntraUserId.ToString() ?? string.Empty,
-                        UpdatedDate = matchingFailedDateTimeOffset,
+                        LogLevel = "Information"
                     };
 
                     audits.Add(resolvedAddressMatchingFailedAudit);

@@ -252,26 +252,6 @@ namespace LHDS.Core.Services.Foundations.DecisionPolls
             return (isNotRecent, startDate, endDate);
         }
 
-        private static void Validate(params (dynamic Rule, string Parameter)[] validations)
-        {
-            var invalidDecisionPollException =
-                new InvalidDecisionPollException(
-                    message: "Invalid decisionPoll. Please correct the errors and try again.");
-
-
-            foreach ((dynamic rule, string parameter) in validations)
-            {
-                if (rule.Condition)
-                {
-                    invalidDecisionPollException.UpsertDataList(
-                        key: parameter,
-                        value: rule.Message);
-                }
-            }
-
-            invalidDecisionPollException.ThrowIfContainsErrors();
-        }
-
         private static void Validate<T>(
             Func<T> createException,
             params (dynamic Rule, string Parameter)[] validations)

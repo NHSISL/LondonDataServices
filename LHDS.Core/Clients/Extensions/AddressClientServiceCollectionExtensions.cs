@@ -12,6 +12,8 @@ using System.Text;
 using Azure.Core.Pipeline;
 using Azure.Identity;
 using Azure.Storage.Blobs;
+using Azure.Storage.Queues;
+using ISL.Security.Client.Models.Clients;
 using LHDS.Core.Brokers.Assigns;
 using LHDS.Core.Brokers.Audits;
 using LHDS.Core.Brokers.CsvHelpers;
@@ -22,8 +24,10 @@ using LHDS.Core.Brokers.Loggings;
 using LHDS.Core.Brokers.Securities;
 using LHDS.Core.Brokers.Storages.Blobs;
 using LHDS.Core.Brokers.Storages.Sql;
+using LHDS.Core.Brokers.Storages.StorageQueues;
 using LHDS.Core.Models.Brokers.Assigns;
 using LHDS.Core.Models.Brokers.Storages.Blobs;
+using LHDS.Core.Models.Brokers.Storages.StorageQueues;
 using LHDS.Core.Models.Configurations;
 using LHDS.Core.Models.Coordinations.AddressCoordinations;
 using LHDS.Core.Services.Coordinations.AddressCoordinations;
@@ -61,7 +65,7 @@ namespace LHDS.Core.Clients.Extensions
         {
             services.AddSingleton<IConfiguration>(_ => configuration);
             AddClients(services, configuration);
-            AddBrokers(services, httpContextAccessor.HttpContext.User);
+            AddBrokers(services, httpContextAccessor.HttpContext.User, configuration);
             AddServices(services);
             AddProcessings(services);
             AddOrchestrations(services);
@@ -77,7 +81,7 @@ namespace LHDS.Core.Clients.Extensions
         {
             services.AddSingleton<IConfiguration>(_ => configuration);
             AddClients(services, configuration);
-            AddBrokers(services, GetClaimsPrincipalFromToken(accessToken));
+            AddBrokers(services, GetClaimsPrincipalFromToken(accessToken), configuration);
             AddServices(services);
             AddProcessings(services);
             AddOrchestrations(services);
@@ -93,7 +97,7 @@ namespace LHDS.Core.Clients.Extensions
         {
             services.AddSingleton<IConfiguration>(_ => configuration);
             AddClients(services, configuration);
-            AddBrokers(services, claimsPrincipal);
+            AddBrokers(services, claimsPrincipal, configuration);
             AddServices(services);
             AddProcessings(services);
             AddOrchestrations(services);
@@ -106,9 +110,6 @@ namespace LHDS.Core.Clients.Extensions
             IServiceCollection services,
             IConfiguration configuration)
         {
-            var blobStorageSettings = configuration.GetSection("blobStorage").Get<BlobStorageSettings>();
-            ValidateBlobStorageSettings(blobStorageSettings);
-
             AddressConfiguration addressConfiguration =
                 configuration.GetSection("addressSettings").Get<AddressConfiguration>();
 
@@ -120,34 +121,56 @@ namespace LHDS.Core.Clients.Extensions
             ValidateAssingConfiguration(assignConfiguration);
             services.AddSingleton(assignConfiguration);
 
-            if (blobStorageSettings != null)
+            var blobStorageSettings = configuration.GetSection("blobStorage").Get<BlobStorageSettings>();
+            ValidateBlobStorageSettings(blobStorageSettings);
+            services.AddSingleton(blobStorageSettings.BlobContainers);
+
+            var blobServiceClientOptions = new BlobClientOptions()
             {
-                services.AddSingleton(blobStorageSettings.BlobContainers);
+                Transport = new HttpClientTransport(new HttpClient { Timeout = new TimeSpan(1, 0, 0) }),
+                Retry = { NetworkTimeout = new TimeSpan(1, 0, 0) },
+                EnableTenantDiscovery = true
+            };
 
-                var blobServiceClientOptions = new BlobClientOptions()
+            services.AddSingleton(
+                new BlobServiceClient(
+                    serviceUri: new Uri(blobStorageSettings.AzureBlobServiceUri),
+                    credential: new DefaultAzureCredential(
+                        new DefaultAzureCredentialOptions
+                        {
+                            VisualStudioTenantId = blobStorageSettings.AzureTenantId,
+                        }),
+                    options: blobServiceClientOptions));
+
+            var storageQueueSettings = configuration.GetSection("storageQueueSettings").Get<StorageQueueSettings>();
+            ValidateStorageQueueSettings(storageQueueSettings);
+            services.AddSingleton(storageQueueSettings.StorageQueues);
+
+            var options = new QueueClientOptions
+            {
+                Transport = new HttpClientTransport(new HttpClient { Timeout = TimeSpan.FromHours(1) }),
+                Retry = { NetworkTimeout = new TimeSpan(1, 0, 0) },
+                EnableTenantDiscovery = true
+            };
+
+            var queueServiceClient = new QueueServiceClient(
+                serviceUri: new Uri(storageQueueSettings.StorageQueueServiceUri),
+                credential: new DefaultAzureCredential(new DefaultAzureCredentialOptions
                 {
-                    Transport = new HttpClientTransport(new HttpClient { Timeout = new TimeSpan(1, 0, 0) }),
-                    Retry = { NetworkTimeout = new TimeSpan(1, 0, 0) },
-                    EnableTenantDiscovery = true
-                };
+                    VisualStudioTenantId = storageQueueSettings.AzureTenantId
+                }),
+                options: options);
 
-                services.AddSingleton(
-                    new BlobServiceClient(
-                        serviceUri: new Uri(blobStorageSettings.AzureBlobServiceUri),
-                        credential: new DefaultAzureCredential(
-                            new DefaultAzureCredentialOptions
-                            {
-                                VisualStudioTenantId = blobStorageSettings.AzureTenantId,
-                            }),
-                        options: blobServiceClientOptions));
-            }
-
+            services.AddTransient(_ => queueServiceClient);
             services.AddTransient<IAddressClient, AddressClient>();
             services.AddTransient<IAzureBlobClient, AzureBlobClient>();
             services.AddTransient<IAuditClient, AuditClient>();
         }
 
-        private static void AddBrokers(IServiceCollection services, ClaimsPrincipal claimsPrincipal)
+        private static void AddBrokers(
+            IServiceCollection services,
+            ClaimsPrincipal claimsPrincipal,
+            IConfiguration configuration)
         {
             services.AddTransient<IStorageBroker>(sp =>
             {
@@ -168,12 +191,17 @@ namespace LHDS.Core.Clients.Extensions
             if (claimsPrincipal != null)
             {
                 var securityBroker = new SecurityBroker(claimsPrincipal);
+                var securityAuditBroker = new SecurityAuditBroker(claimsPrincipal, new SecurityConfigurations());
                 services.AddTransient<ISecurityBroker>(_ => securityBroker);
+                services.AddTransient<ISecurityAuditBroker>(_ => securityAuditBroker);
             }
             else
             {
                 services.AddTransient<ISecurityBroker, SecurityBroker>();
+                services.AddTransient<ISecurityAuditBroker, SecurityAuditBroker>();
             }
+
+            services.AddTransient<IStorageQueueBroker, StorageQueueBroker>();
         }
 
         private static void AddServices(IServiceCollection services)
@@ -218,6 +246,22 @@ namespace LHDS.Core.Clients.Extensions
 
                 (Rule: IsInvalid(blobStorageSettings.AzureTenantId),
                     Parameter: "blobStorage__azureTenantId"));
+        }
+
+        private static void ValidateStorageQueueSettings(StorageQueueSettings? storageQueueSettings)
+        {
+            if (storageQueueSettings == null)
+            {
+                throw new InvalidConfigurationException(
+                    "Configuration section 'storageQueueSettings' not defined.");
+            }
+
+            Validate(
+                (Rule: IsInvalid(storageQueueSettings.StorageQueueServiceUri),
+                    Parameter: "storageQueueSettings__storageQueueServiceUri"),
+
+                (Rule: IsInvalid(storageQueueSettings.AzureTenantId),
+                    Parameter: "storageQueueSettings__azureTenantId"));
         }
 
         private static void ValidateAssingConfiguration(AssignConfiguration? assignConfiguration)

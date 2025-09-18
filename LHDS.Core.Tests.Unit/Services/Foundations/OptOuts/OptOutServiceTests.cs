@@ -236,7 +236,9 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.OptOuts
                 claims: new List<System.Security.Claims.Claim>
                 {
                     new System.Security.Claims.Claim(type: GetRandomString(), value: GetRandomString())
-                });
+                },
+
+                authenticationType: "Custom");
         }
     }
 }

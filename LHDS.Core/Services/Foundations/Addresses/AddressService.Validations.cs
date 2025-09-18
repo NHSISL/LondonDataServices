@@ -17,11 +17,12 @@ namespace LHDS.Core.Services.Foundations.Addresses
         private async ValueTask ValidateAddressOnAddAsync(Address address)
         {
             ValidateAddressIsNotNull(address);
-            EntraUser currentUser = await this.securityBroker.GetCurrentUserAsync();
+            string currentUserId = await this.securityAuditBroker.GetUserIdAsync();
 
             Validate<InvalidAddressException>(
                 createException: () => new InvalidAddressException(
                     message: "Invalid address. Please correct the errors and try again."),
+
                 (Rule: IsInvalid(address.Id), Parameter: nameof(Address.Id)),
                 (Rule: IsInvalid(address.CreatedDate), Parameter: nameof(Address.CreatedDate)),
                 (Rule: IsInvalid(address.CreatedBy), Parameter: nameof(Address.CreatedBy)),
@@ -29,7 +30,7 @@ namespace LHDS.Core.Services.Foundations.Addresses
                 (Rule: IsInvalid(address.UpdatedBy), Parameter: nameof(Address.UpdatedBy)),
 
                 (Rule: IsNotSame(
-                    first: currentUser.EntraUserId,
+                    first: currentUserId,
                     second: address.CreatedBy),
                 Parameter: nameof(Address.CreatedBy)),
 
@@ -71,7 +72,7 @@ namespace LHDS.Core.Services.Foundations.Addresses
         private async ValueTask ValidateAddressOnModifyAsync(Address address)
         {
             ValidateAddressIsNotNull(address);
-            EntraUser currentUser = await this.securityBroker.GetCurrentUserAsync();
+            string currentUserId = await this.securityAuditBroker.GetUserIdAsync();
 
             Validate<InvalidAddressException>(
                 createException: () => new InvalidAddressException(
@@ -84,7 +85,7 @@ namespace LHDS.Core.Services.Foundations.Addresses
                 (Rule: IsInvalid(address.UpdatedBy), Parameter: nameof(Address.UpdatedBy)),
 
                 (Rule: IsNotSame(
-                    first: currentUser.EntraUserId,
+                    first: currentUserId,
                     second: address.UpdatedBy),
                 Parameter: nameof(Address.UpdatedBy)),
 

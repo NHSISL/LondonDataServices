@@ -5,6 +5,7 @@
 using System;
 using LHDS.Core.Models.Foundations.TerminologyPolls;
 using LHDS.Core.Models.Processings.TerminologyPolls.Exceptions;
+using Xeptions;
 
 namespace LHDS.Core.Services.Processings.TerminologyPolls
 {
@@ -19,8 +20,15 @@ namespace LHDS.Core.Services.Processings.TerminologyPolls
             }
         }
 
-        public void ValidateTerminologyPollId(Guid terminologyPollId) =>
-            Validate((Rule: IsInvalid(terminologyPollId), Parameter: nameof(TerminologyPoll.Id)));
+        public void ValidateTerminologyPollId(Guid terminologyPollId)
+        {
+            Validate(
+                createException: () => new InvalidArgumentTerminologyPollsProcessingException(
+                    message: "Invalid argument terminology poll processing. Please correct the errors and try again."),
+
+                (Rule: IsInvalid(terminologyPollId), Parameter: nameof(TerminologyPoll.Id)));
+
+        }
 
         private static dynamic IsInvalid(Guid id) => new
         {
@@ -28,8 +36,14 @@ namespace LHDS.Core.Services.Processings.TerminologyPolls
             Message = "Id is required"
         };
 
-        public void ValidateResourceType(string resourceType) =>
-            Validate((Rule: IsInvalid(resourceType), Parameter: "resourceType"));
+        public void ValidateResourceType(string resourceType)
+        {
+            Validate(
+                createException: () => new InvalidArgumentTerminologyPollsProcessingException(
+                    message: "Invalid argument terminology poll processing. Please correct the errors and try again."),
+
+                (Rule: IsInvalid(resourceType), Parameter: "resourceType"));
+        }
 
         private static dynamic IsInvalid(string? text) => new
         {
@@ -37,23 +51,24 @@ namespace LHDS.Core.Services.Processings.TerminologyPolls
             Message = "Text is required"
         };
 
-        private static void Validate(params (dynamic Rule, string Parameter)[] validations)
+        private static void Validate<T>(
+            Func<T> createException,
+            params (dynamic Rule, string Parameter)[] validations)
+            where T : Xeption
         {
-            var invalidArgumentTerminologyPollsProcessingException =
-                new InvalidArgumentTerminologyPollsProcessingException(
-                    message: "Invalid argument terminology poll processing. Please correct the errors and try again.");
+            T invalidDataException = createException();
 
             foreach ((dynamic rule, string parameter) in validations)
             {
                 if (rule.Condition)
                 {
-                    invalidArgumentTerminologyPollsProcessingException.UpsertDataList(
+                    invalidDataException.UpsertDataList(
                         key: parameter,
                         value: rule.Message);
                 }
             }
 
-            invalidArgumentTerminologyPollsProcessingException.ThrowIfContainsErrors();
+            invalidDataException.ThrowIfContainsErrors();
         }
     }
 }

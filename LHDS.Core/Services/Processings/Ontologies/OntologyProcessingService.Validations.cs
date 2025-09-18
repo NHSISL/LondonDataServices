@@ -14,7 +14,7 @@ namespace LHDS.Core.Services.Processings.Ontologies
         {
             Validate(
                 createException: () => new InvalidArgumentOntologyProcessingException(
-                    message: "Invalid ontology processing arguments. Please correct the errors and try again."),
+                    message: "Invalid ontology processing arguments. Please correct the error and try again."),
 
                 (Rule: IsInvalid(relativeUrl), Parameter: "relativeUrl"));
         }

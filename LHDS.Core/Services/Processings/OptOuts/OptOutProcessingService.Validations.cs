@@ -6,6 +6,7 @@ using System;
 using System.Collections.Generic;
 using LHDS.Core.Models.Foundations.OptOuts;
 using LHDS.Core.Models.Processings.OptOuts.Exceptions;
+using Xeptions;
 
 namespace LHDS.Core.Services.Processings.OptOuts
 {
@@ -34,21 +35,51 @@ namespace LHDS.Core.Services.Processings.OptOuts
             List<string> consentedItemsList)
         {
             Validate(
+                createException: () => new InvalidArgumentOptOutProcessingException(
+                    message: "Invalid opt out processing argument. Please correct the errors and try again."),
+
                 (Rule: IsInvalid(optOutList), Parameter: "OptOutList"),
                 (Rule: IsInvalid(consentedItemsList), Parameter: "ConsentedItemsList"));
         }
 
-        public void ValidateOptOutId(Guid optOutId) =>
-            Validate((Rule: IsInvalid(optOutId), Parameter: nameof(OptOut.Id)));
+        public void ValidateOptOutId(Guid optOutId)
+        {
+            Validate(
+                createException: () => new InvalidArgumentOptOutProcessingException(
+                    message: "Invalid opt out processing argument. Please correct the errors and try again."),
 
-        public void ValidateOptOutNhsNumber(string optOutNhsNumber) =>
-            Validate((Rule: IsInvalid(optOutNhsNumber), Parameter: nameof(OptOut.NhsNumber)));
+                (Rule: IsInvalid(optOutId), Parameter: nameof(OptOut.Id)));
 
-        public void ValidateOptOutBatchReference(string batchReference) =>
-            Validate((Rule: IsInvalid(batchReference), Parameter: nameof(OptOut.BatchReference)));
+        }
 
-        public void ValidateOlderThanDays(int olderThanDays) =>
-            Validate((Rule: IsInvalid(olderThanDays), Parameter: "OlderThanDays"));
+        public void ValidateOptOutNhsNumber(string optOutNhsNumber)
+        {
+            Validate(
+                createException: () => new InvalidArgumentOptOutProcessingException(
+                    message: "Invalid opt out processing argument. Please correct the errors and try again."),
+
+                (Rule: IsInvalid(optOutNhsNumber), Parameter: nameof(OptOut.NhsNumber)));
+
+        }
+
+        public void ValidateOptOutBatchReference(string batchReference)
+        {
+            Validate(
+                createException: () => new InvalidArgumentOptOutProcessingException(
+                    message: "Invalid opt out processing argument. Please correct the errors and try again."),
+
+                (Rule: IsInvalid(batchReference), Parameter: nameof(OptOut.BatchReference)));
+        }
+
+        public void ValidateOlderThanDays(int olderThanDays)
+        {
+            Validate(
+                createException: () => new InvalidArgumentOptOutProcessingException(
+                    message: "Invalid opt out processing argument. Please correct the errors and try again."),
+
+                (Rule: IsInvalid(olderThanDays), Parameter: "OlderThanDays"));
+
+        }
 
         private static dynamic IsInvalid(Guid id) => new
         {
@@ -80,23 +111,24 @@ namespace LHDS.Core.Services.Processings.OptOuts
             Message = "String list is required"
         };
 
-        private static void Validate(params (dynamic Rule, string Parameter)[] validations)
+        private static void Validate<T>(
+            Func<T> createException,
+            params (dynamic Rule, string Parameter)[] validations)
+            where T : Xeption
         {
-            var invalidArgumentOptOutProcessingException = 
-                new InvalidArgumentOptOutProcessingException(
-                    message: "Invalid opt out processing argument. Please correct the errors and try again.");
+            T invalidDataException = createException();
 
             foreach ((dynamic rule, string parameter) in validations)
             {
                 if (rule.Condition)
                 {
-                    invalidArgumentOptOutProcessingException.UpsertDataList(
+                    invalidDataException.UpsertDataList(
                         key: parameter,
                         value: rule.Message);
                 }
             }
 
-            invalidArgumentOptOutProcessingException.ThrowIfContainsErrors();
+            invalidDataException.ThrowIfContainsErrors();
         }
     }
 }

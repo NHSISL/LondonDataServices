@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using LHDS.Core.Models.Brokers.Securities;
 using LHDS.Core.Models.Foundations.SubscriberAgreements;
 using LHDS.Core.Models.Foundations.SubscriberAgreements.Exceptions;
+using Xeptions;
 
 namespace LHDS.Core.Services.Foundations.SubscriberAgreements
 {
@@ -17,6 +18,9 @@ namespace LHDS.Core.Services.Foundations.SubscriberAgreements
             EntraUser currentUser = await this.securityBroker.GetCurrentUserAsync();
 
             Validate(
+                createException: () => new InvalidSubscriberAgreementException(
+                    message: "Invalid subscriberAgreement. Please correct the errors and try again."),
+
                 (Rule: IsInvalid(subscriberAgreement.Id), Parameter: nameof(SubscriberAgreement.Id)),
                 (Rule: IsInvalid(subscriberAgreement.SupplierId), Parameter: nameof(SubscriberAgreement.SupplierId)),
 
@@ -63,6 +67,9 @@ namespace LHDS.Core.Services.Foundations.SubscriberAgreements
             EntraUser currentUser = await this.securityBroker.GetCurrentUserAsync();
 
             Validate(
+                createException: () => new InvalidSubscriberAgreementException(
+                    message: "Invalid subscriberAgreement. Please correct the errors and try again."),
+
                 (Rule: IsInvalid(subscriberAgreement.Id), Parameter: nameof(SubscriberAgreement.Id)),
                 (Rule: IsInvalid(subscriberAgreement.SupplierId), Parameter: nameof(SubscriberAgreement.SupplierId)),
 
@@ -98,8 +105,14 @@ namespace LHDS.Core.Services.Foundations.SubscriberAgreements
                     Parameter: nameof(subscriberAgreement.UpdatedDate)));
         }
 
-        public void ValidateSubscriberAgreementId(Guid subscriberAgreementId) =>
-            Validate((Rule: IsInvalid(subscriberAgreementId), Parameter: nameof(SubscriberAgreement.Id)));
+        public void ValidateSubscriberAgreementId(Guid subscriberAgreementId)
+        {
+            Validate(
+                createException: () => new InvalidSubscriberAgreementException(
+                    message: "Invalid subscriberAgreement. Please correct the errors and try again."), 
+                
+                (Rule: IsInvalid(subscriberAgreementId), Parameter: nameof(SubscriberAgreement.Id)));
+        }
 
         private static void ValidateStorageSubscriberAgreement(
             SubscriberAgreement maybeSubscriberAgreement,
@@ -124,6 +137,9 @@ namespace LHDS.Core.Services.Foundations.SubscriberAgreements
             SubscriberAgreement storageSubscriberAgreement)
         {
             Validate(
+                createException: () => new InvalidSubscriberAgreementException(
+                    message: "Invalid subscriberAgreement. Please correct the errors and try again."),
+
                 (Rule: IsNotSame(
                     firstDate: inputSubscriberAgreement.CreatedDate,
                     secondDate: storageSubscriberAgreement.CreatedDate,
@@ -231,23 +247,24 @@ namespace LHDS.Core.Services.Foundations.SubscriberAgreements
             return timeDifference.Duration() > oneMinute;
         }
 
-        private static void Validate(params (dynamic Rule, string Parameter)[] validations)
+        private static void Validate<T>(
+            Func<T> createException,
+            params (dynamic Rule, string Parameter)[] validations)
+            where T : Xeption
         {
-            var invalidSubscriberAgreementException =
-                new InvalidSubscriberAgreementException(
-                    message: "Invalid subscriberAgreement. Please correct the errors and try again.");
+            T invalidDataException = createException();
 
             foreach ((dynamic rule, string parameter) in validations)
             {
                 if (rule.Condition)
                 {
-                    invalidSubscriberAgreementException.UpsertDataList(
+                    invalidDataException.UpsertDataList(
                         key: parameter,
                         value: rule.Message);
                 }
             }
 
-            invalidSubscriberAgreementException.ThrowIfContainsErrors();
+            invalidDataException.ThrowIfContainsErrors();
         }
     }
 }

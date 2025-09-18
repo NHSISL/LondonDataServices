@@ -7,10 +7,14 @@
   - No line of code should exceed **120 characters** in length.
   - This includes comments, string literals, and code.
   - Exception: automatically generated files may be ignored if they cannot be reformatted safely.
-- **How to measure (raw file characters):**
-  - Count based on **raw file characters**, not editor rendering.  
-  - Tabs must always be converted to spaces (`indent_style = space`).  
-  - Trailing whitespace must be removed.  
+- **How to measure (raw file characters, per-line only):**
+  - Count based on **raw file characters**, not editor rendering.
+  - Tabs must always be converted to spaces (`indent_style = space`).
+  - Trailing whitespace must be removed.
+  - **Per-physical-line measurement ONLY.** The unit of measurement is a **single newline-delimited line**.
+    - **Never** add or aggregate the lengths of multiple lines (e.g., “when considering the full parameter”). That is **not allowed**.
+    - A wrapped invocation is compliant if **each** physical line is ≤ 120 characters, even if the total characters across lines exceed 120.
+  - Ignore soft wrapping (on-screen wrapping that doesn’t insert a newline).
 
 ### Code Formatting
 - Single-line instructions must follow each other with **no blank lines** in between.
@@ -32,62 +36,39 @@
   - Insert a blank line before any `return` statement that follows other instructions.
   - Prefer moving `new` (or method invocation) to the next line if the type or method name is long.
 
-### Review Guidelines
-- When reviewing or completing code suggestions, Copilot should:
-  - Scan `.cs` files for lines longer than 120 characters based on **raw file characters** (tabs already converted to spaces, trailing whitespace removed).  
+### Review Guidelines (strict)
+- When reviewing or completing code suggestions, Copilot must:
+  - Evaluate **each physical line independently**. Do **not** aggregate the lengths of adjacent lines or entire argument lists.
+  - Scan `.cs` files for lines longer than 120 characters based on **raw file characters** (tabs already converted to spaces, trailing whitespace removed).
   - Only flag a violation if a **single physical line** exceeds 120 characters **under these rules**.
-    Do **not** flag lines merely because a statement spans multiple lines or because of on-screen wrapping.
-  - When flagging, include the **line number** and the **measured character count** (e.g., “Line 42: 128 chars”),
-    and show the exact line being measured (truncated if needed).
-  - Recommend a multiline formatting fix for flagged lines (e.g., move `new`, method call, or arguments).
+  - When flagging, include the **line number** and the **measured character count** (e.g., “Line 42: 128 chars”), and show the exact line being measured (truncated if needed).
+  - Recommend a multiline formatting fix for flagged lines (e.g., move `new`, method call, or arguments) **only if the offending single line exceeds 120**.
+  - Do **not** recommend changes (e.g., “move `new` to the next line”) if every involved line is already ≤ 120.
   - Flag missing blank lines before `return` statements.
   - Flag **whitespace-only lines** as invalid blank lines.
 
 ### Examples
 
-#### ✅ Correct (constructor moved to next line)
+#### ✅ Correct (wrapped invocation; each line ≤ 120; do not aggregate)
 ```csharp
-createException: () =>
-    new InvalidArgumentsDocumentProcessingException(
-        message: "Invalid document processing arguments. Please correct the errors and try again."),
+Validate(
+    createException: () => new InvalidDecisionPollException(
+        message: "Invalid decisionPoll. Please correct the errors and try again."),
+    (Rule: IsInvalid(decisionPoll.Id), Parameter: nameof(DecisionPoll.Id)));
 ```
 
-#### ❌ Incorrect (constructor call too long)
+#### ❌ Incorrect (single line > 120)
 ```csharp
-createException: () => new InvalidArgumentsDocumentProcessingException(
-    message: "Invalid document processing arguments. Please correct the errors and try again."),
+Validate(createException: () => new InvalidDecisionPollException(message: "Invalid decisionPoll. Please correct the errors and try again."));
 ```
 
----
-
-#### ✅ Correct (method call moved to next line)
+#### ✅ Also Correct (move `new` to next line to keep the head line short)
 ```csharp
-var result = dataProcessor
-    .ProcessLargeDataSet(
-        source,
-        destination,
-        cancellationToken);
-```
-
-#### ❌ Incorrect (method call too long)
-```csharp
-var result = dataProcessor.ProcessLargeDataSet(source, destination, cancellationToken, additionalOption, extraConfiguration);
-```
-
----
-
-#### ✅ Correct (arguments wrapped to next line)
-```csharp
-var message = string.Format(
-    "User {0} with ID {1} could not be found in the {2} repository.",
-    user.Name,
-    user.Id,
-    repositoryName);
-```
-
-#### ❌ Incorrect (arguments crammed into one line)
-```csharp
-var message = string.Format("User {0} with ID {1} could not be found in the {2} repository.", user.Name, user.Id, repositoryName);
+Validate(
+    createException: () =>
+        new InvalidDecisionPollException(
+            message: "Invalid decisionPoll. Please correct the errors and try again."),
+    (Rule: IsInvalid(decisionPoll.Id), Parameter: nameof(DecisionPoll.Id)));
 ```
 
 ---
@@ -113,9 +94,6 @@ return user;
 
 #### ✅ Correct
 ```csharp
-var activeUsers = users.Where(u => u.IsActive == false).Select(u => new { u.Id, u.Name }).ToList();
-var activeUsers = users.Where(u => u.IsActive).Select(u => new { u.Id, u.Name }).ToList();
-
 var filteredUsers = users
     .Where(u => u.IsActive && u.LastLoginDate >= DateTime.UtcNow.AddDays(-30))
     .OrderByDescending(u => u.LastLoginDate)
@@ -127,39 +105,40 @@ var filteredUsers = users
         LastSeen = u.LastLoginDate.ToString("yyyy-MM-dd HH:mm:ss")
     })
     .ToList();
-
-var x = 1 + 2;
-var y = 2 + 2;
-
-return y;
 ```
 
 #### ❌ Incorrect
 ```csharp
-var activeUsers = users.Where(u => u.IsActive == false).Select(u => new { u.Id, u.Name }).ToList();
-var activeUsers = users.Where(u => u.IsActive).Select(u => new { u.Id, u.Name }).ToList();
-var filteredUsers = users
-    .Where(u => u.IsActive && u.LastLoginDate >= DateTime.UtcNow.AddDays(-30))
-    .OrderByDescending(u => u.LastLoginDate)
-    .Select(u => new
-    {
-        u.Id,
-        u.Name,
-        u.Email,
-        LastSeen = u.LastLoginDate.ToString("yyyy-MM-dd HH:mm:ss")
-    })
-    .ToList();
-var x = 1 + 2;
-var y = 2 + 2;
-return y;
+var filteredUsers = users.Where(u => u.IsActive && u.LastLoginDate >= DateTime.UtcNow.AddDays(-30)).OrderByDescending(u => u.LastLoginDate).Select(u => new { u.Id, u.Name, u.Email, LastSeen = u.LastLoginDate.ToString("yyyy-MM-dd HH:mm:ss") }).ToList();
 ```
 
 ---
 
 ### Rationale
 
-- **Line Length**: Matching the editor’s 120-column ruler ensures consistency between what developers see in their IDE and what the style guide enforces. This avoids confusion where tools count characters differently.  
-- **Blank Lines**: A *blank line* is defined as truly empty (no spaces, no tabs). This prevents false positives from whitespace-only lines, which some linters misinterpret as valid blank lines.  
-- **Method Separation**: Requiring exactly one blank line between member methods improves readability while avoiding inconsistent spacing.  
-- **Return Statements**: Forcing a blank line before `return` makes return points visually stand out, helping readability and reducing missed returns in code reviews.  
-- **Wrapping Long Calls**: Allowing `new`, method names, or arguments to be moved to the next line ensures long invocations can always be split without exceeding the 120-character limit.  
+- **Per-line measurement**: Counting each physical line independently avoids false positives in wrapped invocations. Statements often exceed 120 characters **as a whole**, but are perfectly readable and compliant when wrapped.
+- **Raw characters**: Counting raw file characters (with tabs converted to spaces and trailing whitespace removed) ensures consistent results across tools.
+- **Blank lines**: Defining blank lines as truly empty eliminates whitespace-only edge cases.
+- **Return visibility**: A blank line before `return` improves scanning and reduces review misses.
+- **Long identifiers**: Allowing `new`/method/arguments to move to the next line guarantees a compliant, readable layout.
+
+---
+
+## Supporting .editorconfig Settings
+
+To ensure consistency across editors and to avoid false positives due to tabs/whitespace, use the following in your `.editorconfig`:
+
+```ini
+# C# or VB (and optionally TS/TSX) files
+[*.{cs,vb,ts,tsx}]
+guidelines = 120
+indent_style = space
+indent_size = 4
+trim_trailing_whitespace = true
+end_of_line = crlf
+
+#### Core EditorConfig Options ####
+
+# Sort System.* using directives alphabetically, and place them before other usings
+dotnet_sort_system_directives_first = true
+```

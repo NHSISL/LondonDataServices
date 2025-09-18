@@ -2,9 +2,11 @@
 // Copyright (c) North East London ICB. All rights reserved.
 // ---------------------------------------------------------
 
+using System;
 using System.IO;
 using LHDS.Core.Models.Foundations.Cryptographies.Exceptions;
 using LHDS.Core.Models.Processings.SubscriberCredentials;
+using Xeptions;
 
 namespace LHDS.Core.Services.Foundations.Cryptographies
 {
@@ -13,6 +15,9 @@ namespace LHDS.Core.Services.Foundations.Cryptographies
         private void ValidateInputs(Stream input, Stream output, SubscriberCredential subscriberCredential)
         {
             Validate(
+                createException: () => new InvalidArgumentCryptographyException(
+                    message: "Invalid cryptography arguments. Please correct the errors and try again."),
+
                 (Rule: IsInvalidInputStream(input), Parameter: nameof(input)),
                 (Rule: IsInvalidOutputStream(output), Parameter: nameof(output)),
                 (Rule: IsInvalid(subscriberCredential), Parameter: nameof(subscriberCredential)));
@@ -52,22 +57,24 @@ namespace LHDS.Core.Services.Foundations.Cryptographies
             }
         }
 
-        private static void Validate(params (dynamic Rule, string Parameter)[] validations)
+        private static void Validate<T>(
+            Func<T> createException,
+            params (dynamic Rule, string Parameter)[] validations)
+            where T : Xeption
         {
-            var invalidDocumentProcessingException = new InvalidArgumentCryptographyException(
-                message: "Invalid cryptography arguments. Please correct the errors and try again.");
+            T invalidDataException = createException();
 
             foreach ((dynamic rule, string parameter) in validations)
             {
                 if (rule.Condition)
                 {
-                    invalidDocumentProcessingException.UpsertDataList(
+                    invalidDataException.UpsertDataList(
                         key: parameter,
                         value: rule.Message);
                 }
             }
 
-            invalidDocumentProcessingException.ThrowIfContainsErrors();
+            invalidDataException.ThrowIfContainsErrors();
         }
     }
 }

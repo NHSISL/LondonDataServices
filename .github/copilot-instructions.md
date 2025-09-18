@@ -46,6 +46,10 @@
   - Do **not** recommend changes (e.g., “move `new` to the next line”) if every involved line is already ≤ 120.
   - Flag missing blank lines before `return` statements.
   - Flag **whitespace-only lines** as invalid blank lines.
+- **Operator lines**: For wrapped binary operators (`+`, `&&`, `||`, `??`, ternary `?:`), measure compliance **per physical line only**.  
+  - Do **not** merge an operator-ending line with its continuation when counting characters.  
+  - Both operator-at-end and operator-at-start styles are valid.  
+  - Operator placement at the end of a line is the preferred style.
 
 ### Examples
 
@@ -121,6 +125,7 @@ var filteredUsers = users.Where(u => u.IsActive && u.LastLoginDate >= DateTime.U
 - **Blank lines**: Defining blank lines as truly empty eliminates whitespace-only edge cases.
 - **Return visibility**: A blank line before `return` improves scanning and reduces review misses.
 - **Long identifiers**: Allowing `new`/method/arguments to move to the next line guarantees a compliant, readable layout.
+- **Operator lines**: Operators at the end of a line are valid and preferred; tools must not aggregate them with continuations.
 
 ---
 

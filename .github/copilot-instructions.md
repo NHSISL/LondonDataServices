@@ -7,12 +7,10 @@
   - No line of code should exceed **120 characters** in length.
   - This includes comments, string literals, and code.
   - Exception: automatically generated files may be ignored if they cannot be reformatted safely.
-- **How to measure (match the editor ruler):**
-  - Enforce the limit **per physical line** (newline-delimited). **Do not** aggregate multi-line statements.
-  - Measure **visual columns from column 1**, including leading indentation.
-  - Treat tabs using the editor’s `tabSize` (default **4** columns). If unknown, assume 4.
-  - Trim **trailing whitespace** before counting.
-  - Ignore soft wrapping (on-screen wrapping that doesn’t insert a newline).
+- **How to measure (raw file characters):**
+  - Count based on **raw file characters**, not editor rendering.  
+  - Tabs must always be converted to spaces (`indent_style = space`).  
+  - Trailing whitespace must be removed.  
 
 ### Code Formatting
 - Single-line instructions must follow each other with **no blank lines** in between.
@@ -36,10 +34,7 @@
 
 ### Review Guidelines
 - When reviewing or completing code suggestions, Copilot should:
-  - Scan `.cs` files for lines longer than 120 characters **after**:
-    1) trimming trailing whitespace, and
-    2) including leading indentation, and
-    3) treating tabs as `tabSize` (default 4).
+  - Scan `.cs` files for lines longer than 120 characters based on **raw file characters** (tabs already converted to spaces, trailing whitespace removed).  
   - Only flag a violation if a **single physical line** exceeds 120 characters **under these rules**.
     Do **not** flag lines merely because a statement spans multiple lines or because of on-screen wrapping.
   - When flagging, include the **line number** and the **measured character count** (e.g., “Line 42: 128 chars”),
@@ -163,8 +158,8 @@ return y;
 
 ### Rationale
 
-- **Line Length**: Matching the editor’s 120-column ruler ensures consistency between what developers see in their IDE and what the style guide enforces. This avoids confusion where tools count characters differently (e.g., counting tabs as multiple spaces).  
+- **Line Length**: Matching the editor’s 120-column ruler ensures consistency between what developers see in their IDE and what the style guide enforces. This avoids confusion where tools count characters differently.  
 - **Blank Lines**: A *blank line* is defined as truly empty (no spaces, no tabs). This prevents false positives from whitespace-only lines, which some linters misinterpret as valid blank lines.  
 - **Method Separation**: Requiring exactly one blank line between member methods improves readability while avoiding inconsistent spacing.  
 - **Return Statements**: Forcing a blank line before `return` makes return points visually stand out, helping readability and reducing missed returns in code reviews.  
-- **Wrapping Long Calls**: Allowing `new`, method names, or arguments to be moved to the next line ensures long invocations can always be split without exceeding the 120-column limit.  
+- **Wrapping Long Calls**: Allowing `new`, method names, or arguments to be moved to the next line ensures long invocations can always be split without exceeding the 120-character limit.  

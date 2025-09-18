@@ -11,7 +11,7 @@ namespace LHDS.Core.Services.Foundations.Ontologies
 {
     public partial class OntologyService
     {
-        public async ValueTask ValidateArgs(string relativeUrl)
+        public static void ValidateArgs(string relativeUrl)
         {
             Validate(
                 createException: () => new InvalidArgumentOntologyException(

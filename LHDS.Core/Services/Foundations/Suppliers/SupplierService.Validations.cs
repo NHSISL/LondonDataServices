@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using LHDS.Core.Models.Brokers.Securities;
 using LHDS.Core.Models.Foundations.Suppliers;
 using LHDS.Core.Models.Foundations.Suppliers.Exceptions;
+using Xeptions;
 
 namespace LHDS.Core.Services.Foundations.Suppliers
 {
@@ -17,6 +18,9 @@ namespace LHDS.Core.Services.Foundations.Suppliers
             EntraUser currentUser = await this.securityBroker.GetCurrentUserAsync();
 
             Validate(
+                createException: () => new InvalidSupplierException(
+                    message: "Invalid supplier. Please correct the errors and try again."),
+
                 (Rule: IsInvalid(supplier.Id), Parameter: nameof(Supplier.Id)),
                 (Rule: IsInvalid(supplier.Name), Parameter: nameof(Supplier.Name)),
                 (Rule: IsInvalid(supplier.FriendlyName), Parameter: nameof(Supplier.FriendlyName)),
@@ -57,6 +61,9 @@ namespace LHDS.Core.Services.Foundations.Suppliers
             EntraUser currentUser = await this.securityBroker.GetCurrentUserAsync();
 
             Validate(
+                createException: () => new InvalidSupplierException(
+                    message: "Invalid supplier. Please correct the errors and try again."),
+
                 (Rule: IsInvalid(supplier.Id), Parameter: nameof(Supplier.Id)),
                 (Rule: IsInvalid(supplier.Name), Parameter: nameof(Supplier.Name)),
                 (Rule: IsInvalid(supplier.FriendlyName), Parameter: nameof(Supplier.FriendlyName)),
@@ -86,8 +93,14 @@ namespace LHDS.Core.Services.Foundations.Suppliers
                 (Rule: await IsNotRecentAsync(supplier.UpdatedDate), Parameter: nameof(supplier.UpdatedDate)));
         }
 
-        public void ValidateSupplierId(Guid supplierId) =>
-            Validate((Rule: IsInvalid(supplierId), Parameter: nameof(Supplier.Id)));
+        public void ValidateSupplierId(Guid supplierId)
+        {
+            Validate(
+                createException: () => new InvalidSupplierException(
+                    message: "Invalid supplier. Please correct the errors and try again."),
+
+                (Rule: IsInvalid(supplierId), Parameter: nameof(Supplier.Id)));
+        }
 
         private static void ValidateStorageSupplier(Supplier maybeSupplier, Guid supplierId)
         {
@@ -116,6 +129,9 @@ namespace LHDS.Core.Services.Foundations.Suppliers
         private static void ValidateAgainstStorageSupplierOnModify(Supplier inputSupplier, Supplier storageSupplier)
         {
             Validate(
+                createException: () => new InvalidSupplierException(
+                    message: "Invalid supplier. Please correct the errors and try again."),
+
                 (Rule: IsNotSame(
                     firstDate: inputSupplier.CreatedDate,
                     secondDate: storageSupplier.CreatedDate,
@@ -220,22 +236,24 @@ namespace LHDS.Core.Services.Foundations.Suppliers
             return timeDifference.Duration() > oneMinute;
         }
 
-        private static void Validate(params (dynamic Rule, string Parameter)[] validations)
+        private static void Validate<T>(
+            Func<T> createException,
+            params (dynamic Rule, string Parameter)[] validations)
+            where T : Xeption
         {
-            var invalidSupplierException = new InvalidSupplierException(
-                message: "Invalid supplier. Please correct the errors and try again.");
+            T invalidDataException = createException();
 
             foreach ((dynamic rule, string parameter) in validations)
             {
                 if (rule.Condition)
                 {
-                    invalidSupplierException.UpsertDataList(
+                    invalidDataException.UpsertDataList(
                         key: parameter,
                         value: rule.Message);
                 }
             }
 
-            invalidSupplierException.ThrowIfContainsErrors();
+            invalidDataException.ThrowIfContainsErrors();
         }
     }
 }

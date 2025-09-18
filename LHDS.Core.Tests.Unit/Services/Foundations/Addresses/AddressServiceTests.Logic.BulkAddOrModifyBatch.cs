@@ -45,7 +45,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Addresses
             var addressServiceMock = new Mock<AddressService>(
                 this.storageBrokerMock.Object,
                 this.dateTimeBrokerMock.Object,
-                this.securityBrokerMock.Object,
+                this.securityAuditBrokerMock.Object,
                 this.identifierBrokerMock.Object,
                 this.loggingBrokerMock.Object,
                 this.auditBrokerMock.Object)

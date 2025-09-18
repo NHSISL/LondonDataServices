@@ -21,6 +21,8 @@
 - Any C# `return` statement must be preceded by **exactly one blank line** if it comes after other instructions.
 - If a constructor/method name would push a line past **120 columns**, move `new`, the **method call**, or the **arguments** to the **next line**.
 - Always format so that **no single physical line exceeds 120 characters**, even when calls span multiple lines.
+- **Definition of a blank line**: a line must contain **no characters at all** (no spaces, no tabs). A line with only whitespace does **not** count as a blank line.
+- **Method separation**: Method declarations (single-line or multi-line) must be preceded by **exactly one blank line** after the closing brace `}` of the previous member.
 
 ### Enforcement
 - Copilot should **not generate or suggest code** that exceeds the 120-character line limit (as measured above).
@@ -44,6 +46,7 @@
     and show the exact line being measured (truncated if needed).
   - Recommend a multiline formatting fix for flagged lines (e.g., move `new`, method call, or arguments).
   - Flag missing blank lines before `return` statements.
+  - Flag **whitespace-only lines** as invalid blank lines.
 
 ### Examples
 
@@ -65,7 +68,10 @@ createException: () => new InvalidArgumentsDocumentProcessingException(
 #### ✅ Correct (method call moved to next line)
 ```csharp
 var result = dataProcessor
-    .ProcessLargeDataSet(source, destination, cancellationToken);
+    .ProcessLargeDataSet(
+        source,
+        destination,
+        cancellationToken);
 ```
 
 #### ❌ Incorrect (method call too long)
@@ -77,15 +83,16 @@ var result = dataProcessor.ProcessLargeDataSet(source, destination, cancellation
 
 #### ✅ Correct (arguments wrapped to next line)
 ```csharp
-var result = dataProcessor.ProcessLargeDataSet(
-    source,
-    destination,
-    cancellationToken);
+var message = string.Format(
+    "User {0} with ID {1} could not be found in the {2} repository.",
+    user.Name,
+    user.Id,
+    repositoryName);
 ```
 
 #### ❌ Incorrect (arguments crammed into one line)
 ```csharp
-var result = dataProcessor.ProcessLargeDataSet(source, destination, cancellationToken, additionalOption, extraConfiguration);
+var message = string.Format("User {0} with ID {1} could not be found in the {2} repository.", user.Name, user.Id, repositoryName);
 ```
 
 ---
@@ -151,3 +158,13 @@ var x = 1 + 2;
 var y = 2 + 2;
 return y;
 ```
+
+---
+
+### Rationale
+
+- **Line Length**: Matching the editor’s 120-column ruler ensures consistency between what developers see in their IDE and what the style guide enforces. This avoids confusion where tools count characters differently (e.g., counting tabs as multiple spaces).  
+- **Blank Lines**: A *blank line* is defined as truly empty (no spaces, no tabs). This prevents false positives from whitespace-only lines, which some linters misinterpret as valid blank lines.  
+- **Method Separation**: Requiring exactly one blank line between member methods improves readability while avoiding inconsistent spacing.  
+- **Return Statements**: Forcing a blank line before `return` makes return points visually stand out, helping readability and reducing missed returns in code reviews.  
+- **Wrapping Long Calls**: Allowing `new`, method names, or arguments to be moved to the next line ensures long invocations can always be split without exceeding the 120-column limit.  

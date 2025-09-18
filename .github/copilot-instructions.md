@@ -121,3 +121,24 @@ var filteredUsers = users.Where(u => u.IsActive && u.LastLoginDate >= DateTime.U
 - **Blank lines**: Defining blank lines as truly empty eliminates whitespace-only edge cases.
 - **Return visibility**: A blank line before `return` improves scanning and reduces review misses.
 - **Long identifiers**: Allowing `new`/method/arguments to move to the next line guarantees a compliant, readable layout.
+
+---
+
+## Supporting .editorconfig Settings
+
+To ensure consistency across editors and to avoid false positives due to tabs/whitespace, use the following in your `.editorconfig`:
+
+```ini
+# C# or VB (and optionally TS/TSX) files
+[*.{cs,vb,ts,tsx}]
+guidelines = 120
+indent_style = space
+indent_size = 4
+trim_trailing_whitespace = true
+end_of_line = crlf
+
+#### Core EditorConfig Options ####
+
+# Sort System.* using directives alphabetically, and place them before other usings
+dotnet_sort_system_directives_first = true
+```

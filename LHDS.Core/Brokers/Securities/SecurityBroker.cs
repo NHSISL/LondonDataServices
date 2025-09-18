@@ -102,7 +102,8 @@ namespace LHDS.Core.Brokers.Securities
                 email: user.Email,
                 jobTitle: user.JobTitle,
                 roles: user.Roles,
-                claims: user.Claims);
+                claims: user.Claims,
+                authenticationType: claimsPrincipal.Identity.AuthenticationType);
         }
 
         /// <summary>

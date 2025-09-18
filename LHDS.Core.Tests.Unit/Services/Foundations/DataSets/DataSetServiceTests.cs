@@ -197,7 +197,9 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.DataSets
                 claims: new List<System.Security.Claims.Claim>
                 {
                     new System.Security.Claims.Claim(type: GetRandomString(), value: GetRandomString())
-                });
+                },
+
+                authenticationType: "Custom");
         }
     }
 }

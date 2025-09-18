@@ -2,9 +2,11 @@
 // Copyright (c) North East London ICB. All rights reserved.
 // ---------------------------------------------------------
 
+using System;
 using System.IO;
 using LHDS.Core.Models.Foundations.Documents;
 using LHDS.Core.Models.Processings.Documents.Exceptions;
+using Xeptions;
 
 namespace LHDS.Core.Services.Processings.Documents
 {
@@ -13,6 +15,9 @@ namespace LHDS.Core.Services.Processings.Documents
         private static void ValidateDocumentProcessingOnAdd(Stream input, string fileName, string container)
         {
             Validate(
+                createException: () => new InvalidArgumentsDocumentProcessingException(
+                    message: "Invalid document processing arguments. Please correct the errors and try again."),
+
                 (Rule: IsInvalidInputStream(input), Parameter: "Input"),
                 (Rule: IsInvalid(fileName), Parameter: "FileName"),
                 (Rule: IsInvalid(container), Parameter: "Container"));
@@ -21,6 +26,9 @@ namespace LHDS.Core.Services.Processings.Documents
         private static void ValidateDocumentProcessingOnRetrieve(Stream output, string fileName, string container)
         {
             Validate(
+                createException: () => new InvalidArgumentsDocumentProcessingException(
+                    message: "Invalid document processing arguments. Please correct the errors and try again."),
+
                (Rule: IsInvalidOutputStream(output), Parameter: "Output"),
                (Rule: IsInvalid(container), Parameter: "Container"),
                (Rule: IsInvalid(fileName), Parameter: "FileName"));
@@ -29,6 +37,9 @@ namespace LHDS.Core.Services.Processings.Documents
         private static void ValidateDocumentProcessingOnRemove(string fileName, string container)
         {
             Validate(
+                createException: () => new InvalidArgumentsDocumentProcessingException(
+                    message: "Invalid document processing arguments. Please correct the errors and try again."),
+
                (Rule: IsInvalid(container), Parameter: "Container"),
                (Rule: IsInvalid(fileName), Parameter: "FileName"));
         }
@@ -36,6 +47,9 @@ namespace LHDS.Core.Services.Processings.Documents
         private static void ValidateGetDownloadLinkArguments(string fileName, string container)
         {
             Validate(
+                createException: () => new InvalidArgumentsDocumentProcessingException(
+                    message: "Invalid document processing arguments. Please correct the errors and try again."),
+
                (Rule: IsInvalid(container), Parameter: "Container"),
                (Rule: IsInvalid(fileName), Parameter: "FileName"));
         }
@@ -76,22 +90,24 @@ namespace LHDS.Core.Services.Processings.Documents
             }
         }
 
-        private static void Validate(params (dynamic Rule, string Parameter)[] validations)
+        private static void Validate<T>(
+            Func<T> createException,
+            params (dynamic Rule, string Parameter)[] validations)
+            where T : Xeption
         {
-            var invalidDocumentProcessingException = new InvalidArgumentsDocumentProcessingException(
-                message: "Invalid document processing arguments. Please correct the errors and try again.");
+            T invalidDataException = createException();
 
             foreach ((dynamic rule, string parameter) in validations)
             {
                 if (rule.Condition)
                 {
-                    invalidDocumentProcessingException.UpsertDataList(
+                    invalidDataException.UpsertDataList(
                         key: parameter,
                         value: rule.Message);
                 }
             }
 
-            invalidDocumentProcessingException.ThrowIfContainsErrors();
+            invalidDataException.ThrowIfContainsErrors();
         }
     }
 }

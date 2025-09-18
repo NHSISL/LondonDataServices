@@ -2,20 +2,44 @@
 // Copyright (c) North East London ICB. All rights reserved.
 // ---------------------------------------------------------
 
+using System;
 using LHDS.Core.Models.Orchestrations.TerminologyMetadatas.Exceptions;
+using Xeptions;
 
 namespace LHDS.Core.Services.Orchestrations.TerminologyMetadata
 {
     public partial class TerminologyMetadataOrchestrationService
     {
-        public void ValidateResourceTypes(string[] resourceTypes) =>
-            Validate((Rule: IsInvalid(resourceTypes), Parameter: "resourceTypes"));
+        public void ValidateResourceTypes(string[] resourceTypes)
+        {
+            Validate(
+                createException: () => new InvalidArgumentTerminologyMetaDataOrchestrationException(
+                    message: "Invalid argument terminology metadata orchestration. " +
+                        "Please correct the errors and try again."),
 
-        public void ValidateResourceType(string resourceType) =>
-            Validate((Rule: IsInvalid(resourceType), Parameter: "resourceType"));
+                (Rule: IsInvalid(resourceTypes), Parameter: "resourceTypes"));
+        }
 
-        public void ValidateResourceURL(string resourceURL) =>
-            Validate((Rule: IsInvalid(resourceURL), Parameter: "resourceURL"));
+        public void ValidateResourceType(string resourceType)
+        {
+            Validate(
+                createException: () => new InvalidArgumentTerminologyMetaDataOrchestrationException(
+                    message: "Invalid argument terminology metadata orchestration. " +
+                        "Please correct the errors and try again."),
+
+                (Rule: IsInvalid(resourceType), Parameter: "resourceType"));
+
+        }
+
+        public void ValidateResourceURL(string resourceURL)
+        {
+            Validate(
+                createException: () => new InvalidArgumentTerminologyMetaDataOrchestrationException(
+                    message: "Invalid argument terminology metadata orchestration. " +
+                        "Please correct the errors and try again."),
+
+                (Rule: IsInvalid(resourceURL), Parameter: "resourceURL"));
+        }
 
         private static dynamic IsInvalid(string? text) => new
         {
@@ -29,24 +53,24 @@ namespace LHDS.Core.Services.Orchestrations.TerminologyMetadata
             Message = "Text is required"
         };
 
-        private static void Validate(params (dynamic Rule, string Parameter)[] validations)
+        private static void Validate<T>(
+            Func<T> createException,
+            params (dynamic Rule, string Parameter)[] validations)
+            where T : Xeption
         {
-            var invalidArgumentTerminologyMetaDataOrchestrationException =
-                new InvalidArgumentTerminologyMetaDataOrchestrationException(
-                    message: "Invalid argument terminology metadata orchestration. " +
-                    "Please correct the errors and try again.");
+            T invalidDataException = createException();
 
             foreach ((dynamic rule, string parameter) in validations)
             {
                 if (rule.Condition)
                 {
-                    invalidArgumentTerminologyMetaDataOrchestrationException.UpsertDataList(
+                    invalidDataException.UpsertDataList(
                         key: parameter,
                         value: rule.Message);
                 }
             }
 
-            invalidArgumentTerminologyMetaDataOrchestrationException.ThrowIfContainsErrors();
+            invalidDataException.ThrowIfContainsErrors();
         }
     }
 }

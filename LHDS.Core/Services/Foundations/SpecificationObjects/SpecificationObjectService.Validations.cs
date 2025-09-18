@@ -18,7 +18,6 @@ namespace LHDS.Core.Services.Foundations.SpecificationObjects
             EntraUser currentUser = await this.securityBroker.GetCurrentUserAsync();
 
             Validate(
-
                 createException: () => new InvalidSpecificationObjectException(
                     message: "Invalid specificationObject. Please correct the errors and try again."),
 
@@ -89,7 +88,6 @@ namespace LHDS.Core.Services.Foundations.SpecificationObjects
             EntraUser currentUser = await this.securityBroker.GetCurrentUserAsync();
 
             Validate(
-
                 createException: () => new InvalidSpecificationObjectException(
                     message: "Invalid specificationObject. Please correct the errors and try again."),
 
@@ -155,7 +153,6 @@ namespace LHDS.Core.Services.Foundations.SpecificationObjects
             EntraUser auditUser = await this.securityBroker.GetCurrentUserAsync();
 
             Validate(
-
                 createException: () => new InvalidSpecificationObjectException(
                     message: "Invalid specificationObject. Please correct the errors and try again."),
 
@@ -188,7 +185,6 @@ namespace LHDS.Core.Services.Foundations.SpecificationObjects
         public void ValidateSpecificationObjectId(Guid specificationObjectId)
         {
             Validate(
-
                 createException: () => new InvalidSpecificationObjectException(
                     message: "Invalid specificationObject. Please correct the errors and try again."),
 
@@ -216,7 +212,6 @@ namespace LHDS.Core.Services.Foundations.SpecificationObjects
             SpecificationObject inputSpecificationObject, SpecificationObject storageSpecificationObject)
         {
             Validate(
-
                 createException: () => new InvalidSpecificationObjectException(
                     message: "Invalid specificationObject. Please correct the errors and try again."),
 

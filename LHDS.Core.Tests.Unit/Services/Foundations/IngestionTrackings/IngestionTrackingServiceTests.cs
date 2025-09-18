@@ -188,7 +188,9 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.IngestionTrackings
                 claims: new List<System.Security.Claims.Claim>
                 {
                     new System.Security.Claims.Claim(type: GetRandomString(), value: GetRandomString())
-                });
+                },
+
+                authenticationType: "Custom");
         }
     }
 }

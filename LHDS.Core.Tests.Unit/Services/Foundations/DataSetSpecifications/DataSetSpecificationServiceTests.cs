@@ -84,7 +84,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.DataSetSpecifications
             new DateTimeRange(earliestDate: new DateTime()).GetValue();
 
         private static DataSetSpecification CreateRandomModifyDataSetSpecification(
-            DateTimeOffset dateTimeOffset, 
+            DateTimeOffset dateTimeOffset,
             string dataSetSpecificationId)
         {
             int randomDaysInPast = GetRandomNegativeNumber();
@@ -119,7 +119,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.DataSetSpecifications
                 auditUserId: GetRandomStringWithLengthOf(255)).Create();
 
         private static DataSetSpecification CreateRandomDataSetSpecification(
-            DateTimeOffset dateTimeOffset, 
+            DateTimeOffset dateTimeOffset,
             string auditUserId) =>
             CreateDataSetSpecificationFiller(dateTimeOffset, auditUserId).Create();
 
@@ -168,7 +168,9 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.DataSetSpecifications
                 claims: new List<System.Security.Claims.Claim>
                 {
                     new System.Security.Claims.Claim(type: GetRandomString(), value: GetRandomString())
-                });
+                },
+
+                authenticationType: "Custom");
         }
     }
 }

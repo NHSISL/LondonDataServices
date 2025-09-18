@@ -153,7 +153,9 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.DecisionPolls
                 claims: new List<System.Security.Claims.Claim>
                 {
                     new(type: GetRandomString(), value: GetRandomString())
-                });
+                },
+
+                authenticationType: "Custom");
         }
     }
 }

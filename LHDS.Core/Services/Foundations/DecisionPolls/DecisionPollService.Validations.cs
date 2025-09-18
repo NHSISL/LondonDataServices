@@ -6,6 +6,7 @@ using System;
 using System.Threading.Tasks;
 using LHDS.Core.Models.Foundations.DecisionPolls;
 using LHDS.Core.Models.Foundations.DecisionPolls.Exceptions;
+using Xeptions;
 
 namespace LHDS.Core.Services.Foundations.DecisionPolls
 {
@@ -17,6 +18,9 @@ namespace LHDS.Core.Services.Foundations.DecisionPolls
             string currentUserId = await this.securityAuditBroker.GetUserIdAsync();
 
             Validate(
+                createException: () => new InvalidDecisionPollException(
+                    message: "Invalid decisionPoll. Please correct the errors and try again."),
+
                 (Rule: IsInvalid(decisionPoll.Id), Parameter: nameof(DecisionPoll.Id)),
                 (Rule: IsInvalid(decisionPoll.LastPoll), Parameter: nameof(DecisionPoll.LastPoll)),
                 (Rule: IsInvalid(decisionPoll.CreatedDate), Parameter: nameof(DecisionPoll.CreatedDate)),
@@ -50,6 +54,9 @@ namespace LHDS.Core.Services.Foundations.DecisionPolls
             string currentUserId = await this.securityAuditBroker.GetUserIdAsync();
 
             Validate(
+                createException: () => new InvalidDecisionPollException(
+                    message: "Invalid decisionPoll. Please correct the errors and try again."),
+
                 (Rule: IsInvalid(decisionPoll.Id), Parameter: nameof(DecisionPoll.Id)),
                 (Rule: IsInvalid(decisionPoll.LastPoll), Parameter: nameof(DecisionPoll.LastPoll)),
                 (Rule: IsInvalid(decisionPoll.CreatedDate), Parameter: nameof(DecisionPoll.CreatedDate)),
@@ -71,8 +78,14 @@ namespace LHDS.Core.Services.Foundations.DecisionPolls
                 (Rule: await IsNotRecentAsync(decisionPoll.UpdatedDate), Parameter: nameof(decisionPoll.UpdatedDate)));
         }
 
-        public void ValidateDecisionPollId(Guid decisionPollId) =>
-            Validate((Rule: IsInvalid(decisionPollId), Parameter: nameof(DecisionPoll.Id)));
+        public void ValidateDecisionPollId(Guid decisionPollId)
+        {
+            Validate(
+                createException: () => new InvalidDecisionPollException(
+                    message: "Invalid decisionPoll. Please correct the errors and try again."),
+
+                (Rule: IsInvalid(decisionPollId), Parameter: nameof(DecisionPoll.Id)));
+        }
 
         private static void ValidateStorageDecisionPoll(
             DecisionPoll maybeDecisionPoll,
@@ -97,6 +110,9 @@ namespace LHDS.Core.Services.Foundations.DecisionPolls
             DecisionPoll storageDecisionPoll)
         {
             Validate(
+                createException: () => new InvalidDecisionPollException(
+                    message: "Invalid decisionPoll. Please correct the errors and try again."),
+
                 (Rule: IsNotSame(
                     firstDate: inputDecisionPoll.CreatedDate,
                     secondDate: storageDecisionPoll.CreatedDate,
@@ -123,6 +139,9 @@ namespace LHDS.Core.Services.Foundations.DecisionPolls
             string currentUserId = await this.securityAuditBroker.GetUserIdAsync();
 
             Validate(
+                createException: () => new InvalidDecisionPollException(
+                    message: "Invalid decisionPoll. Please correct the errors and try again."),
+
                 (Rule: IsNotSame(
                     decisionPoll.CreatedDate,
                     maybeDecisionPoll.CreatedDate,
@@ -233,24 +252,24 @@ namespace LHDS.Core.Services.Foundations.DecisionPolls
             return (isNotRecent, startDate, endDate);
         }
 
-        private static void Validate(params (dynamic Rule, string Parameter)[] validations)
+        private static void Validate<T>(
+            Func<T> createException,
+            params (dynamic Rule, string Parameter)[] validations)
+            where T : Xeption
         {
-            var invalidDecisionPollException =
-                new InvalidDecisionPollException(
-                    message: "Invalid decisionPoll. Please correct the errors and try again.");
-
+            T invalidDataException = createException();
 
             foreach ((dynamic rule, string parameter) in validations)
             {
                 if (rule.Condition)
                 {
-                    invalidDecisionPollException.UpsertDataList(
+                    invalidDataException.UpsertDataList(
                         key: parameter,
                         value: rule.Message);
                 }
             }
 
-            invalidDecisionPollException.ThrowIfContainsErrors();
+            invalidDataException.ThrowIfContainsErrors();
         }
     }
 }

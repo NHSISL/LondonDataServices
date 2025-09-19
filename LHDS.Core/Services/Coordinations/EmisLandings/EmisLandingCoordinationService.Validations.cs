@@ -5,6 +5,7 @@
 using System;
 using System.IO;
 using LHDS.Core.Models.Coordinations.EmisLandings.Exceptions;
+using Xeptions;
 
 namespace LHDS.Core.Services.Coordinations.EmisLandings
 {
@@ -12,12 +13,19 @@ namespace LHDS.Core.Services.Coordinations.EmisLandings
     {
         private static void ValidateProcessArgs(Guid supplierId)
         {
-            Validate((Rule: IsInvalid(supplierId), Parameter: "SupplierId"));
+            Validate(
+                createException: () => new InvalidArgumentEmisLandingCoordinationException(
+                    message: "Invalid Emis Landing coordination argument, please correct the errors and try again."),
+
+                (Rule: IsInvalid(supplierId), Parameter: "SupplierId"));
         }
 
         private static void ValidateProcessFileArgs(string fileName, Guid supplierId)
         {
             Validate(
+                createException: () => new InvalidArgumentEmisLandingCoordinationException(
+                    message: "Invalid Emis Landing coordination argument, please correct the errors and try again."),
+
                 (Rule: IsInvalid(fileName), Parameter: "FileName"),
                 (Rule: IsInvalid(supplierId), Parameter: "SupplierId"));
         }
@@ -25,6 +33,9 @@ namespace LHDS.Core.Services.Coordinations.EmisLandings
         private static void ValidateFileNameOnRetrieve(Stream output, string fileName)
         {
             Validate(
+                createException: () => new InvalidArgumentEmisLandingCoordinationException(
+                    message: "Invalid Emis Landing coordination argument, please correct the errors and try again."),
+
                 (Rule: IsInvalidOutputStream(output), Parameter: "Output"),
                 (Rule: IsInvalid(fileName), Parameter: "FileName"),
                 (Rule: IsInvalidFileNameSegments(fileName), Parameter: "FileName"));
@@ -32,12 +43,20 @@ namespace LHDS.Core.Services.Coordinations.EmisLandings
 
         private static void ValidateArgsOnRetrieveListOfDocumentsToProcess(Guid subscriberAgreementId)
         {
-            Validate((Rule: IsInvalid(subscriberAgreementId), Parameter: "SubscriberAgreementId"));
+            Validate(
+                createException: () => new InvalidArgumentEmisLandingCoordinationException(
+                    message: "Invalid Emis Landing coordination argument, please correct the errors and try again."),
+
+                (Rule: IsInvalid(subscriberAgreementId), Parameter: "SubscriberAgreementId"));
         }
 
         private static void ValidateArgsOnRedecryptDocumentByIngestionId(Guid ingestionTrackingId)
         {
-            Validate((Rule: IsInvalid(ingestionTrackingId), Parameter: "ingestionTrackingId"));
+            Validate(
+                createException: () => new InvalidArgumentEmisLandingCoordinationException(
+                    message: "Invalid Emis Landing coordination argument, please correct the errors and try again."),
+
+                (Rule: IsInvalid(ingestionTrackingId), Parameter: "ingestionTrackingId"));
         }
 
         private static dynamic IsInvalid(string? text) => new
@@ -70,23 +89,24 @@ namespace LHDS.Core.Services.Coordinations.EmisLandings
             Message = "Stream is required"
         };
 
-        private static void Validate(params (dynamic Rule, string Parameter)[] validations)
+        private static void Validate<T>(
+            Func<T> createException,
+            params (dynamic Rule, string Parameter)[] validations)
+            where T : Xeption
         {
-            var invalidArgumentEmisLandingCoordinationException =
-                new InvalidArgumentEmisLandingCoordinationException(
-                    message: "Invalid Emis Landing coordination argument, please correct the errors and try again.");
+            T invalidDataException = createException();
 
             foreach ((dynamic rule, string parameter) in validations)
             {
                 if (rule.Condition)
                 {
-                    invalidArgumentEmisLandingCoordinationException.UpsertDataList(
+                    invalidDataException.UpsertDataList(
                         key: parameter,
                         value: rule.Message);
                 }
             }
 
-            invalidArgumentEmisLandingCoordinationException.ThrowIfContainsErrors();
+            invalidDataException.ThrowIfContainsErrors();
         }
     }
 }

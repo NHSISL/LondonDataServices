@@ -19,7 +19,8 @@ namespace LHDS.Core.Services.Orchestrations.Downloads
 
             Validate(
                 createException: () => new InvalidArgumentEmisLandingOrchestrationException(
-                    message: "Invalid EMIS landing orchestration argument(s), " +
+                    message: 
+                        "Invalid EMIS landing orchestration argument(s), " +
                         "please correct the errors and try again."),
 
                 (Rule: IsInvalid(this.landingConfiguration.LandingSupplierId),
@@ -30,7 +31,8 @@ namespace LHDS.Core.Services.Orchestrations.Downloads
         {
             Validate(
                 createException: () => new InvalidArgumentEmisLandingOrchestrationException(
-                    message: "Invalid EMIS landing orchestration argument(s), " +
+                    message: 
+                        "Invalid EMIS landing orchestration argument(s), " +
                         "please correct the errors and try again."),
 
                 (Rule: IsInvalid(subscriberCredential), Parameter: "SubscriberCredential"),
@@ -42,7 +44,8 @@ namespace LHDS.Core.Services.Orchestrations.Downloads
             if (subscriberCredential is null)
             {
                 throw new NullSubscriberCredentialEmisLandingOrchestrationException(
-                    message: "Null subscriber credential EMIS landing orchestration exception, " +
+                    message: 
+                        "Null subscriber credential EMIS landing orchestration exception, " +
                         "please correct the errors and try again.");
             }
         }
@@ -51,8 +54,9 @@ namespace LHDS.Core.Services.Orchestrations.Downloads
         {
             Validate(
                  createException: () => new InvalidArgumentEmisLandingOrchestrationException(
-                     message: "Invalid EMIS landing orchestration argument(s), " +
-                         "please correct the errors and try again."),
+                     message: 
+                        "Invalid EMIS landing orchestration argument(s), " +
+                        "please correct the errors and try again."),
 
                  (Rule: IsInvalid(ingestionTrackingId), Parameter: "ingestionTrackingId"));
         }
@@ -61,7 +65,8 @@ namespace LHDS.Core.Services.Orchestrations.Downloads
         {
             Validate(
                 createException: () => new InvalidArgumentEmisLandingOrchestrationException(
-                    message: "Invalid EMIS landing orchestration argument(s), " +
+                    message: 
+                        "Invalid EMIS landing orchestration argument(s), " +
                         "please correct the errors and try again."),
 
                 (Rule: IsInvalid(supplierId), Parameter: "SupplierId"));
@@ -94,7 +99,8 @@ namespace LHDS.Core.Services.Orchestrations.Downloads
         {
             Validate(
                 createException: () => new InvalidArgumentEmisLandingOrchestrationException(
-                    message: "Invalid EMIS landing orchestration argument(s), " +
+                    message: 
+                        "Invalid EMIS landing orchestration argument(s), " +
                         "please correct the errors and try again."),
 
                 (Rule: IsInvalidOutputStream(output), Parameter: "Output"),
@@ -140,24 +146,6 @@ namespace LHDS.Core.Services.Orchestrations.Downloads
             Condition = string.IsNullOrWhiteSpace(text),
             Message = "Text is required"
         };
-
-        private static void Validate(params (dynamic Rule, string Parameter)[] validations)
-        {
-            var invalidArgumentEmisLandingOrchestrationException = new InvalidArgumentEmisLandingOrchestrationException(
-                message: "Invalid EMIS landing orchestration argument(s), please correct the errors and try again.");
-
-            foreach ((dynamic rule, string parameter) in validations)
-            {
-                if (rule.Condition)
-                {
-                    invalidArgumentEmisLandingOrchestrationException.UpsertDataList(
-                        key: parameter,
-                        value: rule.Message);
-                }
-            }
-
-            invalidArgumentEmisLandingOrchestrationException.ThrowIfContainsErrors();
-        }
 
         private static void Validate<T>(
             Func<T> createException,

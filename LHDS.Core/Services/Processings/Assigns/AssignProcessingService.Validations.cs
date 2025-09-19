@@ -14,7 +14,7 @@ namespace LHDS.Core.Services.Processings.Assigns
         {
             Validate(
                 createException: () => new InvalidArgumentAssignProcessingException(
-                    message: "Invalid assign processing error(s), please correct the errors and try again."),
+                    message: "Invalid address. Please correct the errors and try again."),
 
                 (Rule: IsInvalid(address), Parameter: nameof(address)));
         }

@@ -5,6 +5,7 @@
 using System;
 using System.IO;
 using LHDS.Core.Models.Orchestrations.TppLandings.Exceptions;
+using Xeptions;
 
 namespace LHDS.Core.Services.Orchestrations.Tpp
 {
@@ -13,13 +14,21 @@ namespace LHDS.Core.Services.Orchestrations.Tpp
         private static void ValidateArgumentsOnProcess(string fileName, Guid supplierId)
         {
             Validate(
+                createException: () => new InvalidArgumentTppLandingOrchestrationException(
+                    message: "Invalid TPP landing orchestration argument(s), please correct the errors and try again."),
+
                 (Rule: IsInvalid(fileName), Parameter: "FileName"),
                 (Rule: IsInvalid(supplierId), Parameter: "SupplierId"));
         }
 
         private static void ValidateArgumentsOnReProcess(Guid supplierId)
         {
-            Validate((Rule: IsInvalid(supplierId), Parameter: "SupplierId"));
+            Validate(
+                createException: () => new InvalidArgumentTppLandingOrchestrationException(
+                    message: "Invalid TPP landing orchestration argument(s), please correct the errors and try again."),
+
+
+                (Rule: IsInvalid(supplierId), Parameter: "SupplierId"));
         }
 
         private static dynamic IsInvalid(Guid id) => new
@@ -40,22 +49,24 @@ namespace LHDS.Core.Services.Orchestrations.Tpp
             Message = "Stream is required"
         };
 
-        private static void Validate(params (dynamic Rule, string Parameter)[] validations)
+        private static void Validate<T>(
+            Func<T> createException,
+            params (dynamic Rule, string Parameter)[] validations)
+            where T : Xeption
         {
-            var invalidArgumentException = new InvalidArgumentTppLandingOrchestrationException(
-                message: "Invalid TPP landing orchestration argument(s), please correct the errors and try again.");
+            T invalidDataException = createException();
 
             foreach ((dynamic rule, string parameter) in validations)
             {
                 if (rule.Condition)
                 {
-                    invalidArgumentException.UpsertDataList(
+                    invalidDataException.UpsertDataList(
                         key: parameter,
                         value: rule.Message);
                 }
             }
 
-            invalidArgumentException.ThrowIfContainsErrors();
+            invalidDataException.ThrowIfContainsErrors();
         }
     }
 }

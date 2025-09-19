@@ -6,6 +6,7 @@ using System;
 using System.IO;
 using LHDS.Core.Models.Orchestrations.EmisLandings.Exceptions;
 using LHDS.Core.Models.Processings.SubscriberCredentials;
+using Xeptions;
 
 namespace LHDS.Core.Services.Orchestrations.Downloads
 {
@@ -16,14 +17,24 @@ namespace LHDS.Core.Services.Orchestrations.Downloads
             this.ValidateLandingConfigurationIsNotNull();
             this.ValidateBlobContainersIsNotNull();
 
-            Validate((Rule: IsInvalid(this.landingConfiguration.LandingSupplierId),
+            Validate(
+                createException: () => new InvalidArgumentEmisLandingOrchestrationException(
+                    message: 
+                        "Invalid EMIS landing orchestration argument(s), " +
+                        "please correct the errors and try again."),
+
+                (Rule: IsInvalid(this.landingConfiguration.LandingSupplierId),
                 Parameter: "LandingConfiguration.SupplierId"));
         }
 
         private void ValidateOnProcess(SubscriberCredential subscriberCredential, Guid supplierId)
         {
-
             Validate(
+                createException: () => new InvalidArgumentEmisLandingOrchestrationException(
+                    message: 
+                        "Invalid EMIS landing orchestration argument(s), " +
+                        "please correct the errors and try again."),
+
                 (Rule: IsInvalid(subscriberCredential), Parameter: "SubscriberCredential"),
                 (Rule: IsInvalid(supplierId), Parameter: "SupplierId"));
         }
@@ -33,19 +44,32 @@ namespace LHDS.Core.Services.Orchestrations.Downloads
             if (subscriberCredential is null)
             {
                 throw new NullSubscriberCredentialEmisLandingOrchestrationException(
-                    message: "Null subscriber credential EMIS landing orchestration exception, " +
+                    message: 
+                        "Null subscriber credential EMIS landing orchestration exception, " +
                         "please correct the errors and try again.");
             }
         }
 
         public void ValidateIngestionTrackingId(Guid ingestionTrackingId)
         {
-            Validate((Rule: IsInvalid(ingestionTrackingId), Parameter: "ingestionTrackingId"));
+            Validate(
+                 createException: () => new InvalidArgumentEmisLandingOrchestrationException(
+                     message: 
+                        "Invalid EMIS landing orchestration argument(s), " +
+                        "please correct the errors and try again."),
+
+                 (Rule: IsInvalid(ingestionTrackingId), Parameter: "ingestionTrackingId"));
         }
 
         public void ValidateProcessArguments(Guid supplierId)
         {
-            Validate((Rule: IsInvalid(supplierId), Parameter: "SupplierId"));
+            Validate(
+                createException: () => new InvalidArgumentEmisLandingOrchestrationException(
+                    message: 
+                        "Invalid EMIS landing orchestration argument(s), " +
+                        "please correct the errors and try again."),
+
+                (Rule: IsInvalid(supplierId), Parameter: "SupplierId"));
         }
 
         private void ValidateLandingConfigurationIsNotNull()
@@ -68,19 +92,17 @@ namespace LHDS.Core.Services.Orchestrations.Downloads
             }
         }
 
-        private static void ValidateProcessFileArguments(string fileName, Guid supplierId)
-        {
-            Validate(
-                (Rule: IsInvalid(fileName), Parameter: "FileName"),
-                (Rule: IsInvalid(supplierId), Parameter: "SupplierId"));
-        }
-
         private static void ValidateRetrieveDownloadByFileNameArguments(
             Stream output,
             string fileName,
             SubscriberCredential subscriberCredential)
         {
             Validate(
+                createException: () => new InvalidArgumentEmisLandingOrchestrationException(
+                    message: 
+                        "Invalid EMIS landing orchestration argument(s), " +
+                        "please correct the errors and try again."),
+
                 (Rule: IsInvalidOutputStream(output), Parameter: "Output"),
                 (Rule: IsInvalid(fileName), Parameter: "FileName"),
                 (Rule: IsInvalid(subscriberCredential), Parameter: "SubscriberCredential"));
@@ -125,22 +147,24 @@ namespace LHDS.Core.Services.Orchestrations.Downloads
             Message = "Text is required"
         };
 
-        private static void Validate(params (dynamic Rule, string Parameter)[] validations)
+        private static void Validate<T>(
+            Func<T> createException,
+            params (dynamic Rule, string Parameter)[] validations)
+            where T : Xeption
         {
-            var invalidArgumentEmisLandingOrchestrationException = new InvalidArgumentEmisLandingOrchestrationException(
-                message: "Invalid EMIS landing orchestration argument(s), please correct the errors and try again.");
+            T invalidDataException = createException();
 
             foreach ((dynamic rule, string parameter) in validations)
             {
                 if (rule.Condition)
                 {
-                    invalidArgumentEmisLandingOrchestrationException.UpsertDataList(
+                    invalidDataException.UpsertDataList(
                         key: parameter,
                         value: rule.Message);
                 }
             }
 
-            invalidArgumentEmisLandingOrchestrationException.ThrowIfContainsErrors();
+            invalidDataException.ThrowIfContainsErrors();
         }
     }
 }

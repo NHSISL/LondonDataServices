@@ -45,7 +45,7 @@ namespace LHDS.Core.Services.Orchestrations.Decryptions
         {
             Validate(
                 createException: () => new InvalidArgumentDecryptionOrchestrationException(
-                    message: "Invalid decryption orchestration argument, please correct the errors and try again."),
+                    message: "Invalid decryption orchestration argument(s), please correct the errors and try again."),
 
                 (Rule: IsInvalid(fileName), Parameter: "FileName"));
         }

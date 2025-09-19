@@ -14,7 +14,8 @@ namespace LHDS.Core.Services.Orchestrations.TerminologyMetadata
         {
             Validate(
                 createException: () => new InvalidArgumentTerminologyMetaDataOrchestrationException(
-                    message: "Invalid argument terminology metadata orchestration. " +
+                    message: 
+                        "Invalid argument terminology metadata orchestration. " +
                         "Please correct the errors and try again."),
 
                 (Rule: IsInvalid(resourceTypes), Parameter: "resourceTypes"));
@@ -24,7 +25,8 @@ namespace LHDS.Core.Services.Orchestrations.TerminologyMetadata
         {
             Validate(
                 createException: () => new InvalidArgumentTerminologyMetaDataOrchestrationException(
-                    message: "Invalid argument terminology metadata orchestration. " +
+                    message: 
+                        "Invalid argument terminology metadata orchestration. " +
                         "Please correct the errors and try again."),
 
                 (Rule: IsInvalid(resourceType), Parameter: "resourceType"));
@@ -35,7 +37,8 @@ namespace LHDS.Core.Services.Orchestrations.TerminologyMetadata
         {
             Validate(
                 createException: () => new InvalidArgumentTerminologyMetaDataOrchestrationException(
-                    message: "Invalid argument terminology metadata orchestration. " +
+                    message: 
+                        "Invalid argument terminology metadata orchestration. " +
                         "Please correct the errors and try again."),
 
                 (Rule: IsInvalid(resourceURL), Parameter: "resourceURL"));

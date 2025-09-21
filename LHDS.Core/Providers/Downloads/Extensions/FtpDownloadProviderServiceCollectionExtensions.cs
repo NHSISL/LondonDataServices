@@ -11,6 +11,7 @@ using LHDS.Core.Providers.Downloads.Builders;
 using LHDS.Core.Providers.Downloads.FtpDownloads;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Xeptions;
 
 namespace LHDS.Core.Providers.Downloads.Extensions
 {
@@ -48,6 +49,8 @@ namespace LHDS.Core.Providers.Downloads.Extensions
             }
 
             Validate(
+                createException: (message, errors) => new InvalidConfigurationException(message, null, errors),
+
                 (Rule: IsInvalid(ftpDownloadProviderSettings.FtpPort),
                     Parameter: "ftpDownload__ftpPort"),
 
@@ -73,10 +76,15 @@ namespace LHDS.Core.Providers.Downloads.Extensions
             Message = "Configuration value does not exist"
         };
 
-        private static void Validate(params (dynamic Rule, string Parameter)[] validations)
+        private static void Validate<T>(
+            Func<string, IDictionary, T> createException,
+            params (dynamic Rule, string Parameter)[] validations)
+            where T : Xeption
         {
             StringBuilder validationErrors = new StringBuilder();
             validationErrors.AppendLine("Configuration error(s):");
+
+            // Non-generic IDictionary to match InvalidConfigurationException
             IDictionary errors = new Dictionary<string, List<string>>();
 
             foreach ((dynamic rule, string parameter) in validations)
@@ -88,18 +96,19 @@ namespace LHDS.Core.Providers.Downloads.Extensions
                     if (errors.Contains(parameter))
                     {
                         (errors[parameter] as List<string>)?.Add(rule.Message);
-                        return;
                     }
-
-                    errors.Add(parameter, new List<string> { rule.Message });
+                    else
+                    {
+                        errors.Add(parameter, new List<string> { rule.Message });
+                    }
                 }
             }
 
-            var invalidConfigurationException = new InvalidConfigurationException(
-                message: validationErrors.ToString(),
-                data: errors);
+            T invalidDataException = createException(
+                validationErrors.ToString(),
+                errors);
 
-            invalidConfigurationException.ThrowIfContainsErrors();
+            invalidDataException.ThrowIfContainsErrors();
         }
     }
 }

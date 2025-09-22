@@ -45,8 +45,6 @@ namespace LHDS.Core.Providers.Cryptography.Extensions
         {
             StringBuilder validationErrors = new StringBuilder();
             validationErrors.AppendLine("Configuration error(s):");
-
-            // Non-generic IDictionary to match InvalidConfigurationException
             IDictionary errors = new Dictionary<string, List<string>>();
 
             foreach ((dynamic rule, string parameter) in validations)
@@ -58,11 +56,10 @@ namespace LHDS.Core.Providers.Cryptography.Extensions
                     if (errors.Contains(parameter))
                     {
                         (errors[parameter] as List<string>)?.Add(rule.Message);
+                        return;
                     }
-                    else
-                    {
-                        errors.Add(parameter, new List<string> { rule.Message });
-                    }
+
+                    errors.Add(parameter, new List<string> { rule.Message });
                 }
             }
 

@@ -36,7 +36,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.ResolvedAddresses
             string auditType = "Resolved Address Upload";
             byte[] inputBytes = Encoding.UTF8.GetBytes(inputContent);
             Stream inputStream = new MemoryStream(inputBytes);
-            List<ResolvedAddress> randomResolvedAddresses = CreateRandomResolvedAddresses(count: 1);
+            List<ResolvedAddress> randomResolvedAddresses = CreateRandomResolvedAddresses(count: GetRandomNumber());
             List<ResolvedAddress> mappedResolvedAddresses = randomResolvedAddresses;
 
             Dictionary<string, int> fieldMappings =

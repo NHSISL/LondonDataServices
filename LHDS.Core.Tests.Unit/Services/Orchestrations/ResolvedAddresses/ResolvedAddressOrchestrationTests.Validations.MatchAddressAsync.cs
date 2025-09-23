@@ -36,6 +36,8 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.ResolvedAddresses
                 this.dateTimeBrokerMock.Object,
                 this.identifierBrokerMock.Object,
                 this.securityBrokerMock.Object,
+                this.storageQueueBrokerMock.Object,
+                this.storageQueues,
 
                 new BlobContainers
                 {

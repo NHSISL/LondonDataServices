@@ -104,8 +104,11 @@ namespace LHDS.Core.Services.Orchestrations.Decisions
                         fieldMappings: fieldMappings,
                         shouldAddTrailingComma: false);
 
-                string fileName = $"IDecide_{currentPollDate:HHmm_ddMMyyyy}";
-                string container = this.blobContainers.Decisions;
+                string fileName = $"{this.decisionConfiguration.FolderName}/" +
+                    $"{currentPollDate:yyyyMMdd}/" +
+                    $"{this.decisionConfiguration.FilePrefix}_{currentPollDate:yyyyMMddHHmmss}.csv";
+
+                string container = this.blobContainers.Ingress;
                 string tempFile = Path.GetTempFileName();
                 ValidateDocumentRequirements(processedData);
 

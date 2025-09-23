@@ -192,7 +192,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.EmisLandings
                 .Returns(ValueTask.CompletedTask);
 
             this.hashBrokerMock.Setup(broker =>
-                broker.GenerateSha256HashAsync(It.IsAny<Stream>(), It.IsAny<string?>()))
+                broker.GenerateSha256HashAsync(It.IsAny<Stream>(), null))
                     .ReturnsAsync(randomHash);
 
             this.documentProcessingServiceMock
@@ -295,7 +295,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.EmisLandings
                         Times.Once);
 
             this.hashBrokerMock.Verify(broker =>
-                broker.GenerateSha256HashAsync(It.IsAny<Stream>(), It.IsAny<string?>()),
+                broker.GenerateSha256HashAsync(It.IsAny<Stream>(), null),
                     Times.Once);
 
             this.documentProcessingServiceMock
@@ -461,7 +461,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.EmisLandings
                 .Returns(ValueTask.CompletedTask);
 
             this.hashBrokerMock.Setup(broker =>
-                broker.GenerateSha256HashAsync(It.IsAny<Stream>(), It.IsAny<string?>()))
+                broker.GenerateSha256HashAsync(It.IsAny<Stream>(), null))
                     .ReturnsAsync(randomHash);
 
             this.documentProcessingServiceMock
@@ -547,7 +547,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.EmisLandings
                         Times.Once);
 
             this.hashBrokerMock.Verify(broker =>
-                broker.GenerateSha256HashAsync(It.IsAny<Stream>(), It.IsAny<string?>()),
+                broker.GenerateSha256HashAsync(It.IsAny<Stream>(), null),
                     Times.Once);
 
             this.documentProcessingServiceMock

@@ -6,7 +6,11 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Text;
+using System.Text.Encodings.Web;
+using System.Text.Json;
 using System.Threading.Tasks;
+using LHDS.Core.Models.Brokers.Securities;
+using LHDS.Core.Models.Brokers.Storages.StorageQueues;
 using LHDS.Core.Models.Foundations.ResolvedAddresses;
 using Moq;
 using Xunit;
@@ -21,6 +25,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.ResolvedAddresses
             // Given
             Guid identifier = Guid.NewGuid();
             DateTimeOffset randomDate = GetRandomDateTimeOffset();
+            EntraUser entraUser = CreateRandomEntraUser();
             string randomFileName = GetRandomString();
             string inputFileName = randomFileName;
             string inputContent = GetRandomString();
@@ -31,7 +36,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.ResolvedAddresses
             string auditType = "Resolved Address Upload";
             byte[] inputBytes = Encoding.UTF8.GetBytes(inputContent);
             Stream inputStream = new MemoryStream(inputBytes);
-            List<ResolvedAddress> randomResolvedAddresses = CreateRandomResolvedAddresses();
+            List<ResolvedAddress> randomResolvedAddresses = CreateRandomResolvedAddresses(count: 1);
             List<ResolvedAddress> mappedResolvedAddresses = randomResolvedAddresses;
 
             Dictionary<string, int> fieldMappings =
@@ -48,6 +53,10 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.ResolvedAddresses
             this.identifierBrokerMock.Setup(broker =>
                 broker.GetIdentifierAsync())
                     .ReturnsAsync(identifier);
+
+            this.securityBrokerMock.Setup(broker =>
+                broker.GetCurrentUserAsync())
+                    .ReturnsAsync(entraUser);
 
             this.csvHelperBrokerMock.Setup(service =>
                 service.MapCsvToObjectAsync<ResolvedAddress>(inputContent, true, fieldMappings, true))
@@ -66,6 +75,37 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.ResolvedAddresses
                 broker.GetIdentifierAsync(),
                     Times.Once());
 
+            this.dateTimeBrokerMock.Verify(broker =>
+                broker.GetCurrentDateTimeOffsetAsync(),
+                    Times.Once);
+
+            this.securityBrokerMock.Verify(broker =>
+                broker.GetCurrentUserAsync(),
+                    Times.Once);
+
+            foreach (ResolvedAddress resolvedAddress in mappedResolvedAddresses)
+            {
+                Payload<Guid> payload = new Payload<Guid>
+                {
+                    Message = resolvedAddress.Id,
+                    User = null,
+                    EnqueuedAtUtc = randomDate
+                };
+
+                var jsonOptions = new JsonSerializerOptions
+                {
+                    PropertyNamingPolicy = null,
+                    WriteIndented = false,
+                    Encoder = JavaScriptEncoder.UnsafeRelaxedJsonEscaping
+                };
+
+                string payloadMessage = JsonSerializer.Serialize(payload, jsonOptions);
+
+                this.storageQueueBrokerMock.Verify(broker =>
+                    broker.SendMessageAsync(storageQueues.ResolvedAddressQueue, payloadMessage),
+                        Times.Once);
+            }
+
             this.auditBrokerMock.Verify(service =>
                 service.LogAsync(
                     auditType,
@@ -83,6 +123,10 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.ResolvedAddresses
             this.resolvedAddressProcessingServiceMock.Verify(service =>
                 service.BulkAddResolvedAddressesAsync(mappedResolvedAddresses, It.IsAny<string>()),
                     Times.Once);
+
+            this.securityBrokerMock.Setup(broker =>
+                broker.GetCurrentUserAsync())
+                    .ReturnsAsync(entraUser);
 
             this.auditBrokerMock.Verify(service =>
                 service.LogAsync(

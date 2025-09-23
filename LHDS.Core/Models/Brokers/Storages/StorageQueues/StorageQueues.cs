@@ -6,6 +6,6 @@ namespace LHDS.Core.Models.Brokers.Storages.StorageQueues
 {
     public class StorageQueues
     {
-        public string ResolveAddressQueue { get; set; } = string.Empty;
+        public string ResolvedAddressQueue { get; set; } = string.Empty;
     }
 }

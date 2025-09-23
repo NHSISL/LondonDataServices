@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
+using System.Text.Encodings.Web;
 using System.Text.Json;
 using System.Threading.Tasks;
 using Force.DeepCloner;
@@ -111,22 +112,29 @@ namespace LHDS.Core.Services.Orchestrations.ResolvedAddresses
                 DateTimeOffset uploadedDateTimeOffset =
                     await this.dateTimeBroker.GetCurrentDateTimeOffsetAsync();
 
+                EntraUser entraUser = await this.securityBroker.GetCurrentUserAsync();
+
                 foreach (ResolvedAddress resolvedAddress in resolvedAddresses)
                 {
-                    EntraUser entraUser = await this.securityBroker.GetCurrentUserAsync();
-
                     Payload<Guid> payload = new Payload<Guid>
                     {
                         Message = resolvedAddress.Id,
-                        User = entraUser,
+                        User = null,
                         EnqueuedAtUtc = uploadedDateTimeOffset
                     };
 
-                    string message = JsonSerializer.Serialize(payload);
+                    var jsonOptions = new JsonSerializerOptions
+                    {
+                        PropertyNamingPolicy = null,
+                        WriteIndented = false,
+                        Encoder = JavaScriptEncoder.UnsafeRelaxedJsonEscaping
+                    };
+
+                    string message = JsonSerializer.Serialize(payload, jsonOptions);
 
                     await this.storageQueueBroker.SendMessageAsync(
-                        message: message,
-                        queueName: storageQueues.ResolveAddressQueue);
+                        queueName: storageQueues.ResolvedAddressQueue,
+                        message: message);
                 }
 
                 await this.auditBroker.LogAsync(

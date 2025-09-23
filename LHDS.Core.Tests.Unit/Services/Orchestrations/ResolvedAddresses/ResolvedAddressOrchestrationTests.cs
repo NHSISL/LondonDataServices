@@ -15,8 +15,10 @@ using LHDS.Core.Brokers.DateTimes;
 using LHDS.Core.Brokers.Identifiers;
 using LHDS.Core.Brokers.Loggings;
 using LHDS.Core.Brokers.Securities;
+using LHDS.Core.Brokers.Storages.StorageQueues;
 using LHDS.Core.Models.Brokers.Securities;
 using LHDS.Core.Models.Brokers.Storages.Blobs;
+using LHDS.Core.Models.Brokers.Storages.StorageQueues;
 using LHDS.Core.Models.Foundations.Addresses;
 using LHDS.Core.Models.Foundations.AssignAddresses;
 using LHDS.Core.Models.Foundations.Documents;
@@ -49,6 +51,8 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.ResolvedAddresses
         private readonly Mock<ICsvHelperBroker> csvHelperBrokerMock;
         private readonly Mock<IIdentifierBroker> identifierBrokerMock;
         private readonly Mock<ISecurityBroker> securityBrokerMock;
+        private readonly Mock<IStorageQueueBroker> storageQueueBrokerMock;
+        private readonly StorageQueues storageQueues;
         private readonly ICompareLogic compareLogic;
         private readonly BlobContainers blobContainers;
         private readonly IResolvedAddressOrchestrationService resolvedAddressOrchestrationService;
@@ -66,8 +70,14 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.ResolvedAddresses
             this.dateTimeBrokerMock = new Mock<IDateTimeBroker>();
             this.identifierBrokerMock = new Mock<IIdentifierBroker>();
             this.securityBrokerMock = new Mock<ISecurityBroker>();
+            this.storageQueueBrokerMock = new Mock<IStorageQueueBroker>();
             this.compareLogic = new CompareLogic();
             this.output = output;
+
+            this.storageQueues = new StorageQueues
+            {
+                ResolvedAddressQueue = "ResolvedAddressQueue"
+            };
 
             this.blobContainers = new BlobContainers
             {
@@ -85,6 +95,8 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.ResolvedAddresses
                 dateTimeBroker: this.dateTimeBrokerMock.Object,
                 identifierBroker: this.identifierBrokerMock.Object,
                 securityBroker: this.securityBrokerMock.Object,
+                storageQueueBroker: this.storageQueueBrokerMock.Object,
+                storageQueues: this.storageQueues,
                 blobContainers: blobContainers);
         }
 
@@ -172,10 +184,10 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.ResolvedAddresses
         private static DateTimeOffset GetRandomDateTimeOffset() =>
             new DateTimeRange(earliestDate: new DateTime()).GetValue();
 
-        private static List<ResolvedAddress> CreateRandomResolvedAddresses()
+        private static List<ResolvedAddress> CreateRandomResolvedAddresses(int count)
         {
             return CreateResolvedAddressFiller(dateTimeOffset: GetRandomDateTimeOffset())
-                .Create(count: GetRandomNumber())
+                .Create(count)
                     .ToList();
         }
 

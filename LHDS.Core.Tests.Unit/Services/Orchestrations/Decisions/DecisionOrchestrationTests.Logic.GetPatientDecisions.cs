@@ -26,10 +26,12 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Decisions
             IQueryable<DecisionPoll> decisionPolls = randomDecisionPolls;
             DateTimeOffset lastPollDate = decisionPolls.Max(poll => poll.LastPoll);
             List<Decision> expectedDecisions = CreateRandomDecisions();
-            string expectedContainer = this.blobContainers.Decisions;
+            string expectedContainer = this.blobContainers.Ingress;
             DateTimeOffset currentPollDate = DateTimeOffset.UtcNow;
             string systemUser = "system";
-            string expectedFileName = $"IDecide_{currentPollDate:HHmm_ddMMyyyy}";
+            string expectedFileName = $"{this.decisionConfiguration.FolderName}/" +
+                                      $"{currentPollDate:yyyyMMdd}/" +
+                                      $"{this.decisionConfiguration.FilePrefix}_{currentPollDate:yyyyMMddHHmmss}.csv";
             string expectedHash = GetRandomString();
             string expectedCsvProcessedData = GetRandomString();
             byte[] expectedDocumentBytes = Encoding.UTF8.GetBytes(expectedCsvProcessedData);

@@ -441,6 +441,8 @@ namespace LHDS.AdminPortal.Api
         private static void ValidateDecisionConfiguration(DecisionConfiguration decisionConfiguration)
         {
             Validate((Rule: IsInvalid(decisionConfiguration.HashPepper), Parameter: "IDecide__hashPepper"));
+            Validate((Rule: IsInvalid(decisionConfiguration.FolderName), Parameter: "IDecide__folderName"));
+            Validate((Rule: IsInvalid(decisionConfiguration.FilePrefix), Parameter: "IDecide__filePrefix"));
         }
 
         private static dynamic IsInvalid(string text) => new

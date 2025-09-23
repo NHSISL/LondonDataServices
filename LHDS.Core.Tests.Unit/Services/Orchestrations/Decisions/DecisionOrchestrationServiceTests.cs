@@ -57,12 +57,14 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Decisions
 
             this.blobContainers = new BlobContainers
             {
-                Decisions = "decisions"
+                Ingress = "ingress"
             };
 
             this.decisionConfiguration = new DecisionConfiguration
             {
-                HashPepper = "hashPepper"
+                HashPepper = "hashPepper",
+                FolderName = "localdataoptout",
+                FilePrefix = "ldoo"
             };
 
             this.decisionOrchestrationService = new DecisionOrchestrationService(

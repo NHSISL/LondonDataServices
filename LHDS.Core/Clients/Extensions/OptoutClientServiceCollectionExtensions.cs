@@ -42,6 +42,7 @@ using LHDS.Core.Services.Processings.OptOuts;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Xeptions;
 
 namespace LHDS.Core.Clients.Extensions
 {
@@ -341,6 +342,9 @@ namespace LHDS.Core.Clients.Extensions
             }
 
             Validate(
+                createException: () => new InvalidConfigurationException(
+                    message: "Configuration value does not exist or does not meet validation criteria"),
+
                 (Rule: IsInvalid(meshConfigurationSettings.MailboxId),
                     Parameter: "meshConfiguration__mailboxId"),
 
@@ -365,6 +369,9 @@ namespace LHDS.Core.Clients.Extensions
             if (acceptanceTest)
             {
                 Validate(
+                createException: () => new InvalidConfigurationException(
+                    message: "Configuration value does not exist or does not meet validation criteria"),
+
                     (Rule: IsInvalid(meshConfigurationSettings.TlsRootCertificates),
                         Parameter: "meshConfiguration__tlsRootCertificates__0"),
 
@@ -385,6 +392,9 @@ namespace LHDS.Core.Clients.Extensions
             }
 
             Validate(
+                createException: () => new InvalidConfigurationException(
+                    message: "Configuration value does not exist or does not meet validation criteria"),
+
                 (Rule: IsInvalid(optOutConfiguration.ExpiredAfterDays),
                     Parameter: "optOutSettings__expiredAfterDays"),
 
@@ -416,6 +426,9 @@ namespace LHDS.Core.Clients.Extensions
             }
 
             Validate(
+                createException: () => new InvalidConfigurationException(
+                    message: "Configuration value does not exist or does not meet validation criteria"),
+
                 (Rule: IsInvalid(blobStorageSettings.AzureBlobServiceUri),
                     Parameter: "blobStorage__azureBlobServiceUri"),
 
@@ -447,7 +460,10 @@ namespace LHDS.Core.Clients.Extensions
             Message = "Configuration value does not exist"
         };
 
-        private static void Validate(params (dynamic Rule, string Parameter)[] validations)
+        private static void Validate<T>(
+            Func<T> createException,
+            params (dynamic Rule, string Parameter)[] validations)
+            where T : Xeption
         {
             StringBuilder validationErrors = new StringBuilder();
             validationErrors.AppendLine("Configuration error(s):");
@@ -457,8 +473,7 @@ namespace LHDS.Core.Clients.Extensions
             {
                 if (rule.Condition)
                 {
-                    validationErrors.AppendLine(
-                        $"{parameter} -> Configuration value does not exist or does not meet validation criteria");
+                    validationErrors.AppendLine($"{parameter}");
 
                     if (errors.Contains(parameter))
                     {
@@ -470,11 +485,8 @@ namespace LHDS.Core.Clients.Extensions
                 }
             }
 
-            var invalidConfigurationException = new InvalidConfigurationException(
-                message: validationErrors.ToString(),
-                data: errors);
-
-            invalidConfigurationException.ThrowIfContainsErrors();
+            T invalidDataException = createException();
+            invalidDataException.ThrowIfContainsErrors();
         }
 
         /// <summary>

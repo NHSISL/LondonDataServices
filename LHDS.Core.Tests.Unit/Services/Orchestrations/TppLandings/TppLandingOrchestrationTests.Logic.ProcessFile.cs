@@ -72,7 +72,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.TppLandings
                 broker.GetCurrentDateTimeOffsetAsync())
                    .ReturnsAsync(randomDateTime);
 
-            this.hashBrokerMock.Setup(broker => broker.GenerateSha256HashAsync(inputData))
+            this.hashBrokerMock.Setup(broker => broker.GenerateSha256HashAsync(inputData, null))
                 .ReturnsAsync(randomHash);
 
             // when
@@ -90,7 +90,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.TppLandings
                     Times.Once);
 
             this.hashBrokerMock.Verify(broker =>
-                broker.GenerateSha256HashAsync(inputData),
+                broker.GenerateSha256HashAsync(inputData, null),
                     Times.Never);
 
             this.ingestionTrackingProcessingServiceMock.VerifyNoOtherCalls();
@@ -189,7 +189,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.TppLandings
                     .ReturnsAsync(new List<IngestionTracking>().AsQueryable());
 
             this.hashBrokerMock.Setup(broker =>
-                broker.GenerateSha256HashAsync(inputDataStream))
+                broker.GenerateSha256HashAsync(inputDataStream, null))
                     .ReturnsAsync(randomHash);
 
             this.dateTimeBrokerMock.Setup(broker =>
@@ -273,7 +273,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.TppLandings
             modifiedIngestionTracking.DecryptedFileSha256Hash = randomDecryptedFileSha256Hash;
 
             hashBrokerMock.Setup(broker =>
-                broker.GenerateSha256HashAsync(It.IsAny<Stream>()))
+                broker.GenerateSha256HashAsync(It.IsAny<Stream>(), null))
                     .ReturnsAsync(randomDecryptedFileSha256Hash);
 
             documentProcessingServiceMock.Setup(service =>
@@ -367,7 +367,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.TppLandings
                         Times.Once);
 
             this.hashBrokerMock.Verify(broker =>
-                broker.GenerateSha256HashAsync(It.IsAny<Stream>()),
+                broker.GenerateSha256HashAsync(It.IsAny<Stream>(), null),
                     Times.Once);
 
             documentProcessingServiceMock.Verify(service =>
@@ -498,7 +498,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.TppLandings
             modifiedIngestionTracking.DecryptedFileSize = inputBytes.Length;
 
             hashBrokerMock.Setup(broker =>
-                broker.GenerateSha256HashAsync(It.IsAny<Stream>()))
+                broker.GenerateSha256HashAsync(It.IsAny<Stream>(), null))
                     .ReturnsAsync(randomDecryptedFileSha256Hash);
 
             documentProcessingServiceMock.Setup(service =>
@@ -568,7 +568,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.TppLandings
                         Times.Once);
 
             this.hashBrokerMock.Verify(broker =>
-                broker.GenerateSha256HashAsync(It.IsAny<Stream>()),
+                broker.GenerateSha256HashAsync(It.IsAny<Stream>(), null),
                     Times.Once);
 
             documentProcessingServiceMock.Verify(service =>

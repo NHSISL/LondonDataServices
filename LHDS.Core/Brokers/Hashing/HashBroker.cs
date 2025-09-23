@@ -4,6 +4,7 @@
 
 using System;
 using System.IO;
+using System.Linq;
 using System.Security.Cryptography;
 using System.Threading.Tasks;
 
@@ -29,21 +30,29 @@ namespace LHDS.Core.Brokers.Hashing
             }
         }
 
-        public async ValueTask<string> GenerateSha256HashAsync(Stream? data)
+        public async ValueTask<string> GenerateSha256HashAsync(Stream? data, string? pepper = null)
         {
-            if (data == null)
+            if (data == null || data.Length == 0)
             {
                 return string.Empty;
             }
 
-            using (SHA256 sha256 = SHA256.Create())
-            {
-                data.Position = 0;
-                byte[] hashBytes = sha256.ComputeHash(data);
-                var sha256Hash = BitConverter.ToString(hashBytes).Replace("-", "").ToLower();
+            data.Position = 0;
+            using var memoryStream = new MemoryStream();
+            await data.CopyToAsync(memoryStream);
+            byte[] nhsBytes = memoryStream.ToArray();
 
-                return sha256Hash;
-            }
+            byte[] pepperBytes = !string.IsNullOrEmpty(pepper)
+                ? System.Text.Encoding.UTF8.GetBytes(pepper)
+                : Array.Empty<byte>();
+
+            byte[] combined = nhsBytes.Concat(pepperBytes).ToArray();
+            using var sha256 = SHA256.Create();
+            byte[] hashBytes = sha256.ComputeHash(combined);
+
+            var sha256Hash = BitConverter.ToString(hashBytes).Replace("-", "").ToLowerInvariant();
+
+            return sha256Hash;
         }
     }
 }

@@ -7,7 +7,7 @@ using Azure.Storage.Queues.Models;
 
 namespace LHDS.Core.Brokers.Storages.StorageQueues
 {
-    internal interface IStorageQueueBroker
+    public interface IStorageQueueBroker
     {
         ValueTask SendMessageAsync(string queueName, string message);
         ValueTask<QueueMessage> ReceiveMessageAsync(string queueName);

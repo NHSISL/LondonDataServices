@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
+using System.Text.Json;
 using System.Threading.Tasks;
 using Force.DeepCloner;
 using LHDS.Core.Brokers.Audits;
@@ -15,7 +16,10 @@ using LHDS.Core.Brokers.DateTimes;
 using LHDS.Core.Brokers.Identifiers;
 using LHDS.Core.Brokers.Loggings;
 using LHDS.Core.Brokers.Securities;
+using LHDS.Core.Brokers.Storages.StorageQueues;
+using LHDS.Core.Models.Brokers.Securities;
 using LHDS.Core.Models.Brokers.Storages.Blobs;
+using LHDS.Core.Models.Brokers.Storages.StorageQueues;
 using LHDS.Core.Models.Foundations.Addresses;
 using LHDS.Core.Models.Foundations.AssignAddresses;
 using LHDS.Core.Models.Foundations.Audits;
@@ -39,6 +43,8 @@ namespace LHDS.Core.Services.Orchestrations.ResolvedAddresses
         private readonly IDateTimeBroker dateTimeBroker;
         private readonly IIdentifierBroker identifierBroker;
         private readonly ISecurityBroker securityBroker;
+        private readonly IStorageQueueBroker storageQueueBroker;
+        private readonly StorageQueues storageQueues;
         private readonly BlobContainers blobContainers;
 
         public ResolvedAddressOrchestrationService(
@@ -52,6 +58,8 @@ namespace LHDS.Core.Services.Orchestrations.ResolvedAddresses
             IDateTimeBroker dateTimeBroker,
             IIdentifierBroker identifierBroker,
             ISecurityBroker securityBroker,
+            IStorageQueueBroker storageQueueBroker,
+            StorageQueues storageQueues,
             BlobContainers blobContainers)
         {
             this.documentProcessingService = documentProcessingService;
@@ -64,6 +72,8 @@ namespace LHDS.Core.Services.Orchestrations.ResolvedAddresses
             this.dateTimeBroker = dateTimeBroker;
             this.identifierBroker = identifierBroker;
             this.securityBroker = securityBroker;
+            this.storageQueueBroker = storageQueueBroker;
+            this.storageQueues = storageQueues;
             this.blobContainers = blobContainers;
         }
 
@@ -97,6 +107,27 @@ namespace LHDS.Core.Services.Orchestrations.ResolvedAddresses
 
                 await this.resolvedAddressProcessingService
                     .BulkAddResolvedAddressesAsync(resolvedAddresses, fileName);
+
+                DateTimeOffset uploadedDateTimeOffset =
+                    await this.dateTimeBroker.GetCurrentDateTimeOffsetAsync();
+
+                foreach (ResolvedAddress resolvedAddress in resolvedAddresses)
+                {
+                    EntraUser entraUser = await this.securityBroker.GetCurrentUserAsync();
+
+                    Payload<Guid> payload = new Payload<Guid>
+                    {
+                        Message = resolvedAddress.Id,
+                        User = entraUser,
+                        EnqueuedAtUtc = uploadedDateTimeOffset
+                    };
+
+                    string message = JsonSerializer.Serialize(payload);
+
+                    await this.storageQueueBroker.SendMessageAsync(
+                        message: message,
+                        queueName: storageQueues.ResolveAddressQueue);
+                }
 
                 await this.auditBroker.LogAsync(
                     auditType: "Resolved Address Upload",

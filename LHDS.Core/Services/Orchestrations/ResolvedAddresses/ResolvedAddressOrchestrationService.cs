@@ -301,9 +301,6 @@ namespace LHDS.Core.Services.Orchestrations.ResolvedAddresses
 
             try
             {
-                DateTimeOffset matchingDateTimeOffset =
-                    await this.dateTimeBroker.GetCurrentDateTimeOffsetAsync();
-
                 Audit resolvedAddressMatchingAudit = new Audit
                 {
                     AuditType = "Resolved Address Match",
@@ -369,7 +366,7 @@ namespace LHDS.Core.Services.Orchestrations.ResolvedAddresses
                 audits.Add(resolvedAddressMatchingCompleteAudit);
                 await auditBroker.BulkLogAsync(audits);
             }
-            finally
+            catch (Exception)
             {
                 ResolvedAddress failedToProcess = await this.resolvedAddressProcessingService
                     .RetrieveResolvedAddressByIdAsync(resolvedAddressId);
@@ -396,6 +393,8 @@ namespace LHDS.Core.Services.Orchestrations.ResolvedAddresses
 
                 audits.Add(resolvedAddressMatchingFailedAudit);
                 await auditBroker.BulkLogAsync(audits);
+
+                throw;
             }
         });
 

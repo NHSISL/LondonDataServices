@@ -169,17 +169,17 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.ResolvedAddresses
                broker.GetIdentifierAsync())
                    .ReturnsAsync(identifier);
 
+            this.dateTimeBrokerMock.Setup(broker =>
+                broker.GetCurrentDateTimeOffsetAsync())
+                    .ReturnsAsync(randomDateTimeOffset);
+
             this.securityBrokerMock.Setup(broker =>
                broker.GetCurrentUserAsync())
                    .ReturnsAsync(randomEntraUser);
 
-            this.resolvedAddressProcessingServiceMock.SetupSequence(service =>
+            this.resolvedAddressProcessingServiceMock.Setup(service =>
                service.RetrieveResolvedAddressByIdAsync(randomResolvedAddress.Id))
                    .ReturnsAsync(unmatchedResolvedAddress);
-
-            this.dateTimeBrokerMock.Setup(broker =>
-                broker.GetCurrentDateTimeOffsetAsync())
-                    .ReturnsAsync(randomDateTimeOffset);
 
             ResolvedAddress processingResolvedAddress = unmatchedResolvedAddress.DeepClone();
             ResolvedAddress lockedResolvedAddress = processingResolvedAddress;
@@ -231,7 +231,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.ResolvedAddresses
 
             this.dateTimeBrokerMock.Verify(broker =>
                broker.GetCurrentDateTimeOffsetAsync(),
-                   Times.Exactly(5));
+                   Times.Exactly(4));
 
             this.resolvedAddressProcessingServiceMock.Verify(processing =>
                  processing.ModifyResolvedAddressAsync(It.Is(SameResolvedAddressAs(lockedResolvedAddress))),

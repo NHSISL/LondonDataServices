@@ -25,6 +25,10 @@ namespace LHDS.Core.Services.Coordinations.AddressCoordinations
             Validate<InvalidArgumentAddressCoordinationException>(
                 message: "Invalid address coordination argument, please correct the errors and try again.",
                     (Rule: IsInvalid(payload), Parameter: nameof(Payload<Guid>)));
+
+            Validate<InvalidArgumentAddressCoordinationException>(
+                message: "Invalid address coordination argument, please correct the errors and try again.",
+                    (Rule: IsInvalid(payload.Message), Parameter: nameof(Payload<Guid>.Message)));
         }
 
         private void ValidateFolderPathOnProcessData(string folderPath)
@@ -38,6 +42,12 @@ namespace LHDS.Core.Services.Coordinations.AddressCoordinations
         {
             Condition = payload == null,
             Message = "Payload is required"
+        };
+
+        private static dynamic IsInvalid(Guid id) => new
+        {
+            Condition = id == Guid.Empty,
+            Message = "Id is required"
         };
 
         private static dynamic IsInvalid(string? text) => new

@@ -72,7 +72,7 @@ namespace LHDS.Core.Tests.Unit.Services.Coordinations.AddressCoordinations
 
             invalidArgumentAddressCoordinationException.AddData(
                 key: nameof(Payload<Guid>.Message),
-                values: "Text is required");
+                values: "Id is required");
 
             var expectedAddressCoordinationValidationException =
                 new AddressCoordinationValidationException(

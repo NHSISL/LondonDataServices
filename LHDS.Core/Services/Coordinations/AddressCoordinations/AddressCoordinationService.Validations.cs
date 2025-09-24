@@ -4,6 +4,7 @@
 
 using System;
 using System.IO;
+using LHDS.Core.Models.Brokers.Storages.StorageQueues;
 using LHDS.Core.Models.Coordinations.AddressCoordinations.Exceptions;
 using Xeptions;
 
@@ -19,12 +20,25 @@ namespace LHDS.Core.Services.Coordinations.AddressCoordinations
                     (Rule: IsInvalid(filename), Parameter: nameof(filename)));
         }
 
+        private void ValidateDataOnMatchAddressData(Payload<Guid> payload)
+        {
+            Validate<InvalidArgumentAddressCoordinationException>(
+                message: "Invalid address coordination argument, please correct the errors and try again.",
+                    (Rule: IsInvalid(payload), Parameter: nameof(Payload<Guid>)));
+        }
+
         private void ValidateFolderPathOnProcessData(string folderPath)
         {
             Validate<InvalidArgumentAddressCoordinationException>(
                 message: "Invalid address coordination argument, please correct the errors and try again.",
                     (Rule: IsInvalid(folderPath), Parameter: nameof(folderPath)));
         }
+
+        private static dynamic IsInvalid(Payload<Guid> payload) => new
+        {
+            Condition = payload == null,
+            Message = "Payload is required"
+        };
 
         private static dynamic IsInvalid(string? text) => new
         {

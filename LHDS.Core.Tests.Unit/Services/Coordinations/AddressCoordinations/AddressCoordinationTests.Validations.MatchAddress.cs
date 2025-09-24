@@ -25,8 +25,8 @@ namespace LHDS.Core.Tests.Unit.Services.Coordinations.AddressCoordinations
                     message: "Invalid address coordination argument, please correct the errors and try again.");
 
             invalidArgumentAddressCoordinationException.AddData(
-                key: "payload",
-                values: "Item is required");
+                key: nameof(Payload<Guid>),
+                values: "Payload is required");
 
             var expectedAddressCoordinationValidationException =
                 new AddressCoordinationValidationException(
@@ -72,7 +72,7 @@ namespace LHDS.Core.Tests.Unit.Services.Coordinations.AddressCoordinations
 
             invalidArgumentAddressCoordinationException.AddData(
                 key: nameof(Payload<Guid>.Message),
-                values: "Item is required");
+                values: "Text is required");
 
             var expectedAddressCoordinationValidationException =
                 new AddressCoordinationValidationException(

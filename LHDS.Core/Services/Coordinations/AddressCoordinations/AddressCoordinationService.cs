@@ -67,6 +67,7 @@ namespace LHDS.Core.Services.Coordinations.AddressCoordinations
         public ValueTask MatchAddressDataAsync(Payload<Guid> payload) =>
             TryCatch(async () =>
             {
+                ValidateDataOnMatchAddressData(payload);
                 await this.resolvedAddressOrchestrationService.MatchAddressDataAsync(payload);
             });
 

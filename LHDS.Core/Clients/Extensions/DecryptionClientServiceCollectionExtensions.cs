@@ -323,8 +323,7 @@ namespace LHDS.Core.Clients.Extensions
             }
 
             Validate(
-                createException: () => new InvalidConfigurationException(
-                    message: "Invalid landing settings."),
+                createException: (message, errors) => new InvalidConfigurationException(message, null, errors),
 
                 (Rule: IsInvalid(ftpDownloadProviderSettings.FtpPort),
                     Parameter: "ftpDownload__ftpPort"),
@@ -341,8 +340,7 @@ namespace LHDS.Core.Clients.Extensions
             }
 
             Validate(
-                createException: () => new InvalidConfigurationException(
-                    message: "Invalid landing settings."),
+                createException: (message, errors) => new InvalidConfigurationException(message, null, errors),
 
                 (Rule: IsInvalid(landingConfiguration.LandingSupplierId),
                     Parameter: "landingSettings__landingSupplierId"),
@@ -365,8 +363,7 @@ namespace LHDS.Core.Clients.Extensions
             }
 
             Validate(
-                createException: () => new InvalidConfigurationException(
-                    message: "Invalid landing settings."),
+                createException: (message, errors) => new InvalidConfigurationException(message, null, errors),
 
                 (Rule: IsInvalid(blobStorageSettings.AzureBlobServiceUri),
                     Parameter: "blobStorage__azureBlobServiceUri"),
@@ -400,7 +397,7 @@ namespace LHDS.Core.Clients.Extensions
         };
 
         private static void Validate<T>(
-            Func<T> createException,
+            Func<string, IDictionary, T> createException,
             params (dynamic Rule, string Parameter)[] validations)
             where T : Xeption
         {
@@ -424,7 +421,10 @@ namespace LHDS.Core.Clients.Extensions
                 }
             }
 
-            T invalidDataException = createException();
+            T invalidDataException = createException(
+                validationErrors.ToString(),
+                errors);
+
             invalidDataException.ThrowIfContainsErrors();
         }
 

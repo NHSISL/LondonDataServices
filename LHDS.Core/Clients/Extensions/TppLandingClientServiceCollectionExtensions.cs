@@ -237,8 +237,7 @@ namespace LHDS.Core.Clients.Extensions
             }
 
             Validate(
-                createException: () => new InvalidConfigurationException(
-                    message: "Configuration value does not exist or does not meet validation criteria"),
+                createException: (message, errors) => new InvalidConfigurationException(message, null, errors),
 
                 (Rule: IsInvalid(landingConfiguration.LandingSupplierId),
                     Parameter: "landingSettings__landingSupplierId"),
@@ -261,8 +260,7 @@ namespace LHDS.Core.Clients.Extensions
             }
 
             Validate(
-                createException: () => new InvalidConfigurationException(
-                    message: "Configuration value does not exist or does not meet validation criteria"),
+                createException: (message, errors) => new InvalidConfigurationException(message, null, errors),
 
                 (Rule: IsInvalid(blobStorageSettings.AzureBlobServiceUri),
                     Parameter: "blobStorage__azureBlobServiceUri"),
@@ -284,7 +282,7 @@ namespace LHDS.Core.Clients.Extensions
         };
 
         private static void Validate<T>(
-            Func<T> createException,
+            Func<string, IDictionary, T> createException,
             params (dynamic Rule, string Parameter)[] validations)
             where T : Xeption
         {
@@ -308,9 +306,13 @@ namespace LHDS.Core.Clients.Extensions
                 }
             }
 
-            T invalidDataException = createException();
+            T invalidDataException = createException(
+                validationErrors.ToString(),
+                errors);
+
             invalidDataException.ThrowIfContainsErrors();
         }
+
 
         /// <summary>
         /// Extracts a <see cref="ClaimsPrincipal"/> from a given JWT token.

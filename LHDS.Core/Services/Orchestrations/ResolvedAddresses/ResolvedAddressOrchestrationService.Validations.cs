@@ -4,6 +4,8 @@
 
 using System;
 using System.IO;
+using LHDS.Core.Models.Brokers.Storages.StorageQueues;
+using LHDS.Core.Models.Coordinations.AddressCoordinations.Exceptions;
 using LHDS.Core.Models.Foundations.ResolvedAddresses;
 using LHDS.Core.Models.Orchestrations.ResolvedAddresses.Exceptions;
 using Xeptions;
@@ -53,10 +55,33 @@ namespace LHDS.Core.Services.Orchestrations.ResolvedAddresses
             }
         }
 
+        private void ValidateDataOnMatchAddressData(Payload<Guid> payload)
+        {
+            Validate<InvalidArgumentAddressCoordinationException>(
+                message: "Invalid address coordination argument, please correct the errors and try again.",
+                    (Rule: IsInvalid(payload), Parameter: nameof(Payload<Guid>)));
+
+            Validate<InvalidArgumentAddressCoordinationException>(
+                message: "Invalid address coordination argument, please correct the errors and try again.",
+                    (Rule: IsInvalid(payload.Message), Parameter: nameof(Payload<Guid>.Message)));
+        }
+
         private static dynamic IsInvalidInputStream(Stream? stream) => new
         {
             Condition = stream is null || stream.Length == 0,
             Message = "Stream is required"
+        };
+
+        private static dynamic IsInvalid(Payload<Guid> payload) => new
+        {
+            Condition = payload == null,
+            Message = "Payload is required"
+        };
+
+        private static dynamic IsInvalid(Guid id) => new
+        {
+            Condition = id == Guid.Empty,
+            Message = "Id is required"
         };
 
         private static dynamic IsInvalid(string? text) => new

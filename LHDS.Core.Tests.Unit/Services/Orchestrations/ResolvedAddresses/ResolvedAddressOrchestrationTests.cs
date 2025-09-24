@@ -100,6 +100,21 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.ResolvedAddresses
                 blobContainers: blobContainers);
         }
 
+        private static string GetRandomStringWithLengthOf(int length)
+        {
+            string result = new MnemonicString(wordCount: 1, wordMinLength: length, wordMaxLength: length).GetValue();
+
+            return result.Length > length ? result.Substring(0, length) : result;
+        }
+
+        private Payload<Guid> CreateRandomPayload() =>
+            new Payload<Guid>
+            {
+                Message = Guid.NewGuid(),
+                EnqueuedAtUtc = GetRandomDateTimeOffset(),
+                User = CreateRandomEntraUser()
+            };
+
         private Expression<Func<Stream, bool>> SameStreamAs(Stream expectedStream)
         {
             return actualStream =>
@@ -170,13 +185,6 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.ResolvedAddresses
 
         private static string GetRandomString() =>
             new MnemonicString().GetValue();
-
-        private static string GetRandomStringWithLengthOf(int length)
-        {
-            string result = new MnemonicString(wordCount: 1, wordMinLength: length, wordMaxLength: length).GetValue();
-
-            return result.Length > length ? result.Substring(0, length) : result;
-        }
 
         private static int GetRandomNumber() =>
             new IntRange(min: 2, max: 10).GetValue();

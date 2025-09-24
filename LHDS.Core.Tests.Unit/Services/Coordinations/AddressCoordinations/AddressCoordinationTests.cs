@@ -10,6 +10,7 @@ using KellermanSoftware.CompareNetObjects;
 using LHDS.Core.Brokers.Loggings;
 using LHDS.Core.Models.Brokers.Securities;
 using LHDS.Core.Models.Brokers.Storages.Blobs;
+using LHDS.Core.Models.Brokers.Storages.StorageQueues;
 using LHDS.Core.Models.Coordinations.AddressCoordinations;
 using LHDS.Core.Models.Foundations.Addresses;
 using LHDS.Core.Models.Foundations.ResolvedAddresses;
@@ -73,6 +74,14 @@ namespace LHDS.Core.Tests.Unit.Services.Coordinations.AddressCoordinations
 
             return result.Length > length ? result.Substring(0, length) : result;
         }
+
+        private Payload<Guid> CreateRandomPayload() =>
+            new Payload<Guid>
+            {
+                Message = Guid.NewGuid(),
+                EnqueuedAtUtc = GetRandomDateTimeOffset(),
+                User = CreateRandomEntraUser()
+            };
 
         private EntraUser CreateRandomEntraUser(string entraUserId = "")
         {

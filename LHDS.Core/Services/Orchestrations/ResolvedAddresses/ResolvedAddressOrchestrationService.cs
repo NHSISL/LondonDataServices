@@ -214,7 +214,7 @@ namespace LHDS.Core.Services.Orchestrations.ResolvedAddresses
                         }
 
                         ResolvedAddress newResolvedAddress =
-                            MapOrdananceWithAssign(
+                            MapOrdinanceWithAssign(
                                 updatedAddress,
                                 foundAssignAddress,
                                 foundOrdananceAddress);
@@ -287,41 +287,158 @@ namespace LHDS.Core.Services.Orchestrations.ResolvedAddresses
             }
         });
 
-        virtual internal ResolvedAddress MapOrdananceWithAssign(
+        public ValueTask MatchAddressDataAsync(Payload<Guid> payload) =>
+        TryCatch(async () =>
+        {
+            Guid correlationId = await this.identifierBroker.GetIdentifierAsync();
+            var currentDateTime = await this.dateTimeBroker.GetCurrentDateTimeOffsetAsync();
+            List<Audit> audits = new List<Audit>();
+
+            // TODO: Validate payload
+            Guid resolvedAddressId = payload.Message;
+
+            ResolvedAddress retrievedResolvedAddresses = await resolvedAddressProcessingService
+                .RetrieveResolvedAddressByIdAsync(resolvedAddressId);
+
+            try
+            {
+                await TryCatch(async () =>
+                {
+                    DateTimeOffset matchingDateTimeOffset =
+                        await this.dateTimeBroker.GetCurrentDateTimeOffsetAsync();
+
+                    Audit resolvedAddressMatchingAudit = new Audit
+                    {
+                        AuditType = "Resolved Address Match",
+                        Title = "Matching Resolved Address",
+                        Message = $"Matching resolved address with Id '{resolvedAddressId}'",
+                        CorrelationId = correlationId.ToString(),
+                        FileName = null,
+                        LogLevel = "Information"
+                    };
+
+                    audits.Add(resolvedAddressMatchingAudit);
+                    retrievedResolvedAddresses.IsProcessing = true;
+                    retrievedResolvedAddresses.RetryCount += 1;
+                    retrievedResolvedAddresses.UpdatedDate = await dateTimeBroker.GetCurrentDateTimeOffsetAsync();
+
+                    ResolvedAddress updatedAddress = await resolvedAddressProcessingService.
+                        ModifyResolvedAddressAsync(retrievedResolvedAddresses);
+
+                    AssignAddress foundAssignAddress =
+                        await assignProcessingService.MatchAddressAsync(
+                            retrievedResolvedAddresses.UnstructuredPostalAddress);
+
+                    Address? foundOrdinanceAddress = null;
+
+                    if (foundAssignAddress != null &&
+                        foundAssignAddress.BestMatch != null &&
+                        !string.IsNullOrWhiteSpace(foundAssignAddress.BestMatch.UPRN))
+                    {
+                        foundOrdinanceAddress =
+                            await addressProcessingService
+                                .RetrieveAddressByUPRNAsync(foundAssignAddress.BestMatch.UPRN);
+                    }
+
+                    ResolvedAddress newResolvedAddress =
+                        MapOrdinanceWithAssign(
+                            updatedAddress,
+                            foundAssignAddress,
+                            foundOrdinanceAddress);
+
+                    ValidateNewResolvedAddress(newResolvedAddress);
+                    newResolvedAddress.UpdatedDate = await dateTimeBroker.GetCurrentDateTimeOffsetAsync();
+                    newResolvedAddress.IsProcessed = true;
+
+                    await resolvedAddressProcessingService
+                        .ModifyResolvedAddressAsync(newResolvedAddress);
+
+                    DateTimeOffset matchingCompleteDateTimeOffset =
+                        await this.dateTimeBroker.GetCurrentDateTimeOffsetAsync();
+
+                    Audit resolvedAddressMatchingCompleteAudit = new Audit
+                    {
+                        AuditType = "Resolved Address Match",
+
+                        Title = newResolvedAddress.MatchedWithAssign ?
+                            "Resolved Address Successful Match" : "Resolved Address Unsuccessful Match",
+
+                        Message = $"Resolved address matching complete for {newResolvedAddress.UniqueReference}",
+                        CorrelationId = correlationId.ToString(),
+                        FileName = null,
+                        LogLevel = "Information",
+                    };
+
+                    audits.Add(resolvedAddressMatchingCompleteAudit);
+                });
+
+                await auditBroker.BulkLogAsync(audits);
+            }
+            finally
+            {
+                ResolvedAddress failedToProcess = await this.resolvedAddressProcessingService
+                    .RetrieveResolvedAddressByIdAsync(resolvedAddressId);
+
+                failedToProcess.IsProcessing = false;
+                failedToProcess.UpdatedDate = await dateTimeBroker.GetCurrentDateTimeOffsetAsync();
+                failedToProcess.RetryCount += 1;
+
+                await resolvedAddressProcessingService
+                    .ModifyResolvedAddressAsync(failedToProcess);
+
+                DateTimeOffset matchingFailedDateTimeOffset =
+                    await this.dateTimeBroker.GetCurrentDateTimeOffsetAsync();
+
+                Audit resolvedAddressMatchingFailedAudit = new Audit
+                {
+                    AuditType = "Resolved Address Match",
+                    Title = "Resolved Address Matching Failed",
+                    Message = $"Resolved address matching failed for item with Id '{resolvedAddressId}'",
+                    CorrelationId = correlationId.ToString(),
+                    FileName = null,
+                    LogLevel = "Information"
+                };
+
+                audits.Add(resolvedAddressMatchingFailedAudit);
+                await auditBroker.BulkLogAsync(audits);
+            }
+        });
+
+        virtual internal ResolvedAddress MapOrdinanceWithAssign(
             ResolvedAddress unMatchedResolvedAddress,
             AssignAddress? foundAssignAddress,
             Address? foundOrdananceAddress)
         {
-            ResolvedAddress updatedResolovedAddress = unMatchedResolvedAddress;
-            updatedResolovedAddress.UPRN = foundOrdananceAddress?.UPRN ?? null;
-            updatedResolovedAddress.USRN = foundOrdananceAddress?.USRN ?? null;
-            updatedResolovedAddress.OrganisationName = foundOrdananceAddress?.OrganisationName;
-            updatedResolovedAddress.DepartmentName = foundOrdananceAddress?.DepartmentName;
-            updatedResolovedAddress.SubBuildingName = foundOrdananceAddress?.SubBuildingName;
-            updatedResolovedAddress.BuildingName = foundOrdananceAddress?.BuildingName;
-            updatedResolovedAddress.BuildingNumber = foundOrdananceAddress?.BuildingNumber;
-            updatedResolovedAddress.DependentThoroughfare = foundOrdananceAddress?.DependentThoroughfare;
-            updatedResolovedAddress.Thoroughfare = foundOrdananceAddress?.Thoroughfare;
-            updatedResolovedAddress.DoubleDependentLocality = foundOrdananceAddress?.DoubleDependentLocality;
-            updatedResolovedAddress.DependentLocality = foundOrdananceAddress?.DependentLocality;
-            updatedResolovedAddress.PostTown = foundOrdananceAddress?.PostTown;
-            updatedResolovedAddress.PostCode = foundOrdananceAddress?.PostCode;
-            updatedResolovedAddress.AddressFormatQuality = foundAssignAddress?.AddressFormat;
-            updatedResolovedAddress.PostCodeQuality = foundAssignAddress?.PostcodeQuality;
-            updatedResolovedAddress.MatchedWithAssign = foundAssignAddress?.Matched ?? false;
-            updatedResolovedAddress.Qualifier = foundAssignAddress?.BestMatch?.Qualifier;
-            updatedResolovedAddress.Classification = foundAssignAddress?.BestMatch?.Classification;
-            updatedResolovedAddress.Algorithm = foundAssignAddress?.BestMatch?.Algorithm;
-            updatedResolovedAddress.MatchPattern = foundAssignAddress?.Pattern ?? null;
-            updatedResolovedAddress.XCoordinate = foundOrdananceAddress?.XCoordinate;
-            updatedResolovedAddress.YCoordinate = foundOrdananceAddress?.YCoordinate;
-            updatedResolovedAddress.Latitude = foundOrdananceAddress?.Latitude;
-            updatedResolovedAddress.Longitude = foundOrdananceAddress?.Longitude;
-            updatedResolovedAddress.IsProcessing = false;
-            updatedResolovedAddress.IsExported = false;
-            updatedResolovedAddress.RetryCount = 0;
+            ResolvedAddress updatedResolvedAddress = unMatchedResolvedAddress;
+            updatedResolvedAddress.UPRN = foundOrdananceAddress?.UPRN ?? null;
+            updatedResolvedAddress.USRN = foundOrdananceAddress?.USRN ?? null;
+            updatedResolvedAddress.OrganisationName = foundOrdananceAddress?.OrganisationName;
+            updatedResolvedAddress.DepartmentName = foundOrdananceAddress?.DepartmentName;
+            updatedResolvedAddress.SubBuildingName = foundOrdananceAddress?.SubBuildingName;
+            updatedResolvedAddress.BuildingName = foundOrdananceAddress?.BuildingName;
+            updatedResolvedAddress.BuildingNumber = foundOrdananceAddress?.BuildingNumber;
+            updatedResolvedAddress.DependentThoroughfare = foundOrdananceAddress?.DependentThoroughfare;
+            updatedResolvedAddress.Thoroughfare = foundOrdananceAddress?.Thoroughfare;
+            updatedResolvedAddress.DoubleDependentLocality = foundOrdananceAddress?.DoubleDependentLocality;
+            updatedResolvedAddress.DependentLocality = foundOrdananceAddress?.DependentLocality;
+            updatedResolvedAddress.PostTown = foundOrdananceAddress?.PostTown;
+            updatedResolvedAddress.PostCode = foundOrdananceAddress?.PostCode;
+            updatedResolvedAddress.AddressFormatQuality = foundAssignAddress?.AddressFormat;
+            updatedResolvedAddress.PostCodeQuality = foundAssignAddress?.PostcodeQuality;
+            updatedResolvedAddress.MatchedWithAssign = foundAssignAddress?.Matched ?? false;
+            updatedResolvedAddress.Qualifier = foundAssignAddress?.BestMatch?.Qualifier;
+            updatedResolvedAddress.Classification = foundAssignAddress?.BestMatch?.Classification;
+            updatedResolvedAddress.Algorithm = foundAssignAddress?.BestMatch?.Algorithm;
+            updatedResolvedAddress.MatchPattern = foundAssignAddress?.Pattern ?? null;
+            updatedResolvedAddress.XCoordinate = foundOrdananceAddress?.XCoordinate;
+            updatedResolvedAddress.YCoordinate = foundOrdananceAddress?.YCoordinate;
+            updatedResolvedAddress.Latitude = foundOrdananceAddress?.Latitude;
+            updatedResolvedAddress.Longitude = foundOrdananceAddress?.Longitude;
+            updatedResolvedAddress.IsProcessing = false;
+            updatedResolvedAddress.IsExported = false;
+            updatedResolvedAddress.RetryCount = 0;
 
-            return updatedResolovedAddress;
+            return updatedResolvedAddress;
         }
 
         public ValueTask<List<Guid>> ExportResolvedAddressesAsync() =>

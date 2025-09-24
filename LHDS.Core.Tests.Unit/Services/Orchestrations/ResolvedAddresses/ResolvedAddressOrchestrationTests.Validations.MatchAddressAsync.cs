@@ -107,7 +107,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.ResolvedAddresses
                     .ReturnsAsync(storageAssignAddress);
 
             resolvedAddressOrchestrationServiceMock.Setup(service =>
-                service.MapOrdananceWithAssign(
+                service.MapOrdinanceWithAssign(
                     It.Is(SameResolvedAddressAs(updatedResolvedAddress)),
                     It.Is(SameAssignAddressAs(storageAssignAddress)),
                     null))

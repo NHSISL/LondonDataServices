@@ -6,6 +6,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
+using LHDS.Core.Models.Brokers.Storages.StorageQueues;
 
 namespace LHDS.Core.Services.Orchestrations.ResolvedAddresses
 {
@@ -13,6 +14,7 @@ namespace LHDS.Core.Services.Orchestrations.ResolvedAddresses
     {
         ValueTask UploadAddressesToResolveAsync(Stream input, string fileName);
         ValueTask MatchAddressDataAsync();
+        ValueTask MatchAddressDataAsync(Payload<Guid> payload);
         ValueTask<List<Guid>> ExportResolvedAddressesAsync();
     }
 }

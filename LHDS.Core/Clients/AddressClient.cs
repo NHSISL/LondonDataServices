@@ -6,6 +6,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
+using LHDS.Core.Models.Brokers.Storages.StorageQueues;
 using LHDS.Core.Models.Clients.AddressClient.Exceptions;
 using LHDS.Core.Models.Coordinations.AddressCoordinations.Exceptions;
 using LHDS.Core.Services.Coordinations.AddressCoordinations;
@@ -132,6 +133,41 @@ namespace LHDS.Core.Clients
             try
             {
                 await this.addressCoordinationService.MatchAddressDataAsync();
+            }
+            catch (AddressCoordinationValidationException addressCoordinationValidationException)
+            {
+                throw new AddressClientValidationException(
+                    message: "Address client validation error occurred, fix errors and try again.",
+                    innerException: addressCoordinationValidationException.InnerException as Xeption);
+            }
+            catch (AddressCoordinationDependencyValidationException
+                addressCoordinationDependencyValidationException)
+            {
+                throw new AddressClientValidationException(
+                    message: "Address client validation error occurred, fix errors and try again.",
+                    innerException: addressCoordinationDependencyValidationException.InnerException as Xeption);
+            }
+            catch (AddressCoordinationDependencyException
+                addressCoordinationDependencyException)
+            {
+                throw new AddressClientDependencyException(
+                    message: "Address client dependency error occurred, please contact support.",
+                    innerException: addressCoordinationDependencyException.InnerException as Xeption);
+            }
+            catch (AddressCoordinationServiceException
+                addressCoordinationServiceException)
+            {
+                throw new AddressClientServiceException(
+                    message: "Address client service error occurred, fix errors and try again.",
+                    addressCoordinationServiceException.InnerException as Xeption);
+            }
+        }
+
+        public async ValueTask MatchAddressDataAsync(Payload<Guid> payload)
+        {
+            try
+            {
+                await this.addressCoordinationService.MatchAddressDataAsync(payload);
             }
             catch (AddressCoordinationValidationException addressCoordinationValidationException)
             {

@@ -8,6 +8,7 @@ using System.IO;
 using System.Threading.Tasks;
 using LHDS.Core.Brokers.Loggings;
 using LHDS.Core.Models.Brokers.Storages.Blobs;
+using LHDS.Core.Models.Brokers.Storages.StorageQueues;
 using LHDS.Core.Models.Coordinations.AddressCoordinations;
 using LHDS.Core.Services.Orchestrations.Addresses;
 using LHDS.Core.Services.Orchestrations.ResolvedAddresses;
@@ -61,6 +62,12 @@ namespace LHDS.Core.Services.Coordinations.AddressCoordinations
             TryCatch(async () =>
             {
                 await this.resolvedAddressOrchestrationService.MatchAddressDataAsync();
+            });
+
+        public ValueTask MatchAddressDataAsync(Payload<Guid> payload) =>
+            TryCatch(async () =>
+            {
+                await this.resolvedAddressOrchestrationService.MatchAddressDataAsync(payload);
             });
 
         public ValueTask<List<Guid>> ExportResolvedAddressesAsync() =>

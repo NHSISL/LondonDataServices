@@ -35,10 +35,9 @@ namespace LHDS.Core.Services.Orchestrations.Decisions
                 throw await CreateAndLogValidationExceptionAsync(
                     nullDecisionConfigurationDecisionOrchestrationException);
             }
-            catch (InvalidDecisionPollsDecisionOrchestrationException
-                   invalidDecisionPollsDecisionOrchestrationException)
+            catch (NullDecisionPollDecisionOrchestrationException nullDecisionPollDecisionOrchestrationException)
             {
-                throw await CreateAndLogValidationExceptionAsync(invalidDecisionPollsDecisionOrchestrationException);
+                throw await CreateAndLogValidationExceptionAsync(nullDecisionPollDecisionOrchestrationException);
             }
             catch (InvalidArgumentDecisionOrchestrationException invalidArgumentDecisionOrchestrationException)
             {

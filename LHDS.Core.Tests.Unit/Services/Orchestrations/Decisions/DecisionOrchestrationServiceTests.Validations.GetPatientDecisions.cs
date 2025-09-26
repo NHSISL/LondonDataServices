@@ -123,18 +123,18 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Decisions
 
         [Fact]
         public async Task
-            ShouldThrowValidationExceptionOnGetPatientDecisionsIfDecisionsAdoptedIsNullOrEmptyAndLogItAsync()
+            ShouldThrowValidationExceptionOnGetPatientDecisionsIfDecisionPollIsNullAndLogItAsync()
         {
             // given
             IQueryable<DecisionPoll> emptyDecisionPolls = Enumerable.Empty<DecisionPoll>().AsQueryable();
 
-            var invalidDecisionPollsDecisionOrchestrationException =
-                new InvalidDecisionPollsDecisionOrchestrationException(message: "DecisionPolls required.");
+            var nullDecisionPollDecisionOrchestrationException =
+                new NullDecisionPollDecisionOrchestrationException(message: "DecisionPoll is null.");
 
             var expectedDecisionOrchestrationValidationException =
                 new DecisionOrchestrationValidationException(
                     message: "Decision orchestration validation errors occurred, please try again.",
-                    innerException: invalidDecisionPollsDecisionOrchestrationException);
+                    innerException: nullDecisionPollDecisionOrchestrationException);
 
             this.decisionPollServiceMock.Setup(service =>
                 service.RetrieveAllDecisionPollsAsync())
@@ -178,6 +178,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Decisions
             DateTimeOffset lastPollDate = decisionPolls.Max(poll => poll.LastPoll);
             List<Decision> expectedDecisions = CreateRandomDecisions();
             string expectedHash = GetRandomString();
+            Dictionary<string, int> fieldMappings = GetFieldMappings();
 
             var invalidArgumentDecisionOrchestrationException =
                 new InvalidArgumentDecisionOrchestrationException(
@@ -202,15 +203,18 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Decisions
 
             this.hashBrokerMock
                 .Setup(broker => broker.GenerateSha256HashAsync(
-                    It.IsAny<string>(),
+                    It.Is<string>(nhsNumber => expectedDecisions.Any(
+                        decision => decision.Patient.NhsNumber == nhsNumber)),
                     this.decisionConfiguration.HashPepper))
                 .ReturnsAsync(expectedHash);
 
             this.csvHelperBrokerMock
                 .Setup(broker => broker.MapObjectToCsvAsync(
-                    It.IsAny<List<DecisionCsv>>(),
+                    It.Is<List<DecisionCsv>>(csvs =>
+                        csvs.All(csv => expectedDecisions.Any(
+                            decision => decision.Id == csv.DecisionId && csv.NhsHash == expectedHash))),
                     true,
-                    It.IsAny<Dictionary<string, int>>(),
+                    fieldMappings,
                     false))
                 .ReturnsAsync(string.Empty);
 
@@ -231,15 +235,25 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Decisions
             this.decisionServiceMock.Verify(service =>
                 service.GetPatientDecisions(lastPollDate), Times.Once);
 
-            this.hashBrokerMock.Verify(broker =>
-                broker.GenerateSha256HashAsync(It.IsAny<string>(), this.decisionConfiguration.HashPepper),
-                    Times.Exactly(expectedDecisions.Count));
+            foreach (string nhsNumber in expectedDecisions.Select(d => d.Patient.NhsNumber))
+            {
+                int count = expectedDecisions.Count(decision => decision.Patient.NhsNumber == nhsNumber);
+
+                this.hashBrokerMock.Verify(
+                    broker => broker.GenerateSha256HashAsync(
+                        It.Is<string>(number => number == nhsNumber),
+                        this.decisionConfiguration.HashPepper),
+                        Times.Exactly(count));
+            }
 
             this.csvHelperBrokerMock.Verify(broker =>
                 broker.MapObjectToCsvAsync(
-                    It.IsAny<List<DecisionCsv>>(),
+                    It.Is<List<DecisionCsv>>(csvs =>
+                        csvs.All(csv => expectedDecisions.Any(
+                            decision => decision.Id == csv.DecisionId &&
+                                        csv.NhsHash == expectedHash))),
                     true,
-                    It.IsAny<Dictionary<string, int>>(),
+                    fieldMappings,
                     false),
                     Times.Once);
 

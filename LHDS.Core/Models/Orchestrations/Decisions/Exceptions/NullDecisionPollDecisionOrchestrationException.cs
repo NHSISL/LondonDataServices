@@ -6,9 +6,9 @@ using Xeptions;
 
 namespace LHDS.Core.Models.Orchestrations.Decisions.Exceptions
 {
-    public class InvalidDecisionPollsDecisionOrchestrationException : Xeption
+    public class NullDecisionPollDecisionOrchestrationException : Xeption
     {
-        public InvalidDecisionPollsDecisionOrchestrationException(string message)
+        public NullDecisionPollDecisionOrchestrationException(string message)
             : base(message)
         { }
     }

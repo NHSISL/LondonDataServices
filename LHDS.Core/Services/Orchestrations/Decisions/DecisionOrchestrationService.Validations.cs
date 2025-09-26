@@ -3,7 +3,6 @@
 // ---------------------------------------------------------
 
 using System;
-using System.Linq;
 using LHDS.Core.Models.Foundations.DecisionPolls;
 using LHDS.Core.Models.Orchestrations.Decisions.Exceptions;
 using Xeptions;
@@ -32,11 +31,11 @@ namespace LHDS.Core.Services.Orchestrations.Decisions
             }
         }
 
-        private void ValidateDecisionPolls(IQueryable<DecisionPoll> decisionPolls)
+        private void ValidateDecisionPoll(DecisionPoll decisionPoll)
         {
-            if (decisionPolls is null || !decisionPolls.Any())
+            if (decisionPoll is null)
             {
-                throw new InvalidDecisionPollsDecisionOrchestrationException(message: "DecisionPolls required.");
+                throw new NullDecisionPollDecisionOrchestrationException(message: "DecisionPoll is null.");
             }
         }
 

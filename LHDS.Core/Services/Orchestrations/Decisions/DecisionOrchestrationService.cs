@@ -62,16 +62,16 @@ namespace LHDS.Core.Services.Orchestrations.Decisions
                 IQueryable<DecisionPoll> decisionPolls =
                     await this.decisionPollService.RetrieveAllDecisionPollsAsync();
 
-                DateTimeOffset? lastPollDate = decisionPolls
+                DecisionPoll lastPoll = decisionPolls
                     .OrderByDescending(decisionPoll => decisionPoll.LastPoll)
-                    .Select(decisionPoll => decisionPoll.LastPoll)
                     .FirstOrDefault();
 
-                ValidateDecisionPolls(decisionPolls);
+                ValidateDecisionPoll(lastPoll);
+                DateTimeOffset? lastPollDate = lastPoll?.LastPoll;
                 DateTimeOffset currentPollDate = DateTimeOffset.UtcNow;
 
                 List<Decision> decisions =
-                    await this.decisionService.GetPatientDecisions(lastPollDate);
+                    await this.decisionService.GetPatientDecisions(lastPollDate ?? DateTimeOffset.MinValue);
 
                 List<Task<DecisionCsv>> decisionCsvTasks = decisions
                     .Select(async decision => new DecisionCsv
@@ -145,17 +145,8 @@ namespace LHDS.Core.Services.Orchestrations.Decisions
 
                 await this.decisionService.RecordAdoption(decisions);
 
-                var newDecisionPoll = new DecisionPoll
-                {
-                    Id = Guid.NewGuid(),
-                    LastPoll = currentPollDate,
-                    CreatedBy = "system",
-                    CreatedDate = currentPollDate,
-                    UpdatedBy = "system",
-                    UpdatedDate = currentPollDate
-                };
-
-                await this.decisionPollService.AddDecisionPollAsync(newDecisionPoll);
+                lastPoll!.LastPoll = currentPollDate;
+                await this.decisionPollService.ModifyDecisionPollAsync(lastPoll);
 
                 return decisions;
             });

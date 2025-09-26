@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Linq.Expressions;
+using FluentAssertions;
 using KellermanSoftware.CompareNetObjects;
 using LHDS.Core.Brokers.CsvHelpers;
 using LHDS.Core.Brokers.Hashing;
@@ -29,11 +30,13 @@ using NHSISL.CsvHelperClient.Models.Clients.CsvHelpers.Exceptions;
 using Tynamix.ObjectFiller;
 using Xeptions;
 using Xunit;
+using Xunit.Abstractions;
 
 namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Decisions
 {
     public partial class DecisionOrchestrationServiceTests
     {
+        private readonly ITestOutputHelper output;
         private readonly ICompareLogic compareLogic;
         private readonly Mock<IDecisionPollService> decisionPollServiceMock;
         private readonly Mock<IDecisionService> decisionServiceMock;
@@ -45,8 +48,9 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Decisions
         private readonly DecisionConfiguration decisionConfiguration;
         private readonly IDecisionOrchestrationService decisionOrchestrationService;
 
-        public DecisionOrchestrationServiceTests()
+        public DecisionOrchestrationServiceTests(ITestOutputHelper output)
         {
+            this.output = output;
             this.compareLogic = new CompareLogic();
             this.decisionPollServiceMock = new Mock<IDecisionPollService>();
             this.decisionServiceMock = new Mock<IDecisionService>();
@@ -80,6 +84,32 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Decisions
 
         private static Expression<Func<Xeption, bool>> SameExceptionAs(Xeption expectedException) =>
             actualException => actualException.SameExceptionAs(expectedException);
+
+        private Expression<Func<Stream, bool>> SameStreamAs(Stream expectedStream)
+        {
+            return actualStream =>
+                IsSameStream(expectedStream, actualStream);
+        }
+
+        private bool IsSameStream(Stream expectedStream, Stream actualStream)
+        {
+            byte[] expectedBytes = ReadAllBytesFromStream(expectedStream);
+            byte[] actualBytes = ReadAllBytesFromStream(actualStream);
+
+            string expectedString = System.Text.Encoding.UTF8.GetString(expectedBytes);
+            string actualString = System.Text.Encoding.UTF8.GetString(actualBytes);
+
+            try
+            {
+                actualString.Should().BeEquivalentTo(expectedString);
+            }
+            catch (Exception exception)
+            {
+                output.WriteLine(exception.Message);
+            }
+
+            return new CompareLogic().Compare(expectedBytes, actualBytes).AreEqual;
+        }
 
         private static string GetRandomStringWithLengthOf(int length)
         {
@@ -176,6 +206,16 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Decisions
                 new CsvHelperClientServiceException(innerException)
             };
         }
+
+        private Dictionary<string, int> GetFieldMappings() =>
+            new Dictionary<string, int>
+            {
+                { nameof(DecisionCsv.DecisionId), 0 },
+                { nameof(DecisionCsv.NhsHash), 1 },
+                { nameof(DecisionCsv.PatientInstructionCategory), 2 },
+                { nameof(DecisionCsv.PatientInstructionState), 3 },
+                { nameof(DecisionCsv.InstructionDate), 4 }
+            };
 
         private static List<Decision> CreateRandomDecisions()
         {

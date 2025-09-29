@@ -10,6 +10,7 @@ using System.Text;
 using System.Threading.Tasks;
 using LHDS.Core.Brokers.CsvHelpers;
 using LHDS.Core.Brokers.Hashing;
+using LHDS.Core.Brokers.Identifiers;
 using LHDS.Core.Brokers.Loggings;
 using LHDS.Core.Models.Brokers.DecisionConfigurations;
 using LHDS.Core.Models.Brokers.Storages.Blobs;
@@ -28,6 +29,7 @@ namespace LHDS.Core.Services.Orchestrations.Decisions
         private readonly IDocumentService documentService;
         private readonly ICsvHelperBroker csvHelperBroker;
         private readonly IHashBroker hashBroker;
+        private readonly IIdentifierBroker identifierBroker;
         private readonly ILoggingBroker loggingBroker;
         private readonly BlobContainers blobContainers;
         private readonly DecisionConfiguration decisionConfiguration;
@@ -38,6 +40,7 @@ namespace LHDS.Core.Services.Orchestrations.Decisions
             IDocumentService documentService,
             ICsvHelperBroker csvHelperBroker,
             IHashBroker hashBroker,
+            IIdentifierBroker identifierBroker,
             ILoggingBroker loggingBroker,
             BlobContainers blobContainers,
             DecisionConfiguration decisionConfiguration
@@ -48,6 +51,7 @@ namespace LHDS.Core.Services.Orchestrations.Decisions
             this.documentService = documentService;
             this.csvHelperBroker = csvHelperBroker;
             this.hashBroker = hashBroker;
+            this.identifierBroker = identifierBroker;
             this.loggingBroker = loggingBroker;
             this.blobContainers = blobContainers;
             this.decisionConfiguration = decisionConfiguration;
@@ -62,12 +66,22 @@ namespace LHDS.Core.Services.Orchestrations.Decisions
                 IQueryable<DecisionPoll> decisionPolls =
                     await this.decisionPollService.RetrieveAllDecisionPollsAsync();
 
-                DecisionPoll lastPoll = decisionPolls
-                    .OrderByDescending(decisionPoll => decisionPoll.LastPoll)
-                    .FirstOrDefault();
+                DecisionPoll maybeDecisionPoll = decisionPolls.FirstOrDefault();
 
-                ValidateDecisionPoll(lastPoll);
-                DateTimeOffset? lastPollDate = lastPoll?.LastPoll;
+                if (maybeDecisionPoll is null)
+                {
+                    DecisionPoll newDecisionPoll = new DecisionPoll
+                    {
+                        Id = await this.identifierBroker.GetIdentifierAsync(),
+                        LastPoll = DateTimeOffset.MinValue
+                    };
+
+                    maybeDecisionPoll = await this.decisionPollService.AddDecisionPollAsync(newDecisionPoll);
+                }
+
+                ValidateDecisionPoll(maybeDecisionPoll);
+                DecisionPoll lastDecisionPoll = maybeDecisionPoll;
+                DateTimeOffset? lastPollDate = lastDecisionPoll?.LastPoll;
                 DateTimeOffset currentPollDate = DateTimeOffset.UtcNow;
 
                 List<Decision> decisions =
@@ -145,8 +159,8 @@ namespace LHDS.Core.Services.Orchestrations.Decisions
 
                 await this.decisionService.RecordAdoption(decisions);
 
-                lastPoll!.LastPoll = currentPollDate;
-                await this.decisionPollService.ModifyDecisionPollAsync(lastPoll);
+                lastDecisionPoll!.LastPoll = currentPollDate;
+                await this.decisionPollService.ModifyDecisionPollAsync(lastDecisionPoll);
 
                 return decisions;
             });

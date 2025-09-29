@@ -11,6 +11,7 @@ using FluentAssertions;
 using KellermanSoftware.CompareNetObjects;
 using LHDS.Core.Brokers.CsvHelpers;
 using LHDS.Core.Brokers.Hashing;
+using LHDS.Core.Brokers.Identifiers;
 using LHDS.Core.Brokers.Loggings;
 using LHDS.Core.Models.Brokers.DecisionConfigurations;
 using LHDS.Core.Models.Brokers.Storages.Blobs;
@@ -43,6 +44,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Decisions
         private readonly Mock<IDocumentService> documentServiceMock;
         private readonly Mock<ICsvHelperBroker> csvHelperBrokerMock;
         private readonly Mock<IHashBroker> hashBrokerMock;
+        private readonly Mock<IIdentifierBroker> identifierBrokerMock;
         private readonly Mock<ILoggingBroker> loggingBrokerMock;
         private readonly BlobContainers blobContainers;
         private readonly DecisionConfiguration decisionConfiguration;
@@ -57,6 +59,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Decisions
             this.documentServiceMock = new Mock<IDocumentService>();
             this.csvHelperBrokerMock = new Mock<ICsvHelperBroker>();
             this.hashBrokerMock = new Mock<IHashBroker>();
+            this.identifierBrokerMock = new Mock<IIdentifierBroker>();
             this.loggingBrokerMock = new Mock<ILoggingBroker>();
 
             this.blobContainers = new BlobContainers
@@ -77,6 +80,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Decisions
                 documentService: this.documentServiceMock.Object,
                 csvHelperBroker: this.csvHelperBrokerMock.Object,
                 hashBroker: this.hashBrokerMock.Object,
+                identifierBroker: this.identifierBrokerMock.Object,
                 loggingBroker: this.loggingBrokerMock.Object,
                 blobContainers: this.blobContainers,
                 decisionConfiguration: this.decisionConfiguration);
@@ -258,6 +262,9 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Decisions
                 .Create(count: GetRandomNumber())
                 .AsQueryable();
         }
+
+        private static DecisionPoll CreateRandomDecisionPoll() =>
+            CreateDecisionPollFiller(dateTimeOffset: GetRandomDateTimeOffset()).Create();
 
         private static Filler<DecisionPoll> CreateDecisionPollFiller(DateTimeOffset dateTimeOffset)
         {

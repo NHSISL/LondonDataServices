@@ -42,6 +42,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Decisions
                 documentService: this.documentServiceMock.Object,
                 csvHelperBroker: this.csvHelperBrokerMock.Object,
                 hashBroker: this.hashBrokerMock.Object,
+                identifierBroker: this.identifierBrokerMock.Object,
                 loggingBroker: this.loggingBrokerMock.Object,
                 blobContainers: invalidBlobContainers,
                 decisionConfiguration: this.decisionConfiguration);
@@ -63,6 +64,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Decisions
                         Times.Once);
 
             this.decisionPollServiceMock.VerifyNoOtherCalls();
+            this.identifierBrokerMock.VerifyNoOtherCalls();
             this.decisionServiceMock.VerifyNoOtherCalls();
             this.documentServiceMock.VerifyNoOtherCalls();
             this.csvHelperBrokerMock.VerifyNoOtherCalls();
@@ -93,6 +95,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Decisions
                 documentService: this.documentServiceMock.Object,
                 csvHelperBroker: this.csvHelperBrokerMock.Object,
                 hashBroker: this.hashBrokerMock.Object,
+                identifierBroker: this.identifierBrokerMock.Object,
                 loggingBroker: this.loggingBrokerMock.Object,
                 blobContainers: this.blobContainers,
                 decisionConfiguration: invalidDecisionConfiguration);
@@ -114,6 +117,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Decisions
                         Times.Once);
 
             this.decisionPollServiceMock.VerifyNoOtherCalls();
+            this.identifierBrokerMock.VerifyNoOtherCalls();
             this.decisionServiceMock.VerifyNoOtherCalls();
             this.documentServiceMock.VerifyNoOtherCalls();
             this.csvHelperBrokerMock.VerifyNoOtherCalls();
@@ -127,6 +131,8 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Decisions
         {
             // given
             IQueryable<DecisionPoll> emptyDecisionPolls = Enumerable.Empty<DecisionPoll>().AsQueryable();
+            Guid randomId = Guid.NewGuid();
+            DecisionPoll nullDecisionPoll = null;
 
             var nullDecisionPollDecisionOrchestrationException =
                 new NullDecisionPollDecisionOrchestrationException(message: "DecisionPoll is null.");
@@ -139,6 +145,14 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Decisions
             this.decisionPollServiceMock.Setup(service =>
                 service.RetrieveAllDecisionPollsAsync())
                     .ReturnsAsync(emptyDecisionPolls);
+
+            this.identifierBrokerMock.Setup(broker =>
+                broker.GetIdentifierAsync())
+                    .ReturnsAsync(randomId);
+
+            this.decisionPollServiceMock
+                .Setup(service => service.AddDecisionPollAsync(It.Is<DecisionPoll>(poll => poll.Id == randomId)))
+                .ReturnsAsync(nullDecisionPoll);
 
             // when
             ValueTask<List<Decision>> getPatientDecisionsTask =
@@ -154,6 +168,13 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Decisions
             this.decisionPollServiceMock.Verify(service =>
                 service.RetrieveAllDecisionPollsAsync(),
                 Times.Once);
+
+            this.identifierBrokerMock.Verify(broker =>
+                broker.GetIdentifierAsync(), Times.Once);
+
+            this.decisionPollServiceMock.Verify(service =>
+                service.AddDecisionPollAsync(It.Is<DecisionPoll>(poll => poll.Id == randomId)),
+                    Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>
                 broker.LogErrorAsync(It.Is(SameExceptionAs(
@@ -263,6 +284,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Decisions
                         Times.Once);
 
             this.decisionPollServiceMock.VerifyNoOtherCalls();
+            this.identifierBrokerMock.VerifyNoOtherCalls();
             this.decisionServiceMock.VerifyNoOtherCalls();
             this.documentServiceMock.VerifyNoOtherCalls();
             this.csvHelperBrokerMock.VerifyNoOtherCalls();

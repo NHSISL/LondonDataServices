@@ -54,5 +54,8 @@ namespace LHDS.Core.Brokers.Hashing
 
             return sha256Hash;
         }
+
+        public async ValueTask<string> GenerateSha256HashAsync(string? data, string? pepper = null) =>
+            throw new NotImplementedException();
     }
 }

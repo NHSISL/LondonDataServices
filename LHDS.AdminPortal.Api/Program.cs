@@ -23,6 +23,7 @@ using LHDS.Core.Brokers.Storages.Sql;
 using LHDS.Core.Brokers.Telemetries;
 using LHDS.Core.Clients;
 using LHDS.Core.Clients.Extensions;
+using LHDS.Core.Models.Brokers.DecisionConfigurations;
 using LHDS.Core.Models.Brokers.Storages.Blobs;
 using LHDS.Core.Models.Configurations;
 using LHDS.Core.Models.Foundations.Addresses;
@@ -327,7 +328,7 @@ namespace LHDS.AdminPortal.Api
 
         private static void AddBrokers(IServiceCollection services, IConfiguration configuration)
         {
-            ValidateAppInsightsCinfiguration(configuration);
+            ValidateAppInsightsConfiguration(configuration);
 
             services.AddTransient<IStorageBroker>(sp =>
             {
@@ -397,6 +398,12 @@ namespace LHDS.AdminPortal.Api
                             VisualStudioTenantId = blobStorageSettings.AzureTenantId,
                         }),
                     options: blobServiceClientOptions));
+
+            var decisionConfiguration = configuration.GetSection("IDecide")
+                .Get<DecisionConfiguration>();
+
+            ValidateDecisionConfiguration(decisionConfiguration);
+            services.AddSingleton<DecisionConfiguration>(decisionConfiguration);
         }
 
         private static void ValidateBlobStorageSettings(BlobStorageSettings blobStorageSettings)
@@ -409,7 +416,7 @@ namespace LHDS.AdminPortal.Api
                     Parameter: "blobStorage__azureTenantId"));
         }
 
-        private static void ValidateAppInsightsCinfiguration(IConfiguration configuration)
+        private static void ValidateAppInsightsConfiguration(IConfiguration configuration)
         {
             string connectionString = configuration["ApplicationInsights:ConnectionString"] ?? string.Empty;
             Validate((Rule: IsInvalid(connectionString), Parameter: "applicationInsights__connectionString"));
@@ -429,6 +436,13 @@ namespace LHDS.AdminPortal.Api
 
                 (Rule: IsInvalid(blobContainers.Pds),
                     Parameter: "blobContainers__pds"));
+        }
+
+        private static void ValidateDecisionConfiguration(DecisionConfiguration decisionConfiguration)
+        {
+            Validate((Rule: IsInvalid(decisionConfiguration.HashPepper), Parameter: "IDecide__hashPepper"));
+            Validate((Rule: IsInvalid(decisionConfiguration.FolderName), Parameter: "IDecide__folderName"));
+            Validate((Rule: IsInvalid(decisionConfiguration.FilePrefix), Parameter: "IDecide__filePrefix"));
         }
 
         private static dynamic IsInvalid(string text) => new

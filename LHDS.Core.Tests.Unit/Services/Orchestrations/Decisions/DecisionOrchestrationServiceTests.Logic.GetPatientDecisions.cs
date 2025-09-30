@@ -165,7 +165,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Decisions
         public async Task ShouldGetPatientDecisionsWhenThereAreNoDecisionPollsAsync()
         {
             // given
-            // empty 
+            // empty
             IQueryable<DecisionPoll> noDecisionPolls = Enumerable.Empty<DecisionPoll>().AsQueryable();
             Guid randomId = Guid.NewGuid();
             List<Decision> expectedDecisions = CreateRandomDecisions();
@@ -184,7 +184,8 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Decisions
             expectedDecisionPoll.Id = lastDecisionPoll.Id;
             expectedDecisionPoll.LastPoll = lastDecisionPoll.LastPoll;
 
-            string expectedFileName = $"{this.decisionConfiguration.FolderName}/" +
+            string expectedFileName =
+                $"{this.decisionConfiguration.FolderName}/" +
                 $"{currentPollDate:yyyyMMdd}/" +
                 $"{this.decisionConfiguration.FilePrefix}_{currentPollDate:yyyyMMddHHmmss}.csv";
 

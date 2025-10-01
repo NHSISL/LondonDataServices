@@ -9,9 +9,12 @@ using LHDS.Core.Clients;
 using LHDS.Core.Models.Foundations.Decisions;
 using LHDS.Core.Models.Foundations.DecisionTypes;
 using LHDS.Core.Models.Foundations.Patients;
+using LHDS.Core.Models.Orchestrations.Decisions.Exceptions;
 using LHDS.Core.Services.Orchestrations.Decisions;
 using Moq;
 using Tynamix.ObjectFiller;
+using Xeptions;
+using Xunit;
 
 namespace LHDS.Core.Tests.Unit.Clients.IDecide
 {
@@ -28,6 +31,9 @@ namespace LHDS.Core.Tests.Unit.Clients.IDecide
                 decisionOrchestrationService: this.decisionOrchestrationServiceMock.Object);
         }
 
+        private static string GetRandomString() =>
+            new MnemonicString().GetValue();
+
         private static string GetRandomStringWithLengthOf(int length)
         {
             string result = new MnemonicString(wordCount: 1, wordMinLength: length, wordMaxLength: length).GetValue();
@@ -40,6 +46,27 @@ namespace LHDS.Core.Tests.Unit.Clients.IDecide
 
         private static DateTimeOffset GetRandomDateTimeOffset() =>
             new DateTimeRange(earliestDate: new DateTime()).GetValue();
+
+
+
+        public static TheoryData<Xeption> IDecideClientDependencyValidationExceptions()
+        {
+            string randomMessage = GetRandomString();
+            string exceptionMessage = randomMessage;
+            var innerException = new Xeption(exceptionMessage);
+
+            return new TheoryData<Xeption>
+            {
+                new DecisionOrchestrationValidationException(
+                    message: "Decision orchestration validation errors occurred, please try again.",
+                    innerException),
+
+                new DecisionOrchestrationDependencyValidationException(
+                    message:
+                    "Decision orchestration dependency validation error occurred, fix the errors and try again.",
+                    innerException)
+            };
+        }
 
         private static List<Decision> CreateRandomDecisions()
         {

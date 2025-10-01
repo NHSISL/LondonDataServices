@@ -21,9 +21,9 @@ namespace LHDS.Core.Tests.Unit.Clients.IDecide
             List<Decision> randomDecisions = CreateRandomDecisions();
             List<Decision> expectedDecisions = randomDecisions.DeepClone();
 
-            this.decisionOrchestrationServiceMock
-                .Setup(orchestration => orchestration.GetPatientDecisions())
-                .ReturnsAsync(expectedDecisions);
+            this.decisionOrchestrationServiceMock.Setup(orchestration =>
+                orchestration.GetPatientDecisions())
+                    .ReturnsAsync(expectedDecisions);
 
             // when
             List<Decision> actualDecisions = await this.iDecideClient.GetPatientDecisions();
@@ -32,9 +32,11 @@ namespace LHDS.Core.Tests.Unit.Clients.IDecide
             actualDecisions.Should().NotBeNullOrEmpty();
             actualDecisions.Should().BeEquivalentTo(expectedDecisions);
 
-            this.decisionOrchestrationServiceMock.Verify(service =>
-                service.GetPatientDecisions(),
+            this.decisionOrchestrationServiceMock.Verify(orchestration =>
+                orchestration.GetPatientDecisions(),
                     Times.Once);
+
+            this.decisionOrchestrationServiceMock.VerifyNoOtherCalls();
         }
     }
 }

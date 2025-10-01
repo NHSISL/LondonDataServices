@@ -68,6 +68,20 @@ namespace LHDS.Core.Tests.Unit.Clients.IDecide
             };
         }
 
+        public static TheoryData<Xeption> IDecideClientDependencyExceptions()
+        {
+            string randomMessage = GetRandomString();
+            string exceptionMessage = randomMessage;
+            var innerException = new Xeption(exceptionMessage);
+
+            return new TheoryData<Xeption>
+            {
+                new DecisionOrchestrationDependencyException(
+                    message: "Decision orchestration dependency error occurred, fix the errors and try again.",
+                    innerException)
+            };
+        }
+
         private static List<Decision> CreateRandomDecisions()
         {
             return CreateDecisionFiller(dateTimeOffset: GetRandomDateTimeOffset())

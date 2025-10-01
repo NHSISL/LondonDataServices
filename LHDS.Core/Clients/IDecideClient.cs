@@ -5,14 +5,22 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using LHDS.Core.Models.Foundations.Decisions;
+using LHDS.Core.Services.Orchestrations.Decisions;
 
 namespace LHDS.Core.Clients
 {
     public class IDecideClient : IIDecideClient
     {
-        public ValueTask<List<Decision>> GetPatientDecisions()
+        private readonly IDecisionOrchestrationService decisionOrchestrationService;
+
+        public IDecideClient(IDecisionOrchestrationService decisionOrchestrationService)
         {
-            throw new System.NotImplementedException();
+            this.decisionOrchestrationService = decisionOrchestrationService;
+        }
+
+        public async ValueTask<List<Decision>> GetPatientDecisions()
+        {
+            return await this.decisionOrchestrationService.GetPatientDecisions();
         }
     }
 }

@@ -78,5 +78,37 @@ namespace LHDS.Core.Tests.Unit.Clients.IDecide
 
             this.decisionOrchestrationServiceMock.VerifyNoOtherCalls();
         }
+
+        [Theory]
+        [MemberData(nameof(IDecideClientServiceExceptions))]
+        public async Task ShouldThrowServiceExceptionOnGetPatientDecisionsIfServiceErrorOccursAndLogItAsync(
+            Xeption serviceException)
+        {
+            // given
+            var expectedServiceException = new IDecideClientServiceException(
+                message: "IDecide client service error occurred, please contact support.",
+                innerException: serviceException.InnerException as Xeption);
+
+            this.decisionOrchestrationServiceMock.Setup(orchestration =>
+                orchestration.GetPatientDecisions())
+                    .ThrowsAsync(expectedServiceException);
+
+            // when
+            ValueTask<List<Decision>> getPatientDecisionsTask =
+                this.iDecideClient.GetPatientDecisions();
+
+            IDecideClientServiceException actualException =
+                await Assert.ThrowsAsync<IDecideClientServiceException>(
+                    getPatientDecisionsTask.AsTask);
+
+            // then
+            actualException.Should().BeEquivalentTo(expectedServiceException);
+
+            this.decisionOrchestrationServiceMock.Verify(orchestration =>
+                orchestration.GetPatientDecisions(),
+                    Times.Once);
+
+            this.decisionOrchestrationServiceMock.VerifyNoOtherCalls();
+        }
     }
 }

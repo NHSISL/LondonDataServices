@@ -4,8 +4,11 @@
 
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using LHDS.Core.Models.Clients.IDecideClient.Exceptions;
 using LHDS.Core.Models.Foundations.Decisions;
+using LHDS.Core.Models.Orchestrations.Decisions.Exceptions;
 using LHDS.Core.Services.Orchestrations.Decisions;
+using Xeptions;
 
 namespace LHDS.Core.Clients
 {
@@ -20,7 +23,24 @@ namespace LHDS.Core.Clients
 
         public async ValueTask<List<Decision>> GetPatientDecisions()
         {
-            return await this.decisionOrchestrationService.GetPatientDecisions();
+            try
+            {
+                return await this.decisionOrchestrationService.GetPatientDecisions();
+            }
+            catch (DecisionOrchestrationValidationException decisionOrchestrationValidationException)
+            {
+                throw new IDecideClientValidationException(
+                    message: "IDecide client validation error occurred, fix errors and try again.",
+                    innerException: decisionOrchestrationValidationException.InnerException as Xeption);
+            }
+            catch (DecisionOrchestrationDependencyValidationException
+                decisionOrchestrationDependencyValidationException)
+            {
+                throw new IDecideClientValidationException(
+                    message: "IDecide client validation error occurred, fix errors and try again.",
+                    innerException:
+                        decisionOrchestrationDependencyValidationException.InnerException as Xeption);
+            }
         }
     }
 }

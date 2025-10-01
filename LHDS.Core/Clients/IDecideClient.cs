@@ -47,6 +47,12 @@ namespace LHDS.Core.Clients
                     message: "IDecide client dependency error occurred, please contact support.",
                     innerException: decisionOrchestrationDependencyException.InnerException as Xeption);
             }
+            catch (DecisionOrchestrationServiceException decisionOrchestrationServiceException)
+            {
+                throw new IDecideClientServiceException(
+                    message: "IDecide client service error occurred, please contact support.",
+                    innerException: decisionOrchestrationServiceException.InnerException as Xeption);
+            }
         }
     }
 }

@@ -82,6 +82,21 @@ namespace LHDS.Core.Tests.Unit.Clients.IDecide
             };
         }
 
+        public static TheoryData<Xeption> IDecideClientServiceExceptions()
+        {
+            string randomMessage = GetRandomString();
+            string exceptionMessage = randomMessage;
+            var innerException = new Exception();
+
+            return new TheoryData<Xeption>
+            {
+                new DecisionOrchestrationServiceException(
+                    message: "Decision orchestration service error occurred, please contact support.",
+                    innerException)
+            };
+
+        }
+
         private static List<Decision> CreateRandomDecisions()
         {
             return CreateDecisionFiller(dateTimeOffset: GetRandomDateTimeOffset())

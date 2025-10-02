@@ -19,7 +19,7 @@ using LHDS.Core.Brokers.Loggings;
 using LHDS.Core.Brokers.Securities;
 using LHDS.Core.Brokers.Storages.Blobs;
 using LHDS.Core.Brokers.Storages.Sql;
-using LHDS.Core.Models.Brokers.DecisionConfigurations;
+using LHDS.Core.Models.Brokers.Decisions;
 using LHDS.Core.Models.Brokers.Storages.Blobs;
 using LHDS.Core.Models.Configurations;
 using LHDS.Core.Services.Foundations.DecisionPolls;
@@ -154,6 +154,19 @@ namespace LHDS.Core.Clients.Extensions
             Validate((Rule: IsInvalid(decisionConfiguration.HashPepper), Parameter: "IDecide__hashPepper"));
             Validate((Rule: IsInvalid(decisionConfiguration.FolderName), Parameter: "IDecide__folderName"));
             Validate((Rule: IsInvalid(decisionConfiguration.FilePrefix), Parameter: "IDecide__filePrefix"));
+            Validate((Rule: IsInvalid(decisionConfiguration.IDecideBaseUrl), Parameter: "IDecide__iDecideBaseUrl"));
+
+            Validate((Rule: IsInvalid(decisionConfiguration.IDecideAuthenticationRelativeUrl),
+                Parameter: "IDecide__iDecideAuthenticationRelativeUrl"));
+
+            Validate((Rule: IsInvalid(decisionConfiguration.IDecidePatientDetailsRelativeUrl),
+                Parameter: "IDecide__iDecidePatientDetailsRelativeUrl"));
+
+            Validate((Rule: IsInvalid(decisionConfiguration.IDecideRecordAdoptionRelativeUrl),
+                Parameter: "IDecide__iDecideRecordAdoptionRelativeUrl"));
+
+            Validate((Rule: IsInvalid(decisionConfiguration.ClientId), Parameter: "IDecide__clientId"));
+            Validate((Rule: IsInvalid(decisionConfiguration.ClientSecret), Parameter: "IDecide__clientSecret"));
         }
 
         private static void ValidateBlobStorageSettings(BlobStorageSettings? blobStorageSettings)

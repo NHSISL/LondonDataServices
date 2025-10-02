@@ -10,11 +10,12 @@ namespace LHDS.Core.Models.Brokers.Decisions
         public string FolderName { get; set; } = string.Empty;
         public string FilePrefix { get; set; } = string.Empty;
         public string IDecideBaseUrl { get; set; } = string.Empty;
-        public string IDecideAuthenticationRelativeUrl { get; set; } = string.Empty;
         public string IDecidePatientDetailsRelativeUrl { get; set; } = string.Empty;
         public string IDecideRecordAdoptionRelativeUrl { get; set; } = string.Empty;
+        public string TenantId { get; set; } = string.Empty;
         public string ClientId { get; set; } = string.Empty;
         public string ClientSecret { get; set; } = string.Empty;
+        public string Scope { get; set; } = string.Empty;
         public int MaxResponseContentBufferSizeInMegaBytes { get; set; } = 400;
         public int TimeoutInSeconds { get; set; } = 600;
     }

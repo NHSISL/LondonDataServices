@@ -156,17 +156,16 @@ namespace LHDS.Core.Clients.Extensions
             Validate((Rule: IsInvalid(decisionConfiguration.FilePrefix), Parameter: "IDecide__filePrefix"));
             Validate((Rule: IsInvalid(decisionConfiguration.IDecideBaseUrl), Parameter: "IDecide__iDecideBaseUrl"));
 
-            Validate((Rule: IsInvalid(decisionConfiguration.IDecideAuthenticationRelativeUrl),
-                Parameter: "IDecide__iDecideAuthenticationRelativeUrl"));
-
             Validate((Rule: IsInvalid(decisionConfiguration.IDecidePatientDetailsRelativeUrl),
                 Parameter: "IDecide__iDecidePatientDetailsRelativeUrl"));
 
             Validate((Rule: IsInvalid(decisionConfiguration.IDecideRecordAdoptionRelativeUrl),
                 Parameter: "IDecide__iDecideRecordAdoptionRelativeUrl"));
 
+            Validate((Rule: IsInvalid(decisionConfiguration.TenantId), Parameter: "IDecide__tenantId"));
             Validate((Rule: IsInvalid(decisionConfiguration.ClientId), Parameter: "IDecide__clientId"));
             Validate((Rule: IsInvalid(decisionConfiguration.ClientSecret), Parameter: "IDecide__clientSecret"));
+            Validate((Rule: IsInvalid(decisionConfiguration.Scope), Parameter: "IDecide__scope"));
         }
 
         private static void ValidateBlobStorageSettings(BlobStorageSettings? blobStorageSettings)

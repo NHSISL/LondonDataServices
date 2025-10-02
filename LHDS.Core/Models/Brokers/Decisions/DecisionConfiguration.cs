@@ -12,7 +12,7 @@ namespace LHDS.Core.Models.Brokers.Decisions
         public string IDecideBaseUrl { get; set; } = string.Empty;
         public string IDecidePatientDetailsRelativeUrl { get; set; } = string.Empty;
         public string IDecideRecordAdoptionRelativeUrl { get; set; } = string.Empty;
-        public string TenantId { get; set; } = string.Empty;
+        public string EntraTokenUrl { get; set; } = string.Empty;
         public string ClientId { get; set; } = string.Empty;
         public string ClientSecret { get; set; } = string.Empty;
         public string Scope { get; set; } = string.Empty;

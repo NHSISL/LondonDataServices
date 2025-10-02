@@ -10,7 +10,7 @@ namespace LHDS.Core.Models.Brokers.Decisions
         public string FolderName { get; set; } = string.Empty;
         public string FilePrefix { get; set; } = string.Empty;
         public string IDecideBaseUrl { get; set; } = string.Empty;
-        public string IDecidePatientDetailsRelativeUrl { get; set; } = string.Empty;
+        public string IDecidePatientDecisionsRelativeUrl { get; set; } = string.Empty;
         public string IDecideRecordAdoptionRelativeUrl { get; set; } = string.Empty;
         public string EntraTokenUrl { get; set; } = string.Empty;
         public string ClientId { get; set; } = string.Empty;

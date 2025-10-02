@@ -29,12 +29,43 @@ namespace LHDS.Core.Brokers.Decisions
 
         public async ValueTask<List<Decision>> GetPatientDecisions(DateTimeOffset? lastPollDate)
         {
-            throw new NotImplementedException();
+            string relativeUrl = this.decisionConfiguration.IDecidePatientDecisionsRelativeUrl;
+
+            if (lastPollDate is not null)
+            {
+                string lastPollDateString = Uri.EscapeDataString(
+                    lastPollDate.Value.UtcDateTime.ToString("o"));
+                relativeUrl = $"{relativeUrl}?lastPollDate={lastPollDateString}";
+            }
+
+            List<Decision> decisions = await GetAsync<List<Decision>>(relativeUrl);
+
+            return decisions;
         }
 
         public ValueTask RecordAdoption(List<Decision> decisionsAdopted)
         {
             throw new NotImplementedException();
+        }
+
+        private async ValueTask<T> GetAsync<T>(string relativeUrl)
+        {
+            if (apiClient is null || DateTimeOffset.UtcNow <= decisionAccessToken?.ExpiresAt)
+            {
+                await SetupApiClient();
+            }
+
+            if (apiClient is null)
+            {
+                throw new InvalidOperationException("Failed to setup API client");
+            }
+
+            if (typeof(T) == typeof(string))
+            {
+                return (T)(object)await this.apiClient.GetContentStringAsync(relativeUrl);
+            }
+
+            return await this.apiClient.GetContentAsync<T>(relativeUrl);
         }
 
         private async ValueTask GetAccessTokenAsync()

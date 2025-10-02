@@ -7,7 +7,7 @@ using Newtonsoft.Json;
 
 namespace LHDS.Core.Models.Brokers.Decisions
 {
-    public class DecisionToken
+    public class DecisionAccessToken
     {
         [JsonProperty("access_token")]
         public string AccessToken { get; set; } = string.Empty;

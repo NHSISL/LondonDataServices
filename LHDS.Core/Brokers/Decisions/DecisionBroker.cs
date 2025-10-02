@@ -5,22 +5,26 @@
 using System;
 using System.Collections.Generic;
 using System.Net.Http;
+using System.Net.Http.Headers;
 using System.Threading.Tasks;
 using LHDS.Core.Models.Brokers.Decisions;
 using LHDS.Core.Models.Foundations.Decisions;
 using Newtonsoft.Json;
+using RESTFulSense.Clients;
 
 namespace LHDS.Core.Brokers.Decisions
 {
     public class DecisionBroker : IDecisionBroker
     {
         private readonly DecisionConfiguration decisionConfiguration;
-        private DecisionToken decisionToken = null;
+        private DecisionAccessToken decisionAccessToken = null;
+        private IRESTFulApiFactoryClient? apiClient = null;
 
         public DecisionBroker(DecisionConfiguration decisionConfiguration)
         {
             this.decisionConfiguration = decisionConfiguration;
-            this.decisionToken = null;
+            this.decisionAccessToken = null;
+            this.apiClient = null;
         }
 
         public async ValueTask<List<Decision>> GetPatientDecisions(DateTimeOffset? lastPollDate)
@@ -33,13 +37,8 @@ namespace LHDS.Core.Brokers.Decisions
             throw new NotImplementedException();
         }
 
-        private async ValueTask<string> GetTokenAsync()
+        private async ValueTask GetAccessTokenAsync()
         {
-            if (this.decisionToken is not null && this.decisionToken.ExpiresAt > DateTimeOffset.UtcNow)
-            {
-                return this.decisionToken.AccessToken;
-            }
-
             using (HttpClient httpClient = new HttpClient())
             {
                 var requestContent = new FormUrlEncodedContent(new[]
@@ -62,7 +61,7 @@ namespace LHDS.Core.Brokers.Decisions
                 }
 
                 string responseContent = await response.Content.ReadAsStringAsync();
-                DecisionToken? token = JsonConvert.DeserializeObject<DecisionToken>(responseContent);
+                DecisionAccessToken? token = JsonConvert.DeserializeObject<DecisionAccessToken>(responseContent);
 
                 if (token is null)
                 {
@@ -70,10 +69,29 @@ namespace LHDS.Core.Brokers.Decisions
                 }
 
                 token.ExpiresAt = DateTimeOffset.UtcNow.AddSeconds(token.ExpiresIn);
-                this.decisionToken = token;
-
-                return token.AccessToken;
+                this.decisionAccessToken = token;
             }
+        }
+
+        private async ValueTask SetupApiClient()
+        {
+            await GetAccessTokenAsync();
+
+            var httpClient = new HttpClient()
+            {
+                BaseAddress = new Uri(uriString: $"{this.decisionConfiguration.IDecideBaseUrl}"),
+                Timeout = TimeSpan.FromSeconds(this.decisionConfiguration.TimeoutInSeconds),
+
+                MaxResponseContentBufferSize =
+                    this.decisionConfiguration.MaxResponseContentBufferSizeInMegaBytes * 1024 * 1024
+            };
+
+            httpClient.DefaultRequestHeaders.Authorization =
+                new AuthenticationHeaderValue(
+                    scheme: "Bearer",
+                    parameter: this.decisionAccessToken?.AccessToken ?? "");
+
+            this.apiClient = new RESTFulApiFactoryClient(httpClient);
         }
     }
 }

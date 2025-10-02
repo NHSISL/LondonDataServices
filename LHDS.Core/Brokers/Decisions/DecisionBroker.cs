@@ -39,20 +39,22 @@ namespace LHDS.Core.Brokers.Decisions
 
         private async ValueTask GetAccessTokenAsync()
         {
+            string tenantId = this.decisionConfiguration.TenantId;
+            string tokenEndpoint = $"https://login.microsoftonline.com/{tenantId}/oauth2/v2.0/token";
+
             using (HttpClient httpClient = new HttpClient())
             {
                 var requestContent = new FormUrlEncodedContent(new[]
                 {
                     new KeyValuePair<string, string>("grant_type", "client_credentials"),
                     new KeyValuePair<string, string>("client_id", decisionConfiguration.ClientId),
-                    new KeyValuePair<string, string>("client_secret", decisionConfiguration.ClientSecret)
+                    new KeyValuePair<string, string>("client_secret", decisionConfiguration.ClientSecret),
+                    new KeyValuePair<string, string>("scope", decisionConfiguration.Scope)
                 });
 
                 HttpResponseMessage response = await httpClient
                     .PostAsync(
-                        requestUri:
-                            $"{decisionConfiguration.IDecideBaseUrl}" +
-                            $"{decisionConfiguration.IDecideAuthenticationRelativeUrl}",
+                        requestUri: tokenEndpoint,
                         content: requestContent);
 
                 if (!response.IsSuccessStatusCode)

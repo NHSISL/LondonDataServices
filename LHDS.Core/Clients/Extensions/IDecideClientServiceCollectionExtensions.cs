@@ -156,8 +156,8 @@ namespace LHDS.Core.Clients.Extensions
             Validate((Rule: IsInvalid(decisionConfiguration.FilePrefix), Parameter: "IDecide__filePrefix"));
             Validate((Rule: IsInvalid(decisionConfiguration.IDecideBaseUrl), Parameter: "IDecide__iDecideBaseUrl"));
 
-            Validate((Rule: IsInvalid(decisionConfiguration.IDecidePatientDetailsRelativeUrl),
-                Parameter: "IDecide__iDecidePatientDetailsRelativeUrl"));
+            Validate((Rule: IsInvalid(decisionConfiguration.IDecidePatientDecisionsRelativeUrl),
+                Parameter: "IDecide__iDecidePatientDecisionsRelativeUrl"));
 
             Validate((Rule: IsInvalid(decisionConfiguration.IDecideRecordAdoptionRelativeUrl),
                 Parameter: "IDecide__iDecideRecordAdoptionRelativeUrl"));

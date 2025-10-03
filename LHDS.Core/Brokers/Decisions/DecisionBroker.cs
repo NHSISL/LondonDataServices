@@ -43,9 +43,10 @@ namespace LHDS.Core.Brokers.Decisions
             return decisions;
         }
 
-        public ValueTask RecordAdoption(List<Decision> decisionsAdopted)
+        public async ValueTask RecordAdoption(List<Decision> decisionsAdopted)
         {
-            throw new NotImplementedException();
+            string relativeUrl = this.decisionConfiguration.IDecideRecordAdoptionRelativeUrl;
+            await PostAsync(relativeUrl, decisionsAdopted);
         }
 
         private async ValueTask<T> GetAsync<T>(string relativeUrl)
@@ -66,6 +67,21 @@ namespace LHDS.Core.Brokers.Decisions
             }
 
             return await this.apiClient.GetContentAsync<T>(relativeUrl);
+        }
+
+        private async ValueTask PostAsync(string relativeUrl, object body)
+        {
+            if (apiClient is null || DateTimeOffset.UtcNow <= decisionAccessToken?.ExpiresAt)
+            {
+                await SetupApiClient();
+            }
+
+            if (apiClient is null)
+            {
+                throw new InvalidOperationException("Failed to setup API client");
+            }
+
+            await this.apiClient.PostContentAsync(relativeUrl, body);
         }
 
         private async ValueTask GetAccessTokenAsync()

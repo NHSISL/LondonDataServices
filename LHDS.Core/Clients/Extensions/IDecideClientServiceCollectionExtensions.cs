@@ -14,7 +14,6 @@ using LHDS.Core.Brokers.CsvHelpers;
 using LHDS.Core.Brokers.DateTimes;
 using LHDS.Core.Brokers.Decisions;
 using LHDS.Core.Brokers.Hashing;
-using LHDS.Core.Brokers.Identifiers;
 using LHDS.Core.Brokers.Loggings;
 using LHDS.Core.Brokers.Securities;
 using LHDS.Core.Brokers.Storages.Blobs;
@@ -22,7 +21,6 @@ using LHDS.Core.Brokers.Storages.Sql;
 using LHDS.Core.Models.Brokers.Decisions;
 using LHDS.Core.Models.Brokers.Storages.Blobs;
 using LHDS.Core.Models.Configurations;
-using LHDS.Core.Services.Foundations.DecisionPolls;
 using LHDS.Core.Services.Foundations.Decisions;
 using LHDS.Core.Services.Foundations.Documents;
 using LHDS.Core.Services.Orchestrations.Decisions;
@@ -43,6 +41,24 @@ namespace LHDS.Core.Clients.Extensions
 
             AddProviders(services);
             AddBrokers(services, configuration, GetClaimsPrincipalFromToken(accessToken));
+            AddServices(services);
+            AddProcessingServices(services);
+            AddOrchestrations(services);
+            AddCoordinations(services);
+            AddClients(services, configuration);
+
+            return services;
+        }
+
+        public static IServiceCollection AddIDecideClient(
+            this IServiceCollection services,
+            IConfiguration configuration,
+            ClaimsPrincipal claimsPrincipal)
+        {
+            services.AddSingleton<IConfiguration>(_ => configuration);
+
+            AddProviders(services);
+            AddBrokers(services, configuration, claimsPrincipal);
             AddServices(services);
             AddProcessingServices(services);
             AddOrchestrations(services);
@@ -80,7 +96,6 @@ namespace LHDS.Core.Clients.Extensions
             services.AddTransient<ILoggingBroker, LoggingBroker>();
             services.AddTransient<ICsvHelperBroker, CsvHelperBroker>();
             services.AddTransient<IHashBroker, HashBroker>();
-            services.AddTransient<IIdentifierBroker, IdentifierBroker>();
             services.AddTransient<IDateTimeBroker, DateTimeBroker>();
             services.AddTransient<IDecisionBroker, DecisionBroker>();
 
@@ -100,7 +115,6 @@ namespace LHDS.Core.Clients.Extensions
 
         private static void AddServices(IServiceCollection services)
         {
-            services.AddTransient<IDecisionPollService, DecisionPollService>();
             services.AddTransient<IDecisionService, DecisionService>();
             services.AddTransient<IDocumentService, DocumentService>();
         }

@@ -10,13 +10,10 @@ using System.Text;
 using System.Threading.Tasks;
 using LHDS.Core.Brokers.CsvHelpers;
 using LHDS.Core.Brokers.Hashing;
-using LHDS.Core.Brokers.Identifiers;
 using LHDS.Core.Brokers.Loggings;
 using LHDS.Core.Models.Brokers.Decisions;
 using LHDS.Core.Models.Brokers.Storages.Blobs;
-using LHDS.Core.Models.Foundations.DecisionPolls;
 using LHDS.Core.Models.Foundations.Decisions;
-using LHDS.Core.Services.Foundations.DecisionPolls;
 using LHDS.Core.Services.Foundations.Decisions;
 using LHDS.Core.Services.Foundations.Documents;
 
@@ -24,34 +21,28 @@ namespace LHDS.Core.Services.Orchestrations.Decisions
 {
     public partial class DecisionOrchestrationService : IDecisionOrchestrationService
     {
-        private readonly IDecisionPollService decisionPollService;
         private readonly IDecisionService decisionService;
         private readonly IDocumentService documentService;
         private readonly ICsvHelperBroker csvHelperBroker;
         private readonly IHashBroker hashBroker;
-        private readonly IIdentifierBroker identifierBroker;
         private readonly ILoggingBroker loggingBroker;
         private readonly BlobContainers blobContainers;
         private readonly DecisionConfiguration decisionConfiguration;
 
         public DecisionOrchestrationService(
-            IDecisionPollService decisionPollService,
             IDecisionService decisionService,
             IDocumentService documentService,
             ICsvHelperBroker csvHelperBroker,
             IHashBroker hashBroker,
-            IIdentifierBroker identifierBroker,
             ILoggingBroker loggingBroker,
             BlobContainers blobContainers,
             DecisionConfiguration decisionConfiguration
             )
         {
-            this.decisionPollService = decisionPollService;
             this.decisionService = decisionService;
             this.documentService = documentService;
             this.csvHelperBroker = csvHelperBroker;
             this.hashBroker = hashBroker;
-            this.identifierBroker = identifierBroker;
             this.loggingBroker = loggingBroker;
             this.blobContainers = blobContainers;
             this.decisionConfiguration = decisionConfiguration;
@@ -63,29 +54,10 @@ namespace LHDS.Core.Services.Orchestrations.Decisions
                 ValidateBlobContainersIsNotNull();
                 ValidateDecisionConfigurationIsNotNull();
 
-                IQueryable<DecisionPoll> decisionPolls =
-                    await this.decisionPollService.RetrieveAllDecisionPollsAsync();
-
-                DecisionPoll maybeDecisionPoll = decisionPolls.FirstOrDefault();
-
-                if (maybeDecisionPoll is null)
-                {
-                    DecisionPoll newDecisionPoll = new DecisionPoll
-                    {
-                        Id = await this.identifierBroker.GetIdentifierAsync(),
-                        LastPoll = DateTimeOffset.MinValue
-                    };
-
-                    maybeDecisionPoll = await this.decisionPollService.AddDecisionPollAsync(newDecisionPoll);
-                }
-
-                ValidateDecisionPoll(maybeDecisionPoll);
-                DecisionPoll lastDecisionPoll = maybeDecisionPoll;
-                DateTimeOffset? lastPollDate = lastDecisionPoll?.LastPoll;
-                DateTimeOffset currentPollDate = DateTimeOffset.UtcNow;
-
                 List<Decision> decisions =
-                    await this.decisionService.GetPatientDecisions(lastPollDate ?? DateTimeOffset.MinValue);
+                    await this.decisionService.GetPatientDecisions();
+
+                DateTimeOffset currentPollDate = DateTimeOffset.UtcNow;
 
                 List<Task<DecisionCsv>> decisionCsvTasks = decisions
                     .Select(async decision => new DecisionCsv
@@ -158,9 +130,6 @@ namespace LHDS.Core.Services.Orchestrations.Decisions
                 }
 
                 await this.decisionService.RecordAdoption(decisions);
-
-                lastDecisionPoll!.LastPoll = currentPollDate;
-                await this.decisionPollService.ModifyDecisionPollAsync(lastDecisionPoll);
 
                 return decisions;
             });

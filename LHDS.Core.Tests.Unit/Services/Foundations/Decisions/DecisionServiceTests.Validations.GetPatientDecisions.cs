@@ -20,8 +20,6 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Decisions
         {
             // given
             Guid someDecisionId = Guid.NewGuid();
-            DateTimeOffset randomDateTimeOffset = GetRandomDateTimeOffset();
-            DateTimeOffset inputDateTimeOffset = randomDateTimeOffset;
 
             var invalidDecisions = new List<Decision>
             {
@@ -51,12 +49,12 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Decisions
                     innerException: invalidDecisionException);
 
             this.decisionBrokerMock.Setup(broker =>
-                broker.GetPatientDecisions(inputDateTimeOffset))
+                broker.GetPatientDecisions())
                     .ReturnsAsync(invalidDecisions);
 
             // when
             ValueTask<List<Decision>> addDecisionTask =
-                this.decisionService.GetPatientDecisions(inputDateTimeOffset);
+                this.decisionService.GetPatientDecisions();
 
             DecisionValidationException actualDecisionValidationException =
                 await Assert.ThrowsAsync<DecisionValidationException>(() =>
@@ -67,7 +65,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Decisions
                 .BeEquivalentTo(expectedDecisionValidationException);
 
             this.decisionBrokerMock.Verify(broker =>
-                broker.GetPatientDecisions(inputDateTimeOffset),
+                broker.GetPatientDecisions(),
                     Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>

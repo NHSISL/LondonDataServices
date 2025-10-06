@@ -2,14 +2,12 @@
 // Copyright (c) North East London ICB. All rights reserved.
 // ---------------------------------------------------------
 
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using FluentAssertions;
 using LHDS.Core.Models.Brokers.Decisions;
 using LHDS.Core.Models.Brokers.Storages.Blobs;
-using LHDS.Core.Models.Foundations.DecisionPolls;
 using LHDS.Core.Models.Foundations.Decisions;
 using LHDS.Core.Models.Orchestrations.Decisions.Exceptions;
 using LHDS.Core.Services.Orchestrations.Decisions;
@@ -37,12 +35,10 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Decisions
             BlobContainers invalidBlobContainers = null;
 
             var invalidDecisionOrchestrationService = new DecisionOrchestrationService(
-                decisionPollService: this.decisionPollServiceMock.Object,
                 decisionService: this.decisionServiceMock.Object,
                 documentService: this.documentServiceMock.Object,
                 csvHelperBroker: this.csvHelperBrokerMock.Object,
                 hashBroker: this.hashBrokerMock.Object,
-                identifierBroker: this.identifierBrokerMock.Object,
                 loggingBroker: this.loggingBrokerMock.Object,
                 blobContainers: invalidBlobContainers,
                 decisionConfiguration: this.decisionConfiguration);
@@ -63,8 +59,6 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Decisions
                     expectedDecisionOrchestrationValidationException))),
                         Times.Once);
 
-            this.decisionPollServiceMock.VerifyNoOtherCalls();
-            this.identifierBrokerMock.VerifyNoOtherCalls();
             this.decisionServiceMock.VerifyNoOtherCalls();
             this.documentServiceMock.VerifyNoOtherCalls();
             this.csvHelperBrokerMock.VerifyNoOtherCalls();
@@ -90,12 +84,10 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Decisions
             DecisionConfiguration invalidDecisionConfiguration = null;
 
             var invalidDecisionOrchestrationService = new DecisionOrchestrationService(
-                decisionPollService: this.decisionPollServiceMock.Object,
                 decisionService: this.decisionServiceMock.Object,
                 documentService: this.documentServiceMock.Object,
                 csvHelperBroker: this.csvHelperBrokerMock.Object,
                 hashBroker: this.hashBrokerMock.Object,
-                identifierBroker: this.identifierBrokerMock.Object,
                 loggingBroker: this.loggingBrokerMock.Object,
                 blobContainers: this.blobContainers,
                 decisionConfiguration: invalidDecisionConfiguration);
@@ -116,72 +108,6 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Decisions
                     expectedDecisionOrchestrationValidationException))),
                         Times.Once);
 
-            this.decisionPollServiceMock.VerifyNoOtherCalls();
-            this.identifierBrokerMock.VerifyNoOtherCalls();
-            this.decisionServiceMock.VerifyNoOtherCalls();
-            this.documentServiceMock.VerifyNoOtherCalls();
-            this.csvHelperBrokerMock.VerifyNoOtherCalls();
-            this.hashBrokerMock.VerifyNoOtherCalls();
-            this.loggingBrokerMock.VerifyNoOtherCalls();
-        }
-
-        [Fact]
-        public async Task
-            ShouldThrowValidationExceptionOnGetPatientDecisionsIfDecisionPollIsNullAndLogItAsync()
-        {
-            // given
-            IQueryable<DecisionPoll> emptyDecisionPolls = Enumerable.Empty<DecisionPoll>().AsQueryable();
-            Guid randomId = Guid.NewGuid();
-            DecisionPoll nullDecisionPoll = null;
-
-            var nullDecisionPollDecisionOrchestrationException =
-                new NullDecisionPollDecisionOrchestrationException(message: "DecisionPoll is null.");
-
-            var expectedDecisionOrchestrationValidationException =
-                new DecisionOrchestrationValidationException(
-                    message: "Decision orchestration validation errors occurred, please try again.",
-                    innerException: nullDecisionPollDecisionOrchestrationException);
-
-            this.decisionPollServiceMock.Setup(service =>
-                service.RetrieveAllDecisionPollsAsync())
-                    .ReturnsAsync(emptyDecisionPolls);
-
-            this.identifierBrokerMock.Setup(broker =>
-                broker.GetIdentifierAsync())
-                    .ReturnsAsync(randomId);
-
-            this.decisionPollServiceMock
-                .Setup(service => service.AddDecisionPollAsync(It.Is<DecisionPoll>(poll => poll.Id == randomId)))
-                .ReturnsAsync(nullDecisionPoll);
-
-            // when
-            ValueTask<List<Decision>> getPatientDecisionsTask =
-                this.decisionOrchestrationService.GetPatientDecisions();
-
-            DecisionOrchestrationValidationException actualDecisionOrchestrationValidationException =
-                await Assert.ThrowsAsync<DecisionOrchestrationValidationException>(getPatientDecisionsTask.AsTask);
-
-            // then
-            actualDecisionOrchestrationValidationException.Should()
-                .BeEquivalentTo(expectedDecisionOrchestrationValidationException);
-
-            this.decisionPollServiceMock.Verify(service =>
-                service.RetrieveAllDecisionPollsAsync(),
-                Times.Once);
-
-            this.identifierBrokerMock.Verify(broker =>
-                broker.GetIdentifierAsync(), Times.Once);
-
-            this.decisionPollServiceMock.Verify(service =>
-                service.AddDecisionPollAsync(It.Is<DecisionPoll>(poll => poll.Id == randomId)),
-                    Times.Once);
-
-            this.loggingBrokerMock.Verify(broker =>
-                broker.LogErrorAsync(It.Is(SameExceptionAs(
-                    expectedDecisionOrchestrationValidationException))),
-                        Times.Once);
-
-            this.decisionPollServiceMock.VerifyNoOtherCalls();
             this.decisionServiceMock.VerifyNoOtherCalls();
             this.documentServiceMock.VerifyNoOtherCalls();
             this.csvHelperBrokerMock.VerifyNoOtherCalls();
@@ -194,9 +120,6 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Decisions
             ShouldThrowValidationExceptionOnGetPatientDecisionsIfDocumentRequirementsAreNullOrEmptyAndLogItAsync()
         {
             // given
-            IQueryable<DecisionPoll> randomDecisionPolls = CreateRandomDecisionPolls();
-            IQueryable<DecisionPoll> decisionPolls = randomDecisionPolls;
-            DateTimeOffset lastPollDate = decisionPolls.Max(poll => poll.LastPoll);
             List<Decision> expectedDecisions = CreateRandomDecisions();
             string expectedHash = GetRandomString();
             Dictionary<string, int> fieldMappings = GetFieldMappings();
@@ -214,12 +137,8 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Decisions
                     message: "Decision orchestration validation errors occurred, please try again.",
                     innerException: invalidArgumentDecisionOrchestrationException);
 
-            this.decisionPollServiceMock
-                .Setup(service => service.RetrieveAllDecisionPollsAsync())
-                .ReturnsAsync(decisionPolls);
-
             this.decisionServiceMock
-                .Setup(service => service.GetPatientDecisions(lastPollDate))
+                .Setup(service => service.GetPatientDecisions())
                 .ReturnsAsync(expectedDecisions);
 
             this.hashBrokerMock
@@ -250,11 +169,9 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Decisions
             actualException.Should()
                 .BeEquivalentTo(expectedDecisionOrchestrationValidationException);
 
-            this.decisionPollServiceMock.Verify(service =>
-                service.RetrieveAllDecisionPollsAsync(), Times.Once);
-
             this.decisionServiceMock.Verify(service =>
-                service.GetPatientDecisions(lastPollDate), Times.Once);
+                service.GetPatientDecisions(),
+                    Times.Once);
 
             foreach (string nhsNumber in expectedDecisions.Select(d => d.Patient.NhsNumber))
             {
@@ -283,8 +200,6 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Decisions
                     expectedDecisionOrchestrationValidationException))),
                         Times.Once);
 
-            this.decisionPollServiceMock.VerifyNoOtherCalls();
-            this.identifierBrokerMock.VerifyNoOtherCalls();
             this.decisionServiceMock.VerifyNoOtherCalls();
             this.documentServiceMock.VerifyNoOtherCalls();
             this.csvHelperBrokerMock.VerifyNoOtherCalls();

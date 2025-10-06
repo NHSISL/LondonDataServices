@@ -27,17 +27,9 @@ namespace LHDS.Core.Brokers.Decisions
             this.apiClient = null;
         }
 
-        public async ValueTask<List<Decision>> GetPatientDecisions(DateTimeOffset? lastPollDate)
+        public async ValueTask<List<Decision>> GetPatientDecisions()
         {
             string relativeUrl = this.decisionConfiguration.IDecidePatientDecisionsRelativeUrl;
-
-            if (lastPollDate is not null)
-            {
-                string lastPollDateString = Uri.EscapeDataString(
-                    lastPollDate.Value.UtcDateTime.ToString("o"));
-                relativeUrl = $"{relativeUrl}?lastPollDate={lastPollDateString}";
-            }
-
             List<Decision> decisions = await GetAsync<List<Decision>>(relativeUrl);
 
             return decisions;
@@ -123,7 +115,7 @@ namespace LHDS.Core.Brokers.Decisions
         {
             await GetAccessTokenAsync();
 
-            var httpClient = new HttpClient()
+            var httpClient = new HttpClient
             {
                 BaseAddress = new Uri(uriString: $"{this.decisionConfiguration.IDecideBaseUrl}"),
                 Timeout = TimeSpan.FromSeconds(this.decisionConfiguration.TimeoutInSeconds),

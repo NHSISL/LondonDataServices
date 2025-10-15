@@ -122,12 +122,23 @@ namespace LHDS.Core.Services.Orchestrations.ResolvedAddresses
                 var retrievedResolvedAddresses = await resolvedAddressProcessingService
                     .RetrieveAllResolvedAddressesAsync();
 
-                unMatchedResolvedAddress = retrievedResolvedAddresses
-                    .FirstOrDefault(address =>
+                var candidateAddress = retrievedResolvedAddresses
+                    .Where(address =>
                         address.IsProcessed == false &&
                         address.IsProcessing == false &&
                         address.RetryCount < 4 &&
-                        address.UpdatedDate <= currentDateTime.AddMinutes(-5));
+                        address.UpdatedDate <= currentDateTime.AddMinutes(-5))
+                            .Select(x => x.Id)
+                                .FirstOrDefault();
+
+                if (candidateAddress == Guid.Empty)
+                {
+                    break;
+                }
+
+                unMatchedResolvedAddress = retrievedResolvedAddresses
+                    .Where(address => address.Id == candidateAddress)
+                    .FirstOrDefault();
 
                 if (unMatchedResolvedAddress is null)
                 {

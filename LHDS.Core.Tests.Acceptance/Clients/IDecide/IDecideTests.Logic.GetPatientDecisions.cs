@@ -7,7 +7,6 @@ using System.Net;
 using System.Threading.Tasks;
 using FluentAssertions;
 using Force.DeepCloner;
-using LHDS.Core.Models.Brokers.Decisions;
 using LHDS.Core.Models.Foundations.Decisions;
 using WireMock.RequestBuilders;
 using WireMock.ResponseBuilders;
@@ -21,26 +20,11 @@ namespace LHDS.Core.Tests.Acceptance.Clients.IDecide
         public async Task ShouldGetPatientDecisions()
         {
             // given
-            DecisionAccessToken randomDecisionAccessToken = CreateRandomDecisionAccessToken();
-            DecisionAccessToken decisionAccessToken = randomDecisionAccessToken;
-
             List<Decision> randomDecisions = CreateRandomDecisions();
             List<Decision> decisions = randomDecisions;
             List<Decision> expectedDecisions = decisions.DeepClone();
 
-            this.wireMockEntraServer
-                .Given(
-                    Request
-                        .Create()
-                        .UsingPost())
-
-                .RespondWith(
-                    Response
-                        .Create()
-                        .WithStatusCode(HttpStatusCode.OK)
-                        .WithBodyAsJson(decisionAccessToken));
-
-            this.wireMockIDecideApiServer
+            this.wireMockServer
                 .Given(
                     Request
                         .Create()
@@ -53,7 +37,7 @@ namespace LHDS.Core.Tests.Acceptance.Clients.IDecide
                         .WithStatusCode(HttpStatusCode.OK)
                         .WithBodyAsJson(decisions));
 
-            this.wireMockIDecideApiServer
+            this.wireMockServer
                 .Given(
                     Request
                         .Create()

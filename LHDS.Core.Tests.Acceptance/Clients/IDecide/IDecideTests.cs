@@ -49,13 +49,11 @@ namespace LHDS.Core.Tests.Acceptance.Clients.IDecide
         private readonly ICompareLogic compareLogic;
         private readonly DecisionConfiguration decisionConfiguration;
         private readonly BlobContainers blobContainers;
-        private readonly WireMockServer wireMockEntraServer;
-        private readonly WireMockServer wireMockIDecideApiServer;
+        private readonly WireMockServer wireMockServer;
 
         public IDecideTests(DependencyBroker dependencyBroker)
         {
-            this.wireMockEntraServer = WireMockServer.Start();
-            this.wireMockIDecideApiServer = WireMockServer.Start();
+            this.wireMockServer = WireMockServer.Start();
             this.dependencyBroker = dependencyBroker;
             this.compareLogic = new CompareLogic();
             var serviceCollection = new ServiceCollection();
@@ -79,8 +77,7 @@ namespace LHDS.Core.Tests.Acceptance.Clients.IDecide
                 builder.AddConsole();
             });
 
-            this.dependencyBroker.Configuration["IDecide:entraTokenUrl"] = this.wireMockEntraServer.Url;
-            this.dependencyBroker.Configuration["IDecide:iDecideBaseUrl"] = this.wireMockIDecideApiServer.Url;
+            this.dependencyBroker.Configuration["IDecide:iDecideBaseUrl"] = this.wireMockServer.Url;
 
             serviceCollection
                 .AddDbContextFactory<StorageBroker>()
@@ -130,15 +127,6 @@ namespace LHDS.Core.Tests.Acceptance.Clients.IDecide
 
         private static DateTimeOffset GetRandomDateTimeOffset() =>
             new DateTimeRange(earliestDate: new DateTime().AddDays(7)).GetValue();
-
-        private static DecisionAccessToken CreateRandomDecisionAccessToken() =>
-            new()
-            {
-                TokenType = GetRandomString(),
-                ExpiresIn = GetRandomNumber(),
-                ExtExpiresIn = GetRandomNumber(),
-                AccessToken = GetRandomString()
-            };
 
         private static List<Decision> CreateRandomDecisions()
         {

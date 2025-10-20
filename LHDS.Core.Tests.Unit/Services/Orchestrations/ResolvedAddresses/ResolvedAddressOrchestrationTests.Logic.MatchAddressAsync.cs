@@ -31,8 +31,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.ResolvedAddresses
                 CreateRandomUnmatchedAddresses(count: GetRandomNumber(), dateTimeOffset: randomDateTimeOffset);
 
             List<ResolvedAddress> candidateAddress = randomResolvedAddresses;
-            List<ResolvedAddress> unmatchedResolvedAddresses = candidateAddress;
-            string inputResolvedAddress = unmatchedResolvedAddresses.FirstOrDefault().UnstructuredPostalAddress;
+            string inputResolvedAddress = candidateAddress.FirstOrDefault().UnstructuredPostalAddress;
             AssignAddress randomAssignAddress = CreateRandomAssignAddress(randomDateTimeOffset);
             AssignAddress storageAssignAddress = randomAssignAddress;
             string matchedUprn = storageAssignAddress.BestMatch.UPRN.ToString();
@@ -50,14 +49,14 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.ResolvedAddresses
 
             this.resolvedAddressProcessingServiceMock.SetupSequence(service =>
                service.RetrieveAllResolvedAddressesAsync())
-                   .ReturnsAsync(unmatchedResolvedAddresses.AsQueryable())
+                   .ReturnsAsync(candidateAddress.AsQueryable())
                    .ReturnsAsync(new List<ResolvedAddress>().AsQueryable());
 
             this.dateTimeBrokerMock.Setup(broker =>
                 broker.GetCurrentDateTimeOffsetAsync())
                     .ReturnsAsync(randomDateTimeOffset);
 
-            ResolvedAddress processingResolvedAddress = unmatchedResolvedAddresses.FirstOrDefault().DeepClone();
+            ResolvedAddress processingResolvedAddress = candidateAddress.FirstOrDefault().DeepClone();
             ResolvedAddress lockedResolvedAddress = processingResolvedAddress;
             lockedResolvedAddress.IsProcessing = true;
             lockedResolvedAddress.RetryCount += 1;

@@ -67,6 +67,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LHDS.ConfigImportExportTool
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LHDS.Functions.IDecide", "LHDS.Functions.IDecide\LHDS.Functions.IDecide.csproj", "{B4509EE2-41B9-40EE-B6A1-42F797C27C18}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LHDS.Core.Tests.Integration.IDecide", "LHDS.Core.Tests.Integration.IDecide\LHDS.Core.Tests.Integration.IDecide.csproj", "{F77B7F8C-6B19-2FA7-9562-4191AAE3ADE7}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Acceptance|Any CPU = Acceptance|Any CPU
@@ -291,6 +293,14 @@ Global
 		{B4509EE2-41B9-40EE-B6A1-42F797C27C18}.Release|Any CPU.Build.0 = Release|Any CPU
 		{B4509EE2-41B9-40EE-B6A1-42F797C27C18}.Test|Any CPU.ActiveCfg = Debug|Any CPU
 		{B4509EE2-41B9-40EE-B6A1-42F797C27C18}.Test|Any CPU.Build.0 = Debug|Any CPU
+		{F77B7F8C-6B19-2FA7-9562-4191AAE3ADE7}.Acceptance|Any CPU.ActiveCfg = Debug|Any CPU
+		{F77B7F8C-6B19-2FA7-9562-4191AAE3ADE7}.Acceptance|Any CPU.Build.0 = Debug|Any CPU
+		{F77B7F8C-6B19-2FA7-9562-4191AAE3ADE7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F77B7F8C-6B19-2FA7-9562-4191AAE3ADE7}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F77B7F8C-6B19-2FA7-9562-4191AAE3ADE7}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F77B7F8C-6B19-2FA7-9562-4191AAE3ADE7}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F77B7F8C-6B19-2FA7-9562-4191AAE3ADE7}.Test|Any CPU.ActiveCfg = Debug|Any CPU
+		{F77B7F8C-6B19-2FA7-9562-4191AAE3ADE7}.Test|Any CPU.Build.0 = Debug|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

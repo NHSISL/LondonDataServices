@@ -122,7 +122,7 @@ namespace LHDS.Core.Services.Orchestrations.ResolvedAddresses
                 var retrievedResolvedAddresses = await resolvedAddressProcessingService
                     .RetrieveAllResolvedAddressesAsync();
 
-                var candidateAddress = retrievedResolvedAddresses
+                Guid candidateAddress = retrievedResolvedAddresses
                     .Where(address =>
                         address.IsProcessed == false &&
                         address.IsProcessing == false &&

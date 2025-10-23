@@ -64,9 +64,9 @@ namespace LHDS.Core.Services.Orchestrations.Decisions
                     {
                         DecisionId = decision.Id,
                         NhsHash = await this.hashBroker.GenerateSha256HashAsync(
-                            decision.Patient.NhsNumber,
+                            decision.PatientNhsNumber,
                             this.decisionConfiguration.HashPepper),
-                        PatientInstructionCategory = decision.DecisionType.Name,
+                        PatientInstructionCategory = decision.DecisionTypeName,
                         PatientInstructionState = decision.DecisionChoice,
                         InstructionDate = decision.CreatedDate
                     })

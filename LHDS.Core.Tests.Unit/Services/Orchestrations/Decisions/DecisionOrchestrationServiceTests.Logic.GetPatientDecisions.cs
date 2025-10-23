@@ -43,7 +43,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Decisions
             this.hashBrokerMock
                 .Setup(broker => broker.GenerateSha256HashAsync(
                     It.Is<string>(nhsNumber => expectedDecisions.Any(
-                        decision => decision.Patient.NhsNumber == nhsNumber)),
+                        decision => decision.PatientNhsNumber == nhsNumber)),
                     this.decisionConfiguration.HashPepper))
                 .ReturnsAsync(expectedHash);
 
@@ -84,9 +84,9 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Decisions
                 service.GetPatientDecisions(),
                     Times.Once);
 
-            foreach (string nhsNumber in expectedDecisions.Select(d => d.Patient.NhsNumber))
+            foreach (string nhsNumber in expectedDecisions.Select(d => d.PatientNhsNumber))
             {
-                int count = expectedDecisions.Count(decision => decision.Patient.NhsNumber == nhsNumber);
+                int count = expectedDecisions.Count(decision => decision.PatientNhsNumber == nhsNumber);
 
                 this.hashBrokerMock.Verify(
                     broker => broker.GenerateSha256HashAsync(

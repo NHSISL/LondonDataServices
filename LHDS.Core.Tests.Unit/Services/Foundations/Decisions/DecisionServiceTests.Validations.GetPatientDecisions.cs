@@ -26,8 +26,8 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Decisions
                 new()
                 {
                     Id = someDecisionId,
-                    DecisionType = null,
-                    Patient = null
+                    DecisionTypeName = null,
+                    PatientNhsNumber = null
                 }
             };
 
@@ -36,11 +36,11 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Decisions
                     message: "Invalid decisions. Please correct the errors and try again.");
 
             invalidDecisionException.AddData(
-                key: $"Decisions[0].{nameof(Decision.DecisionType)} - Id: {someDecisionId}",
+                key: $"Decisions[0].{nameof(Decision.DecisionTypeName)} - Id: {someDecisionId}",
                 values: "DecisionType is required");
 
             invalidDecisionException.AddData(
-                key: $"Decisions[0].{nameof(Decision.Patient)} - Id: {someDecisionId}",
+                key: $"Decisions[0].{nameof(Decision.PatientNhsNumber)} - Id: {someDecisionId}",
                 values: "Patient is required");
 
             var expectedDecisionValidationException =

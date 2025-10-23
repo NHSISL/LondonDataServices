@@ -22,7 +22,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.ResolvedAddresses
         [Fact]
         public async Task MatchAddressAsync()
         {
-            //Given
+            // Given
             Guid identifier = Guid.NewGuid();
             EntraUser randomEntraUser = CreateRandomEntraUser();
             DateTimeOffset randomDateTimeOffset = GetRandomDateTimeOffset();
@@ -30,11 +30,28 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.ResolvedAddresses
             List<ResolvedAddress> randomResolvedAddresses =
                 CreateRandomUnmatchedAddresses(count: GetRandomNumber(), dateTimeOffset: randomDateTimeOffset);
 
-            List<ResolvedAddress> unmatchedResolvedAddresses = randomResolvedAddresses;
-            string inputResolvedAddress = unmatchedResolvedAddresses.FirstOrDefault().UnstructuredPostalAddress;
+            List<ResolvedAddress> nonRelevantAddresses = CreateRandomResolvedAddresses(
+                count: GetRandomNumber(),
+                dateTimeOffset: randomDateTimeOffset,
+                isExported: true,
+                isProcessed: true,
+                isProcessing: true,
+                retryCount: 5);
+
+            List<ResolvedAddress> allAddresses = randomResolvedAddresses
+                .Concat(nonRelevantAddresses)
+                .ToList();
+
+            Guid candidateAddressId = randomResolvedAddresses.First().Id;
+            List<ResolvedAddress> retrievedResolvedAddresses = allAddresses;
+
+            ResolvedAddress unMatchedResolvedAddress = randomResolvedAddresses
+                .FirstOrDefault(address => address.Id == candidateAddressId)!;
+
+            string inputResolvedAddress = unMatchedResolvedAddress.UnstructuredPostalAddress;
             AssignAddress randomAssignAddress = CreateRandomAssignAddress(randomDateTimeOffset);
             AssignAddress storageAssignAddress = randomAssignAddress;
-            string matchedUprn = storageAssignAddress.BestMatch.UPRN.ToString();
+            string matchedUprn = storageAssignAddress.BestMatch.UPRN;
             Address randomAddress = CreateRandomAddress(randomDateTimeOffset);
             Address storageAddress = randomAddress;
             Address ordananceAddress = storageAddress;
@@ -49,14 +66,14 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.ResolvedAddresses
 
             this.resolvedAddressProcessingServiceMock.SetupSequence(service =>
                service.RetrieveAllResolvedAddressesAsync())
-                   .ReturnsAsync(unmatchedResolvedAddresses.AsQueryable())
+                   .ReturnsAsync(retrievedResolvedAddresses.AsQueryable())
                    .ReturnsAsync(new List<ResolvedAddress>().AsQueryable());
 
             this.dateTimeBrokerMock.Setup(broker =>
                 broker.GetCurrentDateTimeOffsetAsync())
                     .ReturnsAsync(randomDateTimeOffset);
 
-            ResolvedAddress processingResolvedAddress = unmatchedResolvedAddresses.FirstOrDefault().DeepClone();
+            ResolvedAddress processingResolvedAddress = unMatchedResolvedAddress.DeepClone();
             ResolvedAddress lockedResolvedAddress = processingResolvedAddress;
             lockedResolvedAddress.IsProcessing = true;
             lockedResolvedAddress.RetryCount += 1;
@@ -92,10 +109,10 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.ResolvedAddresses
                processing.ModifyResolvedAddressAsync(newResolvedAddress))
                    .ReturnsAsync(newResolvedAddress);
 
-            //When
+            // When
             await this.resolvedAddressOrchestrationService.MatchAddressDataAsync();
 
-            //Then
+            // Then
             this.identifierBrokerMock.Verify(broker =>
                 broker.GetIdentifierAsync(),
                     Times.Once);
@@ -140,11 +157,10 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.ResolvedAddresses
             this.securityBrokerMock.VerifyNoOtherCalls();
         }
 
-
         [Fact]
         public async Task NullAssignMatchAddressAsync()
         {
-            //Given
+            // Given
             Guid identifier = Guid.NewGuid();
             EntraUser randomEntraUser = CreateRandomEntraUser();
             DateTimeOffset randomDateTimeOffset = GetRandomDateTimeOffset();
@@ -152,16 +168,28 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.ResolvedAddresses
             List<ResolvedAddress> randomResolvedAddresses =
                 CreateRandomUnmatchedAddresses(count: GetRandomNumber(), dateTimeOffset: randomDateTimeOffset);
 
-            List<ResolvedAddress> unmatchedResolvedAddresses = randomResolvedAddresses;
+            List<ResolvedAddress> nonRelevantAddresses = CreateRandomResolvedAddresses(
+                count: GetRandomNumber(),
+                dateTimeOffset: randomDateTimeOffset,
+                isExported: true,
+                isProcessed: true,
+                isProcessing: true,
+                retryCount: 5);
 
-            string inputResolvedAddress =
-                unmatchedResolvedAddresses?.FirstOrDefault()?.UnstructuredPostalAddress
-                    ?? string.Empty;
+            List<ResolvedAddress> allAddresses = randomResolvedAddresses
+                .Concat(nonRelevantAddresses)
+                .ToList();
 
+            Guid candidateAddressId = randomResolvedAddresses.First().Id;
+            List<ResolvedAddress> retrievedResolvedAddresses = allAddresses;
+
+            ResolvedAddress unMatchedResolvedAddress = randomResolvedAddresses
+                .FirstOrDefault(address => address.Id == candidateAddressId);
+
+            string inputResolvedAddress = unMatchedResolvedAddress?.UnstructuredPostalAddress ?? string.Empty;
             AssignAddress randomAssignAddress = CreateRandomAssignAddress(randomDateTimeOffset);
             AssignAddress storageAssignAddress = randomAssignAddress;
             AssignAddress nullStorageAssignAddress = null;
-
             Address ordananceAddress = null;
 
             this.identifierBrokerMock.Setup(broker =>
@@ -174,14 +202,14 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.ResolvedAddresses
 
             this.resolvedAddressProcessingServiceMock.SetupSequence(service =>
                service.RetrieveAllResolvedAddressesAsync())
-                   .ReturnsAsync(unmatchedResolvedAddresses.AsQueryable())
+                   .ReturnsAsync(retrievedResolvedAddresses.AsQueryable())
                    .ReturnsAsync(new List<ResolvedAddress>().AsQueryable());
 
             this.dateTimeBrokerMock.Setup(broker =>
                 broker.GetCurrentDateTimeOffsetAsync())
                     .ReturnsAsync(randomDateTimeOffset);
 
-            ResolvedAddress processingResolvedAddress = unmatchedResolvedAddresses.FirstOrDefault().DeepClone();
+            ResolvedAddress processingResolvedAddress = unMatchedResolvedAddress.DeepClone();
             ResolvedAddress lockedResolvedAddress = processingResolvedAddress;
             lockedResolvedAddress.IsProcessing = true;
             lockedResolvedAddress.RetryCount += 1;
@@ -211,10 +239,10 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.ResolvedAddresses
                processing.ModifyResolvedAddressAsync(resolvedAddress))
                    .ReturnsAsync(resolvedAddress);
 
-            //When
+            // When
             await this.resolvedAddressOrchestrationService.MatchAddressDataAsync();
 
-            //Then
+            // Then
             this.identifierBrokerMock.Verify(broker =>
                 broker.GetIdentifierAsync(),
                     Times.Once);
@@ -253,6 +281,63 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.ResolvedAddresses
             this.identifierBrokerMock.VerifyNoOtherCalls();
             this.auditBrokerMock.VerifyNoOtherCalls();
             this.securityBrokerMock.VerifyNoOtherCalls();
+        }
+
+        [Fact]
+        public async Task MatchAddressAsyncBreaksWhenNoCandidateAddressFound()
+        {
+            // Given
+            Guid identifier = Guid.NewGuid();
+            EntraUser randomEntraUser = CreateRandomEntraUser();
+            DateTimeOffset randomDateTimeOffset = GetRandomDateTimeOffset();
+
+            List<ResolvedAddress> resolvedAddresses = new List<ResolvedAddress>
+            {
+                new ResolvedAddress
+                {
+                    Id = Guid.NewGuid(),
+                    IsProcessed = true,
+                    IsProcessing = false,
+                    RetryCount = 0,
+                    UpdatedDate = randomDateTimeOffset
+                }
+            };
+
+            this.identifierBrokerMock.Setup(broker =>
+                broker.GetIdentifierAsync())
+                .ReturnsAsync(identifier);
+
+            this.securityBrokerMock.Setup(broker =>
+                broker.GetCurrentUserAsync())
+                .ReturnsAsync(randomEntraUser);
+
+            this.resolvedAddressProcessingServiceMock.Setup(service =>
+                service.RetrieveAllResolvedAddressesAsync())
+                .ReturnsAsync(resolvedAddresses.AsQueryable());
+
+            this.dateTimeBrokerMock.Setup(broker =>
+                broker.GetCurrentDateTimeOffsetAsync())
+                .ReturnsAsync(randomDateTimeOffset);
+
+            // When
+            await this.resolvedAddressOrchestrationService.MatchAddressDataAsync();
+
+            // Then
+            this.resolvedAddressProcessingServiceMock.Verify(service =>
+                service.RetrieveAllResolvedAddressesAsync(),
+                Times.Once);
+
+            this.resolvedAddressProcessingServiceMock.Verify(processing =>
+                processing.ModifyResolvedAddressAsync(It.IsAny<ResolvedAddress>()),
+                Times.Never);
+
+            this.assignProcessingServiceMock.Verify(processing =>
+                processing.MatchAddressAsync(It.IsAny<string>()),
+                Times.Never);
+
+            this.auditBrokerMock.Verify(broker =>
+                broker.BulkLogAsync(It.IsAny<List<Audit>>()),
+                Times.Never);
         }
 
         private static ResolvedAddress MapOrdananceWithAssign(

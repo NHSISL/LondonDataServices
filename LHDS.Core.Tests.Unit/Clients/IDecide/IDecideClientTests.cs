@@ -125,9 +125,7 @@ namespace LHDS.Core.Tests.Unit.Clients.IDecide
                 .OnType<DateTimeOffset?>().Use(dateTimeOffset)
                 .OnProperty(decision => decision.DecisionChoice).Use(GetRandomStringWithLengthOf(255))
                 .OnProperty(decision => decision.CreatedBy).Use(userId)
-                .OnProperty(decision => decision.UpdatedBy).Use(userId)
-                .OnProperty(decision => decision.DecisionType).Use(decisionType)
-                .OnProperty(decision => decision.Patient).Use(patient);
+                .OnProperty(decision => decision.UpdatedBy).Use(userId);
 
             return filler;
         }

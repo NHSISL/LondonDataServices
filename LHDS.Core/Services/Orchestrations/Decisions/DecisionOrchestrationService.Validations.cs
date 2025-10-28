@@ -3,7 +3,6 @@
 // ---------------------------------------------------------
 
 using System;
-using LHDS.Core.Models.Foundations.DecisionPolls;
 using LHDS.Core.Models.Orchestrations.Decisions.Exceptions;
 using Xeptions;
 
@@ -28,14 +27,6 @@ namespace LHDS.Core.Services.Orchestrations.Decisions
                 throw new NullDecisionConfigurationDecisionOrchestrationException(
                     message: "Null decision configuration decision orchestration exception, " +
                         "please correct the errors and try again.");
-            }
-        }
-
-        private void ValidateDecisionPoll(DecisionPoll decisionPoll)
-        {
-            if (decisionPoll is null)
-            {
-                throw new NullDecisionPollDecisionOrchestrationException(message: "DecisionPoll is null.");
             }
         }
 

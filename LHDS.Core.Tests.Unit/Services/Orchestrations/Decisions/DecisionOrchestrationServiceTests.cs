@@ -11,18 +11,14 @@ using FluentAssertions;
 using KellermanSoftware.CompareNetObjects;
 using LHDS.Core.Brokers.CsvHelpers;
 using LHDS.Core.Brokers.Hashing;
-using LHDS.Core.Brokers.Identifiers;
 using LHDS.Core.Brokers.Loggings;
 using LHDS.Core.Models.Brokers.Decisions;
 using LHDS.Core.Models.Brokers.Storages.Blobs;
-using LHDS.Core.Models.Foundations.DecisionPolls;
-using LHDS.Core.Models.Foundations.DecisionPolls.Exceptions;
 using LHDS.Core.Models.Foundations.Decisions;
 using LHDS.Core.Models.Foundations.Decisions.Exceptions;
 using LHDS.Core.Models.Foundations.DecisionTypes;
 using LHDS.Core.Models.Foundations.Documents.Exceptions;
 using LHDS.Core.Models.Foundations.Patients;
-using LHDS.Core.Services.Foundations.DecisionPolls;
 using LHDS.Core.Services.Foundations.Decisions;
 using LHDS.Core.Services.Foundations.Documents;
 using LHDS.Core.Services.Orchestrations.Decisions;
@@ -39,12 +35,10 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Decisions
     {
         private readonly ITestOutputHelper output;
         private readonly ICompareLogic compareLogic;
-        private readonly Mock<IDecisionPollService> decisionPollServiceMock;
         private readonly Mock<IDecisionService> decisionServiceMock;
         private readonly Mock<IDocumentService> documentServiceMock;
         private readonly Mock<ICsvHelperBroker> csvHelperBrokerMock;
         private readonly Mock<IHashBroker> hashBrokerMock;
-        private readonly Mock<IIdentifierBroker> identifierBrokerMock;
         private readonly Mock<ILoggingBroker> loggingBrokerMock;
         private readonly BlobContainers blobContainers;
         private readonly DecisionConfiguration decisionConfiguration;
@@ -54,12 +48,10 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Decisions
         {
             this.output = output;
             this.compareLogic = new CompareLogic();
-            this.decisionPollServiceMock = new Mock<IDecisionPollService>();
             this.decisionServiceMock = new Mock<IDecisionService>();
             this.documentServiceMock = new Mock<IDocumentService>();
             this.csvHelperBrokerMock = new Mock<ICsvHelperBroker>();
             this.hashBrokerMock = new Mock<IHashBroker>();
-            this.identifierBrokerMock = new Mock<IIdentifierBroker>();
             this.loggingBrokerMock = new Mock<ILoggingBroker>();
 
             this.blobContainers = new BlobContainers
@@ -75,12 +67,10 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Decisions
             };
 
             this.decisionOrchestrationService = new DecisionOrchestrationService(
-                decisionPollService: this.decisionPollServiceMock.Object,
                 decisionService: this.decisionServiceMock.Object,
                 documentService: this.documentServiceMock.Object,
                 csvHelperBroker: this.csvHelperBrokerMock.Object,
                 hashBroker: this.hashBrokerMock.Object,
-                identifierBroker: this.identifierBrokerMock.Object,
                 loggingBroker: this.loggingBrokerMock.Object,
                 blobContainers: this.blobContainers,
                 decisionConfiguration: this.decisionConfiguration);
@@ -166,14 +156,6 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Decisions
                     message: "Document dependency validation occurred, please try again.",
                     innerException),
 
-                new DecisionPollValidationException(
-                    message: "DecisionPoll validation errors occurred, please try again.",
-                    innerException),
-
-                new DecisionPollDependencyValidationException(
-                    message: "DecisionPoll dependency validation occurred, please try again.",
-                    innerException),
-
                 new CsvHelperClientValidationException(innerException)
             };
         }
@@ -197,14 +179,6 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Decisions
                 new DocumentServiceException(
                     message: "Document service error occurred, please contact support.",
                     innerException),
-
-                new DecisionPollDependencyException(
-                    message: "DecisionPoll dependency error occurred, please contact support.",
-                    innerException),
-
-                new DecisionPollServiceException(
-                message: "DecisionPoll dependency error occurred, please contact support.",
-                innerException),
 
                 new CsvHelperClientDependencyException(innerException),
                 new CsvHelperClientServiceException(innerException)
@@ -249,33 +223,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Decisions
                 .OnType<DateTimeOffset?>().Use(dateTimeOffset)
                 .OnProperty(decision => decision.DecisionChoice).Use(GetRandomStringWithLengthOf(255))
                 .OnProperty(decision => decision.CreatedBy).Use(userId)
-                .OnProperty(decision => decision.UpdatedBy).Use(userId)
-                .OnProperty(decision => decision.DecisionType).Use(decisionType)
-                .OnProperty(decision => decision.Patient).Use(patient);
-
-            return filler;
-        }
-
-        private static IQueryable<DecisionPoll> CreateRandomDecisionPolls()
-        {
-            return CreateDecisionPollFiller(dateTimeOffset: GetRandomDateTimeOffset())
-                .Create(count: GetRandomNumber())
-                .AsQueryable();
-        }
-
-        private static DecisionPoll CreateRandomDecisionPoll() =>
-            CreateDecisionPollFiller(dateTimeOffset: GetRandomDateTimeOffset()).Create();
-
-        private static Filler<DecisionPoll> CreateDecisionPollFiller(DateTimeOffset dateTimeOffset)
-        {
-            string user = Guid.NewGuid().ToString();
-            var filler = new Filler<DecisionPoll>();
-
-            filler.Setup()
-                .OnType<DateTimeOffset>().Use(dateTimeOffset)
-                .OnType<DateTimeOffset?>().Use(dateTimeOffset)
-                .OnProperty(decisionPoll => decisionPoll.CreatedBy).Use(user)
-                .OnProperty(decisionPoll => decisionPoll.UpdatedBy).Use(user);
+                .OnProperty(decision => decision.UpdatedBy).Use(userId);
 
             return filler;
         }

@@ -20,16 +20,14 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Decisions
         {
             // given
             Guid someDecisionId = Guid.NewGuid();
-            DateTimeOffset randomDateTimeOffset = GetRandomDateTimeOffset();
-            DateTimeOffset inputDateTimeOffset = randomDateTimeOffset;
 
             var invalidDecisions = new List<Decision>
             {
                 new()
                 {
                     Id = someDecisionId,
-                    DecisionType = null,
-                    Patient = null
+                    DecisionTypeName = null,
+                    PatientNhsNumber = null
                 }
             };
 
@@ -38,11 +36,11 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Decisions
                     message: "Invalid decisions. Please correct the errors and try again.");
 
             invalidDecisionException.AddData(
-                key: $"Decisions[0].{nameof(Decision.DecisionType)} - Id: {someDecisionId}",
+                key: $"Decisions[0].{nameof(Decision.DecisionTypeName)} - Id: {someDecisionId}",
                 values: "DecisionType is required");
 
             invalidDecisionException.AddData(
-                key: $"Decisions[0].{nameof(Decision.Patient)} - Id: {someDecisionId}",
+                key: $"Decisions[0].{nameof(Decision.PatientNhsNumber)} - Id: {someDecisionId}",
                 values: "Patient is required");
 
             var expectedDecisionValidationException =
@@ -51,12 +49,12 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Decisions
                     innerException: invalidDecisionException);
 
             this.decisionBrokerMock.Setup(broker =>
-                broker.GetPatientDecisions(inputDateTimeOffset))
+                broker.GetPatientDecisions())
                     .ReturnsAsync(invalidDecisions);
 
             // when
             ValueTask<List<Decision>> addDecisionTask =
-                this.decisionService.GetPatientDecisions(inputDateTimeOffset);
+                this.decisionService.GetPatientDecisions();
 
             DecisionValidationException actualDecisionValidationException =
                 await Assert.ThrowsAsync<DecisionValidationException>(() =>
@@ -67,7 +65,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Decisions
                 .BeEquivalentTo(expectedDecisionValidationException);
 
             this.decisionBrokerMock.Verify(broker =>
-                broker.GetPatientDecisions(inputDateTimeOffset),
+                broker.GetPatientDecisions(),
                     Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>

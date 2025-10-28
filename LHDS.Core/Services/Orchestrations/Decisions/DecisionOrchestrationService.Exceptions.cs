@@ -5,7 +5,6 @@
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using LHDS.Core.Models.Foundations.DecisionPolls.Exceptions;
 using LHDS.Core.Models.Foundations.Decisions;
 using LHDS.Core.Models.Foundations.Decisions.Exceptions;
 using LHDS.Core.Models.Foundations.Documents.Exceptions;
@@ -35,10 +34,6 @@ namespace LHDS.Core.Services.Orchestrations.Decisions
                 throw await CreateAndLogValidationExceptionAsync(
                     nullDecisionConfigurationDecisionOrchestrationException);
             }
-            catch (NullDecisionPollDecisionOrchestrationException nullDecisionPollDecisionOrchestrationException)
-            {
-                throw await CreateAndLogValidationExceptionAsync(nullDecisionPollDecisionOrchestrationException);
-            }
             catch (InvalidArgumentDecisionOrchestrationException invalidArgumentDecisionOrchestrationException)
             {
                 throw await CreateAndLogValidationExceptionAsync(invalidArgumentDecisionOrchestrationException);
@@ -55,14 +50,6 @@ namespace LHDS.Core.Services.Orchestrations.Decisions
             {
                 throw await CreateAndLogDependencyValidationExceptionAsync(documentDependencyValidationException);
             }
-            catch (DecisionPollValidationException decisionPollValidationException)
-            {
-                throw await CreateAndLogDependencyValidationExceptionAsync(decisionPollValidationException);
-            }
-            catch (DecisionPollDependencyValidationException decisionPollDependencyValidationException)
-            {
-                throw await CreateAndLogDependencyValidationExceptionAsync(decisionPollDependencyValidationException);
-            }
             catch (CsvHelperClientValidationException csvHelperClientValidationException)
             {
                 throw await CreateAndLogDependencyValidationExceptionAsync(csvHelperClientValidationException);
@@ -78,14 +65,6 @@ namespace LHDS.Core.Services.Orchestrations.Decisions
             catch (DocumentServiceException documentServiceException)
             {
                 throw await CreateAndLogDependencyExceptionAsync(documentServiceException);
-            }
-            catch (DecisionPollDependencyException decisionPollDependencyException)
-            {
-                throw await CreateAndLogDependencyExceptionAsync(decisionPollDependencyException);
-            }
-            catch (DecisionPollServiceException decisionPollServiceException)
-            {
-                throw await CreateAndLogDependencyExceptionAsync(decisionPollServiceException);
             }
             catch (CsvHelperClientDependencyException csvHelperClientDependencyException)
             {

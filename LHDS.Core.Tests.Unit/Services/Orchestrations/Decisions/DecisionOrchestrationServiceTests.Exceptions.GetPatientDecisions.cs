@@ -28,8 +28,8 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Decisions
                     "Decision orchestration dependency validation error occurred, fix the errors and try again.",
                     innerException: dependencyValidationException.InnerException as Xeption);
 
-            this.decisionPollServiceMock.Setup(service =>
-                service.RetrieveAllDecisionPollsAsync())
+            this.decisionServiceMock.Setup(service =>
+                service.GetPatientDecisions())
                     .ThrowsAsync(dependencyValidationException);
 
             // when
@@ -43,8 +43,8 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Decisions
             // then
             actualException.Should().BeEquivalentTo(expectedDependencyException);
 
-            this.decisionPollServiceMock.Verify(service =>
-                service.RetrieveAllDecisionPollsAsync(),
+            this.decisionServiceMock.Verify(service =>
+                service.GetPatientDecisions(),
                     Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>
@@ -52,8 +52,6 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Decisions
                     expectedDependencyException))),
                         Times.Once);
 
-            this.decisionPollServiceMock.VerifyNoOtherCalls();
-            this.identifierBrokerMock.VerifyNoOtherCalls();
             this.decisionServiceMock.VerifyNoOtherCalls();
             this.documentServiceMock.VerifyNoOtherCalls();
             this.csvHelperBrokerMock.VerifyNoOtherCalls();
@@ -73,8 +71,8 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Decisions
                     "Decision orchestration dependency error occurred, fix the errors and try again.",
                     innerException: dependencyException.InnerException as Xeption);
 
-            this.decisionPollServiceMock.Setup(service =>
-                service.RetrieveAllDecisionPollsAsync())
+            this.decisionServiceMock.Setup(service =>
+                service.GetPatientDecisions())
                     .ThrowsAsync(dependencyException);
 
             // when
@@ -88,8 +86,8 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Decisions
             // then
             actualException.Should().BeEquivalentTo(expectedDependencyException);
 
-            this.decisionPollServiceMock.Verify(service =>
-                service.RetrieveAllDecisionPollsAsync(),
+            this.decisionServiceMock.Verify(service =>
+                service.GetPatientDecisions(),
                     Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>
@@ -97,8 +95,6 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Decisions
                     expectedDependencyException))),
                         Times.Once);
 
-            this.decisionPollServiceMock.VerifyNoOtherCalls();
-            this.identifierBrokerMock.VerifyNoOtherCalls();
             this.decisionServiceMock.VerifyNoOtherCalls();
             this.documentServiceMock.VerifyNoOtherCalls();
             this.csvHelperBrokerMock.VerifyNoOtherCalls();
@@ -122,8 +118,8 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Decisions
                     message: "Decision orchestration service error occurred, please contact support.",
                     innerException: failedDecisionOrchestrationServiceException);
 
-            this.decisionPollServiceMock.Setup(service =>
-                service.RetrieveAllDecisionPollsAsync())
+            this.decisionServiceMock.Setup(service =>
+                service.GetPatientDecisions())
                     .ThrowsAsync(serviceException);
 
             // when
@@ -137,8 +133,8 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Decisions
             // then
             actualException.Should().BeEquivalentTo(expectedDecisionOrchestrationServiceException);
 
-            this.decisionPollServiceMock.Verify(service =>
-                service.RetrieveAllDecisionPollsAsync(),
+            this.decisionServiceMock.Verify(service =>
+                service.GetPatientDecisions(),
                     Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>
@@ -146,8 +142,6 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Decisions
                     expectedDecisionOrchestrationServiceException))),
                         Times.Once);
 
-            this.decisionPollServiceMock.VerifyNoOtherCalls();
-            this.identifierBrokerMock.VerifyNoOtherCalls();
             this.decisionServiceMock.VerifyNoOtherCalls();
             this.documentServiceMock.VerifyNoOtherCalls();
             this.csvHelperBrokerMock.VerifyNoOtherCalls();

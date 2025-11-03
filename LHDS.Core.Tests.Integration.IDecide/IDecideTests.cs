@@ -2,8 +2,11 @@
 // Copyright (c) North East London ICB. All rights reserved.
 // ---------------------------------------------------------
 
+using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
-using System.Security.Principal;
+using System.Threading;
+using Azure.Core;
+using Azure.Identity;
 using LHDS.Core.Brokers.Storages.Sql;
 using LHDS.Core.Clients;
 using LHDS.Core.Clients.Extensions;
@@ -33,8 +36,13 @@ namespace LHDS.Core.Tests.Integration.IDecide
                 .AddEnvironmentVariables();
 
             IConfiguration configuration = configurationBuilder.Build();
-            var windowsIdentity = WindowsIdentity.GetCurrent();
-            var claimsPrincipal = new ClaimsPrincipal(windowsIdentity);
+
+            var credential = new DefaultAzureCredential();
+            var tokenRequestContext =
+                new TokenRequestContext(new[] { "https://graph.microsoft.com/.default" });
+
+            AccessToken accessToken =
+                credential.GetTokenAsync(tokenRequestContext).Result;
 
             var serviceProvider = new ServiceCollection()
                 .AddLogging(builder =>
@@ -43,7 +51,7 @@ namespace LHDS.Core.Tests.Integration.IDecide
                     builder.AddApplicationInsights();
                 })
                 .AddDbContextFactory<StorageBroker>()
-                .AddIDecideClient(configuration, claimsPrincipal)
+                .AddIDecideClient(configuration, accessToken.Token)
                 .BuildServiceProvider();
 
             this.storageBroker = serviceProvider.GetService<StorageBroker>();

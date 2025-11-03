@@ -6,7 +6,7 @@ namespace LHDS.Core.Tests.Integration.IDecide
 {
     public partial class IDecideTests
     {
-        [ReleaseCandidateFact]
+        [Fact]
         public async Task ShouldGetPatientDecisionsAsync()
         {
             // given

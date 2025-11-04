@@ -11,7 +11,6 @@ using Azure.Core;
 using Azure.Identity;
 using LHDS.Core.Models.Brokers.Decisions;
 using LHDS.Core.Models.Foundations.Decisions;
-using Newtonsoft.Json;
 using RESTFulSense.Clients;
 
 namespace LHDS.Core.Brokers.Decisions
@@ -19,12 +18,16 @@ namespace LHDS.Core.Brokers.Decisions
     public class DecisionBroker : IDecisionBroker
     {
         private readonly DecisionConfiguration decisionConfiguration;
-        private string accessToken = null;
+        private readonly DefaultAzureCredential credential;
         private IRESTFulApiFactoryClient? apiClient = null;
+        private AccessToken? accessToken = null;
 
         public DecisionBroker(DecisionConfiguration decisionConfiguration)
         {
             this.decisionConfiguration = decisionConfiguration;
+            this.credential = new DefaultAzureCredential();
+            this.accessToken = null;
+            this.apiClient = null;
         }
 
         public async ValueTask<List<Decision>> GetPatientDecisions()
@@ -43,70 +46,73 @@ namespace LHDS.Core.Brokers.Decisions
 
         private async ValueTask<T> GetAsync<T>(string relativeUrl)
         {
-            if (apiClient is null)
+            if (apiClient is null || IsTokenExpired())
             {
                 await SetupApiClient();
-            }
-
-            if (apiClient is null)
-            {
-                throw new InvalidOperationException("Failed to setup API client");
             }
 
             if (typeof(T) == typeof(string))
             {
                 return (T)(object)await this.apiClient.GetContentStringAsync(relativeUrl);
             }
-
-            return await this.apiClient.GetContentAsync<T>(relativeUrl);
+            else
+            {
+                return await this.apiClient.GetContentAsync<T>(relativeUrl);
+            }
         }
 
         private async ValueTask PostAsync(string relativeUrl, object body)
         {
-            if (apiClient is null)
+            if (apiClient is null || IsTokenExpired())
             {
                 await SetupApiClient();
-            }
-
-            if (apiClient is null)
-            {
-                throw new InvalidOperationException("Failed to setup API client");
             }
 
             await this.apiClient.PostContentAsync(relativeUrl, body);
         }
 
+        private bool IsTokenExpired()
+        {
+            if (this.accessToken is null)
+            {
+                return true;
+            }
+
+            return DateTimeOffset.UtcNow >= this.accessToken.Value.ExpiresOn.AddMinutes(-5);
+        }
+
         private async ValueTask GetAccessTokenAsync()
         {
-            var credential = new DefaultAzureCredential();
-            var tokenRequestContext = new TokenRequestContext(
+            var tokenRequestContext =
+                new TokenRequestContext(
                 new[] { "api://a72f1411-698b-4efc-914b-46279c2d5aae/manage" }
-            );
+                );
 
-            AccessToken accessToken = await credential.GetTokenAsync(
-                tokenRequestContext,
-                default
-            );
+            AccessToken token =
+                await this.credential.GetTokenAsync(
+                    tokenRequestContext,
+                    default);
 
-            this.accessToken = accessToken.Token;
+            this.accessToken = token;
         }
 
         private async ValueTask SetupApiClient()
         {
             await GetAccessTokenAsync();
 
-            var httpClient = new HttpClient
+            var httpClient = new HttpClient()
             {
-                BaseAddress = new Uri($"{this.decisionConfiguration.IDecideBaseUrl}"),
+                BaseAddress = new Uri(uriString: $"{this.decisionConfiguration.IDecideBaseUrl}"),
                 Timeout = TimeSpan.FromSeconds(this.decisionConfiguration.TimeoutInSeconds),
+
                 MaxResponseContentBufferSize =
                     this.decisionConfiguration.MaxResponseContentBufferSizeInMegaBytes * 1024 * 1024
             };
 
             httpClient.DefaultRequestHeaders.Authorization =
                 new AuthenticationHeaderValue(
-                    "Bearer",
-                    this.accessToken ?? "");
+                    scheme: "Bearer",
+                    parameter: this.accessToken?.Token ?? "");
 
             this.apiClient = new RESTFulApiFactoryClient(httpClient);
         }

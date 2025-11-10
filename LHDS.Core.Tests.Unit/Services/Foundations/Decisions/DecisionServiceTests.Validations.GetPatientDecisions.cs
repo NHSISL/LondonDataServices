@@ -37,11 +37,11 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Decisions
 
             invalidDecisionException.AddData(
                 key: $"Decisions[0].{nameof(Decision.DecisionTypeName)} - Id: {someDecisionId}",
-                values: "DecisionType is required");
+                values: "Text is required");
 
             invalidDecisionException.AddData(
                 key: $"Decisions[0].{nameof(Decision.PatientNhsNumber)} - Id: {someDecisionId}",
-                values: "Patient is required");
+                values: "Text is required");
 
             var expectedDecisionValidationException =
                 new DecisionValidationException(

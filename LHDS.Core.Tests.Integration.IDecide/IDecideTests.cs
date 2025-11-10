@@ -2,6 +2,7 @@
 // Copyright (c) North East London ICB. All rights reserved.
 // ---------------------------------------------------------
 
+using System.Runtime.InteropServices;
 using System.Security.Claims;
 using System.Security.Principal;
 using LHDS.Core.Brokers.Storages.Sql;
@@ -33,8 +34,18 @@ namespace LHDS.Core.Tests.Integration.IDecide
                 .AddEnvironmentVariables();
 
             IConfiguration configuration = configurationBuilder.Build();
-            var windowsIdentity = WindowsIdentity.GetCurrent();
-            var claimsPrincipal = new ClaimsPrincipal(windowsIdentity);
+
+            ClaimsPrincipal claimsPrincipal;
+
+            if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+            {
+                var windowsIdentity = WindowsIdentity.GetCurrent();
+                claimsPrincipal = new ClaimsPrincipal(windowsIdentity);
+            }
+            else
+            {
+                claimsPrincipal = new ClaimsPrincipal();
+            }
 
             var serviceProvider = new ServiceCollection()
                 .AddLogging(builder =>
@@ -46,9 +57,9 @@ namespace LHDS.Core.Tests.Integration.IDecide
                 .AddIDecideClient(configuration, claimsPrincipal)
                 .BuildServiceProvider();
 
-            this.storageBroker = serviceProvider.GetService<StorageBroker>();
-            this.blobContainers = serviceProvider.GetService<BlobContainers>();
-            iDecideClient = serviceProvider.GetService<IIDecideClient>();
+            this.storageBroker = serviceProvider.GetRequiredService<StorageBroker>();
+            this.blobContainers = serviceProvider.GetRequiredService<BlobContainers>();
+            iDecideClient = serviceProvider.GetRequiredService<IIDecideClient>();
         }
     }
 }

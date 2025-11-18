@@ -172,23 +172,20 @@ namespace LHDS.Core.Services.Orchestrations.OptOuts
                 ValidateConfigurationSettings();
                 bool shouldAddTrailingComma = this.optOutConfiguration.OptOutFileRequireTrailingComma;
 
-                List<OptOut> expiredOptOuts = await
+                List<string> expiredOptOutIdentifiers = await
                     this.optOutProcessingService
                         .RetrieveAllExpiredOptOutsAsync(optOutConfiguration.ExpiredAfterDays);
 
-                if (!expiredOptOuts.Any())
+                if (!expiredOptOutIdentifiers.Any())
                 {
                     return null;
                 }
 
-                List<string> expiredOptOutIdentifiers =
-                    expiredOptOuts.Select(optout => $"{optout.NhsNumber},").ToList();
-
                 StringBuilder csvExpiredOptOutIdentifiers = new StringBuilder();
 
-                foreach (var item in expiredOptOuts)
+                foreach (var identifier in expiredOptOutIdentifiers)
                 {
-                    csvExpiredOptOutIdentifiers.AppendLine($"{item.NhsNumber},");
+                    csvExpiredOptOutIdentifiers.AppendLine($"{identifier},");
                 }
 
                 DateTimeOffset batchReferenceDateTime =
@@ -208,13 +205,19 @@ namespace LHDS.Core.Services.Orchestrations.OptOuts
                     contentEncoding: string.Empty,
                     accept: "application/json");
 
-                foreach (var optOut in expiredOptOuts)
+                foreach (var identifier in expiredOptOutIdentifiers)
                 {
                     var dateTime = await this.dateTimeBroker.GetCurrentDateTimeOffsetAsync();
-                    optOut.LastSentToMesh = dateTime;
-                    optOut.UpdatedDate = dateTime;
-                    optOut.BatchReference = batchReference;
-                    await this.optOutProcessingService.AddOrModifyOptOutAsync(optOut);
+
+                    OptOut modifiedOptOut = new OptOut
+                    {
+                        NhsNumber = identifier,
+                        LastSentToMesh = dateTime,
+                        UpdatedDate = dateTime,
+                        BatchReference = batchReference
+                    };
+                  
+                    await this.optOutProcessingService.AddOrModifyOptOutAsync(modifiedOptOut);
                 }
 
                 return message;

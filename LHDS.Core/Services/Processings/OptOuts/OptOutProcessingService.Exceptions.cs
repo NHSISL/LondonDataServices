@@ -16,6 +16,7 @@ namespace LHDS.Core.Services.Processings.OptOuts
     public partial class OptOutProcessingService
     {
         private delegate ValueTask<OptOut> ReturningOptOutFunction();
+        private delegate ValueTask<List<string>> ReturningOptOutStringListFunction();
         private delegate ValueTask<List<OptOut>> ReturningOptOutListFunction();
         private delegate ValueTask<IQueryable<OptOut>> ReturningOptOutListsFunction();
 
@@ -24,6 +25,47 @@ namespace LHDS.Core.Services.Processings.OptOuts
             try
             {
                 return await returningOptOutFunction();
+            }
+            catch (NullOptOutProcessingException nullOptOutProcessingException)
+            {
+                throw await CreateAndLogValidationExceptionAsync(nullOptOutProcessingException);
+            }
+            catch (InvalidArgumentOptOutProcessingException invalidArgumentOptOutProcessingException)
+            {
+                throw await CreateAndLogValidationExceptionAsync(invalidArgumentOptOutProcessingException);
+            }
+            catch (OptOutValidationException optOutValidationException)
+            {
+                throw await CreateAndLogDependencyValidationExceptionAsync(optOutValidationException);
+            }
+            catch (OptOutDependencyValidationException optOutDependencyValidationException)
+            {
+                throw await CreateAndLogDependencyValidationExceptionAsync(optOutDependencyValidationException);
+            }
+            catch (OptOutDependencyException optOutDependencyException)
+            {
+                throw await CreateAndLogDependencyExceptionAsync(optOutDependencyException);
+            }
+            catch (OptOutServiceException optOutServiceException)
+            {
+                throw await CreateAndLogDependencyExceptionAsync(optOutServiceException);
+            }
+            catch (Exception exception)
+            {
+                var failedOptOutProcessingServiceException =
+                    new FailedOptOutProcessingServiceException(
+                        message: "Failed opt out processing service error occurred, please contact support.",
+                        exception);
+
+                throw await CreateAndLogServiceExceptionAsync(failedOptOutProcessingServiceException);
+            }
+        }
+
+        private async ValueTask<List<string>> TryCatch(ReturningOptOutStringListFunction returningOptOutStringListFunction)
+        {
+            try
+            {
+                return await returningOptOutStringListFunction();
             }
             catch (NullOptOutProcessingException nullOptOutProcessingException)
             {

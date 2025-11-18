@@ -100,30 +100,28 @@ namespace LHDS.Core.Services.Processings.OptOuts
                 return await ValueTask.FromResult(foundOptOut);
             });
 
-        public ValueTask<List<OptOutSummary>> RetrieveAllExpiredOptOutsAsync(int olderThanDays) =>
+        public ValueTask<List<OptOut>> RetrieveAllExpiredOptOutsAsync(int olderThanDays) =>
             TryCatch(async () =>
             {
                 ValidateOlderThanDays(olderThanDays);
                 var currentDateTimeOffset = await this.dateTimeBroker.GetCurrentDateTimeOffsetAsync();
                 var expirationDate = currentDateTimeOffset.AddDays(-olderThanDays);
                 var lastSentExpirationDate = currentDateTimeOffset.AddDays(-2);
+                IQueryable<OptOut> allOptOuts = await this.optOutService.RetrieveAllOptOutsAsync();
 
-                IQueryable<OptOut> allOptOuts =
-                    await this.optOutService.RetrieveAllOptOutsAsync();
-
-                var expiredOptOuts = allOptOuts
+                List<OptOut> expiredOptOuts = allOptOuts
                     .Where(optOut =>
                         optOut.CacheTime < expirationDate
                         && optOut.LastSentToMesh < lastSentExpirationDate)
                     .OrderBy(optOut => optOut.CreatedDate)
-                    .Select(optOut => new OptOutSummary
+                    .Select(optOut => new OptOut
                     {
                         Id = optOut.Id,
                         NhsNumber = optOut.NhsNumber
                     })
                     .ToList();
 
-                return async ValueTask.FromResult(expiredOptOuts);
+                return await ValueTask.FromResult(expiredOptOuts);
             });
 
         public ValueTask<List<OptOut>> RetrieveAllOptOutsByBatchReferenceAsync(string batchReference) =>

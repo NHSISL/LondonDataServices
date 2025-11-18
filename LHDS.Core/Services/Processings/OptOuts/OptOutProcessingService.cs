@@ -63,11 +63,19 @@ namespace LHDS.Core.Services.Processings.OptOuts
                     return await this.optOutService.AddOptOutAsync(optOut);
                 }
 
-                maybeOptOut.Status = optOut.Status;
-                maybeOptOut.BatchReference = optOut.BatchReference;
-                maybeOptOut.CacheTime = optOut.CacheTime;
-                maybeOptOut.LastSentToMesh = optOut.LastSentToMesh;
-                maybeOptOut.UpdatedDate = optOut.UpdatedDate;
+                maybeOptOut.Status = optOut.Status ?? maybeOptOut.Status;
+
+                maybeOptOut.BatchReference =
+                    optOut.BatchReference ?? maybeOptOut.BatchReference;
+
+                maybeOptOut.CacheTime =
+                    optOut.CacheTime == DateTime.MinValue ? maybeOptOut.CacheTime : optOut.CacheTime;
+
+                maybeOptOut.LastSentToMesh =
+                    optOut.LastSentToMesh == DateTime.MinValue ? maybeOptOut.LastSentToMesh: optOut.LastSentToMesh;
+
+                maybeOptOut.UpdatedDate =
+                    optOut.UpdatedDate == DateTime.MinValue ? maybeOptOut.UpdatedDate : optOut.UpdatedDate;
 
                 return await this.optOutService.ModifyOptOutAsync(maybeOptOut);
             });
@@ -100,7 +108,7 @@ namespace LHDS.Core.Services.Processings.OptOuts
                 return await ValueTask.FromResult(foundOptOut);
             });
 
-        public ValueTask<List<OptOut>> RetrieveAllExpiredOptOutsAsync(int olderThanDays) =>
+        public ValueTask<List<string>> RetrieveAllExpiredOptOutsAsync(int olderThanDays) =>
             TryCatch(async () =>
             {
                 ValidateOlderThanDays(olderThanDays);
@@ -109,16 +117,11 @@ namespace LHDS.Core.Services.Processings.OptOuts
                 var lastSentExpirationDate = currentDateTimeOffset.AddDays(-2);
                 IQueryable<OptOut> allOptOuts = await this.optOutService.RetrieveAllOptOutsAsync();
 
-                List<OptOut> expiredOptOuts = allOptOuts
+                List<string> expiredOptOuts = allOptOuts
                     .Where(optOut =>
                         optOut.CacheTime < expirationDate
                         && optOut.LastSentToMesh < lastSentExpirationDate)
-                    .OrderBy(optOut => optOut.CreatedDate)
-                    .Select(optOut => new OptOut
-                    {
-                        Id = optOut.Id,
-                        NhsNumber = optOut.NhsNumber
-                    })
+                    .Select(optOut => optOut.NhsNumber)
                     .ToList();
 
                 return await ValueTask.FromResult(expiredOptOuts);

@@ -172,7 +172,7 @@ namespace LHDS.Core.Services.Orchestrations.OptOuts
                 ValidateConfigurationSettings();
                 bool shouldAddTrailingComma = this.optOutConfiguration.OptOutFileRequireTrailingComma;
 
-                List<OptOut> expiredOptOuts = await
+                List<OptOutSummary> expiredOptOuts = await
                     this.optOutProcessingService
                         .RetrieveAllExpiredOptOutsAsync(optOutConfiguration.ExpiredAfterDays);
 

@@ -32,9 +32,10 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
                 broker.GetCurrentDateTimeOffsetAsync())
                     .ReturnsAsync(currentDateTime);
 
-            this.optOutProcessingServiceMock.Setup(processing =>
+            this.optOutProcessingServiceMock.SetupSequence(processing =>
                 processing.RetrieveAllExpiredOptOutsAsync(optOutConfiguration.ExpiredAfterDays))
-                    .ReturnsAsync(outputOptOuts);
+                    .ReturnsAsync(outputOptOuts)
+                    .ReturnsAsync(new List<string>()); 
 
             StringBuilder processedOutputString = new StringBuilder();
 
@@ -92,12 +93,6 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
                     BatchReference = batchReference
                 };
 
-                //OptOut modifiedOptOutReturn = modifiedOptOut;
-                //modifiedOptOutReturn.Id = Guid.NewGuid();
-                //modifiedOptOutReturn.Status = GetRandomString();
-                //modifiedOptOutReturn.CacheTime = currentDateTime;
-                //modifiedOptOutReturn.UniqueReference = Guid.NewGuid().ToString();
-
                 this.optOutProcessingServiceMock.Setup(processing =>
                     processing.AddOrModifyOptOutAsync(modifiedOptOut))
                         .ReturnsAsync(modifiedOptOut);
@@ -109,7 +104,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
             // Then
             this.optOutProcessingServiceMock.Verify(processings =>
                 processings.RetrieveAllExpiredOptOutsAsync(optOutConfiguration.ExpiredAfterDays),
-                    Times.Once);
+                    Times.Exactly(2));
 
             this.meshProcessingServiceMock.Verify(processings =>
                 processings.SendMessageAsync(
@@ -167,7 +162,6 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
             bool shouldAddTrailingComma = optOutConfiguration.OptOutFileRequireTrailingComma;
             List<string> randomOptOuts = new List<string>();
             List<string> outputOptOuts = randomOptOuts;
-            MeshMessage expectedMessage = null;
 
             var processedOutputString = GetRandomString();
 
@@ -176,10 +170,11 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
                     .ReturnsAsync(outputOptOuts);
 
             // When
-            MeshMessage actualMessage = await this.optOutOrchestrationService.PushExpiredOptOutsToMeshForRenewalAsync();
+            List<MeshMessage?> actualMessage =
+                await this.optOutOrchestrationService.PushExpiredOptOutsToMeshForRenewalAsync();
 
             // Then
-            actualMessage.Should().BeEquivalentTo(expectedMessage);
+            actualMessage.Should().BeEmpty();
 
             this.optOutProcessingServiceMock.Verify(processings =>
                 processings.RetrieveAllExpiredOptOutsAsync(optOutConfiguration.ExpiredAfterDays),

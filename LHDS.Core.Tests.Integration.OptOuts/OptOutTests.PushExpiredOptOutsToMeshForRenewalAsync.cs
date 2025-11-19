@@ -23,7 +23,7 @@ namespace LHDS.Core.Tests.Integration.OptOuts
                 await SetupExpiredTestNhsNumbersForRetrieveUpdatedMesh(batchReference);
 
                 // When
-                MeshMessage? message = await optOutClient.PushExpiredOptOutsToMeshForRenewalAsync();
+                MeshMessage message = await optOutClient.PushExpiredOptOutsToMeshForRenewalAsync();
 
                 // Then
                 message.Should().NotBeNull();

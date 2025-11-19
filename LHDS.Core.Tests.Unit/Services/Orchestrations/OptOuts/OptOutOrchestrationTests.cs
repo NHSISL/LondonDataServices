@@ -280,12 +280,15 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
                 .Create(count: GetRandomNumber())
                     .ToList();
         }
-        private static List<OptOut> CreateRandomOptOutsList()
+
+        private static List<string> CreateRandomIdentifierList()
         {
             return CreateOptOutFiller(dateTimeOffset: GetRandomDateTimeOffset())
-                .Create(count: GetRandomNumber())
-                    .ToList();
+                .Create(count: 1) // GetRandomNumber())
+                .Select(optOut => GenerateValidNhsNumber())
+                .ToList();
         }
+
 
         private string CreateNewCsvList(List<OptOutIdentifier> differentIdentifiers, bool hasTrailingComma)
         {

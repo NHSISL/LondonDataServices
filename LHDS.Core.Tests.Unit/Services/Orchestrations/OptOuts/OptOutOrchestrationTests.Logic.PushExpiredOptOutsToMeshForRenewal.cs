@@ -7,6 +7,8 @@ using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
 using FluentAssertions;
+using Force.DeepCloner;
+using Hl7.Fhir.ElementModel.Types;
 using LHDS.Core.Models.Foundations.Mesh;
 using LHDS.Core.Models.Foundations.OptOuts;
 using Moq;
@@ -23,8 +25,8 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
             DateTimeOffset randomDate = GetRandomDateTimeOffset();
             DateTimeOffset currentDateTime = randomDate;
             bool shouldAddTrailingComma = optOutConfiguration.OptOutFileRequireTrailingComma;
-            List<OptOut> randomOptOuts = CreateRandomOptOutsList();
-            List<OptOut> outputOptOuts = randomOptOuts;
+            List<string> randomOptOuts = CreateRandomIdentifierList();
+            List<string> outputOptOuts = randomOptOuts;
 
             this.dateTimeBrokerMock.Setup(broker =>
                 broker.GetCurrentDateTimeOffsetAsync())
@@ -36,9 +38,9 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
 
             StringBuilder processedOutputString = new StringBuilder();
 
-            foreach (var item in outputOptOuts)
+            foreach (var identifier in outputOptOuts)
             {
-                processedOutputString.AppendLine($"{item.NhsNumber},");
+                processedOutputString.AppendLine($"{identifier},");
             }
 
             string csvFileContent = processedOutputString.ToString();
@@ -80,15 +82,25 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
                     accept))
                         .ReturnsAsync(outputMessage);
 
-            foreach (var optOut in outputOptOuts)
+            foreach (var identifier in outputOptOuts)
             {
-                optOut.LastSentToMesh = currentDateTime;
-                optOut.UpdatedDate = currentDateTime;
-                optOut.BatchReference = batchReference;
+                OptOut modifiedOptOut = new OptOut
+                {
+                    NhsNumber = identifier,
+                    LastSentToMesh = currentDateTime,
+                    UpdatedDate = currentDateTime,
+                    BatchReference = batchReference
+                };
+
+                //OptOut modifiedOptOutReturn = modifiedOptOut;
+                //modifiedOptOutReturn.Id = Guid.NewGuid();
+                //modifiedOptOutReturn.Status = GetRandomString();
+                //modifiedOptOutReturn.CacheTime = currentDateTime;
+                //modifiedOptOutReturn.UniqueReference = Guid.NewGuid().ToString();
 
                 this.optOutProcessingServiceMock.Setup(processing =>
-                    processing.AddOrModifyOptOutAsync(optOut))
-                        .ReturnsAsync(optOut);
+                    processing.AddOrModifyOptOutAsync(modifiedOptOut))
+                        .ReturnsAsync(modifiedOptOut);
             }
 
             // When
@@ -113,15 +125,24 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
                     accept),
                         Times.Once);
 
-            foreach (var optOut in outputOptOuts)
+            foreach (var identifier in outputOptOuts)
             {
-                optOut.LastSentToMesh = currentDateTime;
-                optOut.UpdatedDate = currentDateTime;
-                optOut.BatchReference = batchReference;
+                OptOut modifiedOptOut = new OptOut
+                {
+                    NhsNumber = identifier,
+                    LastSentToMesh = currentDateTime,
+                    UpdatedDate = currentDateTime,
+                    BatchReference = batchReference
+                };
 
                 this.optOutProcessingServiceMock.Verify(processing =>
-                    processing.AddOrModifyOptOutAsync(optOut),
-                        Times.Once());
+                    processing.AddOrModifyOptOutAsync(
+                        It.Is<OptOut>(o =>
+                            o.NhsNumber == identifier &&
+                            o.LastSentToMesh == currentDateTime &&
+                            o.UpdatedDate == currentDateTime &&
+                            o.BatchReference == batchReference)),
+                    Times.Once());
             }
 
             this.dateTimeBrokerMock.Verify(broker =>
@@ -144,8 +165,8 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
             DateTimeOffset randomDate = GetRandomDateTimeOffset();
             DateTimeOffset currentDateTime = randomDate;
             bool shouldAddTrailingComma = optOutConfiguration.OptOutFileRequireTrailingComma;
-            List<OptOut> randomOptOuts = new List<OptOut>();
-            List<OptOut> outputOptOuts = randomOptOuts;
+            List<string> randomOptOuts = new List<string>();
+            List<string> outputOptOuts = randomOptOuts;
             MeshMessage expectedMessage = null;
 
             var processedOutputString = GetRandomString();

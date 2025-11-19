@@ -32,10 +32,9 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
                 broker.GetCurrentDateTimeOffsetAsync())
                     .ReturnsAsync(currentDateTime);
 
-            this.optOutProcessingServiceMock.SetupSequence(processing =>
+            this.optOutProcessingServiceMock.Setup(processing =>
                 processing.RetrieveAllExpiredOptOutsAsync(optOutConfiguration.ExpiredAfterDays))
-                    .ReturnsAsync(outputOptOuts)
-                    .ReturnsAsync(new List<string>()); 
+                    .ReturnsAsync(outputOptOuts); 
 
             StringBuilder processedOutputString = new StringBuilder();
 
@@ -104,7 +103,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
             // Then
             this.optOutProcessingServiceMock.Verify(processings =>
                 processings.RetrieveAllExpiredOptOutsAsync(optOutConfiguration.ExpiredAfterDays),
-                    Times.Exactly(2));
+                    Times.Once);
 
             this.meshProcessingServiceMock.Verify(processings =>
                 processings.SendMessageAsync(
@@ -162,6 +161,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
             bool shouldAddTrailingComma = optOutConfiguration.OptOutFileRequireTrailingComma;
             List<string> randomOptOuts = new List<string>();
             List<string> outputOptOuts = randomOptOuts;
+            MeshMessage expectedMessage = null;
 
             var processedOutputString = GetRandomString();
 
@@ -170,11 +170,11 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
                     .ReturnsAsync(outputOptOuts);
 
             // When
-            List<MeshMessage?> actualMessage =
+            MeshMessage? actualMessage =
                 await this.optOutOrchestrationService.PushExpiredOptOutsToMeshForRenewalAsync();
 
             // Then
-            actualMessage.Should().BeEmpty();
+            actualMessage.Should().BeEquivalentTo(expectedMessage);
 
             this.optOutProcessingServiceMock.Verify(processings =>
                 processings.RetrieveAllExpiredOptOutsAsync(optOutConfiguration.ExpiredAfterDays),

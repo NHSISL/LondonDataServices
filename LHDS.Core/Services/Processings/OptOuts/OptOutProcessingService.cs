@@ -123,6 +123,7 @@ namespace LHDS.Core.Services.Processings.OptOuts
                     .Where(optOut =>
                         optOut.CacheTime < expirationDate
                         && optOut.LastSentToMesh < lastSentExpirationDate)
+                    .OrderBy(optOut => optOut.CreatedDate)
                     .Select(optOut => optOut.NhsNumber)
                     .Take(10000)
                     .ToList();

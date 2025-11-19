@@ -46,7 +46,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
                     innerException: nullConfigOptOutOrchestrationException);
 
             // When
-            ValueTask<MeshMessage?> pushExpOptOutsToMeshIfExpiredTask =
+            ValueTask<MeshMessage> pushExpOptOutsToMeshIfExpiredTask =
                 invalidOptOutOrchestrationService.PushExpiredOptOutsToMeshForRenewalAsync();
 
             OptOutOrchestrationValidationException actualException =
@@ -100,7 +100,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
                     innerException: nullBlobContainersOptOutOrchestrationException);
 
             // When
-            ValueTask<MeshMessage?> pushExpOptOutsToMeshIfExpiredTask =
+            ValueTask<MeshMessage> pushExpOptOutsToMeshIfExpiredTask =
                 invalidOptOutOrchestrationService.PushExpiredOptOutsToMeshForRenewalAsync();
 
             OptOutOrchestrationValidationException actualException =
@@ -181,7 +181,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
                     innerException: invalidConfigOptOutOrchestrationException);
 
             // When
-            ValueTask<MeshMessage?> pushExpOptOutsToMeshIfExpiredTask =
+            ValueTask<MeshMessage> pushExpOptOutsToMeshIfExpiredTask =
                 invalidOptOutOrchestrationService.PushExpiredOptOutsToMeshForRenewalAsync();
 
             OptOutOrchestrationValidationException actualException =

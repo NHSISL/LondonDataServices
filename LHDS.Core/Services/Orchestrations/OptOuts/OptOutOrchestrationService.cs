@@ -166,7 +166,7 @@ namespace LHDS.Core.Services.Orchestrations.OptOuts
                 return csvFileName;
             });
 
-        public ValueTask<MeshMessage?> PushExpiredOptOutsToMeshForRenewalAsync() =>
+        public ValueTask<MeshMessage> PushExpiredOptOutsToMeshForRenewalAsync() =>
           TryCatch(async () =>
           {
               ValidateConfigurationSettings();

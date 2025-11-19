@@ -85,7 +85,7 @@ namespace LHDS.Core.Clients
             }
         }
 
-        public async ValueTask<MeshMessage> PushExpiredOptOutsToMeshForRenewalAsync()
+        public async ValueTask<List<MeshMessage?>> PushExpiredOptOutsToMeshForRenewalAsync()
         {
             try
             {

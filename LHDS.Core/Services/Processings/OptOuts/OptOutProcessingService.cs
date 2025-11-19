@@ -63,7 +63,9 @@ namespace LHDS.Core.Services.Processings.OptOuts
                     return await this.optOutService.AddOptOutAsync(optOut);
                 }
 
-                maybeOptOut.Status = optOut.Status ?? maybeOptOut.Status;
+                maybeOptOut.Status = string.IsNullOrEmpty(optOut.Status)
+                    ? maybeOptOut.Status
+                    : optOut.Status;
 
                 maybeOptOut.BatchReference =
                     optOut.BatchReference ?? maybeOptOut.BatchReference;

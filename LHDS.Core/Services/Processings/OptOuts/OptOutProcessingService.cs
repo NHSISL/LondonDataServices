@@ -124,6 +124,7 @@ namespace LHDS.Core.Services.Processings.OptOuts
                         optOut.CacheTime < expirationDate
                         && optOut.LastSentToMesh < lastSentExpirationDate)
                     .Select(optOut => optOut.NhsNumber)
+                    .Take(10000)
                     .ToList();
 
                 return await ValueTask.FromResult(expiredOptOuts);

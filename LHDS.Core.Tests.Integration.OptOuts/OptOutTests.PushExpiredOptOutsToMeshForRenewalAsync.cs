@@ -3,6 +3,7 @@
 // ---------------------------------------------------------
 
 using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using FluentAssertions;
 using LHDS.Core.Models.Foundations.Mesh;
@@ -22,14 +23,18 @@ namespace LHDS.Core.Tests.Integration.OptOuts
                 await SetupExpiredTestNhsNumbersForRetrieveUpdatedMesh(batchReference);
 
                 // When
-                MeshMessage message = await optOutClient.PushExpiredOptOutsToMeshForRenewalAsync();
+                List<MeshMessage?> messages = await optOutClient.PushExpiredOptOutsToMeshForRenewalAsync();
 
                 // Then
-                message.Should().NotBeNull();
-                message.MessageId.Should().NotBeNullOrWhiteSpace();
-                var messageId = message.MessageId;
-                bool messageAcked = await meshService.AcknowledgeMessageByIdAsync(messageId);
-                messageAcked.Should().BeTrue();
+                foreach (MeshMessage message in messages)
+                {
+                    message.Should().NotBeNull();
+                    message.MessageId.Should().NotBeNullOrWhiteSpace();
+                    var messageId = message.MessageId;
+                    bool messageAcked = await meshService.AcknowledgeMessageByIdAsync(messageId);
+                    messageAcked.Should().BeTrue();
+
+                }
             }
             catch (Exception ex)
             {

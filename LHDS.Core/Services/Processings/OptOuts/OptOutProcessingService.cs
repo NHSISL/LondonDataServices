@@ -74,7 +74,7 @@ namespace LHDS.Core.Services.Processings.OptOuts
                     optOut.CacheTime == DateTime.MinValue ? maybeOptOut.CacheTime : optOut.CacheTime;
 
                 maybeOptOut.LastSentToMesh =
-                    optOut.LastSentToMesh == DateTime.MinValue ? maybeOptOut.LastSentToMesh: optOut.LastSentToMesh;
+                    optOut.LastSentToMesh == DateTime.MinValue ? maybeOptOut.LastSentToMesh : optOut.LastSentToMesh;
 
                 maybeOptOut.UpdatedDate =
                     optOut.UpdatedDate == DateTime.MinValue ? maybeOptOut.UpdatedDate : optOut.UpdatedDate;

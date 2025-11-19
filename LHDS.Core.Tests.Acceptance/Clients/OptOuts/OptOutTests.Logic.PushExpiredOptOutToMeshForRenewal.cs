@@ -56,7 +56,6 @@ namespace LHDS.Core.Tests.Acceptance.Clients.OptOuts
                 contentType: "text/plain");
 
             message.MessageId = messageId;
-            List<Message> messages = new List<Message> { message };
 
             this.meshBrokerMock.Setup(broker =>
                 broker.SendMessageAsync(
@@ -76,13 +75,11 @@ namespace LHDS.Core.Tests.Acceptance.Clients.OptOuts
                 broker.TrackMessageAsync(messageId))
                     .ReturnsAsync(message);
 
-            List<Message> expectedMessages = messages;
-
             //When
             var actualMessage = await this.optOutClient.PushExpiredOptOutsToMeshForRenewalAsync();
 
             //Then
-            actualMessage.Should().BeEquivalentTo(expectedMessages);
+            actualMessage.Should().BeEquivalentTo(message);
 
             this.meshBrokerMock.Verify(broker =>
                 broker.SendMessageAsync(

@@ -1,0 +1,106 @@
+<Solution>
+  <Configurations>
+    <BuildType Name="Acceptance" />
+    <BuildType Name="Debug" />
+    <BuildType Name="Release" />
+    <BuildType Name="Test" />
+  </Configurations>
+  <Folder Name="/Backend/">
+    <Project Path="LHDS.AdminPortal.Api.Tests.Acceptance/LHDS.AdminPortal.Api.Tests.Acceptance.csproj" />
+    <Project Path="LHDS.AdminPortal.Api.Tests.Unit/LHDS.AdminPortal.Api.Tests.Unit.csproj" />
+    <Project Path="LHDS.AdminPortal.Api/LHDS.AdminPortal.Api.csproj">
+      <BuildType Solution="Acceptance|*" Project="Debug" />
+      <BuildType Solution="Test|*" Project="Debug" />
+    </Project>
+  </Folder>
+  <Folder Name="/ConfigImportExportTool/">
+    <Project Path="LHDS.ConfigImportExportTool.Tests.Acceptance/LHDS.ConfigImportExportTool.Tests.Acceptance.csproj">
+      <BuildType Solution="Acceptance|*" Project="Debug" />
+      <BuildType Solution="Test|*" Project="Debug" />
+    </Project>
+    <Project Path="LHDS.ConfigImportExportTool.Tests.Integration/LHDS.ConfigImportExportTool.Tests.Integration.csproj">
+      <BuildType Solution="Acceptance|*" Project="Debug" />
+      <BuildType Solution="Test|*" Project="Debug" />
+    </Project>
+    <Project Path="LHDS.ConfigImportExportTool.Tests.Unit/LHDS.ConfigImportExportTool.Tests.Unit.csproj">
+      <BuildType Solution="Acceptance|*" Project="Debug" />
+      <BuildType Solution="Test|*" Project="Debug" />
+    </Project>
+    <Project Path="LHDS.ConfigImportExportTool/LHDS.ConfigImportExportTool.csproj">
+      <BuildType Solution="Acceptance|*" Project="Debug" />
+      <BuildType Solution="Test|*" Project="Debug" />
+    </Project>
+  </Folder>
+  <Folder Name="/Core/">
+    <Project Path="LHDS.Core.SeedGenerator/LHDS.Core.SeedGenerator.csproj">
+      <BuildType Solution="Acceptance|*" Project="Debug" />
+      <BuildType Solution="Test|*" Project="Debug" />
+    </Project>
+    <Project Path="LHDS.Core.Tests.Acceptance/LHDS.Core.Tests.Acceptance.csproj" />
+    <Project Path="LHDS.Core.Tests.Integration.Addresses.Console/LHDS.Core.Tests.Integration.Addresses.Console.csproj">
+      <BuildType Solution="Acceptance|*" Project="Debug" />
+      <BuildType Solution="Test|*" Project="Debug" />
+    </Project>
+    <Project Path="LHDS.Core.Tests.Integration.Addresses/LHDS.Core.Tests.Integration.Addresses.csproj" />
+    <Project Path="LHDS.Core.Tests.Integration.Decryptions/LHDS.Core.Tests.Integration.Decryptions.csproj">
+      <BuildType Solution="Acceptance|*" Project="Debug" />
+      <BuildType Solution="Test|*" Project="Debug" />
+    </Project>
+    <Project Path="LHDS.Core.Tests.Integration.EmisLandings/LHDS.Core.Tests.Integration.EmisLandings.csproj" />
+    <Project Path="LHDS.Core.Tests.Integration.OptOuts/LHDS.Core.Tests.Integration.OptOuts.csproj" />
+    <Project Path="LHDS.Core.Tests.Integration.Pds/LHDS.Core.Tests.Integration.Pds.csproj">
+      <BuildType Solution="Acceptance|*" Project="Debug" />
+      <BuildType Solution="Test|*" Project="Debug" />
+    </Project>
+    <Project Path="LHDS.Core.Tests.Integration.Terminology/LHDS.Core.Tests.Integration.Terminology.csproj" />
+    <Project Path="LHDS.Core.Tests.Integration.TppLandings/LHDS.Core.Tests.Integration.TppLandings.csproj">
+      <BuildType Solution="Acceptance|*" Project="Debug" />
+      <BuildType Solution="Test|*" Project="Debug" />
+    </Project>
+    <Project Path="LHDS.Core.Tests.Unit/LHDS.Core.Tests.Unit.csproj" />
+    <Project Path="LHDS.Core/LHDS.Core.csproj">
+      <BuildType Solution="Acceptance|*" Project="Debug" />
+      <BuildType Solution="Test|*" Project="Debug" />
+    </Project>
+  </Folder>
+  <Folder Name="/Frontend/">
+    <Project Path="LHDS.AdminPortal.Web/LHDS.AdminPortal.Web.csproj">
+      <BuildType Solution="Acceptance|*" Project="Debug" />
+      <BuildType Solution="Test|*" Project="Debug" />
+    </Project>
+  </Folder>
+  <Folder Name="/Functions/">
+    <Project Path="LHDS.Functions.Addresses/LHDS.Functions.Addresses.csproj">
+      <BuildType Solution="Acceptance|*" Project="Debug" />
+      <BuildType Solution="Test|*" Project="Debug" />
+    </Project>
+    <Project Path="LHDS.Functions.IDecide/LHDS.Functions.IDecide.csproj">
+      <BuildType Solution="Acceptance|*" Project="Debug" />
+      <BuildType Solution="Test|*" Project="Debug" />
+    </Project>
+    <Project Path="LHDS.Functions.Landings.Emis/LHDS.Functions.Landings.Emis.csproj">
+      <BuildType Solution="Acceptance|*" Project="Debug" />
+      <BuildType Solution="Test|*" Project="Debug" />
+    </Project>
+    <Project Path="LHDS.Functions.Landings.Tpp/LHDS.Functions.Landings.Tpp.csproj">
+      <BuildType Solution="Acceptance|*" Project="Debug" />
+      <BuildType Solution="Test|*" Project="Debug" />
+    </Project>
+    <Project Path="LHDS.Functions.OptOut/LHDS.Functions.OptOut.csproj">
+      <BuildType Solution="Acceptance|*" Project="Debug" />
+      <BuildType Solution="Test|*" Project="Debug" />
+    </Project>
+    <Project Path="LHDS.Functions.Pds/LHDS.Functions.Pds.csproj">
+      <BuildType Solution="Acceptance|*" Project="Debug" />
+      <BuildType Solution="Test|*" Project="Debug" />
+    </Project>
+    <Project Path="LHDS.Functions.Terminology/LHDS.Functions.Terminology.csproj">
+      <BuildType Solution="Acceptance|*" Project="Debug" />
+      <BuildType Solution="Test|*" Project="Debug" />
+    </Project>
+  </Folder>
+  <Project Path="LHDS.Core.Tests.Integration.IDecide/LHDS.Core.Tests.Integration.IDecide.csproj">
+    <BuildType Solution="Acceptance|*" Project="Debug" />
+    <BuildType Solution="Test|*" Project="Debug" />
+  </Project>
+</Solution>

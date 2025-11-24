@@ -54,9 +54,9 @@ namespace LHDS.Core.Tests.Integration.IDecide
                 .AddIDecideClient(configuration, accessToken.Token)
                 .BuildServiceProvider();
 
-            this.storageBroker = serviceProvider.GetService<StorageBroker>();
-            this.blobContainers = serviceProvider.GetService<BlobContainers>();
-            iDecideClient = serviceProvider.GetService<IIDecideClient>();
+            this.storageBroker = serviceProvider.GetRequiredService<StorageBroker>();
+            this.blobContainers = serviceProvider.GetRequiredService<BlobContainers>();
+            iDecideClient = serviceProvider.GetRequiredService<IIDecideClient>();
         }
     }
 }

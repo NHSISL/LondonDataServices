@@ -24,6 +24,7 @@ namespace LHDS.Core.Tests.Integration.IDecide
         private readonly IStorageBroker storageBroker;
         private readonly BlobContainers blobContainers;
         private readonly ITestOutputHelper output;
+        private readonly TokenCredential credential;
 
         public IDecideTests(ITestOutputHelper output)
         {
@@ -37,12 +38,19 @@ namespace LHDS.Core.Tests.Integration.IDecide
 
             IConfiguration configuration = configurationBuilder.Build();
 
-            var credential = new DefaultAzureCredential();
-            var tokenRequestContext =
-                new TokenRequestContext(new[] { "https://graph.microsoft.com/.default" });
+#if DEBUG
+            this.credential = new InteractiveBrowserCredential();
+#else
+            this.credential = new DefaultAzureCredential();
+#endif
 
-            AccessToken accessToken =
-                credential.GetTokenAsync(tokenRequestContext).Result;
+            var tokenRequestContext = new TokenRequestContext(
+                new[] { "https://graph.microsoft.com/.default" });
+
+            AccessToken accessToken = this.credential
+                .GetTokenAsync(tokenRequestContext, default)
+                .GetAwaiter()
+                .GetResult();
 
             var serviceProvider = new ServiceCollection()
                 .AddLogging(builder =>
@@ -51,12 +59,13 @@ namespace LHDS.Core.Tests.Integration.IDecide
                     builder.AddApplicationInsights();
                 })
                 .AddDbContextFactory<StorageBroker>()
+                .AddSingleton<TokenCredential>(credential)
                 .AddIDecideClient(configuration, accessToken.Token)
                 .BuildServiceProvider();
 
             this.storageBroker = serviceProvider.GetRequiredService<StorageBroker>();
             this.blobContainers = serviceProvider.GetRequiredService<BlobContainers>();
-            iDecideClient = serviceProvider.GetRequiredService<IIDecideClient>();
+            this.iDecideClient = serviceProvider.GetRequiredService<IIDecideClient>();
         }
     }
 }

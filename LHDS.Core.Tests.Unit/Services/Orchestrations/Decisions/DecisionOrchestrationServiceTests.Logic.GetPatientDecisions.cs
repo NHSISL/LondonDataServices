@@ -125,5 +125,62 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Decisions
             this.hashBrokerMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
         }
+
+        [Fact]
+        public async Task ShouldNotGetPatientDecisionsAsync()
+        {
+            // given
+            List<Decision> expectedDecisions = new List<Decision>(); // empty list
+
+            this.decisionServiceMock
+                .Setup(service => service.GetPatientDecisions())
+                .ReturnsAsync(expectedDecisions);
+
+            // when
+            List<Decision> actualDecisions =
+                await this.decisionOrchestrationService.GetPatientDecisions();
+
+            // then
+            actualDecisions.Should().BeEmpty();
+
+            this.decisionServiceMock.Verify(service =>
+                service.GetPatientDecisions(),
+                    Times.Once);
+
+            foreach (string nhsNumber in expectedDecisions.Select(d => d.PatientNhsNumber))
+            {
+                int count = expectedDecisions.Count(decision => decision.PatientNhsNumber == nhsNumber);
+
+                this.hashBrokerMock.Verify(
+                    broker => broker.GenerateSha256HashAsync(
+                        It.Is<string>(number => number == nhsNumber),
+                        this.decisionConfiguration.HashPepper),
+                    Times.Never());
+            }
+
+            this.csvHelperBrokerMock.Verify(broker =>
+                broker.MapObjectToCsvAsync(
+                    It.IsAny<List<DecisionCsv>>(),
+                    It.IsAny<bool>(),
+                    It.IsAny<Dictionary<string, int>>(),
+                    It.IsAny<bool>()),
+                Times.Never());
+
+            this.documentServiceMock.Verify(service =>
+                service.AddDocumentAsync(
+                    It.IsAny<Stream>(),
+                    It.IsAny<string>(),
+                    It.IsAny<string>()),
+                Times.Never());
+
+            this.decisionServiceMock.Verify(service =>
+                service.RecordAdoption(It.IsAny<List<Decision>>()), Times.Never());
+
+            this.decisionServiceMock.VerifyNoOtherCalls();
+            this.documentServiceMock.VerifyNoOtherCalls();
+            this.csvHelperBrokerMock.VerifyNoOtherCalls();
+            this.hashBrokerMock.VerifyNoOtherCalls();
+            this.loggingBrokerMock.VerifyNoOtherCalls();
+        }
     }
 }

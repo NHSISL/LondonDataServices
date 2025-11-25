@@ -18,14 +18,14 @@ namespace LHDS.Core.Brokers.Decisions
     public class DecisionBroker : IDecisionBroker
     {
         private readonly DecisionConfiguration decisionConfiguration;
-        private readonly DefaultAzureCredential credential;
+        private readonly TokenCredential credential;
         private IRESTFulApiFactoryClient? apiClient = null;
         private AccessToken? accessToken = null;
 
-        public DecisionBroker(DecisionConfiguration decisionConfiguration)
+        public DecisionBroker(DecisionConfiguration decisionConfiguration, TokenCredential credential)
         {
             this.decisionConfiguration = decisionConfiguration;
-            this.credential = new DefaultAzureCredential();
+            this.credential = credential;
             this.accessToken = null;
             this.apiClient = null;
         }
@@ -85,7 +85,7 @@ namespace LHDS.Core.Brokers.Decisions
         {
             var tokenRequestContext =
                 new TokenRequestContext(
-                new[] { "api://a72f1411-698b-4efc-914b-46279c2d5aae/manage" }
+                new[] { this.decisionConfiguration.IDecideScope }
                 );
 
             AccessToken token =

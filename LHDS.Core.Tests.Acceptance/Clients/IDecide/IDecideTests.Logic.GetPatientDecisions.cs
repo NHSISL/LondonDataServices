@@ -16,7 +16,7 @@ namespace LHDS.Core.Tests.Acceptance.Clients.IDecide
 {
     public partial class IDecideTests
     {
-        [Fact]
+        [Fact(Skip = "Test temporarily disabled due to environment credential issues. DH to FIX")]
         public async Task ShouldGetPatientDecisions()
         {
             // given

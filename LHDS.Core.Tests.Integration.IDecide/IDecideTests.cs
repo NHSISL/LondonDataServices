@@ -37,12 +37,7 @@ namespace LHDS.Core.Tests.Integration.IDecide
                 .AddEnvironmentVariables();
 
             IConfiguration configuration = configurationBuilder.Build();
-
-#if DEBUG
-            this.credential = new InteractiveBrowserCredential();
-#else
             this.credential = new DefaultAzureCredential();
-#endif
 
             var tokenRequestContext = new TokenRequestContext(
                 new[] { "https://graph.microsoft.com/.default" });
@@ -60,7 +55,7 @@ namespace LHDS.Core.Tests.Integration.IDecide
                 })
                 .AddDbContextFactory<StorageBroker>()
                 .AddSingleton<TokenCredential>(credential)
-                .AddIDecideClient(configuration, accessToken.Token)
+                .AddIDecideClient(configuration, accessToken.Token, includeInteractiveCredentials: true)
                 .BuildServiceProvider();
 
             this.storageBroker = serviceProvider.GetRequiredService<StorageBroker>();

@@ -42,7 +42,11 @@ var host = new HostBuilder()
                 setup.AddConsole();
             })
             .AddDbContextFactory<StorageBroker>()
-            .AddIDecideClient(configuration: context.Configuration, accessToken: accessToken.Token);
+
+            .AddIDecideClient(
+                configuration: context.Configuration,
+                accessToken: accessToken.Token,
+                includeInteractiveCredentials: false);
     })
     .UseDefaultServiceProvider(options => options.ValidateScopes = false)
     .ConfigureFunctionsWorkerDefaults()

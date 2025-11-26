@@ -50,6 +50,25 @@ namespace LHDS.Core.Clients.Extensions
             return services;
         }
 
+        internal static IServiceCollection AddIDecideClient(
+           this IServiceCollection services,
+           IConfiguration configuration,
+           string accessToken,
+           bool includeInteractiveCredentials)
+        {
+            services.AddSingleton<IConfiguration>(_ => configuration);
+
+            AddProviders(services);
+            AddBrokers(services, configuration, GetClaimsPrincipalFromToken(accessToken), includeInteractiveCredentials);
+            AddServices(services);
+            AddProcessingServices(services);
+            AddOrchestrations(services);
+            AddCoordinations(services);
+            AddClients(services, configuration);
+
+            return services;
+        }
+
         public static IServiceCollection AddIDecideClient(
             this IServiceCollection services,
             IConfiguration configuration,
@@ -74,16 +93,23 @@ namespace LHDS.Core.Clients.Extensions
         private static void AddBrokers(
             IServiceCollection services,
             IConfiguration configuration,
-            ClaimsPrincipal claimsPrincipal)
+            ClaimsPrincipal claimsPrincipal,
+            bool includeInteractiveCredentials = false)
         {
             if (claimsPrincipal is not null)
             {
                 services.AddTransient<ISecurityAuditBroker>(_ =>
                     new SecurityAuditBroker(claimsPrincipal, new SecurityConfigurations()));
+
+                services.AddTransient<IDecisionBroker>(_ =>
+                    new DecisionBroker(
+                        decisionConfiguration: configuration.GetSection("IDecide").Get<DecisionConfiguration>(),
+                        includeInteractiveCredentials));
             }
             else
             {
                 services.AddTransient<ISecurityAuditBroker, SecurityAuditBroker>();
+                services.AddTransient<IDecisionBroker, DecisionBroker>();
             }
 
             services.AddTransient<IStorageBroker>(sp =>
@@ -97,7 +123,6 @@ namespace LHDS.Core.Clients.Extensions
             services.AddTransient<ICsvHelperBroker, CsvHelperBroker>();
             services.AddTransient<IHashBroker, HashBroker>();
             services.AddTransient<IDateTimeBroker, DateTimeBroker>();
-            services.AddTransient<IDecisionBroker, DecisionBroker>();
 
             DecisionConfiguration decisionConfiguration =
                 configuration.GetSection("IDecide").Get<DecisionConfiguration>();

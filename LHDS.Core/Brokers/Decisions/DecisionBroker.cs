@@ -6,6 +6,7 @@ using System;
 using System.Collections.Generic;
 using System.Net.Http;
 using System.Net.Http.Headers;
+using System.Security.Claims;
 using System.Threading.Tasks;
 using Azure.Core;
 using Azure.Identity;
@@ -18,14 +19,21 @@ namespace LHDS.Core.Brokers.Decisions
     public class DecisionBroker : IDecisionBroker
     {
         private readonly DecisionConfiguration decisionConfiguration;
-        private readonly TokenCredential credential;
+        private readonly bool includeInteractiveCredentials = false;
         private IRESTFulApiFactoryClient? apiClient = null;
         private AccessToken? accessToken = null;
 
-        public DecisionBroker(DecisionConfiguration decisionConfiguration, TokenCredential credential)
+        public DecisionBroker(DecisionConfiguration decisionConfiguration)
         {
             this.decisionConfiguration = decisionConfiguration;
-            this.credential = credential;
+            this.accessToken = null;
+            this.apiClient = null;
+        }
+
+        internal DecisionBroker(DecisionConfiguration decisionConfiguration, bool includeInteractiveCredentials = false)
+        {
+            this.decisionConfiguration = decisionConfiguration;
+            this.includeInteractiveCredentials = includeInteractiveCredentials;
             this.accessToken = null;
             this.apiClient = null;
         }
@@ -83,13 +91,15 @@ namespace LHDS.Core.Brokers.Decisions
 
         private async ValueTask GetAccessTokenAsync()
         {
+            var credentials = new DefaultAzureCredential(includeInteractiveCredentials) as TokenCredential;
+
             var tokenRequestContext =
                 new TokenRequestContext(
-                new[] { this.decisionConfiguration.IDecideScope }
+                    new[] { this.decisionConfiguration.IDecideScope }
                 );
 
             AccessToken token =
-                await this.credential.GetTokenAsync(
+                await credentials.GetTokenAsync(
                     tokenRequestContext,
                     default);
 

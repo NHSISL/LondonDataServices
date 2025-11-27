@@ -68,9 +68,12 @@ namespace LHDS.Core.Services.Orchestrations.Decisions
                     .Select(async decision => new DecisionCsv
                     {
                         DecisionId = decision.Id,
-                        NhsHash = await this.hashBroker.GenerateSha256HashAsync(
-                            decision.PatientNhsNumber,
-                            this.decisionConfiguration.HashPepper),
+
+                        NhsNumber = this.decisionConfiguration.HashNhsNumber
+                            ? await this.hashBroker.GenerateSha256HashAsync(
+                                decision.PatientNhsNumber,
+                                this.decisionConfiguration.HashPepper)
+                            : decision.PatientNhsNumber,
 
                         PatientInstructionCategory = decision.DecisionTypeName,
                         PatientInstructionState = decision.DecisionChoice,
@@ -83,7 +86,7 @@ namespace LHDS.Core.Services.Orchestrations.Decisions
                 Dictionary<string, int> fieldMappings = new Dictionary<string, int>
                 {
                     { nameof(DecisionCsv.DecisionId), 0 },
-                    { nameof(DecisionCsv.NhsHash), 1 },
+                    { nameof(DecisionCsv.NhsNumber), 1 },
                     { nameof(DecisionCsv.PatientInstructionCategory), 2 },
                     { nameof(DecisionCsv.PatientInstructionState), 3 },
                     { nameof(DecisionCsv.InstructionDate), 4 }

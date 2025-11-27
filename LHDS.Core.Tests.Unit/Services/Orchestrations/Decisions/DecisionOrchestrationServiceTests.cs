@@ -189,7 +189,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Decisions
             new Dictionary<string, int>
             {
                 { nameof(DecisionCsv.DecisionId), 0 },
-                { nameof(DecisionCsv.NhsHash), 1 },
+                { nameof(DecisionCsv.NhsNumber), 1 },
                 { nameof(DecisionCsv.PatientInstructionCategory), 2 },
                 { nameof(DecisionCsv.PatientInstructionState), 3 },
                 { nameof(DecisionCsv.InstructionDate), 4 }

@@ -37,6 +37,9 @@ namespace LHDS.Core.Tests.Integration.IDecide
                 .AddEnvironmentVariables();
 
             IConfiguration configuration = configurationBuilder.Build();
+
+            //TODO: [26630] - Remove internal constructor and apply config for test managed identity 
+            // in appsettings.Development and GitHub secrets [DH]  use config to get managed identity token
             this.credential = new DefaultAzureCredential();
 
             var tokenRequestContext = new TokenRequestContext(
@@ -54,8 +57,15 @@ namespace LHDS.Core.Tests.Integration.IDecide
                     builder.AddApplicationInsights();
                 })
                 .AddDbContextFactory<StorageBroker>()
+
+                //TODO: [26630] - Remove internal constructor and apply config for test managed identity 
+                // in appsettings.Development and GitHub secrets [DH]
                 .AddSingleton<TokenCredential>(credential)
+
+                //TODO: [26630] - Remove internal constructor and apply config for test managed identity 
+                // in appsettings.Development and GitHub secrets [DH]
                 .AddIDecideClient(configuration, accessToken.Token, includeInteractiveCredentials: true)
+
                 .BuildServiceProvider();
 
             this.storageBroker = serviceProvider.GetRequiredService<StorageBroker>();

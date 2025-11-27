@@ -50,6 +50,8 @@
 	<ItemGroup>
 		<InternalsVisibleTo Include="LHDS.Core.Tests.Unit" />
 		<InternalsVisibleTo Include="LHDS.Core.Tests.Acceptance" />
+		<InternalsVisibleTo Include="LHDS.Core.Tests.Integration.IDecide" />
+		<InternalsVisibleTo Include="LHDS.Functions.IDecide" />
 		<InternalsVisibleTo Include="DynamicProxyGenAssembly2" />
 	</ItemGroup>
 

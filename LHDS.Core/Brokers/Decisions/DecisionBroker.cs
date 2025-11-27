@@ -30,8 +30,8 @@ namespace LHDS.Core.Brokers.Decisions
             this.apiClient = null;
         }
 
-        //TODO: [26630] Remove internal constructor and apply config for test managed identity
-        // in appsettings.Development and GitHub secrets
+        //TODO: [26630] - Remove internal constructor and apply config for test managed identity 
+        // in appsettings.Development and GitHub secrets [DH]
         internal DecisionBroker(DecisionConfiguration decisionConfiguration, bool includeInteractiveCredentials = false)
         {
             this.decisionConfiguration = decisionConfiguration;

@@ -68,7 +68,6 @@ namespace LHDS.Core.Services.Orchestrations.Decisions
                     .Select(async decision => new DecisionCsv
                     {
                         DecisionId = decision.Id,
-                        // Make Configurable wether to hash or not to hash
                         NhsHash = await this.hashBroker.GenerateSha256HashAsync(
                             decision.PatientNhsNumber,
                             this.decisionConfiguration.HashPepper),

@@ -45,8 +45,7 @@ var host = new HostBuilder()
 
             .AddIDecideClient(
                 configuration: context.Configuration,
-                accessToken: accessToken.Token,
-                includeInteractiveCredentials: false);
+                accessToken: accessToken.Token);
     })
     .UseDefaultServiceProvider(options => options.ValidateScopes = false)
     .ConfigureFunctionsWorkerDefaults()

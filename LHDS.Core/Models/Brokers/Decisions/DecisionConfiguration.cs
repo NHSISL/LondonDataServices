@@ -2,6 +2,8 @@
 // Copyright (c) North East London ICB. All rights reserved.
 // ---------------------------------------------------------
 
+using System;
+
 namespace LHDS.Core.Models.Brokers.Decisions
 {
     public class DecisionConfiguration
@@ -13,6 +15,7 @@ namespace LHDS.Core.Models.Brokers.Decisions
         public string IDecidePatientDecisionsRelativeUrl { get; set; } = string.Empty;
         public string IDecideRecordAdoptionRelativeUrl { get; set; } = string.Empty;
         public string IDecideScope { get; set; } = string.Empty;
+        public bool HashNhsNumber { get; set; } = false;
         public int MaxResponseContentBufferSizeInMegaBytes { get; set; } = 400;
         public int TimeoutInSeconds { get; set; } = 600;
     }

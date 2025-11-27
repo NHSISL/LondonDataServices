@@ -120,6 +120,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Decisions
             ShouldThrowValidationExceptionOnGetPatientDecisionsIfDocumentRequirementsAreNullOrEmptyAndLogItAsync()
         {
             // given
+            this.decisionConfiguration.HashNhsNumber = true;
             List<Decision> expectedDecisions = CreateRandomDecisions();
             string expectedHash = GetRandomString();
             Dictionary<string, int> fieldMappings = GetFieldMappings();
@@ -152,7 +153,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Decisions
                 .Setup(broker => broker.MapObjectToCsvAsync(
                     It.Is<List<DecisionCsv>>(csvs =>
                         csvs.All(csv => expectedDecisions.Any(
-                            decision => decision.Id == csv.DecisionId && csv.NhsHash == expectedHash))),
+                            decision => decision.Id == csv.DecisionId && csv.NhsNumber == expectedHash))),
                     true,
                     fieldMappings,
                     false))
@@ -189,7 +190,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Decisions
                     It.Is<List<DecisionCsv>>(csvs =>
                         csvs.All(csv => expectedDecisions.Any(
                             decision => decision.Id == csv.DecisionId &&
-                                        csv.NhsHash == expectedHash))),
+                                        csv.NhsNumber == expectedHash))),
                     true,
                     fieldMappings,
                     false),

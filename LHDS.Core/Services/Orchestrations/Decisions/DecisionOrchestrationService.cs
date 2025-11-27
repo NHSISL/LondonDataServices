@@ -57,6 +57,11 @@ namespace LHDS.Core.Services.Orchestrations.Decisions
                 List<Decision> decisions =
                     await this.decisionService.GetPatientDecisions();
 
+                if (decisions.Count == 0)
+                {
+                    return decisions;
+                }
+
                 DateTimeOffset currentPollDate = DateTimeOffset.UtcNow;
 
                 List<Task<DecisionCsv>> decisionCsvTasks = decisions
@@ -66,6 +71,7 @@ namespace LHDS.Core.Services.Orchestrations.Decisions
                         NhsHash = await this.hashBroker.GenerateSha256HashAsync(
                             decision.PatientNhsNumber,
                             this.decisionConfiguration.HashPepper),
+
                         PatientInstructionCategory = decision.DecisionTypeName,
                         PatientInstructionState = decision.DecisionChoice,
                         InstructionDate = decision.CreatedDate
@@ -129,7 +135,7 @@ namespace LHDS.Core.Services.Orchestrations.Decisions
                     }
                 }
 
-                await this.decisionService.RecordAdoption(decisions);
+               await this.decisionService.RecordAdoption(decisions);
 
                 return decisions;
             });

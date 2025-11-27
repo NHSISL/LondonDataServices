@@ -2,9 +2,11 @@
 // Copyright (c) North East London ICB. All rights reserved.
 // ---------------------------------------------------------
 
-using System.Runtime.InteropServices;
+using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
-using System.Security.Principal;
+using System.Threading;
+using Azure.Core;
+using Azure.Identity;
 using LHDS.Core.Brokers.Storages.Sql;
 using LHDS.Core.Clients;
 using LHDS.Core.Clients.Extensions;
@@ -22,6 +24,7 @@ namespace LHDS.Core.Tests.Integration.IDecide
         private readonly IStorageBroker storageBroker;
         private readonly BlobContainers blobContainers;
         private readonly ITestOutputHelper output;
+        private readonly TokenCredential credential;
 
         public IDecideTests(ITestOutputHelper output)
         {
@@ -35,17 +38,17 @@ namespace LHDS.Core.Tests.Integration.IDecide
 
             IConfiguration configuration = configurationBuilder.Build();
 
-            ClaimsPrincipal claimsPrincipal;
+            //TODO: [26630] - Remove internal constructor and apply config for test managed identity 
+            // in appsettings.Development and GitHub secrets [DH]  use config to get managed identity token
+            this.credential = new DefaultAzureCredential();
 
-            if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
-            {
-                var windowsIdentity = WindowsIdentity.GetCurrent();
-                claimsPrincipal = new ClaimsPrincipal(windowsIdentity);
-            }
-            else
-            {
-                claimsPrincipal = new ClaimsPrincipal();
-            }
+            var tokenRequestContext = new TokenRequestContext(
+                new[] { "https://graph.microsoft.com/.default" });
+
+            AccessToken accessToken = this.credential
+                .GetTokenAsync(tokenRequestContext, default)
+                .GetAwaiter()
+                .GetResult();
 
             var serviceProvider = new ServiceCollection()
                 .AddLogging(builder =>
@@ -54,12 +57,20 @@ namespace LHDS.Core.Tests.Integration.IDecide
                     builder.AddApplicationInsights();
                 })
                 .AddDbContextFactory<StorageBroker>()
-                .AddIDecideClient(configuration, claimsPrincipal)
+
+                //TODO: [26630] - Remove internal constructor and apply config for test managed identity 
+                // in appsettings.Development and GitHub secrets [DH]
+                .AddSingleton<TokenCredential>(credential)
+
+                //TODO: [26630] - Remove internal constructor and apply config for test managed identity 
+                // in appsettings.Development and GitHub secrets [DH]
+                .AddIDecideClient(configuration, accessToken.Token, includeInteractiveCredentials: true)
+
                 .BuildServiceProvider();
 
             this.storageBroker = serviceProvider.GetRequiredService<StorageBroker>();
             this.blobContainers = serviceProvider.GetRequiredService<BlobContainers>();
-            iDecideClient = serviceProvider.GetRequiredService<IIDecideClient>();
+            this.iDecideClient = serviceProvider.GetRequiredService<IIDecideClient>();
         }
     }
 }

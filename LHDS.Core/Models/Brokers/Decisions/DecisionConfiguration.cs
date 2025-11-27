@@ -12,6 +12,7 @@ namespace LHDS.Core.Models.Brokers.Decisions
         public string IDecideBaseUrl { get; set; } = string.Empty;
         public string IDecidePatientDecisionsRelativeUrl { get; set; } = string.Empty;
         public string IDecideRecordAdoptionRelativeUrl { get; set; } = string.Empty;
+        public string IDecideScope { get; set; } = string.Empty;
         public int MaxResponseContentBufferSizeInMegaBytes { get; set; } = 400;
         public int TimeoutInSeconds { get; set; } = 600;
     }

@@ -50,6 +50,27 @@ namespace LHDS.Core.Clients.Extensions
             return services;
         }
 
+        //TODO: [26630] - Remove internal constructor and apply config for test managed identity 
+        // in appsettings.Development and GitHub secrets [DH]
+        internal static IServiceCollection AddIDecideClient(
+           this IServiceCollection services,
+           IConfiguration configuration,
+           string accessToken,
+           bool includeInteractiveCredentials)
+        {
+            services.AddSingleton<IConfiguration>(_ => configuration);
+
+            AddProviders(services);
+            AddBrokers(services, configuration, GetClaimsPrincipalFromToken(accessToken), includeInteractiveCredentials);
+            AddServices(services);
+            AddProcessingServices(services);
+            AddOrchestrations(services);
+            AddCoordinations(services);
+            AddClients(services, configuration);
+
+            return services;
+        }
+
         public static IServiceCollection AddIDecideClient(
             this IServiceCollection services,
             IConfiguration configuration,
@@ -71,19 +92,33 @@ namespace LHDS.Core.Clients.Extensions
         private static void AddProviders(IServiceCollection services)
         { }
 
+        //TODO: [26630] - Remove internal constructor and apply config for test managed identity 
+        // in appsettings.Development and GitHub secrets [DH]
         private static void AddBrokers(
             IServiceCollection services,
             IConfiguration configuration,
-            ClaimsPrincipal claimsPrincipal)
+            ClaimsPrincipal claimsPrincipal,
+            bool includeInteractiveCredentials = false)
         {
             if (claimsPrincipal is not null)
             {
                 services.AddTransient<ISecurityAuditBroker>(_ =>
                     new SecurityAuditBroker(claimsPrincipal, new SecurityConfigurations()));
+
+                //TODO: [26630] - Remove internal constructor and apply config for test managed identity 
+                // in appsettings.Development and GitHub secrets [DH] and remove this
+                services.AddTransient<IDecisionBroker>(_ =>
+                    new DecisionBroker(
+                        decisionConfiguration: configuration.GetSection("IDecide").Get<DecisionConfiguration>(),
+                        includeInteractiveCredentials));
             }
             else
             {
                 services.AddTransient<ISecurityAuditBroker, SecurityAuditBroker>();
+                
+                //TODO: [26630] - Remove internal constructor and apply config for test managed identity 
+                // in appsettings.Development and GitHub secrets [DH] and move this line down
+                services.AddTransient<IDecisionBroker, DecisionBroker>();
             }
 
             services.AddTransient<IStorageBroker>(sp =>
@@ -97,7 +132,6 @@ namespace LHDS.Core.Clients.Extensions
             services.AddTransient<ICsvHelperBroker, CsvHelperBroker>();
             services.AddTransient<IHashBroker, HashBroker>();
             services.AddTransient<IDateTimeBroker, DateTimeBroker>();
-            services.AddTransient<IDecisionBroker, DecisionBroker>();
 
             DecisionConfiguration decisionConfiguration =
                 configuration.GetSection("IDecide").Get<DecisionConfiguration>();

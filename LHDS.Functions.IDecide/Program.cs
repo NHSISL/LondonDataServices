@@ -31,6 +31,8 @@ var host = new HostBuilder()
     })
     .ConfigureServices((context, services) =>
     {
+        //TODO: [26630] - Remove internal constructor and apply config for test managed identity 
+        // in appsettings.Development and GitHub secrets [DH]
         var credential = new DefaultAzureCredential();
         var tokenRequestContext = new TokenRequestContext(new[] { "https://graph.microsoft.com/.default" });
         AccessToken accessToken = credential.GetTokenAsync(tokenRequestContext).Result;

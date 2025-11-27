@@ -18,9 +18,10 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Decisions
     public partial class DecisionOrchestrationServiceTests
     {
         [Fact]
-        public async Task ShouldGetPatientDecisionsAsync()
+        public async Task ShouldGetPatientDecisionsWithHashingAsync()
         {
             // given
+            this.decisionConfiguration.HashNhsNumber = true;
             List<Decision> expectedDecisions = CreateRandomDecisions();
             string expectedContainer = this.blobContainers.Ingress;
             DateTimeOffset currentPollDate = DateTimeOffset.UtcNow;
@@ -52,7 +53,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Decisions
                     It.Is<List<DecisionCsv>>(csvs =>
                         csvs.All(csv => expectedDecisions.Any(
                             decision => decision.Id == csv.DecisionId &&
-                                csv.NhsHash == expectedHash))),
+                                csv.NhsNumber == expectedHash))),
                     true,
                     fieldMappings,
                     false))
@@ -100,7 +101,110 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Decisions
                     It.Is<List<DecisionCsv>>(csvs =>
                         csvs.All(csv => expectedDecisions.Any(
                             decision => decision.Id == csv.DecisionId &&
-                                csv.NhsHash == expectedHash))),
+                                csv.NhsNumber == expectedHash))),
+                    true,
+                    fieldMappings,
+                    false),
+                    Times.Once);
+
+            this.documentServiceMock.Verify(service =>
+                service.AddDocumentAsync(
+                    It.IsAny<Stream>(),
+                    expectedFileName,
+                    expectedContainer),
+                    Times.Once);
+
+            this.decisionServiceMock.Verify(service =>
+                service.RecordAdoption(expectedDecisions), Times.Once);
+
+            documentStream.Position = 0;
+            ReadAllBytesFromStream(documentStream).Should().BeEquivalentTo(expectedDocumentBytes);
+
+            this.decisionServiceMock.VerifyNoOtherCalls();
+            this.documentServiceMock.VerifyNoOtherCalls();
+            this.csvHelperBrokerMock.VerifyNoOtherCalls();
+            this.hashBrokerMock.VerifyNoOtherCalls();
+            this.loggingBrokerMock.VerifyNoOtherCalls();
+        }
+
+        [Fact]
+        public async Task ShouldGetPatientDecisionsWithoutHashingAsync()
+        {
+            // given
+            this.decisionConfiguration.HashNhsNumber = false;
+            List<Decision> expectedDecisions = CreateRandomDecisions();
+            string expectedContainer = this.blobContainers.Ingress;
+            DateTimeOffset currentPollDate = DateTimeOffset.UtcNow;
+
+            string expectedFileName = $"{this.decisionConfiguration.FolderName}/" +
+                $"{currentPollDate:yyyyMMdd}/" +
+                $"{this.decisionConfiguration.FilePrefix}_{currentPollDate:yyyyMMddHHmmss}.csv";
+
+            string expectedHash = GetRandomString();
+            string expectedCsvProcessedData = GetRandomString();
+            byte[] expectedDocumentBytes = Encoding.UTF8.GetBytes(expectedCsvProcessedData);
+            Stream tempDocument = new MemoryStream(expectedDocumentBytes);
+            var documentStream = new MemoryStream();
+            Dictionary<string, int> fieldMappings = GetFieldMappings();
+
+            this.decisionServiceMock
+                .Setup(service => service.GetPatientDecisions())
+                .ReturnsAsync(expectedDecisions);
+
+            this.csvHelperBrokerMock
+                .Setup(broker => broker.MapObjectToCsvAsync(
+                    It.Is<List<DecisionCsv>>(csvs =>
+                        csvs.All(csv => expectedDecisions.Any(
+                            decision => decision.Id == csv.DecisionId &&
+                                csv.NhsNumber == decision.PatientNhsNumber))),
+                    true,
+                    fieldMappings,
+                    false))
+                .ReturnsAsync(expectedCsvProcessedData);
+
+            this.documentServiceMock
+                .Setup(service => service.AddDocumentAsync(
+                    It.Is(SameStreamAs(tempDocument)), expectedFileName, expectedContainer))
+                .Callback<Stream, string, string>((output, fileName, container) =>
+                {
+                    tempDocument.Position = 0;
+                    tempDocument.CopyTo(documentStream);
+                })
+                .Returns(ValueTask.CompletedTask);
+
+            this.decisionServiceMock
+                .Setup(service => service.RecordAdoption(expectedDecisions))
+                .Returns(ValueTask.CompletedTask);
+
+            // when
+            List<Decision> actualDecisions =
+                await this.decisionOrchestrationService.GetPatientDecisions();
+
+            // then
+            actualDecisions.Should().NotBeNull();
+            compareLogic.Compare(expectedDecisions, actualDecisions).AreEqual.Should().BeTrue();
+
+            this.decisionServiceMock.Verify(service =>
+                service.GetPatientDecisions(),
+                    Times.Once);
+
+            foreach (string nhsNumber in expectedDecisions.Select(d => d.PatientNhsNumber))
+            {
+                int count = expectedDecisions.Count(decision => decision.PatientNhsNumber == nhsNumber);
+
+                this.hashBrokerMock.Verify(
+                    broker => broker.GenerateSha256HashAsync(
+                        It.Is<string>(number => number == nhsNumber),
+                        this.decisionConfiguration.HashPepper),
+                        Times.Never);
+            }
+
+            this.csvHelperBrokerMock.Verify(broker =>
+                broker.MapObjectToCsvAsync(
+                    It.Is<List<DecisionCsv>>(csvs =>
+                        csvs.All(csv => expectedDecisions.Any(
+                            decision => decision.Id == csv.DecisionId &&
+                                csv.NhsNumber == decision.PatientNhsNumber))),
                     true,
                     fieldMappings,
                     false),

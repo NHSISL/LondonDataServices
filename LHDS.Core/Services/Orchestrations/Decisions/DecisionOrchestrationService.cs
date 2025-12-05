@@ -100,7 +100,7 @@ namespace LHDS.Core.Services.Orchestrations.Decisions
                         shouldAddTrailingComma: false);
 
                 string fileName = $"{this.decisionConfiguration.FolderName}/" +
-                    $"{currentPollDate:yyyyMMdd}/" +
+                    $"{currentPollDate:yyyyMMddHHmmss}/" +
                     $"{this.decisionConfiguration.FilePrefix}_{currentPollDate:yyyyMMddHHmmss}.csv";
 
                 string container = this.blobContainers.Ingress;

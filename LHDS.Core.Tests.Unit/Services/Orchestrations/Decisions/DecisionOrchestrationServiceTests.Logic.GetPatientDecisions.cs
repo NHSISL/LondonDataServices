@@ -29,7 +29,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Decisions
             DateTimeOffset currentPollDate = DateTimeOffset.UtcNow;
 
             string expectedFileName = $"{this.decisionConfiguration.FolderName}/" +
-                $"{currentPollDate:yyyyMMdd}/" +
+                $"{currentPollDate:yyyyMMddHHmmss}/" +
                 $"{this.decisionConfiguration.FilePrefix}_{currentPollDate:yyyyMMddHHmmss}.csv";
 
             string expectedHash = GetRandomString();

@@ -23,6 +23,11 @@ namespace LHDS.Core.Brokers.Storages.Sql
                 .IsRequired();
 
             modelBuilder.Entity<ResolvedAddress>()
+                .Property(address => address.HashedUnstructuredPostalAddress)
+                .HasColumnType("char(32)")
+                .IsRequired(false);
+
+            modelBuilder.Entity<ResolvedAddress>()
                .Property(address => address.AlternateUnstructuredPostalAddress)
                .IsRequired(false);
 

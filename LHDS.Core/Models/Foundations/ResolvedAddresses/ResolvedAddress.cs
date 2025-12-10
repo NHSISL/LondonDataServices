@@ -13,6 +13,7 @@ namespace LHDS.Core.Models.Foundations.ResolvedAddresses
         public Guid UniqueReference { get; set; }
         public Guid? BatchReference { get; set; }
         public string UnstructuredPostalAddress { get; set; } = string.Empty;
+        public char[] HashedUnstructuredPostalAddress { get; set; } = new char[32];
         public string AlternateUnstructuredPostalAddress { get; set; } = string.Empty;
         public string? UPRN { get; set; }
         public string? USRN { get; set; }

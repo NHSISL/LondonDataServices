@@ -56,7 +56,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.ResolvedAddresses
         [InlineData("")]
         [InlineData(" ")]
         public async Task ShouldThrowValidationExceptionOnAddIfResolvedAddresssIsInvalidAndLogItAsync(
-            string invalidText)
+        string invalidText)
         {
             // given
             DateTimeOffset randomDataTimeOffset = GetRandomDateTimeOffset();
@@ -72,7 +72,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.ResolvedAddresses
                 identifierBrokerMock.Object,
                 dateTimeBrokerMock.Object,
                 securityBrokerMock.Object,
-                loggingBrokerMock.Object, 
+                loggingBrokerMock.Object,
                 auditBrokerMock.Object)
             {
                 CallBase = true
@@ -105,6 +105,10 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.ResolvedAddresses
             invalidResolvedAddressException.AddData(
                 key: nameof(ResolvedAddress.UnstructuredPostalAddress),
                 values: "Text is required");
+
+            invalidResolvedAddressException.AddData(
+                key: nameof(ResolvedAddress.HashedUnstructuredPostalAddress),
+                values: "Char array length should not be greater than 32");
 
             invalidResolvedAddressException.AddData(
                  key: nameof(ResolvedAddress.CreatedDate),
@@ -212,7 +216,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.ResolvedAddresses
                 identifierBrokerMock.Object,
                 dateTimeBrokerMock.Object,
                 securityBrokerMock.Object,
-                loggingBrokerMock.Object, 
+                loggingBrokerMock.Object,
                 auditBrokerMock.Object)
             {
                 CallBase = true
@@ -242,7 +246,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.ResolvedAddresses
                 .BeEquivalentTo(expectedResolvedAddressValidationException);
 
             resolvedAddressServiceMock.Verify(service =>
-                service.ApplyAddAuditAsync(invalidResolvedAddress), 
+                service.ApplyAddAuditAsync(invalidResolvedAddress),
                     Times.Once());
 
             this.dateTimeBrokerMock.Verify(broker =>

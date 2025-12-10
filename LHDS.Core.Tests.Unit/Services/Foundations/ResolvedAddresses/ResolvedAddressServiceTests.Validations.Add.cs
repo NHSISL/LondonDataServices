@@ -107,10 +107,6 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.ResolvedAddresses
                 values: "Text is required");
 
             invalidResolvedAddressException.AddData(
-                key: nameof(ResolvedAddress.HashedUnstructuredPostalAddress),
-                values: "Char array length should not be greater than 32");
-
-            invalidResolvedAddressException.AddData(
                  key: nameof(ResolvedAddress.CreatedDate),
                  values:
                  [

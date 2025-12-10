@@ -24,7 +24,10 @@ namespace LHDS.Core.Brokers.Storages.Sql
 
             modelBuilder.Entity<ResolvedAddress>()
                 .Property(address => address.HashedUnstructuredPostalAddress)
-                .HasColumnType("char(32)")
+                .HasConversion(
+                    v => new string(v),
+                    v => v.ToCharArray())
+                .HasMaxLength(32)
                 .IsRequired(false);
 
             modelBuilder.Entity<ResolvedAddress>()

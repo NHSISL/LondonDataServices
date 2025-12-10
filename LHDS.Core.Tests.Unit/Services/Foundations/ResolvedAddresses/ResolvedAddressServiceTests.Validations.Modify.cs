@@ -64,7 +64,8 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.ResolvedAddresses
         [InlineData(null)]
         [InlineData("")]
         [InlineData(" ")]
-        public async Task ShouldThrowValidationExceptionOnModifyIfResolvedAddressIsInvalidAndLogItAsync(string invalidText)
+        public async Task ShouldThrowValidationExceptionOnModifyIfResolvedAddressIsInvalidAndLogItAsync(
+            string invalidText)
         {
             // given 
             EntraUser randomEntraUser = CreateRandomEntraUser();
@@ -113,6 +114,10 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.ResolvedAddresses
             invalidResolvedAddressException.AddData(
                 key: nameof(ResolvedAddress.UnstructuredPostalAddress),
                 values: "Text is required");
+
+            invalidResolvedAddressException.AddData(
+                key: nameof(ResolvedAddress.HashedUnstructuredPostalAddress),
+                values: "Char array length should not be greater than 32");
 
             invalidResolvedAddressException.AddData(
                 key: nameof(ResolvedAddress.CreatedDate),

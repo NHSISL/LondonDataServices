@@ -279,7 +279,7 @@ namespace LHDS.Core.Services.Foundations.ResolvedAddresses
                                 message: $"Invalid address parts found in line item: {indexOfInvalidItem + 1} " +
                                          $"from file: {fileName}",
                                 fileName,
-                                null);
+                                resolvedAddress.Id.ToString());
                         }
                     }
 

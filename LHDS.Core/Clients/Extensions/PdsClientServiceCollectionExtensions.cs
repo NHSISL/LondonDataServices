@@ -393,7 +393,7 @@ namespace LHDS.Core.Clients.Extensions
 
             Validate(
                 createException: () => new InvalidConfigurationException(
-                    message: "Invalid mesh configuration settings."),
+                    message: "Invalid PDS configuration settings."),
 
                 (Rule: IsInvalid(pdsConfiguration.InputFolder),
                     Parameter: "pdsSettings__inputFolder"),

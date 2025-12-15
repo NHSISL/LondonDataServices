@@ -6,6 +6,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
 using Force.DeepCloner;
@@ -95,6 +96,15 @@ namespace LHDS.Core.Services.Orchestrations.ResolvedAddresses
                 List<ResolvedAddress> resolvedAddresses = await this.csvHelperBroker
                     .MapCsvToObjectAsync<ResolvedAddress>(data: content, hasHeaderRecord: true, fieldMappings);
 
+                foreach (ResolvedAddress address in resolvedAddresses)
+                {
+                    ValidateNullUnstructuredPostalAddress(address.UnstructuredPostalAddress);
+
+                    address.UnstructuredPostalAddress = HashUnstructuredPostalAddress(
+                        address.UnstructuredPostalAddress);
+
+                }
+
                 await this.resolvedAddressProcessingService
                     .BulkAddResolvedAddressesAsync(resolvedAddresses, fileName);
 
@@ -106,6 +116,20 @@ namespace LHDS.Core.Services.Orchestrations.ResolvedAddresses
                     correlationId: correlationId.ToString());
             }
         });
+
+        private static string HashUnstructuredPostalAddress(string unstructuredPostalAddress)
+        {
+            using (MD5 md5 = MD5.Create())
+            {
+                byte[] inputBytes = Encoding.UTF8.GetBytes(unstructuredPostalAddress);
+                byte[] hashBytes = md5.ComputeHash(inputBytes);
+
+                return BitConverter
+                    .ToString(hashBytes)
+                    .Replace("-", string.Empty)
+                    .ToLowerInvariant();
+            }
+        }
 
         public ValueTask MatchAddressDataAsync() =>
         TryCatch(async () =>

@@ -53,6 +53,14 @@ namespace LHDS.Core.Services.Orchestrations.ResolvedAddresses
             }
         }
 
+        private static void ValidateNullUnstructuredPostalAddress(string unstructuredPostalAddress)
+        {
+            Validate<InvalidArgumentResolvedAddressOrchestrationException>(
+                message: "Invalid argument resolved address orchestration exception, " +
+                    "please correct the errors and try again.",
+                (Rule: IsInvalid(unstructuredPostalAddress), Parameter: "UnstructuredPostalAddress"));
+        }
+
         private static dynamic IsInvalidInputStream(Stream? stream) => new
         {
             Condition = stream is null || stream.Length == 0,

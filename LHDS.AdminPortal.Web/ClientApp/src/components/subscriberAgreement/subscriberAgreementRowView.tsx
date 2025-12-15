@@ -6,19 +6,30 @@ import { Link } from "react-router-dom";
 import { SubscriberCredential } from "../../models/subscriberCredentials/subscriberCredentials";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCheck, faTimes } from "@fortawesome/free-solid-svg-icons";
+import { SupplierView } from "../../models/views/components/suppliers/supplierView";
 
 type SubscriberAgreementRowProps = {
     subscriberCredential: SubscriberCredential;
+    suppliers: SupplierView[];
 }
 
 const SubscriberRowView: FunctionComponent<SubscriberAgreementRowProps> = (props) => {
     const {
-        subscriberCredential
+        subscriberCredential,
+        suppliers
     } = props;
+
+    const supplier = suppliers?.find(
+        (s: any) => s.id?.toString() === subscriberCredential.supplierId?.toString()
+    );
+    const supplierName = supplier ? supplier.name : subscriberCredential.supplierId?.toString();
 
     return (<>
 
         <TableBaseRow>
+            <TableBaseData>
+                {supplierName}
+            </TableBaseData>
             <TableBaseData>
                 {subscriberCredential.id.toString()}
             </TableBaseData>

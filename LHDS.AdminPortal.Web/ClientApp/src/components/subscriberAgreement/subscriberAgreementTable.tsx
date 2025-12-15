@@ -17,8 +17,9 @@ import { SpinnerBase } from "../bases/spinner/SpinnerBase";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faPlusCircle, faRefresh } from "@fortawesome/free-solid-svg-icons";
 import { Link } from "react-router-dom";
-import { Row } from "react-bootstrap";
+import { Row, Form } from "react-bootstrap";
 import { subscriberCredentialViewService } from "../../services/views/subscriberCredentials/subscriberCredentialViewService";
+import { supplierViewService } from "../../services/views/suppliers/supplierViewService";
 import { SubscriberCredentialView } from "../../models/views/components/subscriberCredentials/subscriberCredentialView";
 
 type SubscriberAgreementTableProps = {};
@@ -27,6 +28,12 @@ const SubscriberAgreementTable: FunctionComponent<SubscriberAgreementTableProps>
     const [searchTerm, setSearchTerm] = useState<string>("");
     const [debouncedTerm, setDebouncedTerm] = useState<string>("");
     const [showSpinner, setShowSpinner] = useState(false);
+    const [selectedSupplierId, setSelectedSupplierId] = useState<string>("");
+    const [activeFilter, setActiveFilter] = useState<string>("all");
+
+    // Get suppliers for filter dropdown
+    const { mappedSuppliers: suppliersRetrieved, isLoading: isSuppliersLoading } =
+        supplierViewService.useGetAllSuppliers();
 
     const {
         mappedSubscriberCredentials: subscriberCredentialRetrieved,
@@ -67,6 +74,15 @@ const SubscriberAgreementTable: FunctionComponent<SubscriberAgreementTableProps>
         }, 200);
     };
 
+    // Filter subscriber credentials by selected supplier and active status
+    const filteredSubscriberCredentials = subscriberCredentialRetrieved
+        ?.filter((cred: SubscriberCredentialView) =>
+            (!selectedSupplierId || cred.supplierId?.toString() === selectedSupplierId) &&
+            (activeFilter === "all" ||
+                (activeFilter === "active" && cred.isActive) ||
+                (activeFilter === "inactive" && !cred.isActive))
+        );
+
     return (
         <div className="infiniteScrollContainer">
             <CardBase>
@@ -84,7 +100,41 @@ const SubscriberAgreementTable: FunctionComponent<SubscriberAgreementTableProps>
                                         placeholder="Search for Subscriber Agreements...."
                                         onChange={(e) => { handleSearchChange(e.currentTarget.value) }} />
 
-                                    <div className="input-group-append">
+                                    <Form.Select
+                                        value={selectedSupplierId}
+                                        onChange={e => setSelectedSupplierId(e.target.value)}
+                                        disabled={isSuppliersLoading}
+                                        style={{ maxWidth: 150, marginLeft: 10 }}
+                                    >
+                                        {isSuppliersLoading ? (
+                                            <option value="">Loading suppliers...</option>
+                                        ) : (
+                                            <>
+                                                <option value="">All Suppliers</option>
+                                                {suppliersRetrieved &&
+                                                    suppliersRetrieved
+                                                        .filter((supplier: any) => supplier.isIngestionTracked === true || supplier.isIngestionTracked === 1)
+                                                        .map((supplier: any) => (
+                                                            <option key={supplier.id} value={supplier.id}>
+                                                                {supplier.name}
+                                                            </option>
+                                                        ))}
+                                            </>
+                                        )}
+                                    </Form.Select>
+
+                                    {/* Active/Inactive Filter Dropdown */}
+                                    <Form.Select
+                                        value={activeFilter}
+                                        onChange={e => setActiveFilter(e.target.value)}
+                                        style={{ maxWidth: 150, marginLeft: 10 }}
+                                    >
+                                        <option value="all">All Statuses</option>
+                                        <option value="active">Active</option>
+                                        <option value="inactive">Inactive</option>
+                                    </Form.Select>
+
+                                    <div className="input-group-append" style={{ marginLeft: 10 }}>
                                         <Link to="/subscriberAgreement/new">
                                             <button onClick={() => { }} className="btn btn-primary"><FontAwesomeIcon icon={faPlusCircle} />&nbsp;New</button>
                                         </Link>
@@ -93,7 +143,7 @@ const SubscriberAgreementTable: FunctionComponent<SubscriberAgreementTableProps>
                                     {showSpinner ? (
                                         <SpinnerBase />
                                     ) : (
-                                        <div className="input-group-append">
+                                            <div className="input-group-append" style={{ marginLeft: 10 }}>
                                             <button className="btn btn-outline-secondary" id="refreshButton" onClick={refreshData}>
                                                 <FontAwesomeIcon icon={faRefresh} />
                                             </button>
@@ -103,33 +153,36 @@ const SubscriberAgreementTable: FunctionComponent<SubscriberAgreementTableProps>
                             </Row>
 
                             {!showSpinner && (
-                            <TableBase>
-                                <TableBaseThead>
-                                    <TableBaseRow>
-                                        <TableBaseHeader>Supplier Agreement Id</TableBaseHeader>
-                                        <TableBaseHeader>Supplier Sharing Agreement ShortName</TableBaseHeader>
-                                        <TableBaseHeader>Supplier Sharing Agreement Guid</TableBaseHeader>
-                                        <TableBaseHeader>Active</TableBaseHeader>
-                                        <TableBaseHeader></TableBaseHeader>
-                                    </TableBaseRow>
-                                </TableBaseThead>
-                                <TableBaseTbody>
-                                    {subscriberCredentialRetrieved?.map(
-                                        (subscriberCredentialHomeView: SubscriberCredentialView) => (
-                                            <SubscriberAgreementRow
-                                                key={subscriberCredentialHomeView.id.toString()}
-                                                subscriberCredential={subscriberCredentialHomeView} />)
-                                    )}
-                                    <tr>
-                                        <td colSpan={4} className="text-center">
-                                            <InfiniteScrollLoader
-                                                loading={isLoading || isFetchingNextPage}
-                                                spinner={<SpinnerBase />}
-                                                noMorePages={hasNoMorePages()}
-                                                noMorePagesMessage={<>---No more Subscriber Agreements---</>} />
-                                        </td>
-                                    </tr>
-                                </TableBaseTbody>
+                                <TableBase>
+                                    <TableBaseThead>
+                                        <TableBaseRow>
+                                            <TableBaseHeader>Supplier</TableBaseHeader>
+                                            <TableBaseHeader>Supplier Agreement Id</TableBaseHeader>
+                                            <TableBaseHeader>Sharing Agreement Name</TableBaseHeader>
+                                            <TableBaseHeader>Sharing Agreement Guid</TableBaseHeader>
+                                            <TableBaseHeader>Active</TableBaseHeader>
+                                            <TableBaseHeader></TableBaseHeader>
+                                        </TableBaseRow>
+                                    </TableBaseThead>
+                                    <TableBaseTbody>
+                                        {filteredSubscriberCredentials?.map(
+                                            (subscriberCredentialHomeView: SubscriberCredentialView) => (
+                                                <SubscriberAgreementRow
+                                                    key={subscriberCredentialHomeView.id.toString()}
+                                                    subscriberCredential={subscriberCredentialHomeView}
+                                                    suppliers={suppliersRetrieved}
+                                                />)
+                                        )}
+                                        <tr>
+                                            <td colSpan={4} className="text-center">
+                                                <InfiniteScrollLoader
+                                                    loading={isLoading || isFetchingNextPage}
+                                                    spinner={<SpinnerBase />}
+                                                    noMorePages={hasNoMorePages()}
+                                                    noMorePagesMessage={<>---No more Subscriber Agreements---</>} />
+                                            </td>
+                                        </tr>
+                                    </TableBaseTbody>
                                 </TableBase>
                             )}
                         </InfiniteScroll>

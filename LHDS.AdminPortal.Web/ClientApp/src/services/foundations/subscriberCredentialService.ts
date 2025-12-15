@@ -25,6 +25,26 @@ export const subscriberCredentialService = {
             });
     },
 
+    useCreateSubscriberCredentialNoKeys: () => {
+        const broker = new SubscriberCredentialBroker();
+        const queryClient = useQueryClient();
+        const msal = useMsal();
+
+        return useMutation((subscriberCredential: SubscriberCredential) => {
+            const date = new Date();
+            subscriberCredential.createdDate = subscriberCredential.updatedDate = date;
+            subscriberCredential.createdBy = subscriberCredential.updatedBy = msal.accounts[0].username;
+
+            return broker.PostSubscriberCredentialAsync(subscriberCredential);
+        },
+            {
+                onSuccess: (variables) => {
+                    queryClient.invalidateQueries("SubscriberCredentialGetAll");
+                    queryClient.invalidateQueries(["SubscriberCredentialGetById", { id: variables.id }]);
+                }
+            });
+    },
+
     useRegenerateKeysSubscriberCredential: () => {
         const broker = new SubscriberCredentialBroker();
         const queryClient = useQueryClient();

@@ -3,17 +3,16 @@
 // ---------------------------------------------------------
 
 using System;
-using LHDS.Core.Models.Bases;
 
-namespace LHDS.Core.Models.Foundations.DecisionPolls
+namespace LHDS.Core.Models.Foundations.DecisionTypes
 {
-    public class DecisionPoll : IKey, IAudit
+    public class DecisionType
     {
         public Guid Id { get; set; }
-        public DateTimeOffset LastPoll { get; set; }
-        public string CreatedBy { get; set; } = string.Empty;
+        public string Name { get; set; }
+        public string CreatedBy { get; set; }
         public DateTimeOffset CreatedDate { get; set; }
-        public string UpdatedBy { get; set; } = string.Empty;
+        public string UpdatedBy { get; set; }
         public DateTimeOffset UpdatedDate { get; set; }
     }
 }

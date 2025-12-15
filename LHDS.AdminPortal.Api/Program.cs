@@ -8,11 +8,13 @@ using System.Net.Http;
 using System.Text.Json;
 using Attrify.Extensions;
 using Attrify.InvisibleApi.Models;
+using Azure.Core;
 using Azure.Core.Pipeline;
 using Azure.Identity;
 using Azure.Storage.Blobs;
 using ISL.Security.Client.Models.Clients;
 using LHDS.Core.Brokers.DateTimes;
+using LHDS.Core.Brokers.Decisions;
 using LHDS.Core.Brokers.Hashing;
 using LHDS.Core.Brokers.Identifiers;
 using LHDS.Core.Brokers.Loggings;
@@ -22,6 +24,7 @@ using LHDS.Core.Brokers.Storages.Sql;
 using LHDS.Core.Brokers.Telemetries;
 using LHDS.Core.Clients;
 using LHDS.Core.Clients.Extensions;
+using LHDS.Core.Models.Brokers.Decisions;
 using LHDS.Core.Models.Brokers.Storages.Blobs;
 using LHDS.Core.Models.Configurations;
 using LHDS.Core.Models.Foundations.Addresses;
@@ -48,6 +51,7 @@ using LHDS.Core.Services.Foundations.Cryptographies;
 using LHDS.Core.Services.Foundations.DataSets;
 using LHDS.Core.Services.Foundations.DataSetSpecifications;
 using LHDS.Core.Services.Foundations.DataTypes;
+using LHDS.Core.Services.Foundations.Decisions;
 using LHDS.Core.Services.Foundations.Documents;
 using LHDS.Core.Services.Foundations.HealthChecks;
 using LHDS.Core.Services.Foundations.HealthChecks.IngestionTracking;
@@ -324,7 +328,7 @@ namespace LHDS.AdminPortal.Api
 
         private static void AddBrokers(IServiceCollection services, IConfiguration configuration)
         {
-            ValidateAppInsightsCinfiguration(configuration);
+            ValidateAppInsightsConfiguration(configuration);
 
             services.AddTransient<IStorageBroker>(sp =>
             {
@@ -345,6 +349,7 @@ namespace LHDS.AdminPortal.Api
             services.AddTransient<IAzureBlobClient, AzureBlobClient>();
             services.AddTransient<ISecurityBroker, SecurityBroker>();
             services.AddTransient<ITelemetryBroker, TelemetryBroker>();
+            services.AddTransient<IDecisionBroker, DecisionBroker>();
         }
 
         private static void AddFoundationServices(IServiceCollection services, IConfiguration configuration)
@@ -367,6 +372,7 @@ namespace LHDS.AdminPortal.Api
             services.AddTransient<ISecureDataService, SecureDataService>();
             services.AddTransient<IAddressService, AddressService>();
             services.AddTransient<IResolvedAddressService, ResolvedAddressService>();
+            services.AddTransient<IDecisionService, DecisionService>();
 
             var blobStorageSettings = configuration.GetSection("blobStorage")
                 .Get<BlobStorageSettings>();
@@ -391,6 +397,12 @@ namespace LHDS.AdminPortal.Api
                             VisualStudioTenantId = blobStorageSettings.AzureTenantId,
                         }),
                     options: blobServiceClientOptions));
+
+            var decisionConfiguration = configuration.GetSection("IDecide")
+                .Get<DecisionConfiguration>();
+
+            ValidateDecisionConfiguration(decisionConfiguration);
+            services.AddSingleton<DecisionConfiguration>(decisionConfiguration);
         }
 
         private static void ValidateBlobStorageSettings(BlobStorageSettings blobStorageSettings)
@@ -403,7 +415,7 @@ namespace LHDS.AdminPortal.Api
                     Parameter: "blobStorage__azureTenantId"));
         }
 
-        private static void ValidateAppInsightsCinfiguration(IConfiguration configuration)
+        private static void ValidateAppInsightsConfiguration(IConfiguration configuration)
         {
             string connectionString = configuration["ApplicationInsights:ConnectionString"] ?? string.Empty;
             Validate((Rule: IsInvalid(connectionString), Parameter: "applicationInsights__connectionString"));
@@ -423,6 +435,13 @@ namespace LHDS.AdminPortal.Api
 
                 (Rule: IsInvalid(blobContainers.Pds),
                     Parameter: "blobContainers__pds"));
+        }
+
+        private static void ValidateDecisionConfiguration(DecisionConfiguration decisionConfiguration)
+        {
+            Validate((Rule: IsInvalid(decisionConfiguration.HashPepper), Parameter: "IDecide__hashPepper"));
+            Validate((Rule: IsInvalid(decisionConfiguration.FolderName), Parameter: "IDecide__folderName"));
+            Validate((Rule: IsInvalid(decisionConfiguration.FilePrefix), Parameter: "IDecide__filePrefix"));
         }
 
         private static dynamic IsInvalid(string text) => new

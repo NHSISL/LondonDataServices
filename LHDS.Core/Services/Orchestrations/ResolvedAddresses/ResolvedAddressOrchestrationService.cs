@@ -111,7 +111,6 @@ namespace LHDS.Core.Services.Orchestrations.ResolvedAddresses
         TryCatch(async () =>
         {
             Guid correlationId = await this.identifierBroker.GetIdentifierAsync();
-            var auditUser = await this.securityBroker.GetCurrentUserAsync();
             var currentDateTime = await this.dateTimeBroker.GetCurrentDateTimeOffsetAsync();
 
             ResolvedAddress? unMatchedResolvedAddress;
@@ -123,12 +122,23 @@ namespace LHDS.Core.Services.Orchestrations.ResolvedAddresses
                 var retrievedResolvedAddresses = await resolvedAddressProcessingService
                     .RetrieveAllResolvedAddressesAsync();
 
-                unMatchedResolvedAddress = retrievedResolvedAddresses
-                    .FirstOrDefault(address =>
+                Guid candidateAddress = retrievedResolvedAddresses
+                    .Where(address =>
                         address.IsProcessed == false &&
                         address.IsProcessing == false &&
                         address.RetryCount < 4 &&
-                        address.UpdatedDate <= currentDateTime.AddMinutes(-5));
+                        address.UpdatedDate <= currentDateTime.AddMinutes(-5))
+                            .Select(x => x.Id)
+                                .FirstOrDefault();
+
+                if (candidateAddress == Guid.Empty)
+                {
+                    break;
+                }
+
+                unMatchedResolvedAddress = retrievedResolvedAddresses
+                    .Where(address => address.Id == candidateAddress)
+                    .FirstOrDefault();
 
                 if (unMatchedResolvedAddress is null)
                 {
@@ -144,17 +154,12 @@ namespace LHDS.Core.Services.Orchestrations.ResolvedAddresses
 
                         Audit resolvedAddressMatchingAudit = new Audit
                         {
-                            Id = await this.identifierBroker.GetIdentifierAsync(),
                             AuditType = "Resolved Address Match",
                             Title = "Matching Resolved Address",
                             Message = $"Matching resolved address for {unMatchedResolvedAddress.UniqueReference}",
                             CorrelationId = correlationId.ToString(),
                             FileName = null,
-                            LogLevel = "Information",
-                            CreatedBy = auditUser?.EntraUserId.ToString() ?? string.Empty,
-                            CreatedDate = matchingDateTimeOffset,
-                            UpdatedBy = auditUser?.EntraUserId.ToString() ?? string.Empty,
-                            UpdatedDate = matchingDateTimeOffset,
+                            LogLevel = "Information"
                         };
 
                         audits.Add(resolvedAddressMatchingAudit);
@@ -198,7 +203,6 @@ namespace LHDS.Core.Services.Orchestrations.ResolvedAddresses
 
                         Audit resolvedAddressMatchingCompleteAudit = new Audit
                         {
-                            Id = await this.identifierBroker.GetIdentifierAsync(),
                             AuditType = "Resolved Address Match",
 
                             Title = newResolvedAddress.MatchedWithAssign ?
@@ -208,10 +212,6 @@ namespace LHDS.Core.Services.Orchestrations.ResolvedAddresses
                             CorrelationId = correlationId.ToString(),
                             FileName = null,
                             LogLevel = "Information",
-                            CreatedBy = auditUser?.EntraUserId.ToString() ?? string.Empty,
-                            CreatedDate = matchingCompleteDateTimeOffset,
-                            UpdatedBy = auditUser?.EntraUserId.ToString() ?? string.Empty,
-                            UpdatedDate = matchingCompleteDateTimeOffset,
                         };
 
                         audits.Add(resolvedAddressMatchingCompleteAudit);
@@ -238,17 +238,12 @@ namespace LHDS.Core.Services.Orchestrations.ResolvedAddresses
 
                     Audit resolvedAddressMatchingFailedAudit = new Audit
                     {
-                        Id = await this.identifierBroker.GetIdentifierAsync(),
                         AuditType = "Resolved Address Match",
                         Title = "Resolved Address Matching Failed",
                         Message = $"Resolved address matching failed for {failedToProcess.UniqueReference}",
                         CorrelationId = correlationId.ToString(),
                         FileName = null,
-                        LogLevel = "Information",
-                        CreatedBy = auditUser?.EntraUserId.ToString() ?? string.Empty,
-                        CreatedDate = matchingFailedDateTimeOffset,
-                        UpdatedBy = auditUser?.EntraUserId.ToString() ?? string.Empty,
-                        UpdatedDate = matchingFailedDateTimeOffset,
+                        LogLevel = "Information"
                     };
 
                     audits.Add(resolvedAddressMatchingFailedAudit);
@@ -304,57 +299,75 @@ namespace LHDS.Core.Services.Orchestrations.ResolvedAddresses
         public ValueTask<List<Guid>> ExportResolvedAddressesAsync() =>
         TryCatch(async () =>
         {
-            List<ResolvedAddress> unMatchedResolvedAddresses;
             int batchCount = 10000;
             List<Guid> batchReferenceIds = new List<Guid>();
             var exceptions = new List<Exception>();
 
-            while (true)
+            IQueryable<ResolvedAddress> scopedResolvedAddress = await resolvedAddressProcessingService
+                .RetrieveAllResolvedAddressesAsync();
+
+            scopedResolvedAddress = scopedResolvedAddress.Where(resolvedAddress =>
+                resolvedAddress.IsExported == false &&
+                resolvedAddress.IsProcessed == true &&
+                resolvedAddress.IsProcessing == false &&
+                resolvedAddress.RetryCount < 4);
+
+            List<Guid> idsInScope = scopedResolvedAddress
+                .Select(resolvedAddress => resolvedAddress.Id)
+                .ToList();
+
+            if (idsInScope.Count == 0)
             {
-                var retrievedResolvedAddresses = await resolvedAddressProcessingService
-                    .RetrieveAllResolvedAddressesAsync();
+                return batchReferenceIds;
+            }
 
-                unMatchedResolvedAddresses = retrievedResolvedAddresses
-                    .Where(address =>
-                        address.IsExported == false &&
-                        address.IsProcessed == true &&
-                        address.IsProcessing == false &&
-                        address.RetryCount < 4)
-                    .Take(batchCount)
-                    .ToList();
+            int totalBatches = (int)Math.Ceiling(idsInScope.Count / (double)batchCount);
 
-                if (unMatchedResolvedAddresses.Count == 0)
-                {
-                    break;
-                }
+            for (int i = 0; i < totalBatches; i++)
+            {
+                List<Guid> batchIds = idsInScope
+                .Skip(i * batchCount)
+                .Take(batchCount)
+                .ToList();
 
                 Guid batchReference = await this.identifierBroker.GetIdentifierAsync();
                 batchReferenceIds.Add(batchReference);
 
                 try
                 {
-                    await TryCatch(async () =>
+                    IQueryable<ResolvedAddress> notExportedResolvedAddresses = await resolvedAddressProcessingService
+                        .RetrieveAllResolvedAddressesAsync();
+
+                    List<ResolvedAddress> notExportedResolvedAddressesList = notExportedResolvedAddresses
+                        .Where(address => batchIds.Contains(address.Id))
+                        .ToList();
+
+                    if (notExportedResolvedAddressesList.Count == 0)
                     {
-                        Guid correlationId = await this.identifierBroker.GetIdentifierAsync();
+                        break;
+                    }
 
-                        await this.auditBroker.LogAsync(
-                            auditType: "Resolved Address Export",
-                            title: "Exporting Resolved Addresses",
-                            message: $"Exporting resolved addresses with correlation id {correlationId}",
-                            fileName: null,
-                            correlationId: correlationId.ToString());
+                    await this.auditBroker.LogAsync(
+                        auditType: "Resolved Address Export",
+                        title: "Exporting Resolved Addresses",
+                        message: $"Exporting resolved addresses with correlation id {batchReference}",
+                        fileName: $"{batchReference}.csv",
+                        correlationId: batchReference.ToString());
 
-                        unMatchedResolvedAddresses.ForEach(setProcessing =>
-                        {
-                            setProcessing.IsProcessing = true;
-                            setProcessing.RetryCount += 1;
-                            setProcessing.BatchReference = batchReference;
-                        });
+                    List<ResolvedAddress> processingResolvedAddressesList =
+                        notExportedResolvedAddressesList.DeepClone();
 
-                        await resolvedAddressProcessingService
-                            .BulkModifyResolvedAddressesAsync(unMatchedResolvedAddresses);
+                    processingResolvedAddressesList.ForEach(resolvedAddress =>
+                    {
+                        resolvedAddress.IsProcessing = true;
+                        resolvedAddress.RetryCount += 1;
+                        resolvedAddress.BatchReference = batchReference;
+                    });
 
-                        Dictionary<string, int> fieldMappings = new Dictionary<string, int>
+                    await resolvedAddressProcessingService
+                        .BulkModifyResolvedAddressesAsync(processingResolvedAddressesList);
+
+                    Dictionary<string, int> fieldMappings = new Dictionary<string, int>
                         {
                             { nameof(ResolvedAddress.UniqueReference), 0 },
                             { nameof(ResolvedAddress.UPRN), 1 },
@@ -384,69 +397,80 @@ namespace LHDS.Core.Services.Orchestrations.ResolvedAddresses
                             { nameof(ResolvedAddress.Longitude), 25 }
                         };
 
-                        string processedData = await this.csvHelperBroker
-                           .MapObjectToCsvAsync(
-                            @object: unMatchedResolvedAddresses,
-                            addHeaderRecord: true,
-                            fieldMappings: fieldMappings,
-                            shouldAddTrailingComma: false);
+                    string processedData = await this.csvHelperBroker
+                       .MapObjectToCsvAsync(
+                        @object: processingResolvedAddressesList,
+                        addHeaderRecord: true,
+                        fieldMappings: fieldMappings,
+                        shouldAddTrailingComma: false);
 
-                        byte[] processedBytes = Encoding.UTF8.GetBytes(processedData);
-                        batchReferenceIds.Add(batchReference);
-                        string csvFileName = $"out/{batchReference}.csv";
+                    byte[] processedBytes = Encoding.UTF8.GetBytes(processedData);
+                    batchReferenceIds.Add(batchReference);
+                    string csvFileName = $"out/{batchReference}.csv";
 
-                        using (Stream processed = new MemoryStream(processedBytes))
-                        {
-                            await this.documentProcessingService.AddDocumentAsync(
-                                input: processed,
-                                csvFileName,
-                                container: blobContainers.Addresses);
-                        }
+                    using (Stream processed = new MemoryStream(processedBytes))
+                    {
+                        await this.documentProcessingService.AddDocumentAsync(
+                            input: processed,
+                            csvFileName,
+                            container: blobContainers.Addresses);
+                    }
 
-                        List<ResolvedAddress> doneProcessingResolvedAddresses =
-                            unMatchedResolvedAddresses.DeepClone();
+                    List<ResolvedAddress> exportedResolvedAddressesList = processingResolvedAddressesList.DeepClone();
 
-                        doneProcessingResolvedAddresses.ForEach(setFinishedProcessing =>
-                        {
-                            setFinishedProcessing.BatchReference = batchReference;
-                            setFinishedProcessing.IsProcessing = false;
-                            setFinishedProcessing.RetryCount = 0;
-                            setFinishedProcessing.IsExported = true;
-                            setFinishedProcessing.IsProcessed = true;
-                        });
-
-                        await resolvedAddressProcessingService
-                            .BulkModifyResolvedAddressesAsync(doneProcessingResolvedAddresses);
-
-                        await this.auditBroker.LogAsync(
-                             auditType: "Resolved Address Export",
-                             title: "Exported Resolved Addresses",
-                             message: $"Exported resolved addresses with correlation id {correlationId}",
-                             fileName: null,
-                             correlationId: correlationId.ToString());
+                    exportedResolvedAddressesList.ForEach(setFinishedProcessing =>
+                    {
+                        setFinishedProcessing.BatchReference = batchReference;
+                        setFinishedProcessing.IsProcessing = false;
+                        setFinishedProcessing.RetryCount = 0;
+                        setFinishedProcessing.IsExported = true;
                     });
+
+                    await resolvedAddressProcessingService
+                        .BulkModifyResolvedAddressesAsync(exportedResolvedAddressesList);
+
+                    await this.auditBroker.LogAsync(
+                         auditType: "Resolved Address Export",
+                         title: "Exported Resolved Addresses",
+                         message: $"Exported resolved addresses with correlation id {batchReference}",
+                         fileName: $"{batchReference}.csv",
+                         correlationId: batchReference.ToString());
                 }
                 catch (Exception ex)
                 {
-                    IQueryable<ResolvedAddress> resolvedAddresses =
-                        await resolvedAddressProcessingService.RetrieveAllResolvedAddressesAsync();
+                    exceptions.Add(ex);
+                    batchReferenceIds.Remove(batchReference);
+                    List<Audit> audits = new List<Audit>();
 
-                    List<ResolvedAddress> failedToExport = resolvedAddresses
-                        .Where(address => address.BatchReference == batchReference)
+                    IQueryable<ResolvedAddress> failedResolvedAddresses = await resolvedAddressProcessingService
+                        .RetrieveAllResolvedAddressesAsync();
+
+                    List<ResolvedAddress> failedToExport = failedResolvedAddresses
+                        .Where(address => batchIds.Contains(address.Id))
                         .ToList();
 
-                    failedToExport.ForEach(setFinishedExporting =>
+                    failedToExport.ForEach(resolvedAddress =>
                     {
-                        setFinishedExporting.IsProcessing = false;
-                        setFinishedExporting.IsExported = false;
-                        setFinishedExporting.IsProcessed = false;
+                        resolvedAddress.IsProcessing = false;
+                        resolvedAddress.IsExported = false;
+
+                        Audit audit = new Audit
+                        {
+                            AuditType = "Resolved Address Export",
+                            Title = "Resolved Address Export Failed",
+                            Message = $"Resolved address export failed for item with Id: {resolvedAddress.Id}",
+                            CorrelationId = batchReference.ToString(),
+                            FileName = $"{batchReference}.csv",
+                            LogLevel = "Error"
+                        };
+
+                        audits.Add(audit);
                     });
 
                     await resolvedAddressProcessingService
                         .BulkModifyResolvedAddressesAsync(failedToExport);
 
-                    exceptions.Add(ex);
-                    batchReferenceIds.Remove(batchReference);
+                    await auditBroker.BulkLogAsync(audits);
                 }
             }
 
@@ -456,7 +480,7 @@ namespace LHDS.Core.Services.Orchestrations.ResolvedAddresses
                     $"Unable to export addresses for {exceptions.Count} ResolvedAddresses", exceptions);
             }
 
-            return await ValueTask.FromResult(batchReferenceIds);
+            return batchReferenceIds;
         });
     }
 }

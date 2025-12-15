@@ -17,7 +17,8 @@ namespace LHDS.Core.Models.Brokers.Securities
             string email,
             string jobTitle,
             IEnumerable<string> roles,
-            IEnumerable<Claim> claims)
+            IEnumerable<Claim> claims,
+            string authenticationType)
         {
             EntraUserId = entraUserId;
             GivenName = givenName;
@@ -35,6 +36,7 @@ namespace LHDS.Core.Models.Brokers.Securities
         public string DisplayName { get; private set; } = string.Empty;
         public string Email { get; private set; } = string.Empty;
         public string JobTitle { get; private set; } = string.Empty;
+        public string AuthenticationType { get; private set; } = string.Empty;
         public IEnumerable<string> Roles { get; private set; }
         public IEnumerable<Claim> Claims { get; private set; }
     }

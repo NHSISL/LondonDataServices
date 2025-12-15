@@ -6,7 +6,6 @@ using System;
 using System.Threading.Tasks;
 using FluentAssertions;
 using Force.DeepCloner;
-using LHDS.Core.Models.Brokers.Securities;
 using LHDS.Core.Models.Foundations.Audits;
 using LHDS.Core.Models.Foundations.Audits.Exceptions;
 using LHDS.Core.Services.Foundations.Audits;
@@ -55,7 +54,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Audits
                     Times.Never);
 
             this.dateTimeBrokerMock.VerifyNoOtherCalls();
-            this.securityBrokerMock.VerifyNoOtherCalls();
+            this.securityAuditBrokerMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
             this.storageBrokerMock.VerifyNoOtherCalls();
         }
@@ -67,7 +66,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Audits
         public async Task ShouldThrowValidationExceptionOnModifyIfAuditIsInvalidAndLogItAsync(string invalidText)
         {
             // given 
-            EntraUser randomEntraUser = CreateRandomEntraUser();
+            string randomEntraUserId = GetRandomStringWithLengthOf(50);
             DateTimeOffset randomDateTimeOffset = GetRandomDateTimeOffset();
 
             var invalidAudit = new Audit
@@ -80,7 +79,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Audits
                 storageBrokerMock.Object,
                 identifierBrokerMock.Object,
                 dateTimeBrokerMock.Object,
-                securityBrokerMock.Object,
+                securityAuditBrokerMock.Object,
                 loggingBrokerMock.Object)
             {
                 CallBase = true
@@ -94,9 +93,9 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Audits
                 broker.GetCurrentDateTimeOffsetAsync())
                     .ReturnsAsync(randomDateTimeOffset);
 
-            this.securityBrokerMock.Setup(broker =>
-                broker.GetCurrentUserAsync())
-                    .ReturnsAsync(randomEntraUser);
+            this.securityAuditBrokerMock.Setup(broker =>
+                broker.GetUserIdAsync())
+                    .ReturnsAsync(randomEntraUserId);
 
             var invalidAuditException =
                 new InvalidAuditException(
@@ -139,7 +138,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Audits
                 values:
                     [
                         "Text is required",
-                        $"Expected value to be '{randomEntraUser.EntraUserId}' but found " +
+                        $"Expected value to be '{randomEntraUserId}' but found " +
                         $"'{invalidAudit.UpdatedBy}'."
                     ]);
 
@@ -168,8 +167,8 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Audits
                 broker.GetCurrentDateTimeOffsetAsync(),
                     Times.Once);
 
-            this.securityBrokerMock.Verify(broker =>
-                broker.GetCurrentUserAsync(),
+            this.securityAuditBrokerMock.Verify(broker =>
+                broker.GetUserIdAsync(),
                     Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>
@@ -183,7 +182,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Audits
 
             auditServiceMock.VerifyNoOtherCalls();
             this.dateTimeBrokerMock.VerifyNoOtherCalls();
-            this.securityBrokerMock.VerifyNoOtherCalls();
+            this.securityAuditBrokerMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
             this.storageBrokerMock.VerifyNoOtherCalls();
         }
@@ -193,10 +192,10 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Audits
         {
             // given
             DateTimeOffset randomDateTimeOffset = GetRandomDateTimeOffset();
-            EntraUser randomEntraUser = CreateRandomEntraUser();
+            string randomEntraUserId = GetRandomStringWithLengthOf(50);
 
             Audit randomAudit =
-                CreateRandomAudit(randomDateTimeOffset, randomEntraUser.EntraUserId);
+                CreateRandomAudit(randomDateTimeOffset, randomEntraUserId);
 
             Audit invalidAudit = randomAudit;
 
@@ -204,7 +203,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Audits
                 storageBrokerMock.Object,
                 identifierBrokerMock.Object,
                 dateTimeBrokerMock.Object,
-                securityBrokerMock.Object,
+                securityAuditBrokerMock.Object,
                 loggingBrokerMock.Object)
             {
                 CallBase = true
@@ -218,9 +217,9 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Audits
                 broker.GetCurrentDateTimeOffsetAsync())
                     .ReturnsAsync(randomDateTimeOffset);
 
-            this.securityBrokerMock.Setup(broker =>
-                broker.GetCurrentUserAsync())
-                    .ReturnsAsync(randomEntraUser);
+            this.securityAuditBrokerMock.Setup(broker =>
+                broker.GetUserIdAsync())
+                    .ReturnsAsync(randomEntraUserId);
 
             var invalidAuditException =
                 new InvalidAuditException(
@@ -255,8 +254,8 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Audits
                 broker.GetCurrentDateTimeOffsetAsync(),
                     Times.Once);
 
-            this.securityBrokerMock.Verify(broker =>
-                broker.GetCurrentUserAsync(),
+            this.securityAuditBrokerMock.Verify(broker =>
+                broker.GetUserIdAsync(),
                     Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>
@@ -270,7 +269,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Audits
 
             auditServiceMock.VerifyNoOtherCalls();
             this.dateTimeBrokerMock.VerifyNoOtherCalls();
-            this.securityBrokerMock.VerifyNoOtherCalls();
+            this.securityAuditBrokerMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
             this.storageBrokerMock.VerifyNoOtherCalls();
         }
@@ -281,10 +280,10 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Audits
         {
             // given
             DateTimeOffset randomDateTimeOffset = GetRandomDateTimeOffset();
-            EntraUser randomEntraUser = CreateRandomEntraUser();
+            string randomEntraUserId = GetRandomStringWithLengthOf(50);
 
             Audit invalidAudit =
-                CreateRandomAudit(randomDateTimeOffset, randomEntraUser.EntraUserId);
+                CreateRandomAudit(randomDateTimeOffset, randomEntraUserId);
 
             invalidAudit.UpdatedDate = randomDateTimeOffset.AddMinutes(minutes);
 
@@ -292,7 +291,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Audits
                 storageBrokerMock.Object,
                 identifierBrokerMock.Object,
                 dateTimeBrokerMock.Object,
-                securityBrokerMock.Object,
+                securityAuditBrokerMock.Object,
                 loggingBrokerMock.Object)
             {
                 CallBase = true
@@ -306,9 +305,9 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Audits
                 broker.GetCurrentDateTimeOffsetAsync())
                     .ReturnsAsync(randomDateTimeOffset);
 
-            this.securityBrokerMock.Setup(broker =>
-                broker.GetCurrentUserAsync())
-                    .ReturnsAsync(randomEntraUser);
+            this.securityAuditBrokerMock.Setup(broker =>
+                broker.GetUserIdAsync())
+                    .ReturnsAsync(randomEntraUserId);
 
             var invalidAuditException =
                 new InvalidAuditException(
@@ -347,8 +346,8 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Audits
                 broker.GetCurrentDateTimeOffsetAsync(),
                     Times.Once);
 
-            this.securityBrokerMock.Verify(broker =>
-                broker.GetCurrentUserAsync(),
+            this.securityAuditBrokerMock.Verify(broker =>
+                broker.GetUserIdAsync(),
                     Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>
@@ -362,7 +361,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Audits
 
             auditServiceMock.VerifyNoOtherCalls();
             this.dateTimeBrokerMock.VerifyNoOtherCalls();
-            this.securityBrokerMock.VerifyNoOtherCalls();
+            this.securityAuditBrokerMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
             this.storageBrokerMock.VerifyNoOtherCalls();
         }
@@ -372,10 +371,10 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Audits
         {
             // given
             DateTimeOffset randomDateTimeOffset = GetRandomDateTimeOffset();
-            EntraUser randomEntraUser = CreateRandomEntraUser();
+            string randomEntraUserId = GetRandomStringWithLengthOf(50);
 
             Audit invalidAudit =
-                CreateRandomModifyAudit(randomDateTimeOffset, randomEntraUser.EntraUserId);
+                CreateRandomModifyAudit(randomDateTimeOffset, randomEntraUserId);
 
             Audit nonExistAudit = invalidAudit;
             var notFoundAuditException = new NotFoundAuditException(nonExistAudit.Id);
@@ -389,7 +388,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Audits
                 storageBrokerMock.Object,
                 identifierBrokerMock.Object,
                 dateTimeBrokerMock.Object,
-                securityBrokerMock.Object,
+                securityAuditBrokerMock.Object,
                 loggingBrokerMock.Object)
             {
                 CallBase = true
@@ -403,9 +402,9 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Audits
                 broker.GetCurrentDateTimeOffsetAsync())
                     .ReturnsAsync(randomDateTimeOffset);
 
-            this.securityBrokerMock.Setup(broker =>
-                broker.GetCurrentUserAsync())
-                    .ReturnsAsync(randomEntraUser);
+            this.securityAuditBrokerMock.Setup(broker =>
+                broker.GetUserIdAsync())
+                    .ReturnsAsync(randomEntraUserId);
 
             // when 
             ValueTask<Audit> modifyAuditTask =
@@ -431,8 +430,8 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Audits
                 broker.GetCurrentDateTimeOffsetAsync(),
                     Times.Once);
 
-            this.securityBrokerMock.Verify(broker =>
-                broker.GetCurrentUserAsync(),
+            this.securityAuditBrokerMock.Verify(broker =>
+                broker.GetUserIdAsync(),
                     Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>
@@ -442,7 +441,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Audits
 
             auditServiceMock.VerifyNoOtherCalls();
             this.dateTimeBrokerMock.VerifyNoOtherCalls();
-            this.securityBrokerMock.VerifyNoOtherCalls();
+            this.securityAuditBrokerMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
             this.storageBrokerMock.VerifyNoOtherCalls();
         }
@@ -454,10 +453,10 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Audits
             int randomNumber = GetRandomNegativeNumber();
             int randomMinutes = randomNumber;
             DateTimeOffset randomDateTimeOffset = GetRandomDateTimeOffset();
-            EntraUser randomEntraUser = CreateRandomEntraUser();
+            string randomEntraUserId = GetRandomStringWithLengthOf(50);
 
             Audit randomAudit =
-                CreateRandomModifyAudit(randomDateTimeOffset, randomEntraUser.EntraUserId);
+                CreateRandomModifyAudit(randomDateTimeOffset, randomEntraUserId);
 
             Audit invalidAudit = randomAudit.DeepClone();
             Audit storageAudit = invalidAudit.DeepClone();
@@ -468,7 +467,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Audits
                 storageBrokerMock.Object,
                 identifierBrokerMock.Object,
                 dateTimeBrokerMock.Object,
-                securityBrokerMock.Object,
+                securityAuditBrokerMock.Object,
                 loggingBrokerMock.Object)
             {
                 CallBase = true
@@ -482,9 +481,9 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Audits
                 broker.GetCurrentDateTimeOffsetAsync())
                     .ReturnsAsync(randomDateTimeOffset);
 
-            this.securityBrokerMock.Setup(broker =>
-                broker.GetCurrentUserAsync())
-                    .ReturnsAsync(randomEntraUser);
+            this.securityAuditBrokerMock.Setup(broker =>
+                broker.GetUserIdAsync())
+                    .ReturnsAsync(randomEntraUserId);
 
             var invalidAuditException =
                 new InvalidAuditException(
@@ -523,8 +522,8 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Audits
                 broker.GetCurrentDateTimeOffsetAsync(),
                     Times.Once);
 
-            this.securityBrokerMock.Verify(broker =>
-                broker.GetCurrentUserAsync(),
+            this.securityAuditBrokerMock.Verify(broker =>
+                broker.GetUserIdAsync(),
                     Times.Once);
 
             this.storageBrokerMock.Verify(broker =>
@@ -538,7 +537,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Audits
 
             auditServiceMock.VerifyNoOtherCalls();
             this.dateTimeBrokerMock.VerifyNoOtherCalls();
-            this.securityBrokerMock.VerifyNoOtherCalls();
+            this.securityAuditBrokerMock.VerifyNoOtherCalls();
             this.storageBrokerMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
         }
@@ -548,10 +547,10 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Audits
         {
             // given
             DateTimeOffset randomDateTimeOffset = GetRandomDateTimeOffset();
-            EntraUser randomEntraUser = CreateRandomEntraUser();
+            string randomEntraUserId = GetRandomStringWithLengthOf(50);
 
             Audit randomAudit =
-                CreateRandomModifyAudit(randomDateTimeOffset, randomEntraUser.EntraUserId);
+                CreateRandomModifyAudit(randomDateTimeOffset, randomEntraUserId);
 
             Audit invalidAudit = randomAudit.DeepClone();
             Audit storageAudit = invalidAudit.DeepClone();
@@ -575,7 +574,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Audits
                 storageBrokerMock.Object,
                 identifierBrokerMock.Object,
                 dateTimeBrokerMock.Object,
-                securityBrokerMock.Object,
+                securityAuditBrokerMock.Object,
                 loggingBrokerMock.Object)
             {
                 CallBase = true
@@ -589,9 +588,9 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Audits
                 broker.GetCurrentDateTimeOffsetAsync())
                     .ReturnsAsync(randomDateTimeOffset);
 
-            this.securityBrokerMock.Setup(broker =>
-                broker.GetCurrentUserAsync())
-                    .ReturnsAsync(randomEntraUser);
+            this.securityAuditBrokerMock.Setup(broker =>
+                broker.GetUserIdAsync())
+                    .ReturnsAsync(randomEntraUserId);
 
             this.storageBrokerMock.Setup(broker =>
                 broker.SelectAuditByIdAsync(invalidAudit.Id))
@@ -616,8 +615,8 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Audits
                 broker.GetCurrentDateTimeOffsetAsync(),
                     Times.Once);
 
-            this.securityBrokerMock.Verify(broker =>
-                broker.GetCurrentUserAsync(),
+            this.securityAuditBrokerMock.Verify(broker =>
+                broker.GetUserIdAsync(),
                     Times.Once);
 
             this.storageBrokerMock.Verify(broker =>
@@ -631,7 +630,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Audits
 
             auditServiceMock.VerifyNoOtherCalls();
             this.dateTimeBrokerMock.VerifyNoOtherCalls();
-            this.securityBrokerMock.VerifyNoOtherCalls();
+            this.securityAuditBrokerMock.VerifyNoOtherCalls();
             this.storageBrokerMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
         }
@@ -641,10 +640,10 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Audits
         {
             // given
             DateTimeOffset randomDateTimeOffset = GetRandomDateTimeOffset();
-            EntraUser randomEntraUser = CreateRandomEntraUser();
+            string randomEntraUserId = GetRandomStringWithLengthOf(50);
 
             Audit randomAudit =
-                CreateRandomModifyAudit(randomDateTimeOffset, randomEntraUser.EntraUserId);
+                CreateRandomModifyAudit(randomDateTimeOffset, randomEntraUserId);
 
             Audit invalidAudit = randomAudit;
             Audit storageAudit = randomAudit.DeepClone();
@@ -667,7 +666,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Audits
                  storageBrokerMock.Object,
                  identifierBrokerMock.Object,
                  dateTimeBrokerMock.Object,
-                 securityBrokerMock.Object,
+                 securityAuditBrokerMock.Object,
                  loggingBrokerMock.Object)
             {
                 CallBase = true
@@ -681,9 +680,9 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Audits
                 broker.GetCurrentDateTimeOffsetAsync())
                     .ReturnsAsync(randomDateTimeOffset);
 
-            this.securityBrokerMock.Setup(broker =>
-                broker.GetCurrentUserAsync())
-                    .ReturnsAsync(randomEntraUser);
+            this.securityAuditBrokerMock.Setup(broker =>
+                broker.GetUserIdAsync())
+                    .ReturnsAsync(randomEntraUserId);
 
             this.storageBrokerMock.Setup(broker =>
                 broker.SelectAuditByIdAsync(invalidAudit.Id))
@@ -705,8 +704,8 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Audits
                 broker.GetCurrentDateTimeOffsetAsync(),
                     Times.Once);
 
-            this.securityBrokerMock.Verify(broker =>
-                broker.GetCurrentUserAsync(),
+            this.securityAuditBrokerMock.Verify(broker =>
+                broker.GetUserIdAsync(),
                     Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>
@@ -720,7 +719,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Audits
 
             auditServiceMock.VerifyNoOtherCalls();
             this.dateTimeBrokerMock.VerifyNoOtherCalls();
-            this.securityBrokerMock.VerifyNoOtherCalls();
+            this.securityAuditBrokerMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
             this.storageBrokerMock.VerifyNoOtherCalls();
         }

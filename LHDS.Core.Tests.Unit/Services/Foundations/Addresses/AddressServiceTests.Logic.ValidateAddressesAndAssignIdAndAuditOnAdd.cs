@@ -24,7 +24,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Addresses
             List<Address> randomAddresses = CreateRandomAddresses();
             List<Address> inputAddresses = randomAddresses;
             string inputFilename = GetRandomString();
-            EntraUser randomEntraUser = CreateRandomEntraUser();
+            string randomEntraUserId = GetRandomStringWithLengthOf(50);
             DateTimeOffset randomDateTimeOffset = GetRandomDateTimeOffset();
             Guid randomId = Guid.NewGuid();
             List<Address> outputAddresses = inputAddresses.DeepClone();
@@ -32,9 +32,9 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Addresses
             foreach (Address address in outputAddresses)
             {
                 address.Id = randomId;
-                address.CreatedBy = randomEntraUser.EntraUserId;
+                address.CreatedBy = randomEntraUserId;
                 address.CreatedDate = randomDateTimeOffset;
-                address.UpdatedBy = randomEntraUser.EntraUserId;
+                address.UpdatedBy = randomEntraUserId;
                 address.UpdatedDate = randomDateTimeOffset;
             }
 
@@ -43,7 +43,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Addresses
             var addressServiceMock = new Mock<AddressService>(
                 this.storageBrokerMock.Object,
                 this.dateTimeBrokerMock.Object,
-                this.securityBrokerMock.Object,
+                this.securityAuditBrokerMock.Object,
                 this.identifierBrokerMock.Object,
                 this.loggingBrokerMock.Object,
                 this.auditBrokerMock.Object)
@@ -59,9 +59,9 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Addresses
                 broker.GetIdentifierAsync())
                     .ReturnsAsync(randomId);
 
-            this.securityBrokerMock.Setup(broker =>
-                broker.GetCurrentUserAsync())
-                    .ReturnsAsync(randomEntraUser);
+            this.securityAuditBrokerMock.Setup(broker =>
+                broker.GetUserIdAsync())
+                    .ReturnsAsync(randomEntraUserId);
 
             // When
             List<Address> actualAddresses = await addressServiceMock.Object
@@ -78,8 +78,8 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Addresses
                 broker.GetIdentifierAsync(),
                     Times.Exactly(inputAddresses.Count));
 
-            this.securityBrokerMock.Verify(broker =>
-                broker.GetCurrentUserAsync(),
+            this.securityAuditBrokerMock.Verify(broker =>
+                broker.GetUserIdAsync(),
                     Times.Exactly(inputAddresses.Count * 2));
 
             addressServiceMock.Verify(service =>

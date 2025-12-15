@@ -50,7 +50,7 @@ namespace LHDS.Core.Tests.Acceptance.Clients.Addresses
         private readonly IAddressClient addressClient;
         private readonly ICompareLogic compareLogic;
         private readonly IDateTimeBroker dateTimeBroker;
-        private readonly ISecurityBroker securityBroker;
+        private readonly ISecurityAuditBroker securityAuditBroker;
         private readonly AddressConfiguration addressConfiguration;
         private readonly BlobContainers blobContainers;
         private readonly WireMockServer wireMockServer;
@@ -123,7 +123,7 @@ namespace LHDS.Core.Tests.Acceptance.Clients.Addresses
             this.addressConfiguration = serviceProvider.GetService<AddressConfiguration>();
             this.blobContainers = serviceProvider.GetService<BlobContainers>();
             this.dateTimeBroker = serviceProvider.GetService<IDateTimeBroker>();
-            this.securityBroker = serviceProvider.GetService<ISecurityBroker>();
+            this.securityAuditBroker = serviceProvider.GetService<ISecurityAuditBroker>();
             addressClient = serviceProvider.GetService<IAddressClient>();
         }
 
@@ -144,8 +144,20 @@ namespace LHDS.Core.Tests.Acceptance.Clients.Addresses
         private static string GetRandomString() =>
             new MnemonicString().GetValue();
 
+        private static string GetRandomString(int length = 8) =>
+            new MnemonicString(length).GetValue();
+
         private static int GetRandomNumber(int min = 2, int max = 10) =>
             new IntRange(min, max).GetValue();
+
+        private static string GetRandomHexString(int length)
+        {
+            var random = new Random();
+            var buffer = new byte[length / 2 + length % 2];
+            random.NextBytes(buffer);
+            string hex = BitConverter.ToString(buffer).Replace("-", "").ToLowerInvariant();
+            return hex.Substring(0, length);
+        }
 
         private static DateTimeOffset GetRandomDateTimeOffset() =>
             new DateTimeRange(earliestDate: new DateTime().AddDays(7)).GetValue();
@@ -274,6 +286,8 @@ namespace LHDS.Core.Tests.Acceptance.Clients.Addresses
             filler.Setup()
                 .OnType<DateTimeOffset>().Use(timestamp)
                 .OnType<DateTimeOffset?>().Use(timestamp)
+                .OnProperty(resolvedAddress => resolvedAddress.HashedUnstructuredPostalAddress)
+                    .Use(GetRandomHexString(32).ToCharArray())
                 .OnProperty(resolvedAddress => resolvedAddress.IsProcessed).Use(false)
                 .OnProperty(resolvedAddress => resolvedAddress.IsProcessing).Use(false)
                 .OnProperty(resolvedAddress => resolvedAddress.IsExported).Use(false)

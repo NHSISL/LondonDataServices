@@ -5,6 +5,7 @@
 using System;
 using LHDS.Core.Models.Foundations.IngestionTrackings;
 using LHDS.Core.Models.Orchestrations.Ingres.Exceptions;
+using Xeptions;
 
 namespace LHDS.Core.Services.Orchestrations.Ingress
 {
@@ -12,18 +13,30 @@ namespace LHDS.Core.Services.Orchestrations.Ingress
     {
         private void ValidateOnProcessDecryptedItemsForBatchComplete(Guid supplierId)
         {
-            Validate((Rule: IsInvalid(supplierId), Parameter: "supplierId"));
+            Validate(
+                createException: () => new InvalidArgumentIngressOrchestrationException(
+                    message: "Invalid ingress orchestration argument(s), please correct the errors and try again."),
+
+                (Rule: IsInvalid(supplierId), Parameter: "supplierId"));
         }
 
         private static void ValidateOnCheckForBatchComplete(Guid ingestionTrackingId)
         {
-            Validate((Rule: IsInvalid(ingestionTrackingId),
+            Validate(
+                 createException: () => new InvalidArgumentIngressOrchestrationException(
+                     message: "Invalid ingress orchestration argument(s), please correct the errors and try again."),
+
+                 (Rule: IsInvalid(ingestionTrackingId),
                 Parameter: nameof(ingestionTrackingId)));
         }
 
         private static void ValidateOnRollbackIngestionTrackingItem(string encryptedFilePath)
         {
-            Validate((Rule: IsInvalid(encryptedFilePath),
+            Validate(
+                createException: () => new InvalidArgumentIngressOrchestrationException(
+                    message: "Invalid ingress orchestration argument(s), please correct the errors and try again."),
+
+                (Rule: IsInvalid(encryptedFilePath),
                 Parameter: nameof(IngestionTracking.EncryptedFileName)));
         }
 
@@ -62,22 +75,24 @@ namespace LHDS.Core.Services.Orchestrations.Ingress
             Message = "Text is required"
         };
 
-        private static void Validate(params (dynamic Rule, string Parameter)[] validations)
+        private static void Validate<T>(
+            Func<T> createException,
+            params (dynamic Rule, string Parameter)[] validations)
+            where T : Xeption
         {
-            var invalidArgumentIngressOrchestrationException = new InvalidArgumentIngressOrchestrationException(
-                message: "Invalid ingress orchestration argument(s), please correct the errors and try again.");
+            T invalidDataException = createException();
 
             foreach ((dynamic rule, string parameter) in validations)
             {
                 if (rule.Condition)
                 {
-                    invalidArgumentIngressOrchestrationException.UpsertDataList(
+                    invalidDataException.UpsertDataList(
                         key: parameter,
                         value: rule.Message);
                 }
             }
 
-            invalidArgumentIngressOrchestrationException.ThrowIfContainsErrors();
+            invalidDataException.ThrowIfContainsErrors();
         }
     }
 }

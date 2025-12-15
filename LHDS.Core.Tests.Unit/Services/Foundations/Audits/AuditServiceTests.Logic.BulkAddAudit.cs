@@ -26,7 +26,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Audits
                 this.storageBrokerMock.Object,
                 this.identifierBrokerMock.Object,
                 this.dateTimeBrokerMock.Object,
-                this.securityBrokerMock.Object,
+                this.securityAuditBrokerMock.Object,
                 this.loggingBrokerMock.Object)
             { CallBase = true };
 

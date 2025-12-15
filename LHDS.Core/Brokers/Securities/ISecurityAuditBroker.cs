@@ -50,5 +50,20 @@ namespace LHDS.Core.Brokers.Securities
         ValueTask<T> EnsureAddAuditValuesRemainsUnchangedOnModifyAsync<T>(
             T entity,
             T storageEntity);
+
+        /// <summary>
+        /// Retrieves the current user identifier from the given claims principal.
+        /// </summary>
+        /// <returns>The user identifier string.</returns>
+        /// <remarks>
+        /// If no valid user identifier is found, a fallback (such as <c>"anonymous"</c>) may be returned.
+        /// </remarks>
+        /// <example>
+        /// <code>
+        /// string userId = await auditClient.GetUserIdAsync();
+        /// // e.g. "Alice" or "anonymous"
+        /// </code>
+        /// </example>
+        ValueTask<string> GetUserIdAsync();
     }
 }

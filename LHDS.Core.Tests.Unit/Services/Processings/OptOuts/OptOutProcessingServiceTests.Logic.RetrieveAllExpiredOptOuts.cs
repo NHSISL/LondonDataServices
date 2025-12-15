@@ -26,8 +26,9 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.OptOuts
             IQueryable<OptOut> randomOptOuts = CreateRandomOptOuts(expireDate);
             IQueryable<OptOut> retrievedOptOuts = randomOptOuts.DeepClone();
 
-            List<OptOut> expectedOptOuts = retrievedOptOuts
+            List<string> expectedOptOuts = retrievedOptOuts
                 .Where(optOut => optOut.CacheTime < expireDate)
+                .Select(optOut => optOut.NhsNumber)
                     .ToList();
 
             this.dateTimeBrokerMock.Setup(broker =>
@@ -39,7 +40,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.OptOuts
                         .ReturnsAsync(retrievedOptOuts);
 
             // when
-            List<OptOut> actualOptOuts =
+            List<string> actualOptOuts =
                 await this.optOutProcessingService.RetrieveAllExpiredOptOutsAsync(olderThanDays);
 
             // then

@@ -80,7 +80,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.ResolvedAddresses
                 storageBrokerMock.Object,
                 identifierBrokerMock.Object,
                 dateTimeBrokerMock.Object,
-                securityBrokerMock.Object,
+                securityAuditBrokerMock.Object,
                 loggingBrokerMock.Object,
                 auditBrokerMock.Object)
             {
@@ -220,7 +220,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.ResolvedAddresses
                 storageBrokerMock.Object,
                 identifierBrokerMock.Object,
                 dateTimeBrokerMock.Object,
-                securityBrokerMock.Object,
+                securityAuditBrokerMock.Object,
                 loggingBrokerMock.Object,
                 auditBrokerMock.Object)
             {
@@ -376,7 +376,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.ResolvedAddresses
                 storageBrokerMock.Object,
                 identifierBrokerMock.Object,
                 dateTimeBrokerMock.Object,
-                securityBrokerMock.Object,
+                securityAuditBrokerMock.Object,
                 loggingBrokerMock.Object,
                 auditBrokerMock.Object)
             {
@@ -384,15 +384,15 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.ResolvedAddresses
             };
 
             resolvedAddressServiceMock.Setup(service =>
-                service.ApplyAddAuditAsync(invalidResolvedAddress))
+                service.AddResolvedAddressAsync(invalidResolvedAddress))
                     .ReturnsAsync(invalidResolvedAddress);
 
             this.dateTimeBrokerMock.Setup(broker =>
                 broker.GetCurrentDateTimeOffsetAsync())
                     .ReturnsAsync(randomDateTimeOffset);
 
-            this.securityBrokerMock.Setup(broker =>
-                broker.GetCurrentUserAsync())
+            this.securityAuditBrokerMock.Setup(broker =>
+                broker.ApplyAddAuditValuesAsync())
                     .ReturnsAsync(randomEntraUser);
 
             var invalidResolvedAddressException =

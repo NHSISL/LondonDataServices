@@ -4,6 +4,7 @@
 
 using System;
 using LHDS.Core.Models.Coordinations.Decryptions.Exceptions;
+using Xeptions;
 
 namespace LHDS.Core.Services.Coordinations.Decryptions
 {
@@ -11,7 +12,11 @@ namespace LHDS.Core.Services.Coordinations.Decryptions
     {
         private void ValidateOnProcessDecryptedItemsForBatchComplete(Guid supplierId)
         {
-            Validate((Rule: IsInvalid(supplierId), Parameter: "supplierId"));
+            Validate(
+                createException: () => new InvalidArgumentDecryptionCoordinationException(
+                    message: "Invalid decryption coordination argument, please correct the errors and try again."),
+
+                (Rule: IsInvalid(supplierId), Parameter: "supplierId"));
         }
 
         private void ValidateFileNameOnDecrypt(string fileName)
@@ -21,7 +26,11 @@ namespace LHDS.Core.Services.Coordinations.Decryptions
 
         private static void ValidateDataIsNotNull(string fileName)
         {
-            Validate((Rule: IsInvalid(fileName), Parameter: "fileName"));
+            Validate(
+                createException: () => new InvalidArgumentDecryptionCoordinationException(
+                    message: "Invalid decryption coordination argument, please correct the errors and try again."),
+
+                (Rule: IsInvalid(fileName), Parameter: "fileName"));
         }
 
         private static dynamic IsInvalid(Guid id) => new
@@ -36,23 +45,24 @@ namespace LHDS.Core.Services.Coordinations.Decryptions
             Message = "Text is required"
         };
 
-        private static void Validate(params (dynamic Rule, string Parameter)[] validations)
+        private static void Validate<T>(
+            Func<T> createException,
+            params (dynamic Rule, string Parameter)[] validations)
+            where T : Xeption
         {
-            var invalidArgumentDecryptionCoordinationException =
-                new InvalidArgumentDecryptionCoordinationException(
-                    message: "Invalid decryption coordination argument, please correct the errors and try again.");
+            T invalidDataException = createException();
 
             foreach ((dynamic rule, string parameter) in validations)
             {
                 if (rule.Condition)
                 {
-                    invalidArgumentDecryptionCoordinationException.UpsertDataList(
+                    invalidDataException.UpsertDataList(
                         key: parameter,
                         value: rule.Message);
                 }
             }
 
-            invalidArgumentDecryptionCoordinationException.ThrowIfContainsErrors();
+            invalidDataException.ThrowIfContainsErrors();
         }
     }
 }

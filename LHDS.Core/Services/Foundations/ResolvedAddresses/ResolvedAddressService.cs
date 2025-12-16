@@ -97,7 +97,7 @@ namespace LHDS.Core.Services.Foundations.ResolvedAddresses
                       maybeResolvedAddress);
 
                 ValidateAgainstStorageResolvedAddressOnModify(
-                    inputResolvedAddress: ResolvedAddressWithModifyAuditAppliedEnsured, 
+                    inputResolvedAddress: ResolvedAddressWithModifyAuditAppliedEnsured,
                     storageResolvedAddress: maybeResolvedAddress);
 
                 return await this.storageBroker.UpdateResolvedAddressAsync(
@@ -154,21 +154,22 @@ namespace LHDS.Core.Services.Foundations.ResolvedAddresses
                         List<ResolvedAddress> validatedResolvedAddresses =
                             await ApplyIdAndAuditAndValidResolvedAddresses(batch, fileName);
 
-                        var referencesFromValidatedResolvedAddresses =
-                            batch.Select(validatedResolvedAddress =>
-                                validatedResolvedAddress.UniqueReference).ToList();
+                        var referencesFromValidatedResolvedAddresses = validatedResolvedAddresses
+                            .Select(validatedResolvedAddress => validatedResolvedAddress.UniqueReference)
+                            .ToHashSet();
 
-                        var retrievedResolvedAddresses = await this.storageBroker.SelectAllResolvedAddressesAsync();
+                        IQueryable<ResolvedAddress> retrievedResolvedAddresses =
+                            await this.storageBroker.SelectAllResolvedAddressesAsync();
 
                         var existingUniqueReferencesToExclude = retrievedResolvedAddresses
-                            .Where(resolvedAddress => referencesFromValidatedResolvedAddresses
-                                .Contains(resolvedAddress.UniqueReference))
+                            .Where(resolvedAddress =>
+                                referencesFromValidatedResolvedAddresses.Contains(resolvedAddress.UniqueReference))
+                            .Select(resolvedAddress => resolvedAddress.UniqueReference)
+                            .ToHashSet();
 
-                            .Select(resolvedAddress => resolvedAddress.UPRN)
+                        var newResolvedAddresses = validatedResolvedAddresses
+                            .Where(address => !existingUniqueReferencesToExclude.Contains(address.UniqueReference))
                             .ToList();
-
-                        var newResolvedAddresses = batch.Where(address =>
-                            !existingUniqueReferencesToExclude.Contains(address.UPRN)).ToList();
 
                         if (newResolvedAddresses.Count != 0)
                         {
@@ -208,21 +209,21 @@ namespace LHDS.Core.Services.Foundations.ResolvedAddresses
                         List<ResolvedAddress> validatedResolvedAddresses =
                             await ApplyAuditAndValidResolvedAddresses(batch);
 
-                        var idsFromValidatedResolvedAddresses =
-                            batch.Select(validatedResolvedAddress =>
-                                validatedResolvedAddress.Id).ToList();
+                        var idsFromValidatedResolvedAddresses = validatedResolvedAddresses
+                            .Select(validatedResolvedAddress => validatedResolvedAddress.Id)
+                            .ToHashSet();
 
-                        var retrievedResolvedAddresses = await this.storageBroker.SelectAllResolvedAddressesAsync();
+                        IQueryable<ResolvedAddress> retrievedResolvedAddresses =
+                            await this.storageBroker.SelectAllResolvedAddressesAsync();
 
                         var existingIdsInDatabase = retrievedResolvedAddresses
-                            .Where(resolvedAddress => idsFromValidatedResolvedAddresses
-                                .Contains(resolvedAddress.Id))
-
+                            .Where(resolvedAddress => idsFromValidatedResolvedAddresses.Contains(resolvedAddress.Id))
                             .Select(resolvedAddress => resolvedAddress.Id)
-                            .ToList();
+                            .ToHashSet();
 
-                        var toUpdateResolvedAddresses = batch.Where(resolvedAddress =>
-                            existingIdsInDatabase.Contains(resolvedAddress.Id)).ToList();
+                        var toUpdateResolvedAddresses = validatedResolvedAddresses
+                            .Where(resolvedAddress => existingIdsInDatabase.Contains(resolvedAddress.Id))
+                            .ToList();
 
                         if (toUpdateResolvedAddresses.Count != 0)
                         {
@@ -278,7 +279,7 @@ namespace LHDS.Core.Services.Foundations.ResolvedAddresses
                                 message: $"Invalid address parts found in line item: {indexOfInvalidItem + 1} " +
                                          $"from file: {fileName}",
                                 fileName,
-                                null);
+                                resolvedAddress.Id.ToString());
                         }
                     }
 

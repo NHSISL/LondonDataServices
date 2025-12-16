@@ -19,8 +19,6 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Decisions
         public async Task ShouldThrowServiceExceptionOnGetPatientDecisionsIfServiceErrorOccursAndLogItAsync()
         {
             // given
-            DateTimeOffset randomDateTimeOffset = GetRandomDateTimeOffset();
-            DateTimeOffset inputDateTimeOffset = randomDateTimeOffset;
             var serviceException = new Exception();
 
             var failedDecisionServiceException =
@@ -34,12 +32,12 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Decisions
                     innerException: failedDecisionServiceException);
 
             this.decisionBrokerMock.Setup(broker =>
-                broker.GetPatientDecisions(It.IsAny<DateTimeOffset>()))
+                broker.GetPatientDecisions())
                     .ThrowsAsync(serviceException);
 
             // when
             ValueTask<List<Decision>> getPatientDecisionsTask =
-                this.decisionService.GetPatientDecisions(inputDateTimeOffset);
+                this.decisionService.GetPatientDecisions();
 
             DecisionServiceException actualDecisionServiceException =
                 await Assert.ThrowsAsync<DecisionServiceException>(
@@ -50,7 +48,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Decisions
                 .BeEquivalentTo(expectedDecisionServiceException);
 
             this.decisionBrokerMock.Verify(broker =>
-                broker.GetPatientDecisions(It.IsAny<DateTimeOffset>()),
+                broker.GetPatientDecisions(),
                     Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>

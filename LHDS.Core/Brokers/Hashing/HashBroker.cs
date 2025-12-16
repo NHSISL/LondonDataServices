@@ -54,5 +54,27 @@ namespace LHDS.Core.Brokers.Hashing
 
             return sha256Hash;
         }
+
+        public async ValueTask<string> GenerateSha256HashAsync(string? data, string? pepper = null)
+        {
+            if (string.IsNullOrEmpty(data))
+            {
+                return string.Empty;
+            }
+
+            byte[] dataBytes = System.Text.Encoding.UTF8.GetBytes(data);
+
+            byte[] pepperBytes = !string.IsNullOrEmpty(pepper)
+                ? System.Text.Encoding.UTF8.GetBytes(pepper)
+                : Array.Empty<byte>();
+
+            byte[] combined = dataBytes.Concat(pepperBytes).ToArray();
+            using var sha256 = SHA256.Create();
+            byte[] hashBytes = sha256.ComputeHash(combined);
+
+            var sha256Hash = BitConverter.ToString(hashBytes).Replace("-", "").ToLowerInvariant();
+
+            return sha256Hash;
+        }
     }
 }

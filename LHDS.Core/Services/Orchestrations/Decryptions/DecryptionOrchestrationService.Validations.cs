@@ -2,9 +2,11 @@
 // Copyright (c) North East London ICB. All rights reserved.
 // ---------------------------------------------------------
 
+using System;
 using System.IO;
 using LHDS.Core.Models.Orchestrations.Decryptions.Exceptions;
 using LHDS.Core.Models.Processings.SubscriberCredentials;
+using Xeptions;
 
 namespace LHDS.Core.Services.Orchestrations.Decryptions
 {
@@ -41,7 +43,11 @@ namespace LHDS.Core.Services.Orchestrations.Decryptions
 
         private static void ValidateFileNameIsNotNull(string fileName)
         {
-            Validate((Rule: IsInvalid(fileName), Parameter: "FileName"));
+            Validate(
+                createException: () => new InvalidArgumentDecryptionOrchestrationException(
+                    message: "Invalid decryption orchestration argument(s), please correct the errors and try again."),
+
+                (Rule: IsInvalid(fileName), Parameter: "FileName"));
         }
 
         private static dynamic IsInvalid(string? text) => new
@@ -50,23 +56,24 @@ namespace LHDS.Core.Services.Orchestrations.Decryptions
             Message = "Text is required"
         };
 
-        private static void Validate(params (dynamic Rule, string Parameter)[] validations)
+        private static void Validate<T>(
+            Func<T> createException,
+            params (dynamic Rule, string Parameter)[] validations)
+            where T : Xeption
         {
-            var invalidArgumentDecryptionOrchestrationException =
-                new InvalidArgumentDecryptionOrchestrationException(
-                    message: "Invalid decryption orchestration argument(s), please correct the errors and try again.");
+            T invalidDataException = createException();
 
             foreach ((dynamic rule, string parameter) in validations)
             {
                 if (rule.Condition)
                 {
-                    invalidArgumentDecryptionOrchestrationException.UpsertDataList(
+                    invalidDataException.UpsertDataList(
                         key: parameter,
                         value: rule.Message);
                 }
             }
 
-            invalidArgumentDecryptionOrchestrationException.ThrowIfContainsErrors();
+            invalidDataException.ThrowIfContainsErrors();
         }
     }
 }

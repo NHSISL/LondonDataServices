@@ -5,6 +5,8 @@
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using LHDS.Core.Models.Brokers.Securities;
+using LHDS.Core.Models.Foundations.OptOuts;
 using LHDS.Core.Models.Foundations.ResolvedAddresses;
 using LHDS.Core.Models.Foundations.ResolvedAddresses.Exceptions;
 using Xeptions;
@@ -31,6 +33,10 @@ namespace LHDS.Core.Services.Foundations.ResolvedAddresses
                 (Rule: IsInvalid(resolvedAddress.CreatedBy), Parameter: nameof(ResolvedAddress.CreatedBy)),
                 (Rule: IsInvalid(resolvedAddress.UpdatedDate), Parameter: nameof(ResolvedAddress.UpdatedDate)),
                 (Rule: IsInvalid(resolvedAddress.UpdatedBy), Parameter: nameof(ResolvedAddress.UpdatedBy)),
+
+                (Rule: IsInvalidLength(
+                    resolvedAddress.HashedUnstructuredPostalAddress, 32),
+                    Parameter: nameof(ResolvedAddress.HashedUnstructuredPostalAddress)),
 
                 (Rule: IsNotSame(
                     first: currentEntraUserId,
@@ -73,6 +79,12 @@ namespace LHDS.Core.Services.Foundations.ResolvedAddresses
                 (Rule: IsInvalid(resolvedAddresses), Parameter: nameof(resolvedAddresses)));
         }
 
+        private static dynamic IsInvalidLength(char[] chars, int maxLength) => new
+        {
+            Condition = chars == null || chars.Length > maxLength,
+            Message = $"Char array length should not be greater than {maxLength}"
+        };
+
         private async ValueTask ValidateResolvedAddressOnModifyAsync(ResolvedAddress resolvedAddress)
         {
             string currentEntraUserId = await this.securityAuditBroker.GetUserIdAsync();
@@ -91,6 +103,10 @@ namespace LHDS.Core.Services.Foundations.ResolvedAddresses
                 (Rule: IsInvalid(resolvedAddress.CreatedBy), Parameter: nameof(ResolvedAddress.CreatedBy)),
                 (Rule: IsInvalid(resolvedAddress.UpdatedDate), Parameter: nameof(ResolvedAddress.UpdatedDate)),
                 (Rule: IsInvalid(resolvedAddress.UpdatedBy), Parameter: nameof(ResolvedAddress.UpdatedBy)),
+
+                 (Rule: IsInvalidLength(
+                    resolvedAddress.HashedUnstructuredPostalAddress, 32),
+                    Parameter: nameof(ResolvedAddress.HashedUnstructuredPostalAddress)),
 
                 (Rule: IsNotSame(
                     first: currentEntraUserId,

@@ -20,19 +20,23 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.DataTypes
         {
             // given
             DateTimeOffset randomDateTimeOffset = GetRandomDateTimeOffset();
-            EntraUser randomEntraUser = CreateRandomEntraUser();
-            DataType randomDataType = CreateRandomDataType(randomDateTimeOffset, randomEntraUser.EntraUserId);
+            string randomEntraUserId = GetRandomStringWithLengthOf(50);
+            DataType randomDataType = CreateRandomDataType(randomDateTimeOffset, randomEntraUserId);
             DataType inputDataType = randomDataType;
             DataType storageDataType = inputDataType;
             DataType expectedDataType = storageDataType.DeepClone();
 
-            this.dateTimeBrokerMock.Setup(broker =>
+            this.securityAuditBrokerMock.Setup(broker =>
+				broker.ApplyAddAuditValuesAsync(inputDataType))
+					.ReturnsAsync(inputDataType);
+
+			this.dateTimeBrokerMock.Setup(broker =>
                 broker.GetCurrentDateTimeOffsetAsync())
                     .ReturnsAsync(randomDateTimeOffset);
 
-            this.securityBrokerMock.Setup(broker =>
-                broker.GetCurrentUserAsync())
-                    .ReturnsAsync(randomEntraUser);
+            this.securityAuditBrokerMock.Setup(broker =>
+                broker.GetUserIdAsync())
+                    .ReturnsAsync(randomEntraUserId);
 
             this.storageBrokerMock.Setup(broker =>
                 broker.InsertDataTypeAsync(inputDataType))
@@ -44,20 +48,24 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.DataTypes
             // then
             actualDataType.Should().BeEquivalentTo(expectedDataType);
 
-            this.dateTimeBrokerMock.Verify(broker =>
-                broker.GetCurrentDateTimeOffsetAsync(),
-                    Times.Exactly(2));
+            this.securityAuditBrokerMock.Verify(broker =>
+				broker.ApplyAddAuditValuesAsync(inputDataType),
+					Times.Once);
 
-            this.securityBrokerMock.Verify(broker =>
-                broker.GetCurrentUserAsync(),
-                    Times.Exactly(2));
+			this.dateTimeBrokerMock.Verify(broker =>
+                broker.GetCurrentDateTimeOffsetAsync(),
+                    Times.Once);
+
+            this.securityAuditBrokerMock.Verify(broker =>
+                broker.GetUserIdAsync(),
+                    Times.Once);
 
             this.storageBrokerMock.Verify(broker =>
                 broker.InsertDataTypeAsync(inputDataType),
                     Times.Once);
 
+            this.securityAuditBrokerMock.VerifyNoOtherCalls();
             this.dateTimeBrokerMock.VerifyNoOtherCalls();
-            this.securityBrokerMock.VerifyNoOtherCalls();
             this.storageBrokerMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
         }

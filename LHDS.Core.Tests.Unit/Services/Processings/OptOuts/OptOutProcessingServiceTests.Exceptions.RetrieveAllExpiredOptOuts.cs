@@ -35,7 +35,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.OptOuts
                     .ThrowsAsync(dependencyValidationException);
 
             // when
-            ValueTask<List<OptOut>> retrieveAllExpiredOptOutsTask =
+            ValueTask<List<string>> retrieveAllExpiredOptOutsTask =
                 this.optOutProcessingService.RetrieveAllExpiredOptOutsAsync(olderThanDays);
 
             OptOutProcessingDependencyValidationException actualException =
@@ -80,7 +80,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.OptOuts
                     .ThrowsAsync(dependencyException);
 
             // when
-            ValueTask<List<OptOut>> optOutRetrieveExpiredTask =
+            ValueTask<List<string>> optOutRetrieveExpiredTask =
                 this.optOutProcessingService.RetrieveAllExpiredOptOutsAsync(olderThanDays);
 
             OptOutProcessingDependencyException actualException =
@@ -129,7 +129,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.OptOuts
                     .ThrowsAsync(serviceException);
 
             // when
-            ValueTask<List<OptOut>> retrieveExpiretOptOuts =
+            ValueTask<List<string>> retrieveExpiretOptOuts =
                 this.optOutProcessingService.RetrieveAllExpiredOptOutsAsync(olderThanDays);
 
             OptOutProcessingServiceException actualException =

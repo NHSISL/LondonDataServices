@@ -291,6 +291,13 @@ steps:
       projects: '**/LHDS.Functions.Terminology.csproj'
       arguments: --output $(System.DefaultWorkingDirectory)/publish_output_terminology_func --configuration Release
      
+  - task: DotNetCoreCLI@2
+    displayName: "Dotnet Build (iDecide Function)"
+    inputs:
+        command: 'build'
+        projects: '**/LHDS.Functions.IDecide.csproj'
+        arguments: --output $(System.DefaultWorkingDirectory)/publish_output_idecide_func --configuration Release
+     
   - task: Npm@1 
     displayName: Run Code linting
     inputs:
@@ -442,6 +449,16 @@ steps:
       archiveFile: $(Build.ArtifactStagingDirectory)/$(Build.BuildId)_terminology_func.zip
       replaceExistingArchive: true
 
+  - task: ArchiveFiles@2
+    condition: and(succeeded(), ne(variables['Build.Reason'], 'PullRequest'))  
+    displayName: 'Archive files - IDecide Function'
+    inputs:
+      rootFolderOrFile: '$(System.DefaultWorkingDirectory)/publish_output_idecide_func'
+      includeRootFolder: false
+      archiveType: zip
+      archiveFile: $(Build.ArtifactStagingDirectory)/$(Build.BuildId)_idecide_func.zip
+      replaceExistingArchive: true
+
   - publish: $(Build.ArtifactStagingDirectory)/$(Build.BuildId)_api_website
     condition: and(succeeded(), ne(variables['Build.Reason'], 'PullRequest'))  
     displayName: 'Publish Artifact - API'
@@ -506,3 +523,8 @@ steps:
     condition: and(succeeded(), ne(variables['Build.Reason'], 'PullRequest'))  
     displayName: 'Publish Artifact - Terminology Function'
     artifact: drop-terminology-func
+
+  - publish: $(Build.ArtifactStagingDirectory)/$(Build.BuildId)_idecide_func.zip
+    condition: and(succeeded(), ne(variables['Build.Reason'], 'PullRequest'))  
+    displayName: 'Publish Artifact - IDecide Function'
+    artifact: drop-idecide-func

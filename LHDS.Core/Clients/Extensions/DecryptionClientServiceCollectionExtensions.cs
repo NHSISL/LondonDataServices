@@ -366,7 +366,7 @@ namespace LHDS.Core.Clients.Extensions
 
             Validate(
                 createException: () => new InvalidConfigurationException(
-                    message: "Invalid landing settings."),
+                    message: "Invalid blob storage settings."),
 
                 (Rule: IsInvalid(blobStorageSettings.AzureBlobServiceUri),
                     Parameter: "blobStorage__azureBlobServiceUri"),

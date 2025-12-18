@@ -24,7 +24,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.ResolvedAddresses
             string randomEntraUserId = GetRandomStringWithLengthOf(50);
 
             ResolvedAddress randomResolvedAddress = 
-                CreateRandomModifyResolvedAddress(randomDateTimeOffset, randomEntraUserId );
+                CreateRandomModifyResolvedAddress(randomDateTimeOffset, randomEntraUserId);
 
             ResolvedAddress inputResolvedAddress = randomResolvedAddress;
             ResolvedAddress storageResolvedAddress = inputResolvedAddress.DeepClone();

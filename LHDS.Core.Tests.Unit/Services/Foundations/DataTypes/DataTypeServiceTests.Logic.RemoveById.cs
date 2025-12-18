@@ -20,31 +20,35 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.DataTypes
         {
             //Given
             DateTimeOffset randomDateTimeOffset = GetRandomDateTimeOffset();
-            EntraUser randomEntraUser = CreateRandomEntraUser();
-            DataType randomDataType = CreateRandomDataType(randomDateTimeOffset, randomEntraUser.EntraUserId);
+            string randomEntraUserId = GetRandomStringWithLengthOf(50);
+            DataType randomDataType = CreateRandomDataType(randomDateTimeOffset, randomEntraUserId);
             Guid inputDataTypeId = randomDataType.Id;
             DataType storageDataType = randomDataType;
             DataType dataSetWithDeleteAuditApplied = storageDataType.DeepClone();
-            dataSetWithDeleteAuditApplied.UpdatedBy = randomEntraUser.EntraUserId.ToString();
+            dataSetWithDeleteAuditApplied.UpdatedBy = randomEntraUserId.ToString();
             dataSetWithDeleteAuditApplied.UpdatedDate = randomDateTimeOffset;
             DataType updatedDataType = dataSetWithDeleteAuditApplied;
             DataType deletedDataType = updatedDataType;
             DataType expectedDataType = deletedDataType.DeepClone();
 
-            this.dateTimeBrokerMock.Setup(broker =>
+			this.dateTimeBrokerMock.Setup(broker =>
                 broker.GetCurrentDateTimeOffsetAsync())
                     .ReturnsAsync(randomDateTimeOffset);
 
-            this.securityBrokerMock.Setup(broker =>
-                broker.GetCurrentUserAsync())
-                    .ReturnsAsync(randomEntraUser);
+            this.securityAuditBrokerMock.Setup(broker =>
+                broker.GetUserIdAsync())
+                    .ReturnsAsync(randomEntraUserId);
 
             this.storageBrokerMock.Setup(broker =>
                 broker.SelectDataTypeByIdAsync(inputDataTypeId))
                     .ReturnsAsync(storageDataType);
 
+            this.securityAuditBrokerMock.Setup(broker =>
+				broker.ApplyRemoveAuditValuesAsync(storageDataType))
+					.ReturnsAsync(dataSetWithDeleteAuditApplied);
+
             this.storageBrokerMock.Setup(broker =>
-                broker.UpdateDataTypeAsync(randomDataType))
+                broker.UpdateDataTypeAsync(dataSetWithDeleteAuditApplied))
                     .ReturnsAsync(updatedDataType);
 
             this.storageBrokerMock.Setup(broker =>
@@ -61,16 +65,16 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.DataTypes
                 broker.SelectDataTypeByIdAsync(inputDataTypeId),
                     Times.Once);
 
-            this.dateTimeBrokerMock.Verify(broker =>
-                broker.GetCurrentDateTimeOffsetAsync(),
+            this.securityAuditBrokerMock.Verify(broker =>
+                broker.ApplyRemoveAuditValuesAsync(storageDataType),
+					Times.Once);
+
+            this.securityAuditBrokerMock.Verify(broker =>
+                broker.GetUserIdAsync(),
                     Times.Once);
 
-            this.securityBrokerMock.Verify(broker =>
-                broker.GetCurrentUserAsync(),
-                    Times.Exactly(2));
-
             this.storageBrokerMock.Verify(broker =>
-                broker.UpdateDataTypeAsync(randomDataType),
+                broker.UpdateDataTypeAsync(dataSetWithDeleteAuditApplied),
                     Times.Once);
 
             this.storageBrokerMock.Verify(broker =>
@@ -80,7 +84,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.DataTypes
             this.storageBrokerMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
             this.dateTimeBrokerMock.VerifyNoOtherCalls();
-            this.securityBrokerMock.VerifyNoOtherCalls();
+            this.securityAuditBrokerMock.VerifyNoOtherCalls();
         }
     }
 }

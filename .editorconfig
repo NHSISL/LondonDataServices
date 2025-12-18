@@ -2,7 +2,6 @@
 
 # C# or VB files
 [*.{cs,vb,ts,tsx}]
-guidelines = 120
 indent_style = space
 indent_size = 4
 trim_trailing_whitespace = true

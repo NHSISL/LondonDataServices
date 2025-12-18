@@ -43,7 +43,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.ResolvedAddresses
 
             this.securityAuditBrokerMock.Setup(broker =>
                 broker.GetUserIdAsync())
-                    .ReturnsAsync(randomEntraUserId );
+                    .ReturnsAsync(randomEntraUserId);
 
             this.securityAuditBrokerMock.Setup(broker =>
                 broker.EnsureAddAuditValuesRemainsUnchangedOnModifyAsync(

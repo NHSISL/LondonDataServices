@@ -28,7 +28,7 @@ namespace LHDS.Core.Services.Foundations.Ontologies
         public ValueTask<OntologyAssets> RetrieveAllCodingSystemsAsync(string relativeUrl) =>
             TryCatch(async () =>
             {
-                await ValidateArgs(relativeUrl);
+                ValidateArgs(relativeUrl);
                 Bundle codingSystems = await this.ontologyBroker.GetAllAsync(relativeUrl);
                 string? nextPageUrl = codingSystems.NextLink?.ToString();
 
@@ -61,7 +61,7 @@ namespace LHDS.Core.Services.Foundations.Ontologies
         public ValueTask<OntologyAssets> RetrieveAllConceptMapsAsync(string relativeUrl) =>
             TryCatch(async () =>
             {
-                await ValidateArgs(relativeUrl);
+                ValidateArgs(relativeUrl);
                 Bundle valueSets = await this.ontologyBroker.GetAllAsync(relativeUrl);
                 string? nextPageUrl = valueSets.NextLink?.ToString();
 
@@ -94,7 +94,7 @@ namespace LHDS.Core.Services.Foundations.Ontologies
         public ValueTask<OntologyAssets> RetrieveAllValueSetsAsync(string relativeUrl) =>
             TryCatch(async () =>
             {
-                await ValidateArgs(relativeUrl);
+                ValidateArgs(relativeUrl);
                 Bundle valueSets = await this.ontologyBroker.GetAllAsync(relativeUrl);
                 string? nextPageUrl = valueSets.NextLink?.ToString();
 
@@ -127,7 +127,7 @@ namespace LHDS.Core.Services.Foundations.Ontologies
         public ValueTask<string> RetrieveArtifactDetailsAsync(string relativeUrl) =>
             TryCatch(async () =>
             {
-                await ValidateArgs(relativeUrl);
+                ValidateArgs(relativeUrl);
 
                 return await this.ontologyBroker.GetArtifactDetailsAsync(relativeUrl);
             });

@@ -3,7 +3,6 @@
 // ---------------------------------------------------------
 
 using System;
-using System.Threading.Tasks;
 using LHDS.Core.Models.Foundations.Ontologies.Exceptions;
 using Xeptions;
 
@@ -14,6 +13,7 @@ namespace LHDS.Core.Services.Foundations.Ontologies
         public static void ValidateArgs(string relativeUrl)
         {
             Validate(
+
                 createException: () => new InvalidArgumentOntologyException(
                     message: "Invalid ontology arguments. Please correct the error and try again."),
 

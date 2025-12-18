@@ -324,7 +324,7 @@ namespace LHDS.Core.Clients.Extensions
 
             Validate(
                 createException: () => new InvalidConfigurationException(
-                    message: "Invalid landing settings."),
+                    message: "Invalid FTP provider settings."),
 
                 (Rule: IsInvalid(ftpDownloadProviderSettings.FtpPort),
                     Parameter: "ftpDownload__ftpPort"),

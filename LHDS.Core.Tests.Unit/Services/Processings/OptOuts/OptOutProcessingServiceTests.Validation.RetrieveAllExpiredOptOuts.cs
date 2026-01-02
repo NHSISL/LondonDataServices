@@ -35,7 +35,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.OptOuts
                     innerException: invalidArgumentOptOutProcessingException);
 
             // when
-            ValueTask<List<OptOut>> RetrieveExiredOptOutTask =
+            ValueTask<List<string>> RetrieveExiredOptOutTask =
                 this.optOutProcessingService.RetrieveAllExpiredOptOutsAsync(olderThanDays: inputOlderThanDays);
 
             OptOutProcessingValidationException actualOptOutProcessingValidationException =

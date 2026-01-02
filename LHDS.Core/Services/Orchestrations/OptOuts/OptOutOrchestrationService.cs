@@ -166,59 +166,62 @@ namespace LHDS.Core.Services.Orchestrations.OptOuts
                 return csvFileName;
             });
 
-        public ValueTask<MeshMessage?> PushExpiredOptOutsToMeshForRenewalAsync() =>
-            TryCatch(async () =>
-            {
-                ValidateConfigurationSettings();
-                bool shouldAddTrailingComma = this.optOutConfiguration.OptOutFileRequireTrailingComma;
+        public ValueTask<MeshMessage> PushExpiredOptOutsToMeshForRenewalAsync() =>
+          TryCatch(async () =>
+          {
+              ValidateConfigurationSettings();
+              bool shouldAddTrailingComma = this.optOutConfiguration.OptOutFileRequireTrailingComma;
 
-                List<OptOut> expiredOptOuts = await
-                    this.optOutProcessingService
-                        .RetrieveAllExpiredOptOutsAsync(optOutConfiguration.ExpiredAfterDays);
+              List<string> expiredOptOutIdentifiers = await
+                  this.optOutProcessingService
+                      .RetrieveAllExpiredOptOutsAsync(optOutConfiguration.ExpiredAfterDays);
 
-                if (!expiredOptOuts.Any())
-                {
-                    return null;
-                }
+              if (!expiredOptOutIdentifiers.Any())
+              {
+                  return null;
+              }
 
-                List<string> expiredOptOutIdentifiers =
-                    expiredOptOuts.Select(optout => $"{optout.NhsNumber},").ToList();
+              StringBuilder csvExpiredOptOutIdentifiers = new StringBuilder();
 
-                StringBuilder csvExpiredOptOutIdentifiers = new StringBuilder();
+              foreach (var identifier in expiredOptOutIdentifiers)
+              {
+                  csvExpiredOptOutIdentifiers.AppendLine($"{identifier},");
+              }
 
-                foreach (var item in expiredOptOuts)
-                {
-                    csvExpiredOptOutIdentifiers.AppendLine($"{item.NhsNumber},");
-                }
+              DateTimeOffset batchReferenceDateTime =
+                  await this.dateTimeBroker.GetCurrentDateTimeOffsetAsync();
 
-                DateTimeOffset batchReferenceDateTime =
-                    await this.dateTimeBroker.GetCurrentDateTimeOffsetAsync();
+              string batchReference = batchReferenceDateTime.ToString("yyyyMMddHHmmss");
 
-                string batchReference = batchReferenceDateTime.ToString("yyyyMMddHHmmss");
+              MeshMessage message = await this.meshProcessingService.SendMessageAsync(
+                  mexTo: this.optOutConfiguration.To,
+                  mexWorkflowId: this.optOutConfiguration.WorkflowId,
+                  fileContent: Encoding.UTF8.GetBytes(csvExpiredOptOutIdentifiers.ToString()),
+                  mexSubject: string.Empty,
+                  mexLocalId: batchReference,
+                  mexFileName: $"{batchReference}.txt",
+                  mexContentChecksum: string.Empty,
+                  contentType: "text/plain",
+                  contentEncoding: string.Empty,
+                  accept: "application/json");
 
-                MeshMessage message = await this.meshProcessingService.SendMessageAsync(
-                    mexTo: this.optOutConfiguration.To,
-                    mexWorkflowId: this.optOutConfiguration.WorkflowId,
-                    fileContent: Encoding.UTF8.GetBytes(csvExpiredOptOutIdentifiers.ToString()),
-                    mexSubject: string.Empty,
-                    mexLocalId: batchReference,
-                    mexFileName: $"{batchReference}.txt",
-                    mexContentChecksum: string.Empty,
-                    contentType: "text/plain",
-                    contentEncoding: string.Empty,
-                    accept: "application/json");
+              foreach (var identifier in expiredOptOutIdentifiers)
+              {
+                  var dateTime = await this.dateTimeBroker.GetCurrentDateTimeOffsetAsync();
 
-                foreach (var optOut in expiredOptOuts)
-                {
-                    var dateTime = await this.dateTimeBroker.GetCurrentDateTimeOffsetAsync();
-                    optOut.LastSentToMesh = dateTime;
-                    optOut.UpdatedDate = dateTime;
-                    optOut.BatchReference = batchReference;
-                    await this.optOutProcessingService.AddOrModifyOptOutAsync(optOut);
-                }
+                  OptOut modifiedOptOut = new OptOut
+                  {
+                      NhsNumber = identifier,
+                      LastSentToMesh = dateTime,
+                      UpdatedDate = dateTime,
+                      BatchReference = batchReference
+                  };
 
-                return message;
-            });
+                  await this.optOutProcessingService.AddOrModifyOptOutAsync(modifiedOptOut);
+              }
+
+              return message;
+          });
 
         public ValueTask<List<MeshMessage>> RetrieveUpdatedMeshConsentStatusesChangesAsync() =>
             TryCatch(async () =>

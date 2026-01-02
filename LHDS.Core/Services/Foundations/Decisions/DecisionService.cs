@@ -2,7 +2,6 @@
 // Copyright (c) North East London ICB. All rights reserved.
 // ---------------------------------------------------------
 
-using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using LHDS.Core.Brokers.Decisions;
@@ -24,11 +23,11 @@ namespace LHDS.Core.Services.Foundations.Decisions
             this.loggingBroker = loggingBroker;
         }
 
-        public ValueTask<List<Decision>> GetPatientDecisions(DateTimeOffset? lastPollDate) =>
+        public ValueTask<List<Decision>> GetPatientDecisions() =>
             TryCatch(async () =>
             {
                 List<Decision> maybeDecisions =
-                    await this.decisionBroker.GetPatientDecisions(lastPollDate) ?? new List<Decision>();
+                    await this.decisionBroker.GetPatientDecisions() ?? new List<Decision>();
 
                 maybeDecisions.RemoveAll(decision => decision is null);
                 ValidateDecisions(maybeDecisions);

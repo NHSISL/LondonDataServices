@@ -3,8 +3,6 @@
 // ---------------------------------------------------------
 
 using System;
-using LHDS.Core.Models.Foundations.DecisionTypes;
-using LHDS.Core.Models.Foundations.Patients;
 
 namespace LHDS.Core.Models.Foundations.Decisions
 {
@@ -21,7 +19,7 @@ namespace LHDS.Core.Models.Foundations.Decisions
         public string? ResponsiblePersonGivenName { get; set; }
         public string? ResponsiblePersonSurname { get; set; }
         public string? ResponsiblePersonRelationship { get; set; }
-        public DecisionType DecisionType { get; set; } = null!;
-        public Patient Patient { get; set; } = null!;
+        public string DecisionTypeName { get; set; }
+        public string PatientNhsNumber { get; set; }
     }
 }

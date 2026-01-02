@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using LHDS.Core.Models.Brokers.Securities;
 using LHDS.Core.Models.Foundations.ObjectColumns;
 using LHDS.Core.Models.Foundations.ObjectColumns.Exceptions;
+using Xeptions;
 
 namespace LHDS.Core.Services.Foundations.ObjectColumns
 {
@@ -16,9 +17,15 @@ namespace LHDS.Core.Services.Foundations.ObjectColumns
         {
             EntraUser currentUser = await this.securityBroker.GetCurrentUserAsync();
 
-            Validate(
+            Validate<InvalidObjectColumnException>(
+                createException: () => new InvalidObjectColumnException(
+                    message: "Invalid objectColumn. Please correct the errors and try again."),
+
                 (Rule: IsInvalid(objectColumn.Id), Parameter: nameof(ObjectColumn.Id)),
-                (Rule: IsInvalid(objectColumn.SpecificationObjectId), Parameter: nameof(ObjectColumn.SpecificationObjectId)),
+
+                (Rule: IsInvalid(objectColumn.SpecificationObjectId), 
+                Parameter: nameof(ObjectColumn.SpecificationObjectId)),
+
                 (Rule: IsInvalid(objectColumn.SupplierColumnName), Parameter: nameof(ObjectColumn.SupplierColumnName)),
                 (Rule: IsInvalid(objectColumn.OurColumnName), Parameter: nameof(ObjectColumn.OurColumnName)),
                 (Rule: IsInvalid(objectColumn.SqlDataType), Parameter: nameof(ObjectColumn.SqlDataType)),
@@ -28,45 +35,44 @@ namespace LHDS.Core.Services.Foundations.ObjectColumns
                 (Rule: IsInvalid(objectColumn.UpdatedDate), Parameter: nameof(ObjectColumn.UpdatedDate)),
                 (Rule: IsInvalid(objectColumn.UpdatedBy), Parameter: nameof(ObjectColumn.UpdatedBy)),
 
-                (Rule: IsEqualOrSmallerThan(
-                    objectColumn.SupplierColumnName, 255), Parameter: nameof(objectColumn.SupplierColumnName)),
+                (Rule: IsEqualOrSmallerThan(objectColumn.SupplierColumnName, 255), 
+                Parameter: nameof(objectColumn.SupplierColumnName)),
 
-                (Rule: IsEqualOrSmallerThan(
-                    objectColumn.OurColumnName, 255), Parameter: nameof(objectColumn.OurColumnName)),
+                (Rule: IsEqualOrSmallerThan(objectColumn.OurColumnName, 255), 
+                Parameter: nameof(objectColumn.OurColumnName)),
 
-                (Rule: IsEqualOrSmallerThan(
-                    objectColumn.ColumnDescription, 500), Parameter: nameof(objectColumn.ColumnDescription)),
+                (Rule: IsEqualOrSmallerThan(objectColumn.ColumnDescription, 500), 
+                Parameter: nameof(objectColumn.ColumnDescription)),
 
-                (Rule: IsEqualOrSmallerThan(
-                    objectColumn.PopulatedBy, 255), Parameter: nameof(objectColumn.PopulatedBy)),
+                (Rule: IsEqualOrSmallerThan(objectColumn.PopulatedBy, 255), 
+                Parameter: nameof(objectColumn.PopulatedBy)),
 
-                (Rule: IsEqualOrSmallerThan(
-                    objectColumn.SqlDataType, 50), Parameter: nameof(objectColumn.SqlDataType)),
+                (Rule: IsEqualOrSmallerThan(objectColumn.SqlDataType, 50), 
+                Parameter: nameof(objectColumn.SqlDataType)),
 
-                (Rule: IsEqualOrSmallerThan(
-                    objectColumn.FhirDataType, 255), Parameter: nameof(objectColumn.FhirDataType)),
+                (Rule: IsEqualOrSmallerThan(objectColumn.FhirDataType, 255), 
+                Parameter: nameof(objectColumn.FhirDataType)),
 
-                (Rule: IsEqualOrSmallerThan(
-                    objectColumn.SupplierDateFormat, 255), Parameter: nameof(objectColumn.SupplierDateFormat)),
+                (Rule: IsEqualOrSmallerThan(objectColumn.SupplierDateFormat, 255), 
+                Parameter: nameof(objectColumn.SupplierDateFormat)),
 
-                (Rule: IsEqualOrSmallerThan(
-                    objectColumn.PersonConfidentialDataType, 255),
+                (Rule: IsEqualOrSmallerThan(objectColumn.PersonConfidentialDataType, 255),
                 Parameter: nameof(objectColumn.PersonConfidentialDataType)),
 
-                (Rule: IsEqualOrSmallerThan(
-                    objectColumn.MaskingMethod, 255), Parameter: nameof(objectColumn.MaskingMethod)),
+                (Rule: IsEqualOrSmallerThan(objectColumn.MaskingMethod, 255), 
+                Parameter: nameof(objectColumn.MaskingMethod)),
 
-                (Rule: IsEqualOrSmallerThan(
-                    objectColumn.CodeSystem, 255), Parameter: nameof(objectColumn.CodeSystem)),
+                (Rule: IsEqualOrSmallerThan(objectColumn.CodeSystem, 255), 
+                Parameter: nameof(objectColumn.CodeSystem)),
 
-                (Rule: IsEqualOrSmallerThan(
-                    objectColumn.PartitionColumnLevel, 255), Parameter: nameof(objectColumn.PartitionColumnLevel)),
+                (Rule: IsEqualOrSmallerThan(objectColumn.PartitionColumnLevel, 255), 
+                Parameter: nameof(objectColumn.PartitionColumnLevel)),
 
-                (Rule: IsEqualOrSmallerThan(
-                    objectColumn.CreatedBy, 255), Parameter: nameof(objectColumn.CreatedBy)),
+                (Rule: IsEqualOrSmallerThan(objectColumn.CreatedBy, 255), 
+                Parameter: nameof(objectColumn.CreatedBy)),
 
-                (Rule: IsEqualOrSmallerThan(
-                    objectColumn.UpdatedBy, 255), Parameter: nameof(objectColumn.UpdatedBy)),
+                (Rule: IsEqualOrSmallerThan(objectColumn.UpdatedBy, 255), 
+                Parameter: nameof(objectColumn.UpdatedBy)),
 
                 (Rule: IsNotSame(
                     first: currentUser.EntraUserId,
@@ -92,9 +98,15 @@ namespace LHDS.Core.Services.Foundations.ObjectColumns
         {
             EntraUser currentUser = await this.securityBroker.GetCurrentUserAsync();
 
-            Validate(
+            Validate<InvalidObjectColumnException>(
+                createException: () => new InvalidObjectColumnException(
+                    message: "Invalid objectColumn. Please correct the errors and try again."),
+
                 (Rule: IsInvalid(objectColumn.Id), Parameter: nameof(ObjectColumn.Id)),
-                (Rule: IsInvalid(objectColumn.SpecificationObjectId), Parameter: nameof(ObjectColumn.SpecificationObjectId)),
+
+                (Rule: IsInvalid(objectColumn.SpecificationObjectId), 
+                Parameter: nameof(ObjectColumn.SpecificationObjectId)),
+
                 (Rule: IsInvalid(objectColumn.SupplierColumnName), Parameter: nameof(ObjectColumn.SupplierColumnName)),
                 (Rule: IsInvalid(objectColumn.OurColumnName), Parameter: nameof(ObjectColumn.OurColumnName)),
                 (Rule: IsInvalid(objectColumn.SqlDataType), Parameter: nameof(ObjectColumn.SqlDataType)),
@@ -104,45 +116,44 @@ namespace LHDS.Core.Services.Foundations.ObjectColumns
                 (Rule: IsInvalid(objectColumn.UpdatedDate), Parameter: nameof(ObjectColumn.UpdatedDate)),
                 (Rule: IsInvalid(objectColumn.UpdatedBy), Parameter: nameof(ObjectColumn.UpdatedBy)),
 
-                (Rule: IsEqualOrSmallerThan(
-                    objectColumn.SupplierColumnName, 255), Parameter: nameof(objectColumn.SupplierColumnName)),
+                (Rule: IsEqualOrSmallerThan(objectColumn.SupplierColumnName, 255), 
+                Parameter: nameof(objectColumn.SupplierColumnName)),
 
-                (Rule: IsEqualOrSmallerThan(
-                    objectColumn.OurColumnName, 255), Parameter: nameof(objectColumn.OurColumnName)),
+                (Rule: IsEqualOrSmallerThan(objectColumn.OurColumnName, 255), 
+                Parameter: nameof(objectColumn.OurColumnName)),
 
-                (Rule: IsEqualOrSmallerThan(
-                    objectColumn.ColumnDescription, 500), Parameter: nameof(objectColumn.ColumnDescription)),
+                (Rule: IsEqualOrSmallerThan(objectColumn.ColumnDescription, 500), 
+                Parameter: nameof(objectColumn.ColumnDescription)),
 
-                (Rule: IsEqualOrSmallerThan(
-                    objectColumn.PopulatedBy, 255), Parameter: nameof(objectColumn.PopulatedBy)),
+                (Rule: IsEqualOrSmallerThan(objectColumn.PopulatedBy, 255), 
+                Parameter: nameof(objectColumn.PopulatedBy)),
 
-                (Rule: IsEqualOrSmallerThan(
-                    objectColumn.SqlDataType, 50), Parameter: nameof(objectColumn.SqlDataType)),
+                (Rule: IsEqualOrSmallerThan(objectColumn.SqlDataType, 50), 
+                Parameter: nameof(objectColumn.SqlDataType)),
 
-                (Rule: IsEqualOrSmallerThan(
-                    objectColumn.FhirDataType, 255), Parameter: nameof(objectColumn.FhirDataType)),
+                (Rule: IsEqualOrSmallerThan(objectColumn.FhirDataType, 255), 
+                Parameter: nameof(objectColumn.FhirDataType)),
 
-                (Rule: IsEqualOrSmallerThan(
-                    objectColumn.SupplierDateFormat, 255), Parameter: nameof(objectColumn.SupplierDateFormat)),
+                (Rule: IsEqualOrSmallerThan(objectColumn.SupplierDateFormat, 255), 
+                Parameter: nameof(objectColumn.SupplierDateFormat)),
 
-                (Rule: IsEqualOrSmallerThan(
-                    objectColumn.PersonConfidentialDataType, 255),
+                (Rule: IsEqualOrSmallerThan(objectColumn.PersonConfidentialDataType, 255),
                 Parameter: nameof(objectColumn.PersonConfidentialDataType)),
 
-                (Rule: IsEqualOrSmallerThan(
-                    objectColumn.MaskingMethod, 255), Parameter: nameof(objectColumn.MaskingMethod)),
+                (Rule: IsEqualOrSmallerThan(objectColumn.MaskingMethod, 255), 
+                Parameter: nameof(objectColumn.MaskingMethod)),
 
-                (Rule: IsEqualOrSmallerThan(
-                    objectColumn.CodeSystem, 255), Parameter: nameof(objectColumn.CodeSystem)),
+                (Rule: IsEqualOrSmallerThan(objectColumn.CodeSystem, 255), 
+                Parameter: nameof(objectColumn.CodeSystem)),
 
-                (Rule: IsEqualOrSmallerThan(
-                    objectColumn.PartitionColumnLevel, 255), Parameter: nameof(objectColumn.PartitionColumnLevel)),
+                (Rule: IsEqualOrSmallerThan(objectColumn.PartitionColumnLevel, 255), 
+                Parameter: nameof(objectColumn.PartitionColumnLevel)),
 
-                (Rule: IsEqualOrSmallerThan(
-                    objectColumn.CreatedBy, 255), Parameter: nameof(objectColumn.CreatedBy)),
+                (Rule: IsEqualOrSmallerThan(objectColumn.CreatedBy, 255), 
+                Parameter: nameof(objectColumn.CreatedBy)),
 
-                (Rule: IsEqualOrSmallerThan(
-                    objectColumn.UpdatedBy, 255), Parameter: nameof(objectColumn.UpdatedBy)),
+                (Rule: IsEqualOrSmallerThan(objectColumn.UpdatedBy, 255), 
+                Parameter: nameof(objectColumn.UpdatedBy)),
 
                 (Rule: IsNotSame(
                     first: currentUser.EntraUserId,
@@ -155,11 +166,18 @@ namespace LHDS.Core.Services.Foundations.ObjectColumns
                     secondDateName: nameof(ObjectColumn.CreatedDate)),
                 Parameter: nameof(ObjectColumn.UpdatedDate)),
 
-                (Rule: await IsNotRecentAsync(objectColumn.UpdatedDate), Parameter: nameof(objectColumn.UpdatedDate)));
+                (Rule: await IsNotRecentAsync(objectColumn.UpdatedDate), 
+                Parameter: nameof(objectColumn.UpdatedDate)));
         }
 
-        public void ValidateObjectColumnId(Guid objectColumnId) =>
-            Validate((Rule: IsInvalid(objectColumnId), Parameter: nameof(ObjectColumn.Id)));
+        public void ValidateObjectColumnId(Guid objectColumnId)
+        {
+            Validate<InvalidObjectColumnException>(
+                createException: () => new InvalidObjectColumnException(
+                    message: "Invalid objectColumn. Please correct the errors and try again."),
+                
+                (Rule: IsInvalid(objectColumnId), Parameter: nameof(ObjectColumn.Id)));
+        }
 
         private static void ValidateStorageObjectColumn(ObjectColumn maybeObjectColumn, Guid objectColumnId)
         {
@@ -181,7 +199,10 @@ namespace LHDS.Core.Services.Foundations.ObjectColumns
             ObjectColumn inputObjectColumn,
             ObjectColumn storageObjectColumn)
         {
-            Validate(
+            Validate<InvalidObjectColumnException>(
+                createException: () => new InvalidObjectColumnException(
+                    message: "Invalid objectColumn. Please correct the errors and try again."),
+
                 (Rule: IsNotSame(
                     firstDate: inputObjectColumn.CreatedDate,
                     secondDate: storageObjectColumn.CreatedDate,
@@ -207,7 +228,10 @@ namespace LHDS.Core.Services.Foundations.ObjectColumns
         {
             EntraUser auditUser = await this.securityBroker.GetCurrentUserAsync();
 
-            Validate(
+            Validate<InvalidObjectColumnException>(
+                createException: () => new InvalidObjectColumnException(
+                    message: "Invalid objectColumn. Please correct the errors and try again."),
+
                 (Rule: IsNotSame(
                     objectColumn.CreatedDate,
                     maybeObjectColumn.CreatedDate,
@@ -319,23 +343,24 @@ namespace LHDS.Core.Services.Foundations.ObjectColumns
             return timeDifference.Duration() > oneMinute;
         }
 
-        private static void Validate(params (dynamic Rule, string Parameter)[] validations)
+        private static void Validate<T>(
+            Func<T> createException,
+            params (dynamic Rule, string Parameter)[] validations)
+            where T : Xeption
         {
-            var invalidObjectColumnException =
-                new InvalidObjectColumnException(
-                    message: "Invalid objectColumn. Please correct the errors and try again.");
+            T invalidDataException = createException();
 
             foreach ((dynamic rule, string parameter) in validations)
             {
                 if (rule.Condition)
                 {
-                    invalidObjectColumnException.UpsertDataList(
+                    invalidDataException.UpsertDataList(
                         key: parameter,
                         value: rule.Message);
                 }
             }
 
-            invalidObjectColumnException.ThrowIfContainsErrors();
+            invalidDataException.ThrowIfContainsErrors();
         }
     }
 }

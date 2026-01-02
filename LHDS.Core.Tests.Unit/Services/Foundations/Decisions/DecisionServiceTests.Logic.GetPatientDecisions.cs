@@ -2,7 +2,6 @@
 // Copyright (c) North East London ICB. All rights reserved.
 // ---------------------------------------------------------
 
-using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using FluentAssertions;
@@ -19,25 +18,23 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Decisions
         public async Task ShouldGetPatientDecisionsAsync()
         {
             // given
-            DateTimeOffset randomDateTimeOffset = GetRandomDateTimeOffset();
-            DateTimeOffset inputDateTimeOffset = randomDateTimeOffset;
             List<Decision> randomDecisions = CreateRandomDecisions();
             List<Decision> brokerDecisions = randomDecisions;
             List<Decision> expectedDecisions = brokerDecisions.DeepClone();
 
             this.decisionBrokerMock.Setup(broker =>
-                broker.GetPatientDecisions(inputDateTimeOffset))
+                broker.GetPatientDecisions())
                     .ReturnsAsync(brokerDecisions);
 
             // when
             List<Decision> actualDecisions =
-                await this.decisionService.GetPatientDecisions(inputDateTimeOffset);
+                await this.decisionService.GetPatientDecisions();
 
             // then
             actualDecisions.Should().BeEquivalentTo(expectedDecisions);
 
             this.decisionBrokerMock.Verify(broker =>
-                broker.GetPatientDecisions(inputDateTimeOffset),
+                broker.GetPatientDecisions(),
                     Times.Once);
 
             this.decisionBrokerMock.VerifyNoOtherCalls();

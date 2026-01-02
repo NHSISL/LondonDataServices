@@ -4,21 +4,129 @@
 
 using System;
 using System.Collections.Generic;
+using System.Net.Http;
+using System.Net.Http.Headers;
+using System.Security.Claims;
 using System.Threading.Tasks;
+using Azure.Core;
+using Azure.Identity;
+using LHDS.Core.Models.Brokers.Decisions;
 using LHDS.Core.Models.Foundations.Decisions;
+using RESTFulSense.Clients;
 
 namespace LHDS.Core.Brokers.Decisions
 {
     public class DecisionBroker : IDecisionBroker
     {
-        public ValueTask<List<Decision>> GetPatientDecisions(DateTimeOffset? lastPollDate)
+        private readonly DecisionConfiguration decisionConfiguration;
+        private readonly bool includeInteractiveCredentials = false;
+        private IRESTFulApiFactoryClient? apiClient = null;
+        private AccessToken? accessToken = null;
+
+        public DecisionBroker(DecisionConfiguration decisionConfiguration)
         {
-            throw new NotImplementedException();
+            this.decisionConfiguration = decisionConfiguration;
+            this.accessToken = null;
+            this.apiClient = null;
         }
 
-        public ValueTask RecordAdoption(List<Decision> decisionsAdopted)
+        //TODO: [26630] - Remove internal constructor and apply config for test managed identity 
+        // in appsettings.Development and GitHub secrets [DH]
+        internal DecisionBroker(DecisionConfiguration decisionConfiguration, bool includeInteractiveCredentials = false)
         {
-            throw new NotImplementedException();
+            this.decisionConfiguration = decisionConfiguration;
+            this.includeInteractiveCredentials = includeInteractiveCredentials;
+            this.accessToken = null;
+            this.apiClient = null;
+        }
+
+        public async ValueTask<List<Decision>> GetPatientDecisions()
+        {
+            string relativeUrl = this.decisionConfiguration.IDecidePatientDecisionsRelativeUrl;
+            List<Decision> decisions = await GetAsync<List<Decision>>(relativeUrl);
+
+            return decisions;
+        }
+
+        public async ValueTask RecordAdoption(List<Decision> decisionsAdopted)
+        {
+            string relativeUrl = this.decisionConfiguration.IDecideRecordAdoptionRelativeUrl;
+            await PostAsync(relativeUrl, decisionsAdopted);
+        }
+
+        private async ValueTask<T> GetAsync<T>(string relativeUrl)
+        {
+            if (apiClient is null || IsTokenExpired())
+            {
+                await SetupApiClient();
+            }
+
+            if (typeof(T) == typeof(string))
+            {
+                return (T)(object)await this.apiClient.GetContentStringAsync(relativeUrl);
+            }
+            else
+            {
+                return await this.apiClient.GetContentAsync<T>(relativeUrl);
+            }
+        }
+
+        private async ValueTask PostAsync(string relativeUrl, object body)
+        {
+            if (apiClient is null || IsTokenExpired())
+            {
+                await SetupApiClient();
+            }
+
+            await this.apiClient.PostContentAsync(relativeUrl, body);
+        }
+
+        private bool IsTokenExpired()
+        {
+            if (this.accessToken is null)
+            {
+                return true;
+            }
+
+            return DateTimeOffset.UtcNow >= this.accessToken.Value.ExpiresOn.AddMinutes(-5);
+        }
+
+        private async ValueTask GetAccessTokenAsync()
+        {
+            var credentials = new DefaultAzureCredential(includeInteractiveCredentials) as TokenCredential;
+
+            var tokenRequestContext =
+                new TokenRequestContext(
+                    new[] { this.decisionConfiguration.IDecideScope }
+                );
+
+            AccessToken token =
+                await credentials.GetTokenAsync(
+                    tokenRequestContext,
+                    default);
+
+            this.accessToken = token;
+        }
+
+        private async ValueTask SetupApiClient()
+        {
+            await GetAccessTokenAsync();
+
+            var httpClient = new HttpClient()
+            {
+                BaseAddress = new Uri(uriString: $"{this.decisionConfiguration.IDecideBaseUrl}"),
+                Timeout = TimeSpan.FromSeconds(this.decisionConfiguration.TimeoutInSeconds),
+
+                MaxResponseContentBufferSize =
+                    this.decisionConfiguration.MaxResponseContentBufferSizeInMegaBytes * 1024 * 1024
+            };
+
+            httpClient.DefaultRequestHeaders.Authorization =
+                new AuthenticationHeaderValue(
+                    scheme: "Bearer",
+                    parameter: this.accessToken?.Token ?? "");
+
+            this.apiClient = new RESTFulApiFactoryClient(httpClient);
         }
     }
 }

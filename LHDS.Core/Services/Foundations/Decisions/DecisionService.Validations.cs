@@ -7,8 +7,6 @@ using System.Collections.Generic;
 using System.Linq;
 using LHDS.Core.Models.Foundations.Decisions;
 using LHDS.Core.Models.Foundations.Decisions.Exceptions;
-using LHDS.Core.Models.Foundations.DecisionTypes;
-using LHDS.Core.Models.Foundations.Patients;
 using Xeptions;
 
 namespace LHDS.Core.Services.Foundations.Decisions
@@ -25,11 +23,11 @@ namespace LHDS.Core.Services.Foundations.Decisions
             var validations = maybeDecisions
                 .SelectMany((decision, i) => new[]
                 {
-                    (Rule: IsNotNull(decision.DecisionType),
-                        Parameter: $"Decisions[{i}].{nameof(Decision.DecisionType)} - Id: {decision.Id}"),
+                    (Rule: IsInvalid(decision.DecisionTypeName),
+                        Parameter: $"Decisions[{i}].{nameof(Decision.DecisionTypeName)} - Id: {decision.Id}"),
 
-                    (Rule: IsNotNull(decision.Patient),
-                        Parameter: $"Decisions[{i}].{nameof(Decision.Patient)} - Id: {decision.Id}")
+                    (Rule: IsInvalid(decision.PatientNhsNumber),
+                        Parameter: $"Decisions[{i}].{nameof(Decision.PatientNhsNumber)} - Id: {decision.Id}")
                 })
                 .ToArray();
 
@@ -48,16 +46,10 @@ namespace LHDS.Core.Services.Foundations.Decisions
             }
         }
 
-        private static dynamic IsNotNull(DecisionType decisionType) => new
+        private static dynamic IsInvalid(string text) => new
         {
-            Condition = decisionType is null,
-            Message = "DecisionType is required"
-        };
-
-        private static dynamic IsNotNull(Patient patient) => new
-        {
-            Condition = patient is null,
-            Message = "Patient is required"
+            Condition = String.IsNullOrWhiteSpace(text),
+            Message = "Text is required"
         };
 
         internal virtual void Validate<T>(

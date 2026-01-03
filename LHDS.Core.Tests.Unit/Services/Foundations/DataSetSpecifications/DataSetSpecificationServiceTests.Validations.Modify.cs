@@ -385,7 +385,8 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.DataSetSpecifications
                 values:
                 [
                     $"Date is not recent. " +
-            $"Expected a value between {startDate} and {endDate} but found {randomDataSetSpecification.UpdatedDate}"
+                    $"Expected a value between {startDate} and {endDate} " +
+                    $"but found {randomDataSetSpecification.UpdatedDate}"
                 ]);
 
             var expectedDataSetSpecificationValidationException =
@@ -404,6 +405,10 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.DataSetSpecifications
             // then
             actualDataSetSpecificationValidationException.Should()
                 .BeEquivalentTo(expectedDataSetSpecificationValidationException);
+
+            this.securityAuditBrokerMock.Verify(broker =>
+                broker.ApplyModifyAuditValuesAsync(randomDataSetSpecification),
+                    Times.Once);
 
             this.dateTimeBrokerMock.Verify(broker =>
                 broker.GetCurrentDateTimeOffsetAsync(),

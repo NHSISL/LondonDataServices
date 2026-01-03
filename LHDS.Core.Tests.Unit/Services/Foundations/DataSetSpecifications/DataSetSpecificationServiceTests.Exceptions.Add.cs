@@ -174,10 +174,6 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.DataSetSpecifications
                 broker.ApplyAddAuditValuesAsync(randomDataSetSpecification))
                     .ThrowsAsync(foreignKeyConstraintConflictException);
 
-            this.securityAuditBrokerMock.Setup(broker =>
-                broker.GetUserIdAsync())
-                    .ReturnsAsync(randomEntraUserId);
-
             // when
             ValueTask<DataSetSpecification> addDataSetSpecificationTask =
                 this.dataSetSpecificationService.AddDataSetSpecificationAsync(randomDataSetSpecification);
@@ -197,10 +193,6 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.DataSetSpecifications
             this.dateTimeBrokerMock.Verify(broker =>
                 broker.GetCurrentDateTimeOffsetAsync(),
                     Times.Never);
-
-            this.securityAuditBrokerMock.Verify(broker =>
-                broker.GetUserIdAsync(),
-                    Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>
                 broker.LogErrorAsync(It.Is(SameExceptionAs(

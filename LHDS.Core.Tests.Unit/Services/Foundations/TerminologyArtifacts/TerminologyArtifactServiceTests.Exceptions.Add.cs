@@ -34,8 +34,8 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.TerminologyArtifacts
                     message: "TerminologyArtifact dependency error occurred, please contact support.",
                     innerException: failedTerminologyArtifactStorageException);
 
-            this.dateTimeBrokerMock.Setup(broker =>
-                broker.GetCurrentDateTimeOffsetAsync())
+            this.securityAuditBrokerMock.Setup(broker =>
+                broker.ApplyAddAuditValuesAsync(It.IsAny<TerminologyArtifact>()))
                     .ThrowsAsync(sqlException);
 
             // when
@@ -50,9 +50,13 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.TerminologyArtifacts
             actualTerminologyArtifactDependencyException.Should()
                 .BeEquivalentTo(expectedTerminologyArtifactDependencyException);
 
+            this.securityAuditBrokerMock.Verify(broker =>
+                broker.ApplyAddAuditValuesAsync(It.IsAny<TerminologyArtifact>()),
+                    Times.Once);
+
             this.dateTimeBrokerMock.Verify(broker =>
                 broker.GetCurrentDateTimeOffsetAsync(),
-                    Times.Once);
+                    Times.Never);
 
             this.storageBrokerMock.Verify(broker =>
                 broker.InsertTerminologyArtifactAsync(It.IsAny<TerminologyArtifact>()),
@@ -63,6 +67,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.TerminologyArtifacts
                     expectedTerminologyArtifactDependencyException))),
                         Times.Once);
 
+            this.securityAuditBrokerMock.VerifyNoOtherCalls();
             this.dateTimeBrokerMock.VerifyNoOtherCalls();
             this.storageBrokerMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
@@ -89,8 +94,8 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.TerminologyArtifacts
                     message: "TerminologyArtifact dependency validation occurred, please try again.",
                     innerException: alreadyExistsTerminologyArtifactException);
 
-            this.dateTimeBrokerMock.Setup(broker =>
-                broker.GetCurrentDateTimeOffsetAsync())
+            this.securityAuditBrokerMock.Setup(broker =>
+                broker.ApplyAddAuditValuesAsync(It.IsAny<TerminologyArtifact>()))
                     .ThrowsAsync(duplicateKeyException);
 
             // when
@@ -105,9 +110,13 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.TerminologyArtifacts
             actualTerminologyArtifactDependencyValidationException.Should()
                 .BeEquivalentTo(expectedTerminologyArtifactDependencyValidationException);
 
+            this.securityAuditBrokerMock.Verify(broker =>
+                broker.ApplyAddAuditValuesAsync(It.IsAny<TerminologyArtifact>()),
+                    Times.Once);
+
             this.dateTimeBrokerMock.Verify(broker =>
                 broker.GetCurrentDateTimeOffsetAsync(),
-                    Times.Once);
+                    Times.Never);
 
             this.storageBrokerMock.Verify(broker =>
                 broker.InsertTerminologyArtifactAsync(It.IsAny<TerminologyArtifact>()),
@@ -118,6 +127,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.TerminologyArtifacts
                     expectedTerminologyArtifactDependencyValidationException))),
                         Times.Once);
 
+            this.securityAuditBrokerMock.VerifyNoOtherCalls();
             this.dateTimeBrokerMock.VerifyNoOtherCalls();
             this.storageBrokerMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
@@ -144,8 +154,8 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.TerminologyArtifacts
                     message: "TerminologyArtifact dependency validation occurred, please try again.",
                     innerException: invalidTerminologyArtifactReferenceException);
 
-            this.dateTimeBrokerMock.Setup(broker =>
-                broker.GetCurrentDateTimeOffsetAsync())
+            this.securityAuditBrokerMock.Setup(broker =>
+                broker.ApplyAddAuditValuesAsync(It.IsAny<TerminologyArtifact>()))
                     .ThrowsAsync(foreignKeyConstraintConflictException);
 
             // when
@@ -160,9 +170,13 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.TerminologyArtifacts
             actualTerminologyArtifactDependencyValidationException.Should()
                 .BeEquivalentTo(expectedTerminologyArtifactValidationException);
 
+            this.securityAuditBrokerMock.Verify(broker =>
+                broker.ApplyAddAuditValuesAsync(It.IsAny<TerminologyArtifact>()),
+                    Times.Once);
+
             this.dateTimeBrokerMock.Verify(broker =>
                 broker.GetCurrentDateTimeOffsetAsync(),
-                    Times.Once());
+                    Times.Never());
 
             this.loggingBrokerMock.Verify(broker =>
                 broker.LogErrorAsync(It.Is(SameExceptionAs(
@@ -173,6 +187,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.TerminologyArtifacts
                 broker.InsertTerminologyArtifactAsync(someTerminologyArtifact),
                     Times.Never());
 
+            this.securityAuditBrokerMock.VerifyNoOtherCalls();
             this.dateTimeBrokerMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
             this.storageBrokerMock.VerifyNoOtherCalls();
@@ -197,8 +212,8 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.TerminologyArtifacts
                     message: "TerminologyArtifact dependency error occurred, please contact support.",
                     innerException: failedTerminologyArtifactStorageException);
 
-            this.dateTimeBrokerMock.Setup(broker =>
-                broker.GetCurrentDateTimeOffsetAsync())
+            this.securityAuditBrokerMock.Setup(broker =>
+                broker.ApplyAddAuditValuesAsync(It.IsAny<TerminologyArtifact>()))
                     .ThrowsAsync(databaseUpdateException);
 
             // when
@@ -213,9 +228,13 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.TerminologyArtifacts
             actualTerminologyArtifactDependencyException.Should()
                 .BeEquivalentTo(expectedTerminologyArtifactDependencyException);
 
+            this.securityAuditBrokerMock.Verify(broker =>
+                broker.ApplyAddAuditValuesAsync(It.IsAny<TerminologyArtifact>()),
+                    Times.Once);
+
             this.dateTimeBrokerMock.Verify(broker =>
                 broker.GetCurrentDateTimeOffsetAsync(),
-                    Times.Once);
+                    Times.Never);
 
             this.storageBrokerMock.Verify(broker =>
                 broker.InsertTerminologyArtifactAsync(It.IsAny<TerminologyArtifact>()),
@@ -226,6 +245,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.TerminologyArtifacts
                     expectedTerminologyArtifactDependencyException))),
                         Times.Once);
 
+            this.securityAuditBrokerMock.VerifyNoOtherCalls();
             this.dateTimeBrokerMock.VerifyNoOtherCalls();
             this.storageBrokerMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
@@ -248,8 +268,8 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.TerminologyArtifacts
                     message: "TerminologyArtifact service error occurred, please contact support.",
                     innerException: failedTerminologyArtifactServiceException);
 
-            this.dateTimeBrokerMock.Setup(broker =>
-                broker.GetCurrentDateTimeOffsetAsync())
+            this.securityAuditBrokerMock.Setup(broker =>
+                broker.ApplyAddAuditValuesAsync(It.IsAny<TerminologyArtifact>()))
                     .ThrowsAsync(serviceException);
 
             // when
@@ -264,9 +284,13 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.TerminologyArtifacts
             actualTerminologyArtifactServiceException.Should()
                 .BeEquivalentTo(expectedTerminologyArtifactServiceException);
 
+            this.securityAuditBrokerMock.Verify(broker =>
+                broker.ApplyAddAuditValuesAsync(It.IsAny<TerminologyArtifact>()),
+                    Times.Once);
+
             this.dateTimeBrokerMock.Verify(broker =>
                 broker.GetCurrentDateTimeOffsetAsync(),
-                    Times.Once);
+                    Times.Never);
 
             this.storageBrokerMock.Verify(broker =>
                 broker.InsertTerminologyArtifactAsync(It.IsAny<TerminologyArtifact>()),
@@ -277,6 +301,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.TerminologyArtifacts
                     expectedTerminologyArtifactServiceException))),
                         Times.Once);
 
+            this.securityAuditBrokerMock.VerifyNoOtherCalls();
             this.dateTimeBrokerMock.VerifyNoOtherCalls();
             this.storageBrokerMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();

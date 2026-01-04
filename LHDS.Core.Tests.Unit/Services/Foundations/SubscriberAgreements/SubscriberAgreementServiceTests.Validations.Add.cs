@@ -30,10 +30,6 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.SubscriberAgreements
                     message: "SubscriberAgreement validation errors occurred, please try again.",
                     innerException: nullSubscriberAgreementException);
 
-            this.securityAuditBrokerMock.Setup(broker =>
-                broker.ApplyAddAuditValuesAsync(nullSubscriberAgreement))
-                    .ReturnsAsync(nullSubscriberAgreement);
-
             // when
             ValueTask<SubscriberAgreement> addSubscriberAgreementTask =
                 this.subscriberAgreementService.AddSubscriberAgreementAsync(nullSubscriberAgreement);

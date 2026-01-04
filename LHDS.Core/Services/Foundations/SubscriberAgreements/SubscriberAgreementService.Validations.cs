@@ -15,6 +15,7 @@ namespace LHDS.Core.Services.Foundations.SubscriberAgreements
     {
         private async ValueTask ValidateSubscriberAgreementOnAddAsync(SubscriberAgreement subscriberAgreement)
         {
+            ValidateSubscriberAgreementIsNotNull(subscriberAgreement);
             string currentUserId = await this.securityAuditBroker.GetUserIdAsync();
 
             Validate(
@@ -64,6 +65,7 @@ namespace LHDS.Core.Services.Foundations.SubscriberAgreements
 
         private async ValueTask ValidateSubscriberAgreementOnModifyAsync(SubscriberAgreement subscriberAgreement)
         {
+            ValidateSubscriberAgreementIsNotNull(subscriberAgreement);
             string currentUserId = await this.securityAuditBroker.GetUserIdAsync();
 
             Validate(

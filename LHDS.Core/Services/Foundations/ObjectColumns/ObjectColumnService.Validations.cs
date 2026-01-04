@@ -15,7 +15,8 @@ namespace LHDS.Core.Services.Foundations.ObjectColumns
     {
         private async ValueTask ValidateObjectColumnOnAddAsync(ObjectColumn objectColumn)
         {
-            EntraUser currentUser = await this.securityBroker.GetCurrentUserAsync();
+            ValidateObjectColumnIsNotNull(objectColumn);
+            string currentUserId = await this.securityAuditBroker.GetUserIdAsync();
 
             Validate<InvalidObjectColumnException>(
                 createException: () => new InvalidObjectColumnException(
@@ -75,7 +76,7 @@ namespace LHDS.Core.Services.Foundations.ObjectColumns
                 Parameter: nameof(objectColumn.UpdatedBy)),
 
                 (Rule: IsNotSame(
-                    first: currentUser.EntraUserId,
+                    first: currentUserId,
                     second: objectColumn.CreatedBy),
                 Parameter: nameof(ObjectColumn.CreatedBy)),
 
@@ -96,7 +97,8 @@ namespace LHDS.Core.Services.Foundations.ObjectColumns
 
         private async ValueTask ValidateObjectColumnOnModifyAsync(ObjectColumn objectColumn)
         {
-            EntraUser currentUser = await this.securityBroker.GetCurrentUserAsync();
+            ValidateObjectColumnIsNotNull(objectColumn);
+            string currentUserId = await this.securityAuditBroker.GetUserIdAsync();
 
             Validate<InvalidObjectColumnException>(
                 createException: () => new InvalidObjectColumnException(
@@ -156,7 +158,7 @@ namespace LHDS.Core.Services.Foundations.ObjectColumns
                 Parameter: nameof(objectColumn.UpdatedBy)),
 
                 (Rule: IsNotSame(
-                    first: currentUser.EntraUserId,
+                    first: currentUserId,
                     second: objectColumn.UpdatedBy),
                 Parameter: nameof(ObjectColumn.UpdatedBy)),
 
@@ -226,7 +228,7 @@ namespace LHDS.Core.Services.Foundations.ObjectColumns
             ObjectColumn objectColumn,
             ObjectColumn maybeObjectColumn)
         {
-            EntraUser auditUser = await this.securityBroker.GetCurrentUserAsync();
+            string auditUserId = await this.securityAuditBroker.GetUserIdAsync();
 
             Validate<InvalidObjectColumnException>(
                 createException: () => new InvalidObjectColumnException(
@@ -251,7 +253,7 @@ namespace LHDS.Core.Services.Foundations.ObjectColumns
                  Parameter: nameof(ObjectColumn.UpdatedDate)),
 
                 (Rule: IsNotSame(
-                    auditUser.EntraUserId.ToString(),
+                    auditUserId.ToString(),
                     objectColumn.UpdatedBy,
                     nameof(ObjectColumn.UpdatedBy)),
                  Parameter: nameof(ObjectColumn.UpdatedBy))

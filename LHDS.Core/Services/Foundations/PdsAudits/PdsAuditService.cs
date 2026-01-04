@@ -17,25 +17,27 @@ namespace LHDS.Core.Services.Foundations.PdsAudits
     {
         private readonly IStorageBroker storageBroker;
         private readonly IDateTimeBroker dateTimeBroker;
-        private readonly ISecurityBroker securityBroker;
+        private readonly ISecurityAuditBroker securityAuditBroker;
         private readonly ILoggingBroker loggingBroker;
 
         public PdsAuditService(
             IStorageBroker storageBroker,
             IDateTimeBroker dateTimeBroker,
-            ISecurityBroker securityBroker,
+            ISecurityAuditBroker securityAuditBroker,
             ILoggingBroker loggingBroker)
         {
             this.storageBroker = storageBroker;
             this.dateTimeBroker = dateTimeBroker;
-            this.securityBroker = securityBroker;
+            this.securityAuditBroker = securityAuditBroker;
             this.loggingBroker = loggingBroker;
         }
 
         public ValueTask<PdsAudit> AddPdsAuditAsync(PdsAudit pdsAudit) =>
             TryCatch(async () =>
             {
-                PdsAudit pdsAuditWithAddAuditApplied = await ApplyAddPdsAuditAsync(pdsAudit);
+                PdsAudit pdsAuditWithAddAuditApplied =
+                    await this.securityAuditBroker.ApplyAddAuditValuesAsync(pdsAudit);
+
                 await ValidatePdsAuditOnAddAsync(pdsAuditWithAddAuditApplied);
 
                 return await this.storageBroker.InsertPdsAuditAsync(pdsAudit);
@@ -60,7 +62,9 @@ namespace LHDS.Core.Services.Foundations.PdsAudits
         public ValueTask<PdsAudit> ModifyPdsAuditAsync(PdsAudit pdsAudit) =>
             TryCatch(async () =>
             {
-                PdsAudit pdsAuditWithModifyAuditApplied = await ApplyModifyAuditAsync(pdsAudit);
+                PdsAudit pdsAuditWithModifyAuditApplied =
+                    await this.securityAuditBroker.ApplyModifyAuditValuesAsync(pdsAudit);
+
                 await ValidatePdsAuditOnModifyAsync(pdsAuditWithModifyAuditApplied);
 
                 PdsAudit maybePdsAudit =
@@ -84,29 +88,5 @@ namespace LHDS.Core.Services.Foundations.PdsAudits
 
                 return await this.storageBroker.DeletePdsAuditAsync(maybePdsAudit);
             });
-
-        virtual internal async ValueTask<PdsAudit> ApplyAddPdsAuditAsync(PdsAudit pdsAudit)
-        {
-            ValidatePdsAuditIsNotNull(pdsAudit);
-            var auditDateTimeOffset = await this.dateTimeBroker.GetCurrentDateTimeOffsetAsync();
-            var auditUser = await this.securityBroker.GetCurrentUserAsync();
-            pdsAudit.CreatedBy = auditUser?.EntraUserId.ToString() ?? string.Empty;
-            pdsAudit.CreatedDate = auditDateTimeOffset;
-            pdsAudit.UpdatedBy = auditUser?.EntraUserId.ToString() ?? string.Empty;
-            pdsAudit.UpdatedDate = auditDateTimeOffset;
-
-            return pdsAudit;
-        }
-
-        virtual internal async ValueTask<PdsAudit> ApplyModifyAuditAsync(PdsAudit pdsAudit)
-        {
-            ValidatePdsAuditIsNotNull(pdsAudit);
-            var auditDateTimeOffset = await this.dateTimeBroker.GetCurrentDateTimeOffsetAsync();
-            var auditUser = await this.securityBroker.GetCurrentUserAsync();
-            pdsAudit.UpdatedBy = auditUser?.EntraUserId.ToString() ?? string.Empty;
-            pdsAudit.UpdatedDate = auditDateTimeOffset;
-
-            return pdsAudit;
-        }
     }
 }

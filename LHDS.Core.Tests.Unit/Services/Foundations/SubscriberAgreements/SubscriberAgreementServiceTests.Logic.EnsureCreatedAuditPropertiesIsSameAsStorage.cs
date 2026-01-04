@@ -27,7 +27,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.SubscriberAgreements
             var subscriberAgreementServiceMock = new Mock<SubscriberAgreementService>(
                 storageBrokerMock.Object,
                 dateTimeBrokerMock.Object,
-                securityBrokerMock.Object,
+                securityAuditBrokerMock.Object,
                 loggingBrokerMock.Object)
             {
                 CallBase = true
@@ -47,8 +47,8 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.SubscriberAgreements
                         Times.Once());
 
             subscriberAgreementServiceMock.VerifyNoOtherCalls();
+            this.securityAuditBrokerMock.VerifyNoOtherCalls();
             this.dateTimeBrokerMock.VerifyNoOtherCalls();
-            this.securityBrokerMock.VerifyNoOtherCalls();
             this.storageBrokerMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
         }

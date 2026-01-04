@@ -21,14 +21,12 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.TerminologyArtifacts
         {
             // given
             DateTimeOffset randomDateTimeOffset = GetRandomDateTimeOffset();
-            EntraUser randomEntraUser = CreateRandomEntraUser();
+            string randomUserId = GetRandomStringWithLengthOf(50);
 
             TerminologyArtifact randomTerminologyArtifact =
-                CreateRandomModifyTerminologyArtifact(randomDateTimeOffset, randomEntraUser.EntraUserId);
+                CreateRandomModifyTerminologyArtifact(randomDateTimeOffset, randomUserId);
 
             TerminologyArtifact inputTerminologyArtifact = randomTerminologyArtifact.DeepClone();
-            inputTerminologyArtifact.CreatedBy = Guid.NewGuid().ToString();
-            inputTerminologyArtifact.CreatedDate = randomDateTimeOffset.AddDays(1); 
             TerminologyArtifact storageTerminologyArtifact = randomTerminologyArtifact.DeepClone();
             storageTerminologyArtifact.UpdatedDate = storageTerminologyArtifact.CreatedDate;
             TerminologyArtifact updatedTerminologyArtifact = inputTerminologyArtifact.DeepClone();
@@ -37,17 +35,26 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.TerminologyArtifacts
             TerminologyArtifact expectedTerminologyArtifact = updatedTerminologyArtifact.DeepClone();
             Guid objectColumnId = inputTerminologyArtifact.Id;
 
+            this.securityAuditBrokerMock.Setup(broker =>
+                broker.ApplyModifyAuditValuesAsync(inputTerminologyArtifact))
+                    .ReturnsAsync(inputTerminologyArtifact);
+
             this.dateTimeBrokerMock.Setup(broker =>
                 broker.GetCurrentDateTimeOffsetAsync())
                     .ReturnsAsync(randomDateTimeOffset);
 
-            this.securityBrokerMock.Setup(broker =>
-                broker.GetCurrentUserAsync())
-                    .ReturnsAsync(randomEntraUser);
+            this.securityAuditBrokerMock.Setup(broker =>
+                broker.GetUserIdAsync())
+                    .ReturnsAsync(randomUserId);
 
             this.storageBrokerMock.Setup(broker =>
                 broker.SelectTerminologyArtifactByIdAsync(objectColumnId))
                     .ReturnsAsync(storageTerminologyArtifact);
+
+            this.securityAuditBrokerMock.Setup(broker =>
+                broker.EnsureAddAuditValuesRemainsUnchangedOnModifyAsync(
+                    inputTerminologyArtifact, storageTerminologyArtifact))
+                        .ReturnsAsync(inputTerminologyArtifact);
 
             this.storageBrokerMock.Setup(broker =>
                 broker.UpdateTerminologyArtifactAsync(inputTerminologyArtifact))
@@ -60,13 +67,22 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.TerminologyArtifacts
             // then
             actualTerminologyArtifact.Should().BeEquivalentTo(expectedTerminologyArtifact);
 
+            this.securityAuditBrokerMock.Verify(broker =>
+                broker.ApplyModifyAuditValuesAsync(inputTerminologyArtifact),
+                    Times.Once);
+
             this.dateTimeBrokerMock.Verify(broker =>
                 broker.GetCurrentDateTimeOffsetAsync(),
-                    Times.Exactly(2));
+                    Times.Once);
 
-            this.securityBrokerMock.Verify(broker =>
-                broker.GetCurrentUserAsync(),
-                    Times.Exactly(2));
+            this.securityAuditBrokerMock.Verify(broker =>
+                broker.GetUserIdAsync(),
+                    Times.Once);
+
+            this.securityAuditBrokerMock.Verify(broker =>
+                broker.EnsureAddAuditValuesRemainsUnchangedOnModifyAsync(
+                    inputTerminologyArtifact, storageTerminologyArtifact),
+                        Times.Once);
 
             this.storageBrokerMock.Verify(broker =>
                 broker.SelectTerminologyArtifactByIdAsync(inputTerminologyArtifact.Id),
@@ -76,8 +92,8 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.TerminologyArtifacts
                 broker.UpdateTerminologyArtifactAsync(inputTerminologyArtifact),
                     Times.Once);
 
+            this.securityAuditBrokerMock.VerifyNoOtherCalls();
             this.dateTimeBrokerMock.VerifyNoOtherCalls();
-            this.securityBrokerMock.VerifyNoOtherCalls();
             this.storageBrokerMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
         }

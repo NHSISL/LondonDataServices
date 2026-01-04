@@ -17,18 +17,18 @@ namespace LHDS.Core.Services.Foundations.SpecificationObjects
     {
         private readonly IStorageBroker storageBroker;
         private readonly IDateTimeBroker dateTimeBroker;
-        private readonly ISecurityBroker securityBroker;
+        private readonly ISecurityAuditBroker securityAuditBroker;
         private readonly ILoggingBroker loggingBroker;
 
         public SpecificationObjectService(
             IStorageBroker storageBroker,
             IDateTimeBroker dateTimeBroker,
-            ISecurityBroker securityBroker,
+            ISecurityAuditBroker securityAuditBroker,
             ILoggingBroker loggingBroker)
         {
             this.storageBroker = storageBroker;
             this.dateTimeBroker = dateTimeBroker;
-            this.securityBroker = securityBroker;
+            this.securityAuditBroker = securityAuditBroker;
             this.loggingBroker = loggingBroker;
         }
 
@@ -36,7 +36,7 @@ namespace LHDS.Core.Services.Foundations.SpecificationObjects
             TryCatch(async () =>
             {
                 SpecificationObject specificationObjectWithAddAuditApplied = 
-                    await ApplyAddAuditAsync(specificationObject);
+                    await this.securityAuditBroker.ApplyAddAuditValuesAsync(specificationObject);
 
                 await ValidateSpecificationObjectOnAddAsync(specificationObjectWithAddAuditApplied);
 
@@ -63,7 +63,7 @@ namespace LHDS.Core.Services.Foundations.SpecificationObjects
             TryCatch(async () =>
             {
                 SpecificationObject specificationObjectWithModifyAuditApplied = 
-                    await ApplyModifyAuditAsync(specificationObject);
+                    await this.securityAuditBroker.ApplyModifyAuditValuesAsync(specificationObject);
 
                 await ValidateSpecificationObjectOnModifyAsync(specificationObjectWithModifyAuditApplied);
 
@@ -90,7 +90,7 @@ namespace LHDS.Core.Services.Foundations.SpecificationObjects
                 ValidateStorageSpecificationObject(maybeSpecificationObject, specificationObjectId);
 
                 SpecificationObject specificationObjectWithDeleteAuditApplied = 
-                    await ApplyDeleteAuditAsync(maybeSpecificationObject);
+                    await this.securityAuditBroker.ApplyRemoveAuditValuesAsync(maybeSpecificationObject);
 
                 SpecificationObject updatedSpecificationObject =
                     await this.storageBroker.UpdateSpecificationObjectAsync(specificationObjectWithDeleteAuditApplied);
@@ -101,42 +101,5 @@ namespace LHDS.Core.Services.Foundations.SpecificationObjects
 
                 return await this.storageBroker.DeleteSpecificationObjectAsync(updatedSpecificationObject);
             });
-
-        virtual internal async ValueTask<SpecificationObject> 
-            ApplyAddAuditAsync(SpecificationObject specificationObject)
-        {
-            ValidateSpecificationObjectIsNotNull(specificationObject);
-            var auditDateTimeOffset = await this.dateTimeBroker.GetCurrentDateTimeOffsetAsync();
-            var auditUser = await this.securityBroker.GetCurrentUserAsync();
-            specificationObject.CreatedBy = auditUser?.EntraUserId.ToString() ?? string.Empty;
-            specificationObject.CreatedDate = auditDateTimeOffset;
-            specificationObject.UpdatedBy = auditUser?.EntraUserId.ToString() ?? string.Empty;
-            specificationObject.UpdatedDate = auditDateTimeOffset;
-
-            return specificationObject;
-        }
-
-        virtual internal async ValueTask<SpecificationObject> 
-            ApplyModifyAuditAsync(SpecificationObject specificationObject)
-        {
-            ValidateSpecificationObjectIsNotNull(specificationObject);
-            var auditDateTimeOffset = await this.dateTimeBroker.GetCurrentDateTimeOffsetAsync();
-            var auditUser = await this.securityBroker.GetCurrentUserAsync();
-            specificationObject.UpdatedBy = auditUser?.EntraUserId.ToString() ?? string.Empty;
-            specificationObject.UpdatedDate = auditDateTimeOffset;
-
-            return specificationObject;
-        }
-
-        virtual internal async ValueTask<SpecificationObject> 
-            ApplyDeleteAuditAsync(SpecificationObject specificationObject)
-        {
-            ValidateSpecificationObjectIsNotNull(specificationObject);
-            var auditDateTimeOffset = await this.dateTimeBroker.GetCurrentDateTimeOffsetAsync();
-            var auditUser = await this.securityBroker.GetCurrentUserAsync();
-            specificationObject.UpdatedBy = auditUser?.EntraUserId.ToString() ?? string.Empty;
-            specificationObject.UpdatedDate = auditDateTimeOffset;
-            return specificationObject;
-        }
     }
 }

@@ -41,6 +41,10 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.ObjectColumns
             actualObjectColumnValidationException.Should()
                 .BeEquivalentTo(expectedObjectColumnValidationException);
 
+            this.securityAuditBrokerMock.Verify(broker =>
+                broker.ApplyModifyAuditValuesAsync(nullObjectColumn),
+                    Times.Once);
+
             this.loggingBrokerMock.Verify(broker =>
                 broker.LogErrorAsync(It.Is(SameExceptionAs(
                     expectedObjectColumnValidationException))),
@@ -54,8 +58,8 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.ObjectColumns
                 broker.UpdateObjectColumnAsync(It.IsAny<ObjectColumn>()),
                     Times.Never);
 
+            this.securityAuditBrokerMock.VerifyNoOtherCalls();
             this.dateTimeBrokerMock.VerifyNoOtherCalls();
-            this.securityBrokerMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
             this.storageBrokerMock.VerifyNoOtherCalls();
         }
@@ -67,7 +71,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.ObjectColumns
         public async Task ShouldThrowValidationExceptionOnModifyIfObjectColumnIsInvalidAndLogItAsync(string invalidText)
         {
             // given 
-            EntraUser randomEntraUser = CreateRandomEntraUser();
+            string randomUserId = GetRandomStringWithLengthOf(50);
             DateTimeOffset randomDateTimeOffset = GetRandomDateTimeOffset();
 
             var invalidObjectColumn = new ObjectColumn
@@ -78,26 +82,17 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.ObjectColumns
                 CodeSystem = invalidText,
             };
 
-            var objectColumnServiceMock = new Mock<ObjectColumnService>(
-                storageBrokerMock.Object,
-                dateTimeBrokerMock.Object,
-                securityBrokerMock.Object,
-                loggingBrokerMock.Object)
-            {
-                CallBase = true
-            };
-
-            objectColumnServiceMock.Setup(service =>
-                service.ApplyModifyAuditAsync(invalidObjectColumn))
+            this.securityAuditBrokerMock.Setup(broker =>
+                broker.ApplyModifyAuditValuesAsync(invalidObjectColumn))
                     .ReturnsAsync(invalidObjectColumn);
 
             this.dateTimeBrokerMock.Setup(broker =>
                 broker.GetCurrentDateTimeOffsetAsync())
                     .ReturnsAsync(randomDateTimeOffset);
 
-            this.securityBrokerMock.Setup(broker =>
-                broker.GetCurrentUserAsync())
-                    .ReturnsAsync(randomEntraUser);
+            this.securityAuditBrokerMock.Setup(broker =>
+                broker.GetUserIdAsync())
+                    .ReturnsAsync(randomUserId);
 
             var invalidObjectColumnException =
                 new InvalidObjectColumnException(
@@ -149,7 +144,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.ObjectColumns
                 values:
                     [
                         "Text is required",
-                        $"Expected value to be '{randomEntraUser.EntraUserId}' but found " +
+                        $"Expected value to be '{randomUserId}' but found " +
                         $"'{invalidObjectColumn.UpdatedBy}'."
                     ]);
 
@@ -160,7 +155,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.ObjectColumns
 
             // when
             ValueTask<ObjectColumn> modifyObjectColumnTask =
-                objectColumnServiceMock.Object.ModifyObjectColumnAsync(invalidObjectColumn);
+                objectColumnService.ModifyObjectColumnAsync(invalidObjectColumn);
 
             ObjectColumnValidationException actualObjectColumnValidationException =
                 await Assert.ThrowsAsync<ObjectColumnValidationException>(
@@ -170,12 +165,16 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.ObjectColumns
             actualObjectColumnValidationException.Should()
                 .BeEquivalentTo(expectedObjectColumnValidationException);
 
+            this.securityAuditBrokerMock.Verify(broker =>
+                broker.ApplyModifyAuditValuesAsync(invalidObjectColumn),
+                    Times.Once);
+
             this.dateTimeBrokerMock.Verify(broker =>
                 broker.GetCurrentDateTimeOffsetAsync(),
                     Times.Once);
 
-            this.securityBrokerMock.Verify(broker =>
-                broker.GetCurrentUserAsync(),
+            this.securityAuditBrokerMock.Verify(broker =>
+                broker.GetUserIdAsync(),
                     Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>
@@ -187,8 +186,8 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.ObjectColumns
                 broker.UpdateObjectColumnAsync(It.IsAny<ObjectColumn>()),
                     Times.Never);
 
+            this.securityAuditBrokerMock.VerifyNoOtherCalls();
             this.dateTimeBrokerMock.VerifyNoOtherCalls();
-            this.securityBrokerMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
             this.storageBrokerMock.VerifyNoOtherCalls();
         }
@@ -198,12 +197,12 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.ObjectColumns
         {
             // given 
             DateTimeOffset randomDateTimeOffset = GetRandomDateTimeOffset();
-            EntraUser randomEntraUser = CreateRandomEntraUser(entraUserId: GetRandomStringWithLengthOf(256));
+            string randomUserId =  GetRandomStringWithLengthOf(256);
 
             ObjectColumn invalidObjectColumn = 
-                CreateRandomModifyObjectColumn(randomDateTimeOffset, randomEntraUser.EntraUserId);
+                CreateRandomModifyObjectColumn(randomDateTimeOffset, randomUserId);
 
-            var inputCreatedByUpdatedByString = randomEntraUser.EntraUserId;
+            var inputCreatedByUpdatedByString = randomUserId;
             invalidObjectColumn.SupplierColumnName = GetRandomString(256);
             invalidObjectColumn.OurColumnName = GetRandomString(256);
             invalidObjectColumn.ColumnDescription = GetRandomString(501);
@@ -218,26 +217,17 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.ObjectColumns
             invalidObjectColumn.CreatedBy = inputCreatedByUpdatedByString;
             invalidObjectColumn.UpdatedBy = inputCreatedByUpdatedByString;
 
-            var objectColumnServiceMock = new Mock<ObjectColumnService>(
-                storageBrokerMock.Object,
-                dateTimeBrokerMock.Object,
-                securityBrokerMock.Object,
-                loggingBrokerMock.Object)
-            {
-                CallBase = true
-            };
-
-            objectColumnServiceMock.Setup(service =>
-                service.ApplyModifyAuditAsync(invalidObjectColumn))
+            this.securityAuditBrokerMock.Setup(broker =>
+                broker.ApplyModifyAuditValuesAsync(invalidObjectColumn))
                     .ReturnsAsync(invalidObjectColumn);
 
             this.dateTimeBrokerMock.Setup(broker =>
                 broker.GetCurrentDateTimeOffsetAsync())
                     .ReturnsAsync(randomDateTimeOffset);
 
-            this.securityBrokerMock.Setup(broker =>
-                broker.GetCurrentUserAsync())
-                    .ReturnsAsync(randomEntraUser);
+            this.securityAuditBrokerMock.Setup(broker =>
+                broker.GetUserIdAsync())
+                    .ReturnsAsync(randomUserId);
 
             var invalidObjectColumnException =
                 new InvalidObjectColumnException(
@@ -300,13 +290,9 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.ObjectColumns
                     message: "ObjectColumn validation errors occurred, please try again.",
                     innerException: invalidObjectColumnException);
 
-            this.dateTimeBrokerMock.Setup(broker =>
-                broker.GetCurrentDateTimeOffsetAsync())
-                    .ReturnsAsync(randomDateTimeOffset);
-
             // when
             ValueTask<ObjectColumn> modifyObjectColumnTask =
-                objectColumnServiceMock.Object.ModifyObjectColumnAsync(invalidObjectColumn);
+                objectColumnService.ModifyObjectColumnAsync(invalidObjectColumn);
 
             ObjectColumnValidationException actualObjectColumnValidationException =
                 await Assert.ThrowsAsync<ObjectColumnValidationException>(
@@ -316,12 +302,16 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.ObjectColumns
             actualObjectColumnValidationException.Should()
                 .BeEquivalentTo(expectedObjectColumnValidationException);
 
+            this.securityAuditBrokerMock.Verify(broker =>
+                broker.ApplyModifyAuditValuesAsync(invalidObjectColumn),
+                    Times.Once);
+
             this.dateTimeBrokerMock.Verify(broker =>
                 broker.GetCurrentDateTimeOffsetAsync(),
                     Times.Once);
 
-            this.securityBrokerMock.Verify(broker =>
-                broker.GetCurrentUserAsync(),
+            this.securityAuditBrokerMock.Verify(broker =>
+                broker.GetUserIdAsync(),
                     Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>
@@ -333,8 +323,8 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.ObjectColumns
                 broker.UpdateObjectColumnAsync(It.IsAny<ObjectColumn>()),
                     Times.Never);
 
+            this.securityAuditBrokerMock.VerifyNoOtherCalls();
             this.dateTimeBrokerMock.VerifyNoOtherCalls();
-            this.securityBrokerMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
             this.storageBrokerMock.VerifyNoOtherCalls();
         }
@@ -344,33 +334,24 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.ObjectColumns
         {
             // given
             DateTimeOffset randomDateTimeOffset = GetRandomDateTimeOffset();
-            EntraUser randomEntraUser = CreateRandomEntraUser();
+            string randomUserId = GetRandomStringWithLengthOf(50);
 
             ObjectColumn randomObjectColumn =
-                CreateRandomObjectColumn(randomDateTimeOffset, randomEntraUser.EntraUserId);
+                CreateRandomObjectColumn(randomDateTimeOffset, randomUserId);
 
             ObjectColumn invalidObjectColumn = randomObjectColumn;
 
-            var objectColumnServiceMock = new Mock<ObjectColumnService>(
-                storageBrokerMock.Object,
-                dateTimeBrokerMock.Object,
-                securityBrokerMock.Object,
-                loggingBrokerMock.Object)
-            {
-                CallBase = true
-            };
-
-            objectColumnServiceMock.Setup(service =>
-                service.ApplyModifyAuditAsync(invalidObjectColumn))
+            this.securityAuditBrokerMock.Setup(broker =>
+                broker.ApplyModifyAuditValuesAsync(invalidObjectColumn))
                     .ReturnsAsync(invalidObjectColumn);
 
             this.dateTimeBrokerMock.Setup(broker =>
                 broker.GetCurrentDateTimeOffsetAsync())
                     .ReturnsAsync(randomDateTimeOffset);
 
-            this.securityBrokerMock.Setup(broker =>
-                broker.GetCurrentUserAsync())
-                    .ReturnsAsync(randomEntraUser);
+            this.securityAuditBrokerMock.Setup(broker =>
+                broker.GetUserIdAsync())
+                    .ReturnsAsync(randomUserId);
 
             var invalidObjectColumnException =
                 new InvalidObjectColumnException(
@@ -387,7 +368,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.ObjectColumns
 
             // when
             ValueTask<ObjectColumn> modifyObjectColumnTask =
-                objectColumnServiceMock.Object.ModifyObjectColumnAsync(invalidObjectColumn);
+                objectColumnService.ModifyObjectColumnAsync(invalidObjectColumn);
 
             ObjectColumnValidationException actualObjectColumnValidationException =
                 await Assert.ThrowsAsync<ObjectColumnValidationException>(
@@ -397,12 +378,16 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.ObjectColumns
             actualObjectColumnValidationException.Should()
                 .BeEquivalentTo(expectedObjectColumnValidationException);
 
+            this.securityAuditBrokerMock.Verify(broker =>
+                broker.ApplyModifyAuditValuesAsync(invalidObjectColumn),
+                    Times.Once);
+
             this.dateTimeBrokerMock.Verify(broker =>
                 broker.GetCurrentDateTimeOffsetAsync(),
                     Times.Once);
 
-            this.securityBrokerMock.Verify(broker =>
-                broker.GetCurrentUserAsync(),
+            this.securityAuditBrokerMock.Verify(broker =>
+                broker.GetUserIdAsync(),
                     Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>
@@ -414,8 +399,8 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.ObjectColumns
                 broker.SelectObjectColumnByIdAsync(invalidObjectColumn.Id),
                     Times.Never);
 
+            this.securityAuditBrokerMock.VerifyNoOtherCalls();
             this.dateTimeBrokerMock.VerifyNoOtherCalls();
-            this.securityBrokerMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
             this.storageBrokerMock.VerifyNoOtherCalls();
         }
@@ -426,33 +411,24 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.ObjectColumns
         {
             // given
             DateTimeOffset randomDateTimeOffset = GetRandomDateTimeOffset();
-            EntraUser randomEntraUser = CreateRandomEntraUser();
+            string randomUserId = GetRandomStringWithLengthOf(50);
 
             ObjectColumn invalidObjectColumn =
-                CreateRandomObjectColumn(randomDateTimeOffset, randomEntraUser.EntraUserId);
+                CreateRandomObjectColumn(randomDateTimeOffset, randomUserId);
 
             invalidObjectColumn.UpdatedDate = randomDateTimeOffset.AddMinutes(minutes);
 
-            var objectColumnServiceMock = new Mock<ObjectColumnService>(
-                storageBrokerMock.Object,
-                dateTimeBrokerMock.Object,
-                securityBrokerMock.Object,
-                loggingBrokerMock.Object)
-            {
-                CallBase = true
-            };
-
-            objectColumnServiceMock.Setup(service =>
-                service.ApplyModifyAuditAsync(invalidObjectColumn))
+            this.securityAuditBrokerMock.Setup(broker =>
+                broker.ApplyModifyAuditValuesAsync(invalidObjectColumn))
                     .ReturnsAsync(invalidObjectColumn);
 
             this.dateTimeBrokerMock.Setup(broker =>
                 broker.GetCurrentDateTimeOffsetAsync())
                     .ReturnsAsync(randomDateTimeOffset);
 
-            this.securityBrokerMock.Setup(broker =>
-                broker.GetCurrentUserAsync())
-                    .ReturnsAsync(randomEntraUser);
+            this.securityAuditBrokerMock.Setup(broker =>
+                broker.GetUserIdAsync())
+                    .ReturnsAsync(randomUserId);
 
             var invalidObjectColumnException =
                 new InvalidObjectColumnException(
@@ -473,7 +449,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.ObjectColumns
 
             // when
             ValueTask<ObjectColumn> modifyObjectColumnTask =
-                objectColumnServiceMock.Object.ModifyObjectColumnAsync(invalidObjectColumn);
+                objectColumnService.ModifyObjectColumnAsync(invalidObjectColumn);
 
             ObjectColumnValidationException actualObjectColumnValidationException =
                 await Assert.ThrowsAsync<ObjectColumnValidationException>(
@@ -483,12 +459,16 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.ObjectColumns
             actualObjectColumnValidationException.Should()
                 .BeEquivalentTo(expectedObjectColumnValidatonException);
 
+            this.securityAuditBrokerMock.Verify(broker =>
+                broker.ApplyModifyAuditValuesAsync(invalidObjectColumn),
+                    Times.Once);
+
             this.dateTimeBrokerMock.Verify(broker =>
                 broker.GetCurrentDateTimeOffsetAsync(),
                     Times.Once);
 
-            this.securityBrokerMock.Verify(broker =>
-                broker.GetCurrentUserAsync(),
+            this.securityAuditBrokerMock.Verify(broker =>
+                broker.GetUserIdAsync(),
                     Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>
@@ -500,8 +480,8 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.ObjectColumns
                 broker.SelectObjectColumnByIdAsync(It.IsAny<Guid>()),
                     Times.Never);
 
+            this.securityAuditBrokerMock.VerifyNoOtherCalls();
             this.dateTimeBrokerMock.VerifyNoOtherCalls();
-            this.securityBrokerMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
             this.storageBrokerMock.VerifyNoOtherCalls();
         }
@@ -511,10 +491,10 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.ObjectColumns
         {
             // given
             DateTimeOffset randomDateTimeOffset = GetRandomDateTimeOffset();
-            EntraUser randomEntraUser = CreateRandomEntraUser();
+            string randomUserId = GetRandomStringWithLengthOf(50);
 
             ObjectColumn invalidObjectColumn =
-                CreateRandomModifyObjectColumn(randomDateTimeOffset, randomEntraUser.EntraUserId); 
+                CreateRandomModifyObjectColumn(randomDateTimeOffset, randomUserId); 
             
             ObjectColumn nonExistObjectColumn = invalidObjectColumn;
             var notFoundObjectColumnException = new NotFoundObjectColumnException(nonExistObjectColumn.Id);
@@ -524,30 +504,21 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.ObjectColumns
                     message: "ObjectColumn validation errors occurred, please try again.",
                     innerException: notFoundObjectColumnException);
 
-            var objectColumnServiceMock = new Mock<ObjectColumnService>(
-                storageBrokerMock.Object,
-                dateTimeBrokerMock.Object,
-                securityBrokerMock.Object,
-                loggingBrokerMock.Object)
-            {
-                CallBase = true
-            };
-
-            objectColumnServiceMock.Setup(service =>
-                service.ApplyModifyAuditAsync(invalidObjectColumn))
+            this.securityAuditBrokerMock.Setup(broker =>
+                broker.ApplyModifyAuditValuesAsync(invalidObjectColumn))
                     .ReturnsAsync(invalidObjectColumn);
 
             this.dateTimeBrokerMock.Setup(broker =>
                 broker.GetCurrentDateTimeOffsetAsync())
                     .ReturnsAsync(randomDateTimeOffset);
 
-            this.securityBrokerMock.Setup(broker =>
-                broker.GetCurrentUserAsync())
-                    .ReturnsAsync(randomEntraUser);
+            this.securityAuditBrokerMock.Setup(broker =>
+                broker.GetUserIdAsync())
+                    .ReturnsAsync(randomUserId);
 
             // when 
             ValueTask<ObjectColumn> modifyObjectColumnTask =
-                objectColumnServiceMock.Object.ModifyObjectColumnAsync(nonExistObjectColumn);
+                objectColumnService.ModifyObjectColumnAsync(nonExistObjectColumn);
 
             ObjectColumnValidationException actualObjectColumnValidationException =
                 await Assert.ThrowsAsync<ObjectColumnValidationException>(
@@ -557,6 +528,10 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.ObjectColumns
             actualObjectColumnValidationException.Should()
                 .BeEquivalentTo(expectedObjectColumnValidationException);
 
+            this.securityAuditBrokerMock.Verify(broker =>
+                broker.ApplyModifyAuditValuesAsync(nonExistObjectColumn),
+                    Times.Once);
+
             this.storageBrokerMock.Verify(broker =>
                 broker.SelectObjectColumnByIdAsync(nonExistObjectColumn.Id),
                     Times.Once);
@@ -565,8 +540,8 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.ObjectColumns
                 broker.GetCurrentDateTimeOffsetAsync(),
                     Times.Once);
 
-            this.securityBrokerMock.Verify(broker =>
-                broker.GetCurrentUserAsync(),
+            this.securityAuditBrokerMock.Verify(broker =>
+                broker.GetUserIdAsync(),
                     Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>
@@ -574,8 +549,8 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.ObjectColumns
                     expectedObjectColumnValidationException))),
                         Times.Once);
 
+            this.securityAuditBrokerMock.VerifyNoOtherCalls();
             this.dateTimeBrokerMock.VerifyNoOtherCalls();
-            this.securityBrokerMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
             this.storageBrokerMock.VerifyNoOtherCalls();
         }
@@ -587,36 +562,27 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.ObjectColumns
             int randomNumber = GetRandomNegativeNumber();
             int randomMinutes = randomNumber;
             DateTimeOffset randomDateTimeOffset = GetRandomDateTimeOffset();
-            EntraUser randomEntraUser = CreateRandomEntraUser();
+            string randomUserId = GetRandomStringWithLengthOf(50);
 
             ObjectColumn randomObjectColumn =
-                CreateRandomModifyObjectColumn(randomDateTimeOffset, randomEntraUser.EntraUserId);
+                CreateRandomModifyObjectColumn(randomDateTimeOffset, randomUserId);
 
             ObjectColumn invalidObjectColumn = randomObjectColumn.DeepClone();
             ObjectColumn storageObjectColumn = invalidObjectColumn.DeepClone();
             storageObjectColumn.CreatedDate = storageObjectColumn.CreatedDate.AddMinutes(randomMinutes);
             storageObjectColumn.UpdatedDate = storageObjectColumn.UpdatedDate.AddMinutes(randomMinutes);
 
-            var objectColumnServiceMock = new Mock<ObjectColumnService>(
-                storageBrokerMock.Object,
-                dateTimeBrokerMock.Object,
-                securityBrokerMock.Object,
-                loggingBrokerMock.Object)
-            {
-                CallBase = true
-            };
-
-            objectColumnServiceMock.Setup(service =>
-                service.ApplyModifyAuditAsync(invalidObjectColumn))
+            this.securityAuditBrokerMock.Setup(broker =>
+                broker.ApplyModifyAuditValuesAsync(invalidObjectColumn))
                     .ReturnsAsync(invalidObjectColumn);
 
             this.dateTimeBrokerMock.Setup(broker =>
                 broker.GetCurrentDateTimeOffsetAsync())
                     .ReturnsAsync(randomDateTimeOffset);
 
-            this.securityBrokerMock.Setup(broker =>
-                broker.GetCurrentUserAsync())
-                    .ReturnsAsync(randomEntraUser);
+            this.securityAuditBrokerMock.Setup(broker =>
+                broker.GetUserIdAsync())
+                    .ReturnsAsync(randomUserId);
 
             var invalidObjectColumnException =
                 new InvalidObjectColumnException(
@@ -637,7 +603,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.ObjectColumns
 
             // when
             ValueTask<ObjectColumn> modifyObjectColumnTask =
-                objectColumnServiceMock.Object.ModifyObjectColumnAsync(invalidObjectColumn);
+                objectColumnService.ModifyObjectColumnAsync(invalidObjectColumn);
 
             ObjectColumnValidationException actualObjectColumnValidationException =
                 await Assert.ThrowsAsync<ObjectColumnValidationException>(
@@ -647,12 +613,16 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.ObjectColumns
             actualObjectColumnValidationException.Should()
                 .BeEquivalentTo(expectedObjectColumnValidationException);
 
+            this.securityAuditBrokerMock.Verify(broker =>
+                broker.ApplyModifyAuditValuesAsync(invalidObjectColumn),
+                    Times.Once);
+
             this.dateTimeBrokerMock.Verify(broker =>
                 broker.GetCurrentDateTimeOffsetAsync(),
                     Times.Once);
 
-            this.securityBrokerMock.Verify(broker =>
-                broker.GetCurrentUserAsync(),
+            this.securityAuditBrokerMock.Verify(broker =>
+                broker.GetUserIdAsync(),
                     Times.Once);
 
             this.storageBrokerMock.Verify(broker =>
@@ -664,8 +634,8 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.ObjectColumns
                    expectedObjectColumnValidationException))),
                        Times.Once);
 
+            this.securityAuditBrokerMock.VerifyNoOtherCalls();
             this.dateTimeBrokerMock.VerifyNoOtherCalls();
-            this.securityBrokerMock.VerifyNoOtherCalls();
             this.storageBrokerMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
         }
@@ -675,10 +645,10 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.ObjectColumns
         {
             // given
             DateTimeOffset randomDateTimeOffset = GetRandomDateTimeOffset();
-            EntraUser randomEntraUser = CreateRandomEntraUser();
+            string randomUserId = GetRandomStringWithLengthOf(50);
 
             ObjectColumn randomObjectColumn =
-                CreateRandomModifyObjectColumn(randomDateTimeOffset, randomEntraUser.EntraUserId); 
+                CreateRandomModifyObjectColumn(randomDateTimeOffset, randomUserId); 
             
             ObjectColumn invalidObjectColumn = randomObjectColumn.DeepClone();
             ObjectColumn storageObjectColumn = invalidObjectColumn.DeepClone();
@@ -698,26 +668,17 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.ObjectColumns
                     message: "ObjectColumn validation errors occurred, please try again.",
                     innerException: invalidObjectColumnException);
 
-            var objectColumnServiceMock = new Mock<ObjectColumnService>(
-                storageBrokerMock.Object,
-                dateTimeBrokerMock.Object,
-                securityBrokerMock.Object,
-                loggingBrokerMock.Object)
-            {
-                CallBase = true
-            };
-
-            objectColumnServiceMock.Setup(service =>
-                service.ApplyModifyAuditAsync(invalidObjectColumn))
+            this.securityAuditBrokerMock.Setup(broker =>
+                broker.ApplyModifyAuditValuesAsync(invalidObjectColumn))
                     .ReturnsAsync(invalidObjectColumn);
 
             this.dateTimeBrokerMock.Setup(broker =>
                 broker.GetCurrentDateTimeOffsetAsync())
                     .ReturnsAsync(randomDateTimeOffset);
 
-            this.securityBrokerMock.Setup(broker =>
-                broker.GetCurrentUserAsync())
-                    .ReturnsAsync(randomEntraUser);
+            this.securityAuditBrokerMock.Setup(broker =>
+                broker.GetUserIdAsync())
+                    .ReturnsAsync(randomUserId);
 
             this.storageBrokerMock.Setup(broker =>
                 broker.SelectObjectColumnByIdAsync(invalidObjectColumn.Id))
@@ -725,7 +686,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.ObjectColumns
 
             // when
             ValueTask<ObjectColumn> modifyObjectColumnTask =
-                objectColumnServiceMock.Object.ModifyObjectColumnAsync(invalidObjectColumn);
+                objectColumnService.ModifyObjectColumnAsync(invalidObjectColumn);
 
             ObjectColumnValidationException actualObjectColumnValidationException =
                 await Assert.ThrowsAsync<ObjectColumnValidationException>(
@@ -734,12 +695,16 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.ObjectColumns
             // then
             actualObjectColumnValidationException.Should().BeEquivalentTo(expectedObjectColumnValidationException);
 
+            this.securityAuditBrokerMock.Verify(broker =>
+                broker.ApplyModifyAuditValuesAsync(invalidObjectColumn),
+                    Times.Once);
+
             this.dateTimeBrokerMock.Verify(broker =>
                 broker.GetCurrentDateTimeOffsetAsync(),
                     Times.Once);
 
-            this.securityBrokerMock.Verify(broker =>
-                broker.GetCurrentUserAsync(),
+            this.securityAuditBrokerMock.Verify(broker =>
+                broker.GetUserIdAsync(),
                     Times.Once); 
             
             this.storageBrokerMock.Verify(broker =>
@@ -751,8 +716,8 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.ObjectColumns
                    expectedObjectColumnValidationException))),
                        Times.Once);
 
+            this.securityAuditBrokerMock.VerifyNoOtherCalls();
             this.dateTimeBrokerMock.VerifyNoOtherCalls();
-            this.securityBrokerMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
             this.storageBrokerMock.VerifyNoOtherCalls();
         }
@@ -762,10 +727,10 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.ObjectColumns
         {
             // given
             DateTimeOffset randomDateTimeOffset = GetRandomDateTimeOffset();
-            EntraUser randomEntraUser = CreateRandomEntraUser();
+            string randomUserId = GetRandomStringWithLengthOf(50);
 
             ObjectColumn randomObjectColumn =
-                CreateRandomModifyObjectColumn(randomDateTimeOffset, randomEntraUser.EntraUserId);
+                CreateRandomModifyObjectColumn(randomDateTimeOffset, randomUserId);
 
             ObjectColumn invalidObjectColumn = randomObjectColumn;
             ObjectColumn storageObjectColumn = randomObjectColumn.DeepClone();
@@ -784,26 +749,17 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.ObjectColumns
                     message: "ObjectColumn validation errors occurred, please try again.",
                     innerException: invalidObjectColumnException);
 
-            var objectColumnServiceMock = new Mock<ObjectColumnService>(
-                storageBrokerMock.Object,
-                dateTimeBrokerMock.Object,
-                securityBrokerMock.Object,
-                loggingBrokerMock.Object)
-            {
-                CallBase = true
-            };
-
-            objectColumnServiceMock.Setup(service =>
-                service.ApplyModifyAuditAsync(invalidObjectColumn))
+            this.securityAuditBrokerMock.Setup(broker =>
+                broker.ApplyModifyAuditValuesAsync(invalidObjectColumn))
                     .ReturnsAsync(invalidObjectColumn);
 
             this.dateTimeBrokerMock.Setup(broker =>
                 broker.GetCurrentDateTimeOffsetAsync())
                     .ReturnsAsync(randomDateTimeOffset);
 
-            this.securityBrokerMock.Setup(broker =>
-                broker.GetCurrentUserAsync())
-                    .ReturnsAsync(randomEntraUser);
+            this.securityAuditBrokerMock.Setup(broker =>
+                broker.GetUserIdAsync())
+                    .ReturnsAsync(randomUserId);
 
             this.storageBrokerMock.Setup(broker => 
                 broker.SelectObjectColumnByIdAsync(invalidObjectColumn.Id))
@@ -811,18 +767,22 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.ObjectColumns
 
             // when
             ValueTask <ObjectColumn> modifyObjectColumnTask =
-                objectColumnServiceMock.Object.ModifyObjectColumnAsync(invalidObjectColumn);
+                objectColumnService.ModifyObjectColumnAsync(invalidObjectColumn);
 
             // then
             await Assert.ThrowsAsync<ObjectColumnValidationException>(
                 modifyObjectColumnTask.AsTask);
 
+            this.securityAuditBrokerMock.Verify(broker =>
+                broker.ApplyModifyAuditValuesAsync(invalidObjectColumn),
+                    Times.Once);
+
             this.dateTimeBrokerMock.Verify(broker =>
                 broker.GetCurrentDateTimeOffsetAsync(),
                     Times.Once);
 
-            this.securityBrokerMock.Verify(broker =>
-                broker.GetCurrentUserAsync(),
+            this.securityAuditBrokerMock.Verify(broker =>
+                broker.GetUserIdAsync(),
                     Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>
@@ -834,8 +794,8 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.ObjectColumns
                 broker.SelectObjectColumnByIdAsync(invalidObjectColumn.Id),
                     Times.Once);
 
+            this.securityAuditBrokerMock.VerifyNoOtherCalls();
             this.dateTimeBrokerMock.VerifyNoOtherCalls();
-            this.securityBrokerMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
             this.storageBrokerMock.VerifyNoOtherCalls();
         }

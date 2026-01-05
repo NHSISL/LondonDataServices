@@ -76,8 +76,8 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.IngestionTrackings
             }
 
             // when
-            await ingestionTrackingService
-                .BulkAddOrModifyBySplittingIntoBatchesAsync(inputIngestionTrackingItems, inputBatchSize);
+            await ingestionTrackingServiceMock.Object.BulkAddOrModifyBySplittingIntoBatchesAsync(
+                inputIngestionTrackingItems, inputBatchSize);
 
             // then
             this.storageBrokerMock.Verify(broker =>
@@ -100,9 +100,9 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.IngestionTrackings
 
                 if (newIngestionTrackingItems.Count != 0)
                 {
-                    this.securityAuditBrokerMock.Verify(broker =>
-                    service.AssignAuditValuesAndValidateOnBulkAddAsync(newIngestionTrackingItems),
-                        Times.Once);
+                    ingestionTrackingServiceMock.Verify(service =>
+                        service.AssignAuditValuesAndValidateOnBulkAddAsync(newIngestionTrackingItems),
+                            Times.Once);
 
                     this.storageBrokerMock.Verify(broker =>
                         broker.BulkInsertIngestionTrackingsAsync(newIngestionTrackingItems),
@@ -111,8 +111,8 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.IngestionTrackings
 
                 if (existingIngestionTrackingItems.Count != 0)
                 {
-                    this.securityAuditBrokerMock.Verify(broker =>
-                    service.AssignAuditValuesAndValidateOnBulkModifyAsync(existingIngestionTrackingItems),
+                    ingestionTrackingServiceMock.Verify(service =>
+                        service.AssignAuditValuesAndValidateOnBulkModifyAsync(existingIngestionTrackingItems),
                         Times.Once);
 
                     this.storageBrokerMock.Verify(broker =>
@@ -121,14 +121,13 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.IngestionTrackings
                 }
             }
 
-            this.securityAuditBrokerMock.Verify(broker =>
+            ingestionTrackingServiceMock.Verify(service =>
                 service.BulkAddOrModifyBySplittingIntoBatchesAsync(inputIngestionTrackingItems, inputBatchSize),
                     Times.Once);
 
             ingestionTrackingServiceMock.VerifyNoOtherCalls();
             this.dateTimeBrokerMock.VerifyNoOtherCalls();
             this.storageBrokerMock.VerifyNoOtherCalls();
-            this.securityBrokerMock.VerifyNoOtherCalls();
             this.securityAuditBrokerMock.VerifyNoOtherCalls();
             this.auditBrokerMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();

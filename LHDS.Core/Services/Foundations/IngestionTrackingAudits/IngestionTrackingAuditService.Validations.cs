@@ -15,7 +15,8 @@ namespace LHDS.Core.Services.Foundations.IngestionTrackingAudits
     {
         private async ValueTask ValidateIngestionTrackingAuditOnAddAsync(IngestionTrackingAudit ingestionTrackingAudit)
         {
-            EntraUser currentUser = await this.securityBroker.GetCurrentUserAsync();
+            ValidateIngestionTrackingAuditIsNotNull(ingestionTrackingAudit);
+            string currentUserId = await this.securityAuditBroker.GetUserIdAsync();
 
             Validate(
                 createException: () => new InvalidIngestionTrackingAuditException(
@@ -42,7 +43,7 @@ namespace LHDS.Core.Services.Foundations.IngestionTrackingAudits
                     Parameter: nameof(IngestionTrackingAudit.UpdatedBy)),
 
                 (Rule: IsNotSame(
-                    first: currentUser.EntraUserId,
+                    first: currentUserId,
                     second: ingestionTrackingAudit.CreatedBy),
                 Parameter: nameof(IngestionTrackingAudit.CreatedBy)),
 

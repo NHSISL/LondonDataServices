@@ -31,7 +31,6 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.IngestionTrackings
             Mock<IngestionTrackingService> ingestionTrackingServiceMock = new Mock<IngestionTrackingService>(
                 storageBrokerMock.Object,
                 dateTimeBrokerMock.Object,
-                securityBrokerMock.Object,
                 securityAuditBrokerMock.Object,
                 auditBrokerMock.Object,
                 loggingBrokerMock.Object)
@@ -59,7 +58,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.IngestionTrackings
                 var existingIngestionTrackingItems = batch.Where(address => existingIds.Contains(address.Id)).ToList();
                 var newIngestionTrackingItems = batch.Where(address => !existingIds.Contains(address.Id)).ToList();
 
-                ingestionTrackingServiceMock.Setup(service =>
+                this.securityAuditBrokerMock.Setup(broker =>
                     service.AssignAuditValuesAndValidateOnBulkAddAsync(newIngestionTrackingItems))
                         .ReturnsAsync(newIngestionTrackingItems);
 
@@ -67,7 +66,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.IngestionTrackings
                     broker.BulkInsertIngestionTrackingsAsync(newIngestionTrackingItems))
                         .Returns(ValueTask.CompletedTask);
 
-                ingestionTrackingServiceMock.Setup(service =>
+                this.securityAuditBrokerMock.Setup(broker =>
                     service.AssignAuditValuesAndValidateOnBulkModifyAsync(existingIngestionTrackingItems))
                         .ReturnsAsync(existingIngestionTrackingItems);
 
@@ -77,7 +76,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.IngestionTrackings
             }
 
             // when
-            await ingestionTrackingServiceMock.Object
+            await ingestionTrackingService
                 .BulkAddOrModifyBySplittingIntoBatchesAsync(inputIngestionTrackingItems, inputBatchSize);
 
             // then
@@ -101,7 +100,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.IngestionTrackings
 
                 if (newIngestionTrackingItems.Count != 0)
                 {
-                    ingestionTrackingServiceMock.Verify(service =>
+                    this.securityAuditBrokerMock.Verify(broker =>
                     service.AssignAuditValuesAndValidateOnBulkAddAsync(newIngestionTrackingItems),
                         Times.Once);
 
@@ -112,7 +111,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.IngestionTrackings
 
                 if (existingIngestionTrackingItems.Count != 0)
                 {
-                    ingestionTrackingServiceMock.Verify(service =>
+                    this.securityAuditBrokerMock.Verify(broker =>
                     service.AssignAuditValuesAndValidateOnBulkModifyAsync(existingIngestionTrackingItems),
                         Times.Once);
 
@@ -122,7 +121,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.IngestionTrackings
                 }
             }
 
-            ingestionTrackingServiceMock.Verify(service =>
+            this.securityAuditBrokerMock.Verify(broker =>
                 service.BulkAddOrModifyBySplittingIntoBatchesAsync(inputIngestionTrackingItems, inputBatchSize),
                     Times.Once);
 

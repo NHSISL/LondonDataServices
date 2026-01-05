@@ -32,16 +32,16 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.IngestionTrackings
                 CallBase = true
             };
 
-            ingestionTrackingServiceMock.Setup(service =>
+            this.securityAuditBrokerMock.Setup(broker =>
                 service.BulkAddOrModifyBySplittingIntoBatchesAsync(inputIngestionTrackingItems, 10000))
                     .Returns(ValueTask.CompletedTask);
 
             // when
-            await ingestionTrackingServiceMock.Object
+            await ingestionTrackingService
                 .BulkModifyIngestionTrackingAsync(inputIngestionTrackingItems);
 
             // then
-            ingestionTrackingServiceMock.Verify(service =>
+            this.securityAuditBrokerMock.Verify(broker =>
                 service.BulkAddOrModifyBySplittingIntoBatchesAsync(inputIngestionTrackingItems, 10000),
                     Times.Exactly(1));
 

@@ -5,10 +5,8 @@
 using System;
 using System.Threading.Tasks;
 using FluentAssertions;
-using LHDS.Core.Models.Brokers.Securities;
 using LHDS.Core.Models.Foundations.IngestionTrackingAudits;
 using LHDS.Core.Models.Foundations.IngestionTrackingAudits.Exceptions;
-using LHDS.Core.Services.Foundations.IngestionTrackingAudits;
 using Moq;
 using Xunit;
 
@@ -41,11 +39,16 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.IngestionTrackingAudits
             actualIngestionTrackingAuditValidationException.Should()
                 .BeEquivalentTo(expectedIngestionTrackingAuditValidationException);
 
+            this.securityAuditBrokerMock.Verify(broker =>
+                broker.ApplyAddAuditValuesAsync(nullIngestionTrackingAudit),
+                    Times.Once);
+
             this.loggingBrokerMock.Verify(broker =>
                 broker.LogErrorAsync(It.Is(SameExceptionAs(
                     expectedIngestionTrackingAuditValidationException))),
                         Times.Once);
 
+            this.securityAuditBrokerMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
             this.dateTimeBrokerMock.VerifyNoOtherCalls();
             this.storageBrokerMock.VerifyNoOtherCalls();
@@ -59,33 +62,24 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.IngestionTrackingAudits
         {
             // given
             DateTimeOffset randomDataTimeOffset = GetRandomDateTimeOffset();
-            EntraUser randomEntraUser = CreateRandomEntraUser();
+            string randomUserId = GetRandomStringWithLengthOf(50);
 
             var invalidIngestionTrackingAudit = new IngestionTrackingAudit
             {
                 Message = invalidText,
             };
 
-            var ingestionTrackingAuditServiceMock = new Mock<IngestionTrackingAuditService>(
-                storageBrokerMock.Object,
-                dateTimeBrokerMock.Object,
-                securityBrokerMock.Object,
-                loggingBrokerMock.Object)
-            {
-                CallBase = true
-            };
-
-            ingestionTrackingAuditServiceMock.Setup(service =>
-                service.ApplyAddIngestionTrackingAuditAsync(invalidIngestionTrackingAudit))
+            this.securityAuditBrokerMock.Setup(broker =>
+                broker.ApplyAddAuditValuesAsync(invalidIngestionTrackingAudit))
                     .ReturnsAsync(invalidIngestionTrackingAudit);
 
             this.dateTimeBrokerMock.Setup(broker =>
                 broker.GetCurrentDateTimeOffsetAsync())
                     .ReturnsAsync(randomDataTimeOffset);
 
-            this.securityBrokerMock.Setup(broker =>
-                broker.GetCurrentUserAsync())
-                    .ReturnsAsync(randomEntraUser);
+            this.securityAuditBrokerMock.Setup(broker =>
+                broker.GetUserIdAsync())
+                    .ReturnsAsync(randomUserId);
 
             var invalidIngestionTrackingAuditException =
                 new InvalidIngestionTrackingAuditException(
@@ -116,7 +110,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.IngestionTrackingAudits
                 values:
                 [
                     "Text is required",
-                    $"Expected value to be '{randomEntraUser.EntraUserId}' " +
+                    $"Expected value to be '{randomUserId}' " +
                     $"but found '{invalidIngestionTrackingAudit.CreatedBy}'."
                 ]);
 
@@ -135,7 +129,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.IngestionTrackingAudits
 
             // when
             ValueTask<IngestionTrackingAudit> addIngestionTrackingAuditTask =
-                ingestionTrackingAuditServiceMock.Object.AddIngestionTrackingAuditAsync(invalidIngestionTrackingAudit);
+                ingestionTrackingAuditService.AddIngestionTrackingAuditAsync(invalidIngestionTrackingAudit);
 
             IngestionTrackingAuditValidationException actualIngestionTrackingAuditValidationException =
                 await Assert.ThrowsAsync<IngestionTrackingAuditValidationException>(addIngestionTrackingAuditTask.AsTask);
@@ -144,12 +138,16 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.IngestionTrackingAudits
             actualIngestionTrackingAuditValidationException.Should()
                 .BeEquivalentTo(expectedIngestionTrackingAuditValidationException);
 
+            this.securityAuditBrokerMock.Verify(broker =>
+                broker.ApplyAddAuditValuesAsync(invalidIngestionTrackingAudit),
+                    Times.Once());
+
             this.dateTimeBrokerMock.Verify(broker =>
                 broker.GetCurrentDateTimeOffsetAsync(),
                     Times.Once());
 
-            this.securityBrokerMock.Verify(broker =>
-                broker.GetCurrentUserAsync(),
+            this.securityAuditBrokerMock.Verify(broker =>
+                broker.GetUserIdAsync(),
                     Times.Once());
 
             this.loggingBrokerMock.Verify(broker =>
@@ -161,8 +159,8 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.IngestionTrackingAudits
                 broker.InsertIngestionTrackingAuditAsync(It.IsAny<IngestionTrackingAudit>()),
                     Times.Never);
 
+            this.securityAuditBrokerMock.VerifyNoOtherCalls();
             this.dateTimeBrokerMock.VerifyNoOtherCalls();
-            this.securityBrokerMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
             this.storageBrokerMock.VerifyNoOtherCalls();
         }
@@ -172,12 +170,12 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.IngestionTrackingAudits
         {
             // given
             DateTimeOffset randomDateTimeOffset = GetRandomDateTimeOffset();
-            EntraUser randomEntraUser = CreateRandomEntraUser(entraUserId: GetRandomStringWithLengthOf(256));
+            string randomUserId = GetRandomStringWithLengthOf(256);
 
             IngestionTrackingAudit invalidIngestionTrackingAudit =
-                CreateRandomIngestionTrackingAudit(randomDateTimeOffset, randomEntraUser.EntraUserId);
+                CreateRandomIngestionTrackingAudit(randomDateTimeOffset, randomUserId);
 
-            var inputCreatedByUpdatedByString = randomEntraUser.EntraUserId;
+            var inputCreatedByUpdatedByString = randomUserId;
             invalidIngestionTrackingAudit.CreatedBy = inputCreatedByUpdatedByString;
             invalidIngestionTrackingAudit.UpdatedBy = inputCreatedByUpdatedByString;
 
@@ -198,30 +196,21 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.IngestionTrackingAudits
                     message: "IngestionTrackingAudit validation errors occurred, please try again.",
                     innerException: invalidIngestionTrackingAuditException);
 
-            var ingestionTrackingAuditServiceMock = new Mock<IngestionTrackingAuditService>(
-                storageBrokerMock.Object,
-                dateTimeBrokerMock.Object,
-                securityBrokerMock.Object,
-                loggingBrokerMock.Object)
-            {
-                CallBase = true
-            };
-
-            ingestionTrackingAuditServiceMock.Setup(service =>
-                service.ApplyAddIngestionTrackingAuditAsync(invalidIngestionTrackingAudit))
+            this.securityAuditBrokerMock.Setup(broker =>
+                broker.ApplyAddAuditValuesAsync(invalidIngestionTrackingAudit))
                     .ReturnsAsync(invalidIngestionTrackingAudit);
 
             this.dateTimeBrokerMock.Setup(broker =>
                 broker.GetCurrentDateTimeOffsetAsync())
                     .ReturnsAsync(randomDateTimeOffset);
 
-            this.securityBrokerMock.Setup(broker =>
-                broker.GetCurrentUserAsync())
-                    .ReturnsAsync(randomEntraUser);
+            this.securityAuditBrokerMock.Setup(broker =>
+                broker.GetUserIdAsync())
+                    .ReturnsAsync(randomUserId);
 
             // when
             ValueTask<IngestionTrackingAudit> addIngestionTrackingAuditTask =
-                ingestionTrackingAuditServiceMock.Object.AddIngestionTrackingAuditAsync(invalidIngestionTrackingAudit);
+                ingestionTrackingAuditService.AddIngestionTrackingAuditAsync(invalidIngestionTrackingAudit);
 
             IngestionTrackingAuditValidationException actualIngestionTrackingAuditValidationException =
                 await Assert.ThrowsAsync<IngestionTrackingAuditValidationException>(
@@ -231,12 +220,16 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.IngestionTrackingAudits
             actualIngestionTrackingAuditValidationException.Should()
                 .BeEquivalentTo(expectedIngestionTrackingAuditValidationException);
 
+            this.securityAuditBrokerMock.Verify(broker =>
+                broker.ApplyAddAuditValuesAsync(invalidIngestionTrackingAudit),
+                    Times.Once());
+
             this.dateTimeBrokerMock.Verify(broker =>
                 broker.GetCurrentDateTimeOffsetAsync(),
                     Times.Once());
 
-            this.securityBrokerMock.Verify(broker =>
-                broker.GetCurrentUserAsync(),
+            this.securityAuditBrokerMock.Verify(broker =>
+                broker.GetUserIdAsync(),
                     Times.Once());
 
             this.loggingBrokerMock.Verify(broker =>
@@ -248,8 +241,8 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.IngestionTrackingAudits
                 broker.InsertIngestionTrackingAuditAsync(It.IsAny<IngestionTrackingAudit>()),
                     Times.Never);
 
+            this.securityAuditBrokerMock.VerifyNoOtherCalls();
             this.dateTimeBrokerMock.VerifyNoOtherCalls();
-            this.securityBrokerMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
             this.storageBrokerMock.VerifyNoOtherCalls();
         }
@@ -260,10 +253,10 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.IngestionTrackingAudits
             // given
             int randomNumber = GetRandomNumber();
             DateTimeOffset randomDateTimeOffset = GetRandomDateTimeOffset();
-            EntraUser randomEntraUser = CreateRandomEntraUser();
+            string randomUserId = GetRandomStringWithLengthOf(50);
 
             IngestionTrackingAudit randomIngestionTrackingAudit =
-                CreateRandomIngestionTrackingAudit(randomDateTimeOffset, randomEntraUser.EntraUserId);
+                CreateRandomIngestionTrackingAudit(randomDateTimeOffset, randomUserId);
 
             IngestionTrackingAudit invalidIngestionTrackingAudit = randomIngestionTrackingAudit;
             invalidIngestionTrackingAudit.CreatedDate = GetRandomDateTimeOffset();
@@ -286,30 +279,21 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.IngestionTrackingAudits
                     message: "IngestionTrackingAudit validation errors occurred, please try again.",
                     innerException: invalidIngestionTrackingAuditException);
 
-            var ingestionTrackingAuditServiceMock = new Mock<IngestionTrackingAuditService>(
-                storageBrokerMock.Object,
-                dateTimeBrokerMock.Object,
-                securityBrokerMock.Object,
-                loggingBrokerMock.Object)
-            {
-                CallBase = true
-            };
-
-            ingestionTrackingAuditServiceMock.Setup(service =>
-                service.ApplyAddIngestionTrackingAuditAsync(invalidIngestionTrackingAudit))
+            this.securityAuditBrokerMock.Setup(broker =>
+                broker.ApplyAddAuditValuesAsync(invalidIngestionTrackingAudit))
                     .ReturnsAsync(invalidIngestionTrackingAudit);
 
             this.dateTimeBrokerMock.Setup(broker =>
                 broker.GetCurrentDateTimeOffsetAsync())
                     .ReturnsAsync(randomDateTimeOffset);
 
-            this.securityBrokerMock.Setup(broker =>
-                broker.GetCurrentUserAsync())
-                    .ReturnsAsync(randomEntraUser);
+            this.securityAuditBrokerMock.Setup(broker =>
+                broker.GetUserIdAsync())
+                    .ReturnsAsync(randomUserId);
 
             // when
             ValueTask<IngestionTrackingAudit> addIngestionTrackingAuditTask =
-                ingestionTrackingAuditServiceMock.Object.AddIngestionTrackingAuditAsync(invalidIngestionTrackingAudit);
+                ingestionTrackingAuditService.AddIngestionTrackingAuditAsync(invalidIngestionTrackingAudit);
 
             IngestionTrackingAuditValidationException actualIngestionTrackingAuditValidationException =
                 await Assert.ThrowsAsync<IngestionTrackingAuditValidationException>(
@@ -319,12 +303,16 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.IngestionTrackingAudits
             actualIngestionTrackingAuditValidationException.Should()
                 .BeEquivalentTo(expectedIngestionTrackingAuditValidationException);
 
+            this.securityAuditBrokerMock.Verify(broker =>
+                broker.ApplyAddAuditValuesAsync(invalidIngestionTrackingAudit),
+                    Times.Once());
+
             this.dateTimeBrokerMock.Verify(broker =>
                 broker.GetCurrentDateTimeOffsetAsync(),
                     Times.Once());
 
-            this.securityBrokerMock.Verify(broker =>
-                broker.GetCurrentUserAsync(),
+            this.securityAuditBrokerMock.Verify(broker =>
+                broker.GetUserIdAsync(),
                     Times.Once());
 
             this.loggingBrokerMock.Verify(broker =>
@@ -336,8 +324,8 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.IngestionTrackingAudits
                 broker.InsertIngestionTrackingAuditAsync(It.IsAny<IngestionTrackingAudit>()),
                     Times.Never);
 
+            this.securityAuditBrokerMock.VerifyNoOtherCalls();
             this.dateTimeBrokerMock.VerifyNoOtherCalls();
-            this.securityBrokerMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
             this.storageBrokerMock.VerifyNoOtherCalls();
         }
@@ -347,10 +335,10 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.IngestionTrackingAudits
         {
             // given
             DateTimeOffset randomDateTimeOffset = GetRandomDateTimeOffset();
-            EntraUser randomEntraUser = CreateRandomEntraUser();
+            string randomUserId = GetRandomStringWithLengthOf(50);
 
             IngestionTrackingAudit randomIngestionTrackingAudit =
-                CreateRandomIngestionTrackingAudit(randomDateTimeOffset, randomEntraUser.EntraUserId);
+                CreateRandomIngestionTrackingAudit(randomDateTimeOffset, randomUserId);
 
             IngestionTrackingAudit invalidIngestionTrackingAudit = randomIngestionTrackingAudit;
             invalidIngestionTrackingAudit.CreatedBy = GetRandomString();
@@ -362,7 +350,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.IngestionTrackingAudits
 
             invalidIngestionTrackingAuditException.AddData(
                 key: nameof(IngestionTrackingAudit.CreatedBy),
-                values: $"Expected value to be '{randomEntraUser.EntraUserId}' " +
+                values: $"Expected value to be '{randomUserId}' " +
                     $"but found '{invalidIngestionTrackingAudit.CreatedBy}'.");
 
             invalidIngestionTrackingAuditException.AddData(
@@ -374,30 +362,21 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.IngestionTrackingAudits
                     message: "IngestionTrackingAudit validation errors occurred, please try again.",
                     innerException: invalidIngestionTrackingAuditException);
 
-            var ingestionTrackingAuditServiceMock = new Mock<IngestionTrackingAuditService>(
-                storageBrokerMock.Object,
-                dateTimeBrokerMock.Object,
-                securityBrokerMock.Object,
-                loggingBrokerMock.Object)
-            {
-                CallBase = true
-            };
-
-            ingestionTrackingAuditServiceMock.Setup(service =>
-                service.ApplyAddIngestionTrackingAuditAsync(invalidIngestionTrackingAudit))
+            this.securityAuditBrokerMock.Setup(broker =>
+                broker.ApplyAddAuditValuesAsync(invalidIngestionTrackingAudit))
                     .ReturnsAsync(invalidIngestionTrackingAudit);
 
             this.dateTimeBrokerMock.Setup(broker =>
                 broker.GetCurrentDateTimeOffsetAsync())
                     .ReturnsAsync(randomDateTimeOffset);
 
-            this.securityBrokerMock.Setup(broker =>
-                broker.GetCurrentUserAsync())
-                    .ReturnsAsync(randomEntraUser);
+            this.securityAuditBrokerMock.Setup(broker =>
+                broker.GetUserIdAsync())
+                    .ReturnsAsync(randomUserId);
 
             // when
             ValueTask<IngestionTrackingAudit> addIngestionTrackingAuditTask =
-                ingestionTrackingAuditServiceMock.Object.AddIngestionTrackingAuditAsync(invalidIngestionTrackingAudit);
+                ingestionTrackingAuditService.AddIngestionTrackingAuditAsync(invalidIngestionTrackingAudit);
 
             IngestionTrackingAuditValidationException actualIngestionTrackingAuditValidationException =
                 await Assert.ThrowsAsync<IngestionTrackingAuditValidationException>(
@@ -407,12 +386,16 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.IngestionTrackingAudits
             actualIngestionTrackingAuditValidationException.Should()
                 .BeEquivalentTo(expectedIngestionTrackingAuditValidationException);
 
+            this.securityAuditBrokerMock.Verify(broker =>
+                broker.ApplyAddAuditValuesAsync(invalidIngestionTrackingAudit),
+                    Times.Once());
+
             this.dateTimeBrokerMock.Verify(broker =>
                 broker.GetCurrentDateTimeOffsetAsync(),
                     Times.Once());
 
-            this.securityBrokerMock.Verify(broker =>
-                broker.GetCurrentUserAsync(),
+            this.securityAuditBrokerMock.Verify(broker =>
+                broker.GetUserIdAsync(),
                     Times.Once());
 
             this.loggingBrokerMock.Verify(broker =>
@@ -424,8 +407,8 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.IngestionTrackingAudits
                 broker.InsertIngestionTrackingAuditAsync(It.IsAny<IngestionTrackingAudit>()),
                     Times.Never);
 
+            this.securityAuditBrokerMock.VerifyNoOtherCalls();
             this.dateTimeBrokerMock.VerifyNoOtherCalls();
-            this.securityBrokerMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
             this.storageBrokerMock.VerifyNoOtherCalls();
         }
@@ -437,11 +420,11 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.IngestionTrackingAudits
         {
             // given
             DateTimeOffset randomDateTimeOffset = GetRandomDateTimeOffset();
-            EntraUser randomEntraUser = CreateRandomEntraUser();
+            string randomUserId = GetRandomStringWithLengthOf(50);
             DateTimeOffset invalidDateTime = randomDateTimeOffset.AddMinutes(minutesBeforeOrAfter);
 
             IngestionTrackingAudit randomIngestionTrackingAudit =
-                CreateRandomIngestionTrackingAudit(invalidDateTime, randomEntraUser.EntraUserId);
+                CreateRandomIngestionTrackingAudit(invalidDateTime, randomUserId);
 
             IngestionTrackingAudit invalidIngestionTrackingAudit = randomIngestionTrackingAudit;
 
@@ -458,30 +441,21 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.IngestionTrackingAudits
                     message: "IngestionTrackingAudit validation errors occurred, please try again.",
                     innerException: invalidIngestionTrackingAuditException);
 
-            var ingestionTrackingAuditServiceMock = new Mock<IngestionTrackingAuditService>(
-                storageBrokerMock.Object,
-                dateTimeBrokerMock.Object,
-                securityBrokerMock.Object,
-                loggingBrokerMock.Object)
-            {
-                CallBase = true
-            };
-
-            ingestionTrackingAuditServiceMock.Setup(service =>
-                service.ApplyAddIngestionTrackingAuditAsync(invalidIngestionTrackingAudit))
+            this.securityAuditBrokerMock.Setup(broker =>
+                broker.ApplyAddAuditValuesAsync(invalidIngestionTrackingAudit))
                     .ReturnsAsync(invalidIngestionTrackingAudit);
 
             this.dateTimeBrokerMock.Setup(broker =>
                 broker.GetCurrentDateTimeOffsetAsync())
                     .ReturnsAsync(randomDateTimeOffset);
 
-            this.securityBrokerMock.Setup(broker =>
-                broker.GetCurrentUserAsync())
-                    .ReturnsAsync(randomEntraUser);
+            this.securityAuditBrokerMock.Setup(broker =>
+                broker.GetUserIdAsync())
+                    .ReturnsAsync(randomUserId);
 
             // when
             ValueTask<IngestionTrackingAudit> addIngestionTrackingAuditTask =
-                ingestionTrackingAuditServiceMock.Object.AddIngestionTrackingAuditAsync(invalidIngestionTrackingAudit);
+                ingestionTrackingAuditService.AddIngestionTrackingAuditAsync(invalidIngestionTrackingAudit);
 
             IngestionTrackingAuditValidationException actualIngestionTrackingAuditValidationException =
                 await Assert.ThrowsAsync<IngestionTrackingAuditValidationException>(
@@ -491,12 +465,16 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.IngestionTrackingAudits
             actualIngestionTrackingAuditValidationException.Should()
                 .BeEquivalentTo(expectedIngestionTrackingAuditValidationException);
 
+            this.securityAuditBrokerMock.Verify(broker =>
+                broker.ApplyAddAuditValuesAsync(invalidIngestionTrackingAudit),
+                    Times.Once());
+
             this.dateTimeBrokerMock.Verify(broker =>
                 broker.GetCurrentDateTimeOffsetAsync(),
                     Times.Once());
 
-            this.securityBrokerMock.Verify(broker =>
-                broker.GetCurrentUserAsync(),
+            this.securityAuditBrokerMock.Verify(broker =>
+                broker.GetUserIdAsync(),
                     Times.Once());
 
             this.loggingBrokerMock.Verify(broker =>
@@ -508,8 +486,8 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.IngestionTrackingAudits
                 broker.InsertIngestionTrackingAuditAsync(It.IsAny<IngestionTrackingAudit>()),
                     Times.Never);
 
+            this.securityAuditBrokerMock.VerifyNoOtherCalls();
             this.dateTimeBrokerMock.VerifyNoOtherCalls();
-            this.securityBrokerMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
             this.storageBrokerMock.VerifyNoOtherCalls();
         }

@@ -50,13 +50,13 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.IngestionTrackings
                     message: "Failed ingestion tracking storage error occurred, please contact support.",
                     innerException: failedIngestionTrackingStorageException);
 
-            ingestionTrackingServiceMock.Setup(service =>
+            this.securityAuditBrokerMock.Setup(broker =>
                 service.BulkAddOrModifyBySplittingIntoBatchesAsync(It.IsAny<List<IngestionTracking>>(), It.IsAny<int>()))
                     .ThrowsAsync(sqlException);
 
             // when
             ValueTask bulkModifyIngestionTrackingTask =
-                ingestionTrackingServiceMock.Object.BulkModifyIngestionTrackingAsync(inputIngestionTrackingItems);
+                ingestionTrackingService.BulkModifyIngestionTrackingAsync(inputIngestionTrackingItems);
 
             IngestionTrackingDependencyException actualIngestionTrackingDependencyException =
                 await Assert.ThrowsAsync<IngestionTrackingDependencyException>(
@@ -66,7 +66,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.IngestionTrackings
             actualIngestionTrackingDependencyException.Should()
                 .BeEquivalentTo(expectedIngestionTrackingDependencyException);
 
-            ingestionTrackingServiceMock.Verify(service =>
+            this.securityAuditBrokerMock.Verify(broker =>
                 service.BulkAddOrModifyBySplittingIntoBatchesAsync(It.IsAny<List<IngestionTracking>>(), It.IsAny<int>()),
                     Times.Once);
 
@@ -117,13 +117,13 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.IngestionTrackings
                     message: "Ingestion tracking dependency validation occurred, please try again.",
                     innerException: invalidIngestionTrackingReferenceException);
 
-            ingestionTrackingServiceMock.Setup(service =>
+            this.securityAuditBrokerMock.Setup(broker =>
                 service.BulkAddOrModifyBySplittingIntoBatchesAsync(It.IsAny<List<IngestionTracking>>(), It.IsAny<int>()))
                     .ThrowsAsync(foreignKeyConstraintConflictException);
 
             // when
             ValueTask bulkModifyIngestionTrackingTask =
-                ingestionTrackingServiceMock.Object.BulkModifyIngestionTrackingAsync(inputIngestionTrackingItems);
+                ingestionTrackingService.BulkModifyIngestionTrackingAsync(inputIngestionTrackingItems);
 
             IngestionTrackingDependencyValidationException actualIngestionTrackingDependencyValidationException =
                 await Assert.ThrowsAsync<IngestionTrackingDependencyValidationException>(
@@ -133,7 +133,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.IngestionTrackings
             actualIngestionTrackingDependencyValidationException.Should()
                 .BeEquivalentTo(expectedIngestionTrackingDependencyValidationException);
 
-            ingestionTrackingServiceMock.Verify(service =>
+            this.securityAuditBrokerMock.Verify(broker =>
                 service.BulkAddOrModifyBySplittingIntoBatchesAsync(It.IsAny<List<IngestionTracking>>(), It.IsAny<int>()),
                     Times.Once);
 
@@ -180,13 +180,13 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.IngestionTrackings
                     message: "Failed ingestion tracking storage error occurred, please contact support.",
                     innerException: failedIngestionTrackingStorageException);
 
-            ingestionTrackingServiceMock.Setup(service =>
+            this.securityAuditBrokerMock.Setup(broker =>
                 service.BulkAddOrModifyBySplittingIntoBatchesAsync(It.IsAny<List<IngestionTracking>>(), It.IsAny<int>()))
                     .ThrowsAsync(databaseUpdateException);
 
             // when
             ValueTask bulkModifyIngestionTrackingTask =
-                ingestionTrackingServiceMock.Object.BulkModifyIngestionTrackingAsync(inputIngestionTrackingItems);
+                ingestionTrackingService.BulkModifyIngestionTrackingAsync(inputIngestionTrackingItems);
 
             IngestionTrackingDependencyException actualIngestionTrackingDependencyException =
                 await Assert.ThrowsAsync<IngestionTrackingDependencyException>(
@@ -196,7 +196,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.IngestionTrackings
             actualIngestionTrackingDependencyException.Should()
                 .BeEquivalentTo(expectedIngestionTrackingDependencyException);
 
-            ingestionTrackingServiceMock.Verify(service =>
+            this.securityAuditBrokerMock.Verify(broker =>
                 service.BulkAddOrModifyBySplittingIntoBatchesAsync(It.IsAny<List<IngestionTracking>>(), It.IsAny<int>()),
                     Times.Once);
 
@@ -243,13 +243,13 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.IngestionTrackings
                     message: "Ingestion tracking dependency validation occurred, please try again.",
                     innerException: lockedIngestionTrackingException);
 
-            ingestionTrackingServiceMock.Setup(service =>
+            this.securityAuditBrokerMock.Setup(broker =>
                 service.BulkAddOrModifyBySplittingIntoBatchesAsync(It.IsAny<List<IngestionTracking>>(), It.IsAny<int>()))
                     .ThrowsAsync(databaseUpdateConcurrencyException);
 
             // when
             ValueTask bulkModifyIngestionTrackingTask =
-                ingestionTrackingServiceMock.Object.BulkModifyIngestionTrackingAsync(inputIngestionTrackingItems);
+                ingestionTrackingService.BulkModifyIngestionTrackingAsync(inputIngestionTrackingItems);
 
             IngestionTrackingDependencyValidationException actualIngestionTrackingDependencyValidationException =
                 await Assert.ThrowsAsync<IngestionTrackingDependencyValidationException>(
@@ -259,7 +259,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.IngestionTrackings
             actualIngestionTrackingDependencyValidationException.Should()
                 .BeEquivalentTo(expectedIngestionTrackingDependencyValidationException);
 
-            ingestionTrackingServiceMock.Verify(service =>
+            this.securityAuditBrokerMock.Verify(broker =>
                 service.BulkAddOrModifyBySplittingIntoBatchesAsync(It.IsAny<List<IngestionTracking>>(), It.IsAny<int>()),
                     Times.Once);
 
@@ -306,13 +306,13 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.IngestionTrackings
                     message: "Ingestion tracking service error occurred, please contact support.",
                     innerException: failedIngestionTrackingServiceException);
 
-            ingestionTrackingServiceMock.Setup(service =>
+            this.securityAuditBrokerMock.Setup(broker =>
                 service.BulkAddOrModifyBySplittingIntoBatchesAsync(It.IsAny<List<IngestionTracking>>(), It.IsAny<int>()))
                     .ThrowsAsync(serviceException);
 
             // when
             ValueTask bulkModifyIngestionTrackingTask =
-                ingestionTrackingServiceMock.Object.BulkModifyIngestionTrackingAsync(inputIngestionTrackingItems);
+                ingestionTrackingService.BulkModifyIngestionTrackingAsync(inputIngestionTrackingItems);
 
             IngestionTrackingServiceException actualIngestionTrackingServiceException =
                 await Assert.ThrowsAsync<IngestionTrackingServiceException>(
@@ -322,7 +322,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.IngestionTrackings
             actualIngestionTrackingServiceException.Should()
                 .BeEquivalentTo(expectedIngestionTrackingServiceException);
 
-            ingestionTrackingServiceMock.Verify(service =>
+            this.securityAuditBrokerMock.Verify(broker =>
                 service.BulkAddOrModifyBySplittingIntoBatchesAsync(It.IsAny<List<IngestionTracking>>(), It.IsAny<int>()),
                     Times.Once);
 

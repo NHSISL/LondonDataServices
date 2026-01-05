@@ -30,7 +30,6 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.IngestionTrackings
             Mock<IngestionTrackingService> ingestionTrackingServiceMock = new Mock<IngestionTrackingService>(
                 storageBrokerMock.Object,
                 dateTimeBrokerMock.Object,
-                securityBrokerMock.Object,
                 securityAuditBrokerMock.Object,
                 auditBrokerMock.Object,
                 loggingBrokerMock.Object)
@@ -50,7 +49,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.IngestionTrackings
                     message: "Failed ingestion tracking storage error occurred, please contact support.",
                     innerException: failedIngestionTrackingStorageException);
 
-            this.securityAuditBrokerMock.Setup(broker =>
+            ingestionTrackingServiceMock.Setup(service =>
                 service.BulkAddOrModifyBySplittingIntoBatchesAsync(It.IsAny<List<IngestionTracking>>(), It.IsAny<int>()))
                     .ThrowsAsync(sqlException);
 
@@ -66,7 +65,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.IngestionTrackings
             actualIngestionTrackingDependencyException.Should()
                 .BeEquivalentTo(expectedIngestionTrackingDependencyException);
 
-            this.securityAuditBrokerMock.Verify(broker =>
+            ingestionTrackingServiceMock.Verify(service =>
                 service.BulkAddOrModifyBySplittingIntoBatchesAsync(It.IsAny<List<IngestionTracking>>(), It.IsAny<int>()),
                     Times.Once);
 
@@ -75,10 +74,9 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.IngestionTrackings
                     expectedIngestionTrackingDependencyException))),
                         Times.Once);
 
+            this.securityAuditBrokerMock.VerifyNoOtherCalls();
             this.dateTimeBrokerMock.VerifyNoOtherCalls();
             this.storageBrokerMock.VerifyNoOtherCalls();
-            this.securityBrokerMock.VerifyNoOtherCalls();
-            this.securityAuditBrokerMock.VerifyNoOtherCalls();
             this.auditBrokerMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
         }
@@ -93,7 +91,6 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.IngestionTrackings
             Mock<IngestionTrackingService> ingestionTrackingServiceMock = new Mock<IngestionTrackingService>(
                 storageBrokerMock.Object,
                 dateTimeBrokerMock.Object,
-                securityBrokerMock.Object,
                 securityAuditBrokerMock.Object,
                 auditBrokerMock.Object,
                 loggingBrokerMock.Object)
@@ -117,7 +114,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.IngestionTrackings
                     message: "Ingestion tracking dependency validation occurred, please try again.",
                     innerException: invalidIngestionTrackingReferenceException);
 
-            this.securityAuditBrokerMock.Setup(broker =>
+            ingestionTrackingServiceMock.Setup(service =>
                 service.BulkAddOrModifyBySplittingIntoBatchesAsync(It.IsAny<List<IngestionTracking>>(), It.IsAny<int>()))
                     .ThrowsAsync(foreignKeyConstraintConflictException);
 
@@ -133,7 +130,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.IngestionTrackings
             actualIngestionTrackingDependencyValidationException.Should()
                 .BeEquivalentTo(expectedIngestionTrackingDependencyValidationException);
 
-            this.securityAuditBrokerMock.Verify(broker =>
+            ingestionTrackingServiceMock.Verify(service =>
                 service.BulkAddOrModifyBySplittingIntoBatchesAsync(It.IsAny<List<IngestionTracking>>(), It.IsAny<int>()),
                     Times.Once);
 
@@ -144,7 +141,6 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.IngestionTrackings
 
             this.dateTimeBrokerMock.VerifyNoOtherCalls();
             this.storageBrokerMock.VerifyNoOtherCalls();
-            this.securityBrokerMock.VerifyNoOtherCalls();
             this.securityAuditBrokerMock.VerifyNoOtherCalls();
             this.auditBrokerMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
@@ -160,7 +156,6 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.IngestionTrackings
             Mock<IngestionTrackingService> ingestionTrackingServiceMock = new Mock<IngestionTrackingService>(
                 storageBrokerMock.Object,
                 dateTimeBrokerMock.Object,
-                securityBrokerMock.Object,
                 securityAuditBrokerMock.Object,
                 auditBrokerMock.Object,
                 loggingBrokerMock.Object)
@@ -180,7 +175,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.IngestionTrackings
                     message: "Failed ingestion tracking storage error occurred, please contact support.",
                     innerException: failedIngestionTrackingStorageException);
 
-            this.securityAuditBrokerMock.Setup(broker =>
+            ingestionTrackingServiceMock.Setup(service =>
                 service.BulkAddOrModifyBySplittingIntoBatchesAsync(It.IsAny<List<IngestionTracking>>(), It.IsAny<int>()))
                     .ThrowsAsync(databaseUpdateException);
 
@@ -196,7 +191,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.IngestionTrackings
             actualIngestionTrackingDependencyException.Should()
                 .BeEquivalentTo(expectedIngestionTrackingDependencyException);
 
-            this.securityAuditBrokerMock.Verify(broker =>
+            ingestionTrackingServiceMock.Verify(service =>
                 service.BulkAddOrModifyBySplittingIntoBatchesAsync(It.IsAny<List<IngestionTracking>>(), It.IsAny<int>()),
                     Times.Once);
 
@@ -205,10 +200,9 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.IngestionTrackings
                     expectedIngestionTrackingDependencyException))),
                         Times.Once);
 
+            this.securityAuditBrokerMock.VerifyNoOtherCalls();
             this.dateTimeBrokerMock.VerifyNoOtherCalls();
             this.storageBrokerMock.VerifyNoOtherCalls();
-            this.securityBrokerMock.VerifyNoOtherCalls();
-            this.securityAuditBrokerMock.VerifyNoOtherCalls();
             this.auditBrokerMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
         }
@@ -223,7 +217,6 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.IngestionTrackings
             Mock<IngestionTrackingService> ingestionTrackingServiceMock = new Mock<IngestionTrackingService>(
                 storageBrokerMock.Object,
                 dateTimeBrokerMock.Object,
-                securityBrokerMock.Object,
                 securityAuditBrokerMock.Object,
                 auditBrokerMock.Object,
                 loggingBrokerMock.Object)
@@ -243,7 +236,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.IngestionTrackings
                     message: "Ingestion tracking dependency validation occurred, please try again.",
                     innerException: lockedIngestionTrackingException);
 
-            this.securityAuditBrokerMock.Setup(broker =>
+            ingestionTrackingServiceMock.Setup(service =>
                 service.BulkAddOrModifyBySplittingIntoBatchesAsync(It.IsAny<List<IngestionTracking>>(), It.IsAny<int>()))
                     .ThrowsAsync(databaseUpdateConcurrencyException);
 
@@ -259,7 +252,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.IngestionTrackings
             actualIngestionTrackingDependencyValidationException.Should()
                 .BeEquivalentTo(expectedIngestionTrackingDependencyValidationException);
 
-            this.securityAuditBrokerMock.Verify(broker =>
+            ingestionTrackingServiceMock.Verify(service =>
                 service.BulkAddOrModifyBySplittingIntoBatchesAsync(It.IsAny<List<IngestionTracking>>(), It.IsAny<int>()),
                     Times.Once);
 
@@ -268,10 +261,9 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.IngestionTrackings
                     expectedIngestionTrackingDependencyValidationException))),
                         Times.Once);
 
+            this.securityAuditBrokerMock.VerifyNoOtherCalls();
             this.dateTimeBrokerMock.VerifyNoOtherCalls();
             this.storageBrokerMock.VerifyNoOtherCalls();
-            this.securityBrokerMock.VerifyNoOtherCalls();
-            this.securityAuditBrokerMock.VerifyNoOtherCalls();
             this.auditBrokerMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
         }
@@ -286,7 +278,6 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.IngestionTrackings
             Mock<IngestionTrackingService> ingestionTrackingServiceMock = new Mock<IngestionTrackingService>(
                 storageBrokerMock.Object,
                 dateTimeBrokerMock.Object,
-                securityBrokerMock.Object,
                 securityAuditBrokerMock.Object,
                 auditBrokerMock.Object,
                 loggingBrokerMock.Object)
@@ -306,7 +297,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.IngestionTrackings
                     message: "Ingestion tracking service error occurred, please contact support.",
                     innerException: failedIngestionTrackingServiceException);
 
-            this.securityAuditBrokerMock.Setup(broker =>
+            ingestionTrackingServiceMock.Setup(service =>
                 service.BulkAddOrModifyBySplittingIntoBatchesAsync(It.IsAny<List<IngestionTracking>>(), It.IsAny<int>()))
                     .ThrowsAsync(serviceException);
 
@@ -322,7 +313,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.IngestionTrackings
             actualIngestionTrackingServiceException.Should()
                 .BeEquivalentTo(expectedIngestionTrackingServiceException);
 
-            this.securityAuditBrokerMock.Verify(broker =>
+            ingestionTrackingServiceMock.Verify(service =>
                 service.BulkAddOrModifyBySplittingIntoBatchesAsync(It.IsAny<List<IngestionTracking>>(), It.IsAny<int>()),
                     Times.Once);
 
@@ -333,7 +324,6 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.IngestionTrackings
 
             this.dateTimeBrokerMock.VerifyNoOtherCalls();
             this.storageBrokerMock.VerifyNoOtherCalls();
-            this.securityBrokerMock.VerifyNoOtherCalls();
             this.securityAuditBrokerMock.VerifyNoOtherCalls();
             this.auditBrokerMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();

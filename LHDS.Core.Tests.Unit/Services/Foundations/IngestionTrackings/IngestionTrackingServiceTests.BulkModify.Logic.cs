@@ -24,7 +24,6 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.IngestionTrackings
             Mock<IngestionTrackingService> ingestionTrackingServiceMock = new Mock<IngestionTrackingService>(
                 storageBrokerMock.Object,
                 dateTimeBrokerMock.Object,
-                securityBrokerMock.Object,
                 securityAuditBrokerMock.Object,
                 auditBrokerMock.Object,
                 loggingBrokerMock.Object)
@@ -32,7 +31,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.IngestionTrackings
                 CallBase = true
             };
 
-            this.securityAuditBrokerMock.Setup(broker =>
+            ingestionTrackingServiceMock.Setup(service =>
                 service.BulkAddOrModifyBySplittingIntoBatchesAsync(inputIngestionTrackingItems, 10000))
                     .Returns(ValueTask.CompletedTask);
 
@@ -41,14 +40,13 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.IngestionTrackings
                 .BulkModifyIngestionTrackingAsync(inputIngestionTrackingItems);
 
             // then
-            this.securityAuditBrokerMock.Verify(broker =>
+            ingestionTrackingServiceMock.Verify(service =>
                 service.BulkAddOrModifyBySplittingIntoBatchesAsync(inputIngestionTrackingItems, 10000),
                     Times.Exactly(1));
 
+            this.securityAuditBrokerMock.VerifyNoOtherCalls();
             this.dateTimeBrokerMock.VerifyNoOtherCalls();
             this.storageBrokerMock.VerifyNoOtherCalls();
-            this.securityBrokerMock.VerifyNoOtherCalls();
-            this.securityAuditBrokerMock.VerifyNoOtherCalls();
             this.auditBrokerMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
         }

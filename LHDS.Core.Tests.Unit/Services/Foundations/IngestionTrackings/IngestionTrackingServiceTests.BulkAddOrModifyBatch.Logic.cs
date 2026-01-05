@@ -58,7 +58,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.IngestionTrackings
                 var existingIngestionTrackingItems = batch.Where(address => existingIds.Contains(address.Id)).ToList();
                 var newIngestionTrackingItems = batch.Where(address => !existingIds.Contains(address.Id)).ToList();
 
-                this.securityAuditBrokerMock.Setup(broker =>
+                ingestionTrackingServiceMock.Verify(service =>
                     service.AssignAuditValuesAndValidateOnBulkAddAsync(newIngestionTrackingItems))
                         .ReturnsAsync(newIngestionTrackingItems);
 
@@ -66,7 +66,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.IngestionTrackings
                     broker.BulkInsertIngestionTrackingsAsync(newIngestionTrackingItems))
                         .Returns(ValueTask.CompletedTask);
 
-                this.securityAuditBrokerMock.Setup(broker =>
+                ingestionTrackingServiceMock.Verify(service =>
                     service.AssignAuditValuesAndValidateOnBulkModifyAsync(existingIngestionTrackingItems))
                         .ReturnsAsync(existingIngestionTrackingItems);
 
@@ -126,9 +126,9 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.IngestionTrackings
                     Times.Once);
 
             ingestionTrackingServiceMock.VerifyNoOtherCalls();
+            this.securityAuditBrokerMock.VerifyNoOtherCalls();
             this.dateTimeBrokerMock.VerifyNoOtherCalls();
             this.storageBrokerMock.VerifyNoOtherCalls();
-            this.securityAuditBrokerMock.VerifyNoOtherCalls();
             this.auditBrokerMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
         }

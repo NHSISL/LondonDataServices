@@ -67,10 +67,9 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.IngestionTrackings
                 broker.UpdateIngestionTrackingAsync(randomIngestionTracking),
                     Times.Never);
 
+            this.securityAuditBrokerMock.VerifyNoOtherCalls();
             this.dateTimeBrokerMock.VerifyNoOtherCalls();
             this.storageBrokerMock.VerifyNoOtherCalls();
-            this.securityBrokerMock.VerifyNoOtherCalls();
-            this.securityAuditBrokerMock.VerifyNoOtherCalls();
             this.auditBrokerMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
         }
@@ -128,10 +127,9 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.IngestionTrackings
                 broker.UpdateIngestionTrackingAsync(someIngestionTracking),
                     Times.Never);
 
+            this.securityAuditBrokerMock.VerifyNoOtherCalls();
             this.dateTimeBrokerMock.VerifyNoOtherCalls();
             this.storageBrokerMock.VerifyNoOtherCalls();
-            this.securityBrokerMock.VerifyNoOtherCalls();
-            this.securityAuditBrokerMock.VerifyNoOtherCalls();
             this.auditBrokerMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
         }
@@ -186,10 +184,9 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.IngestionTrackings
                 broker.UpdateIngestionTrackingAsync(randomIngestionTracking),
                     Times.Never);
 
+            this.securityAuditBrokerMock.VerifyNoOtherCalls();
             this.dateTimeBrokerMock.VerifyNoOtherCalls();
             this.storageBrokerMock.VerifyNoOtherCalls();
-            this.securityBrokerMock.VerifyNoOtherCalls();
-            this.securityAuditBrokerMock.VerifyNoOtherCalls();
             this.auditBrokerMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
         }
@@ -244,10 +241,9 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.IngestionTrackings
                 broker.UpdateIngestionTrackingAsync(randomIngestionTracking),
                     Times.Never);
 
+            this.securityAuditBrokerMock.VerifyNoOtherCalls();
             this.dateTimeBrokerMock.VerifyNoOtherCalls();
             this.storageBrokerMock.VerifyNoOtherCalls();
-            this.securityBrokerMock.VerifyNoOtherCalls();
-            this.securityAuditBrokerMock.VerifyNoOtherCalls();
             this.auditBrokerMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
         }
@@ -302,10 +298,9 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.IngestionTrackings
                 broker.UpdateIngestionTrackingAsync(randomIngestionTracking),
                     Times.Never);
 
+            this.securityAuditBrokerMock.VerifyNoOtherCalls();
             this.dateTimeBrokerMock.VerifyNoOtherCalls();
             this.storageBrokerMock.VerifyNoOtherCalls();
-            this.securityBrokerMock.VerifyNoOtherCalls();
-            this.securityAuditBrokerMock.VerifyNoOtherCalls();
             this.auditBrokerMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
         }

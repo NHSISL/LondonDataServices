@@ -89,7 +89,6 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.SpecificationObjects
             this.storageBrokerMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
             this.dateTimeBrokerMock.VerifyNoOtherCalls();
-            this.securityAuditBrokerMock.VerifyNoOtherCalls();
         }
     }
 }

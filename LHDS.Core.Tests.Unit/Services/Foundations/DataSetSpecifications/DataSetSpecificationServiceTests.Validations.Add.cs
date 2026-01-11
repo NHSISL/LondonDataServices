@@ -9,7 +9,6 @@ using LHDS.Core.Models.Brokers.Securities;
 using LHDS.Core.Models.Foundations.DataSetSpecifications;
 using LHDS.Core.Models.Foundations.DataSetSpecifications.Exceptions;
 using LHDS.Core.Services.Foundations.DataSetSpecifications;
-using Microsoft.Extensions.Azure;
 using Moq;
 using Xunit;
 

@@ -253,7 +253,7 @@ namespace LHDS.Core.Services.Foundations.ObjectColumns
                  Parameter: nameof(ObjectColumn.UpdatedDate)),
 
                 (Rule: IsNotSame(
-                    auditUserId.ToString(),
+                    auditUserId,
                     objectColumn.UpdatedBy,
                     nameof(ObjectColumn.UpdatedBy)),
                  Parameter: nameof(ObjectColumn.UpdatedBy))

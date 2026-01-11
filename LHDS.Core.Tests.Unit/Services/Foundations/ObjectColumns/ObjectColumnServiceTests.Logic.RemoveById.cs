@@ -24,9 +24,9 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.ObjectColumns
             ObjectColumn randomObjectColumn = CreateRandomObjectColumn(randomDateTimeOffset, randomUserId);
             Guid inputObjectColumnId = randomObjectColumn.Id;
             ObjectColumn storageObjectColumn = randomObjectColumn;
-            ObjectColumn ObjectColumWithDeleteAuditApplied = storageObjectColumn.DeepClone();
-            ObjectColumWithDeleteAuditApplied.UpdatedBy = randomUserId.ToString();
-            ObjectColumWithDeleteAuditApplied.UpdatedDate = randomDateTimeOffset;
+            ObjectColumn ObjectColumnWithDeleteAuditApplied = storageObjectColumn.DeepClone();
+            ObjectColumnWithDeleteAuditApplied.UpdatedBy = randomUserId.ToString();
+            ObjectColumnWithDeleteAuditApplied.UpdatedDate = randomDateTimeOffset;
             ObjectColumn updatedObjectColumn = storageObjectColumn;
             ObjectColumn deletedObjectColumn = updatedObjectColumn;
             ObjectColumn expectedObjectColumn = deletedObjectColumn.DeepClone();
@@ -37,7 +37,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.ObjectColumns
 
             this.securityAuditBrokerMock.Setup(broker =>
                 broker.ApplyRemoveAuditValuesAsync(storageObjectColumn))
-                    .ReturnsAsync(ObjectColumWithDeleteAuditApplied);
+                    .ReturnsAsync(ObjectColumnWithDeleteAuditApplied);
 
             this.dateTimeBrokerMock.Setup(broker =>
                 broker.GetCurrentDateTimeOffsetAsync())
@@ -48,7 +48,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.ObjectColumns
                     .ReturnsAsync(randomUserId);
 
             this.storageBrokerMock.Setup(broker =>
-                broker.UpdateObjectColumnAsync(ObjectColumWithDeleteAuditApplied))
+                broker.UpdateObjectColumnAsync(ObjectColumnWithDeleteAuditApplied))
                     .ReturnsAsync(updatedObjectColumn);
 
             this.storageBrokerMock.Setup(broker =>
@@ -75,7 +75,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.ObjectColumns
                     Times.Once);
 
             this.storageBrokerMock.Verify(broker =>
-                broker.UpdateObjectColumnAsync(ObjectColumWithDeleteAuditApplied),
+                broker.UpdateObjectColumnAsync(ObjectColumnWithDeleteAuditApplied),
                     Times.Once);
 
             this.storageBrokerMock.Verify(broker =>

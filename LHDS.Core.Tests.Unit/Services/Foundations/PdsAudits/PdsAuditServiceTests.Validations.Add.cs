@@ -246,7 +246,6 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.PdsAudits
                 broker.InsertPdsAuditAsync(It.IsAny<PdsAudit>()),
                     Times.Never);
 
-            
             this.dateTimeBrokerMock.VerifyNoOtherCalls();
             this.securityAuditBrokerMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
@@ -329,7 +328,6 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.PdsAudits
                 broker.InsertPdsAuditAsync(It.IsAny<PdsAudit>()),
                     Times.Never);
 
-            
             this.dateTimeBrokerMock.VerifyNoOtherCalls();
             this.securityAuditBrokerMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
@@ -412,7 +410,6 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.PdsAudits
                 broker.InsertPdsAuditAsync(It.IsAny<PdsAudit>()),
                     Times.Never);
 
-            
             this.dateTimeBrokerMock.VerifyNoOtherCalls();
             this.securityAuditBrokerMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
@@ -491,7 +488,6 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.PdsAudits
                 broker.InsertPdsAuditAsync(It.IsAny<PdsAudit>()),
                     Times.Never);
 
-            
             this.dateTimeBrokerMock.VerifyNoOtherCalls();
             this.securityAuditBrokerMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();

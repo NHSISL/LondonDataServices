@@ -212,8 +212,8 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.SubscriberAgreements
                     message: "SubscriberAgreement dependency error occurred, please contact support.",
                     innerException: failedSubscriberAgreementStorageException);
 
-            this.securityAuditBrokerMock.Setup(Brokers =>
-                Brokers.ApplyAddAuditValuesAsync(It.IsAny<SubscriberAgreement>()))
+            this.securityAuditBrokerMock.Setup(broker =>
+                broker.ApplyAddAuditValuesAsync(It.IsAny<SubscriberAgreement>()))
                     .ThrowsAsync(databaseUpdateException);
 
             // when

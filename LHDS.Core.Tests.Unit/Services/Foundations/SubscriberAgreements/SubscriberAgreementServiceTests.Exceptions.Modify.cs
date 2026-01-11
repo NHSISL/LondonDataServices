@@ -98,8 +98,8 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.SubscriberAgreements
                     message: "SubscriberAgreement dependency validation occurred, please try again.",
                     innerException: invalidSubscriberAgreementReferenceException);
 
-            this.securityAuditBrokerMock.Setup(Brokers =>
-                Brokers.ApplyModifyAuditValuesAsync(someSubscriberAgreement))
+            this.securityAuditBrokerMock.Setup(broker =>
+                broker.ApplyModifyAuditValuesAsync(someSubscriberAgreement))
                     .ThrowsAsync(foreignKeyConstraintConflictException);
 
             // when

@@ -4,7 +4,6 @@
 
 using System;
 using System.Threading.Tasks;
-using LHDS.Core.Models.Brokers.Securities;
 using LHDS.Core.Models.Foundations.OptOuts;
 using LHDS.Core.Models.Foundations.OptOuts.Exceptions;
 
@@ -14,7 +13,8 @@ namespace LHDS.Core.Services.Foundations.OptOuts
     {
         private async ValueTask ValidateOptOutOnAddAsync(OptOut optOut)
         {
-            EntraUser currentUser = await this.securityBroker.GetCurrentUserAsync();
+            ValidateOptOutIsNotNull(optOut);
+            string currentUserId = await this.securityAuditBroker.GetUserIdAsync();
 
             Validate(
                 (Rule: IsInvalid(optOut.Id), Parameter: nameof(OptOut.Id)),
@@ -29,7 +29,7 @@ namespace LHDS.Core.Services.Foundations.OptOuts
                 (Rule: IsInvalidNhsNumber(optOut.NhsNumber), Parameter: nameof(OptOut.NhsNumber)),
 
                 (Rule: IsNotSame(
-                    first: currentUser.EntraUserId,
+                    first: currentUserId,
                     second: optOut.CreatedBy),
                 Parameter: nameof(OptOut.CreatedBy)),
 
@@ -56,7 +56,8 @@ namespace LHDS.Core.Services.Foundations.OptOuts
 
         private async ValueTask ValidateOptOutOnModifyAsync(OptOut optOut)
         {
-            EntraUser currentUser = await this.securityBroker.GetCurrentUserAsync();
+            ValidateOptOutIsNotNull(optOut);
+            string currentUserId = await this.securityAuditBroker.GetUserIdAsync();
 
             Validate(
                 (Rule: IsInvalid(optOut.Id), Parameter: nameof(OptOut.Id)),
@@ -71,7 +72,7 @@ namespace LHDS.Core.Services.Foundations.OptOuts
                 (Rule: IsInvalidNhsNumber(optOut.NhsNumber), Parameter: nameof(OptOut.NhsNumber)),
 
                 (Rule: IsNotSame(
-                    first: currentUser.EntraUserId,
+                    first: currentUserId,
                     second: optOut.UpdatedBy),
                 Parameter: nameof(OptOut.UpdatedBy)),
 
@@ -136,7 +137,7 @@ namespace LHDS.Core.Services.Foundations.OptOuts
             OptOut optOut,
             OptOut maybeOptOut)
         {
-            EntraUser auditUser = await this.securityBroker.GetCurrentUserAsync();
+            string auditUserId = await this.securityAuditBroker.GetUserIdAsync();
 
             Validate(
                 (Rule: IsNotSame(
@@ -158,7 +159,7 @@ namespace LHDS.Core.Services.Foundations.OptOuts
                  Parameter: nameof(OptOut.UpdatedDate)),
 
                 (Rule: IsNotSame(
-                    auditUser.EntraUserId.ToString(),
+                    auditUserId,
                     optOut.UpdatedBy,
                     nameof(OptOut.UpdatedBy)),
                  Parameter: nameof(OptOut.UpdatedBy))

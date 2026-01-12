@@ -18,7 +18,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.TerminologyArtifacts
         [Fact]
         public async Task ShouldRemoveTerminologyArtifactByIdAsync()
         {
-            //Given
+            // given
             DateTimeOffset randomDateTimeOffset = GetRandomDateTimeOffset();
             string randomUserId = GetRandomStringWithLengthOf(50);
 

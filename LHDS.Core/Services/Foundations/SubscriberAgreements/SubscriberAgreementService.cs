@@ -74,7 +74,7 @@ namespace LHDS.Core.Services.Foundations.SubscriberAgreements
                 ValidateStorageSubscriberAgreement(maybeSubscriberAgreement, subscriberAgreement.Id);
 
                 SubscriberAgreement SubscriberAgreementWithModifyAuditAppliedEnsured =
-                   await EnsureCreatedAuditPropertiesIsSameAsStorageAsync(
+                   await this.securityAuditBroker.EnsureAddAuditValuesRemainsUnchangedOnModifyAsync(
                        subscriberAgreement,
                        maybeSubscriberAgreement);
 
@@ -97,15 +97,5 @@ namespace LHDS.Core.Services.Foundations.SubscriberAgreements
 
                 return await this.storageBroker.DeleteSubscriberAgreementAsync(maybeSubscriberAgreement);
             });
-
-        virtual internal async ValueTask<SubscriberAgreement> EnsureCreatedAuditPropertiesIsSameAsStorageAsync(
-            SubscriberAgreement subscriberAgreement,
-            SubscriberAgreement maybeSubscriberAgreement)
-        {
-            subscriberAgreement.CreatedDate = maybeSubscriberAgreement.CreatedDate;
-            subscriberAgreement.CreatedBy = maybeSubscriberAgreement.CreatedBy;
-
-            return subscriberAgreement;
-        }
     }
 }

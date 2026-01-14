@@ -723,15 +723,6 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.SubscriberAgreements
                     message: "SubscriberAgreement validation errors occurred, please try again.",
                     innerException: invalidSubscriberAgreementException);
 
-            var subscriberAgreementServiceMock = new Mock<SubscriberAgreementService>(
-                storageBrokerMock.Object,
-                dateTimeBrokerMock.Object,
-                securityAuditBrokerMock.Object,
-                loggingBrokerMock.Object)
-            {
-                CallBase = true
-            };
-
             this.securityAuditBrokerMock.Setup(broker =>
                 broker.ApplyModifyAuditValuesAsync(invalidSubscriberAgreement))
                     .ReturnsAsync(invalidSubscriberAgreement);
@@ -747,6 +738,12 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.SubscriberAgreements
             this.storageBrokerMock.Setup(broker =>
                 broker.SelectSubscriberAgreementByIdAsync(invalidSubscriberAgreement.Id))
                     .ReturnsAsync(storageSubscriberAgreement);
+
+            this.securityAuditBrokerMock.Setup(broker =>
+                broker.EnsureAddAuditValuesRemainsUnchangedOnModifyAsync(
+                    invalidSubscriberAgreement,
+                    storageSubscriberAgreement))
+                        .ReturnsAsync(invalidSubscriberAgreement);
 
             // when
             ValueTask<SubscriberAgreement> modifySubscriberAgreementTask =
@@ -776,6 +773,12 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.SubscriberAgreements
             this.storageBrokerMock.Verify(broker =>
                 broker.SelectSubscriberAgreementByIdAsync(invalidSubscriberAgreement.Id),
                     Times.Once);
+
+            this.securityAuditBrokerMock.Verify(broker =>
+                broker.EnsureAddAuditValuesRemainsUnchangedOnModifyAsync(
+                    invalidSubscriberAgreement,
+                    storageSubscriberAgreement),
+                        Times.Once());
 
             this.securityAuditBrokerMock.VerifyNoOtherCalls();
             this.dateTimeBrokerMock.VerifyNoOtherCalls();

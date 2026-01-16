@@ -48,6 +48,12 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.PdsAudits
                 broker.SelectPdsAuditByIdAsync(pdsAuditId))
                     .ReturnsAsync(storagePdsAudit);
 
+            this.securityAuditBrokerMock.Setup(broker =>
+                broker.EnsureAddAuditValuesRemainsUnchangedOnModifyAsync(
+                    inputPdsAudit,
+                    storagePdsAudit))
+                        .ReturnsAsync(inputPdsAudit);
+
             this.storageBrokerMock.Setup(broker =>
                 broker.UpdatePdsAuditAsync(inputPdsAudit))
                     .ReturnsAsync(updatedPdsAudit);
@@ -74,6 +80,12 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.PdsAudits
             this.storageBrokerMock.Verify(broker =>
                 broker.SelectPdsAuditByIdAsync(inputPdsAudit.Id),
                     Times.Once);
+
+            this.securityAuditBrokerMock.Verify(broker =>
+                broker.EnsureAddAuditValuesRemainsUnchangedOnModifyAsync(
+                    inputPdsAudit,
+                    storagePdsAudit),
+                        Times.Once);
 
             this.storageBrokerMock.Verify(broker =>
                 broker.UpdatePdsAuditAsync(inputPdsAudit),

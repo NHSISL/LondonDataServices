@@ -545,6 +545,12 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.PdsAudits
                 broker.SelectPdsAuditByIdAsync(invalidPdsAudit.Id))
                     .ReturnsAsync(storagePdsAudit);
 
+            this.securityAuditBrokerMock.Setup(broker =>
+                broker.EnsureAddAuditValuesRemainsUnchangedOnModifyAsync(
+                    invalidPdsAudit,
+                    storagePdsAudit))
+                        .ReturnsAsync(invalidPdsAudit);
+
             // when
             ValueTask<PdsAudit> modifyPdsAuditTask =
                 pdsAuditService.ModifyPdsAuditAsync(invalidPdsAudit);
@@ -572,6 +578,12 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.PdsAudits
             this.storageBrokerMock.Verify(broker =>
                 broker.SelectPdsAuditByIdAsync(invalidPdsAudit.Id),
                     Times.Once);
+
+            this.securityAuditBrokerMock.Verify(broker =>
+                broker.EnsureAddAuditValuesRemainsUnchangedOnModifyAsync(
+                    invalidPdsAudit,
+                    storagePdsAudit),
+                        Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>
                broker.LogErrorAsync(It.Is(SameExceptionAs(
@@ -628,6 +640,12 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.PdsAudits
                 broker.SelectPdsAuditByIdAsync(invalidPdsAudit.Id))
                     .ReturnsAsync(storagePdsAudit);
 
+            this.securityAuditBrokerMock.Setup(broker =>
+                broker.EnsureAddAuditValuesRemainsUnchangedOnModifyAsync(
+                    invalidPdsAudit,
+                    storagePdsAudit))
+                        .ReturnsAsync(invalidPdsAudit);
+
             // when
             ValueTask<PdsAudit> modifyPdsAuditTask =
                 pdsAuditService.ModifyPdsAuditAsync(invalidPdsAudit);
@@ -654,6 +672,12 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.PdsAudits
             this.storageBrokerMock.Verify(broker =>
                 broker.SelectPdsAuditByIdAsync(invalidPdsAudit.Id),
                     Times.Once);
+
+            this.securityAuditBrokerMock.Verify(broker =>
+                broker.EnsureAddAuditValuesRemainsUnchangedOnModifyAsync(
+                    invalidPdsAudit,
+                    storagePdsAudit),
+                        Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>
                broker.LogErrorAsync(It.Is(SameExceptionAs(
@@ -709,6 +733,12 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.PdsAudits
                 broker.SelectPdsAuditByIdAsync(invalidPdsAudit.Id))
                     .ReturnsAsync(storagePdsAudit);
 
+            this.securityAuditBrokerMock.Setup(broker =>
+                broker.EnsureAddAuditValuesRemainsUnchangedOnModifyAsync(
+                    invalidPdsAudit,
+                    storagePdsAudit))
+                        .ReturnsAsync(invalidPdsAudit);
+
             // when
             ValueTask<PdsAudit> modifyPdsAuditTask =
                 pdsAuditService.ModifyPdsAuditAsync(invalidPdsAudit);
@@ -729,14 +759,20 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.PdsAudits
                 broker.GetUserIdAsync(),
                     Times.Once);
 
+            this.storageBrokerMock.Verify(broker =>
+                broker.SelectPdsAuditByIdAsync(invalidPdsAudit.Id),
+                    Times.Once);
+
+            this.securityAuditBrokerMock.Verify(broker =>
+                broker.EnsureAddAuditValuesRemainsUnchangedOnModifyAsync(
+                    invalidPdsAudit,
+                    storagePdsAudit),
+                        Times.Once);
+
             this.loggingBrokerMock.Verify(broker =>
                 broker.LogErrorAsync(It.Is(SameExceptionAs(
                     expectedPdsAuditValidationException))),
                         Times.Once);
-
-            this.storageBrokerMock.Verify(broker =>
-                broker.SelectPdsAuditByIdAsync(invalidPdsAudit.Id),
-                    Times.Once);
 
             this.securityAuditBrokerMock.VerifyNoOtherCalls();
             this.dateTimeBrokerMock.VerifyNoOtherCalls();

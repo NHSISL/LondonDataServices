@@ -71,7 +71,16 @@ namespace LHDS.Core.Services.Foundations.PdsAudits
                     await this.storageBroker.SelectPdsAuditByIdAsync(pdsAudit.Id);
 
                 ValidateStoragePdsAudit(maybePdsAudit, pdsAudit.Id);
-                ValidateAgainstStoragePdsAuditOnModify(inputPdsAudit: pdsAudit, storagePdsAudit: maybePdsAudit);
+
+                PdsAudit pdsAuditWithModifyAuditValuesEnsured =
+                    await this.securityAuditBroker.
+                        EnsureAddAuditValuesRemainsUnchangedOnModifyAsync(
+                            pdsAudit,
+                            maybePdsAudit);
+
+                ValidateAgainstStoragePdsAuditOnModify(
+                    inputPdsAudit: pdsAuditWithModifyAuditValuesEnsured,
+                    storagePdsAudit: maybePdsAudit);
 
                 return await this.storageBroker.UpdatePdsAuditAsync(pdsAudit);
             });

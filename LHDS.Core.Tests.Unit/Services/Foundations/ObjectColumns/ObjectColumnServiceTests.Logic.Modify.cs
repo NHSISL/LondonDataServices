@@ -47,6 +47,12 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.ObjectColumns
                 broker.SelectObjectColumnByIdAsync(objectColumnId))
                     .ReturnsAsync(storageObjectColumn);
 
+            this.securityAuditBrokerMock.Setup(broker =>
+                broker.EnsureAddAuditValuesRemainsUnchangedOnModifyAsync(
+                    inputObjectColumn,
+                    storageObjectColumn))
+                        .ReturnsAsync(inputObjectColumn);
+
             this.storageBrokerMock.Setup(broker =>
                 broker.UpdateObjectColumnAsync(inputObjectColumn))
                     .ReturnsAsync(updatedObjectColumn);
@@ -73,6 +79,12 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.ObjectColumns
             this.storageBrokerMock.Verify(broker =>
                 broker.SelectObjectColumnByIdAsync(inputObjectColumn.Id),
                     Times.Once);
+
+            this.securityAuditBrokerMock.Verify(broker =>
+                broker.EnsureAddAuditValuesRemainsUnchangedOnModifyAsync(
+                    inputObjectColumn,
+                    storageObjectColumn),
+                        Times.Once);
 
             this.storageBrokerMock.Verify(broker =>
                 broker.UpdateObjectColumnAsync(inputObjectColumn),

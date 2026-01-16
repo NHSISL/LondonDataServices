@@ -10,6 +10,7 @@ using LHDS.Core.Brokers.Loggings;
 using LHDS.Core.Brokers.Securities;
 using LHDS.Core.Brokers.Storages.Sql;
 using LHDS.Core.Models.Foundations.ObjectColumns;
+using LHDS.Core.Models.Foundations.SubscriberAgreements;
 
 namespace LHDS.Core.Services.Foundations.ObjectColumns
 {
@@ -72,8 +73,13 @@ namespace LHDS.Core.Services.Foundations.ObjectColumns
 
                 ValidateStorageObjectColumn(maybeObjectColumn, objectColumn.Id);
 
+                ObjectColumn objectColumnWithModifyAuditAppliedEnsured =
+                   await this.securityAuditBroker.EnsureAddAuditValuesRemainsUnchangedOnModifyAsync(
+                       objectColumn,
+                       maybeObjectColumn);
+
                 ValidateAgainstStorageObjectColumnOnModify(
-                    inputObjectColumn: objectColumn,
+                    inputObjectColumn: objectColumnWithModifyAuditAppliedEnsured,
                     storageObjectColumn: maybeObjectColumn);
 
                 return await this.storageBroker.UpdateObjectColumnAsync(objectColumn);

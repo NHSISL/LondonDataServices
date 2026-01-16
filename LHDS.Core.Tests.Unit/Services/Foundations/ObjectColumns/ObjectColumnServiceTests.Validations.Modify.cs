@@ -601,6 +601,12 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.ObjectColumns
                 broker.SelectObjectColumnByIdAsync(invalidObjectColumn.Id))
                     .ReturnsAsync(storageObjectColumn);
 
+            this.securityAuditBrokerMock.Setup(broker =>
+                broker.EnsureAddAuditValuesRemainsUnchangedOnModifyAsync(
+                    invalidObjectColumn,
+                    storageObjectColumn))
+                        .ReturnsAsync(invalidObjectColumn);
+
             // when
             ValueTask<ObjectColumn> modifyObjectColumnTask =
                 objectColumnService.ModifyObjectColumnAsync(invalidObjectColumn);
@@ -628,6 +634,12 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.ObjectColumns
             this.storageBrokerMock.Verify(broker =>
                 broker.SelectObjectColumnByIdAsync(invalidObjectColumn.Id),
                     Times.Once);
+
+            this.securityAuditBrokerMock.Verify(broker =>
+                broker.EnsureAddAuditValuesRemainsUnchangedOnModifyAsync(
+                    invalidObjectColumn,
+                    storageObjectColumn),
+                        Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>
                broker.LogErrorAsync(It.Is(SameExceptionAs(
@@ -684,6 +696,12 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.ObjectColumns
                 broker.SelectObjectColumnByIdAsync(invalidObjectColumn.Id))
                     .ReturnsAsync(storageObjectColumn);
 
+            this.securityAuditBrokerMock.Setup(broker =>
+                broker.EnsureAddAuditValuesRemainsUnchangedOnModifyAsync(
+                    invalidObjectColumn,
+                    storageObjectColumn))
+                        .ReturnsAsync(invalidObjectColumn);
+
             // when
             ValueTask<ObjectColumn> modifyObjectColumnTask =
                 objectColumnService.ModifyObjectColumnAsync(invalidObjectColumn);
@@ -710,6 +728,12 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.ObjectColumns
             this.storageBrokerMock.Verify(broker =>
                 broker.SelectObjectColumnByIdAsync(invalidObjectColumn.Id),
                     Times.Once);
+
+            this.securityAuditBrokerMock.Verify(broker =>
+                broker.EnsureAddAuditValuesRemainsUnchangedOnModifyAsync(
+                    invalidObjectColumn,
+                    storageObjectColumn),
+                        Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>
                broker.LogErrorAsync(It.Is(SameExceptionAs(
@@ -765,6 +789,12 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.ObjectColumns
                 broker.SelectObjectColumnByIdAsync(invalidObjectColumn.Id))
                     .ReturnsAsync(storageObjectColumn);
 
+            this.securityAuditBrokerMock.Setup(broker =>
+                broker.EnsureAddAuditValuesRemainsUnchangedOnModifyAsync(
+                    invalidObjectColumn,
+                    storageObjectColumn))
+                        .ReturnsAsync(invalidObjectColumn);
+
             // when
             ValueTask <ObjectColumn> modifyObjectColumnTask =
                 objectColumnService.ModifyObjectColumnAsync(invalidObjectColumn);
@@ -785,14 +815,20 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.ObjectColumns
                 broker.GetUserIdAsync(),
                     Times.Once);
 
+            this.storageBrokerMock.Verify(broker =>
+                broker.SelectObjectColumnByIdAsync(invalidObjectColumn.Id),
+                    Times.Once);
+
+            this.securityAuditBrokerMock.Verify(broker =>
+                broker.EnsureAddAuditValuesRemainsUnchangedOnModifyAsync(
+                    invalidObjectColumn,
+                    storageObjectColumn),
+                        Times.Once);
+
             this.loggingBrokerMock.Verify(broker =>
                 broker.LogErrorAsync(It.Is(SameExceptionAs(
                     expectedObjectColumnValidationException))),
                         Times.Once);
-
-            this.storageBrokerMock.Verify(broker =>
-                broker.SelectObjectColumnByIdAsync(invalidObjectColumn.Id),
-                    Times.Once);
 
             this.securityAuditBrokerMock.VerifyNoOtherCalls();
             this.dateTimeBrokerMock.VerifyNoOtherCalls();

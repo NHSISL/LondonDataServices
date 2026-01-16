@@ -558,6 +558,12 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.SpecificationObjects
                 broker.SelectSpecificationObjectByIdAsync(invalidSpecificationObject.Id))
                 .ReturnsAsync(storageSpecificationObject);
 
+            this.securityAuditBrokerMock.Setup(broker =>
+                broker.EnsureAddAuditValuesRemainsUnchangedOnModifyAsync(
+                    invalidSpecificationObject,
+                    storageSpecificationObject))
+                        .ReturnsAsync(invalidSpecificationObject);
+
             // when
             ValueTask<SpecificationObject> modifySpecificationObjectTask =
                 specificationObjectService.ModifySpecificationObjectAsync(invalidSpecificationObject);
@@ -585,6 +591,12 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.SpecificationObjects
             this.storageBrokerMock.Verify(broker =>
                 broker.SelectSpecificationObjectByIdAsync(invalidSpecificationObject.Id),
                     Times.Once);
+
+            this.securityAuditBrokerMock.Verify(broker =>
+                broker.EnsureAddAuditValuesRemainsUnchangedOnModifyAsync(
+                    invalidSpecificationObject,
+                    storageSpecificationObject),
+                        Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>
                broker.LogErrorAsync(It.Is(SameExceptionAs(
@@ -641,6 +653,12 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.SpecificationObjects
                 broker.SelectSpecificationObjectByIdAsync(invalidSpecificationObject.Id))
                 .ReturnsAsync(storageSpecificationObject);
 
+            this.securityAuditBrokerMock.Setup(broker =>
+                broker.EnsureAddAuditValuesRemainsUnchangedOnModifyAsync(
+                    invalidSpecificationObject,
+                    storageSpecificationObject))
+                        .ReturnsAsync(invalidSpecificationObject);
+
             this.dateTimeBrokerMock.Setup(broker =>
                 broker.GetCurrentDateTimeOffsetAsync())
                 .ReturnsAsync(randomDateTimeOffset);
@@ -671,6 +689,12 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.SpecificationObjects
             this.storageBrokerMock.Verify(broker =>
                 broker.SelectSpecificationObjectByIdAsync(invalidSpecificationObject.Id),
                     Times.Once);
+
+            this.securityAuditBrokerMock.Verify(broker =>
+                broker.EnsureAddAuditValuesRemainsUnchangedOnModifyAsync(
+                    invalidSpecificationObject,
+                    storageSpecificationObject),
+                        Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>
                broker.LogErrorAsync(It.Is(SameExceptionAs(
@@ -725,6 +749,12 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.SpecificationObjects
                 broker.SelectSpecificationObjectByIdAsync(invalidSpecificationObject.Id))
                 .ReturnsAsync(storageSpecificationObject);
 
+            this.securityAuditBrokerMock.Setup(broker =>
+                broker.EnsureAddAuditValuesRemainsUnchangedOnModifyAsync(
+                    invalidSpecificationObject,
+                    storageSpecificationObject))
+                        .ReturnsAsync(invalidSpecificationObject);
+
             // when
             ValueTask<SpecificationObject> modifySpecificationObjectTask =
                 specificationObjectService.ModifySpecificationObjectAsync(invalidSpecificationObject);
@@ -753,6 +783,12 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.SpecificationObjects
             this.storageBrokerMock.Verify(broker =>
                 broker.SelectSpecificationObjectByIdAsync(invalidSpecificationObject.Id),
                     Times.Once);
+
+            this.securityAuditBrokerMock.Verify(broker =>
+                broker.EnsureAddAuditValuesRemainsUnchangedOnModifyAsync(
+                    invalidSpecificationObject,
+                    storageSpecificationObject),
+                        Times.Once);
 
             this.securityAuditBrokerMock.VerifyNoOtherCalls();
             this.dateTimeBrokerMock.VerifyNoOtherCalls();

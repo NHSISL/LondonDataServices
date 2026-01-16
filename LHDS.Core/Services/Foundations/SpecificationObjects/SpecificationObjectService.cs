@@ -72,8 +72,14 @@ namespace LHDS.Core.Services.Foundations.SpecificationObjects
 
                 ValidateStorageSpecificationObject(maybeSpecificationObject, specificationObject.Id);
 
+                SpecificationObject specificationObjectWithModifyAuditValuesEnsured =
+                await this.securityAuditBroker.
+                    EnsureAddAuditValuesRemainsUnchangedOnModifyAsync(
+                        specificationObject,
+                        maybeSpecificationObject);
+
                 ValidateAgainstStorageSpecificationObjectOnModify(
-                    inputSpecificationObject: specificationObject, 
+                    inputSpecificationObject: specificationObjectWithModifyAuditValuesEnsured, 
                     storageSpecificationObject: maybeSpecificationObject);
 
                 return await storageBroker.UpdateSpecificationObjectAsync(specificationObject);

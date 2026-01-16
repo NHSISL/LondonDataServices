@@ -48,6 +48,12 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.SpecificationObjects
                 broker.SelectSpecificationObjectByIdAsync(specificationObjectId))
                     .ReturnsAsync(storageSpecificationObject);
 
+            this.securityAuditBrokerMock.Setup(broker =>
+                broker.EnsureAddAuditValuesRemainsUnchangedOnModifyAsync(
+                    inputSpecificationObject,
+                    storageSpecificationObject))
+                        .ReturnsAsync(inputSpecificationObject);
+
             this.storageBrokerMock.Setup(broker =>
                 broker.UpdateSpecificationObjectAsync(inputSpecificationObject))
                     .ReturnsAsync(updatedSpecificationObject);
@@ -74,6 +80,12 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.SpecificationObjects
             this.storageBrokerMock.Verify(broker =>
                 broker.SelectSpecificationObjectByIdAsync(inputSpecificationObject.Id),
                     Times.Once);
+
+            this.securityAuditBrokerMock.Verify(broker =>
+                broker.EnsureAddAuditValuesRemainsUnchangedOnModifyAsync(
+                    inputSpecificationObject,
+                    storageSpecificationObject),
+                        Times.Once);
 
             this.storageBrokerMock.Verify(broker =>
                 broker.UpdateSpecificationObjectAsync(inputSpecificationObject),

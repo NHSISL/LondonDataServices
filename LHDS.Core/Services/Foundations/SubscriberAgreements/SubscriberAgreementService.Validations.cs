@@ -15,7 +15,8 @@ namespace LHDS.Core.Services.Foundations.SubscriberAgreements
     {
         private async ValueTask ValidateSubscriberAgreementOnAddAsync(SubscriberAgreement subscriberAgreement)
         {
-            EntraUser currentUser = await this.securityBroker.GetCurrentUserAsync();
+            ValidateSubscriberAgreementIsNotNull(subscriberAgreement);
+            string currentUserId = await this.securityAuditBroker.GetUserIdAsync();
 
             Validate(
                 createException: () => new InvalidSubscriberAgreementException(
@@ -48,7 +49,7 @@ namespace LHDS.Core.Services.Foundations.SubscriberAgreements
                 Parameter: nameof(SubscriberAgreement.UpdatedDate)),
 
                  (Rule: IsNotSame(
-                    first: currentUser.EntraUserId,
+                    first: currentUserId,
                     second: subscriberAgreement.CreatedBy),
                 Parameter: nameof(SubscriberAgreement.CreatedBy)),
 
@@ -64,7 +65,8 @@ namespace LHDS.Core.Services.Foundations.SubscriberAgreements
 
         private async ValueTask ValidateSubscriberAgreementOnModifyAsync(SubscriberAgreement subscriberAgreement)
         {
-            EntraUser currentUser = await this.securityBroker.GetCurrentUserAsync();
+            ValidateSubscriberAgreementIsNotNull(subscriberAgreement);
+            string currentUserId = await this.securityAuditBroker.GetUserIdAsync();
 
             Validate(
                 createException: () => new InvalidSubscriberAgreementException(
@@ -91,7 +93,7 @@ namespace LHDS.Core.Services.Foundations.SubscriberAgreements
                     Parameter: nameof(SubscriberAgreement.UpdatedBy)),
 
                 (Rule: IsNotSame(
-                    first: currentUser.EntraUserId,
+                    first: currentUserId,
                     second: subscriberAgreement.UpdatedBy),
                 Parameter: nameof(SubscriberAgreement.UpdatedBy)),
 

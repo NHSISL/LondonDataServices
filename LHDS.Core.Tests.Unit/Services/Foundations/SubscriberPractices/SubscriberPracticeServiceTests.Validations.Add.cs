@@ -9,7 +9,6 @@ using LHDS.Core.Models.Brokers.Securities;
 using LHDS.Core.Models.Foundations.SubscriberPractices;
 using LHDS.Core.Models.Foundations.SubscriberPractices.Exceptions;
 using LHDS.Core.Services.Foundations.SubscriberPractices;
-using Microsoft.Extensions.Azure;
 using Moq;
 using Xunit;
 

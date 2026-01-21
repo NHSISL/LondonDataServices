@@ -22,10 +22,10 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.DataSetSpecifications
         {
             // given
             DateTimeOffset randomDateTimeOffset = GetRandomDateTimeOffset();
-            EntraUser randomEntraUser = CreateRandomEntraUser();
+            string randomEntraUserId = GetRandomStringWithLengthOf(50);
 
             DataSetSpecification randomDataSetSpecification =
-                CreateRandomDataSetSpecification(randomDateTimeOffset, randomEntraUser.EntraUserId);
+                CreateRandomDataSetSpecification(randomDateTimeOffset, randomEntraUserId);
 
             SqlException sqlException = GetSqlException();
 
@@ -43,9 +43,9 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.DataSetSpecifications
                 broker.SelectDataSetSpecificationByIdAsync(randomDataSetSpecification.Id))
                     .ThrowsAsync(sqlException);
 
-            this.securityBrokerMock.Setup(broker =>
-                broker.GetCurrentUserAsync())
-                    .ReturnsAsync(randomEntraUser);
+            this.securityAuditBrokerMock.Setup(broker =>
+                broker.GetUserIdAsync())
+                    .ReturnsAsync(randomEntraUserId);
 
             // when
             ValueTask<DataSetSpecification> addDataSetSpecificationTask =
@@ -77,7 +77,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.DataSetSpecifications
                     Times.Never);
 
             this.dateTimeBrokerMock.VerifyNoOtherCalls();
-            this.securityBrokerMock.VerifyNoOtherCalls();
+            this.securityAuditBrokerMock.VerifyNoOtherCalls();
             this.storageBrokerMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
         }
@@ -131,7 +131,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.DataSetSpecifications
                     Times.Never);
 
             this.dateTimeBrokerMock.VerifyNoOtherCalls();
-            this.securityBrokerMock.VerifyNoOtherCalls();
+            this.securityAuditBrokerMock.VerifyNoOtherCalls();
             this.storageBrokerMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
         }
@@ -179,7 +179,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.DataSetSpecifications
                         Times.Once);
 
             this.dateTimeBrokerMock.VerifyNoOtherCalls();
-            this.securityBrokerMock.VerifyNoOtherCalls();
+            this.securityAuditBrokerMock.VerifyNoOtherCalls();
             this.storageBrokerMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
         }
@@ -227,7 +227,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.DataSetSpecifications
                         Times.Once);
 
             this.dateTimeBrokerMock.VerifyNoOtherCalls();
-            this.securityBrokerMock.VerifyNoOtherCalls();
+            this.securityAuditBrokerMock.VerifyNoOtherCalls();
             this.storageBrokerMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
         }

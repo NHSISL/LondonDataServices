@@ -66,7 +66,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.SpecificationObjects
         public async Task ShouldThrowValidationExceptionOnModifyIfSpecificationObjectIsInvalidAndLogItAsync(string invalidText)
         {
             // given 
-            EntraUser randomEntraUser = CreateRandomEntraUser();
+            string randomUserId = GetRandomStringWithLengthOf(50);
             DateTimeOffset randomDateTimeOffset = GetRandomDateTimeOffset();
 
             var invalidSpecificationObject = new SpecificationObject
@@ -75,26 +75,17 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.SpecificationObjects
                 OurObjectName = invalidText,
             };
 
-            var specificationObjectServiceMock = new Mock<SpecificationObjectService>(
-                storageBrokerMock.Object,
-                dateTimeBrokerMock.Object,
-                securityBrokerMock.Object,
-                loggingBrokerMock.Object)
-            {
-                CallBase = true
-            };
-
-            specificationObjectServiceMock.Setup(service =>
-                service.ApplyModifyAuditAsync(invalidSpecificationObject))
+            this.securityAuditBrokerMock.Setup(broker =>
+                broker.ApplyModifyAuditValuesAsync(invalidSpecificationObject))
                     .ReturnsAsync(invalidSpecificationObject);
 
             this.dateTimeBrokerMock.Setup(broker =>
                 broker.GetCurrentDateTimeOffsetAsync())
                     .ReturnsAsync(randomDateTimeOffset);
 
-            this.securityBrokerMock.Setup(broker =>
-                broker.GetCurrentUserAsync())
-                    .ReturnsAsync(randomEntraUser);
+            this.securityAuditBrokerMock.Setup(broker =>
+                broker.GetUserIdAsync())
+                    .ReturnsAsync(randomUserId);
 
             var invalidSpecificationObjectException =
                 new InvalidSpecificationObjectException(
@@ -138,7 +129,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.SpecificationObjects
                  values:
                     [
                         "Text is required",
-                        $"Expected value to be '{randomEntraUser.EntraUserId}' but found " +
+                        $"Expected value to be '{randomUserId}' but found " +
                             $"'{invalidSpecificationObject.UpdatedBy}'."
                     ]);
 
@@ -149,7 +140,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.SpecificationObjects
 
             // when
             ValueTask<SpecificationObject> modifySpecificationObjectTask =
-                specificationObjectServiceMock.Object.ModifySpecificationObjectAsync(invalidSpecificationObject);
+                specificationObjectService.ModifySpecificationObjectAsync(invalidSpecificationObject);
 
             SpecificationObjectValidationException actualSpecificationObjectValidationException =
                 await Assert.ThrowsAsync<SpecificationObjectValidationException>(
@@ -159,12 +150,16 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.SpecificationObjects
             actualSpecificationObjectValidationException.Should()
                 .BeEquivalentTo(expectedSpecificationObjectValidationException);
 
+            this.securityAuditBrokerMock.Verify(broker =>
+                broker.ApplyModifyAuditValuesAsync(invalidSpecificationObject),
+                    Times.Once);
+
             this.dateTimeBrokerMock.Verify(broker =>
                 broker.GetCurrentDateTimeOffsetAsync(),
                     Times.Once);
 
-            this.securityBrokerMock.Verify(broker =>
-                broker.GetCurrentUserAsync(),
+            this.securityAuditBrokerMock.Verify(broker =>
+                broker.GetUserIdAsync(),
                     Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>
@@ -176,8 +171,8 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.SpecificationObjects
                 broker.UpdateSpecificationObjectAsync(It.IsAny<SpecificationObject>()),
                     Times.Never);
 
+            this.securityAuditBrokerMock.VerifyNoOtherCalls();
             this.dateTimeBrokerMock.VerifyNoOtherCalls();
-            this.securityBrokerMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
             this.storageBrokerMock.VerifyNoOtherCalls();
         }
@@ -187,12 +182,12 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.SpecificationObjects
         {
             // given
             DateTimeOffset randomDateTimeOffset = GetRandomDateTimeOffset();
-            EntraUser randomEntraUser = CreateRandomEntraUser(entraUserId: GetRandomStringWithLengthOf(256));
+            string randomUserId = GetRandomStringWithLengthOf(256);
 
             SpecificationObject invalidSpecificationObject = 
-                CreateRandomModifySpecificationObject(randomDateTimeOffset, randomEntraUser.EntraUserId);
+                CreateRandomModifySpecificationObject(randomDateTimeOffset, randomUserId);
 
-            var inputCreatedByUpdatedByString = randomEntraUser.EntraUserId;
+            var inputCreatedByUpdatedByString = randomUserId;
             invalidSpecificationObject.SupplierObjectName = GetRandomString(256);
             invalidSpecificationObject.OurObjectName = GetRandomString(256);
             invalidSpecificationObject.ObjectDescription = GetRandomString(501);
@@ -201,26 +196,17 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.SpecificationObjects
             invalidSpecificationObject.CreatedBy = inputCreatedByUpdatedByString;
             invalidSpecificationObject.UpdatedBy = inputCreatedByUpdatedByString;
 
-            var specificationObjectServiceMock = new Mock<SpecificationObjectService>(
-                storageBrokerMock.Object,
-                dateTimeBrokerMock.Object,
-                securityBrokerMock.Object,
-                loggingBrokerMock.Object)
-            {
-                CallBase = true
-            };
-
-            specificationObjectServiceMock.Setup(service =>
-                service.ApplyModifyAuditAsync(invalidSpecificationObject))
+            this.securityAuditBrokerMock.Setup(broker =>
+                broker.ApplyModifyAuditValuesAsync(invalidSpecificationObject))
                     .ReturnsAsync(invalidSpecificationObject);
 
             this.dateTimeBrokerMock.Setup(broker =>
                 broker.GetCurrentDateTimeOffsetAsync())
                     .ReturnsAsync(randomDateTimeOffset);
 
-            this.securityBrokerMock.Setup(broker =>
-                broker.GetCurrentUserAsync())
-                    .ReturnsAsync(randomEntraUser);
+            this.securityAuditBrokerMock.Setup(broker =>
+                broker.GetUserIdAsync())
+                    .ReturnsAsync(randomUserId);
 
             var invalidSpecificationObjectException =
                 new InvalidSpecificationObjectException(
@@ -261,7 +247,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.SpecificationObjects
 
             // when
             ValueTask<SpecificationObject> modifySpecificationObjectTask =
-                specificationObjectServiceMock.Object.ModifySpecificationObjectAsync(invalidSpecificationObject);
+                specificationObjectService.ModifySpecificationObjectAsync(invalidSpecificationObject);
 
             SpecificationObjectValidationException actualSpecificationObjectValidationException =
                 await Assert.ThrowsAsync<SpecificationObjectValidationException>(modifySpecificationObjectTask.AsTask);
@@ -270,12 +256,16 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.SpecificationObjects
             actualSpecificationObjectValidationException.Should()
                 .BeEquivalentTo(expectedSpecificationObjectValidationException);
 
+            this.securityAuditBrokerMock.Verify(broker =>
+                broker.ApplyModifyAuditValuesAsync(invalidSpecificationObject),
+                    Times.Once);
+
             this.dateTimeBrokerMock.Verify(broker =>
                 broker.GetCurrentDateTimeOffsetAsync(),
                     Times.Once());
 
-            this.securityBrokerMock.Verify(broker =>
-                broker.GetCurrentUserAsync(),
+            this.securityAuditBrokerMock.Verify(broker =>
+                broker.GetUserIdAsync(),
                     Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>
@@ -287,8 +277,8 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.SpecificationObjects
                 broker.UpdateSpecificationObjectAsync(It.IsAny<SpecificationObject>()),
                     Times.Never);
 
+            this.securityAuditBrokerMock.VerifyNoOtherCalls();
             this.dateTimeBrokerMock.VerifyNoOtherCalls();
-            this.securityBrokerMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
             this.storageBrokerMock.VerifyNoOtherCalls();
         }
@@ -298,33 +288,24 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.SpecificationObjects
         {
             // given
             DateTimeOffset randomDateTimeOffset = GetRandomDateTimeOffset();
-            EntraUser randomEntraUser = CreateRandomEntraUser();
+            string randomUserId = GetRandomStringWithLengthOf(50);
 
             SpecificationObject randomSpecificationObject = 
-                CreateRandomSpecificationObject(randomDateTimeOffset, randomEntraUser.EntraUserId);
+                CreateRandomSpecificationObject(randomDateTimeOffset, randomUserId);
 
             SpecificationObject invalidSpecificationObject = randomSpecificationObject;
 
-            var specificationObjectServiceMock = new Mock<SpecificationObjectService>(
-                storageBrokerMock.Object,
-                dateTimeBrokerMock.Object,
-                securityBrokerMock.Object,
-                loggingBrokerMock.Object)
-            {
-                CallBase = true
-            };
-
-            specificationObjectServiceMock.Setup(service =>
-                service.ApplyModifyAuditAsync(invalidSpecificationObject))
+            this.securityAuditBrokerMock.Setup(broker =>
+                broker.ApplyModifyAuditValuesAsync(invalidSpecificationObject))
                     .ReturnsAsync(invalidSpecificationObject);
 
             this.dateTimeBrokerMock.Setup(broker =>
                 broker.GetCurrentDateTimeOffsetAsync())
                     .ReturnsAsync(randomDateTimeOffset);
 
-            this.securityBrokerMock.Setup(broker =>
-                broker.GetCurrentUserAsync())
-                    .ReturnsAsync(randomEntraUser);
+            this.securityAuditBrokerMock.Setup(broker =>
+                broker.GetUserIdAsync())
+                    .ReturnsAsync(randomUserId);
 
             var invalidSpecificationObjectException =
                 new InvalidSpecificationObjectException(
@@ -341,7 +322,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.SpecificationObjects
 
             // when
             ValueTask<SpecificationObject> modifySpecificationObjectTask =
-                specificationObjectServiceMock.Object.ModifySpecificationObjectAsync(invalidSpecificationObject);
+                specificationObjectService.ModifySpecificationObjectAsync(invalidSpecificationObject);
 
             SpecificationObjectValidationException actualSpecificationObjectValidationException =
                 await Assert.ThrowsAsync<SpecificationObjectValidationException>(
@@ -351,12 +332,16 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.SpecificationObjects
             actualSpecificationObjectValidationException.Should()
                 .BeEquivalentTo(expectedSpecificationObjectValidationException);
 
+            this.securityAuditBrokerMock.Verify(broker =>
+                broker.ApplyModifyAuditValuesAsync(invalidSpecificationObject),
+                    Times.Once);
+
             this.dateTimeBrokerMock.Verify(broker =>
                 broker.GetCurrentDateTimeOffsetAsync(),
                     Times.Once);
 
-            this.securityBrokerMock.Verify(broker =>
-                broker.GetCurrentUserAsync(),
+            this.securityAuditBrokerMock.Verify(broker =>
+                broker.GetUserIdAsync(),
                     Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>
@@ -368,8 +353,8 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.SpecificationObjects
                 broker.SelectSpecificationObjectByIdAsync(invalidSpecificationObject.Id),
                     Times.Never);
 
+            this.securityAuditBrokerMock.VerifyNoOtherCalls();
             this.dateTimeBrokerMock.VerifyNoOtherCalls();
-            this.securityBrokerMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
             this.storageBrokerMock.VerifyNoOtherCalls();
         }
@@ -380,33 +365,24 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.SpecificationObjects
         {
             // given
             DateTimeOffset randomDateTimeOffset = GetRandomDateTimeOffset();
-            EntraUser randomEntraUser = CreateRandomEntraUser();
+            string randomUserId = GetRandomStringWithLengthOf(50);
 
             SpecificationObject randomSpecificationObject =
-                CreateRandomSpecificationObject(randomDateTimeOffset, randomEntraUser.EntraUserId);
+                CreateRandomSpecificationObject(randomDateTimeOffset, randomUserId);
 
             randomSpecificationObject.UpdatedDate = randomDateTimeOffset.AddMinutes(minutes);
 
-            var specificationObjectServiceMock = new Mock<SpecificationObjectService>(
-                storageBrokerMock.Object,
-                dateTimeBrokerMock.Object,
-                securityBrokerMock.Object,
-                loggingBrokerMock.Object)
-            {
-                CallBase = true
-            };
-
-            specificationObjectServiceMock.Setup(service =>
-                service.ApplyModifyAuditAsync(randomSpecificationObject))
+            this.securityAuditBrokerMock.Setup(broker =>
+                broker.ApplyModifyAuditValuesAsync(randomSpecificationObject))
                     .ReturnsAsync(randomSpecificationObject);
 
             this.dateTimeBrokerMock.Setup(broker =>
                 broker.GetCurrentDateTimeOffsetAsync())
                     .ReturnsAsync(randomDateTimeOffset);
 
-            this.securityBrokerMock.Setup(broker =>
-                broker.GetCurrentUserAsync())
-                    .ReturnsAsync(randomEntraUser);
+            this.securityAuditBrokerMock.Setup(broker =>
+                broker.GetUserIdAsync())
+                    .ReturnsAsync(randomUserId);
 
             var invalidSpecificationObjectException =
                 new InvalidSpecificationObjectException(
@@ -423,7 +399,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.SpecificationObjects
 
             // when
             ValueTask<SpecificationObject> modifySpecificationObjectTask =
-                specificationObjectServiceMock.Object.ModifySpecificationObjectAsync(randomSpecificationObject);
+                specificationObjectService.ModifySpecificationObjectAsync(randomSpecificationObject);
 
             SpecificationObjectValidationException actualSpecificationObjectValidationException =
                 await Assert.ThrowsAsync<SpecificationObjectValidationException>(
@@ -433,12 +409,16 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.SpecificationObjects
             actualSpecificationObjectValidationException.Should()
                 .BeEquivalentTo(expectedSpecificationObjectValidatonException);
 
+            this.securityAuditBrokerMock.Verify(broker =>
+                broker.ApplyModifyAuditValuesAsync(randomSpecificationObject),
+                    Times.Once);
+
             this.dateTimeBrokerMock.Verify(broker =>
                 broker.GetCurrentDateTimeOffsetAsync(),
                     Times.Once);
 
-            this.securityBrokerMock.Verify(broker =>
-                broker.GetCurrentUserAsync(),
+            this.securityAuditBrokerMock.Verify(broker =>
+                broker.GetUserIdAsync(),
                     Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>
@@ -450,8 +430,8 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.SpecificationObjects
                 broker.SelectSpecificationObjectByIdAsync(It.IsAny<Guid>()),
                     Times.Never);
 
+            this.securityAuditBrokerMock.VerifyNoOtherCalls();
             this.dateTimeBrokerMock.VerifyNoOtherCalls();
-            this.securityBrokerMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
             this.storageBrokerMock.VerifyNoOtherCalls();
         }
@@ -461,10 +441,10 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.SpecificationObjects
         {
             // given
             DateTimeOffset randomDateTimeOffset = GetRandomDateTimeOffset();
-            EntraUser randomEntraUser = CreateRandomEntraUser();
+            string randomUserId = GetRandomStringWithLengthOf(50);
 
             SpecificationObject randomSpecificationObject =
-                CreateRandomModifySpecificationObject(randomDateTimeOffset, randomEntraUser.EntraUserId);
+                CreateRandomModifySpecificationObject(randomDateTimeOffset, randomUserId);
 
             SpecificationObject nonExistSpecificationObject = randomSpecificationObject;
             SpecificationObject nullSpecificationObject = null;
@@ -472,26 +452,17 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.SpecificationObjects
             var notFoundSpecificationObjectException =
                 new NotFoundSpecificationObjectException(nonExistSpecificationObject.Id);
 
-            var specificationObjectServiceMock = new Mock<SpecificationObjectService>(
-                storageBrokerMock.Object,
-                dateTimeBrokerMock.Object,
-                securityBrokerMock.Object,
-                loggingBrokerMock.Object)
-            {
-                CallBase = true
-            };
-
-            specificationObjectServiceMock.Setup(service =>
-                service.ApplyModifyAuditAsync(randomSpecificationObject))
+            this.securityAuditBrokerMock.Setup(broker =>
+                broker.ApplyModifyAuditValuesAsync(randomSpecificationObject))
                     .ReturnsAsync(randomSpecificationObject);
 
             this.dateTimeBrokerMock.Setup(broker =>
                 broker.GetCurrentDateTimeOffsetAsync())
                     .ReturnsAsync(randomDateTimeOffset);
 
-            this.securityBrokerMock.Setup(broker =>
-                broker.GetCurrentUserAsync())
-                    .ReturnsAsync(randomEntraUser);
+            this.securityAuditBrokerMock.Setup(broker =>
+                broker.GetUserIdAsync())
+                    .ReturnsAsync(randomUserId);
 
             var expectedSpecificationObjectValidationException =
                 new SpecificationObjectValidationException(
@@ -504,7 +475,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.SpecificationObjects
 
             // when 
             ValueTask<SpecificationObject> modifySpecificationObjectTask =
-                specificationObjectServiceMock.Object.ModifySpecificationObjectAsync(nonExistSpecificationObject);
+                specificationObjectService.ModifySpecificationObjectAsync(nonExistSpecificationObject);
 
             SpecificationObjectValidationException actualSpecificationObjectValidationException =
                 await Assert.ThrowsAsync<SpecificationObjectValidationException>(
@@ -514,12 +485,16 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.SpecificationObjects
             actualSpecificationObjectValidationException.Should()
                 .BeEquivalentTo(expectedSpecificationObjectValidationException);
 
+            this.securityAuditBrokerMock.Verify(broker =>
+                broker.ApplyModifyAuditValuesAsync(nonExistSpecificationObject),
+                    Times.Once);
+
             this.dateTimeBrokerMock.Verify(broker =>
                 broker.GetCurrentDateTimeOffsetAsync(),
                     Times.Once);
 
-            this.securityBrokerMock.Verify(broker =>
-                broker.GetCurrentUserAsync(),
+            this.securityAuditBrokerMock.Verify(broker =>
+                broker.GetUserIdAsync(),
                     Times.Once);
 
             this.storageBrokerMock.Verify(broker =>
@@ -531,8 +506,8 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.SpecificationObjects
                     expectedSpecificationObjectValidationException))),
                         Times.Once);
 
+            this.securityAuditBrokerMock.VerifyNoOtherCalls();
             this.dateTimeBrokerMock.VerifyNoOtherCalls();
-            this.securityBrokerMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
             this.storageBrokerMock.VerifyNoOtherCalls();
         }
@@ -542,38 +517,29 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.SpecificationObjects
         {
             // given
             int randomNumber = GetRandomNegativeNumber();
-            EntraUser randomEntraUser = CreateRandomEntraUser();
+            string randomUserId = GetRandomStringWithLengthOf(50);
             int randomMinutes = randomNumber;
             DateTimeOffset randomDateTimeOffset = GetRandomDateTimeOffset();
 
             SpecificationObject randomSpecificationObject = 
-                CreateRandomModifySpecificationObject(randomDateTimeOffset, randomEntraUser.EntraUserId);
+                CreateRandomModifySpecificationObject(randomDateTimeOffset, randomUserId);
 
             SpecificationObject invalidSpecificationObject = randomSpecificationObject.DeepClone();
             SpecificationObject storageSpecificationObject = invalidSpecificationObject.DeepClone();
             storageSpecificationObject.CreatedDate = storageSpecificationObject.CreatedDate.AddMinutes(randomMinutes);
             storageSpecificationObject.UpdatedDate = storageSpecificationObject.UpdatedDate.AddMinutes(randomMinutes);
 
-            var specificationObjectServiceMock = new Mock<SpecificationObjectService>(
-                storageBrokerMock.Object,
-                dateTimeBrokerMock.Object,
-                securityBrokerMock.Object,
-                loggingBrokerMock.Object)
-            {
-                CallBase = true
-            };
-
-            specificationObjectServiceMock.Setup(service =>
-                service.ApplyModifyAuditAsync(invalidSpecificationObject))
+            this.securityAuditBrokerMock.Setup(broker =>
+                broker.ApplyModifyAuditValuesAsync(invalidSpecificationObject))
                     .ReturnsAsync(invalidSpecificationObject);
 
             this.dateTimeBrokerMock.Setup(broker =>
                 broker.GetCurrentDateTimeOffsetAsync())
                     .ReturnsAsync(randomDateTimeOffset);
 
-            this.securityBrokerMock.Setup(broker =>
-                broker.GetCurrentUserAsync())
-                    .ReturnsAsync(randomEntraUser);
+            this.securityAuditBrokerMock.Setup(broker =>
+                broker.GetUserIdAsync())
+                    .ReturnsAsync(randomUserId);
 
             var invalidSpecificationObjectException =
                 new InvalidSpecificationObjectException(
@@ -592,9 +558,15 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.SpecificationObjects
                 broker.SelectSpecificationObjectByIdAsync(invalidSpecificationObject.Id))
                 .ReturnsAsync(storageSpecificationObject);
 
+            this.securityAuditBrokerMock.Setup(broker =>
+                broker.EnsureAddAuditValuesRemainsUnchangedOnModifyAsync(
+                    invalidSpecificationObject,
+                    storageSpecificationObject))
+                        .ReturnsAsync(invalidSpecificationObject);
+
             // when
             ValueTask<SpecificationObject> modifySpecificationObjectTask =
-                specificationObjectServiceMock.Object.ModifySpecificationObjectAsync(invalidSpecificationObject);
+                specificationObjectService.ModifySpecificationObjectAsync(invalidSpecificationObject);
 
             SpecificationObjectValidationException actualSpecificationObjectValidationException =
                 await Assert.ThrowsAsync<SpecificationObjectValidationException>(
@@ -604,25 +576,35 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.SpecificationObjects
             actualSpecificationObjectValidationException.Should()
                 .BeEquivalentTo(expectedSpecificationObjectValidationException);
 
+            this.securityAuditBrokerMock.Verify(broker =>
+                broker.ApplyModifyAuditValuesAsync(invalidSpecificationObject),
+                    Times.Once);
+
             this.dateTimeBrokerMock.Verify(broker =>
                 broker.GetCurrentDateTimeOffsetAsync(),
                     Times.Once);
 
-            this.securityBrokerMock.Verify(broker =>
-                broker.GetCurrentUserAsync(),
+            this.securityAuditBrokerMock.Verify(broker =>
+                broker.GetUserIdAsync(),
                     Times.Once);
 
             this.storageBrokerMock.Verify(broker =>
                 broker.SelectSpecificationObjectByIdAsync(invalidSpecificationObject.Id),
                     Times.Once);
 
+            this.securityAuditBrokerMock.Verify(broker =>
+                broker.EnsureAddAuditValuesRemainsUnchangedOnModifyAsync(
+                    invalidSpecificationObject,
+                    storageSpecificationObject),
+                        Times.Once);
+
             this.loggingBrokerMock.Verify(broker =>
                broker.LogErrorAsync(It.Is(SameExceptionAs(
                    expectedSpecificationObjectValidationException))),
                        Times.Once);
 
+            this.securityAuditBrokerMock.VerifyNoOtherCalls();
             this.dateTimeBrokerMock.VerifyNoOtherCalls();
-            this.securityBrokerMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
             this.storageBrokerMock.VerifyNoOtherCalls();
         }
@@ -632,36 +614,27 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.SpecificationObjects
         {
             // given
             DateTimeOffset randomDateTimeOffset = GetRandomDateTimeOffset();
-            EntraUser randomEntraUser = CreateRandomEntraUser();
+            string randomUserId = GetRandomStringWithLengthOf(50);
 
             SpecificationObject randomSpecificationObject = 
-                CreateRandomModifySpecificationObject(randomDateTimeOffset, randomEntraUser.EntraUserId);
+                CreateRandomModifySpecificationObject(randomDateTimeOffset, randomUserId);
 
             SpecificationObject invalidSpecificationObject = randomSpecificationObject.DeepClone();
             SpecificationObject storageSpecificationObject = invalidSpecificationObject.DeepClone();
             invalidSpecificationObject.CreatedBy = Guid.NewGuid().ToString();
             storageSpecificationObject.UpdatedDate = storageSpecificationObject.CreatedDate;
 
-            var specificationObjectServiceMock = new Mock<SpecificationObjectService>(
-                storageBrokerMock.Object,
-                dateTimeBrokerMock.Object,
-                securityBrokerMock.Object,
-                loggingBrokerMock.Object)
-            {
-                CallBase = true
-            };
-
-            specificationObjectServiceMock.Setup(service =>
-                service.ApplyModifyAuditAsync(invalidSpecificationObject))
+            this.securityAuditBrokerMock.Setup(broker =>
+                broker.ApplyModifyAuditValuesAsync(invalidSpecificationObject))
                     .ReturnsAsync(invalidSpecificationObject);
 
             this.dateTimeBrokerMock.Setup(broker =>
                 broker.GetCurrentDateTimeOffsetAsync())
                     .ReturnsAsync(randomDateTimeOffset);
 
-            this.securityBrokerMock.Setup(broker =>
-                broker.GetCurrentUserAsync())
-                    .ReturnsAsync(randomEntraUser);
+            this.securityAuditBrokerMock.Setup(broker =>
+                broker.GetUserIdAsync())
+                    .ReturnsAsync(randomUserId);
 
             var invalidSpecificationObjectException =
                 new InvalidSpecificationObjectException(
@@ -680,13 +653,19 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.SpecificationObjects
                 broker.SelectSpecificationObjectByIdAsync(invalidSpecificationObject.Id))
                 .ReturnsAsync(storageSpecificationObject);
 
+            this.securityAuditBrokerMock.Setup(broker =>
+                broker.EnsureAddAuditValuesRemainsUnchangedOnModifyAsync(
+                    invalidSpecificationObject,
+                    storageSpecificationObject))
+                        .ReturnsAsync(invalidSpecificationObject);
+
             this.dateTimeBrokerMock.Setup(broker =>
                 broker.GetCurrentDateTimeOffsetAsync())
                 .ReturnsAsync(randomDateTimeOffset);
 
             // when
             ValueTask<SpecificationObject> modifySpecificationObjectTask =
-                specificationObjectServiceMock.Object.ModifySpecificationObjectAsync(invalidSpecificationObject);
+                specificationObjectService.ModifySpecificationObjectAsync(invalidSpecificationObject);
 
             SpecificationObjectValidationException actualSpecificationObjectValidationException =
                 await Assert.ThrowsAsync<SpecificationObjectValidationException>(
@@ -695,25 +674,35 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.SpecificationObjects
             // then
             actualSpecificationObjectValidationException.Should().BeEquivalentTo(expectedSpecificationObjectValidationException);
 
+            this.securityAuditBrokerMock.Verify(broker =>
+                broker.ApplyModifyAuditValuesAsync(invalidSpecificationObject),
+                    Times.Once);
+
             this.dateTimeBrokerMock.Verify(broker =>
                 broker.GetCurrentDateTimeOffsetAsync(),
                     Times.Once);
 
-            this.securityBrokerMock.Verify(broker =>
-                broker.GetCurrentUserAsync(),
+            this.securityAuditBrokerMock.Verify(broker =>
+                broker.GetUserIdAsync(),
                     Times.Once);
 
             this.storageBrokerMock.Verify(broker =>
                 broker.SelectSpecificationObjectByIdAsync(invalidSpecificationObject.Id),
                     Times.Once);
 
+            this.securityAuditBrokerMock.Verify(broker =>
+                broker.EnsureAddAuditValuesRemainsUnchangedOnModifyAsync(
+                    invalidSpecificationObject,
+                    storageSpecificationObject),
+                        Times.Once);
+
             this.loggingBrokerMock.Verify(broker =>
                broker.LogErrorAsync(It.Is(SameExceptionAs(
                    expectedSpecificationObjectValidationException))),
                        Times.Once);
 
+            this.securityAuditBrokerMock.VerifyNoOtherCalls();
             this.dateTimeBrokerMock.VerifyNoOtherCalls();
-            this.securityBrokerMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
             this.storageBrokerMock.VerifyNoOtherCalls();
         }
@@ -723,34 +712,25 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.SpecificationObjects
         {
             // given
             DateTimeOffset randomDateTimeOffset = GetRandomDateTimeOffset();
-            EntraUser randomEntraUser = CreateRandomEntraUser();
+            string randomUserId = GetRandomStringWithLengthOf(50);
 
             SpecificationObject randomSpecificationObject = 
-                CreateRandomModifySpecificationObject(randomDateTimeOffset, randomEntraUser.EntraUserId);
+                CreateRandomModifySpecificationObject(randomDateTimeOffset, randomUserId);
 
             SpecificationObject invalidSpecificationObject = randomSpecificationObject;
             SpecificationObject storageSpecificationObject = randomSpecificationObject.DeepClone();
 
-            var specificationObjectServiceMock = new Mock<SpecificationObjectService>(
-                storageBrokerMock.Object,
-                dateTimeBrokerMock.Object,
-                securityBrokerMock.Object,
-                loggingBrokerMock.Object)
-            {
-                CallBase = true
-            };
-
-            specificationObjectServiceMock.Setup(service =>
-                service.ApplyModifyAuditAsync(invalidSpecificationObject))
+            this.securityAuditBrokerMock.Setup(broker =>
+                broker.ApplyModifyAuditValuesAsync(invalidSpecificationObject))
                     .ReturnsAsync(invalidSpecificationObject);
 
             this.dateTimeBrokerMock.Setup(broker =>
                 broker.GetCurrentDateTimeOffsetAsync())
                     .ReturnsAsync(randomDateTimeOffset);
 
-            this.securityBrokerMock.Setup(broker =>
-                broker.GetCurrentUserAsync())
-                    .ReturnsAsync(randomEntraUser);
+            this.securityAuditBrokerMock.Setup(broker =>
+                broker.GetUserIdAsync())
+                    .ReturnsAsync(randomUserId);
 
             var invalidSpecificationObjectException =
                 new InvalidSpecificationObjectException(
@@ -769,20 +749,30 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.SpecificationObjects
                 broker.SelectSpecificationObjectByIdAsync(invalidSpecificationObject.Id))
                 .ReturnsAsync(storageSpecificationObject);
 
+            this.securityAuditBrokerMock.Setup(broker =>
+                broker.EnsureAddAuditValuesRemainsUnchangedOnModifyAsync(
+                    invalidSpecificationObject,
+                    storageSpecificationObject))
+                        .ReturnsAsync(invalidSpecificationObject);
+
             // when
             ValueTask<SpecificationObject> modifySpecificationObjectTask =
-                specificationObjectServiceMock.Object.ModifySpecificationObjectAsync(invalidSpecificationObject);
+                specificationObjectService.ModifySpecificationObjectAsync(invalidSpecificationObject);
 
             // then
             await Assert.ThrowsAsync<SpecificationObjectValidationException>(
                 modifySpecificationObjectTask.AsTask);
 
+            this.securityAuditBrokerMock.Verify(broker =>
+                broker.ApplyModifyAuditValuesAsync(invalidSpecificationObject),
+                    Times.Once);
+
             this.dateTimeBrokerMock.Verify(broker =>
                 broker.GetCurrentDateTimeOffsetAsync(),
                     Times.Once);
 
-            this.securityBrokerMock.Verify(broker =>
-                broker.GetCurrentUserAsync(),
+            this.securityAuditBrokerMock.Verify(broker =>
+                broker.GetUserIdAsync(),
                     Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>
@@ -794,8 +784,14 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.SpecificationObjects
                 broker.SelectSpecificationObjectByIdAsync(invalidSpecificationObject.Id),
                     Times.Once);
 
+            this.securityAuditBrokerMock.Verify(broker =>
+                broker.EnsureAddAuditValuesRemainsUnchangedOnModifyAsync(
+                    invalidSpecificationObject,
+                    storageSpecificationObject),
+                        Times.Once);
+
+            this.securityAuditBrokerMock.VerifyNoOtherCalls();
             this.dateTimeBrokerMock.VerifyNoOtherCalls();
-            this.securityBrokerMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
             this.storageBrokerMock.VerifyNoOtherCalls();
         }

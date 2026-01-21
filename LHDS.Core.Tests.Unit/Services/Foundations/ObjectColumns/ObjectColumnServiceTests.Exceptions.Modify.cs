@@ -34,8 +34,8 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.ObjectColumns
                     message: "ObjectColumn dependency error occurred, please contact support.",
                     innerException: failedObjectColumnStorageException);
 
-            this.dateTimeBrokerMock.Setup(broker =>
-                broker.GetCurrentDateTimeOffsetAsync())
+            this.securityAuditBrokerMock.Setup(broker =>
+                broker.ApplyModifyAuditValuesAsync(randomObjectColumn))
                     .ThrowsAsync(sqlException);
 
             // when
@@ -50,9 +50,13 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.ObjectColumns
             actualObjectColumnDependencyException.Should()
                 .BeEquivalentTo(expectedObjectColumnDependencyException);
 
+            this.securityAuditBrokerMock.Verify(broker =>
+                broker.ApplyModifyAuditValuesAsync(randomObjectColumn),
+                    Times.Once);
+
             this.dateTimeBrokerMock.Verify(broker =>
                 broker.GetCurrentDateTimeOffsetAsync(),
-                    Times.Once);
+                    Times.Never);
 
             this.storageBrokerMock.Verify(broker =>
                 broker.SelectObjectColumnByIdAsync(randomObjectColumn.Id),
@@ -67,6 +71,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.ObjectColumns
                 broker.UpdateObjectColumnAsync(randomObjectColumn),
                     Times.Never);
 
+            this.securityAuditBrokerMock.VerifyNoOtherCalls();
             this.dateTimeBrokerMock.VerifyNoOtherCalls();
             this.storageBrokerMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
@@ -93,8 +98,8 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.ObjectColumns
                     message: "ObjectColumn dependency validation occurred, please try again.",
                     innerException: invalidObjectColumnReferenceException);
 
-            this.dateTimeBrokerMock.Setup(broker =>
-                broker.GetCurrentDateTimeOffsetAsync())
+            this.securityAuditBrokerMock.Setup(broker =>
+                broker.ApplyModifyAuditValuesAsync(someObjectColumn))
                     .ThrowsAsync(foreignKeyConstraintConflictException);
 
             // when
@@ -109,9 +114,13 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.ObjectColumns
             actualObjectColumnDependencyValidationException.Should()
                 .BeEquivalentTo(expectedObjectColumnDependencyValidationException);
 
+            this.securityAuditBrokerMock.Verify(broker =>
+                broker.ApplyModifyAuditValuesAsync(someObjectColumn),
+                    Times.Once);
+
             this.dateTimeBrokerMock.Verify(broker =>
                 broker.GetCurrentDateTimeOffsetAsync(),
-                    Times.Once);
+                    Times.Never);
 
             this.storageBrokerMock.Verify(broker =>
                 broker.SelectObjectColumnByIdAsync(someObjectColumn.Id),
@@ -125,6 +134,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.ObjectColumns
                 broker.UpdateObjectColumnAsync(someObjectColumn),
                     Times.Never);
 
+            this.securityAuditBrokerMock.VerifyNoOtherCalls();
             this.dateTimeBrokerMock.VerifyNoOtherCalls();
             this.storageBrokerMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
@@ -147,8 +157,8 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.ObjectColumns
                     message: "ObjectColumn dependency error occurred, please contact support.",
                     innerException: failedObjectColumnStorageException);
 
-            this.dateTimeBrokerMock.Setup(broker =>
-                broker.GetCurrentDateTimeOffsetAsync())
+            this.securityAuditBrokerMock.Setup(broker =>
+                broker.ApplyModifyAuditValuesAsync(randomObjectColumn))
                     .ThrowsAsync(databaseUpdateException);
 
             // when
@@ -163,9 +173,13 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.ObjectColumns
             actualObjectColumnDependencyException.Should()
                 .BeEquivalentTo(expectedObjectColumnDependencyException);
 
+            this.securityAuditBrokerMock.Verify(broker =>
+                broker.ApplyModifyAuditValuesAsync(randomObjectColumn),
+                    Times.Once);
+
             this.dateTimeBrokerMock.Verify(broker =>
                 broker.GetCurrentDateTimeOffsetAsync(),
-                    Times.Once);
+                    Times.Never);
 
             this.storageBrokerMock.Verify(broker =>
                 broker.SelectObjectColumnByIdAsync(randomObjectColumn.Id),
@@ -180,6 +194,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.ObjectColumns
                 broker.UpdateObjectColumnAsync(randomObjectColumn),
                     Times.Never);
 
+            this.securityAuditBrokerMock.VerifyNoOtherCalls();
             this.dateTimeBrokerMock.VerifyNoOtherCalls();
             this.storageBrokerMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
@@ -202,8 +217,8 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.ObjectColumns
                     message: "ObjectColumn dependency validation occurred, please try again.",
                     innerException: lockedObjectColumnException);
 
-            this.dateTimeBrokerMock.Setup(broker =>
-                broker.GetCurrentDateTimeOffsetAsync())
+            this.securityAuditBrokerMock.Setup(broker =>
+                broker.ApplyModifyAuditValuesAsync(randomObjectColumn))
                     .ThrowsAsync(databaseUpdateConcurrencyException);
 
             // when
@@ -218,9 +233,13 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.ObjectColumns
             actualObjectColumnDependencyValidationException.Should()
                 .BeEquivalentTo(expectedObjectColumnDependencyValidationException);
 
+            this.securityAuditBrokerMock.Verify(broker =>
+                broker.ApplyModifyAuditValuesAsync(randomObjectColumn),
+                    Times.Once);
+
             this.dateTimeBrokerMock.Verify(broker =>
                 broker.GetCurrentDateTimeOffsetAsync(),
-                    Times.Once);
+                    Times.Never);
 
             this.storageBrokerMock.Verify(broker =>
                 broker.SelectObjectColumnByIdAsync(randomObjectColumn.Id),
@@ -235,6 +254,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.ObjectColumns
                 broker.UpdateObjectColumnAsync(randomObjectColumn),
                     Times.Never);
 
+            this.securityAuditBrokerMock.VerifyNoOtherCalls();
             this.dateTimeBrokerMock.VerifyNoOtherCalls();
             this.storageBrokerMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
@@ -257,8 +277,8 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.ObjectColumns
                     message: "ObjectColumn service error occurred, please contact support.",
                     innerException: failedObjectColumnServiceException);
 
-            this.dateTimeBrokerMock.Setup(broker =>
-                broker.GetCurrentDateTimeOffsetAsync())
+            this.securityAuditBrokerMock.Setup(broker =>
+                broker.ApplyModifyAuditValuesAsync(randomObjectColumn))
                     .ThrowsAsync(serviceException);
 
             // when
@@ -273,9 +293,13 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.ObjectColumns
             actualObjectColumnServiceException.Should()
                 .BeEquivalentTo(expectedObjectColumnServiceException);
 
+            this.securityAuditBrokerMock.Verify(broker =>
+                broker.ApplyModifyAuditValuesAsync(randomObjectColumn),
+                    Times.Once);
+
             this.dateTimeBrokerMock.Verify(broker =>
                 broker.GetCurrentDateTimeOffsetAsync(),
-                    Times.Once);
+                    Times.Never);
 
             this.storageBrokerMock.Verify(broker =>
                 broker.SelectObjectColumnByIdAsync(randomObjectColumn.Id),
@@ -290,6 +314,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.ObjectColumns
                 broker.UpdateObjectColumnAsync(randomObjectColumn),
                     Times.Never);
 
+            this.securityAuditBrokerMock.VerifyNoOtherCalls();
             this.dateTimeBrokerMock.VerifyNoOtherCalls();
             this.storageBrokerMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();

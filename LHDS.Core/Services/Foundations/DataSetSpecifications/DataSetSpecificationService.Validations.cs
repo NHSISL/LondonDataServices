@@ -16,7 +16,7 @@ namespace LHDS.Core.Services.Foundations.DataSetSpecifications
         private async ValueTask ValidateDataSetSpecificationOnAddAsync(DataSetSpecification dataSetSpecification)
         {
             ValidateDataSetSpecificationIsNotNull(dataSetSpecification);
-            EntraUser currentUser = await this.securityBroker.GetCurrentUserAsync();
+            string currentUserId = await this.securityAuditBroker.GetUserIdAsync();
 
             Validate<InvalidDataSetSpecificationException>(
                 createException: () => new InvalidDataSetSpecificationException(
@@ -54,7 +54,7 @@ namespace LHDS.Core.Services.Foundations.DataSetSpecifications
                     Parameter: nameof(DataSetSpecification.UpdatedBy)),
 
                 (Rule: IsNotSame(
-                    first: currentUser.EntraUserId,
+                    first: currentUserId,
                     second: dataSetSpecification.CreatedBy),
                 Parameter: nameof(DataSetSpecification.CreatedBy)),
 
@@ -78,7 +78,7 @@ namespace LHDS.Core.Services.Foundations.DataSetSpecifications
         private async ValueTask ValidateDataSetSpecificationOnModifyAsync(DataSetSpecification dataSetSpecification)
         {
             ValidateDataSetSpecificationIsNotNull(dataSetSpecification);
-            EntraUser currentUser = await this.securityBroker.GetCurrentUserAsync();
+            string currentUserId = await this.securityAuditBroker.GetUserIdAsync();
 
             Validate<InvalidDataSetSpecificationException>(
                 createException: () => new InvalidDataSetSpecificationException(
@@ -116,7 +116,7 @@ namespace LHDS.Core.Services.Foundations.DataSetSpecifications
                     Parameter: nameof(DataSetSpecification.UpdatedBy)),
 
                 (Rule: IsNotSame(
-                    first: currentUser.EntraUserId,
+                    first: currentUserId,
                     second: dataSetSpecification.UpdatedBy),
                 Parameter: nameof(DataSetSpecification.UpdatedBy)),
 
@@ -134,7 +134,7 @@ namespace LHDS.Core.Services.Foundations.DataSetSpecifications
         private async ValueTask ValidateDataSetSpecificationOnDeleteAsync(DataSetSpecification dataSetSpecification)
         {
             ValidateDataSetSpecificationIsNotNull(dataSetSpecification);
-            EntraUser currentUser = await this.securityBroker.GetCurrentUserAsync();
+            string currentUserId = await this.securityAuditBroker.GetUserIdAsync();
 
             Validate<InvalidDataSetSpecificationException>(
                 createException: () => new InvalidDataSetSpecificationException(
@@ -149,7 +149,7 @@ namespace LHDS.Core.Services.Foundations.DataSetSpecifications
                 (Rule: IsInvalid(dataSetSpecification.UpdatedBy),
                     Parameter: nameof(DataSetSpecification.UpdatedBy)),
 
-                (Rule: IsNotSame(currentUser.EntraUserId, dataSetSpecification.UpdatedBy),
+                (Rule: IsNotSame(currentUserId, dataSetSpecification.UpdatedBy),
                     Parameter: nameof(DataSetSpecification.UpdatedBy)),
 
                 (Rule: await IsNotRecentAsync(dataSetSpecification.UpdatedDate),

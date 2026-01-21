@@ -15,7 +15,8 @@ namespace LHDS.Core.Services.Foundations.PdsAudits
     {
         private async ValueTask ValidatePdsAuditOnAddAsync(PdsAudit pdsAudit)
         {
-            EntraUser currentUser = await this.securityBroker.GetCurrentUserAsync();
+            ValidatePdsAuditIsNotNull(pdsAudit);
+            string currentUserId = await this.securityAuditBroker.GetUserIdAsync();
 
             Validate<InvalidPdsAuditException>(
                 createException: () => new InvalidPdsAuditException(
@@ -32,7 +33,7 @@ namespace LHDS.Core.Services.Foundations.PdsAudits
                 (Rule: IsInvalid(pdsAudit.UpdatedBy), Parameter: nameof(PdsAudit.UpdatedBy)),
 
                 (Rule: IsNotSame(
-                    first: currentUser.EntraUserId,
+                    first: currentUserId,
                     second: pdsAudit.CreatedBy),
                 Parameter: nameof(PdsAudit.CreatedBy)),
 
@@ -59,7 +60,8 @@ namespace LHDS.Core.Services.Foundations.PdsAudits
 
         private async ValueTask ValidatePdsAuditOnModifyAsync(PdsAudit pdsAudit)
         {
-            EntraUser currentUser = await this.securityBroker.GetCurrentUserAsync();
+            ValidatePdsAuditIsNotNull(pdsAudit);
+            string currentUserId = await this.securityAuditBroker.GetUserIdAsync();
 
             Validate<InvalidPdsAuditException>(
                 createException: () => new InvalidPdsAuditException(
@@ -76,7 +78,7 @@ namespace LHDS.Core.Services.Foundations.PdsAudits
                 (Rule: IsInvalid(pdsAudit.UpdatedBy), Parameter: nameof(PdsAudit.UpdatedBy)),
 
                 (Rule: IsNotSame(
-                    first: currentUser.EntraUserId,
+                    first: currentUserId,
                     second: pdsAudit.UpdatedBy),
                 Parameter: nameof(PdsAudit.UpdatedBy)),
 

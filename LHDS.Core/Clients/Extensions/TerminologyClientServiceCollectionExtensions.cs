@@ -12,6 +12,7 @@ using System.Text;
 using Azure.Core.Pipeline;
 using Azure.Identity;
 using Azure.Storage.Blobs;
+using ISL.Security.Client.Models.Clients;
 using LHDS.Core.Brokers.DateTimes;
 using LHDS.Core.Brokers.Identifiers;
 using LHDS.Core.Brokers.Loggings;
@@ -118,19 +119,17 @@ namespace LHDS.Core.Clients.Extensions
 
             ValidateOntologyConfiguration(ontologyConfiguration);
 
-            if (ontologyConfiguration != null)
-            {
-                services.AddSingleton(ontologyConfiguration);
-            }
-
             if (claimsPrincipal != null)
             {
                 var securityBroker = new SecurityBroker(claimsPrincipal);
+                var securityAuditBroker = new SecurityAuditBroker(claimsPrincipal, new SecurityConfigurations());
                 services.AddTransient<ISecurityBroker>(_ => securityBroker);
+                services.AddTransient<ISecurityAuditBroker>(_ => securityAuditBroker);
             }
             else
             {
                 services.AddTransient<ISecurityBroker, SecurityBroker>();
+                services.AddTransient<ISecurityAuditBroker, SecurityAuditBroker>();
             }
         }
 

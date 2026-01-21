@@ -41,15 +41,19 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.SubscriberAgreements
             actualSubscriberAgreementValidationException.Should()
                 .BeEquivalentTo(expectedSubscriberAgreementValidationException);
 
+            this.securityAuditBrokerMock.Verify(broker =>
+                broker.ApplyAddAuditValuesAsync(nullSubscriberAgreement),
+                    Times.Once());
+
             this.loggingBrokerMock.Verify(broker =>
                 broker.LogErrorAsync(It.Is(SameExceptionAs(
                     expectedSubscriberAgreementValidationException))),
                         Times.Once);
 
+            this.securityAuditBrokerMock.VerifyNoOtherCalls();
             this.storageBrokerMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
             this.dateTimeBrokerMock.VerifyNoOtherCalls();
-            this.securityBrokerMock.VerifyNoOtherCalls();
         }
 
         [Theory]
@@ -59,7 +63,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.SubscriberAgreements
         public async Task ShouldThrowValidationExceptionOnAddIfSubscriberAgreementIsInvalidAndLogItAsync(string invalidText)
         {
             // given
-            EntraUser randomEntraUser = CreateRandomEntraUser();
+            string randomUserId = GetRandomStringWithLengthOf(50);
             DateTimeOffset randomDateTimeOffset = GetRandomDateTimeOffset();
 
             var invalidSubscriberAgreement = new SubscriberAgreement
@@ -70,23 +74,23 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.SubscriberAgreements
             var subscriberAgreementServiceMock = new Mock<SubscriberAgreementService>(
                 storageBrokerMock.Object,
                 dateTimeBrokerMock.Object,
-                securityBrokerMock.Object,
+                securityAuditBrokerMock.Object,
                 loggingBrokerMock.Object)
             {
                 CallBase = true
             };
 
-            subscriberAgreementServiceMock.Setup(service =>
-                service.ApplyAddAuditAsync(invalidSubscriberAgreement))
+            securityAuditBrokerMock.Setup(broker =>
+                broker.ApplyAddAuditValuesAsync(invalidSubscriberAgreement))
                     .ReturnsAsync(invalidSubscriberAgreement);
 
             this.dateTimeBrokerMock.Setup(broker =>
                 broker.GetCurrentDateTimeOffsetAsync())
                     .ReturnsAsync(randomDateTimeOffset);
 
-            this.securityBrokerMock.Setup(broker =>
-                broker.GetCurrentUserAsync())
-                    .ReturnsAsync(randomEntraUser);
+            this.securityAuditBrokerMock.Setup(broker =>
+                broker.GetUserIdAsync())
+                    .ReturnsAsync(randomUserId);
 
             var invalidSubscriberAgreementException =
                 new InvalidSubscriberAgreementException(
@@ -117,7 +121,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.SubscriberAgreements
                 values:
                 [
                     "Text is required",
-                    $"Expected value to be '{randomEntraUser.EntraUserId}' but found '{invalidSubscriberAgreement.CreatedBy}'."
+                    $"Expected value to be '{randomUserId}' but found '{invalidSubscriberAgreement.CreatedBy}'."
                 ]);
 
             invalidSubscriberAgreementException.AddData(
@@ -135,7 +139,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.SubscriberAgreements
 
             // when
             ValueTask<SubscriberAgreement> addSubscriberAgreementTask =
-                subscriberAgreementServiceMock.Object.AddSubscriberAgreementAsync(invalidSubscriberAgreement);
+                subscriberAgreementService.AddSubscriberAgreementAsync(invalidSubscriberAgreement);
 
             SubscriberAgreementValidationException actualSubscriberAgreementValidationException =
                 await Assert.ThrowsAsync<SubscriberAgreementValidationException>(addSubscriberAgreementTask.AsTask);
@@ -144,12 +148,16 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.SubscriberAgreements
             actualSubscriberAgreementValidationException.Should()
                 .BeEquivalentTo(expectedSubscriberAgreementValidationException);
 
+            this.securityAuditBrokerMock.Verify(broker =>
+                broker.ApplyAddAuditValuesAsync(invalidSubscriberAgreement),
+                    Times.Once());
+
             this.dateTimeBrokerMock.Verify(broker =>
                 broker.GetCurrentDateTimeOffsetAsync(),
                     Times.Once());
 
-            this.securityBrokerMock.Verify(broker =>
-                broker.GetCurrentUserAsync(),
+            this.securityAuditBrokerMock.Verify(broker =>
+                broker.GetUserIdAsync(),
                     Times.Once());
 
             this.loggingBrokerMock.Verify(broker =>
@@ -164,16 +172,16 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.SubscriberAgreements
             this.storageBrokerMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
             this.dateTimeBrokerMock.VerifyNoOtherCalls();
-            this.securityBrokerMock.VerifyNoOtherCalls();
+            this.securityAuditBrokerMock.VerifyNoOtherCalls();
         }
 
         [Fact]
         public async Task ShouldThrowValidationExceptionOnAddIfSubscriberAgreementIsInvalidLengthAndLogItAsync()
         {
             // given 
-            EntraUser randomEntraUser = CreateRandomEntraUser();
+            string randomUserId = GetRandomStringWithLengthOf(50);
             DateTimeOffset randomDateTimeOffset = GetRandomDateTimeOffset();
-            SubscriberAgreement invalidSubscriberAgreement = CreateRandomSubscriberAgreement(randomDateTimeOffset, randomEntraUser.EntraUserId);
+            SubscriberAgreement invalidSubscriberAgreement = CreateRandomSubscriberAgreement(randomDateTimeOffset, randomUserId);
             invalidSubscriberAgreement.SupplierSharingAgreementShortName = GetRandomString(129);
             invalidSubscriberAgreement.CreatedBy = GetRandomString(256);
             invalidSubscriberAgreement.UpdatedBy = invalidSubscriberAgreement.CreatedBy;
@@ -190,7 +198,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.SubscriberAgreements
                 key: nameof(SubscriberAgreement.CreatedBy),
                 [
                     "Text exceeded length requirement",
-                    $"Expected value to be '{randomEntraUser.EntraUserId}' but found '{invalidSubscriberAgreement.CreatedBy}'."
+                    $"Expected value to be '{randomUserId}' but found '{invalidSubscriberAgreement.CreatedBy}'."
                 ]);
 
             invalidSubscriberAgreementException.AddData(
@@ -205,27 +213,27 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.SubscriberAgreements
             var subscriberAgreementServiceMock = new Mock<SubscriberAgreementService>(
                 storageBrokerMock.Object,
                 dateTimeBrokerMock.Object,
-                securityBrokerMock.Object,
+                securityAuditBrokerMock.Object,
                 loggingBrokerMock.Object)
             {
                 CallBase = true
             };
 
-            subscriberAgreementServiceMock.Setup(service =>
-                service.ApplyAddAuditAsync(invalidSubscriberAgreement))
+            this.securityAuditBrokerMock.Setup(broker =>
+                broker.ApplyAddAuditValuesAsync(invalidSubscriberAgreement))
                     .ReturnsAsync(invalidSubscriberAgreement);
 
             this.dateTimeBrokerMock.Setup(broker =>
                 broker.GetCurrentDateTimeOffsetAsync())
                     .ReturnsAsync(randomDateTimeOffset);
 
-            this.securityBrokerMock.Setup(broker =>
-                broker.GetCurrentUserAsync())
-                    .ReturnsAsync(randomEntraUser);
+            this.securityAuditBrokerMock.Setup(broker =>
+                broker.GetUserIdAsync())
+                    .ReturnsAsync(randomUserId);
 
             // when
             ValueTask<SubscriberAgreement> addSubscriberAgreementTask =
-                subscriberAgreementServiceMock.Object.AddSubscriberAgreementAsync(invalidSubscriberAgreement);
+                subscriberAgreementService.AddSubscriberAgreementAsync(invalidSubscriberAgreement);
 
             SubscriberAgreementValidationException actualSubscriberAgreementValidationException =
                 await Assert.ThrowsAsync<SubscriberAgreementValidationException>(
@@ -235,12 +243,16 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.SubscriberAgreements
             actualSubscriberAgreementValidationException.Should()
                 .BeEquivalentTo(expectedSubscriberAgreementValidationException);
 
+            this.securityAuditBrokerMock.Verify(broker =>
+                broker.ApplyAddAuditValuesAsync(invalidSubscriberAgreement),
+                    Times.Once());
+
             this.dateTimeBrokerMock.Verify(broker =>
                 broker.GetCurrentDateTimeOffsetAsync(),
                     Times.Once);
 
-            this.securityBrokerMock.Verify(broker =>
-                broker.GetCurrentUserAsync(),
+            this.securityAuditBrokerMock.Verify(broker =>
+                broker.GetUserIdAsync(),
                     Times.Once());
 
             this.loggingBrokerMock.Verify(broker =>
@@ -255,7 +267,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.SubscriberAgreements
             this.storageBrokerMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
             this.dateTimeBrokerMock.VerifyNoOtherCalls();
-            this.securityBrokerMock.VerifyNoOtherCalls();
+            this.securityAuditBrokerMock.VerifyNoOtherCalls();
         }
 
         [Fact]
@@ -263,9 +275,9 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.SubscriberAgreements
         {
             // given
             int randomNumber = GetRandomNumber();
-            EntraUser randomEntraUser = CreateRandomEntraUser();
+            string randomUserId = GetRandomStringWithLengthOf(50);
             DateTimeOffset randomDateTimeOffset = GetRandomDateTimeOffset();
-            SubscriberAgreement randomSubscriberAgreement = CreateRandomSubscriberAgreement(randomDateTimeOffset, randomEntraUser.EntraUserId);
+            SubscriberAgreement randomSubscriberAgreement = CreateRandomSubscriberAgreement(randomDateTimeOffset, randomUserId);
             SubscriberAgreement invalidSubscriberAgreement = randomSubscriberAgreement;
 
             invalidSubscriberAgreement.UpdatedDate =
@@ -287,27 +299,27 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.SubscriberAgreements
             var subscriberAgreementServiceMock = new Mock<SubscriberAgreementService>(
                 storageBrokerMock.Object,
                 dateTimeBrokerMock.Object,
-                securityBrokerMock.Object,
+                securityAuditBrokerMock.Object,
                 loggingBrokerMock.Object)
             {
                 CallBase = true
             };
 
-            subscriberAgreementServiceMock.Setup(service =>
-                service.ApplyAddAuditAsync(invalidSubscriberAgreement))
+            this.securityAuditBrokerMock.Setup(broker =>
+                broker.ApplyAddAuditValuesAsync(invalidSubscriberAgreement))
                     .ReturnsAsync(invalidSubscriberAgreement);
 
             this.dateTimeBrokerMock.Setup(broker =>
                 broker.GetCurrentDateTimeOffsetAsync())
                     .ReturnsAsync(randomDateTimeOffset);
 
-            this.securityBrokerMock.Setup(broker =>
-                broker.GetCurrentUserAsync())
-                    .ReturnsAsync(randomEntraUser);
+            this.securityAuditBrokerMock.Setup(broker =>
+                broker.GetUserIdAsync())
+                    .ReturnsAsync(randomUserId);
 
             // when
             ValueTask<SubscriberAgreement> addSubscriberAgreementTask =
-                subscriberAgreementServiceMock.Object.AddSubscriberAgreementAsync(invalidSubscriberAgreement);
+                subscriberAgreementService.AddSubscriberAgreementAsync(invalidSubscriberAgreement);
 
             SubscriberAgreementValidationException actualSubscriberAgreementValidationException =
                 await Assert.ThrowsAsync<SubscriberAgreementValidationException>(addSubscriberAgreementTask.AsTask);
@@ -316,12 +328,16 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.SubscriberAgreements
             actualSubscriberAgreementValidationException.Should()
                 .BeEquivalentTo(expectedSubscriberAgreementValidationException);
 
+            this.securityAuditBrokerMock.Verify(broker =>
+                broker.ApplyAddAuditValuesAsync(invalidSubscriberAgreement),
+                    Times.Once());
+
             this.dateTimeBrokerMock.Verify(broker =>
                 broker.GetCurrentDateTimeOffsetAsync(),
                     Times.Once());
 
-            this.securityBrokerMock.Verify(broker =>
-                broker.GetCurrentUserAsync(),
+            this.securityAuditBrokerMock.Verify(broker =>
+                broker.GetUserIdAsync(),
                     Times.Once());
 
             this.loggingBrokerMock.Verify(broker =>
@@ -336,16 +352,16 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.SubscriberAgreements
             this.storageBrokerMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
             this.dateTimeBrokerMock.VerifyNoOtherCalls();
-            this.securityBrokerMock.VerifyNoOtherCalls();
+            this.securityAuditBrokerMock.VerifyNoOtherCalls();
         }
 
         [Fact]
         public async Task ShouldThrowValidationExceptionOnAddIfCreateAndUpdateUsersIsNotSameAndLogItAsync()
         {
             // given
-            EntraUser randomEntraUser = CreateRandomEntraUser();
+            string randomUserId = GetRandomStringWithLengthOf(50);
             DateTimeOffset randomDateTimeOffset = GetRandomDateTimeOffset();
-            SubscriberAgreement randomSubscriberAgreement = CreateRandomSubscriberAgreement(randomDateTimeOffset, randomEntraUser.EntraUserId);
+            SubscriberAgreement randomSubscriberAgreement = CreateRandomSubscriberAgreement(randomDateTimeOffset, randomUserId);
             SubscriberAgreement invalidSubscriberAgreement = randomSubscriberAgreement;
             invalidSubscriberAgreement.UpdatedBy = Guid.NewGuid().ToString();
 
@@ -365,27 +381,27 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.SubscriberAgreements
             var subscriberAgreementServiceMock = new Mock<SubscriberAgreementService>(
                 storageBrokerMock.Object,
                 dateTimeBrokerMock.Object,
-                securityBrokerMock.Object,
+                securityAuditBrokerMock.Object,
                 loggingBrokerMock.Object)
             {
                 CallBase = true
             };
 
-            subscriberAgreementServiceMock.Setup(service =>
-                service.ApplyAddAuditAsync(invalidSubscriberAgreement))
+            this.securityAuditBrokerMock.Setup(broker =>
+                broker.ApplyAddAuditValuesAsync(invalidSubscriberAgreement))
                     .ReturnsAsync(invalidSubscriberAgreement);
 
             this.dateTimeBrokerMock.Setup(broker =>
                 broker.GetCurrentDateTimeOffsetAsync())
                     .ReturnsAsync(randomDateTimeOffset);
 
-            this.securityBrokerMock.Setup(broker =>
-                broker.GetCurrentUserAsync())
-                    .ReturnsAsync(randomEntraUser);
+            this.securityAuditBrokerMock.Setup(broker =>
+                broker.GetUserIdAsync())
+                    .ReturnsAsync(randomUserId);
 
             // when
             ValueTask<SubscriberAgreement> addSubscriberAgreementTask =
-                subscriberAgreementServiceMock.Object.AddSubscriberAgreementAsync(invalidSubscriberAgreement);
+                subscriberAgreementService.AddSubscriberAgreementAsync(invalidSubscriberAgreement);
 
             SubscriberAgreementValidationException actualSubscriberAgreementValidationException =
                 await Assert.ThrowsAsync<SubscriberAgreementValidationException>(addSubscriberAgreementTask.AsTask);
@@ -394,12 +410,16 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.SubscriberAgreements
             actualSubscriberAgreementValidationException.Should()
                 .BeEquivalentTo(expectedSubscriberAgreementValidationException);
 
+            this.securityAuditBrokerMock.Verify(broker =>
+                broker.ApplyAddAuditValuesAsync(invalidSubscriberAgreement),
+                    Times.Once());
+
             this.dateTimeBrokerMock.Verify(broker =>
                 broker.GetCurrentDateTimeOffsetAsync(),
                     Times.Once());
 
-            this.securityBrokerMock.Verify(broker =>
-                broker.GetCurrentUserAsync(),
+            this.securityAuditBrokerMock.Verify(broker =>
+                broker.GetUserIdAsync(),
                     Times.Once());
 
             this.loggingBrokerMock.Verify(broker =>
@@ -411,10 +431,10 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.SubscriberAgreements
                 broker.InsertSubscriberAgreementAsync(It.IsAny<SubscriberAgreement>()),
                     Times.Never);
 
+            this.securityAuditBrokerMock.VerifyNoOtherCalls();
             this.storageBrokerMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
             this.dateTimeBrokerMock.VerifyNoOtherCalls();
-            this.securityBrokerMock.VerifyNoOtherCalls();
         }
 
         [Theory]
@@ -423,9 +443,9 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.SubscriberAgreements
             int minutesBeforeOrAfter)
         {
             // given
-            EntraUser randomEntraUser = CreateRandomEntraUser();
+            string randomUserId = GetRandomStringWithLengthOf(50);
             DateTimeOffset randomDateTimeOffset = GetRandomDateTimeOffset();
-            SubscriberAgreement randomSubscriberAgreement = CreateRandomSubscriberAgreement(randomDateTimeOffset, randomEntraUser.EntraUserId);
+            SubscriberAgreement randomSubscriberAgreement = CreateRandomSubscriberAgreement(randomDateTimeOffset, randomUserId);
             SubscriberAgreement invalidSubscriberAgreement = randomSubscriberAgreement;
 
             DateTimeOffset invalidDateTime =
@@ -444,30 +464,21 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.SubscriberAgreements
                     message: "SubscriberAgreement validation errors occurred, please try again.",
                     innerException: invalidSubscriberAgreementException);
 
-            var subscriberAgreementServiceMock = new Mock<SubscriberAgreementService>(
-                storageBrokerMock.Object,
-                dateTimeBrokerMock.Object,
-                securityBrokerMock.Object,
-                loggingBrokerMock.Object)
-            {
-                CallBase = true
-            };
-
-            subscriberAgreementServiceMock.Setup(service =>
-                service.ApplyAddAuditAsync(invalidSubscriberAgreement))
+            this.securityAuditBrokerMock.Setup(broker =>
+                broker.ApplyAddAuditValuesAsync(invalidSubscriberAgreement))
                     .ReturnsAsync(invalidSubscriberAgreement);
 
             this.dateTimeBrokerMock.Setup(broker =>
                 broker.GetCurrentDateTimeOffsetAsync())
                     .ReturnsAsync(invalidDateTime);
 
-            this.securityBrokerMock.Setup(broker =>
-                broker.GetCurrentUserAsync())
-                    .ReturnsAsync(randomEntraUser);
+            this.securityAuditBrokerMock.Setup(broker =>
+                broker.GetUserIdAsync())
+                    .ReturnsAsync(randomUserId);
 
             // when
             ValueTask<SubscriberAgreement> addSubscriberAgreementTask =
-                subscriberAgreementServiceMock.Object.AddSubscriberAgreementAsync(invalidSubscriberAgreement);
+                subscriberAgreementService.AddSubscriberAgreementAsync(invalidSubscriberAgreement);
 
             SubscriberAgreementValidationException actualSubscriberAgreementValidationException =
                 await Assert.ThrowsAsync<SubscriberAgreementValidationException>(addSubscriberAgreementTask.AsTask);
@@ -476,12 +487,16 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.SubscriberAgreements
             actualSubscriberAgreementValidationException.Should()
                 .BeEquivalentTo(expectedSubscriberAgreementValidationException);
 
+            this.securityAuditBrokerMock.Verify(broker =>
+                broker.ApplyAddAuditValuesAsync(invalidSubscriberAgreement),
+                    Times.Once());
+
             this.dateTimeBrokerMock.Verify(broker =>
                 broker.GetCurrentDateTimeOffsetAsync(),
                     Times.Once());
 
-            this.securityBrokerMock.Verify(broker =>
-                broker.GetCurrentUserAsync(),
+            this.securityAuditBrokerMock.Verify(broker =>
+                broker.GetUserIdAsync(),
                     Times.Once());
 
             this.loggingBrokerMock.Verify(broker =>
@@ -493,10 +508,10 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.SubscriberAgreements
                 broker.InsertSubscriberAgreementAsync(It.IsAny<SubscriberAgreement>()),
                     Times.Never);
 
+            this.securityAuditBrokerMock.VerifyNoOtherCalls();
             this.storageBrokerMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
             this.dateTimeBrokerMock.VerifyNoOtherCalls();
-            this.securityBrokerMock.VerifyNoOtherCalls();
         }
     }
 }

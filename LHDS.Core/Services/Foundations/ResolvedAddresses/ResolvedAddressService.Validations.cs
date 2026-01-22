@@ -127,7 +127,6 @@ namespace LHDS.Core.Services.Foundations.ResolvedAddresses
         public void ValidateResolvedAddressId(Guid resolvedAddressId)
         {
             Validate(
-
                 createException: () => new InvalidResolvedAddressException(
                     message: "Invalid resolved address. Please correct the errors and try again."),
 
@@ -153,7 +152,6 @@ namespace LHDS.Core.Services.Foundations.ResolvedAddresses
         private static void ValidateAgainstStorageResolvedAddressOnModify(ResolvedAddress inputResolvedAddress, ResolvedAddress storageResolvedAddress)
         {
             Validate(
-
                 createException: () => new InvalidResolvedAddressException(
                     message: "Invalid resolved address. Please correct the errors and try again."),
 
@@ -183,7 +181,6 @@ namespace LHDS.Core.Services.Foundations.ResolvedAddresses
             string auditUserId = await this.securityAuditBroker.GetUserIdAsync();
 
             Validate(
-
                 createException: () => new InvalidResolvedAddressException(
                     message: "Invalid resolved address. Please correct the errors and try again."),
 

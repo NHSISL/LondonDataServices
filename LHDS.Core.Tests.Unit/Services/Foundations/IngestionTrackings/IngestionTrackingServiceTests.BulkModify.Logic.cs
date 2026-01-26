@@ -36,7 +36,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.IngestionTrackings
                     .Returns(ValueTask.CompletedTask);
 
             // when
-            await ingestionTrackingService
+            await ingestionTrackingServiceMock.Object
                 .BulkModifyIngestionTrackingAsync(inputIngestionTrackingItems);
 
             // then

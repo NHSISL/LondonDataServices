@@ -55,7 +55,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.IngestionTrackings
 
             // when
             ValueTask bulkModifyIngestionTrackingTask =
-                ingestionTrackingService.BulkModifyIngestionTrackingAsync(inputIngestionTrackingItems);
+                ingestionTrackingServiceMock.Object.BulkModifyIngestionTrackingAsync(inputIngestionTrackingItems);
 
             IngestionTrackingDependencyException actualIngestionTrackingDependencyException =
                 await Assert.ThrowsAsync<IngestionTrackingDependencyException>(
@@ -120,7 +120,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.IngestionTrackings
 
             // when
             ValueTask bulkModifyIngestionTrackingTask =
-                ingestionTrackingService.BulkModifyIngestionTrackingAsync(inputIngestionTrackingItems);
+                ingestionTrackingServiceMock.Object.BulkModifyIngestionTrackingAsync(inputIngestionTrackingItems);
 
             IngestionTrackingDependencyValidationException actualIngestionTrackingDependencyValidationException =
                 await Assert.ThrowsAsync<IngestionTrackingDependencyValidationException>(
@@ -181,7 +181,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.IngestionTrackings
 
             // when
             ValueTask bulkModifyIngestionTrackingTask =
-                ingestionTrackingService.BulkModifyIngestionTrackingAsync(inputIngestionTrackingItems);
+                ingestionTrackingServiceMock.Object.BulkModifyIngestionTrackingAsync(inputIngestionTrackingItems);
 
             IngestionTrackingDependencyException actualIngestionTrackingDependencyException =
                 await Assert.ThrowsAsync<IngestionTrackingDependencyException>(
@@ -242,7 +242,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.IngestionTrackings
 
             // when
             ValueTask bulkModifyIngestionTrackingTask =
-                ingestionTrackingService.BulkModifyIngestionTrackingAsync(inputIngestionTrackingItems);
+                ingestionTrackingServiceMock.Object.BulkModifyIngestionTrackingAsync(inputIngestionTrackingItems);
 
             IngestionTrackingDependencyValidationException actualIngestionTrackingDependencyValidationException =
                 await Assert.ThrowsAsync<IngestionTrackingDependencyValidationException>(
@@ -303,7 +303,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.IngestionTrackings
 
             // when
             ValueTask bulkModifyIngestionTrackingTask =
-                ingestionTrackingService.BulkModifyIngestionTrackingAsync(inputIngestionTrackingItems);
+                ingestionTrackingServiceMock.Object.BulkModifyIngestionTrackingAsync(inputIngestionTrackingItems);
 
             IngestionTrackingServiceException actualIngestionTrackingServiceException =
                 await Assert.ThrowsAsync<IngestionTrackingServiceException>(

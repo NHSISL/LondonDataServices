@@ -58,7 +58,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.IngestionTrackings
                 var existingIngestionTrackingItems = batch.Where(address => existingIds.Contains(address.Id)).ToList();
                 var newIngestionTrackingItems = batch.Where(address => !existingIds.Contains(address.Id)).ToList();
 
-                ingestionTrackingServiceMock.Verify(service =>
+                ingestionTrackingServiceMock.Setup(service =>
                     service.AssignAuditValuesAndValidateOnBulkAddAsync(newIngestionTrackingItems))
                         .ReturnsAsync(newIngestionTrackingItems);
 
@@ -66,7 +66,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.IngestionTrackings
                     broker.BulkInsertIngestionTrackingsAsync(newIngestionTrackingItems))
                         .Returns(ValueTask.CompletedTask);
 
-                ingestionTrackingServiceMock.Verify(service =>
+                ingestionTrackingServiceMock.Setup(service =>
                     service.AssignAuditValuesAndValidateOnBulkModifyAsync(existingIngestionTrackingItems))
                         .ReturnsAsync(existingIngestionTrackingItems);
 

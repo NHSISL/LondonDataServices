@@ -313,7 +313,6 @@ namespace LHDS.Core.Clients.Extensions
             invalidDataException.ThrowIfContainsErrors();
         }
 
-
         /// <summary>
         /// Extracts a <see cref="ClaimsPrincipal"/> from a given JWT token.
         /// </summary>

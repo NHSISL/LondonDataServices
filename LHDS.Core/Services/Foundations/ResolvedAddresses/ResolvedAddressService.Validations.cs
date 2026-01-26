@@ -5,8 +5,6 @@
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using LHDS.Core.Models.Brokers.Securities;
-using LHDS.Core.Models.Foundations.OptOuts;
 using LHDS.Core.Models.Foundations.ResolvedAddresses;
 using LHDS.Core.Models.Foundations.ResolvedAddresses.Exceptions;
 using Xeptions;
@@ -17,7 +15,7 @@ namespace LHDS.Core.Services.Foundations.ResolvedAddresses
     {
         private async ValueTask ValidateResolvedAddressOnAddAsync(ResolvedAddress resolvedAddress)
         {
-            EntraUser currentUser = await this.securityBroker.GetCurrentUserAsync();
+            string currentEntraUserId = await this.securityAuditBroker.GetUserIdAsync();
 
             Validate(
 
@@ -40,7 +38,7 @@ namespace LHDS.Core.Services.Foundations.ResolvedAddresses
                     Parameter: nameof(ResolvedAddress.HashedUnstructuredPostalAddress)),
 
                 (Rule: IsNotSame(
-                    first: currentUser.EntraUserId,
+                    first: currentEntraUserId,
                     second: resolvedAddress.CreatedBy),
                 Parameter: nameof(ResolvedAddress.CreatedBy)),
 
@@ -56,7 +54,7 @@ namespace LHDS.Core.Services.Foundations.ResolvedAddresses
                     secondName: nameof(ResolvedAddress.CreatedBy)),
                 Parameter: nameof(ResolvedAddress.UpdatedBy)),
 
-                (Rule: await IsNotRecentAsync(resolvedAddress.CreatedDate), 
+                (Rule: await IsNotRecentAsync(resolvedAddress.CreatedDate),
                 Parameter: nameof(ResolvedAddress.CreatedDate)));
         }
 
@@ -89,7 +87,7 @@ namespace LHDS.Core.Services.Foundations.ResolvedAddresses
 
         private async ValueTask ValidateResolvedAddressOnModifyAsync(ResolvedAddress resolvedAddress)
         {
-            EntraUser currentUser = await this.securityBroker.GetCurrentUserAsync();
+            string currentEntraUserId = await this.securityAuditBroker.GetUserIdAsync();
 
             Validate(
 
@@ -112,7 +110,7 @@ namespace LHDS.Core.Services.Foundations.ResolvedAddresses
                     Parameter: nameof(ResolvedAddress.HashedUnstructuredPostalAddress)),
 
                 (Rule: IsNotSame(
-                    first: currentUser.EntraUserId,
+                    first: currentEntraUserId,
                     second: resolvedAddress.UpdatedBy),
                 Parameter: nameof(ResolvedAddress.UpdatedBy)),
 
@@ -154,7 +152,6 @@ namespace LHDS.Core.Services.Foundations.ResolvedAddresses
         private static void ValidateAgainstStorageResolvedAddressOnModify(ResolvedAddress inputResolvedAddress, ResolvedAddress storageResolvedAddress)
         {
             Validate(
-
                 createException: () => new InvalidResolvedAddressException(
                     message: "Invalid resolved address. Please correct the errors and try again."),
 
@@ -181,10 +178,9 @@ namespace LHDS.Core.Services.Foundations.ResolvedAddresses
             ResolvedAddress resolvedAddress,
             ResolvedAddress maybeResolvedAddress)
         {
-            EntraUser auditUser = await this.securityBroker.GetCurrentUserAsync();
+            string auditUserId = await this.securityAuditBroker.GetUserIdAsync();
 
             Validate(
-
                 createException: () => new InvalidResolvedAddressException(
                     message: "Invalid resolved address. Please correct the errors and try again."),
 
@@ -207,7 +203,7 @@ namespace LHDS.Core.Services.Foundations.ResolvedAddresses
                  Parameter: nameof(ResolvedAddress.UpdatedDate)),
 
                 (Rule: IsNotSame(
-                    auditUser.EntraUserId.ToString(),
+                    auditUserId,
                     resolvedAddress.UpdatedBy,
                     nameof(ResolvedAddress.UpdatedBy)),
                  Parameter: nameof(ResolvedAddress.UpdatedBy))

@@ -23,7 +23,7 @@ namespace LHDS.Core.Services.Foundations.ResolvedAddresses
         private readonly IStorageBroker storageBroker;
         private readonly IIdentifierBroker identifierBroker;
         private readonly IDateTimeBroker dateTimeBroker;
-        private readonly ISecurityBroker securityBroker;
+        private readonly ISecurityAuditBroker securityAuditBroker;
         private readonly ILoggingBroker loggingBroker;
         private readonly IAuditBroker auditBroker;
 
@@ -31,14 +31,14 @@ namespace LHDS.Core.Services.Foundations.ResolvedAddresses
             IStorageBroker storageBroker,
             IIdentifierBroker identifierBroker,
             IDateTimeBroker dateTimeBroker,
-            ISecurityBroker securityBroker,
+            ISecurityAuditBroker securityAuditBroker,
             ILoggingBroker loggingBroker,
             IAuditBroker auditBroker)
         {
             this.storageBroker = storageBroker;
             this.identifierBroker = identifierBroker;
             this.dateTimeBroker = dateTimeBroker;
-            this.securityBroker = securityBroker;
+            this.securityAuditBroker = securityAuditBroker;
             this.loggingBroker = loggingBroker;
             this.auditBroker = auditBroker;
         }
@@ -46,8 +46,8 @@ namespace LHDS.Core.Services.Foundations.ResolvedAddresses
         public ValueTask<ResolvedAddress> AddResolvedAddressAsync(ResolvedAddress resolvedAddress) =>
             TryCatch(async () =>
             {
-                ResolvedAddress resolvedAddressWithAddAuditApplied =
-                    await ApplyAddAuditAsync(resolvedAddress);
+                ResolvedAddress resolvedAddressWithAddAuditApplied = 
+                    await this.securityAuditBroker.ApplyAddAuditValuesAsync(resolvedAddress);
 
                 await ValidateResolvedAddressOnAddAsync(resolvedAddressWithAddAuditApplied);
 
@@ -81,8 +81,8 @@ namespace LHDS.Core.Services.Foundations.ResolvedAddresses
         public ValueTask<ResolvedAddress> ModifyResolvedAddressAsync(ResolvedAddress resolvedAddress) =>
             TryCatch(async () =>
             {
-                ResolvedAddress resolvedAddressWithModifyAuditApplied =
-                    await ApplyModifyAuditAsync(resolvedAddress);
+                ResolvedAddress resolvedAddressWithModifyAuditApplied = 
+                    await this.securityAuditBroker.ApplyModifyAuditValuesAsync(resolvedAddress);
 
                 await ValidateResolvedAddressOnModifyAsync(resolvedAddressWithModifyAuditApplied);
 
@@ -92,7 +92,7 @@ namespace LHDS.Core.Services.Foundations.ResolvedAddresses
                 ValidateStorageResolvedAddress(maybeResolvedAddress, resolvedAddress.Id);
 
                 ResolvedAddress ResolvedAddressWithModifyAuditAppliedEnsured =
-                  await EnsureCreatedAuditPropertiesIsSameAsStorageAsync(
+                  await this.securityAuditBroker.EnsureAddAuditValuesRemainsUnchangedOnModifyAsync(
                       resolvedAddress,
                       maybeResolvedAddress);
 
@@ -123,7 +123,7 @@ namespace LHDS.Core.Services.Foundations.ResolvedAddresses
                 ValidateStorageResolvedAddress(maybeResolvedAddress, resolvedAddressId);
 
                 ResolvedAddress resolvedAddressWithDeleteAuditApplied =
-                    await ApplyDeleteAuditAsync(maybeResolvedAddress);
+                    await this.securityAuditBroker.ApplyRemoveAuditValuesAsync(maybeResolvedAddress);
 
                 ResolvedAddress updatedResolvedAddress =
                     await this.storageBroker.UpdateResolvedAddressAsync(resolvedAddressWithDeleteAuditApplied);
@@ -256,10 +256,10 @@ namespace LHDS.Core.Services.Foundations.ResolvedAddresses
                 try
                 {
                     var currentDateTime = await this.dateTimeBroker.GetCurrentDateTimeOffsetAsync();
-                    var currentEntraUser = await this.securityBroker.GetCurrentUserAsync();
+                    string currentEntraUserId = await this.securityAuditBroker.GetUserIdAsync();
                     resolvedAddress.Id = await this.identifierBroker.GetIdentifierAsync();
                     resolvedAddress.CreatedDate = currentDateTime;
-                    resolvedAddress.CreatedBy = currentEntraUser.EntraUserId;
+                    resolvedAddress.CreatedBy = currentEntraUserId;
                     resolvedAddress.UpdatedDate = resolvedAddress.CreatedDate;
                     resolvedAddress.UpdatedBy = resolvedAddress.CreatedBy;
                     await ValidateResolvedAddressOnAddAsync(resolvedAddress);
@@ -326,51 +326,6 @@ namespace LHDS.Core.Services.Foundations.ResolvedAddresses
             }
 
             return await ValueTask.FromResult(validatedResolvedAddresses);
-        }
-
-        virtual internal async ValueTask<ResolvedAddress> ApplyAddAuditAsync(ResolvedAddress resolvedAddress)
-        {
-            ValidateResolvedAddressIsNotNull(resolvedAddress);
-            var auditDateTimeOffset = await this.dateTimeBroker.GetCurrentDateTimeOffsetAsync();
-            var auditUser = await this.securityBroker.GetCurrentUserAsync();
-            resolvedAddress.CreatedBy = auditUser?.EntraUserId.ToString() ?? string.Empty;
-            resolvedAddress.CreatedDate = auditDateTimeOffset;
-            resolvedAddress.UpdatedBy = auditUser?.EntraUserId.ToString() ?? string.Empty;
-            resolvedAddress.UpdatedDate = auditDateTimeOffset;
-
-            return resolvedAddress;
-        }
-
-        virtual internal async ValueTask<ResolvedAddress> ApplyModifyAuditAsync(ResolvedAddress resolvedAddress)
-        {
-            ValidateResolvedAddressIsNotNull(resolvedAddress);
-            var auditDateTimeOffset = await this.dateTimeBroker.GetCurrentDateTimeOffsetAsync();
-            var auditUser = await this.securityBroker.GetCurrentUserAsync();
-            resolvedAddress.UpdatedBy = auditUser?.EntraUserId.ToString() ?? string.Empty;
-            resolvedAddress.UpdatedDate = auditDateTimeOffset;
-
-            return resolvedAddress;
-        }
-
-        virtual internal async ValueTask<ResolvedAddress> ApplyDeleteAuditAsync(ResolvedAddress resolvedAddress)
-        {
-            ValidateResolvedAddressIsNotNull(resolvedAddress);
-            var auditDateTimeOffset = await this.dateTimeBroker.GetCurrentDateTimeOffsetAsync();
-            var auditUser = await this.securityBroker.GetCurrentUserAsync();
-            resolvedAddress.UpdatedBy = auditUser?.EntraUserId.ToString() ?? string.Empty;
-            resolvedAddress.UpdatedDate = auditDateTimeOffset;
-
-            return resolvedAddress;
-        }
-
-        virtual internal async ValueTask<ResolvedAddress> EnsureCreatedAuditPropertiesIsSameAsStorageAsync(
-           ResolvedAddress resolvedAddress,
-           ResolvedAddress maybeResolvedAddress)
-        {
-            resolvedAddress.CreatedDate = maybeResolvedAddress.CreatedDate;
-            resolvedAddress.CreatedBy = maybeResolvedAddress.CreatedBy;
-
-            return resolvedAddress;
         }
     }
 }

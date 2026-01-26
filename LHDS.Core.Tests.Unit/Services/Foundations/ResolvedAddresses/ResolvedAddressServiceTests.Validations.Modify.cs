@@ -46,7 +46,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.ResolvedAddresses
 
             this.securityAuditBrokerMock.Verify(broker =>
                 broker.ApplyModifyAuditValuesAsync(nullResolvedAddress),
-                    Times.Once());
+                    Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>
                 broker.LogErrorAsync(It.Is(SameExceptionAs(
@@ -156,7 +156,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.ResolvedAddresses
 
             this.securityAuditBrokerMock.Verify(broker =>
                 broker.ApplyModifyAuditValuesAsync(invalidResolvedAddress),
-                    Times.Once());
+                    Times.Once);
 
             this.dateTimeBrokerMock.Verify(broker =>
                 broker.GetCurrentDateTimeOffsetAsync(),
@@ -169,7 +169,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.ResolvedAddresses
             this.loggingBrokerMock.Verify(broker =>
                 broker.LogErrorAsync(It.Is(SameExceptionAs(
                     expectedResolvedAddressValidationException))),
-                        Times.Once());
+                        Times.Once);
 
             this.storageBrokerMock.Verify(broker =>
                 broker.UpdateResolvedAddressAsync(It.IsAny<ResolvedAddress>()),
@@ -232,7 +232,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.ResolvedAddresses
 
             this.securityAuditBrokerMock.Verify(broker =>
                 broker.ApplyModifyAuditValuesAsync(invalidResolvedAddress),
-                    Times.Once());
+                    Times.Once);
 
             this.dateTimeBrokerMock.Verify(broker =>
                 broker.GetCurrentDateTimeOffsetAsync(),
@@ -313,7 +313,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.ResolvedAddresses
 
             this.securityAuditBrokerMock.Verify(broker =>
                 broker.ApplyModifyAuditValuesAsync(invalidResolvedAddress),
-                    Times.Once());
+                    Times.Once);
 
             this.dateTimeBrokerMock.Verify(broker =>
                 broker.GetCurrentDateTimeOffsetAsync(),
@@ -394,15 +394,15 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.ResolvedAddresses
 
             this.securityAuditBrokerMock.Verify(service =>
                 service.ApplyModifyAuditValuesAsync(invalidResolvedAddress),
-                    Times.Once());
+                    Times.Once);
 
             this.dateTimeBrokerMock.Verify(broker =>
                 broker.GetCurrentDateTimeOffsetAsync(),
-                    Times.Once());
+                    Times.Once);
 
             this.securityAuditBrokerMock.Verify(broker =>
                 broker.GetUserIdAsync(),
-                    Times.Once());
+                    Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>
                 broker.LogErrorAsync(It.Is(SameExceptionAs(
@@ -463,7 +463,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.ResolvedAddresses
 
             this.securityAuditBrokerMock.Verify(broker =>
                 broker.ApplyModifyAuditValuesAsync(invalidResolvedAddress),
-                    Times.Once());
+                    Times.Once);
 
             this.storageBrokerMock.Verify(broker =>
                 broker.SelectResolvedAddressByIdAsync(nonExistResolvedAddress.Id),
@@ -554,7 +554,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.ResolvedAddresses
 
             this.securityAuditBrokerMock.Verify(broker =>
                 broker.ApplyModifyAuditValuesAsync(invalidResolvedAddress),
-                    Times.Once());
+                    Times.Once);
 
             this.dateTimeBrokerMock.Verify(broker =>
                 broker.GetCurrentDateTimeOffsetAsync(),
@@ -568,7 +568,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.ResolvedAddresses
                 broker.EnsureAddAuditValuesRemainsUnchangedOnModifyAsync(
                     invalidResolvedAddress,
                     storageResolvedAddress),
-                    Times.Once());
+                    Times.Once);
 
             this.storageBrokerMock.Verify(broker =>
                 broker.SelectResolvedAddressByIdAsync(invalidResolvedAddress.Id),
@@ -648,7 +648,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.ResolvedAddresses
 
             this.securityAuditBrokerMock.Verify(broker =>
                 broker.ApplyModifyAuditValuesAsync(invalidResolvedAddress),
-                    Times.Once());
+                    Times.Once);
 
             this.dateTimeBrokerMock.Verify(broker =>
                 broker.GetCurrentDateTimeOffsetAsync(),
@@ -738,7 +738,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.ResolvedAddresses
 
             this.securityAuditBrokerMock.Verify(broker =>
                 broker.ApplyModifyAuditValuesAsync(invalidResolvedAddress),
-                    Times.Once());
+                    Times.Once);
 
             this.dateTimeBrokerMock.Verify(broker =>
                 broker.GetCurrentDateTimeOffsetAsync(),

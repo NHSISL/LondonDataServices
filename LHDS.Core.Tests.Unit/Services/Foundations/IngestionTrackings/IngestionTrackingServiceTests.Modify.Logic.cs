@@ -32,6 +32,10 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.IngestionTrackings
             IngestionTracking expectedIngestionTracking = updatedIngestionTracking.DeepClone();
             Guid ingestionTrackingId = inputIngestionTracking.Id;
 
+            this.securityAuditBrokerMock.Setup(broker =>
+                broker.ApplyModifyAuditValuesAsync(inputIngestionTracking))
+                    .ReturnsAsync(inputIngestionTracking);
+
             this.dateTimeBrokerMock.Setup(broker =>
                 broker.GetCurrentDateTimeOffsetAsync())
                     .ReturnsAsync(randomDateTimeOffset);
@@ -44,6 +48,11 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.IngestionTrackings
                 broker.SelectIngestionTrackingByIdAsync(ingestionTrackingId))
                     .ReturnsAsync(storageIngestionTracking);
 
+            this.securityAuditBrokerMock.Setup(broker =>
+                broker.EnsureAddAuditValuesRemainsUnchangedOnModifyAsync(
+                    inputIngestionTracking,
+                    storageIngestionTracking));
+
             this.storageBrokerMock.Setup(broker =>
                 broker.UpdateIngestionTrackingAsync(inputIngestionTracking))
                     .ReturnsAsync(updatedIngestionTracking);
@@ -55,17 +64,27 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.IngestionTrackings
             // then
             actualIngestionTracking.Should().BeEquivalentTo(expectedIngestionTracking);
 
+            this.securityAuditBrokerMock.Verify(broker =>
+                broker.ApplyModifyAuditValuesAsync(inputIngestionTracking),
+                    Times.Once);
+
             this.dateTimeBrokerMock.Verify(broker =>
                 broker.GetCurrentDateTimeOffsetAsync(),
-                    Times.Exactly(2));
+                    Times.Once);
 
             this.securityAuditBrokerMock.Verify(broker =>
                 broker.GetUserIdAsync(),
-                    Times.Exactly(2));
+                    Times.Once);
 
             this.storageBrokerMock.Verify(broker =>
                 broker.SelectIngestionTrackingByIdAsync(inputIngestionTracking.Id),
                     Times.Once);
+
+            this.securityAuditBrokerMock.Verify(broker =>
+                broker.EnsureAddAuditValuesRemainsUnchangedOnModifyAsync(
+                    inputIngestionTracking,
+                    storageIngestionTracking),
+                        Times.Once);
 
             this.storageBrokerMock.Verify(broker =>
                 broker.UpdateIngestionTrackingAsync(inputIngestionTracking),

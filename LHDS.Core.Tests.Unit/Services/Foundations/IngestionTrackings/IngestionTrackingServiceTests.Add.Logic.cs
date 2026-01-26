@@ -29,6 +29,10 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.IngestionTrackings
             IngestionTracking storageIngestionTracking = inputIngestionTracking;
             IngestionTracking expectedIngestionTracking = storageIngestionTracking.DeepClone();
 
+            this.securityAuditBrokerMock.Setup(broker =>
+                broker.ApplyAddAuditValuesAsync(inputIngestionTracking))
+                    .ReturnsAsync(inputIngestionTracking);
+
             this.dateTimeBrokerMock.Setup(broker =>
                 broker.GetCurrentDateTimeOffsetAsync())
                     .ReturnsAsync(randomDateTimeOffset);
@@ -48,13 +52,17 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.IngestionTrackings
             // then
             actualIngestionTracking.Should().BeEquivalentTo(expectedIngestionTracking);
 
+            this.securityAuditBrokerMock.Verify(broker =>
+                broker.ApplyAddAuditValuesAsync(inputIngestionTracking),
+                    Times.Once);
+
             this.dateTimeBrokerMock.Verify(broker =>
                 broker.GetCurrentDateTimeOffsetAsync(),
-                    Times.Exactly(2));
+                    Times.Once);
 
             this.securityAuditBrokerMock.Verify(broker =>
                 broker.GetUserIdAsync(),
-                    Times.Exactly(2));
+                    Times.Once);
 
             this.storageBrokerMock.Verify(broker =>
                 broker.InsertIngestionTrackingAsync(inputIngestionTracking),

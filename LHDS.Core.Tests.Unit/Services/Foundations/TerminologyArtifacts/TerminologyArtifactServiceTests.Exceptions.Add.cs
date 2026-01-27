@@ -176,7 +176,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.TerminologyArtifacts
 
             this.dateTimeBrokerMock.Verify(broker =>
                 broker.GetCurrentDateTimeOffsetAsync(),
-                    Times.Never());
+                    Times.Never);
 
             this.loggingBrokerMock.Verify(broker =>
                 broker.LogErrorAsync(It.Is(SameExceptionAs(
@@ -185,7 +185,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.TerminologyArtifacts
 
             this.storageBrokerMock.Verify(broker =>
                 broker.InsertTerminologyArtifactAsync(someTerminologyArtifact),
-                    Times.Never());
+                    Times.Never);
 
             this.securityAuditBrokerMock.VerifyNoOtherCalls();
             this.dateTimeBrokerMock.VerifyNoOtherCalls();

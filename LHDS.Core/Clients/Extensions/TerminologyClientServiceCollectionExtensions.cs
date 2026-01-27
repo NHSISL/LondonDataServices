@@ -117,7 +117,6 @@ namespace LHDS.Core.Clients.Extensions
             OntologyConfiguration? ontologyConfiguration =
                 configuration.GetSection("ontologySettings").Get<OntologyConfiguration>();
 
-
             ValidateOntologyConfiguration(ontologyConfiguration);
 
             if (ontologyConfiguration != null)

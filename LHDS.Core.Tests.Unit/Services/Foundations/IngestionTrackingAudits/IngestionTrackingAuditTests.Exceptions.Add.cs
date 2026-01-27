@@ -185,7 +185,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.IngestionTrackingAudits
 
             this.storageBrokerMock.Verify(broker =>
                 broker.InsertIngestionTrackingAuditAsync(someIngestionTrackingAudit),
-                    Times.Never());
+                    Times.Never);
 
             this.securityAuditBrokerMock.VerifyNoOtherCalls();
             this.dateTimeBrokerMock.VerifyNoOtherCalls();

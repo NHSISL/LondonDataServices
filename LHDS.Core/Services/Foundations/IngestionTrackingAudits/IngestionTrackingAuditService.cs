@@ -10,6 +10,7 @@ using LHDS.Core.Brokers.Loggings;
 using LHDS.Core.Brokers.Securities;
 using LHDS.Core.Brokers.Storages.Sql;
 using LHDS.Core.Models.Foundations.IngestionTrackingAudits;
+using LHDS.Core.Models.Foundations.IngestionTrackingAudits;
 
 namespace LHDS.Core.Services.Foundations.IngestionTrackingAudits
 {
@@ -63,18 +64,23 @@ namespace LHDS.Core.Services.Foundations.IngestionTrackingAudits
         public ValueTask<IngestionTrackingAudit> ModifyIngestionTrackingAuditAsync(IngestionTrackingAudit audit) =>
             TryCatch(async () =>
             {
-                IngestionTrackingAudit ingestionTrackingAuditWithModifyAuditApplied =
+                IngestionTrackingAudit auditWithModifyAuditApplied =
                     await this.securityAuditBroker.ApplyModifyAuditValuesAsync(audit);
 
-                await ValidateIngestionTrackingAuditOnModifyAsync(ingestionTrackingAuditWithModifyAuditApplied);
+                await ValidateIngestionTrackingAuditOnModifyAsync(auditWithModifyAuditApplied);
 
                 IngestionTrackingAudit maybeAudit =
                     await this.storageBroker.SelectIngestionTrackingAuditByIdAsync(audit.Id);
 
                 ValidateStorageIngestionTrackingAudit(maybeAudit, audit.Id);
 
+                IngestionTrackingAudit auditWithModifyAuditAppliedEnsured =
+                    await this.securityAuditBroker.EnsureAddAuditValuesRemainsUnchangedOnModifyAsync(
+                        auditWithModifyAuditApplied,
+                        maybeAudit);
+
                 ValidateAgainstStorageIngestionTrackingAuditOnModify(
-                    inputIngestionTrackingAudit: ingestionTrackingAuditWithModifyAuditApplied,
+                    inputIngestionTrackingAudit: auditWithModifyAuditAppliedEnsured,
                     storageIngestionTrackingAudit: maybeAudit);
 
                 return await this.storageBroker.UpdateIngestionTrackingAuditAsync(audit);

@@ -39,6 +39,12 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.IngestionTrackingAudits
                 broker.SelectIngestionTrackingAuditByIdAsync(auditId))
                     .ReturnsAsync(storageIngestionTrackingAudit);
 
+            this.securityAuditBrokerMock.Setup(broker =>
+                broker.EnsureAddAuditValuesRemainsUnchangedOnModifyAsync(
+                    inputIngestionTrackingAudit,
+                    storageIngestionTrackingAudit))
+                        .ReturnsAsync(inputIngestionTrackingAudit);
+
             this.storageBrokerMock.Setup(broker =>
                 broker.UpdateIngestionTrackingAuditAsync(inputIngestionTrackingAudit))
                     .ReturnsAsync(updatedIngestionTrackingAudit);
@@ -61,6 +67,12 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.IngestionTrackingAudits
             this.storageBrokerMock.Verify(broker =>
                 broker.SelectIngestionTrackingAuditByIdAsync(inputIngestionTrackingAudit.Id),
                     Times.Once);
+
+            this.securityAuditBrokerMock.Verify(broker =>
+                broker.EnsureAddAuditValuesRemainsUnchangedOnModifyAsync(
+                    inputIngestionTrackingAudit,
+                    storageIngestionTrackingAudit),
+                        Times.Once);
 
             this.storageBrokerMock.Verify(broker =>
                 broker.UpdateIngestionTrackingAuditAsync(inputIngestionTrackingAudit),

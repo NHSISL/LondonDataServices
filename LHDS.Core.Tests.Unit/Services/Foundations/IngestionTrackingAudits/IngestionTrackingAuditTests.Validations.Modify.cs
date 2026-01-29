@@ -401,6 +401,12 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.IngestionTrackingAudits
                 broker.GetCurrentDateTimeOffsetAsync())
                     .ReturnsAsync(randomDateTimeOffset);
 
+            this.securityAuditBrokerMock.Setup(broker =>
+                broker.EnsureAddAuditValuesRemainsUnchangedOnModifyAsync(
+                    invalidIngestionTrackingAudit,
+                    storageIngestionTrackingAudit))
+                        .ReturnsAsync(invalidIngestionTrackingAudit);
+
             // when
             ValueTask<IngestionTrackingAudit> modifyIngestionTrackingAuditTask =
                 this.ingestionTrackingAuditService.ModifyIngestionTrackingAuditAsync(invalidIngestionTrackingAudit);
@@ -424,6 +430,12 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.IngestionTrackingAudits
             this.dateTimeBrokerMock.Verify(broker =>
                 broker.GetCurrentDateTimeOffsetAsync(),
                     Times.Once);
+
+            this.securityAuditBrokerMock.Verify(broker =>
+                broker.EnsureAddAuditValuesRemainsUnchangedOnModifyAsync(
+                    invalidIngestionTrackingAudit,
+                    storageIngestionTrackingAudit),
+                        Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>
                broker.LogErrorAsync(It.Is(SameExceptionAs(
@@ -474,6 +486,12 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.IngestionTrackingAudits
                 broker.GetCurrentDateTimeOffsetAsync())
                     .ReturnsAsync(randomDateTimeOffset);
 
+            this.securityAuditBrokerMock.Setup(broker =>
+                broker.EnsureAddAuditValuesRemainsUnchangedOnModifyAsync(
+                    invalidIngestionTrackingAudit,
+                    storageIngestionTrackingAudit))
+                        .ReturnsAsync(invalidIngestionTrackingAudit);
+
             // when
             ValueTask<IngestionTrackingAudit> modifyIngestionTrackingAuditTask =
                 this.ingestionTrackingAuditService.ModifyIngestionTrackingAuditAsync(invalidIngestionTrackingAudit);
@@ -496,6 +514,12 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.IngestionTrackingAudits
             this.dateTimeBrokerMock.Verify(broker =>
                 broker.GetCurrentDateTimeOffsetAsync(),
                     Times.Once);
+
+            this.securityAuditBrokerMock.Verify(broker =>
+                broker.EnsureAddAuditValuesRemainsUnchangedOnModifyAsync(
+                    invalidIngestionTrackingAudit,
+                    storageIngestionTrackingAudit),
+                        Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>
                broker.LogErrorAsync(It.Is(SameExceptionAs(
@@ -541,6 +565,12 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.IngestionTrackingAudits
                 broker.GetCurrentDateTimeOffsetAsync())
                     .ReturnsAsync(randomDateTimeOffset);
 
+            this.securityAuditBrokerMock.Setup(broker =>
+                broker.EnsureAddAuditValuesRemainsUnchangedOnModifyAsync(
+                    invalidIngestionTrackingAudit,
+                    storageIngestionTrackingAudit))
+                        .ReturnsAsync(invalidIngestionTrackingAudit);
+
             // when
             ValueTask<IngestionTrackingAudit> modifyIngestionTrackingAuditTask =
                 this.ingestionTrackingAuditService.ModifyIngestionTrackingAuditAsync(invalidIngestionTrackingAudit);
@@ -560,6 +590,12 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.IngestionTrackingAudits
             this.loggingBrokerMock.Verify(broker =>
                 broker.LogErrorAsync(It.Is(SameExceptionAs(
                     expectedIngestionTrackingAuditValidationException))),
+                        Times.Once);
+
+            this.securityAuditBrokerMock.Verify(broker =>
+                broker.EnsureAddAuditValuesRemainsUnchangedOnModifyAsync(
+                    invalidIngestionTrackingAudit,
+                    storageIngestionTrackingAudit),
                         Times.Once);
 
             this.storageBrokerMock.Verify(broker =>

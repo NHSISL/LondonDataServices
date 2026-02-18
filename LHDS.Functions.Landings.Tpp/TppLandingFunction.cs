@@ -34,10 +34,23 @@ namespace LHDS.Functions.Landings.Tpp
         {
             try
             {
-                await this.loggingBroker
-                      .LogInformationAsync(
-                          $"C# Blob trigger function Processing document\n " +
-                          $"Name: FileName: {name}");
+                bool shouldProcess =
+                    await this.fileNameValidationService.ShouldProcessFileAsync(
+                        fileName: name,
+                        includePattern: landingConfiguration.FileNameIncludePattern,
+                        excludePattern: landingConfiguration.FileNameExcludePattern);
+
+                string action
+                    = shouldProcess ? "PROCESSING" : "SKIPPING";
+
+                await this.loggingBroker.LogInformationAsync(
+                    $"C# Blob trigger function {action} document\n " +
+                    $"Name: FileName: {name}");
+
+                if (!shouldProcess)
+                {
+                    return;
+                }
 
                 await tppLandingClient.ProcessAsync(
                     fileName: name,
@@ -49,5 +62,6 @@ namespace LHDS.Functions.Landings.Tpp
                 throw;
             }
         }
+
     }
 }

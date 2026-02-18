@@ -2,40 +2,42 @@
 // Copyright (c) North East London ICB. All rights reserved.
 // ---------------------------------------------------------
 
-using System;
-using System.Linq;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
-using LHDS.Core.Brokers.DateTimes;
-using LHDS.Core.Brokers.Loggings;
-using LHDS.Core.Brokers.Securities;
-using LHDS.Core.Brokers.Storages.Sql;
-using LHDS.Core.Models.Foundations.TerminologyPolls;
-using LHDS.Core.Services.Foundations.FileNameValidations;
 
-namespace LHDS.Core.Services.Foundations.TerminologyPolls
+namespace LHDS.Core.Services.Foundations.FileNameValidations
 {
     public partial class FileNameValidationService : IFileNameValidationService
     {
-        private readonly IStorageBroker storageBroker;
-        private readonly IDateTimeBroker dateTimeBroker;
-        private readonly ISecurityBroker securityBroker;
-        private readonly ILoggingBroker loggingBroker;
+        public FileNameValidationService() { }
 
-        public FileNameValidationService(
-            IStorageBroker storageBroker,
-            IDateTimeBroker dateTimeBroker,
-            ISecurityBroker securityBroker,
-            ILoggingBroker loggingBroker)
+        public ValueTask<bool> ShouldProcessFileAsync(
+            string fileName,
+            string? includePattern,
+            string? excludePattern) =>
+        TryCatch(async () =>
         {
-            this.storageBroker = storageBroker;
-            this.dateTimeBroker = dateTimeBroker;
-            this.securityBroker = securityBroker;
-            this.loggingBroker = loggingBroker;
-        }
+            ValidateArguments(fileName);
 
-        public ValueTask<bool> ShouldProcessFileAsync(string fileName, string includePattern, string excludePattern)
-        {
-            throw new NotImplementedException();
-        }
+            if (!string.IsNullOrWhiteSpace(includePattern))
+            {
+                if (!Regex.IsMatch(fileName, includePattern))
+                {
+                    return false;
+                }
+            }
+
+            if (!string.IsNullOrWhiteSpace(excludePattern))
+            {
+                bool isExcluded = Regex.IsMatch(fileName, excludePattern);
+
+                if (isExcluded)
+                {
+                    return false;
+                }
+            }
+
+            return true;
+        });
     }
 }

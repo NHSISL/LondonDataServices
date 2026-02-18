@@ -954,9 +954,8 @@ namespace LHDS.Core.Migrations
                         .HasMaxLength(255)
                         .HasColumnType("nvarchar(255)");
 
-                    b.Property<string>("HashedUnstructuredPostalAddress")
-                        .HasMaxLength(32)
-                        .HasColumnType("nvarchar(32)");
+                    b.Property<byte[]>("HashedUnstructuredPostalAddress")
+                        .HasColumnType("VARBINARY(16)");
 
                     b.Property<bool>("IsExported")
                         .HasColumnType("bit");

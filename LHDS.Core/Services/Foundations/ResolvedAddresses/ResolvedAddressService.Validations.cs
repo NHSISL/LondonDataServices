@@ -36,7 +36,7 @@ namespace LHDS.Core.Services.Foundations.ResolvedAddresses
                 (Rule: IsInvalid(resolvedAddress.UpdatedBy), Parameter: nameof(ResolvedAddress.UpdatedBy)),
 
                 (Rule: IsInvalidLength(
-                    resolvedAddress.HashedUnstructuredPostalAddress, 32),
+                    resolvedAddress.HashedUnstructuredPostalAddress, 16),
                     Parameter: nameof(ResolvedAddress.HashedUnstructuredPostalAddress)),
 
                 (Rule: IsNotSame(
@@ -81,10 +81,10 @@ namespace LHDS.Core.Services.Foundations.ResolvedAddresses
                 (Rule: IsInvalid(resolvedAddresses), Parameter: nameof(resolvedAddresses)));
         }
 
-        private static dynamic IsInvalidLength(char[] chars, int maxLength) => new
+        private static dynamic IsInvalidLength(byte[]? bytes, int maxLength) => new
         {
-            Condition = chars == null || chars.Length > maxLength,
-            Message = $"Char array length should not be greater than {maxLength}"
+            Condition = bytes != null && bytes.Length > maxLength,
+            Message = $"Byte array length should not be greater than {maxLength}."
         };
 
         private async ValueTask ValidateResolvedAddressOnModifyAsync(ResolvedAddress resolvedAddress)

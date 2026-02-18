@@ -100,7 +100,7 @@ namespace LHDS.Core.Services.Orchestrations.ResolvedAddresses
                 {
                     ValidateNullUnstructuredPostalAddress(address.UnstructuredPostalAddress);
 
-                    address.UnstructuredPostalAddress = HashUnstructuredPostalAddress(
+                    address.HashedUnstructuredPostalAddress = HashUnstructuredPostalAddress(
                         address.UnstructuredPostalAddress);
                 }
 
@@ -116,18 +116,16 @@ namespace LHDS.Core.Services.Orchestrations.ResolvedAddresses
             }
         });
 
-        private static string HashUnstructuredPostalAddress(string unstructuredPostalAddress)
+        private static byte[] HashUnstructuredPostalAddress(string unstructuredPostalAddress)
         {
             using (MD5 md5 = MD5.Create())
             {
-                byte[] inputBytes = Encoding.UTF8.GetBytes(unstructuredPostalAddress);
+                byte[] inputBytes = Encoding.Unicode.GetBytes(unstructuredPostalAddress);
                 byte[] hashBytes = md5.ComputeHash(inputBytes);
 
-                return BitConverter
-                    .ToString(hashBytes)
-                    .Replace("-", string.Empty)
-                    .ToLowerInvariant();
+                return hashBytes;
             }
+
         }
 
         public ValueTask MatchAddressDataAsync() =>
@@ -168,19 +166,23 @@ namespace LHDS.Core.Services.Orchestrations.ResolvedAddresses
                     break;
                 }
 
-                ResolvedAddress? matchedByPostalCode = retrievedResolvedAddresses
+                Guid? matchedHashedByPostalCodeId = retrievedResolvedAddresses
                     .Where(address =>
                         address.Id != unMatchedResolvedAddress.Id &&
                         address.HashedUnstructuredPostalAddress == unMatchedResolvedAddress.HashedUnstructuredPostalAddress &&
                         address.MatchedWithAssign == true &&
                         address.IsProcessed)
+                    .Select(address => address.Id)
                     .FirstOrDefault();
 
-                if (matchedByPostalCode != null)
+                if (matchedHashedByPostalCodeId != null)
                 {
+                    ResolvedAddress matchedHashedByPostalCode = retrievedResolvedAddresses
+                        .FirstOrDefault(address => address.Id == matchedHashedByPostalCodeId);
+
                     await CopyResolvedAddressPropertiesFromMatchAsync(
                         unMatchedResolvedAddress,
-                        matchedByPostalCode,
+                        matchedHashedByPostalCode,
                         dateTimeBroker);
 
                     await resolvedAddressProcessingService
@@ -341,37 +343,37 @@ namespace LHDS.Core.Services.Orchestrations.ResolvedAddresses
         }
 
         private async ValueTask CopyResolvedAddressPropertiesFromMatchAsync(
-        ResolvedAddress target,
-        ResolvedAddress source,
+        ResolvedAddress unMatchedResolvedAddress,
+        ResolvedAddress matchedHashedByPostalCode,
         IDateTimeBroker dateTimeBroker)
         {
-            target.UPRN = source.UPRN;
-            target.USRN = source.USRN;
-            target.OrganisationName = source.OrganisationName;
-            target.DepartmentName = source.DepartmentName;
-            target.SubBuildingName = source.SubBuildingName;
-            target.BuildingName = source.BuildingName;
-            target.BuildingNumber = source.BuildingNumber;
-            target.DependentThoroughfare = source.DependentThoroughfare;
-            target.Thoroughfare = source.Thoroughfare;
-            target.DoubleDependentLocality = source.DoubleDependentLocality;
-            target.DependentLocality = source.DependentLocality;
-            target.PostTown = source.PostTown;
-            target.PostCode = source.PostCode;
-            target.AddressFormatQuality = source.AddressFormatQuality;
-            target.PostCodeQuality = source.PostCodeQuality;
-            target.MatchedWithAssign = source.MatchedWithAssign;
-            target.Qualifier = source.Qualifier;
-            target.Classification = source.Classification;
-            target.Algorithm = source.Algorithm;
-            target.MatchPattern = source.MatchPattern;
-            target.XCoordinate = source.XCoordinate;
-            target.YCoordinate = source.YCoordinate;
-            target.Latitude = source.Latitude;
-            target.Longitude = source.Longitude;
-            target.IsProcessed = true;
-            target.IsProcessing = false;
-            target.UpdatedDate = await dateTimeBroker.GetCurrentDateTimeOffsetAsync();
+            unMatchedResolvedAddress.UPRN = matchedHashedByPostalCode.UPRN;
+            unMatchedResolvedAddress.USRN = matchedHashedByPostalCode.USRN;
+            unMatchedResolvedAddress.OrganisationName = matchedHashedByPostalCode.OrganisationName;
+            unMatchedResolvedAddress.DepartmentName = matchedHashedByPostalCode.DepartmentName;
+            unMatchedResolvedAddress.SubBuildingName = matchedHashedByPostalCode.SubBuildingName;
+            unMatchedResolvedAddress.BuildingName = matchedHashedByPostalCode.BuildingName;
+            unMatchedResolvedAddress.BuildingNumber = matchedHashedByPostalCode.BuildingNumber;
+            unMatchedResolvedAddress.DependentThoroughfare = matchedHashedByPostalCode.DependentThoroughfare;
+            unMatchedResolvedAddress.Thoroughfare = matchedHashedByPostalCode.Thoroughfare;
+            unMatchedResolvedAddress.DoubleDependentLocality = matchedHashedByPostalCode.DoubleDependentLocality;
+            unMatchedResolvedAddress.DependentLocality = matchedHashedByPostalCode.DependentLocality;
+            unMatchedResolvedAddress.PostTown = matchedHashedByPostalCode.PostTown;
+            unMatchedResolvedAddress.PostCode = matchedHashedByPostalCode.PostCode;
+            unMatchedResolvedAddress.AddressFormatQuality = matchedHashedByPostalCode.AddressFormatQuality;
+            unMatchedResolvedAddress.PostCodeQuality = matchedHashedByPostalCode.PostCodeQuality;
+            unMatchedResolvedAddress.MatchedWithAssign = matchedHashedByPostalCode.MatchedWithAssign;
+            unMatchedResolvedAddress.Qualifier = matchedHashedByPostalCode.Qualifier;
+            unMatchedResolvedAddress.Classification = matchedHashedByPostalCode.Classification;
+            unMatchedResolvedAddress.Algorithm = matchedHashedByPostalCode.Algorithm;
+            unMatchedResolvedAddress.MatchPattern = matchedHashedByPostalCode.MatchPattern;
+            unMatchedResolvedAddress.XCoordinate = matchedHashedByPostalCode.XCoordinate;
+            unMatchedResolvedAddress.YCoordinate = matchedHashedByPostalCode.YCoordinate;
+            unMatchedResolvedAddress.Latitude = matchedHashedByPostalCode.Latitude;
+            unMatchedResolvedAddress.Longitude = matchedHashedByPostalCode.Longitude;
+            unMatchedResolvedAddress.IsProcessed = true;
+            unMatchedResolvedAddress.IsProcessing = false;
+            unMatchedResolvedAddress.UpdatedDate = await dateTimeBroker.GetCurrentDateTimeOffsetAsync();
         }
 
         public ValueTask<List<Guid>> ExportResolvedAddressesAsync() =>

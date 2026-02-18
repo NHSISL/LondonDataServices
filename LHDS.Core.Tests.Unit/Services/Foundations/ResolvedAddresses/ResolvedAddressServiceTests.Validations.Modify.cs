@@ -378,7 +378,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.ResolvedAddresses
                 CreateRandomResolvedAddress(randomDateTimeOffset, randomEntraUser.EntraUserId);
 
             invalidResolvedAddress.HashedUnstructuredPostalAddress =
-                GetRandomHexString(33).ToCharArray();
+                GetRandomBytes(17);
 
             var resolvedAddressServiceMock = new Mock<ResolvedAddressService>(
                 storageBrokerMock.Object,
@@ -409,7 +409,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.ResolvedAddresses
 
             invalidResolvedAddressException.AddData(
                 key: nameof(ResolvedAddress.HashedUnstructuredPostalAddress),
-                values: "Char array length should not be greater than 32");
+                values: "Byte array length should not be greater than 16.");
 
             invalidResolvedAddressException.AddData(
                 key: nameof(ResolvedAddress.UpdatedDate),

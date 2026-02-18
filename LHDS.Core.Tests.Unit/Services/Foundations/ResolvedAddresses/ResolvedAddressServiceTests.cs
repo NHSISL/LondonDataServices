@@ -88,13 +88,13 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.ResolvedAddresses
             };
         }
 
-        private static string GetRandomHexString(int length)
+        private static byte[] GetRandomBytes(int length)
         {
             var random = new Random();
-            var buffer = new byte[length / 2 + length % 2];
+            var buffer = new byte[length];
             random.NextBytes(buffer);
-            string hex = BitConverter.ToString(buffer).Replace("-", "").ToLowerInvariant();
-            return hex.Substring(0, length);
+
+            return buffer;
         }
 
         private static SqlException GetSqlException() =>

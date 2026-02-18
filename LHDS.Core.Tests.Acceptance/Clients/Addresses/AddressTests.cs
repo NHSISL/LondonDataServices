@@ -150,13 +150,13 @@ namespace LHDS.Core.Tests.Acceptance.Clients.Addresses
         private static int GetRandomNumber(int min = 2, int max = 10) =>
             new IntRange(min, max).GetValue();
 
-        private static string GetRandomHexString(int length)
+        private static byte[] GetRandomBytes(int length)
         {
             var random = new Random();
-            var buffer = new byte[length / 2 + length % 2];
+            var buffer = new byte[length];
             random.NextBytes(buffer);
-            string hex = BitConverter.ToString(buffer).Replace("-", "").ToLowerInvariant();
-            return hex.Substring(0, length);
+
+            return buffer;
         }
 
         private static DateTimeOffset GetRandomDateTimeOffset() =>
@@ -287,7 +287,7 @@ namespace LHDS.Core.Tests.Acceptance.Clients.Addresses
                 .OnType<DateTimeOffset>().Use(timestamp)
                 .OnType<DateTimeOffset?>().Use(timestamp)
                 .OnProperty(resolvedAddress => resolvedAddress.HashedUnstructuredPostalAddress)
-                    .Use(GetRandomHexString(32).ToCharArray())
+                    .Use(GetRandomBytes(16))
                 .OnProperty(resolvedAddress => resolvedAddress.IsProcessed).Use(false)
                 .OnProperty(resolvedAddress => resolvedAddress.IsProcessing).Use(false)
                 .OnProperty(resolvedAddress => resolvedAddress.IsExported).Use(false)

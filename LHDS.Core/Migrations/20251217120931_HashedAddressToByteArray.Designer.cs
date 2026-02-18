@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace LHDS.Core.Migrations
 {
     [DbContext(typeof(StorageBroker))]
-    [Migration("20251210114110_HashedAddress")]
-    partial class HashedAddress
+    [Migration("20251217120931_HashedAddressToByteArray")]
+    partial class HashedAddressToByteArray
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -957,9 +957,8 @@ namespace LHDS.Core.Migrations
                         .HasMaxLength(255)
                         .HasColumnType("nvarchar(255)");
 
-                    b.Property<string>("HashedUnstructuredPostalAddress")
-                        .HasMaxLength(32)
-                        .HasColumnType("nvarchar(32)");
+                    b.Property<byte[]>("HashedUnstructuredPostalAddress")
+                        .HasColumnType("VARBINARY(16)");
 
                     b.Property<bool>("IsExported")
                         .HasColumnType("bit");

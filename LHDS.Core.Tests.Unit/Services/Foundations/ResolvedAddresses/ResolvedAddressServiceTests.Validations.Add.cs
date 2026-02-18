@@ -4,6 +4,7 @@
 
 using System;
 using System.Threading.Tasks;
+using CsvHelper;
 using FluentAssertions;
 using LHDS.Core.Models.Brokers.Securities;
 using LHDS.Core.Models.Foundations.ResolvedAddresses;
@@ -11,6 +12,7 @@ using LHDS.Core.Models.Foundations.ResolvedAddresses.Exceptions;
 using LHDS.Core.Services.Foundations.ResolvedAddresses;
 using Moq;
 using Xunit;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace LHDS.Core.Tests.Unit.Services.Foundations.ResolvedAddresses
 {
@@ -364,7 +366,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.ResolvedAddresses
         }
 
         [Fact]
-        public async Task ShouldThrowValidationExceptionOnAddIfHashGreaterThanMaxLengthAndLogItAsync()
+        public async Task ShouldThrowValidationExceptionOnAddIfByteArrayGreaterThanMaxLengthAndLogItAsync()
         {
             // given
             DateTimeOffset randomDateTimeOffset = GetRandomDateTimeOffset();
@@ -374,7 +376,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.ResolvedAddresses
                 CreateRandomResolvedAddress(randomDateTimeOffset, randomEntraUser.EntraUserId);
 
             invalidResolvedAddress.HashedUnstructuredPostalAddress =
-                GetRandomHexString(33).ToCharArray();
+                GetRandomBytes(17);
 
             var resolvedAddressServiceMock = new Mock<ResolvedAddressService>(
                 storageBrokerMock.Object,
@@ -405,7 +407,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.ResolvedAddresses
 
             invalidResolvedAddressException.AddData(
                 key: nameof(ResolvedAddress.HashedUnstructuredPostalAddress),
-                values: "Char array length should not be greater than 32");
+                values: "Byte array length should not be greater than 16.");
 
             var expectedResolvedAddressValidationException =
                 new ResolvedAddressValidationException(

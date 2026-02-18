@@ -13,7 +13,7 @@ namespace LHDS.Core.Services.Foundations.FileNameValidations
     {
         ValueTask<bool> ShouldProcessFileAsync(
             string fileName,
-            string includePattern,
-            string excludePattern);
+            string? includePattern,
+            string? excludePattern);
     }
 }

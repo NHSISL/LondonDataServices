@@ -15,7 +15,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.FileNameValidations
         {
             // given
             string fileName = "LDS-NWL-MH-S1-Group1";
-            string includePattern = @"(?i)-MH-";
+            string includePattern = @"(?i)^[^-]+-[^-]+-MH-";
             string excludePattern = string.Empty;
             bool expectedResult = true;
 
@@ -37,7 +37,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.FileNameValidations
         {
             // given
             string fileName = "LDS-NWL-Com-S1-Group1";
-            string includePattern = @"(?i)-MH-";
+            string includePattern = @"(?i)^[^-]+-[^-]+-MH-";
             string excludePattern = string.Empty;
             bool expectedResult = false;
 
@@ -59,9 +59,31 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.FileNameValidations
         {
             // given
             string fileName = "LDS-NWL-mh-S1-Group1";
-            string includePattern = @"(?i)-MH-";
+            string includePattern = @"(?i)^[^-]+-[^-]+-MH-";
             string excludePattern = string.Empty;
             bool expectedResult = true;
+
+            // when
+            ValueTask<bool> shouldProcessFileTask =
+                this.fileNameValidationService.ShouldProcessFileAsync(
+                    fileName: fileName,
+                    includePattern: includePattern,
+                    excludePattern: excludePattern);
+
+            bool actualResult = await shouldProcessFileTask;
+
+            // then
+            actualResult.Should().Be(expectedResult);
+        }
+
+        [Fact]
+        public async Task ShouldNotProcessMentalHealthFileWhenMHNotInThirdSegmentAsync()
+        {
+            // given
+            string fileName = "LDS-MH-NWL-S1-Group1";
+            string includePattern = @"(?i)^[^-]+-[^-]+-MH-";
+            string excludePattern = string.Empty;
+            bool expectedResult = false;
 
             // when
             ValueTask<bool> shouldProcessFileTask =
@@ -81,7 +103,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.FileNameValidations
         {
             // given
             string fileName = "LDS-NWL-Com-S1-Group1";
-            string includePattern = @"(?i)-Com-";
+            string includePattern = @"(?i)^[^-]+-[^-]+-Com-";
             string excludePattern = string.Empty;
             bool expectedResult = true;
 
@@ -103,7 +125,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.FileNameValidations
         {
             // given
             string fileName = "LDS-NWL-MH-S1-Group1";
-            string includePattern = @"(?i)-Com-";
+            string includePattern = @"(?i)^[^-]+-[^-]+-Com-";
             string excludePattern = string.Empty;
             bool expectedResult = false;
 
@@ -125,7 +147,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.FileNameValidations
         {
             // given
             string fileName = "LDS-NWL-com-S1-Group1";
-            string includePattern = @"(?i)-Com-";
+            string includePattern = @"(?i)^[^-]+-[^-]+-Com-";
             string excludePattern = string.Empty;
             bool expectedResult = true;
 
@@ -143,12 +165,34 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.FileNameValidations
         }
 
         [Fact]
-        public async Task ShouldProcessOtherFileWhenExcludesBothMHAndComAsync()
+        public async Task ShouldNotProcessCommunityFileWhenComNotInThirdSegmentAsync()
+        {
+            // given
+            string fileName = "LDS-Com-NWL-S1-Group1";
+            string includePattern = @"(?i)^[^-]+-[^-]+-Com-";
+            string excludePattern = string.Empty;
+            bool expectedResult = false;
+
+            // when
+            ValueTask<bool> shouldProcessFileTask =
+                this.fileNameValidationService.ShouldProcessFileAsync(
+                    fileName: fileName,
+                    includePattern: includePattern,
+                    excludePattern: excludePattern);
+
+            bool actualResult = await shouldProcessFileTask;
+
+            // then
+            actualResult.Should().Be(expectedResult);
+        }
+
+        [Fact]
+        public async Task ShouldProcessGenericFileWhenExcludesMHAndComInThirdSegmentAsync()
         {
             // given
             string fileName = "LDS-NEL-S1-Group2_NewUnits";
             string includePattern = string.Empty;
-            string excludePattern = @"(?i)(-MH-|-Com-)";
+            string excludePattern = @"(?i)^[^-]+-[^-]+-(MH|Com)-";
             bool expectedResult = true;
 
             // when
@@ -165,12 +209,12 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.FileNameValidations
         }
 
         [Fact]
-        public async Task ShouldNotProcessOtherFileWhenContainsMHPatternAsync()
+        public async Task ShouldNotProcessGenericFileWhenContainsMHInThirdSegmentAsync()
         {
             // given
             string fileName = "LDS-NWL-MH-S1-Group1";
             string includePattern = string.Empty;
-            string excludePattern = @"(?i)(-MH-|-Com-)";
+            string excludePattern = @"(?i)^[^-]+-[^-]+-(MH|Com)-";
             bool expectedResult = false;
 
             // when
@@ -187,12 +231,12 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.FileNameValidations
         }
 
         [Fact]
-        public async Task ShouldNotProcessOtherFileWhenContainsComPatternAsync()
+        public async Task ShouldNotProcessGenericFileWhenContainsComInThirdSegmentAsync()
         {
             // given
             string fileName = "LDS-NWL-Com-S1-Group1";
             string includePattern = string.Empty;
-            string excludePattern = @"(?i)(-MH-|-Com-)";
+            string excludePattern = @"(?i)^[^-]+-[^-]+-(MH|Com)-";
             bool expectedResult = false;
 
             // when
@@ -209,12 +253,12 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.FileNameValidations
         }
 
         [Fact]
-        public async Task ShouldNotProcessOtherFileWhenContainsMHWithCaseInsensitiveAsync()
+        public async Task ShouldNotProcessGenericFileWhenContainsMHInThirdSegmentCaseInsensitiveAsync()
         {
             // given
             string fileName = "LDS-NWL-mh-S1-Group1";
             string includePattern = string.Empty;
-            string excludePattern = @"(?i)(-MH-|-Com-)";
+            string excludePattern = @"(?i)^[^-]+-[^-]+-(MH|Com)-";
             bool expectedResult = false;
 
             // when
@@ -231,13 +275,35 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.FileNameValidations
         }
 
         [Fact]
-        public async Task ShouldNotProcessOtherFileWhenContainsComWithCaseInsensitiveAsync()
+        public async Task ShouldNotProcessGenericFileWhenContainsComInThirdSegmentCaseInsensitiveAsync()
         {
             // given
             string fileName = "LDS-NWL-com-S1-Group1";
             string includePattern = string.Empty;
-            string excludePattern = @"(?i)(-MH-|-Com-)";
+            string excludePattern = @"(?i)^[^-]+-[^-]+-(MH|Com)-";
             bool expectedResult = false;
+
+            // when
+            ValueTask<bool> shouldProcessFileTask =
+                this.fileNameValidationService.ShouldProcessFileAsync(
+                    fileName: fileName,
+                    includePattern: includePattern,
+                    excludePattern: excludePattern);
+
+            bool actualResult = await shouldProcessFileTask;
+
+            // then
+            actualResult.Should().Be(expectedResult);
+        }
+
+        [Fact]
+        public async Task ShouldProcessGenericFileWhenMHNotInThirdSegmentAsync()
+        {
+            // given
+            string fileName = "LDS-MH-NWL-S1-Group1";
+            string includePattern = string.Empty;
+            string excludePattern = @"(?i)^[^-]+-[^-]+-(MH|Com)-";
+            bool expectedResult = true;
 
             // when
             ValueTask<bool> shouldProcessFileTask =

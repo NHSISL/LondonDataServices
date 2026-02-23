@@ -13,7 +13,9 @@ namespace LHDS.Core.Services.Foundations.FileNameValidations
         private static void ValidateArguments(string fileName)
         {
             Validate<InvalidArgumentFileNameException>(
-                message: "Invalid file name validation argument(s), please correct the errors and try again.",
+                createException: () => new InvalidArgumentFileNameException(
+                    message: "Invalid file name validation argument(s), please correct the errors and try again.",
+
                 (Rule: IsInvalid(fileName), Parameter: nameof(fileName)));
         }
 
@@ -24,23 +26,23 @@ namespace LHDS.Core.Services.Foundations.FileNameValidations
         };
 
         private static void Validate<T>(
-            string message,
+            Func<T> createException,
             params (dynamic Rule, string Parameter)[] validations)
             where T : Xeption
         {
-            var invalidDataException = (T?)Activator.CreateInstance(typeof(T), message);
+            T invalidDataException = createException();
 
             foreach ((dynamic rule, string parameter) in validations)
             {
                 if (rule.Condition)
                 {
-                    invalidDataException?.UpsertDataList(
+                    invalidDataException.UpsertDataList(
                         key: parameter,
                         value: rule.Message);
                 }
             }
 
-            invalidDataException?.ThrowIfContainsErrors();
+            invalidDataException.ThrowIfContainsErrors();
         }
     }
 }

@@ -84,5 +84,41 @@ namespace LHDS.Core.Clients
                     innerException: tppOrchestrationServiceException.InnerException as Xeption);
             }
         }
+
+        public async ValueTask<bool> ShouldValidateFileNameAsync(string fileName, string includePattern, string excludePattern)
+        {
+            try
+            {
+                return
+                    await this.tppLandingCoordinationService.ShouldValidateFileNameAsync(
+                        fileName,
+                        includePattern,
+                        excludePattern);
+            }
+            catch (TppLandingOrchestrationValidationException tppOrchestrationValidationException)
+            {
+                throw new TppLandingClientValidationException(
+                    message: "TPP landing client dependency validation error occurred, please contact support.",
+                    tppOrchestrationValidationException.InnerException as Xeption);
+            }
+            catch (TppLandingOrchestrationDependencyValidationException tppOrchestrationDependencyValidationException)
+            {
+                throw new TppLandingClientValidationException(
+                    message: "TPP landing client dependency validation error occurred, please contact support.",
+                    innerException: tppOrchestrationDependencyValidationException.InnerException as Xeption);
+            }
+            catch (TppLandingOrchestrationDependencyException tppOrchestrationDependencyException)
+            {
+                throw new TppLandingClientDependencyException(
+                    message: "TPP landing client dependency error occurred, please contact support.",
+                    innerException: tppOrchestrationDependencyException.InnerException as Xeption);
+            }
+            catch (TppLandingOrchestrationServiceException tppOrchestrationServiceException)
+            {
+                throw new TppLandingClientServiceException(
+                    message: "TPP landing client service error occurred, fix errors and try again.",
+                    innerException: tppOrchestrationServiceException.InnerException as Xeption);
+            }
+        }
     }
 }

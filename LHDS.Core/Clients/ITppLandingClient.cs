@@ -11,5 +11,9 @@ namespace LHDS.Core.Clients
     {
         ValueTask<Guid> ProcessAsync(string fileName, Guid supplierId);
         ValueTask ReProcessAsync(Guid supplierId);
+        ValueTask<bool> ShouldValidateFileNameAsync(
+            string fileName,
+            string? includePattern,
+            string? excludePattern);
     }
 }

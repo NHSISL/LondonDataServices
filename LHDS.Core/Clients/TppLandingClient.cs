@@ -85,7 +85,10 @@ namespace LHDS.Core.Clients
             }
         }
 
-        public async ValueTask<bool> ShouldValidateFileNameAsync(string fileName, string includePattern, string excludePattern)
+        public async ValueTask<bool> ShouldValidateFileNameAsync(
+            string fileName,
+            string includePattern,
+            string excludePattern)
         {
             try
             {

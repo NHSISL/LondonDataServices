@@ -30,6 +30,15 @@ namespace LHDS.Core.Services.Coordinations.TppLandings
                 (Rule: IsInvalid(supplierId), Parameter: "SupplierId"));
         }
 
+        private static void ValidateFileNameOnProcess(string fileName)
+        {
+            Validate(
+                createException: () => new InvalidArgumentTppLandingCoordinationException(
+                    message: "Invalid TPP landing coordination argument(s), please correct the errors and try again."),
+
+                (Rule: IsInvalid(fileName), Parameter: "FileName"));
+        }
+
         private static dynamic IsInvalid(Guid id) => new
         {
             Condition = id == Guid.Empty,

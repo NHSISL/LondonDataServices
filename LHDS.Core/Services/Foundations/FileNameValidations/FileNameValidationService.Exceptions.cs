@@ -34,6 +34,24 @@ namespace LHDS.Core.Services.Foundations.FileNameValidations
 
                 throw CreateAndLogDependencyValidationException(invalidRegexFileNameValidationException);
             }
+            catch (RegexMatchTimeoutException regexMatchTimeoutException)
+            {
+                var invalidRegexFileNameValidationException =
+                    new InvalidRegexFileNameValidationException(
+                        message: "Invalid regex pattern occurred, fix errors and try again.",
+                        innerException: regexMatchTimeoutException);
+
+                throw CreateAndLogDependencyValidationException(invalidRegexFileNameValidationException);
+            }
+            catch (ArgumentNullException argumentNullException)
+            {
+                var invalidRegexFileNameValidationException =
+                    new InvalidRegexFileNameValidationException(
+                        message: "Invalid regex pattern occurred, fix errors and try again.",
+                        innerException: argumentNullException);
+
+                throw CreateAndLogDependencyValidationException(invalidRegexFileNameValidationException);
+            }
             catch (Exception exception)
             {
                 var failedFileNameValidationServiceException =

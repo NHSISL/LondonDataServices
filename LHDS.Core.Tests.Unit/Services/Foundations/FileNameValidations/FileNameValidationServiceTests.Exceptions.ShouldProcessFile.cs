@@ -24,7 +24,6 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.FileNameValidations
             string someFileName = GetRandomString();
             string someIncludePattern = GetRandomString();
             string someExcludePattern = GetRandomString();
-
             var fileNameValidationServiceMock = new Mock<FileNameValidationService> { CallBase = true };
 
             fileNameValidationServiceMock

@@ -9,6 +9,7 @@ using LHDS.Core.Brokers.Loggings;
 using LHDS.Core.Models.Orchestrations.Ingres.Exceptions;
 using LHDS.Core.Models.Orchestrations.TppLandings.Exceptions;
 using LHDS.Core.Services.Coordinations.TppLandings;
+using LHDS.Core.Services.Foundations.FileNameValidations;
 using LHDS.Core.Services.Orchestrations.Ingress;
 using LHDS.Core.Services.Orchestrations.TppLandings;
 using Moq;
@@ -22,6 +23,7 @@ namespace LHDS.Core.Tests.Unit.Services.Coordinations.TppLandings
     {
         private readonly Mock<ITppLandingOrchestrationService> tppLandingOrchestrationServiceMock;
         private readonly Mock<IIngressOrchestrationService> ingressOrchestrationServiceMock;
+        private readonly Mock<IFileNameValidationService> fileNameValidationServiceMock;
         private readonly Mock<ILoggingBroker> loggingBrokerMock;
         private readonly ICompareLogic compareLogic;
         private readonly ITppLandingCoordinationService tppLandingCoordinationService;
@@ -30,13 +32,14 @@ namespace LHDS.Core.Tests.Unit.Services.Coordinations.TppLandings
         {
             this.tppLandingOrchestrationServiceMock = new Mock<ITppLandingOrchestrationService>();
             this.ingressOrchestrationServiceMock = new Mock<IIngressOrchestrationService>();
+            this.fileNameValidationServiceMock = new Mock<IFileNameValidationService>();
             this.loggingBrokerMock = new Mock<ILoggingBroker>();
             this.compareLogic = new CompareLogic();
 
             this.tppLandingCoordinationService = new TppLandingCoordinationService(
                 tppOrchestrationService: tppLandingOrchestrationServiceMock.Object,
                 ingressOrchestrationService: ingressOrchestrationServiceMock.Object,
-                fileNameValidationService: null,
+                fileNameValidationService: fileNameValidationServiceMock.Object,
                 loggingBroker: loggingBrokerMock.Object);
         }
 

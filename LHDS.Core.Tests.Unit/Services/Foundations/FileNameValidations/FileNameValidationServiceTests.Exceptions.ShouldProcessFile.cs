@@ -3,7 +3,6 @@
 // ---------------------------------------------------------
 
 using System;
-using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using FluentAssertions;
 using LHDS.Core.Models.Foundations.FileNameValidation.Exceptions;
@@ -16,18 +15,29 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.FileNameValidations
 {
     public partial class FileNameValidationServiceTests
     {
-        [Fact]
-        public async Task ShouldThrowDependencyValidationExceptionOnShouldProcessFileIfRegexErrorOccursAsync()
+        [Theory]
+        [MemberData(nameof(DependencyValidationExceptions))]
+        public async Task ShouldThrowDependencyValidationExceptionOnShouldProcessFileIfDependencyErrorOccursAsync(
+            Exception dependencyValidationException)
         {
             // given
             string someFileName = GetRandomString();
-            string someIncludePattern = "[";
+            string someIncludePattern = GetRandomString();
             string someExcludePattern = GetRandomString();
+
+            var fileNameValidationServiceMock = new Mock<FileNameValidationService> { CallBase = true };
+
+            fileNameValidationServiceMock
+                .Setup(service => service.MatchesPatterns(
+                    It.IsAny<string>(),
+                    It.IsAny<string>(),
+                    It.IsAny<string>()))
+                .Throws(dependencyValidationException);
 
             var invalidRegexFileNameValidationException =
                 new InvalidRegexFileNameValidationException(
                     message: "Invalid regex pattern occurred, fix errors and try again.",
-                    innerException: It.IsAny<RegexParseException>());
+                    innerException: dependencyValidationException);
 
             var expectedFileNameValidationDependencyValidationException =
                 new FileNameValidationDependencyValidationException(
@@ -36,7 +46,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.FileNameValidations
 
             // when
             ValueTask<bool> shouldProcessFileTask =
-                this.fileNameValidationService.ShouldProcessFileAsync(
+                fileNameValidationServiceMock.Object.ShouldProcessFileAsync(
                     fileName: someFileName,
                     includePattern: someIncludePattern,
                     excludePattern: someExcludePattern);
@@ -49,7 +59,15 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.FileNameValidations
             actualException.Should().BeOfType<FileNameValidationDependencyValidationException>();
             actualException.Message.Should().Be(expectedFileNameValidationDependencyValidationException.Message);
             actualException.InnerException.Should().BeOfType<InvalidRegexFileNameValidationException>();
-            actualException.InnerException.InnerException.Should().BeOfType<RegexParseException>();
+
+            fileNameValidationServiceMock.Verify(
+                service => service.MatchesPatterns(
+                    It.IsAny<string>(),
+                    It.IsAny<string>(),
+                    It.IsAny<string>()),
+                Times.Once);
+
+            fileNameValidationServiceMock.VerifyNoOtherCalls();
         }
 
         [Fact]

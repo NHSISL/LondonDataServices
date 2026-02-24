@@ -24,7 +24,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.FileNameValidations
             string excludePattern = GetRandomString();
 
             var invalidArgumentFileNameException =
-                new InvalidArgumentFileNameException(
+                new InvalidArgumentFileNameValidationServiceException(
                     message: "Invalid file name validation argument(s), please correct the errors and try again.");
 
             invalidArgumentFileNameException.AddData(

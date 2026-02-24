@@ -8,7 +8,6 @@ using System.Threading.Tasks;
 using LHDS.Core.Brokers.Loggings;
 using LHDS.Core.Clients;
 using LHDS.Core.Models.Orchestrations.EmisLandings;
-using LHDS.Core.Services.Foundations.FileNameValidations;
 using Microsoft.Azure.Functions.Worker;
 
 namespace LHDS.Functions.Landings.Tpp
@@ -18,19 +17,15 @@ namespace LHDS.Functions.Landings.Tpp
         private readonly ILoggingBroker loggingBroker;
         private readonly ITppLandingClient tppLandingClient;
         private readonly LandingConfiguration landingConfiguration;
-        private readonly IFileNameValidationService fileNameValidationService;
-
 
         public TppLandingFunction(
             ILoggingBroker loggingBroker,
             ITppLandingClient tppLandingClient,
-            LandingConfiguration landingConfiguration,
-            IFileNameValidationService fileNameValidationService)
+            LandingConfiguration landingConfiguration)
         {
             this.loggingBroker = loggingBroker;
             this.tppLandingClient = tppLandingClient;
             this.landingConfiguration = landingConfiguration;
-            this.fileNameValidationService = fileNameValidationService;
         }
 
         [Function("TppLandingFunction")]
@@ -39,23 +34,10 @@ namespace LHDS.Functions.Landings.Tpp
         {
             try
             {
-                bool shouldProcess =
-                    await this.fileNameValidationService.ShouldProcessFileAsync(
-                        fileName: name,
-                        includePattern: landingConfiguration.FileNameIncludePattern,
-                        excludePattern: landingConfiguration.FileNameExcludePattern);
-
-                string action
-                    = shouldProcess ? "PROCESSING" : "SKIPPING";
-
-                await this.loggingBroker.LogInformationAsync(
-                    $"C# Blob trigger function {action} document\n " +
-                    $"Name: FileName: {name}");
-
-                if (!shouldProcess)
-                {
-                    return;
-                }
+                await this.loggingBroker
+                      .LogInformationAsync(
+                          $"C# Blob trigger function Processing document\n " +
+                          $"Name: FileName: {name}");
 
                 await tppLandingClient.ProcessAsync(
                     fileName: name,
@@ -67,6 +49,5 @@ namespace LHDS.Functions.Landings.Tpp
                 throw;
             }
         }
-
     }
 }

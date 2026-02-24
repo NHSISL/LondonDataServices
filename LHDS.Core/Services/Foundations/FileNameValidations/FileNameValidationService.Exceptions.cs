@@ -21,18 +21,18 @@ namespace LHDS.Core.Services.Foundations.FileNameValidations
             {
                 return await returningBoolFunction();
             }
-            catch (InvalidArgumentFileNameException invalidArgumentFileNameException)
+            catch (InvalidArgumentFileNameValidationServiceException invalidArgumentFileNameException)
             {
                 throw CreateAndLogValidationException(invalidArgumentFileNameException);
             }
             catch (RegexParseException regexParseException)
             {
-                var failedFileNameValidationServiceException =
-                    new FailedFileNameValidationServiceException(
-                        message: "Failed file name validation service error occurred, please contact support.",
+                var invalidRegexFileNameValidationException =
+                    new InvalidRegexFileNameValidationException(
+                        message: "Invalid regex pattern occurred, fix errors and try again.",
                         innerException: regexParseException);
 
-                throw CreateAndLogServiceException(failedFileNameValidationServiceException);
+                throw CreateAndLogDependencyValidationException(invalidRegexFileNameValidationException);
             }
             catch (Exception exception)
             {
@@ -54,6 +54,18 @@ namespace LHDS.Core.Services.Foundations.FileNameValidations
 
             return fileNameValidationException;
         }
+
+        private FileNameValidationDependencyValidationException CreateAndLogDependencyValidationException(
+           Xeption exception)
+        {
+            var fileNameValidationDependencyValidationException =
+                new FileNameValidationDependencyValidationException(
+                    message: "File name validation dependency validation error occurred, fix errors and try again.",
+                    innerException: exception);
+
+            return fileNameValidationDependencyValidationException;
+        }
+
 
         private FileNameValidationServiceException CreateAndLogServiceException(Xeption exception)
         {

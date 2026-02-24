@@ -8,6 +8,8 @@ using System.Threading.Tasks;
 using FluentAssertions;
 using LHDS.Core.Models.Foundations.FileNameValidation.Exceptions;
 using LHDS.Core.Models.Foundations.FileNameValidations.Exceptions;
+using LHDS.Core.Services.Foundations.FileNameValidations;
+using Moq;
 using Xunit;
 
 namespace LHDS.Core.Tests.Unit.Services.Foundations.FileNameValidations
@@ -15,21 +17,63 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.FileNameValidations
     public partial class FileNameValidationServiceTests
     {
         [Fact]
-        public async Task ShouldThrowServiceExceptionOnShouldProcessFileIfServiceErrorOccursAsync()
+        public async Task ShouldThrowDependencyValidationExceptionOnShouldProcessFileIfRegexErrorOccursAsync()
         {
             // given
             string someFileName = GetRandomString();
             string someIncludePattern = "[";
             string someExcludePattern = GetRandomString();
 
+            var invalidRegexFileNameValidationException =
+                new InvalidRegexFileNameValidationException(
+                    message: "Invalid regex pattern occurred, fix errors and try again.",
+                    innerException: It.IsAny<RegexParseException>());
+
+            var expectedFileNameValidationDependencyValidationException =
+                new FileNameValidationDependencyValidationException(
+                    message: "File name validation dependency validation error occurred, fix errors and try again.",
+                    innerException: invalidRegexFileNameValidationException);
+
+            // when
+            ValueTask<bool> shouldProcessFileTask =
+                this.fileNameValidationService.ShouldProcessFileAsync(
+                    fileName: someFileName,
+                    includePattern: someIncludePattern,
+                    excludePattern: someExcludePattern);
+
+            FileNameValidationDependencyValidationException actualException =
+                await Assert.ThrowsAsync<FileNameValidationDependencyValidationException>(
+                    shouldProcessFileTask.AsTask);
+
+            // then
+            actualException.Should().BeOfType<FileNameValidationDependencyValidationException>();
+            actualException.Message.Should().Be(expectedFileNameValidationDependencyValidationException.Message);
+            actualException.InnerException.Should().BeOfType<InvalidRegexFileNameValidationException>();
+            actualException.InnerException.InnerException.Should().BeOfType<RegexParseException>();
+        }
+
+        [Fact]
+        public async Task ShouldThrowServiceExceptionOnShouldProcessFileIfServiceErrorOccursAsync()
+        {
+            // given
+            string someFileName = GetRandomString();
+            string someIncludePattern = GetRandomString();
+            string someExcludePattern = GetRandomString();
+            var exception = new Exception();
+
+            var fileNameValidationServiceMock = new Mock<FileNameValidationService> { CallBase = true };
+
+            fileNameValidationServiceMock
+                .Setup(service => service.MatchesPatterns(
+                    It.IsAny<string>(),
+                    It.IsAny<string>(),
+                    It.IsAny<string>()))
+                .Throws(exception);
+
             var failedFileNameValidationServiceException =
                 new FailedFileNameValidationServiceException(
                     message: "Failed file name validation service error occurred, please contact support.",
-                    innerException: new Exception());
-
-            failedFileNameValidationServiceException.AddData(
-                key: "InnerException",
-                values: "RegexParseException");
+                    innerException: exception);
 
             var expectedFileNameValidationServiceException =
                 new FileNameValidationServiceException(
@@ -38,7 +82,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.FileNameValidations
 
             // when
             ValueTask<bool> shouldProcessFileTask =
-                this.fileNameValidationService.ShouldProcessFileAsync(
+                fileNameValidationServiceMock.Object.ShouldProcessFileAsync(
                     fileName: someFileName,
                     includePattern: someIncludePattern,
                     excludePattern: someExcludePattern);
@@ -51,9 +95,16 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.FileNameValidations
             actualException.Should().BeOfType<FileNameValidationServiceException>();
             actualException.Message.Should().Be(expectedFileNameValidationServiceException.Message);
             actualException.InnerException.Should().BeOfType<FailedFileNameValidationServiceException>();
+            actualException.InnerException.InnerException.Should().BeOfType<Exception>();
 
-            actualException.InnerException.InnerException.Should()
-                .BeOfType<RegexParseException>();
+            fileNameValidationServiceMock.Verify(
+                service => service.MatchesPatterns(
+                    It.IsAny<string>(),
+                    It.IsAny<string>(),
+                    It.IsAny<string>()),
+                Times.Once);
+
+            fileNameValidationServiceMock.VerifyNoOtherCalls();
         }
     }
 }

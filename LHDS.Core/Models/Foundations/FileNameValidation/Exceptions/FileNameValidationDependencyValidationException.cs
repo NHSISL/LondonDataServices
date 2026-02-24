@@ -6,10 +6,10 @@ using Xeptions;
 
 namespace LHDS.Core.Models.Foundations.FileNameValidations.Exceptions
 {
-    public class InvalidArgumentFileNameValidationServiceException : Xeption
+    public class FileNameValidationDependencyValidationException : Xeption
     {
-        public InvalidArgumentFileNameValidationServiceException(string message)
-            : base(message)
+        public FileNameValidationDependencyValidationException(string message, Xeption innerException)
+            : base(message, innerException)
         { }
     }
 }

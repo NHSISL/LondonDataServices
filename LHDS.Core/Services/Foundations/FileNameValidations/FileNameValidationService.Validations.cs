@@ -12,7 +12,7 @@ namespace LHDS.Core.Services.Foundations.FileNameValidations
     {
         private static void ValidateArguments(string fileName)
         {
-            Validate<InvalidArgumentFileNameException>(
+            Validate<InvalidArgumentFileNameValidationServiceException>(
                 message: "Invalid file name validation argument(s), please correct the errors and try again.",
                 (Rule: IsInvalid(fileName), Parameter: nameof(fileName)));
         }

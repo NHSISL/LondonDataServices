@@ -19,6 +19,14 @@ namespace LHDS.Core.Services.Foundations.FileNameValidations
         {
             ValidateArguments(fileName);
 
+            return MatchesPatterns(fileName, includePattern, excludePattern);
+        });
+
+        internal virtual bool MatchesPatterns(
+            string fileName,
+            string? includePattern,
+            string? excludePattern)
+        {
             if (!string.IsNullOrWhiteSpace(includePattern))
             {
                 if (!Regex.IsMatch(fileName, includePattern))
@@ -26,11 +34,9 @@ namespace LHDS.Core.Services.Foundations.FileNameValidations
                     return false;
                 }
             }
-
             if (!string.IsNullOrWhiteSpace(excludePattern))
             {
                 bool isExcluded = Regex.IsMatch(fileName, excludePattern);
-
                 if (isExcluded)
                 {
                     return false;
@@ -38,6 +44,6 @@ namespace LHDS.Core.Services.Foundations.FileNameValidations
             }
 
             return true;
-        });
+        }
     }
 }

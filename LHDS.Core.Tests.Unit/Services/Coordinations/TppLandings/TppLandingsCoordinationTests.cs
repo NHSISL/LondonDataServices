@@ -36,6 +36,7 @@ namespace LHDS.Core.Tests.Unit.Services.Coordinations.TppLandings
             this.tppLandingCoordinationService = new TppLandingCoordinationService(
                 tppOrchestrationService: tppLandingOrchestrationServiceMock.Object,
                 ingressOrchestrationService: ingressOrchestrationServiceMock.Object,
+                fileNameValidationService: null,
                 loggingBroker: loggingBrokerMock.Object);
         }
 

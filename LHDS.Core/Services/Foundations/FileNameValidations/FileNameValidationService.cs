@@ -34,6 +34,7 @@ namespace LHDS.Core.Services.Foundations.FileNameValidations
                     return false;
                 }
             }
+            
             if (!string.IsNullOrWhiteSpace(excludePattern))
             {
                 bool isExcluded = Regex.IsMatch(fileName, excludePattern);

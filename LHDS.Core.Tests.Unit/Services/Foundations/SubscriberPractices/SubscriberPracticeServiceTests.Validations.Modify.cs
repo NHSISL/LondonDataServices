@@ -315,7 +315,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.SubscriberPractices
 
             this.securityAuditBrokerMock.Verify(broker =>
                 broker.ApplyModifyAuditValuesAsync(invalidSubscriberPractice),
-                    Times.Once());
+                    Times.Once);
 
             this.dateTimeBrokerMock.Verify(broker =>
                 broker.GetCurrentDateTimeOffsetAsync(),

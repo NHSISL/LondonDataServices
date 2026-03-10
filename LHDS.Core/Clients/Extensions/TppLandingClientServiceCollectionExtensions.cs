@@ -30,6 +30,7 @@ using LHDS.Core.Services.Foundations.Audits;
 using LHDS.Core.Services.Foundations.DataSets;
 using LHDS.Core.Services.Foundations.DataSetSpecifications;
 using LHDS.Core.Services.Foundations.Documents;
+using LHDS.Core.Services.Foundations.FileNameValidations;
 using LHDS.Core.Services.Foundations.IngestionTrackingAudits;
 using LHDS.Core.Services.Foundations.IngestionTrackings;
 using LHDS.Core.Services.Foundations.ObjectColumns;
@@ -199,6 +200,7 @@ namespace LHDS.Core.Clients.Extensions
             services.AddTransient<ISpecificationObjectService, SpecificationObjectService>();
             services.AddTransient<IObjectColumnService, ObjectColumnService>();
             services.AddTransient<ISubscriberAgreementService, SubscriberAgreementService>();
+            services.AddTransient<IFileNameValidationService, FileNameValidationService>();
         }
 
         private static void AddProcessingServices(IServiceCollection services)

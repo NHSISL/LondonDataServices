@@ -10,7 +10,7 @@
     "@microsoft/applicationinsights-react-js": "3.4.0",
     "@microsoft/applicationinsights-web": "2.8.9",
     "@types/react-router-bootstrap": "^0.24.5",
-    "axios": "^1.8.2",
+    "axios": "^1.13.5",
     "bootstrap": "^5.2.0",
     "guid-typescript": "file:dependencies/guid-typescript",
     "http-proxy-middleware": "^2.0.9",

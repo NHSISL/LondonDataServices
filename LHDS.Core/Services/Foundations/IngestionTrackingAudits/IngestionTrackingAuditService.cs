@@ -10,7 +10,6 @@ using LHDS.Core.Brokers.Loggings;
 using LHDS.Core.Brokers.Securities;
 using LHDS.Core.Brokers.Storages.Sql;
 using LHDS.Core.Models.Foundations.IngestionTrackingAudits;
-using LHDS.Core.Models.Foundations.IngestionTrackingAudits;
 
 namespace LHDS.Core.Services.Foundations.IngestionTrackingAudits
 {

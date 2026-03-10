@@ -15,5 +15,7 @@ namespace LHDS.Core.Models.Orchestrations.EmisLandings
         public string BatchDownloadedFile { get; set; } = "LDSBatchDownloaded.txt";
         public string BatchReadyFile { get; set; } = "LDSBatchReady.txt";
         public int LastSeenMinutes { get; set; } = 60;
+        public string FileNameIncludePattern { get; set; }
+        public string FileNameExcludePattern { get; set; }
     }
 }

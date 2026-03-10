@@ -16,7 +16,8 @@ namespace LHDS.Core.Services.Foundations.IngestionTrackings
     {
         private async ValueTask ValidateIngestionTrackingOnAddAsync(IngestionTracking ingestionTracking)
         {
-            EntraUser currentUser = await this.securityBroker.GetCurrentUserAsync();
+            ValidateIngestionTrackingIsNotNull(ingestionTracking);
+            string currentUserId = await this.securityAuditBroker.GetUserIdAsync();
 
             Validate(
                 createException: () => new InvalidIngestionTrackingException(
@@ -35,7 +36,7 @@ namespace LHDS.Core.Services.Foundations.IngestionTrackings
                 (Rule: IsInvalid(ingestionTracking.UpdatedBy), Parameter: nameof(IngestionTracking.UpdatedBy)),
 
                 (Rule: IsNotSame(
-                    first: currentUser.EntraUserId,
+                    first: currentUserId,
                     second: ingestionTracking.CreatedBy),
                 Parameter: nameof(IngestionTracking.CreatedBy)),
 
@@ -56,7 +57,8 @@ namespace LHDS.Core.Services.Foundations.IngestionTrackings
 
         private async ValueTask ValidateIngestionTrackingOnModifyAsync(IngestionTracking ingestionTracking)
         {
-            EntraUser currentUser = await this.securityBroker.GetCurrentUserAsync();
+            ValidateIngestionTrackingIsNotNull(ingestionTracking);
+            string currentUserId = await this.securityAuditBroker.GetUserIdAsync();
 
             Validate(
                 createException: () => new InvalidIngestionTrackingException(
@@ -75,7 +77,7 @@ namespace LHDS.Core.Services.Foundations.IngestionTrackings
                 (Rule: IsInvalid(ingestionTracking.UpdatedBy), Parameter: nameof(IngestionTracking.UpdatedBy)),
 
                 (Rule: IsNotSame(
-                    first: currentUser.EntraUserId,
+                    first: currentUserId,
                     second: ingestionTracking.UpdatedBy),
                 Parameter: nameof(IngestionTracking.UpdatedBy)),
 

@@ -495,7 +495,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.SubscriberPractices
             this.securityAuditBrokerMock.Verify(broker =>
                 broker.EnsureAddAuditValuesRemainsUnchangedOnModifyAsync(
                     invalidSubscriberPractice, storageSubscriberPractice),
-                        Times.Once());
+                        Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>
                broker.LogErrorAsync(It.Is(SameExceptionAs(

@@ -46,7 +46,7 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.DataSetSpecifications
             await this.apiBroker.DeleteSupplierByIdAsync(randomSupplier.Id);
         }
 
-        [Fact(Skip = "Will fix in another PR.")]
+        [Fact]
         public async Task ShouldGetAllDataSetSpecificationsAsync()
         {
             // Given
@@ -57,6 +57,7 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.DataSetSpecifications
                 CreateRandomDataSetSpecifications(dataSetId: randomDataSet.Id);
 
             IQueryable<DataSetSpecification> inputDataSetSpecifications = randomDataSetSpecifications;
+
             IQueryable<DataSetSpecification> expectedDataSetSpecifications = inputDataSetSpecifications;
 
             foreach (DataSetSpecification inputDataSetSpecification in inputDataSetSpecifications)
@@ -74,7 +75,12 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.DataSetSpecifications
                 DataSetSpecification actualDataSetSpecification =
                     actualDataSetSpecifications.Single(approval => approval.Id == expectedDataSetSpecification.Id);
 
-                actualDataSetSpecification.Should().BeEquivalentTo(expectedDataSetSpecification);
+                actualDataSetSpecification.Should().BeEquivalentTo(expectedDataSetSpecification, options => options
+                    .Excluding(property => property.CreatedBy)
+                    .Excluding(property => property.CreatedDate)
+                    .Excluding(property => property.UpdatedBy)
+                    .Excluding(property => property.UpdatedDate));
+
                 await this.apiBroker.DeleteDataSetSpecificationByIdAsync(actualDataSetSpecification.Id);
             }
 

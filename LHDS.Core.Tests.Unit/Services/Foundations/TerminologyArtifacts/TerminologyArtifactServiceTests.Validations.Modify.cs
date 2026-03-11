@@ -650,7 +650,6 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.TerminologyArtifacts
 
             this.securityAuditBrokerMock.Verify(broker =>
                 broker.ApplyModifyAuditValuesAsync(invalidTerminologyArtifact),
-
                     Times.Once);
 
             this.dateTimeBrokerMock.Verify(broker =>

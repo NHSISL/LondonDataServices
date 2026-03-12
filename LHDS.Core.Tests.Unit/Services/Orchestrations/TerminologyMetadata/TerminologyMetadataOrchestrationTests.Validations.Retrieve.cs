@@ -208,7 +208,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.TerminologyMetadata
 
             this.terminologyPollProcessingServiceMock.Verify(service =>
                 service.RetrieveOrAddTerminologyPollAsync(resourceType),
-                    Times.Once());
+                    Times.Once);
 
 
             this.loggingBrokerMock.Verify(broker =>

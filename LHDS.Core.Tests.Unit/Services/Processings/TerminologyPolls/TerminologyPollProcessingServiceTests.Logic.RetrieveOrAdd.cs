@@ -42,7 +42,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.TerminologyPolls
 
             this.terminologyPollServiceMock.Verify(service =>
                 service.RetrieveAllTerminologyPollsAsync(),
-                    Times.Once());
+                    Times.Once);
 
             this.terminologyPollServiceMock.Verify(service =>
                 service.AddTerminologyPollAsync(inputTerminologyPoll),
@@ -104,19 +104,19 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.TerminologyPolls
 
             this.terminologyPollServiceMock.Verify(service =>
                 service.RetrieveAllTerminologyPollsAsync(),
-                    Times.Once());
+                    Times.Once);
 
             this.dateTimeBrokerMock.Verify(broker =>
                 broker.GetCurrentDateTimeOffsetAsync(),
-                    Times.Once());
+                    Times.Once);
 
             this.identifierBrokerMock.Verify(broker =>
                 broker.GetIdentifierAsync(),
-                    Times.Once());
+                    Times.Once);
 
             this.terminologyPollServiceMock.Verify(service =>
                 service.AddTerminologyPollAsync(It.Is(SameTerminologyPollAs(inputTerminologyPoll))),
-                    Times.Once());
+                    Times.Once);
 
             this.terminologyPollServiceMock.VerifyNoOtherCalls();
             this.dateTimeBrokerMock.VerifyNoOtherCalls();

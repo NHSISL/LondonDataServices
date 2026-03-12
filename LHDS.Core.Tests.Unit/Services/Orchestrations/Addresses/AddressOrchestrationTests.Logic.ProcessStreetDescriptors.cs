@@ -127,7 +127,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Addresses
                         inputStreetDescriptorFile,
                         inputBatchSize,
                         i * inputBatchSize),
-                            Times.Once());
+                            Times.Once);
 
                 this.addressProcessingServiceMock.Setup(service =>
                     service.RetrieveAllAddressesAsync())

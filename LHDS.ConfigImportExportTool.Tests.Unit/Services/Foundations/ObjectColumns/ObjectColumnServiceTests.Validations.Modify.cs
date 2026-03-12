@@ -144,7 +144,7 @@ namespace LHDS.ConfigImportExportTool.Tests.Unit.Services.Foundations.ObjectColu
             this.loggingBrokerMock.Verify(broker =>
                 broker.LogErrorAsync(It.Is(SameExceptionAs(
                     expectedObjectColumnValidationException))),
-                        Times.Once());
+                        Times.Once);
 
             this.storageBrokerMock.Verify(broker =>
                 broker.UpdateObjectColumnAsync(It.IsAny<ObjectColumn>()),
@@ -259,7 +259,7 @@ namespace LHDS.ConfigImportExportTool.Tests.Unit.Services.Foundations.ObjectColu
             this.loggingBrokerMock.Verify(broker =>
                 broker.LogErrorAsync(It.Is(SameExceptionAs(
                     expectedObjectColumnValidationException))),
-                        Times.Once());
+                        Times.Once);
 
             this.storageBrokerMock.Verify(broker =>
                 broker.UpdateObjectColumnAsync(It.IsAny<ObjectColumn>()),

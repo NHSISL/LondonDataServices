@@ -155,7 +155,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.ResolvedAddresses
                     $"{identifier}.csv",
                     identifier.ToString(),
                     "Information"),
-                        Times.Once());
+                        Times.Once);
 
             this.resolvedAddressProcessingServiceMock.Verify(service =>
                 service.BulkModifyResolvedAddressesAsync(
@@ -187,7 +187,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.ResolvedAddresses
                     $"{identifier}.csv",
                     identifier.ToString(),
                     "Information"),
-                        Times.Once());
+                        Times.Once);
 
             this.resolvedAddressProcessingServiceMock.VerifyNoOtherCalls();
             this.identifierBrokerMock.VerifyNoOtherCalls();

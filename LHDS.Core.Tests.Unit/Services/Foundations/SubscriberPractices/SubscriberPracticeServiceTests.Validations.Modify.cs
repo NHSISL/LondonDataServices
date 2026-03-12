@@ -158,7 +158,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.SubscriberPractices
 
             this.securityAuditBrokerMock.Verify(broker =>
                 broker.ApplyModifyAuditValuesAsync(invalidSubscriberPractice),
-                    Times.Once());
+                    Times.Once);
 
             this.dateTimeBrokerMock.Verify(broker =>
                 broker.GetCurrentDateTimeOffsetAsync(),
@@ -171,7 +171,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.SubscriberPractices
             this.loggingBrokerMock.Verify(broker =>
                 broker.LogErrorAsync(It.Is(SameExceptionAs(
                     expectedSubscriberPracticeValidationException))),
-                        Times.Once());
+                        Times.Once);
 
             this.storageBrokerMock.Verify(broker =>
                 broker.UpdateSubscriberPracticeAsync(It.IsAny<SubscriberPractice>()),
@@ -234,7 +234,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.SubscriberPractices
 
             this.securityAuditBrokerMock.Verify(broker =>
                 broker.ApplyModifyAuditValuesAsync(invalidSubscriberPractice),
-                    Times.Once());
+                    Times.Once);
 
             this.dateTimeBrokerMock.Verify(broker =>
                 broker.GetCurrentDateTimeOffsetAsync(),
@@ -587,7 +587,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.SubscriberPractices
             this.securityAuditBrokerMock.Verify(broker =>
                 broker.EnsureAddAuditValuesRemainsUnchangedOnModifyAsync(
                     invalidSubscriberPractice, storageSubscriberPractice),
-                        Times.Once());
+                        Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>
                broker.LogErrorAsync(It.Is(SameExceptionAs(

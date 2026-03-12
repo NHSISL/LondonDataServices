@@ -55,7 +55,7 @@ namespace LHDS.ConfigImportExportTool.Tests.Unit.Services.Foundations.CsvHelpers
 
             this.loggingBrokerMock.Verify(broker =>
                 broker.LogErrorAsync(It.Is(SameExceptionAs(expectedCsvHelperValidationException))),
-                    Times.Once());
+                    Times.Once);
 
             this.csvHelperBrokerMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();

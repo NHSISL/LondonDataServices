@@ -43,7 +43,7 @@ namespace LHDS.AdminPortal.Api.Tests.Unit.Controllers.SubscriberAgreements
 
             this.subscriberAgreementServiceMock.Verify(service =>
                 service.RetrieveSubscriberAgreementByIdAsync(inputId),
-                    Times.Once());
+                    Times.Once);
 
             this.subscriberAgreementServiceMock.VerifyNoOtherCalls();
         }

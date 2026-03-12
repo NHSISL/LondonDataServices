@@ -145,15 +145,15 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.TerminologyPolls
 
             terminologyPollServiceMock.Verify(service =>
                 service.ApplyAddTerminologyPollAsync(invalidTerminologyPoll),
-                    Times.Once());
+                    Times.Once);
 
             this.dateTimeBrokerMock.Verify(broker =>
                 broker.GetCurrentDateTimeOffsetAsync(),
-                    Times.Once());
+                    Times.Once);
 
             this.securityBrokerMock.Verify(broker =>
                 broker.GetCurrentUserAsync(),
-                    Times.Once());
+                    Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>
                 broker.LogErrorAsync(It.Is(SameExceptionAs(
@@ -237,15 +237,15 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.TerminologyPolls
 
             terminologyPollServiceMock.Verify(service =>
                 service.ApplyAddTerminologyPollAsync(invalidTerminologyPoll),
-                    Times.Once());
+                    Times.Once);
 
             this.dateTimeBrokerMock.Verify(broker =>
                 broker.GetCurrentDateTimeOffsetAsync(),
-                    Times.Once());
+                    Times.Once);
 
             this.securityBrokerMock.Verify(broker =>
                 broker.GetCurrentUserAsync(),
-                    Times.Once());
+                    Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>
                 broker.LogErrorAsync(It.Is(SameExceptionAs(
@@ -329,15 +329,15 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.TerminologyPolls
 
             terminologyPollServiceMock.Verify(service =>
                 service.ApplyAddTerminologyPollAsync(invalidTerminologyPoll),
-                    Times.Once());
+                    Times.Once);
 
             this.dateTimeBrokerMock.Verify(broker =>
                 broker.GetCurrentDateTimeOffsetAsync(),
-                    Times.Once());
+                    Times.Once);
 
             this.securityBrokerMock.Verify(broker =>
                 broker.GetCurrentUserAsync(),
-                    Times.Once());
+                    Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>
                 broker.LogErrorAsync(It.Is(SameExceptionAs(
@@ -417,15 +417,15 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.TerminologyPolls
 
             terminologyPollServiceMock.Verify(service =>
                 service.ApplyAddTerminologyPollAsync(invalidTerminologyPoll),
-                    Times.Once());
+                    Times.Once);
 
             this.dateTimeBrokerMock.Verify(broker =>
                 broker.GetCurrentDateTimeOffsetAsync(),
-                    Times.Once());
+                    Times.Once);
 
             this.securityBrokerMock.Verify(broker =>
                 broker.GetCurrentUserAsync(),
-                    Times.Once());
+                    Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>
                 broker.LogErrorAsync(It.Is(SameExceptionAs(

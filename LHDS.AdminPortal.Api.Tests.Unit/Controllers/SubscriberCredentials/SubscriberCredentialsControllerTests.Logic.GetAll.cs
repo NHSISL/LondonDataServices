@@ -46,7 +46,7 @@ namespace LHDS.AdminPortal.Api.Tests.Unit.Controllers.SubscriberCredentials
 
             this.subscriberCredentialOrchestrationMock.Verify(service =>
                 service.RetrieveAllSubscriberCredentialsAsync(),
-                    Times.Once());
+                    Times.Once);
 
             this.subscriberCredentialOrchestrationMock.VerifyNoOtherCalls();
         }

@@ -147,7 +147,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.IngestionTrackingAudits
             this.loggingBrokerMock.Verify(broker =>
                 broker.LogErrorAsync(It.Is(SameExceptionAs(
                     expectedIngestionTrackingAuditValidationException))),
-                        Times.Once());
+                        Times.Once);
 
             this.storageBrokerMock.Verify(broker =>
                 broker.UpdateIngestionTrackingAuditAsync(It.IsAny<IngestionTrackingAudit>()),

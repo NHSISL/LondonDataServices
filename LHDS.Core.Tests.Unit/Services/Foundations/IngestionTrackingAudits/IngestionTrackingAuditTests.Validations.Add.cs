@@ -309,7 +309,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.IngestionTrackingAudits
 
             this.dateTimeBrokerMock.Verify(broker =>
                 broker.GetCurrentDateTimeOffsetAsync(),
-                    Times.Once());
+                    Times.Once);
 
             this.securityAuditBrokerMock.Verify(broker =>
                 broker.GetUserIdAsync(),

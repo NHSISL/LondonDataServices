@@ -252,7 +252,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.ResolvedAddresses
 
             this.auditBrokerMock.Verify(service =>
                 service.BulkLogAsync(It.IsAny<List<Audit>>()),
-                    Times.Once());
+                    Times.Once);
 
             this.resolvedAddressProcessingServiceMock.Verify(processing =>
                 processing.BulkModifyResolvedAddressesAsync(
@@ -265,7 +265,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.ResolvedAddresses
             //this.loggingBrokerMock.Verify(broker =>
             //    broker.LogErrorAsync(It.Is(SameExceptionAs(
             //        innerResolvedAddressOrchestrationDependencyException))),
-            //            Times.Once());
+            //            Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>
                 broker.LogErrorAsync(It.Is(SameExceptionAs(

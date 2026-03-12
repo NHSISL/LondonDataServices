@@ -45,7 +45,7 @@ namespace LHDS.AdminPortal.Api.Tests.Unit.Controllers.DataSets
 
             this.dataSetServiceMock.Verify(service =>
                 service.RetrieveAllDataSetsAsync(),
-                    Times.Once());
+                    Times.Once);
 
             this.dataSetServiceMock.VerifyNoOtherCalls();
         }

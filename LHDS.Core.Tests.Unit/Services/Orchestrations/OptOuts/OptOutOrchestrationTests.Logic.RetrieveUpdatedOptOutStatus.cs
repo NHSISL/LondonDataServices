@@ -148,7 +148,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
 
                 this.meshProcessingServiceMock.Verify(processings =>
                     processings.RetrieveMessageByIdAsync(messageId),
-                        Times.Once());
+                        Times.Once);
 
                 meshMessageList.Add(message);
 
@@ -190,11 +190,11 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
 
                 documentProcessingServiceMock.Verify(processings =>
                     processings.AddDocumentAsync(It.IsAny<Stream>(), inputFileName, inputContainer),
-                        Times.Once());
+                        Times.Once);
 
                 this.meshProcessingServiceMock.Verify(processings =>
                     processings.AcknowledgeMessageByIdAsync(messageId),
-                        Times.Once());
+                        Times.Once);
             }
 
             this.optOutProcessingServiceMock.VerifyNoOtherCalls();
@@ -309,7 +309,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
                     // Get message
                     this.meshProcessingServiceMock.Verify(processings =>
                         processings.RetrieveMessageByIdAsync(messageId),
-                            Times.Once());
+                            Times.Once);
 
                     meshMessageList.Add(message);
 
@@ -399,7 +399,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
                 // Get message
                 this.meshProcessingServiceMock.Verify(processings =>
                     processings.RetrieveMessageByIdAsync(messageId),
-                        Times.Once());
+                        Times.Once);
             }
 
             this.optOutProcessingServiceMock.VerifyNoOtherCalls();

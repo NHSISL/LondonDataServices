@@ -22,7 +22,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.SecureDatas
             // then
             this.keyVaultSecretBrokerMock.Verify(broker =>
                 broker.DeleteKeyVaultSecretAsync(secretName),
-                    Times.Once());
+                    Times.Once);
 
             this.keyVaultSecretBrokerMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();

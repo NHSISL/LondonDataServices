@@ -43,7 +43,7 @@ namespace LHDS.AdminPortal.Api.Tests.Unit.Controllers.ResolvedAddresses
 
             this.resolvedAddressServiceMock.Verify(service =>
                 service.RetrieveAllResolvedAddressesAsync(),
-                    Times.Once());
+                    Times.Once);
 
             this.resolvedAddressServiceMock.VerifyNoOtherCalls();
         }

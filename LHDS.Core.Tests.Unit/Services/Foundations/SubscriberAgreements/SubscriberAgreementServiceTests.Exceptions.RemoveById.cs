@@ -206,7 +206,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.SubscriberAgreements
 
             this.storageBrokerMock.Verify(broker =>
                 broker.SelectSubscriberAgreementByIdAsync(It.IsAny<Guid>()),
-                        Times.Once());
+                        Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>
                 broker.LogErrorAsync(It.Is(SameExceptionAs(

@@ -93,7 +93,7 @@ namespace LHDS.ConfigImportExportTool.Tests.Unit.Services.Foundations.Specificat
 
             this.storageBrokerMock.Verify(broker =>
                 broker.SelectSpecificationObjectByIdAsync(It.IsAny<Guid>()),
-                    Times.Once());
+                    Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>
                 broker.LogErrorAsync(It.Is(SameExceptionAs(

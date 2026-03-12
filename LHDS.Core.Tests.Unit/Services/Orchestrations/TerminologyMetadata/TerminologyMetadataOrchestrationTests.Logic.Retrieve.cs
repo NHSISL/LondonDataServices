@@ -189,7 +189,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.TerminologyMetadata
 
                 this.terminologyArtifactProcessingServiceMock.Verify(service =>
                     service.ModifyOrAddTerminologyArtifactAsync(It.Is(SameTerminologyArtifactAs(terminologyArtifact))),
-                        Times.Once());
+                        Times.Once);
             }
 
             this.dateTimeBrokerMock.Verify(broker =>

@@ -184,7 +184,7 @@ namespace LHDS.ConfigImportExportTool.Tests.Unit.Services.Orchestrations.ReadSch
                     It.IsAny<bool>(),
                     It.IsAny<Dictionary<string, int>>(),
                     It.IsAny<bool>()),
-                        Times.Once());
+                        Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>
                broker.LogErrorAsync(It.Is(SameExceptionAs(

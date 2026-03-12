@@ -104,7 +104,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Mesh
                     contentType,
                     contentEncoding,
                     accept),
-                        Times.Once());
+                        Times.Once);
 
             this.meshBrokerMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
@@ -203,7 +203,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Mesh
                     contentType,
                     contentEncoding,
                     accept),
-                        Times.Once());
+                        Times.Once);
 
             this.meshBrokerMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();

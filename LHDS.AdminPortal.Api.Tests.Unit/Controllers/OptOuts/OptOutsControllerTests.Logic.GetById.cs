@@ -46,7 +46,7 @@ namespace LHDS.AdminPortal.Api.Tests.Unit.Controllers.OptOuts
 
             this.optOutProcessingServiceMock.Verify(service =>
                 service.RetrieveOptOutByNhsNumberAsync(randomNhsNumber),
-                    Times.Once());
+                    Times.Once);
 
             this.optOutProcessingServiceMock.VerifyNoOtherCalls();
         }

@@ -114,7 +114,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Addresses
 
                 addressOrchestrationServiceMock.Verify(service =>
                     service.MapDPADataToAddressesAsync(inputDpaCsvFile, inputBatchSize, i * inputBatchSize),
-                        Times.Once());
+                        Times.Once);
 
                 this.addressProcessingServiceMock.Setup(service =>
                     service.RetrieveAllAddressesAsync())

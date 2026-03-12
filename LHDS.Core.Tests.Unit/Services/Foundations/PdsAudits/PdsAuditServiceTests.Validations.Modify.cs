@@ -175,7 +175,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.PdsAudits
             this.loggingBrokerMock.Verify(broker =>
                 broker.LogErrorAsync(It.Is(SameExceptionAs(
                     expectedPdsAuditValidationException))),
-                        Times.Once());
+                        Times.Once);
 
             this.storageBrokerMock.Verify(broker =>
                 broker.UpdatePdsAuditAsync(It.IsAny<PdsAudit>()),
@@ -261,7 +261,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.PdsAudits
             this.loggingBrokerMock.Verify(broker =>
                 broker.LogErrorAsync(It.Is(SameExceptionAs(
                     expectedPdsAuditValidationException))),
-                        Times.Once());
+                        Times.Once);
 
             this.storageBrokerMock.Verify(broker =>
                 broker.UpdatePdsAuditAsync(It.IsAny<PdsAudit>()),

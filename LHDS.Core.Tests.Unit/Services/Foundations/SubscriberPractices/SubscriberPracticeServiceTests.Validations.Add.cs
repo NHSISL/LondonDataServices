@@ -41,15 +41,19 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.SubscriberPractices
             actualSubscriberPracticeValidationException.Should()
                 .BeEquivalentTo(expectedSubscriberPracticeValidationException);
 
+            this.securityAuditBrokerMock.Verify(broker =>
+                broker.ApplyAddAuditValuesAsync(nullSubscriberPractice),
+                    Times.Once);
+
             this.loggingBrokerMock.Verify(broker =>
                 broker.LogErrorAsync(It.Is(SameExceptionAs(
                     expectedSubscriberPracticeValidationException))),
                         Times.Once);
 
+            this.securityAuditBrokerMock.VerifyNoOtherCalls();
             this.storageBrokerMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
             this.dateTimeBrokerMock.VerifyNoOtherCalls();
-            this.securityBrokerMock.VerifyNoOtherCalls();
         }
 
         [Theory]
@@ -59,7 +63,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.SubscriberPractices
         public async Task ShouldThrowValidationExceptionOnAddIfSubscriberPracticeIsInvalidAndLogItAsync(string invalidText)
         {
             // given
-            EntraUser randomEntraUser = CreateRandomEntraUser();
+            string randomUserId = GetRandomStringWithLengthOf(50);
             DateTimeOffset randomDateTimeOffset = GetRandomDateTimeOffset();
 
             var invalidSubscriberPractice = new SubscriberPractice
@@ -68,26 +72,17 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.SubscriberPractices
                 PracticeCode = invalidText,
             };
 
-            var subscriberPracticeServiceMock = new Mock<SubscriberPracticeService>(
-                storageBrokerMock.Object,
-                dateTimeBrokerMock.Object,
-                securityBrokerMock.Object,
-                loggingBrokerMock.Object)
-            {
-                CallBase = true
-            };
-
-            subscriberPracticeServiceMock.Setup(service =>
-                service.ApplyAddAuditAsync(invalidSubscriberPractice))
+            this.securityAuditBrokerMock.Setup(broker =>
+                broker.ApplyAddAuditValuesAsync(invalidSubscriberPractice))
                     .ReturnsAsync(invalidSubscriberPractice);
 
             this.dateTimeBrokerMock.Setup(broker =>
                 broker.GetCurrentDateTimeOffsetAsync())
                     .ReturnsAsync(randomDateTimeOffset);
 
-            this.securityBrokerMock.Setup(broker =>
-                broker.GetCurrentUserAsync())
-                    .ReturnsAsync(randomEntraUser);
+            this.securityAuditBrokerMock.Setup(broker =>
+                broker.GetUserIdAsync())
+                    .ReturnsAsync(randomUserId);
 
             var invalidSubscriberPracticeException =
                 new InvalidSubscriberPracticeException(
@@ -122,7 +117,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.SubscriberPractices
                 values:
                 [
                     "Text is required",
-                    $"Expected value to be '{randomEntraUser.EntraUserId}' but found '{invalidSubscriberPractice.CreatedBy}'."
+                    $"Expected value to be '{randomUserId}' but found '{invalidSubscriberPractice.CreatedBy}'."
                 ]);
 
             invalidSubscriberPracticeException.AddData(
@@ -140,7 +135,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.SubscriberPractices
 
             // when
             ValueTask<SubscriberPractice> addSubscriberPracticeTask =
-                subscriberPracticeServiceMock.Object.AddSubscriberPracticeAsync(invalidSubscriberPractice);
+                subscriberPracticeService.AddSubscriberPracticeAsync(invalidSubscriberPractice);
 
             SubscriberPracticeValidationException actualSubscriberPracticeValidationException =
                 await Assert.ThrowsAsync<SubscriberPracticeValidationException>(addSubscriberPracticeTask.AsTask);
@@ -149,13 +144,17 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.SubscriberPractices
             actualSubscriberPracticeValidationException.Should()
                 .BeEquivalentTo(expectedSubscriberPracticeValidationException);
 
+            this.securityAuditBrokerMock.Verify(broker =>
+                broker.ApplyAddAuditValuesAsync(invalidSubscriberPractice),
+                    Times.Once);
+
             this.dateTimeBrokerMock.Verify(broker =>
                 broker.GetCurrentDateTimeOffsetAsync(),
-                    Times.Once());
+                    Times.Once);
 
-            this.securityBrokerMock.Verify(broker =>
-                broker.GetCurrentUserAsync(),
-                    Times.Once());
+            this.securityAuditBrokerMock.Verify(broker =>
+                broker.GetUserIdAsync(),
+                    Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>
                 broker.LogErrorAsync(It.Is(SameExceptionAs(
@@ -166,10 +165,10 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.SubscriberPractices
                 broker.InsertSubscriberPracticeAsync(It.IsAny<SubscriberPractice>()),
                     Times.Never);
 
+            this.securityAuditBrokerMock.VerifyNoOtherCalls();
             this.storageBrokerMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
             this.dateTimeBrokerMock.VerifyNoOtherCalls();
-            this.securityBrokerMock.VerifyNoOtherCalls();
         }
 
         [Fact]
@@ -177,9 +176,9 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.SubscriberPractices
         {
             // given
             int randomNumber = GetRandomNumber();
-            EntraUser randomEntraUser = CreateRandomEntraUser();
+            string randomUserId = GetRandomStringWithLengthOf(50);
             DateTimeOffset randomDateTimeOffset = GetRandomDateTimeOffset();
-            SubscriberPractice randomSubscriberPractice = CreateRandomSubscriberPractice(randomDateTimeOffset, randomEntraUser.EntraUserId);
+            SubscriberPractice randomSubscriberPractice = CreateRandomSubscriberPractice(randomDateTimeOffset, randomUserId);
             SubscriberPractice invalidSubscriberPractice = randomSubscriberPractice;
 
             invalidSubscriberPractice.UpdatedDate =
@@ -198,30 +197,21 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.SubscriberPractices
                     message: "SubscriberPractice validation errors occurred, please try again.",
                     innerException: invalidSubscriberPracticeException);
 
-            var subscriberPracticeServiceMock = new Mock<SubscriberPracticeService>(
-                storageBrokerMock.Object,
-                dateTimeBrokerMock.Object,
-                securityBrokerMock.Object,
-                loggingBrokerMock.Object)
-            {
-                CallBase = true
-            };
-
-            subscriberPracticeServiceMock.Setup(service =>
-                service.ApplyAddAuditAsync(invalidSubscriberPractice))
+            this.securityAuditBrokerMock.Setup(broker =>
+                broker.ApplyAddAuditValuesAsync(invalidSubscriberPractice))
                     .ReturnsAsync(invalidSubscriberPractice);
 
             this.dateTimeBrokerMock.Setup(broker =>
                 broker.GetCurrentDateTimeOffsetAsync())
                     .ReturnsAsync(randomDateTimeOffset);
 
-            this.securityBrokerMock.Setup(broker =>
-                broker.GetCurrentUserAsync())
-                    .ReturnsAsync(randomEntraUser);
+            this.securityAuditBrokerMock.Setup(broker =>
+                broker.GetUserIdAsync())
+                    .ReturnsAsync(randomUserId);
 
             // when
             ValueTask<SubscriberPractice> addSubscriberPracticeTask =
-                subscriberPracticeServiceMock.Object.AddSubscriberPracticeAsync(invalidSubscriberPractice);
+                subscriberPracticeService.AddSubscriberPracticeAsync(invalidSubscriberPractice);
 
             SubscriberPracticeValidationException actualSubscriberPracticeValidationException =
                 await Assert.ThrowsAsync<SubscriberPracticeValidationException>(addSubscriberPracticeTask.AsTask);
@@ -230,13 +220,17 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.SubscriberPractices
             actualSubscriberPracticeValidationException.Should()
                 .BeEquivalentTo(expectedSubscriberPracticeValidationException);
 
+            this.securityAuditBrokerMock.Verify(broker =>
+                broker.ApplyAddAuditValuesAsync(invalidSubscriberPractice),
+                    Times.Once);
+
             this.dateTimeBrokerMock.Verify(broker =>
                 broker.GetCurrentDateTimeOffsetAsync(),
-                    Times.Once());
+                    Times.Once);
 
-            this.securityBrokerMock.Verify(broker =>
-                broker.GetCurrentUserAsync(),
-                    Times.Once());
+            this.securityAuditBrokerMock.Verify(broker =>
+                broker.GetUserIdAsync(),
+                    Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>
                 broker.LogErrorAsync(It.Is(SameExceptionAs(
@@ -247,19 +241,19 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.SubscriberPractices
                 broker.InsertSubscriberPracticeAsync(It.IsAny<SubscriberPractice>()),
                     Times.Never);
 
+            this.securityAuditBrokerMock.VerifyNoOtherCalls();
             this.storageBrokerMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
             this.dateTimeBrokerMock.VerifyNoOtherCalls();
-            this.securityBrokerMock.VerifyNoOtherCalls();
         }
 
         [Fact]
         public async Task ShouldThrowValidationExceptionOnAddIfCreateAndUpdateUsersIsNotSameAndLogItAsync()
         {
             // given
-            EntraUser randomEntraUser = CreateRandomEntraUser();
+            string randomUserId = GetRandomStringWithLengthOf(50);
             DateTimeOffset randomDateTimeOffset = GetRandomDateTimeOffset();
-            SubscriberPractice randomSubscriberPractice = CreateRandomSubscriberPractice(randomDateTimeOffset, randomEntraUser.EntraUserId);
+            SubscriberPractice randomSubscriberPractice = CreateRandomSubscriberPractice(randomDateTimeOffset, randomUserId);
             SubscriberPractice invalidSubscriberPractice = randomSubscriberPractice;
             invalidSubscriberPractice.UpdatedBy = Guid.NewGuid().ToString();
 
@@ -276,30 +270,21 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.SubscriberPractices
                     message: "SubscriberPractice validation errors occurred, please try again.",
                     innerException: invalidSubscriberPracticeException);
 
-            var subscriberPracticeServiceMock = new Mock<SubscriberPracticeService>(
-                storageBrokerMock.Object,
-                dateTimeBrokerMock.Object,
-                securityBrokerMock.Object,
-                loggingBrokerMock.Object)
-            {
-                CallBase = true
-            };
-
-            subscriberPracticeServiceMock.Setup(service =>
-                service.ApplyAddAuditAsync(invalidSubscriberPractice))
+            this.securityAuditBrokerMock.Setup(broker =>
+                broker.ApplyAddAuditValuesAsync(invalidSubscriberPractice))
                     .ReturnsAsync(invalidSubscriberPractice);
 
             this.dateTimeBrokerMock.Setup(broker =>
                 broker.GetCurrentDateTimeOffsetAsync())
                     .ReturnsAsync(randomDateTimeOffset);
 
-            this.securityBrokerMock.Setup(broker =>
-                broker.GetCurrentUserAsync())
-                    .ReturnsAsync(randomEntraUser);
+            this.securityAuditBrokerMock.Setup(broker =>
+                broker.GetUserIdAsync())
+                    .ReturnsAsync(randomUserId);
 
             // when
             ValueTask<SubscriberPractice> addSubscriberPracticeTask =
-                subscriberPracticeServiceMock.Object.AddSubscriberPracticeAsync(invalidSubscriberPractice);
+                subscriberPracticeService.AddSubscriberPracticeAsync(invalidSubscriberPractice);
 
             SubscriberPracticeValidationException actualSubscriberPracticeValidationException =
                 await Assert.ThrowsAsync<SubscriberPracticeValidationException>(addSubscriberPracticeTask.AsTask);
@@ -308,13 +293,17 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.SubscriberPractices
             actualSubscriberPracticeValidationException.Should()
                 .BeEquivalentTo(expectedSubscriberPracticeValidationException);
 
+            this.securityAuditBrokerMock.Verify(broker =>
+                broker.ApplyAddAuditValuesAsync(invalidSubscriberPractice),
+                    Times.Once);
+
             this.dateTimeBrokerMock.Verify(broker =>
                 broker.GetCurrentDateTimeOffsetAsync(),
-                    Times.Once());
+                    Times.Once);
 
-            this.securityBrokerMock.Verify(broker =>
-                broker.GetCurrentUserAsync(),
-                    Times.Once());
+            this.securityAuditBrokerMock.Verify(broker =>
+                broker.GetUserIdAsync(),
+                    Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>
                 broker.LogErrorAsync(It.Is(SameExceptionAs(
@@ -325,10 +314,10 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.SubscriberPractices
                 broker.InsertSubscriberPracticeAsync(It.IsAny<SubscriberPractice>()),
                     Times.Never);
 
+            this.securityAuditBrokerMock.VerifyNoOtherCalls();
             this.storageBrokerMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
             this.dateTimeBrokerMock.VerifyNoOtherCalls();
-            this.securityBrokerMock.VerifyNoOtherCalls();
         }
 
         [Theory]
@@ -337,9 +326,9 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.SubscriberPractices
             int minutesBeforeOrAfter)
         {
             // given
-            EntraUser randomEntraUser = CreateRandomEntraUser();
+            string randomUserId = GetRandomStringWithLengthOf(50);
             DateTimeOffset randomDateTimeOffset = GetRandomDateTimeOffset();
-            SubscriberPractice randomSubscriberPractice = CreateRandomSubscriberPractice(randomDateTimeOffset, randomEntraUser.EntraUserId);
+            SubscriberPractice randomSubscriberPractice = CreateRandomSubscriberPractice(randomDateTimeOffset, randomUserId);
             SubscriberPractice invalidSubscriberPractice = randomSubscriberPractice;
 
             DateTimeOffset invalidDateTime =
@@ -358,30 +347,21 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.SubscriberPractices
                     message: "SubscriberPractice validation errors occurred, please try again.",
                     innerException: invalidSubscriberPracticeException);
 
-            var subscriberPracticeServiceMock = new Mock<SubscriberPracticeService>(
-                storageBrokerMock.Object,
-                dateTimeBrokerMock.Object,
-                securityBrokerMock.Object,
-                loggingBrokerMock.Object)
-            {
-                CallBase = true
-            };
-
-            subscriberPracticeServiceMock.Setup(service =>
-                service.ApplyAddAuditAsync(invalidSubscriberPractice))
+            this.securityAuditBrokerMock.Setup(broker =>
+                broker.ApplyAddAuditValuesAsync(invalidSubscriberPractice))
                     .ReturnsAsync(invalidSubscriberPractice);
 
             this.dateTimeBrokerMock.Setup(broker =>
                 broker.GetCurrentDateTimeOffsetAsync())
                     .ReturnsAsync(invalidDateTime);
 
-            this.securityBrokerMock.Setup(broker =>
-                broker.GetCurrentUserAsync())
-                    .ReturnsAsync(randomEntraUser);
+            this.securityAuditBrokerMock.Setup(broker =>
+                broker.GetUserIdAsync())
+                    .ReturnsAsync(randomUserId);
 
             // when
             ValueTask<SubscriberPractice> addSubscriberPracticeTask =
-                subscriberPracticeServiceMock.Object.AddSubscriberPracticeAsync(invalidSubscriberPractice);
+                subscriberPracticeService.AddSubscriberPracticeAsync(invalidSubscriberPractice);
 
             SubscriberPracticeValidationException actualSubscriberPracticeValidationException =
                 await Assert.ThrowsAsync<SubscriberPracticeValidationException>(addSubscriberPracticeTask.AsTask);
@@ -390,13 +370,17 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.SubscriberPractices
             actualSubscriberPracticeValidationException.Should()
                 .BeEquivalentTo(expectedSubscriberPracticeValidationException);
 
+            this.securityAuditBrokerMock.Verify(broker =>
+                broker.ApplyAddAuditValuesAsync(invalidSubscriberPractice),
+                    Times.Once);
+
             this.dateTimeBrokerMock.Verify(broker =>
                 broker.GetCurrentDateTimeOffsetAsync(),
-                    Times.Once());
+                    Times.Once);
 
-            this.securityBrokerMock.Verify(broker =>
-                broker.GetCurrentUserAsync(),
-                    Times.Once());
+            this.securityAuditBrokerMock.Verify(broker =>
+                broker.GetUserIdAsync(),
+                    Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>
                 broker.LogErrorAsync(It.Is(SameExceptionAs(
@@ -407,10 +391,10 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.SubscriberPractices
                 broker.InsertSubscriberPracticeAsync(It.IsAny<SubscriberPractice>()),
                     Times.Never);
 
+            this.securityAuditBrokerMock.VerifyNoOtherCalls();
             this.storageBrokerMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
             this.dateTimeBrokerMock.VerifyNoOtherCalls();
-            this.securityBrokerMock.VerifyNoOtherCalls();
         }
     }
 }

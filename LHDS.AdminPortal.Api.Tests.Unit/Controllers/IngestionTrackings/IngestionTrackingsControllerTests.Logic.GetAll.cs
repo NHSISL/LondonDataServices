@@ -43,7 +43,7 @@ namespace LHDS.AdminPortal.Api.Tests.Unit.Controllers.IngestionTrackings
 
             this.ingestionTrackingServiceMock.Verify(service =>
                 service.RetrieveAllIngestionTrackingsAsync(),
-                    Times.Once());
+                    Times.Once);
 
             this.ingestionTrackingServiceMock.VerifyNoOtherCalls();
         }

@@ -19,7 +19,6 @@ namespace LHDS.Core.Services.Foundations.IngestionTrackingAudits
             string currentUserId = await this.securityAuditBroker.GetUserIdAsync();
 
             Validate(
-
                 createException: () => new InvalidIngestionTrackingAuditException(
                     message: "Invalid IngestionTrackingAudit. Please correct the errors and try again."),
 
@@ -75,7 +74,6 @@ namespace LHDS.Core.Services.Foundations.IngestionTrackingAudits
             ValidateIngestionTrackingAuditIsNotNull(ingestionTrackingAudit);
 
             Validate(
-
                 createException: () => new InvalidIngestionTrackingAuditException(
                     message: "Invalid IngestionTrackingAudit. Please correct the errors and try again."),
 
@@ -118,7 +116,6 @@ namespace LHDS.Core.Services.Foundations.IngestionTrackingAudits
         public void ValidateIngestionTrackingAuditId(Guid ingestionTrackingAuditId)
         {
             Validate(
-
                 createException: () => new InvalidIngestionTrackingAuditException(
                     message: "Invalid IngestionTrackingAudit. Please correct the errors and try again."),
 

@@ -206,7 +206,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Addresses
 
             this.storageBrokerMock.Verify(broker =>
                 broker.SelectAddressByIdAsync(It.IsAny<Guid>()),
-                        Times.Once());
+                        Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>
                 broker.LogErrorAsync(It.Is(SameExceptionAs(

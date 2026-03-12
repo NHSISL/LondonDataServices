@@ -83,7 +83,7 @@ namespace LHDS.AdminPortal.Api.Tests.Unit.Controllers.ResolvedAddresses
 
             this.resolvedAddressServiceMock.Verify(service =>
                 service.RetrieveResolvedAddressByIdAsync(It.IsAny<Guid>()),
-                    Times.Once());
+                    Times.Once);
 
             this.resolvedAddressServiceMock.VerifyNoOtherCalls();
         }

@@ -81,7 +81,7 @@ namespace LHDS.AdminPortal.Api.Tests.Unit.Controllers.SubscriberAgreements
 
             this.subscriberAgreementServiceMock.Verify(service =>
                 service.RetrieveSubscriberAgreementByIdAsync(It.IsAny<Guid>()),
-                    Times.Once());
+                    Times.Once);
 
             this.subscriberAgreementServiceMock.VerifyNoOtherCalls();
         }

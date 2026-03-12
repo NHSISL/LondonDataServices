@@ -27,7 +27,7 @@ namespace LHDS.ConfigImportExportTool.Tests.Unit.Clients.ImportExports
             // then
             this.importExportCoordinationServiceMock.Verify(service =>
                 service.Import(inputDataSetName, inputVersion, inputFilePath),
-                    Times.Once());
+                    Times.Once);
 
             this.importExportCoordinationServiceMock.VerifyNoOtherCalls();
         }

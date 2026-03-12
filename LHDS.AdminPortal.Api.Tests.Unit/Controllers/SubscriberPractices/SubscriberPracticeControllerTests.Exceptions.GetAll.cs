@@ -44,7 +44,7 @@ namespace LHDS.AdminPortal.Api.Tests.Unit.Controllers.SubscriberPractices
 
             this.subscriberPracticeServiceMock.Verify(service =>
                 service.RetrieveAllSubscriberPracticesAsync(),
-                    Times.Once());
+                    Times.Once);
 
             this.subscriberPracticeServiceMock.VerifyNoOtherCalls();
         }

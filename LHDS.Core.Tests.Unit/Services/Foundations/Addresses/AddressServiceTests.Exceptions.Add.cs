@@ -56,7 +56,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Addresses
 
             this.securityAuditBrokerMock.Verify(service =>
                service.ApplyAddAuditValuesAsync(someAddress),
-                    Times.Once());
+                    Times.Once);
 
             this.dateTimeBrokerMock.Verify(broker =>
                 broker.GetCurrentDateTimeOffsetAsync(),
@@ -64,7 +64,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Addresses
 
             this.securityAuditBrokerMock.Verify(service =>
                service.GetUserIdAsync(),
-                    Times.Once());
+                    Times.Once);
 
             this.storageBrokerMock.Verify(broker =>
                 broker.InsertAddressAsync(It.IsAny<Address>()),
@@ -124,7 +124,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Addresses
 
             this.securityAuditBrokerMock.Verify(service =>
                 service.ApplyAddAuditValuesAsync(randomAddress),
-                    Times.Once());
+                    Times.Once);
 
             this.dateTimeBrokerMock.Verify(broker =>
                 broker.GetCurrentDateTimeOffsetAsync(),
@@ -132,7 +132,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Addresses
 
             this.securityAuditBrokerMock.Verify(service =>
                service.GetUserIdAsync(),
-                    Times.Once());
+                    Times.Once);
 
             this.storageBrokerMock.Verify(broker =>
                 broker.InsertAddressAsync(It.IsAny<Address>()),
@@ -192,15 +192,15 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Addresses
 
             this.securityAuditBrokerMock.Verify(service =>
                service.ApplyAddAuditValuesAsync(someAddress),
-                    Times.Once());
+                    Times.Once);
 
             this.dateTimeBrokerMock.Verify(broker =>
                 broker.GetCurrentDateTimeOffsetAsync(),
-                    Times.Once());
+                    Times.Once);
 
             this.securityAuditBrokerMock.Verify(service =>
                 service.GetUserIdAsync(),
-                    Times.Once());
+                    Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>
                 broker.LogErrorAsync(It.Is(SameExceptionAs(
@@ -258,7 +258,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Addresses
 
             this.securityAuditBrokerMock.Verify(service =>
                service.ApplyAddAuditValuesAsync(someAddress),
-                    Times.Once());
+                    Times.Once);
 
             this.dateTimeBrokerMock.Verify(broker =>
                 broker.GetCurrentDateTimeOffsetAsync(),
@@ -266,7 +266,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Addresses
 
             this.securityAuditBrokerMock.Verify(service =>
                service.GetUserIdAsync(),
-                    Times.Once());
+                    Times.Once);
 
             this.storageBrokerMock.Verify(broker =>
                 broker.InsertAddressAsync(It.IsAny<Address>()),
@@ -322,7 +322,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Addresses
 
             this.securityAuditBrokerMock.Verify(service =>
                service.ApplyAddAuditValuesAsync(someAddress),
-                    Times.Once());
+                    Times.Once);
 
             this.dateTimeBrokerMock.Verify(broker =>
                 broker.GetCurrentDateTimeOffsetAsync(),
@@ -330,7 +330,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Addresses
 
             this.securityAuditBrokerMock.Verify(service =>
                service.GetUserIdAsync(),
-                    Times.Once());
+                    Times.Once);
 
             this.storageBrokerMock.Verify(broker =>
                 broker.InsertAddressAsync(It.IsAny<Address>()),

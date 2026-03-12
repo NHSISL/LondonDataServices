@@ -71,11 +71,11 @@ namespace LHDS.ConfigImportExportTool.Tests.Unit.Services.Orchestrations.SchemaC
 
             this.dataSetProcessingServiceMock.Verify(service =>
                 service.RetrieveAllDataSetsAsync(),
-                    Times.Once());
+                    Times.Once);
 
             this.specificationObjectProcessingServiceMock.Verify(service =>
                 service.RetrieveAllSpecificationObjectsAsync(),
-                    Times.Once());
+                    Times.Once);
 
             this.dataSetProcessingServiceMock.VerifyNoOtherCalls();
             this.specificationObjectProcessingServiceMock.VerifyNoOtherCalls();

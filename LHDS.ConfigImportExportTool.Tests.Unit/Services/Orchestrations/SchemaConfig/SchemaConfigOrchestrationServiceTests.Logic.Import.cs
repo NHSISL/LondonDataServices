@@ -97,7 +97,7 @@ namespace LHDS.ConfigImportExportTool.Tests.Unit.Services.Orchestrations.SchemaC
             // then
             this.dataSetProcessingServiceMock.Verify(service =>
                 service.RetrieveAllDataSetsAsync(),
-                    Times.Once());
+                    Times.Once);
 
             int invocationCount = 0;
 
@@ -107,7 +107,7 @@ namespace LHDS.ConfigImportExportTool.Tests.Unit.Services.Orchestrations.SchemaC
 
                 this.specificationObjectProcessingServiceMock.Verify(service =>
                     service.ReadOrInsertSpecificationObjectAsync(specificationObject),
-                        Times.Once());
+                        Times.Once);
 
                 invocationCount++;
 
@@ -117,7 +117,7 @@ namespace LHDS.ConfigImportExportTool.Tests.Unit.Services.Orchestrations.SchemaC
 
                     this.objectColumnProcessingServiceMock.Verify(service =>
                         service.ReadOrInsertObjectColumnAsync(objectColumn),
-                            Times.Once());
+                            Times.Once);
 
                     invocationCount++;
                 };

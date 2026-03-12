@@ -666,7 +666,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.ResolvedAddresses
                 broker.EnsureAddAuditValuesRemainsUnchangedOnModifyAsync(
                     invalidResolvedAddress,
                     storageResolvedAddress),
-                    Times.Once());
+                    Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>
                broker.LogErrorAsync(It.Is(SameExceptionAs(

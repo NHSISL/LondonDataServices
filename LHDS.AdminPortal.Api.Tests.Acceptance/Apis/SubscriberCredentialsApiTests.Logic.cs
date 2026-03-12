@@ -413,21 +413,23 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.SubscriberCredentials
             await this.apiBroker.DeleteSubscriberCredentialByIdAsync(subscriberAgreementId);
         }
 
-        [Fact(Skip = "Need to fix Assert.")]
+        [Fact]
         public async Task ShouldDeleteSubscriberCredentialAsync()
         {
             // given
             Guid subscriberAgreementId = Guid.NewGuid();
-            await PostRandomSubscriberCredentialAsync(subscriberAgreementId);
+            SubscriberCredential postedSubscriberCredential =
+                await PostRandomSubscriberCredentialAsync(subscriberAgreementId);
 
             // when
-            await this.apiBroker.DeleteSubscriberCredentialByIdAsync(subscriberAgreementId);
+            await this.apiBroker.DeleteSubscriberCredentialByIdAsync(postedSubscriberCredential.Id);
 
-            ValueTask<SubscriberCredential> getSubscriberCredentialbyIdTask =
-                this.apiBroker.GetSubscriberCredentialByIdAsync(subscriberAgreementId);
+            ValueTask<SubscriberCredential> getSubscriberCredentialByIdTask =
+                this.apiBroker.GetSubscriberCredentialByIdAsync(postedSubscriberCredential.Id);
 
             // then
-            await Assert.ThrowsAsync<HttpResponseInternalServerErrorException>(getSubscriberCredentialbyIdTask.AsTask);
+            await Assert.ThrowsAsync<HttpResponseNotFoundException>(
+                getSubscriberCredentialByIdTask.AsTask);
         }
     }
 }

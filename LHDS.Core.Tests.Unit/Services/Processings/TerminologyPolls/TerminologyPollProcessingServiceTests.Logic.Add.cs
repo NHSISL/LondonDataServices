@@ -35,7 +35,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.TerminologyPolls
 
             this.terminologyPollServiceMock.Verify(service =>
                 service.AddTerminologyPollAsync(inputTerminologyPoll),
-                    Times.Once());
+                    Times.Once);
 
             this.terminologyPollServiceMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();

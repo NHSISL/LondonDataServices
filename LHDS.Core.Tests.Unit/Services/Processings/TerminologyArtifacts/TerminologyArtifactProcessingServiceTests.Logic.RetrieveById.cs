@@ -35,7 +35,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.TerminologyArtifacts
 
             this.terminologyArtifactServiceMock.Verify(service =>
                 service.RetrieveTerminologyArtifactByIdAsync(randomTerminologyArtifacts.Id),
-                    Times.Once());
+                    Times.Once);
 
             this.terminologyArtifactServiceMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();

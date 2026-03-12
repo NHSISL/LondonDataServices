@@ -209,7 +209,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.DataSets
 
             this.storageBrokerMock.Verify(broker =>
                 broker.SelectDataSetByIdAsync(It.IsAny<Guid>()),
-                        Times.Once());
+                        Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>
                 broker.LogErrorAsync(It.Is(SameExceptionAs(

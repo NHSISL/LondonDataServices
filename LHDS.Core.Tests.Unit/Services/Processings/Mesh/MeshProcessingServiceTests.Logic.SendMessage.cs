@@ -99,11 +99,11 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.Mesh
                     contentType,
                     contentEncoding,
                     accept),
-                        Times.Once());
+                        Times.Once);
 
             this.meshServiceMock.Verify(service =>
                 service.RetrieveTrackingStatusByIdAsync(ouputMeshMessage.MessageId),
-                    Times.Once());
+                    Times.Once);
 
             this.meshServiceMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();

@@ -158,7 +158,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Addresses
             this.loggingBrokerMock.Verify(broker =>
                 broker.LogErrorAsync(It.Is(SameExceptionAs(
                     expectedAddressValidationException))),
-                        Times.Once());
+                        Times.Once);
 
             this.storageBrokerMock.Verify(broker =>
                 broker.UpdateAddressAsync(It.IsAny<Address>()),

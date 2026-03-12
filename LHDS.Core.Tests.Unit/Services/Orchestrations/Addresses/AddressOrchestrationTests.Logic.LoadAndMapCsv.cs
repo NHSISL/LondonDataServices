@@ -108,7 +108,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Addresses
 
             this.csvHelperBrokerMock.Verify(service =>
                 service.MapCsvToObjectAsync<Address>(stringRecords, hasHeaderRecord, fieldMappings, true),
-                    Times.Once());
+                    Times.Once);
 
             this.fileBrokerMock.VerifyNoOtherCalls();
             this.csvHelperBrokerMock.VerifyNoOtherCalls();

@@ -37,7 +37,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.SecureDatas
 
             this.keyVaultSecretBrokerMock.Verify(broker =>
                 broker.CreateOrUpdateKeyVaultSecretAsync(It.Is(SameKeyVaultSecretAs(inputKeyVaultSecret))),
-                    Times.Once());
+                    Times.Once);
 
             this.keyVaultSecretBrokerMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();

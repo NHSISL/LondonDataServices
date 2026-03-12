@@ -20,7 +20,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.Mesh
             // then
             this.meshServiceMock.Verify(service =>
                 service.ValidateMailboxAccessAsync(),
-                    Times.Once());
+                    Times.Once);
 
             this.meshServiceMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();

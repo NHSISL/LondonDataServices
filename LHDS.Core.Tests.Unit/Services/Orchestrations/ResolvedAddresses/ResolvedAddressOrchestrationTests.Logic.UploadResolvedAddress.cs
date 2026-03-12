@@ -64,7 +64,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.ResolvedAddresses
             // Then
             this.identifierBrokerMock.Verify(broker =>
                 broker.GetIdentifierAsync(),
-                    Times.Once());
+                    Times.Once);
 
             this.auditBrokerMock.Verify(service =>
                 service.LogAsync(
@@ -74,7 +74,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.ResolvedAddresses
                     null,
                     identifier.ToString(),
                     "Information"),
-                        Times.Once());
+                        Times.Once);
 
             this.csvHelperBrokerMock.Verify(service =>
                 service.MapCsvToObjectAsync<ResolvedAddress>(inputContent, true, fieldMappings, true),
@@ -92,7 +92,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.ResolvedAddresses
                     null,
                     identifier.ToString(),
                     "Information"),
-                        Times.Once());
+                        Times.Once);
 
             this.resolvedAddressProcessingServiceMock.VerifyNoOtherCalls();
             this.identifierBrokerMock.VerifyNoOtherCalls();

@@ -74,7 +74,7 @@ namespace LHDS.Core.Tests.Acceptance.Clients.Pds
 
                 this.blobStorageBrokerMock.Verify(broker =>
                     broker.InsertFileAsync(It.IsAny<Stream>(), fileNameReturn, pdsFileContainer),
-                        Times.Once());
+                        Times.Once);
 
                 this.meshBrokerMock.Verify(broker =>
                     broker.AcknowledgeMessageByIdAsync(item.MessageId),

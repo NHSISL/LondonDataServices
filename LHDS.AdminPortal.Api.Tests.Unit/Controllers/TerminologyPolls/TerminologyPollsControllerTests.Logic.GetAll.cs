@@ -43,7 +43,7 @@ namespace LHDS.AdminPortal.Api.Tests.Unit.Controllers.TerminologyPolls
 
             this.terminologyPollsServiceMock.Verify(service =>
                 service.RetrieveAllTerminologyPollsAsync(),
-                    Times.Once());
+                    Times.Once);
 
             this.terminologyPollsServiceMock.VerifyNoOtherCalls();
         }

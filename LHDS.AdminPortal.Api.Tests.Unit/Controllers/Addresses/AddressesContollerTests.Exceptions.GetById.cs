@@ -80,7 +80,7 @@ namespace LHDS.AdminPortal.Api.Tests.Unit.Controllers.Addresses
 
             this.addressServiceMock.Verify(service =>
                 service.RetrieveAddressByIdAsync(It.IsAny<Guid>()),
-                    Times.Once());
+                    Times.Once);
 
             this.addressServiceMock.VerifyNoOtherCalls();
         }

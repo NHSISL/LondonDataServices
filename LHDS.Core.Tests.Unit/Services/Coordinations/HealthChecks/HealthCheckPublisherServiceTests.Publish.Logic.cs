@@ -45,7 +45,7 @@ namespace LHDS.Core.Tests.Unit.Services.Coordinations.HealthChecks
 
                 this.telemetryBrokerMock.Verify(broker =>
                     broker.TrackEventAsync(It.Is(SameEventTelemetryAs(eventTelemetry))),
-                        Times.Once());
+                        Times.Once);
             }
 
             this.telemetryBrokerMock.VerifyNoOtherCalls();

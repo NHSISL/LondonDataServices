@@ -28,7 +28,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.Mesh
             // then
             this.meshServiceMock.Verify(service =>
                 service.RetrieveMessageByIdAsync(randomMessage.MessageId),
-                    Times.Once());
+                    Times.Once);
 
             this.meshServiceMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();

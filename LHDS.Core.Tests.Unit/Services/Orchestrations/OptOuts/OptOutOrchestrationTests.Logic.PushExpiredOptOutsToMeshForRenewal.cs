@@ -136,7 +136,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
                             o.LastSentToMesh == currentDateTime &&
                             o.UpdatedDate == currentDateTime &&
                             o.BatchReference == batchReference)),
-                    Times.Once());
+                    Times.Once);
             }
 
             this.dateTimeBrokerMock.Verify(broker =>

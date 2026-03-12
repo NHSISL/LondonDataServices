@@ -104,11 +104,11 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Addresses
 
             this.fileBrokerMock.Verify(service =>
                 service.GetListOfFilesAsync(inputTempPath, inputSearchPattern),
-                    Times.Once());
+                    Times.Once);
 
             this.identifierBrokerMock.Verify(broker =>
                 broker.GetIdentifierAsync(),
-                    Times.Once());
+                    Times.Once);
 
             this.auditBrokerMock.Verify(broker =>
                 broker.LogInformationAsync(

@@ -57,7 +57,6 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.DataSetSpecifications
                 CreateRandomDataSetSpecifications(dataSetId: randomDataSet.Id);
 
             IQueryable<DataSetSpecification> inputDataSetSpecifications = randomDataSetSpecifications;
-
             IQueryable<DataSetSpecification> expectedDataSetSpecifications = inputDataSetSpecifications;
 
             foreach (DataSetSpecification inputDataSetSpecification in inputDataSetSpecifications)

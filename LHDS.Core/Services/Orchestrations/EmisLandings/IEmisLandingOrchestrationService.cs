@@ -22,5 +22,10 @@ namespace LHDS.Core.Services.Orchestrations.EmisLandings
             subscriberCredential);
 
         ValueTask RedecryptDocumentByIngestionIdAsync(Guid ingestionTrackingId);
+
+        ValueTask<string> ReLandDocumentByFileNameAsync(
+            string fileName,
+            SubscriberCredential subscriberCredential,
+            Guid supplierId);
     }
 }

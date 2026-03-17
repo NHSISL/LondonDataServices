@@ -237,6 +237,17 @@ namespace LHDS.Core.Services.Orchestrations.Downloads
                         retrievedIngestionTracking);
             });
 
+        public ValueTask<string> ReLandDocumentByFileNameAsync(
+            string fileName,
+            SubscriberCredential subscriberCredential,
+            Guid supplierId) =>
+            TryCatch(async () =>
+            {
+                ValidateReLandDocumentByFileNameArguments(fileName, subscriberCredential, supplierId);
+
+                return await ProcessFileAsync(subscriberCredential, supplierId, fileName);
+            });
+
         virtual internal async ValueTask<string> ProcessFileAsync(
             SubscriberCredential subscriberCredential,
             Guid supplierId,

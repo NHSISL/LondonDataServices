@@ -59,6 +59,15 @@ namespace LHDS.Core.Services.Coordinations.EmisLandings
                 (Rule: IsInvalid(ingestionTrackingId), Parameter: "ingestionTrackingId"));
         }
 
+        private static void ValidateArgsOnReLandDocumentByFileName(string fileName)
+        {
+            Validate(
+                createException: () => new InvalidArgumentEmisLandingCoordinationException(
+                    message: "Invalid Emis Landing coordination argument, please correct the errors and try again."),
+
+                (Rule: IsInvalid(fileName), Parameter: "FileName"));
+        }
+
         private static dynamic IsInvalid(string? text) => new
         {
             Condition = string.IsNullOrWhiteSpace(text),

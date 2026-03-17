@@ -80,13 +80,13 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.Landings
         }
 
         [Fact]
-
         public async Task ShouldLandNewDocumentByFileNameForExistingIngestionTrackingAsync()
         {
             await ValueTask.CompletedTask;
 
             //Given
             Guid emisSupplierId = Guid.Parse("67680f17-9d0c-4474-8b35-56ca8f9df1f6");
+            await PostRandomSupplierAsync(emisSupplierId);
             SubscriberCredential randomSubscriberCredential = CreateRandomSubscriberCredential(emisSupplierId);
             SubscriberCredential inputSubscriberCredential = randomSubscriberCredential;
             await this.apiBroker.PostSubscriberCredentialAsync(inputSubscriberCredential);

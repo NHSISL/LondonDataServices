@@ -61,22 +61,6 @@ namespace LHDS.Core.Services.Orchestrations.Downloads
                  (Rule: IsInvalid(ingestionTrackingId), Parameter: "ingestionTrackingId"));
         }
 
-        private static void ValidateReLandDocumentByFileNameArguments(
-            string fileName,
-            SubscriberCredential subscriberCredential,
-            Guid supplierId)
-        {
-            Validate(
-                createException: () => new InvalidArgumentEmisLandingOrchestrationException(
-                    message:
-                        "Invalid EMIS landing orchestration argument(s), " +
-                        "please correct the errors and try again."),
-
-                (Rule: IsInvalid(fileName), Parameter: "FileName"),
-                (Rule: IsInvalid(subscriberCredential), Parameter: "SubscriberCredential"),
-                (Rule: IsInvalid(supplierId), Parameter: "SupplierId"));
-        }
-
         public void ValidateProcessArguments(Guid supplierId)
         {
             Validate(

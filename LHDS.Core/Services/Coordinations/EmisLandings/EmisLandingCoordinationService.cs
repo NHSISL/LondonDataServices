@@ -113,30 +113,5 @@ namespace LHDS.Core.Services.Coordinations.EmisLandings
                 ValidateArgsOnRedecryptDocumentByIngestionId(ingestionTrackingId);
                 await this.emisLandingOrchestrationService.RedecryptDocumentByIngestionIdAsync(ingestionTrackingId);
             });
-
-        public ValueTask<string> ReLandDocumentByFileNameAsync(string fileName) =>
-            TryCatch(async () =>
-            {
-                ValidateArgsOnReLandDocumentByFileName(fileName);
-
-                string[] fileNameParts = fileName.Split('/');
-                Guid subscriberCredentialId = Guid.Parse(fileNameParts[3]);
-
-                SubscriberCredential subscriberCredential =
-                    await this.subscriberCredentialOrchestration.RetrieveSubscriberCredentialByIdAsync(
-                        subscriberCredentialId, false);
-
-                string fileNameWithSlash = fileName.StartsWith('/')
-                    ? fileName
-                    : "/" + fileName;
-
-                string decryptedFileName =
-                    await this.emisLandingOrchestrationService.ReLandDocumentByFileNameAsync(
-                        fileNameWithSlash,
-                        subscriberCredential,
-                        subscriberCredential.SupplierId);
-
-                return decryptedFileName;
-            });
     }
 }

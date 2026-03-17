@@ -108,43 +108,5 @@ namespace LHDS.AdminPortal.Api.Controllers
                 return InternalServerError(emisLandingCoordinationServiceException);
             }
         }
-
-        [Authorize(Roles = "ISL.LDS.AdminApi.EmisLanding,ISL.LDS.AdminApi.Administrators")]
-        [HttpGet("filename/{*fileName}")]
-        public async ValueTask<ActionResult<string>> ReLandDocumentByFileNameAsync(string fileName)
-        {
-            try
-            {
-                string decryptedFileName =
-                    await emisLandingCoordinationService.ReLandDocumentByFileNameAsync(fileName);
-
-                return Ok(decryptedFileName);
-            }
-            catch (InvalidArgumentEmisLandingCoordinationException invalidArgumentEmisLandingCoordinationException)
-            {
-                return BadRequest(invalidArgumentEmisLandingCoordinationException);
-            }
-            catch (EmisLandingCoordinationValidationException emisLandingCoordinationValidationException)
-            {
-                return BadRequest(emisLandingCoordinationValidationException);
-            }
-            catch (EmisLandingCoordinationDependencyValidationException
-                    emisLandingCoordinationDependencyValidationException)
-            {
-                return FailedDependency(emisLandingCoordinationDependencyValidationException);
-            }
-            catch (EmisLandingCoordinationDependencyException emisLandingCoordinationDependencyException)
-            {
-                return InternalServerError(emisLandingCoordinationDependencyException);
-            }
-            catch (EmisLandingCoordinationServiceException emisLandingCoordinationServiceException)
-            {
-                return InternalServerError(emisLandingCoordinationServiceException);
-            }
-            catch (FailedEmisLandingCoordinationServiceException failedEmisLandingCoordinationServiceException)
-            {
-                return InternalServerError(failedEmisLandingCoordinationServiceException);
-            }
-        }
     }
 }

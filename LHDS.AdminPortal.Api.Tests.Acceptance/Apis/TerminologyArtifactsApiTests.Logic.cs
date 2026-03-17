@@ -38,7 +38,7 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.TerminologyArtifacts
             await this.apiBroker.DeleteTerminologyArtifactByIdAsync(actualTerminologyArtifact.Id);
         }
 
-        [Fact(Skip = "Will fix in another PR.")]
+        [Fact]
         public async Task ShouldGetAllTerminologyArtifactsAsync()
         {
             // given

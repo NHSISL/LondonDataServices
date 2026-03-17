@@ -17,18 +17,18 @@ namespace LHDS.Core.Services.Foundations.IngestionTrackingAudits
     {
         private readonly IStorageBroker storageBroker;
         private readonly IDateTimeBroker dateTimeBroker;
-        private readonly ISecurityBroker securityBroker;
+        private readonly ISecurityAuditBroker securityAuditBroker;
         private readonly ILoggingBroker loggingBroker;
 
         public IngestionTrackingAuditService(
             IStorageBroker storageBroker,
             IDateTimeBroker dateTimeBroker,
-            ISecurityBroker securityBroker,
+            ISecurityAuditBroker securityAuditBroker,
             ILoggingBroker loggingBroker)
         {
             this.storageBroker = storageBroker;
             this.dateTimeBroker = dateTimeBroker;
-            this.securityBroker = securityBroker;
+            this.securityAuditBroker = securityAuditBroker;
             this.loggingBroker = loggingBroker;
         }
 
@@ -36,7 +36,7 @@ namespace LHDS.Core.Services.Foundations.IngestionTrackingAudits
             TryCatch(async () =>
             {
                 IngestionTrackingAudit ingestionTrackingAuditWithAddAuditApplied = 
-                    await ApplyAddIngestionTrackingAuditAsync(audit);
+                    await this.securityAuditBroker.ApplyAddAuditValuesAsync(audit);
 
                 await ValidateIngestionTrackingAuditOnAddAsync(ingestionTrackingAuditWithAddAuditApplied);
 
@@ -63,15 +63,23 @@ namespace LHDS.Core.Services.Foundations.IngestionTrackingAudits
         public ValueTask<IngestionTrackingAudit> ModifyIngestionTrackingAuditAsync(IngestionTrackingAudit audit) =>
             TryCatch(async () =>
             {
-                await ValidateIngestionTrackingAuditOnModifyAsync(audit);
+                IngestionTrackingAudit auditWithModifyAuditApplied =
+                    await this.securityAuditBroker.ApplyModifyAuditValuesAsync(audit);
+
+                await ValidateIngestionTrackingAuditOnModifyAsync(auditWithModifyAuditApplied);
 
                 IngestionTrackingAudit maybeAudit =
                     await this.storageBroker.SelectIngestionTrackingAuditByIdAsync(audit.Id);
 
                 ValidateStorageIngestionTrackingAudit(maybeAudit, audit.Id);
 
+                IngestionTrackingAudit auditWithModifyAuditAppliedEnsured =
+                    await this.securityAuditBroker.EnsureAddAuditValuesRemainsUnchangedOnModifyAsync(
+                        auditWithModifyAuditApplied,
+                        maybeAudit);
+
                 ValidateAgainstStorageIngestionTrackingAuditOnModify(
-                    inputIngestionTrackingAudit: audit,
+                    inputIngestionTrackingAudit: auditWithModifyAuditAppliedEnsured,
                     storageIngestionTrackingAudit: maybeAudit);
 
                 return await this.storageBroker.UpdateIngestionTrackingAuditAsync(audit);
@@ -97,18 +105,5 @@ namespace LHDS.Core.Services.Foundations.IngestionTrackingAudits
 
                 return deletedItem;
             });
-
-        virtual internal async ValueTask<IngestionTrackingAudit> ApplyAddIngestionTrackingAuditAsync(IngestionTrackingAudit ingestionTrackingAudit)
-        {
-            ValidateIngestionTrackingAuditIsNotNull(ingestionTrackingAudit);
-            var auditDateTimeOffset = await this.dateTimeBroker.GetCurrentDateTimeOffsetAsync();
-            var auditUser = await this.securityBroker.GetCurrentUserAsync();
-            ingestionTrackingAudit.CreatedBy = auditUser?.EntraUserId.ToString() ?? string.Empty;
-            ingestionTrackingAudit.CreatedDate = auditDateTimeOffset;
-            ingestionTrackingAudit.UpdatedBy = auditUser?.EntraUserId.ToString() ?? string.Empty;
-            ingestionTrackingAudit.UpdatedDate = auditDateTimeOffset;
-
-            return ingestionTrackingAudit;
-        }
     }
 }

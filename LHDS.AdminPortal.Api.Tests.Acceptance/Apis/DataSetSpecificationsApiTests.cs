@@ -89,7 +89,7 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.DataSetSpecifications
 
         private static Filler<DataSetSpecification> CreateDataSetSpecificationFiller(Guid dataSetId)
         {
-            string user = GetRandomString(255);
+            string user = Guid.NewGuid().ToString();
             var now = DateTimeOffset.UtcNow;
             var filler = new Filler<DataSetSpecification>();
 
@@ -99,16 +99,17 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.DataSetSpecifications
                 .OnProperty(dataSetSpecification => dataSetSpecification.DataSetId).Use(dataSetId)
 
                 .OnProperty(dataSetSpecification => dataSetSpecification.OurSpecificationVersion)
-                    .Use(GetRandomString(10))
+                    .Use(() => GetRandomString(10))
+
                 .OnProperty(dataSetSpecification => dataSetSpecification.SupplierSpecificationVersion)
-                    .Use(GetRandomString(10))
+                    .Use(() => GetRandomString(10))
 
                 .OnProperty(dataSetSpecification => dataSetSpecification.PresededById).IgnoreIt()
                 .OnProperty(dataSetSpecification => dataSetSpecification.SupersededById).IgnoreIt()
-                .OnProperty(dataSetSpecification => dataSetSpecification.CreatedBy).Use(user)
-                .OnProperty(dataSetSpecification => dataSetSpecification.CreatedDate).Use(now)
-                .OnProperty(dataSetSpecification => dataSetSpecification.UpdatedBy).Use(user)
-                .OnProperty(dataSetSpecification => dataSetSpecification.UpdatedDate).Use(now);
+                .OnProperty(dataSetSpecification => dataSetSpecification.CreatedBy).Use(() => user)
+                .OnProperty(dataSetSpecification => dataSetSpecification.CreatedDate).Use(() => now)
+                .OnProperty(dataSetSpecification => dataSetSpecification.UpdatedBy).Use(() => user)
+                .OnProperty(dataSetSpecification => dataSetSpecification.UpdatedDate).Use(() => now);
 
             return filler;
         }

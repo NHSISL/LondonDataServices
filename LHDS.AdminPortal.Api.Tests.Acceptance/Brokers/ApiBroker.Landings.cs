@@ -14,12 +14,6 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Brokers
     {
         private const string emisLandingsRelativeUrl = "api/emislandings";
 
-        public async ValueTask<string> ReLandDocumentByFileNameAsync(string fileName)
-        {
-            return await this.apiFactoryClient.GetContentStringAsync(
-                $"{emisLandingsRelativeUrl}/filename/{HttpUtility.UrlEncode(fileName)}");
-        }
-
         public async ValueTask<List<string>> DownloadDocumentsAsync(Guid emisSupplierId)
         {
             return await this.apiFactoryClient.GetContentAsync<List<string>>(

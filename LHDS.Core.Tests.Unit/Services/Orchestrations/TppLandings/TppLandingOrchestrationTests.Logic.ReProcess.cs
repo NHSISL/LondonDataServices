@@ -24,6 +24,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.TppLandings
             Guid randomSupplierId = Guid.NewGuid();
             Guid inputSupplierId = randomSupplierId;
             DateTimeOffset randomDateTime = GetRandomDateTimeOffset();
+            DateTimeOffset currentDateTime = randomDateTime.AddHours(3);
             List<string> randomFileNames = GetRandomStrings();
 
             var tppOrchestrationServiceMock = new Mock<TppLandingOrchestrationService>(
@@ -58,6 +59,10 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.TppLandings
                         .ReturnsAsync(inputSupplierId);
             }
 
+            this.dateTimeBrokerMock.Setup(broker =>
+                broker.GetCurrentDateTimeOffsetAsync())
+                    .ReturnsAsync(currentDateTime);
+
             this.ingestionTrackingProcessingServiceMock.Setup(service =>
                 service.RetrieveAllIngestionTrackingsAsync())
                     .ReturnsAsync(ingestionTrackings.AsQueryable());
@@ -67,6 +72,10 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.TppLandings
                 supplierId: inputSupplierId);
 
             // then
+            this.dateTimeBrokerMock.Verify(broker =>
+                broker.GetCurrentDateTimeOffsetAsync(),
+                    Times.Once);
+
             this.ingestionTrackingProcessingServiceMock.Verify(service =>
                 service.RetrieveAllIngestionTrackingsAsync(),
                     Times.Once);

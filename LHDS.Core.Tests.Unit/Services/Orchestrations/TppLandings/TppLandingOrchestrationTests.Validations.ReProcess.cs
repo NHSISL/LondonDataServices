@@ -59,5 +59,56 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.TppLandings
             this.subscriberAgreementProcessingServiceMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
         }
+
+        [Theory]
+        [InlineData(0)]
+        [InlineData(-1)]
+        [InlineData(-60)]
+        public async Task ShouldThrowValidationExceptionOnReProcessIfRelandIntervalInMinutesIsInvalidAndLogItAsync(
+            int invalidRelandInterval)
+        {
+            // given
+            Guid supplierId = Guid.NewGuid();
+            this.landingConfiguration.RelandIntervalInMinutes = invalidRelandInterval;
+
+            var invalidArgumentException =
+                new InvalidArgumentTppLandingOrchestrationException(
+                    message:
+                        "Invalid TPP Reland orchestration configuration, " +
+                        "please correct the errors and try again.");
+
+            invalidArgumentException.AddData(
+               key: "relandIntervalInMinutes",
+               values: "Value must be greater than zero");
+
+            var expectedTppOrchestrationValidationException =
+                new TppLandingOrchestrationValidationException(
+                    message: "TPP landing orchestration validation errors occurred, please try again.",
+                    innerException: invalidArgumentException);
+
+            // when
+            ValueTask<List<Guid>> returnedGuidTask = this.tppOrchestrationService.ReProcessAsync(supplierId);
+
+            TppLandingOrchestrationValidationException actualException =
+                await Assert.ThrowsAsync<TppLandingOrchestrationValidationException>(returnedGuidTask.AsTask);
+
+            // then
+            actualException.Should()
+               .BeEquivalentTo(expectedTppOrchestrationValidationException);
+
+            this.loggingBrokerMock.Verify(broker =>
+                broker.LogErrorAsync(It.Is(SameExceptionAs(
+                    expectedTppOrchestrationValidationException))),
+                        Times.Once);
+
+            this.ingestionTrackingProcessingServiceMock.VerifyNoOtherCalls();
+            this.hashBrokerMock.VerifyNoOtherCalls();
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
+            this.documentProcessingServiceMock.VerifyNoOtherCalls();
+            this.ingestionTrackingProcessingAuditServiceMock.VerifyNoOtherCalls();
+            this.dataSetSpecificationProcessingServiceMock.VerifyNoOtherCalls();
+            this.subscriberAgreementProcessingServiceMock.VerifyNoOtherCalls();
+            this.loggingBrokerMock.VerifyNoOtherCalls();
+        }
     }
 }

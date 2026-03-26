@@ -6,6 +6,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using FluentAssertions;
 using LHDS.Core.Models.Foundations.IngestionTrackings;
 using LHDS.Core.Services.Orchestrations.Tpp;
 using Moq;
@@ -16,15 +17,66 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.TppLandings
     public partial class TppLandingOrchestrationTests
     {
         [Fact]
-        public async Task ShouldReProcessAsync()
+        public async Task ShouldReProcessOnlyFilteredIngestionTrackingsAsync()
         {
             // given
-            string randomFileName = GetRandomString();
-            string inputFileName = randomFileName;
-            Guid randomSupplierId = Guid.NewGuid();
-            Guid inputSupplierId = randomSupplierId;
-            DateTimeOffset randomDateTime = GetRandomDateTimeOffset();
-            List<string> randomFileNames = GetRandomStrings();
+            Guid supplierId = Guid.NewGuid();
+            Guid otherSupplierId = Guid.NewGuid();
+            DateTimeOffset currentDateTime = GetRandomDateTimeOffset();
+            int relandIntervalInMinutes = landingConfiguration.RelandIntervalInMinutes;
+            DateTimeOffset cutoff = currentDateTime.AddMinutes(-relandIntervalInMinutes);
+
+            IngestionTracking validOldEnough =
+                CreateRandomIngestionTracking(cutoff.AddMinutes(-1));
+
+            validOldEnough.SupplierId = supplierId;
+            validOldEnough.IsDownloaded = false;
+            validOldEnough.RetryCount = 3;
+
+            IngestionTracking invalidWrongSupplier =
+                CreateRandomIngestionTracking(cutoff.AddMinutes(-1));
+
+            invalidWrongSupplier.SupplierId = otherSupplierId;
+            invalidWrongSupplier.IsDownloaded = false;
+            invalidWrongSupplier.RetryCount = 1;
+
+            IngestionTracking invalidAlreadyDownloaded =
+                CreateRandomIngestionTracking(cutoff.AddMinutes(-1));
+
+            invalidAlreadyDownloaded.SupplierId = supplierId;
+            invalidAlreadyDownloaded.IsDownloaded = true;
+            invalidAlreadyDownloaded.RetryCount = 1;
+
+            IngestionTracking invalidRetryCountTooHigh =
+                CreateRandomIngestionTracking(cutoff.AddMinutes(-1));
+
+            invalidRetryCountTooHigh.SupplierId = supplierId;
+            invalidRetryCountTooHigh.IsDownloaded = false;
+            invalidRetryCountTooHigh.RetryCount = 4;
+
+            IngestionTracking invalidTooRecent =
+                CreateRandomIngestionTracking(cutoff.AddMinutes(1));
+
+            invalidTooRecent.SupplierId = supplierId;
+            invalidTooRecent.IsDownloaded = false;
+            invalidTooRecent.RetryCount = 1;
+
+            IngestionTracking invalidExactCutoff =
+                CreateRandomIngestionTracking(cutoff);
+
+            invalidExactCutoff.SupplierId = supplierId;
+            invalidExactCutoff.IsDownloaded = false;
+            invalidExactCutoff.RetryCount = 1;
+
+            List<IngestionTracking> allIngestionTrackings =
+            [
+                validOldEnough,
+                invalidWrongSupplier,
+                invalidAlreadyDownloaded,
+                invalidRetryCountTooHigh,
+                invalidTooRecent,
+                invalidExactCutoff
+            ];
 
             var tppOrchestrationServiceMock = new Mock<TppLandingOrchestrationService>(
                 documentProcessingServiceMock.Object,
@@ -43,40 +95,56 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.TppLandings
                 CallBase = true
             };
 
-            List<IngestionTracking> ingestionTrackings = CreateRandomIngestionTrackings(
-                dateTimeOffset: randomDateTime,
-                fileNames: randomFileNames,
-                supplierId: randomSupplierId);
+            tppOrchestrationServiceMock.Setup(service =>
+                service.ProcessFileAsync(validOldEnough.FileName, supplierId))
+                    .ReturnsAsync(validOldEnough.Id);
 
-            foreach (IngestionTracking ingestionTracking in ingestionTrackings)
-            {
-                ingestionTracking.IsDownloaded = false;
-                ingestionTracking.RetryCount = 1;
-
-                tppOrchestrationServiceMock.Setup(service =>
-                    service.ProcessFileAsync(ingestionTracking.FileName, ingestionTracking.SupplierId))
-                        .ReturnsAsync(inputSupplierId);
-            }
+            this.dateTimeBrokerMock.Setup(broker =>
+                broker.GetCurrentDateTimeOffsetAsync())
+                    .ReturnsAsync(currentDateTime);
 
             this.ingestionTrackingProcessingServiceMock.Setup(service =>
                 service.RetrieveAllIngestionTrackingsAsync())
-                    .ReturnsAsync(ingestionTrackings.AsQueryable());
+                    .ReturnsAsync(allIngestionTrackings.AsQueryable());
 
             // when
-            await tppOrchestrationServiceMock.Object.ReProcessAsync(
-                supplierId: inputSupplierId);
+            List<Guid> actualProcessedIds =
+                await tppOrchestrationServiceMock.Object.ReProcessAsync(supplierId);
 
             // then
+            actualProcessedIds.Should().BeEquivalentTo([validOldEnough.Id]);
+
+            tppOrchestrationServiceMock.Verify(service =>
+                service.ProcessFileAsync(validOldEnough.FileName, supplierId),
+                    Times.Once);
+
+            tppOrchestrationServiceMock.Verify(service =>
+                service.ProcessFileAsync(invalidWrongSupplier.FileName, invalidWrongSupplier.SupplierId),
+                    Times.Never);
+
+            tppOrchestrationServiceMock.Verify(service =>
+                service.ProcessFileAsync(invalidAlreadyDownloaded.FileName, invalidAlreadyDownloaded.SupplierId),
+                    Times.Never);
+
+            tppOrchestrationServiceMock.Verify(service =>
+                service.ProcessFileAsync(invalidRetryCountTooHigh.FileName, invalidRetryCountTooHigh.SupplierId),
+                    Times.Never);
+
+            tppOrchestrationServiceMock.Verify(service =>
+                service.ProcessFileAsync(invalidTooRecent.FileName, invalidTooRecent.SupplierId),
+                    Times.Never);
+
+            tppOrchestrationServiceMock.Verify(service =>
+                service.ProcessFileAsync(invalidExactCutoff.FileName, invalidExactCutoff.SupplierId),
+                    Times.Never);
+
+            this.dateTimeBrokerMock.Verify(broker =>
+                broker.GetCurrentDateTimeOffsetAsync(),
+                    Times.Once);
+
             this.ingestionTrackingProcessingServiceMock.Verify(service =>
                 service.RetrieveAllIngestionTrackingsAsync(),
                     Times.Once);
-
-            foreach (IngestionTracking ingestionTracking in ingestionTrackings)
-            {
-                tppOrchestrationServiceMock.Verify(service =>
-                    service.ProcessFileAsync(ingestionTracking.FileName, ingestionTracking.SupplierId),
-                        Times.Once);
-            }
 
             this.ingestionTrackingProcessingServiceMock.VerifyNoOtherCalls();
             this.hashBrokerMock.VerifyNoOtherCalls();

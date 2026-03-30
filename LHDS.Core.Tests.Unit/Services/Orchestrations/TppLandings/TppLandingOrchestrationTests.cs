@@ -47,7 +47,6 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.TppLandings
         private readonly Mock<IIngestionTrackingAuditProcessingService> ingestionTrackingProcessingAuditServiceMock;
         private readonly Mock<IDataSetSpecificationProcessingService> dataSetSpecificationProcessingServiceMock;
         private readonly Mock<ISubscriberAgreementProcessingService> subscriberAgreementProcessingServiceMock;
-        private readonly Mock<IFileNameValidationService> fileNameValidationServiceMock;
         private readonly Mock<ILoggingBroker> loggingBrokerMock;
         private readonly Mock<IDateTimeBroker> dateTimeBrokerMock;
         private readonly Mock<IIdentifierBroker> identifierBrokerMock;

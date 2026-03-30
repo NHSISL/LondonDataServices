@@ -47,7 +47,6 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.TppLandings
                 ingestionTrackingProcessingAuditServiceMock.Object,
                 dataSetSpecificationProcessingServiceMock.Object,
                 subscriberAgreementProcessingServiceMock.Object,
-                fileNameValidationServiceMock.Object,
                 blobContainers,
                 loggingBrokerMock.Object,
                 dateTimeBrokerMock.Object,

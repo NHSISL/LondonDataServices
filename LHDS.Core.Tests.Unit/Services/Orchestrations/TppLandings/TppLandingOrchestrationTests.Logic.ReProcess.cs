@@ -84,7 +84,6 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.TppLandings
                 ingestionTrackingProcessingAuditServiceMock.Object,
                 dataSetSpecificationProcessingServiceMock.Object,
                 subscriberAgreementProcessingServiceMock.Object,
-                fileNameValidationServiceMock.Object,
                 blobContainers,
                 loggingBrokerMock.Object,
                 dateTimeBrokerMock.Object,
@@ -108,29 +107,12 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.TppLandings
                 service.RetrieveAllIngestionTrackingsAsync())
                     .ReturnsAsync(allIngestionTrackings.AsQueryable());
 
-            this.fileNameValidationServiceMock.Setup(service =>
-                service.ShouldProcessFileAsync(
-                    It.IsAny<string>(),
-                    It.IsAny<string>(),
-                    It.IsAny<string>()))
-                        .ReturnsAsync(true);
-
-            this.loggingBrokerMock.Setup(broker =>
-                broker.LogInformationAsync(It.IsAny<string>()))
-                    .Returns(ValueTask.CompletedTask);
-
             // when
             List<Guid> actualProcessedIds =
                 await tppOrchestrationServiceMock.Object.ReProcessAsync(supplierId);
 
             // then
             actualProcessedIds.Should().BeEquivalentTo([validOldEnough.Id]);
-
-            this.loggingBrokerMock.Verify(broker =>
-                broker.LogInformationAsync(
-                    $"C# Blob trigger function PROCESSING document\n " +
-                    $"Name: FileName: {validOldEnough.FileName}"),
-                        Times.Once);
 
             tppOrchestrationServiceMock.Verify(service =>
                 service.ProcessFileAsync(validOldEnough.FileName, supplierId),
@@ -164,21 +146,14 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.TppLandings
                 service.RetrieveAllIngestionTrackingsAsync(),
                     Times.Once);
 
-            this.fileNameValidationServiceMock.Verify(service =>
-                service.ShouldProcessFileAsync(
-                    validOldEnough.FileName,
-                    landingConfiguration.FileNameIncludePattern,
-                    landingConfiguration.FileNameExcludePattern),
-                        Times.Once);
-
             this.ingestionTrackingProcessingServiceMock.VerifyNoOtherCalls();
-            this.fileNameValidationServiceMock.VerifyNoOtherCalls();
             this.hashBrokerMock.VerifyNoOtherCalls();
             this.dateTimeBrokerMock.VerifyNoOtherCalls();
             this.dataSetSpecificationProcessingServiceMock.VerifyNoOtherCalls();
             this.subscriberAgreementProcessingServiceMock.VerifyNoOtherCalls();
             this.documentProcessingServiceMock.VerifyNoOtherCalls();
             this.ingestionTrackingProcessingAuditServiceMock.VerifyNoOtherCalls();
+            this.loggingBrokerMock.VerifyNoOtherCalls();
         }
     }
 }

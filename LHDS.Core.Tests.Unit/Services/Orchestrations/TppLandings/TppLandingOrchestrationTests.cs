@@ -47,7 +47,6 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.TppLandings
         private readonly Mock<IIngestionTrackingAuditProcessingService> ingestionTrackingProcessingAuditServiceMock;
         private readonly Mock<IDataSetSpecificationProcessingService> dataSetSpecificationProcessingServiceMock;
         private readonly Mock<ISubscriberAgreementProcessingService> subscriberAgreementProcessingServiceMock;
-        private readonly Mock<IFileNameValidationService> fileNameValidationServiceMock;
         private readonly Mock<ILoggingBroker> loggingBrokerMock;
         private readonly Mock<IDateTimeBroker> dateTimeBrokerMock;
         private readonly Mock<IIdentifierBroker> identifierBrokerMock;
@@ -66,7 +65,6 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.TppLandings
             ingestionTrackingProcessingAuditServiceMock = new Mock<IIngestionTrackingAuditProcessingService>();
             dataSetSpecificationProcessingServiceMock = new Mock<IDataSetSpecificationProcessingService>();
             subscriberAgreementProcessingServiceMock = new Mock<ISubscriberAgreementProcessingService>();
-            fileNameValidationServiceMock = new Mock<IFileNameValidationService>();
             loggingBrokerMock = new Mock<ILoggingBroker>();
             dateTimeBrokerMock = new Mock<IDateTimeBroker>();
             identifierBrokerMock = new Mock<IIdentifierBroker>();
@@ -96,7 +94,6 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.TppLandings
                 ingestionTrackingProcessingAuditService: ingestionTrackingProcessingAuditServiceMock.Object,
                 dataSetSpecificationProcessingService: dataSetSpecificationProcessingServiceMock.Object,
                 subscriberAgreementProcessingService: subscriberAgreementProcessingServiceMock.Object,
-                fileNameValidationService: fileNameValidationServiceMock.Object,
                 blobContainers: blobContainers,
                 loggingBroker: loggingBrokerMock.Object,
                 dateTimeBroker: dateTimeBrokerMock.Object,

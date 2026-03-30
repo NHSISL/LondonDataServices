@@ -95,7 +95,7 @@ namespace LHDS.Core.Services.Orchestrations.Tpp
                         ingestionTracking.SupplierId == supplierId
                         && ingestionTracking.IsDownloaded == false
                         && ingestionTracking.RetryCount < 4
-                        && ingestionTracking.CreatedDate <
+                        && ingestionTracking.UpdatedDate <
                             currentDateTime.AddMinutes(-landingConfiguration.RelandIntervalInMinutes));
 
                 List<IngestionTracking> ingestionTrackingsToProcess = filteredIngestionTrackings.ToList();

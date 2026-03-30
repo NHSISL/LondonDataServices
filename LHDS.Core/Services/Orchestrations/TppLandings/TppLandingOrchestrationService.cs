@@ -18,6 +18,7 @@ using LHDS.Core.Models.Foundations.IngestionTrackingAudits;
 using LHDS.Core.Models.Foundations.IngestionTrackings;
 using LHDS.Core.Models.Foundations.SubscriberAgreements;
 using LHDS.Core.Models.Orchestrations.EmisLandings;
+using LHDS.Core.Services.Foundations.FileNameValidations;
 using LHDS.Core.Services.Orchestrations.TppLandings;
 using LHDS.Core.Services.Processings.DataSetSpecifications;
 using LHDS.Core.Services.Processings.Documents;
@@ -34,6 +35,7 @@ namespace LHDS.Core.Services.Orchestrations.Tpp
         private readonly IIngestionTrackingAuditProcessingService ingestionTrackingProcessingAuditService;
         private readonly IDataSetSpecificationProcessingService dataSetSpecificationProcessingService;
         private readonly ISubscriberAgreementProcessingService subscriberAgreementProcessingService;
+        private readonly IFileNameValidationService fileNameValidationService;
         private readonly BlobContainers blobContainers;
         private readonly ILoggingBroker loggingBroker;
         private readonly IDateTimeBroker dateTimeBroker;
@@ -48,6 +50,7 @@ namespace LHDS.Core.Services.Orchestrations.Tpp
             IIngestionTrackingAuditProcessingService ingestionTrackingProcessingAuditService,
             IDataSetSpecificationProcessingService dataSetSpecificationProcessingService,
             ISubscriberAgreementProcessingService subscriberAgreementProcessingService,
+            IFileNameValidationService fileNameValidationService,
             BlobContainers blobContainers,
             ILoggingBroker loggingBroker,
             IDateTimeBroker dateTimeBroker,
@@ -61,6 +64,7 @@ namespace LHDS.Core.Services.Orchestrations.Tpp
             this.ingestionTrackingProcessingAuditService = ingestionTrackingProcessingAuditService;
             this.dataSetSpecificationProcessingService = dataSetSpecificationProcessingService;
             this.subscriberAgreementProcessingService = subscriberAgreementProcessingService;
+            this.fileNameValidationService = fileNameValidationService;
             this.blobContainers = blobContainers;
             this.loggingBroker = loggingBroker;
             this.dateTimeBroker = dateTimeBroker;
@@ -104,6 +108,24 @@ namespace LHDS.Core.Services.Orchestrations.Tpp
                 {
                     try
                     {
+                        bool shouldProcess =
+                            await this.fileNameValidationService.ShouldProcessFileAsync(
+                               fileName: ingestionTracking.FileName,
+                               includePattern: landingConfiguration.FileNameIncludePattern,
+                               excludePattern: landingConfiguration.FileNameExcludePattern);
+
+                        string action
+                            = shouldProcess ? "PROCESSING" : "SKIPPING";
+
+                        await this.loggingBroker.LogInformationAsync(
+                            $"C# Blob trigger function {action} document\n " +
+                            $"Name: FileName: {ingestionTracking.FileName}");
+
+                        if (!shouldProcess)
+                        {
+                            continue;
+                        }
+
                         await this.ProcessFileAsync(ingestionTracking.FileName, supplierId);
                         ingestionTrackingsProcessed.Add(ingestionTracking.Id);
                     }

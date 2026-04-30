@@ -60,7 +60,8 @@ namespace LHDS.Core.Tests.Acceptance.Clients.Decryptions
             ingestionTracking.Decrypted = false;
             ingestionTracking.IsProcessing = false;
             ingestionTracking.RetryCount = 0;
-            ingestionTracking.LastAttempt = dateTimeOffset.AddMinutes(-15);
+            ingestionTracking.LastAttempt = dateTimeOffset.AddMinutes(-65);
+            ingestionTracking.UpdatedDate = dateTimeOffset.AddMinutes(-65);
             ingestionTracking.SubscriberAgreementId = generatedSubscriberCredential.Id;
 
             await this.ingestionTrackingService.AddIngestionTrackingAsync(ingestionTracking);

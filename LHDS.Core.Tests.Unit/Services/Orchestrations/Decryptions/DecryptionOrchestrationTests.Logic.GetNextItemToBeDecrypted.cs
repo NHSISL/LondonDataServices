@@ -27,18 +27,21 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Decryptions
                 broker.GetCurrentDateTimeOffsetAsync())
                     .ReturnsAsync(randomDateTimeOffset);
 
-            DateTimeOffset olderThanDateTimeOffset = randomDateTimeOffset.AddMinutes(-15);
+            int relandIntervalInMinutes = landingConfiguration.RelandIntervalInMinutes;
+            DateTimeOffset olderThanDateTimeOffset = randomDateTimeOffset.AddMinutes(-(relandIntervalInMinutes + 1));
             IngestionTracking randomIngestionTracking = CreateRandomIngestionTracking(randomDateTimeOffset);
             randomIngestionTracking.IsDownloaded = true;
             randomIngestionTracking.Decrypted = false;
             randomIngestionTracking.IsProcessing = false;
             randomIngestionTracking.RetryCount = 0;
             randomIngestionTracking.LastAttempt = olderThanDateTimeOffset;
+            randomIngestionTracking.UpdatedDate = olderThanDateTimeOffset;
             IngestionTracking storageIngestionTracking = randomIngestionTracking;
             var updatedIngestionTracking = storageIngestionTracking.DeepClone();
             updatedIngestionTracking.IsProcessing = true;
             updatedIngestionTracking.RetryCount += 1;
             updatedIngestionTracking.LastAttempt = randomDateTimeOffset;
+            updatedIngestionTracking.UpdatedDate = randomDateTimeOffset;
             var outputIngestionTracking = updatedIngestionTracking.DeepClone();
 
             this.ingestionTrackingServiceMock.Setup(service =>

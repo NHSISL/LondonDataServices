@@ -191,10 +191,7 @@ namespace LHDS.Core.Services.Orchestrations.Decryptions
         public ValueTask<string?> GetNextItemToBeDecrypted() =>
             TryCatch(async () =>
             {
-                DateTimeOffset olderThanDateTimeOffset =
-                    await this.dateTimeBroker.GetCurrentDateTimeOffsetAsync();
-
-                olderThanDateTimeOffset.AddMinutes(-15);
+                DateTimeOffset currentDateTime = await this.dateTimeBroker.GetCurrentDateTimeOffsetAsync();
 
                 IQueryable<IngestionTracking> allIngestionTrackings =
                     await this.ingestionTrackingService.RetrieveAllIngestionTrackingsAsync();
@@ -206,7 +203,8 @@ namespace LHDS.Core.Services.Orchestrations.Decryptions
                         && ingestionTrackingItem.Decrypted == false
                         && ingestionTrackingItem.IsProcessing == false
                         && ingestionTrackingItem.RetryCount < 4
-                        && ingestionTrackingItem.LastAttempt <= olderThanDateTimeOffset);
+                        && ingestionTrackingItem.UpdatedDate <
+                            currentDateTime.AddMinutes(-landingConfiguration.RelandIntervalInMinutes));
 
                 if (item == null)
                 {

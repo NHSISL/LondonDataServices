@@ -83,8 +83,6 @@ namespace LHDS.Core.Services.Orchestrations.Tpp
             TryCatch(async () =>
             {
                 ValidateArgumentsOnReProcess(supplierId);
-                ValidateConfigurationForReland(landingConfiguration.RelandIntervalInMinutes);
-
                 DateTimeOffset currentDateTime = await this.dateTimeBroker.GetCurrentDateTimeOffsetAsync();
 
                 IQueryable<IngestionTracking> allIngestionTrackings =
@@ -94,9 +92,7 @@ namespace LHDS.Core.Services.Orchestrations.Tpp
                     .Where(ingestionTracking =>
                         ingestionTracking.SupplierId == supplierId
                         && ingestionTracking.IsDownloaded == false
-                        && ingestionTracking.RetryCount < 4
-                        && ingestionTracking.UpdatedDate <
-                            currentDateTime.AddMinutes(-landingConfiguration.RelandIntervalInMinutes));
+                        && ingestionTracking.RetryCount < 4);
 
                 List<IngestionTracking> ingestionTrackingsToProcess = filteredIngestionTrackings.ToList();
                 List<Guid> ingestionTrackingsProcessed = new List<Guid>();

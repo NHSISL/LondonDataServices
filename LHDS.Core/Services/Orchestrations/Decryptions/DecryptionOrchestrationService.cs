@@ -85,8 +85,9 @@ namespace LHDS.Core.Services.Orchestrations.Decryptions
 
                 string decryptedFileSha256Hash = string.Empty;
                 long fileSize = 0;
-                string encryptedTempFile = Path.GetTempFileName();
-                string decryptedTempFile = Path.GetTempFileName();
+                string tempDir = landingConfiguration.TempFilePath;
+                string encryptedTempFile = Path.Combine(tempDir, $"{Guid.NewGuid()}_enc.tmp");
+                string decryptedTempFile = Path.Combine(tempDir, $"{Guid.NewGuid()}_dec.tmp");
 
                 try
                 {

@@ -23,59 +23,33 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.TppLandings
             Guid supplierId = Guid.NewGuid();
             Guid otherSupplierId = Guid.NewGuid();
             DateTimeOffset currentDateTime = GetRandomDateTimeOffset();
-            int relandIntervalInMinutes = landingConfiguration.RelandIntervalInMinutes;
-            DateTimeOffset cutoff = currentDateTime.AddMinutes(-relandIntervalInMinutes);
 
-            IngestionTracking validOldEnough =
-                CreateRandomIngestionTracking(cutoff.AddMinutes(-1));
+            IngestionTracking validItem = CreateRandomIngestionTracking(currentDateTime);
+            validItem.SupplierId = supplierId;
+            validItem.IsDownloaded = false;
+            validItem.RetryCount = 3;
 
-            validOldEnough.SupplierId = supplierId;
-            validOldEnough.IsDownloaded = false;
-            validOldEnough.RetryCount = 3;
-
-            IngestionTracking invalidWrongSupplier =
-                CreateRandomIngestionTracking(cutoff.AddMinutes(-1));
-
+            IngestionTracking invalidWrongSupplier = CreateRandomIngestionTracking(currentDateTime);
             invalidWrongSupplier.SupplierId = otherSupplierId;
             invalidWrongSupplier.IsDownloaded = false;
             invalidWrongSupplier.RetryCount = 1;
 
-            IngestionTracking invalidAlreadyDownloaded =
-                CreateRandomIngestionTracking(cutoff.AddMinutes(-1));
-
+            IngestionTracking invalidAlreadyDownloaded = CreateRandomIngestionTracking(currentDateTime);
             invalidAlreadyDownloaded.SupplierId = supplierId;
             invalidAlreadyDownloaded.IsDownloaded = true;
             invalidAlreadyDownloaded.RetryCount = 1;
 
-            IngestionTracking invalidRetryCountTooHigh =
-                CreateRandomIngestionTracking(cutoff.AddMinutes(-1));
-
+            IngestionTracking invalidRetryCountTooHigh = CreateRandomIngestionTracking(currentDateTime);
             invalidRetryCountTooHigh.SupplierId = supplierId;
             invalidRetryCountTooHigh.IsDownloaded = false;
             invalidRetryCountTooHigh.RetryCount = 4;
 
-            IngestionTracking invalidTooRecent =
-                CreateRandomIngestionTracking(cutoff.AddMinutes(1));
-
-            invalidTooRecent.SupplierId = supplierId;
-            invalidTooRecent.IsDownloaded = false;
-            invalidTooRecent.RetryCount = 1;
-
-            IngestionTracking invalidExactCutoff =
-                CreateRandomIngestionTracking(cutoff);
-
-            invalidExactCutoff.SupplierId = supplierId;
-            invalidExactCutoff.IsDownloaded = false;
-            invalidExactCutoff.RetryCount = 1;
-
             List<IngestionTracking> allIngestionTrackings =
             [
-                validOldEnough,
+                validItem,
                 invalidWrongSupplier,
                 invalidAlreadyDownloaded,
-                invalidRetryCountTooHigh,
-                invalidTooRecent,
-                invalidExactCutoff
+                invalidRetryCountTooHigh
             ];
 
             var tppOrchestrationServiceMock = new Mock<TppLandingOrchestrationService>(
@@ -96,8 +70,8 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.TppLandings
             };
 
             tppOrchestrationServiceMock.Setup(service =>
-                service.ProcessFileAsync(validOldEnough.FileName, supplierId))
-                    .ReturnsAsync(validOldEnough.Id);
+                service.ProcessFileAsync(validItem.FileName, supplierId))
+                    .ReturnsAsync(validItem.Id);
 
             this.dateTimeBrokerMock.Setup(broker =>
                 broker.GetCurrentDateTimeOffsetAsync())
@@ -112,10 +86,10 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.TppLandings
                 await tppOrchestrationServiceMock.Object.ReProcessAsync(supplierId);
 
             // then
-            actualProcessedIds.Should().BeEquivalentTo([validOldEnough.Id]);
+            actualProcessedIds.Should().BeEquivalentTo([validItem.Id]);
 
             tppOrchestrationServiceMock.Verify(service =>
-                service.ProcessFileAsync(validOldEnough.FileName, supplierId),
+                service.ProcessFileAsync(validItem.FileName, supplierId),
                     Times.Once);
 
             tppOrchestrationServiceMock.Verify(service =>
@@ -128,14 +102,6 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.TppLandings
 
             tppOrchestrationServiceMock.Verify(service =>
                 service.ProcessFileAsync(invalidRetryCountTooHigh.FileName, invalidRetryCountTooHigh.SupplierId),
-                    Times.Never);
-
-            tppOrchestrationServiceMock.Verify(service =>
-                service.ProcessFileAsync(invalidTooRecent.FileName, invalidTooRecent.SupplierId),
-                    Times.Never);
-
-            tppOrchestrationServiceMock.Verify(service =>
-                service.ProcessFileAsync(invalidExactCutoff.FileName, invalidExactCutoff.SupplierId),
                     Times.Never);
 
             this.dateTimeBrokerMock.Verify(broker =>

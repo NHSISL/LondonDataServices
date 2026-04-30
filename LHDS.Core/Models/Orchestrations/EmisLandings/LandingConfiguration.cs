@@ -3,6 +3,7 @@
 // ---------------------------------------------------------
 
 using System;
+using System.IO;
 
 namespace LHDS.Core.Models.Orchestrations.EmisLandings
 {
@@ -18,5 +19,6 @@ namespace LHDS.Core.Models.Orchestrations.EmisLandings
         public string FileNameIncludePattern { get; set; }
         public string FileNameExcludePattern { get; set; }
         public int RelandIntervalInMinutes { get; set; } = 60;
+        public string TempFilePath { get; set; } = Path.GetTempPath();
     }
 }

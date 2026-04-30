@@ -160,10 +160,6 @@ namespace LHDS.Core.Tests.Acceptance.Clients.TppLandings
             await this.ingestionTrackingService.RemoveIngestionTrackingByIdAsync(ingestionTracking.Id);
             await this.subscriberAgreementService.RemoveSubscriberAgreementByIdAsync(subscriberAgreement.Id);
             await this.supplierService.RemoveSupplierByIdAsync(supplierId);
-
-            await this.documentProcessingService.RemoveDocumentByFileNameAsync(
-                ingestionTracking.DecryptedFileName,
-                blobContainers.Ingress);
         }
 
         [Fact]

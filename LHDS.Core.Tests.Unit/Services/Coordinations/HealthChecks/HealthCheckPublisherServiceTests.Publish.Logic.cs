@@ -21,7 +21,7 @@ namespace LHDS.Core.Tests.Unit.Services.Coordinations.HealthChecks
             HealthReport inputHealthReport = randomHealthReport;
 
             // when
-            await this.healthCheckPublisherService.PublishAsync(inputHealthReport, default);
+            await this.healthCheckPublisherService.PublishAsync(inputHealthReport, TestContext.Current.CancellationToken);
 
             // then
             foreach (var entry in inputHealthReport.Entries)

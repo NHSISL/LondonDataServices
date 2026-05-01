@@ -42,7 +42,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Addresses
                 Path.GetDirectoryName(assembly),
                 $"Resources/Services/Orchestrations/Addresses/{inputCsvFileName}");
 
-            byte[] csvData = await File.ReadAllBytesAsync(inputCsvFilePath);
+            byte[] csvData = await File.ReadAllBytesAsync(inputCsvFilePath, TestContext.Current.CancellationToken);
             string stringData = Encoding.UTF8.GetString(csvData);
             List<string> records = stringData.Split(new[] { "\r\n", "\n" }, StringSplitOptions.None).ToList();
 

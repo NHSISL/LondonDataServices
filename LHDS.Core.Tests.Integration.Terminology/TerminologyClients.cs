@@ -1,4 +1,4 @@
-﻿// ---------------------------------------------------------
+// ---------------------------------------------------------
 // Copyright (c) North East London ICB. All rights reserved.
 // ---------------------------------------------------------
 
@@ -10,7 +10,9 @@ using LHDS.Core.Clients.Extensions;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using Xunit.Abstractions;
+
+
+using Xunit;
 
 namespace LHDS.Core.Tests.Integration.Terminology
 {
@@ -48,3 +50,4 @@ namespace LHDS.Core.Tests.Integration.Terminology
         }
     }
 }
+

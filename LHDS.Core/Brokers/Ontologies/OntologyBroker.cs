@@ -31,8 +31,8 @@ namespace LHDS.Core.Brokers.Ontologies
         public async ValueTask<Bundle> GetAllAsync(string relativeUrl)
         {
             string jsonResponse = await GetAsync<string>(relativeUrl);
-            var parser = new FhirJsonParser();
-            Bundle bundle = parser.Parse<Bundle>(jsonResponse);
+            var deserializer = new FhirJsonDeserializer();
+            Bundle bundle = deserializer.Deserialize<Bundle>(jsonResponse);
 
             return bundle;
         }

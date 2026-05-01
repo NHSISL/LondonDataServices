@@ -3,6 +3,7 @@
 // ---------------------------------------------------------
 
 using System;
+using System.Runtime.CompilerServices;
 using Xunit;
 
 namespace LHDS.Core.Tests.Integration.Decryptions
@@ -10,7 +11,10 @@ namespace LHDS.Core.Tests.Integration.Decryptions
     [AttributeUsage(AttributeTargets.Method, AllowMultiple = false)]
     public class ReleaseCandidateFactAttribute : FactAttribute
     {
-        public ReleaseCandidateFactAttribute()
+        public ReleaseCandidateFactAttribute(
+            [CallerFilePath] string sourceFile = "",
+            [CallerLineNumber] int sourceLine = 0)
+            : base(sourceFile, sourceLine)
         {
             var isReleaseCandidate =
                 string.Equals(

@@ -49,7 +49,7 @@ namespace LHDS.Core.Tests.Acceptance.Clients.Addresses
 
             using (StreamReader reader = new StreamReader(retrievedDocumentStream))
             {
-                retrievedDocumentCsv = await reader.ReadToEndAsync();
+                retrievedDocumentCsv = await reader.ReadToEndAsync(TestContext.Current.CancellationToken);
             }
 
             List<ResolvedAddress> retrievedCsvAddresses = await this.MapCsvToObject(data: retrievedDocumentCsv);

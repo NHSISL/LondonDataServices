@@ -35,7 +35,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Addresses
                 Path.GetDirectoryName(assembly),
                 $"Resources/Services/Orchestrations/Addresses/{zipFileName}");
 
-            byte[] inputData = await File.ReadAllBytesAsync(inputFilePath);
+            byte[] inputData = await File.ReadAllBytesAsync(inputFilePath, TestContext.Current.CancellationToken);
             Stream inputStream = new MemoryStream(inputData);
             string inputFileName = zipFileName;
             string randomTempPath = Path.GetTempPath();

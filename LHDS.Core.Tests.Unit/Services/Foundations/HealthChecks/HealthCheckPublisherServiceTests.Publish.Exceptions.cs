@@ -41,7 +41,9 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.HealthChecks
             // when
             HealthCheckPublisherServiceException actualHealthCheckPublisherServiceException =
                 await Assert.ThrowsAsync<HealthCheckPublisherServiceException>(
-                    () => this.healthCheckPublisherService.PublishAsync(someHealthReport));
+                    () => this.healthCheckPublisherService.PublishAsync(
+                        someHealthReport,
+                        TestContext.Current.CancellationToken));
 
             // then
             actualHealthCheckPublisherServiceException.Should()

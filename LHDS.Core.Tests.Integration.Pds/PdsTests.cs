@@ -1,4 +1,4 @@
-﻿// ---------------------------------------------------------
+// ---------------------------------------------------------
 // Copyright (c) North East London ICB. All rights reserved.
 // ---------------------------------------------------------
 
@@ -20,7 +20,9 @@ using LHDS.Core.Services.Foundations.PdsAudits;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using Xunit.Abstractions;
+
+
+using Xunit;
 
 namespace LHDS.Core.Tests.Integration.Pds
 {
@@ -90,3 +92,4 @@ namespace LHDS.Core.Tests.Integration.Pds
         }
     }
 }
+

@@ -1,6 +1,6 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
 	<PropertyGroup>
-		<TargetFramework>net9.0</TargetFramework>
+		<TargetFramework>net10.0</TargetFramework>
 		<AzureFunctionsVersion>v4</AzureFunctionsVersion>
 		<OutputType>Exe</OutputType>
 		<Nullable>disable</Nullable>
@@ -12,19 +12,19 @@
 		<PackageReference Include="EFxceptions" Version="1.0.3" />
 		<PackageReference Include="FluentAssertions" Version="7.2.0" />
 		<PackageReference Include="Microsoft.Azure.Functions.Extensions" Version="1.1.0" />
-		<PackageReference Include="Microsoft.Azure.Functions.Worker" Version="2.0.0" />
+		<PackageReference Include="Microsoft.Azure.Functions.Worker" Version="2.52.0" />
 		<PackageReference Include="Microsoft.Azure.Functions.Worker.Extensions.Http" Version="3.3.0" />
-		<PackageReference Include="Microsoft.Azure.Functions.Worker.Extensions.Storage.Blobs" Version="6.7.0" />
+		<PackageReference Include="Microsoft.Azure.Functions.Worker.Extensions.Storage.Blobs" Version="6.8.1" />
 		<PackageReference Include="Microsoft.Azure.Functions.Worker.Extensions.Tables" Version="1.5.0" />
-		<PackageReference Include="Microsoft.Azure.Functions.Worker.Extensions.Storage.Queues" Version="5.5.2" />
+		<PackageReference Include="Microsoft.Azure.Functions.Worker.Extensions.Storage.Queues" Version="5.5.4" />
 		<PackageReference Include="Microsoft.Azure.Functions.Worker.Extensions.Timer" Version="4.3.1" />
-		<PackageReference Include="Microsoft.Azure.Functions.Worker.Sdk" Version="2.0.5" />
-		<PackageReference Include="Microsoft.EntityFrameworkCore" Version="9.0.9" />
-		<PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="9.0.9" />
+		<PackageReference Include="Microsoft.Azure.Functions.Worker.Sdk" Version="2.0.7" />
+		<PackageReference Include="Microsoft.EntityFrameworkCore" Version="10.0.7" />
+		<PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="10.0.7" />
 		<PackageReference Include="Microsoft.Extensions.Azure" Version="1.12.0" />
-		<PackageReference Include="Microsoft.Extensions.Configuration" Version="9.0.9" />
-		<PackageReference Include="Microsoft.Extensions.Configuration.UserSecrets" Version="9.0.9" />
-		<PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="9.0.9" />
+		<PackageReference Include="Microsoft.Extensions.Configuration" Version="10.0.7" />
+		<PackageReference Include="Microsoft.Extensions.Configuration.UserSecrets" Version="10.0.7" />
+		<PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="10.0.7" />
 		<PackageReference Include="Microsoft.Extensions.Logging.ApplicationInsights" Version="2.23.0" />
 		<PackageReference Include="Tynamix.ObjectFiller" Version="1.5.9" />
 	</ItemGroup>
@@ -52,3 +52,7 @@
 		<Using Include="System.Threading.ExecutionContext" Alias="ExecutionContext" />
 	</ItemGroup>
 </Project>
+
+
+
+

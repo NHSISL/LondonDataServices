@@ -1,4 +1,4 @@
-﻿// ---------------------------------------------------------
+// ---------------------------------------------------------
 // Copyright (c) North East London ICB. All rights reserved.
 // ---------------------------------------------------------
 
@@ -22,8 +22,8 @@ using LHDS.Core.Services.Foundations.OptOuts;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using Tynamix.ObjectFiller;
-using Xunit.Abstractions;
+using Xunit;using Tynamix.ObjectFiller;
+
 
 namespace LHDS.Core.Tests.Integration.OptOuts
 {
@@ -309,3 +309,4 @@ namespace LHDS.Core.Tests.Integration.OptOuts
         }
     }
 }
+

@@ -1,7 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk.Web">
 
 	<PropertyGroup>
-		<TargetFramework>net9.0</TargetFramework>
+		<TargetFramework>net10.0</TargetFramework>
 		<Nullable>disable</Nullable>
 		<ImplicitUsings>disable</ImplicitUsings>
 		<NoWarn>CS1998,CS8632</NoWarn>
@@ -17,23 +17,22 @@
 		<PackageReference Include="EFxceptions" Version="1.0.3" />
 		<PackageReference Include="Microsoft.ApplicationInsights.AspNetCore" Version="2.23.0" />
 		<PackageReference Include="Microsoft.AspNet.WebApi.Client" Version="6.0.0" />
-		<PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="9.0.9" />
-		<PackageReference Include="Microsoft.AspNetCore.OData" Version="9.4.0" />
+		<PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="10.0.7" />
+		<PackageReference Include="Microsoft.AspNetCore.OData" Version="9.4.1" />
 		<PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="9.0.9" />
-		<PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="9.0.9" />
-		<PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="9.0.9">
+		<PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="10.0.7" />
+		<PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="10.0.7">
 			<IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
 			<PrivateAssets>all</PrivateAssets>
 		</PackageReference>
 		<PackageReference Include="Microsoft.Extensions.Azure" Version="1.12.0" />
-		<PackageReference Include="Microsoft.Extensions.Logging" Version="9.0.9" />
-		<PackageReference Include="Microsoft.Identity.Web" Version="3.14.0" />
+		<PackageReference Include="Microsoft.Extensions.Logging" Version="10.0.7" />
+		<PackageReference Include="Microsoft.Identity.Web" Version="4.8.0" />
 		<PackageReference Include="RESTFulSense" Version="3.2.0" />
 		<PackageReference Include="SshKeyGenerator" Version="1.1.51" />
 		<PackageReference Include="Swashbuckle.AspNetCore" Version="9.0.4" />
 		<PackageReference Include="Tynamix.ObjectFiller" Version="1.5.9" />
 		<PackageReference Include="Xeption" Version="2.8.0" />
-		<PackageReference Include="xunit.extensibility.core" Version="2.9.3" />
 	</ItemGroup>
 
 	<ItemGroup>
@@ -47,3 +46,9 @@
 	</ItemGroup>
 
 </Project>
+
+
+
+
+
+

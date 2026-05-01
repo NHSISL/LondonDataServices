@@ -300,7 +300,9 @@ namespace LHDS.Core.Services.Foundations.ResolvedAddresses
                 try
                 {
                     var currentDateTime = await this.dateTimeBroker.GetCurrentDateTimeOffsetAsync();
+                    string currentEntraUserId = await this.securityAuditBroker.GetUserIdAsync();
                     resolvedAddress.UpdatedDate = currentDateTime;
+                    resolvedAddress.UpdatedBy = currentEntraUserId;
                     await ValidateResolvedAddressOnModifyAsync(resolvedAddress);
                     validatedResolvedAddresses.Add(resolvedAddress);
                 }

@@ -1,4 +1,4 @@
-﻿// ---------------------------------------------------------
+// ---------------------------------------------------------
 // Copyright (c) North East London ICB. All rights reserved.
 // ---------------------------------------------------------
 
@@ -40,9 +40,15 @@ namespace LHDS.Core.Tests.Acceptance.Clients.Terminology
                 Scope = ""
             };
 
+            string resourceTypeSpecificFields = resourceType switch
+            {
+                "CodeSystem" => @"""status"": ""active"", ""content"": ""complete"",",
+                _ => @"""status"": ""active"","
+            };
+
             string returnedJsonString = $@"{{
                 ""resourceType"": ""Bundle"",
-                ""id"": ""{Guid.NewGuid}"",
+                ""id"": ""{Guid.NewGuid()}"",
                 ""meta"": {{
                     ""lastUpdated"": ""2024-06-04T10:59:29.125+00:00""
                 }},
@@ -59,7 +65,8 @@ namespace LHDS.Core.Tests.Acceptance.Clients.Terminology
                         ""fullUrl"": ""https://ontology.onelondon.online/authoring/fhir/ValueSet/6d5030f7-5575-4500-beb5-2a72d0c6e10e"",
                         ""resource"": {{
                             ""resourceType"": ""{resourceType}"",
-                            ""id"": ""{Guid.NewGuid}"",
+                            ""id"": ""{Guid.NewGuid()}"",
+                            {resourceTypeSpecificFields}
                             ""meta"": {{
                                 ""versionId"": ""1"",
                                 ""lastUpdated"": ""2023-07-01T13:18:41.902+00:00"",

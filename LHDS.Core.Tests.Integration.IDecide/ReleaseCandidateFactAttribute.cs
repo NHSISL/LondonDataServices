@@ -2,13 +2,24 @@
 // Copyright (c) North East London ICB. All rights reserved.
 // ---------------------------------------------------------
 
-using Xunit.Sdk;
+using System;
+using Xunit;
 
 namespace LHDS.Core.Tests.Integration.IDecide
 {
     [AttributeUsage(AttributeTargets.Method, AllowMultiple = false)]
-    [XunitTestCaseDiscoverer(
-        typeName: "LHDS.Core.Tests.Integration.IDecide.ReleaseCandidateTestCaseDiscoverer",
-        assemblyName: "LHDS.Core.Tests.Integration.IDecide")]
-    public class ReleaseCandidateFactAttribute : FactAttribute { }
+    public class ReleaseCandidateFactAttribute : FactAttribute
+    {
+        public ReleaseCandidateFactAttribute()
+        {
+            var isReleaseCandidate =
+                string.Equals(
+                    Environment.GetEnvironmentVariable("IS_RELEASE_CANDIDATE"),
+                    "true",
+                    StringComparison.OrdinalIgnoreCase);
+
+            if (!isReleaseCandidate)
+                Skip = "Skipped: IS_RELEASE_CANDIDATE is not set to true.";
+        }
+    }
 }

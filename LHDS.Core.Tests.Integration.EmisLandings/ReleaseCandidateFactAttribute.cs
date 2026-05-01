@@ -4,13 +4,22 @@
 
 using System;
 using Xunit;
-using Xunit.Sdk;
 
 namespace LHDS.Core.Tests.Integration.EmisLandings
 {
     [AttributeUsage(AttributeTargets.Method, AllowMultiple = false)]
-    [XunitTestCaseDiscoverer(
-        typeName: "LHDS.Core.Tests.Integration.EmisLandings.ReleaseCandidateTestCaseDiscoverer",
-        assemblyName: "LHDS.Core.Tests.Integration.EmisLandings")]
-    public class ReleaseCandidateFactAttribute : FactAttribute { }
+    public class ReleaseCandidateFactAttribute : FactAttribute
+    {
+        public ReleaseCandidateFactAttribute()
+        {
+            var isReleaseCandidate =
+                string.Equals(
+                    Environment.GetEnvironmentVariable("IS_RELEASE_CANDIDATE"),
+                    "true",
+                    StringComparison.OrdinalIgnoreCase);
+
+            if (!isReleaseCandidate)
+                Skip = "Skipped: IS_RELEASE_CANDIDATE is not set to true.";
+        }
+    }
 }

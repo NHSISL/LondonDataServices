@@ -12,7 +12,6 @@ using LHDS.Core.Models.Foundations.Audits;
 using LHDS.Core.Models.Foundations.ResolvedAddresses;
 using LHDS.Core.Models.Orchestrations.ResolvedAddresses.Exceptions;
 using Moq;
-using Valid8R;
 using Xeptions;
 using Xunit;
 
@@ -256,10 +255,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.ResolvedAddresses
 
             this.resolvedAddressProcessingServiceMock.Verify(processing =>
                 processing.BulkModifyResolvedAddressesAsync(
-                    It.Is(Valid8.SameObjectAs<List<ResolvedAddress>>(
-                        failedResolvedAddresses,
-                        output,
-                        "Second bulk modify:"))),
+                    It.Is(SameResolvedAddressListAs(failedResolvedAddresses))),
                         Times.Once);
 
             //this.loggingBrokerMock.Verify(broker =>

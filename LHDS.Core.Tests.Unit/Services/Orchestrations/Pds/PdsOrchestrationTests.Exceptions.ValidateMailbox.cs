@@ -3,6 +3,7 @@
 // ---------------------------------------------------------
 
 using System;
+using System.Threading;
 using System.Threading.Tasks;
 using FluentAssertions;
 using LHDS.Core.Models.Orchestrations.Pds.Exceptions;
@@ -25,7 +26,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Pds
                     dependancyValidationException.InnerException as Xeption);
 
             this.meshServiceMock.Setup(service =>
-              service.ValidateMailboxAccessAsync())
+              service.ValidateMailboxAccessAsync(It.IsAny<CancellationToken>()))
                     .ThrowsAsync(dependancyValidationException);
 
             //when
@@ -42,7 +43,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Pds
                 .BeEquivalentTo(expectedDependencyException);
 
             this.meshServiceMock.Verify(service =>
-                service.ValidateMailboxAccessAsync(),
+                service.ValidateMailboxAccessAsync(It.IsAny<CancellationToken>()),
                    Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>
@@ -70,7 +71,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Pds
                     innerException: dependancyException.InnerException as Xeption);
 
             this.meshServiceMock.Setup(service =>
-                service.ValidateMailboxAccessAsync())
+                service.ValidateMailboxAccessAsync(It.IsAny<CancellationToken>()))
                    .ThrowsAsync(dependancyException);
 
             // when
@@ -86,7 +87,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Pds
                 .BeEquivalentTo(expectedDependencyException);
 
             this.meshServiceMock.Verify(service =>
-                 service.ValidateMailboxAccessAsync(),
+                 service.ValidateMailboxAccessAsync(It.IsAny<CancellationToken>()),
                     Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>
@@ -119,7 +120,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Pds
                     innerException: failedPdsOrchestrationServiceException);
 
             this.meshServiceMock.Setup(service =>
-                service.ValidateMailboxAccessAsync())
+                service.ValidateMailboxAccessAsync(It.IsAny<CancellationToken>()))
                     .ThrowsAsync(serviceException);
 
             // when
@@ -135,7 +136,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Pds
                 .BeEquivalentTo(expectedPdsOrchestrationServiceException);
 
             this.meshServiceMock.Verify(service =>
-                  service.ValidateMailboxAccessAsync(),
+                  service.ValidateMailboxAccessAsync(It.IsAny<CancellationToken>()),
                      Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>

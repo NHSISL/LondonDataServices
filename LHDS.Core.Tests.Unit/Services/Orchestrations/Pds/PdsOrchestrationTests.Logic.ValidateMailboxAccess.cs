@@ -2,6 +2,7 @@
 // Copyright (c) North East London ICB. All rights reserved.
 // ---------------------------------------------------------
 
+using System.Threading;
 using System.Threading.Tasks;
 using FluentAssertions;
 using Moq;
@@ -19,7 +20,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Pds
             bool expectedResult = storageResult;
 
             meshServiceMock.Setup(processings =>
-               processings.ValidateMailboxAccessAsync())
+               processings.ValidateMailboxAccessAsync(It.IsAny<CancellationToken>()))
                    .ReturnsAsync(storageResult);
 
             // when
@@ -30,7 +31,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Pds
             actualResult.Should().Be(expectedResult);
 
             meshServiceMock.Verify(Processings =>
-                Processings.ValidateMailboxAccessAsync(),
+                Processings.ValidateMailboxAccessAsync(It.IsAny<CancellationToken>()),
                     Times.Once);
 
             meshServiceMock.VerifyNoOtherCalls();

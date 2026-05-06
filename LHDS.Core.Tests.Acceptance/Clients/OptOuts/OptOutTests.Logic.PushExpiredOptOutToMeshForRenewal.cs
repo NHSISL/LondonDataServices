@@ -78,7 +78,8 @@ namespace LHDS.Core.Tests.Acceptance.Clients.OptOuts
                     .ReturnsAsync(message);
 
             //When
-            var actualMessage = await this.optOutClient.PushExpiredOptOutsToMeshForRenewalAsync();
+            var actualMessage = await this.optOutClient
+                .PushExpiredOptOutsToMeshForRenewalAsync(TestContext.Current.CancellationToken);
 
             //Then
             actualMessage.Should().BeEquivalentTo(message);

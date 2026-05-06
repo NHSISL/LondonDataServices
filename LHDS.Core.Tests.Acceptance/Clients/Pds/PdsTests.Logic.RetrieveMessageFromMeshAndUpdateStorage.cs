@@ -65,7 +65,8 @@ namespace LHDS.Core.Tests.Acceptance.Clients.Pds
             }
 
             //When
-            List<PdsAudit> actualList = await pdsClient.RetreiveMessagesFromMeshAndUpdateStorage();
+            List<PdsAudit> actualList = await pdsClient
+                .RetreiveMessagesFromMeshAndUpdateStorage(TestContext.Current.CancellationToken);
 
             //Then
             actualList.Should().HaveCount(1);

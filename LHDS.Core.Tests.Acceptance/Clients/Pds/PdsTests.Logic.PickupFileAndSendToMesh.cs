@@ -2,7 +2,6 @@
 // Copyright (c) North East London ICB. All rights reserved.
 // ---------------------------------------------------------
 
-using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Text;
@@ -60,7 +59,9 @@ namespace LHDS.Core.Tests.Acceptance.Clients.Pds
 
             //When
             await using var pdsStream = new MemoryStream(pdsFile);
-            var actualPdsAudit = await pdsClient.PickupFileAndSendToMesh(pdsStream, fileName);
+
+            var actualPdsAudit = await pdsClient
+                .PickupFileAndSendToMesh(pdsStream, fileName, TestContext.Current.CancellationToken);
 
             //Then
             actualPdsAudit.Should().NotBeNull();

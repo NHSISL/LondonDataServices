@@ -65,7 +65,8 @@ namespace LHDS.Core.Tests.Acceptance.Clients.OptOuts
             }
 
             //When
-            await this.optOutClient.RetrieveOptOutStatusAsync(input: optOutStream, fileName);
+            await this.optOutClient
+                .RetrieveOptOutStatusAsync(input: optOutStream, fileName, TestContext.Current.CancellationToken);
 
             //Then
             IQueryable<OptOut> actualOptOuts = await this.optOutService.RetrieveAllOptOutsAsync();

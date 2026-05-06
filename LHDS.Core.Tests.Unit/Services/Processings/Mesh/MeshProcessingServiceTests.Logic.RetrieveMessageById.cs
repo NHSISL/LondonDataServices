@@ -30,7 +30,8 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.Mesh
             // when
             await this.meshProcessingService.RetrieveMessageByIdAsync(
                 randomMessage.MessageId,
-                Stream.Null);
+                Stream.Null,
+                TestContext.Current.CancellationToken);
 
             // then
             this.meshServiceMock.Verify(service =>

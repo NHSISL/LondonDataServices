@@ -3,6 +3,7 @@
 // ---------------------------------------------------------
 
 using System;
+using System.Threading;
 using System.Threading.Tasks;
 using FluentAssertions;
 using LHDS.Core.Models.Foundations.Mesh;
@@ -33,12 +34,14 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Mesh
                     innerException: meshClientValidationException);
 
             this.meshBrokerMock.Setup(broker =>
-                broker.TrackMessageAsync(It.IsAny<string>()))
+                broker.TrackMessageAsync(It.IsAny<string>(), It.IsAny<CancellationToken>()))
                     .ThrowsAsync(meshClientValidationException);
 
             // when
             ValueTask<MeshMessage> retrieveTrackingStatusTask =
-                this.meshService.RetrieveTrackingStatusByIdAsync(messageId);
+                this.meshService.RetrieveTrackingStatusByIdAsync(
+                    messageId,
+                    TestContext.Current.CancellationToken);
 
             MeshServiceDependencyValidationException actualValidationException =
                 await Assert.ThrowsAsync<MeshServiceDependencyValidationException>(retrieveTrackingStatusTask.AsTask);
@@ -51,7 +54,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Mesh
             actualValidationException.Should().BeEquivalentTo(expectedDependencyValidationException);
 
             this.meshBrokerMock.Verify(broker =>
-                broker.TrackMessageAsync(It.IsAny<string>()),
+                broker.TrackMessageAsync(It.IsAny<string>(), It.IsAny<CancellationToken>()),
                     Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>
@@ -79,12 +82,14 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Mesh
                     innerException: meshClientDependencyException);
 
             this.meshBrokerMock.Setup(broker =>
-                broker.TrackMessageAsync(It.IsAny<string>()))
+                broker.TrackMessageAsync(It.IsAny<string>(), It.IsAny<CancellationToken>()))
                     .ThrowsAsync(meshClientDependencyException);
 
             // when
             ValueTask<MeshMessage> retrieveTrackingStatusTask =
-                this.meshService.RetrieveTrackingStatusByIdAsync(messageId);
+                this.meshService.RetrieveTrackingStatusByIdAsync(
+                    messageId,
+                    TestContext.Current.CancellationToken);
 
             MeshServiceDependencyException actualDependencyException =
                 await Assert.ThrowsAsync<MeshServiceDependencyException>(retrieveTrackingStatusTask.AsTask);
@@ -93,7 +98,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Mesh
             actualDependencyException.Should().BeEquivalentTo(expectedDependencyException);
 
             this.meshBrokerMock.Verify(broker =>
-                broker.TrackMessageAsync(It.IsAny<string>()),
+                broker.TrackMessageAsync(It.IsAny<string>(), It.IsAny<CancellationToken>()),
                     Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>
@@ -122,12 +127,14 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Mesh
                    innerException: failedMeshServiceException);
 
             this.meshBrokerMock.Setup(broker =>
-                broker.TrackMessageAsync(It.IsAny<string>()))
+                broker.TrackMessageAsync(It.IsAny<string>(), It.IsAny<CancellationToken>()))
                     .ThrowsAsync(serviceException);
 
             // when
             ValueTask<MeshMessage> RetrieveTrackingStatusTask =
-                this.meshService.RetrieveTrackingStatusByIdAsync(messageId);
+                this.meshService.RetrieveTrackingStatusByIdAsync(
+                    messageId,
+                    TestContext.Current.CancellationToken);
 
             MeshServiceException actualMeshServiceException =
                 await Assert.ThrowsAsync<MeshServiceException>
@@ -138,7 +145,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Mesh
                 .BeEquivalentTo(expectedMeshServiceException);
 
             this.meshBrokerMock.Verify(broker =>
-                broker.TrackMessageAsync(It.IsAny<string>()),
+                broker.TrackMessageAsync(It.IsAny<string>(), It.IsAny<CancellationToken>()),
                     Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>

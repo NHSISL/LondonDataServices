@@ -3,9 +3,7 @@
 // ---------------------------------------------------------
 
 using System.IO;
-using System.IO;
 using System.Text;
-using System.Threading;
 using System.Threading;
 using System.Threading.Tasks;
 using FluentAssertions;
@@ -66,7 +64,8 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.Mesh
                     mexContentChecksum,
                     contentType,
                     contentEncoding,
-                    accept);
+                    accept,
+                    TestContext.Current.CancellationToken);
 
             MeshProcessingValidationException actualMeshProcessingValidationException =
                 await Assert.ThrowsAsync<MeshProcessingValidationException>(sendMessageTask.AsTask);
@@ -138,7 +137,8 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.Mesh
                     mexContentChecksum,
                     contentType,
                     contentEncoding,
-                    accept);
+                    accept,
+                    TestContext.Current.CancellationToken);
 
             MeshProcessingValidationException actualMeshProcessingValidationException =
                 await Assert.ThrowsAsync<MeshProcessingValidationException>(sendMessageTask.AsTask);
@@ -176,7 +176,6 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.Mesh
             //Given
             string mexTo = GetRandomString();
             string mexWorkflowId = GetRandomString();
-            using Stream fileContent = new MemoryStream(Encoding.UTF8.GetBytes(GetRandomString()));
             string mexSubject = GetRandomString();
             string mexLocalId = GetRandomString();
             string mexFileName = GetRandomString();
@@ -219,7 +218,8 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.Mesh
                     mexContentChecksum,
                     contentType,
                     contentEncoding,
-                    accept))
+                    accept,
+                    It.IsAny<CancellationToken>()))
                         .ReturnsAsync(returnMessage);
 
             this.meshServiceMock.Setup(service =>
@@ -229,6 +229,8 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.Mesh
                 .ReturnsAsync(nullTrackingMessage);
 
             //When
+            using Stream fileContent = new MemoryStream(Encoding.UTF8.GetBytes(GetRandomString()));
+
             ValueTask<MeshMessage> SendMessageTask =
                 this.meshProcessingService.SendMessageAsync(
                     mexTo,
@@ -240,7 +242,8 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.Mesh
                     mexContentChecksum,
                     contentType,
                     contentEncoding,
-                    accept);
+                    accept,
+                    TestContext.Current.CancellationToken);
 
             MeshProcessingValidationException actualMeshProcessingValidationException =
                 await Assert.ThrowsAsync<MeshProcessingValidationException>(SendMessageTask.AsTask);
@@ -260,7 +263,8 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.Mesh
                     mexContentChecksum,
                     contentType,
                     contentEncoding,
-                    accept),
+                    accept,
+                    It.IsAny<CancellationToken>()),
                         Times.Once);
 
             this.meshServiceMock.Verify(service =>

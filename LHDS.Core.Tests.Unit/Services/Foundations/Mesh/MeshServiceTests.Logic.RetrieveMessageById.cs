@@ -3,6 +3,7 @@
 // ---------------------------------------------------------
 
 using System.IO;
+using System.Threading;
 using System.Threading.Tasks;
 using FluentAssertions;
 using LHDS.Core.Models.Foundations.Mesh;
@@ -23,7 +24,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Mesh
             Message outputMessage = CreateRandomMessage();
 
             this.meshBrokerMock.Setup(broker =>
-                broker.RetrieveMessageAsync(inputMessageId, It.IsAny<Stream>(), default))
+                broker.RetrieveMessageAsync(inputMessageId, It.IsAny<Stream>(), It.IsAny<CancellationToken>()))
                     .ReturnsAsync(outputMessage);
 
             MeshMessage expectedMeshMessage = new MeshMessage
@@ -34,14 +35,17 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Mesh
 
             // when
             MeshMessage actualMeshMessage =
-                await this.meshService.RetrieveMessageByIdAsync(inputMessageId, new MemoryStream());
+                await this.meshService.RetrieveMessageByIdAsync(
+                    inputMessageId,
+                    new MemoryStream(),
+                    TestContext.Current.CancellationToken);
 
             // then
             actualMeshMessage.MessageId.Should().Be(expectedMeshMessage.MessageId);
             actualMeshMessage.Headers.Should().BeEquivalentTo(expectedMeshMessage.Headers);
 
             this.meshBrokerMock.Verify(broker =>
-                broker.RetrieveMessageAsync(inputMessageId, It.IsAny<Stream>(), default),
+                broker.RetrieveMessageAsync(inputMessageId, It.IsAny<Stream>(), It.IsAny<CancellationToken>()),
                     Times.Once);
 
             this.meshBrokerMock.VerifyNoOtherCalls();

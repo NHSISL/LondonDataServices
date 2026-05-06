@@ -42,7 +42,8 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.Mesh
             ValueTask<MeshMessage> retrieveMessageIdsFromInboxTask =
                 this.meshProcessingService.RetrieveMessageByIdAsync(
                     randomMessage.MessageId,
-                    Stream.Null);
+                    Stream.Null,
+                    TestContext.Current.CancellationToken);
 
             MeshProcessingValidationException actualMeshProcessingValidationException =
                 await Assert.ThrowsAsync<MeshProcessingValidationException>(retrieveMessageIdsFromInboxTask.AsTask);

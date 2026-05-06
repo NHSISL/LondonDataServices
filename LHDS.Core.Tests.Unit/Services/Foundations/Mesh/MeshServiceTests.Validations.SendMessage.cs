@@ -64,7 +64,8 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Mesh
                     mexContentChecksum,
                     contentType,
                     contentEncoding,
-                    accept);
+                    accept,
+                    TestContext.Current.CancellationToken);
 
             MeshValidationException actualMeshValidationException =
                 await Assert.ThrowsAsync<MeshValidationException>(sendFileTask.AsTask);
@@ -137,7 +138,8 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Mesh
                     mexContentChecksum,
                     contentType,
                     contentEncoding,
-                    accept);
+                    accept,
+                    TestContext.Current.CancellationToken);
 
             MeshValidationException actualMeshValidationException =
                 await Assert.ThrowsAsync<MeshValidationException>(sendFileTask.AsTask);

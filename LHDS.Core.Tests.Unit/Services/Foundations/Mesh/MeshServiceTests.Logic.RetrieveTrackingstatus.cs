@@ -2,6 +2,7 @@
 // Copyright (c) North East London ICB. All rights reserved.
 // ---------------------------------------------------------
 
+using System.Threading;
 using System.Threading.Tasks;
 using FluentAssertions;
 using Force.DeepCloner;
@@ -24,18 +25,20 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Mesh
             Message expectedMessage = outputMessage.DeepClone();
 
             this.meshBrokerMock.Setup(broker =>
-                broker.TrackMessageAsync(inputMessageId))
+                broker.TrackMessageAsync(inputMessageId, It.IsAny<CancellationToken>()))
                     .ReturnsAsync(outputMessage);
 
             // when
             MeshMessage actualMeshMessage =
-                await this.meshService.RetrieveTrackingStatusByIdAsync(inputMessageId);
+                await this.meshService.RetrieveTrackingStatusByIdAsync(
+                    inputMessageId,
+                    TestContext.Current.CancellationToken);
 
             // then
             actualMeshMessage.Should().BeEquivalentTo(expectedMessage);
 
             this.meshBrokerMock.Verify(broker =>
-                broker.TrackMessageAsync(inputMessageId),
+                broker.TrackMessageAsync(inputMessageId, It.IsAny<CancellationToken>()),
                     Times.Once);
 
             this.meshBrokerMock.VerifyNoOtherCalls();

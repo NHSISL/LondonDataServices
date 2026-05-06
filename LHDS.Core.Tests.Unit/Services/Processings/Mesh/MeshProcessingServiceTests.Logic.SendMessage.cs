@@ -84,7 +84,8 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.Mesh
                     mexContentChecksum,
                     contentType,
                     contentEncoding,
-                    accept);
+                    accept,
+                    TestContext.Current.CancellationToken);
 
             // then
             actualMessage.Should().BeEquivalentTo(expectedMessage);

@@ -100,7 +100,8 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Pds
 
             //when
             List<PdsAudit> actualPdsAudits =
-                await this.pdsOrchestrationService.RetreiveMessagesFromMeshAndUpdateStorage();
+                await this.pdsOrchestrationService.RetreiveMessagesFromMeshAndUpdateStorage(
+                    TestContext.Current.CancellationToken);
 
             //then
             actualPdsAudits.Should().BeEquivalentTo(expectedPdsAudits);
@@ -209,7 +210,8 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Pds
 
             //when
             List<PdsAudit> actualPdsAudits =
-                await this.pdsOrchestrationService.RetreiveMessagesFromMeshAndUpdateStorage();
+                await this.pdsOrchestrationService.RetreiveMessagesFromMeshAndUpdateStorage(
+                    TestContext.Current.CancellationToken);
 
             //then
             actualPdsAudits.Should().BeEquivalentTo(expectedPdsAudits);

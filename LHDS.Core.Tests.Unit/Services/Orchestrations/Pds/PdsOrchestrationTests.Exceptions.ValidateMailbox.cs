@@ -30,7 +30,8 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Pds
 
             //when
             ValueTask<bool> validateMailboxAccessTask =
-                this.pdsOrchestrationService.ValidateMailboxAccessAsync();
+                this.pdsOrchestrationService.ValidateMailboxAccessAsync(
+                    TestContext.Current.CancellationToken);
 
             PdsOrchestrationDependencyValidationException actualException =
               await Assert.ThrowsAsync<PdsOrchestrationDependencyValidationException>(
@@ -74,7 +75,8 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Pds
 
             // when
             ValueTask<bool> validateMailboxAccessTask =
-              this.pdsOrchestrationService.ValidateMailboxAccessAsync();
+                this.pdsOrchestrationService.ValidateMailboxAccessAsync(
+                    TestContext.Current.CancellationToken);
 
             PdsOrchestrationDependencyException actualException =
                 await Assert.ThrowsAsync<PdsOrchestrationDependencyException>(validateMailboxAccessTask.AsTask);
@@ -122,7 +124,8 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Pds
 
             // when
             ValueTask<bool> validateMailboxAccessTask =
-                this.pdsOrchestrationService.ValidateMailboxAccessAsync();
+                this.pdsOrchestrationService.ValidateMailboxAccessAsync(
+                    TestContext.Current.CancellationToken);
 
             PdsOrchestrationServiceException actualException =
                 await Assert.ThrowsAsync<PdsOrchestrationServiceException>(validateMailboxAccessTask.AsTask);

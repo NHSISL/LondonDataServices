@@ -23,7 +23,8 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Pds
                    .ReturnsAsync(storageResult);
 
             // when
-            bool actualResult = await this.pdsOrchestrationService.ValidateMailboxAccessAsync();
+            bool actualResult = await this.pdsOrchestrationService.ValidateMailboxAccessAsync(
+                TestContext.Current.CancellationToken);
 
             //then
             actualResult.Should().Be(expectedResult);

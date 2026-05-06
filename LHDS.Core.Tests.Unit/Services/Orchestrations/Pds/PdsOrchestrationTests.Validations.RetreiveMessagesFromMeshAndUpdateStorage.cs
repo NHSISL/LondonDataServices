@@ -49,7 +49,8 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Pds
 
             // When
             ValueTask<List<PdsAudit>> PickupFileAndSendToMeshTask =
-                invalidPdsOrchestrationService.RetreiveMessagesFromMeshAndUpdateStorage();
+                invalidPdsOrchestrationService.RetreiveMessagesFromMeshAndUpdateStorage(
+                    TestContext.Current.CancellationToken);
 
             PdsOrchestrationValidationException actualException =
                 await Assert.ThrowsAsync<PdsOrchestrationValidationException>(

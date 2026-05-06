@@ -77,7 +77,8 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Pds
 
             // When
             ValueTask<List<PdsAudit>> retreiveMessagesFromMeshAndUpdateStorageTask =
-                this.pdsOrchestrationService.RetreiveMessagesFromMeshAndUpdateStorage();
+                this.pdsOrchestrationService.RetreiveMessagesFromMeshAndUpdateStorage(
+                    TestContext.Current.CancellationToken);
 
             PdsOrchestrationServiceException actualPdsOrchestrationServiceException =
                 await Assert.ThrowsAsync<PdsOrchestrationServiceException>(

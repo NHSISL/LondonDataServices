@@ -181,7 +181,8 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Pds
 
             // When
             ValueTask<List<PdsAudit>> retreiveMessagesFromMeshAndUpdateStorageTask =
-                this.pdsOrchestrationService.RetreiveMessagesFromMeshAndUpdateStorage();
+                this.pdsOrchestrationService.RetreiveMessagesFromMeshAndUpdateStorage(
+                    TestContext.Current.CancellationToken);
 
             PdsOrchestrationServiceException actualPdsOrchestrationServiceException =
                 await Assert.ThrowsAsync<PdsOrchestrationServiceException>(
@@ -287,7 +288,8 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Pds
 
             // When
             ValueTask<List<PdsAudit>> retreiveMessagesFromMeshAndUpdateStorageTask =
-                 this.pdsOrchestrationService.RetreiveMessagesFromMeshAndUpdateStorage();
+                this.pdsOrchestrationService.RetreiveMessagesFromMeshAndUpdateStorage(
+                    TestContext.Current.CancellationToken);
 
             PdsOrchestrationServiceException actualPdsOrchestrationServiceException =
                 await Assert.ThrowsAsync<PdsOrchestrationServiceException>(
@@ -342,7 +344,8 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Pds
 
             //when
             ValueTask<List<PdsAudit>> retreiveMessagesFromMeshAndUpdateStorageTask =
-                this.pdsOrchestrationService.RetreiveMessagesFromMeshAndUpdateStorage();
+                this.pdsOrchestrationService.RetreiveMessagesFromMeshAndUpdateStorage(
+                    TestContext.Current.CancellationToken);
 
             PdsOrchestrationDependencyValidationException actualException =
                 await Assert.ThrowsAsync<PdsOrchestrationDependencyValidationException>(
@@ -386,7 +389,8 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Pds
 
             // when
             ValueTask<List<PdsAudit>> retreiveMessagesFromMeshAndUpdateStorageTask =
-                this.pdsOrchestrationService.RetreiveMessagesFromMeshAndUpdateStorage();
+                this.pdsOrchestrationService.RetreiveMessagesFromMeshAndUpdateStorage(
+                    TestContext.Current.CancellationToken);
 
             PdsOrchestrationDependencyException actualException =
                 await Assert.ThrowsAsync<PdsOrchestrationDependencyException>(
@@ -435,7 +439,8 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Pds
 
             // when
             ValueTask<List<PdsAudit>> retreiveMessagesFromMeshAndUpdateStorageTask =
-                this.pdsOrchestrationService.RetreiveMessagesFromMeshAndUpdateStorage();
+                this.pdsOrchestrationService.RetreiveMessagesFromMeshAndUpdateStorage(
+                    TestContext.Current.CancellationToken);
 
             PdsOrchestrationServiceException actualException =
                 await Assert.ThrowsAsync<PdsOrchestrationServiceException>(

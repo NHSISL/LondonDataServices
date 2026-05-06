@@ -92,7 +92,10 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Pds
 
             //when
             PdsAudit actualPdsAudit =
-                await this.pdsOrchestrationService.PickupFileAndSendToMesh(inputStream, fileName);
+                await this.pdsOrchestrationService.PickupFileAndSendToMesh(
+                    inputStream,
+                    fileName,
+                    TestContext.Current.CancellationToken);
 
             //then
             actualPdsAudit.Should().BeEquivalentTo(expectedPdsAudit);

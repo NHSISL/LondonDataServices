@@ -42,7 +42,8 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Mesh
             ValueTask<MeshMessage> retrieveTrackingStatusTask =
                 this.meshService.RetrieveMessageByIdAsync(
                     messageId,
-                    outputStream: Stream.Null);
+                    outputStream: Stream.Null,
+                    TestContext.Current.CancellationToken);
 
             MeshValidationException actualMeshValidationException =
                 await Assert.ThrowsAsync<MeshValidationException>(

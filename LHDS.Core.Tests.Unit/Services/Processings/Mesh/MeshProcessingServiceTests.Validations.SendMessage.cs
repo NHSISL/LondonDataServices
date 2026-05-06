@@ -103,7 +103,6 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.Mesh
             // given
             string mexTo = GetRandomString();
             string mexWorkflowId = GetRandomString();
-            Stream fileContent = null;
             string mexSubject = GetRandomString();
             string mexLocalId = GetRandomString();
             string mexFileName = GetRandomString();

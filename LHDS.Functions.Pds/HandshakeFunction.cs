@@ -3,6 +3,7 @@
 // ---------------------------------------------------------
 
 using System;
+using System.Threading;
 using System.Threading.Tasks;
 using LHDS.Core.Brokers.Loggings;
 using LHDS.Core.Clients;
@@ -25,13 +26,15 @@ namespace LHDS.Functions.Pds
         }
 
         [Function("HandShakeFunction")]
-        public async Task Run([TimerTrigger("0 0 23 * * *")] MyInformation myTimer)
+        public async Task Run(
+            [TimerTrigger("0 0 23 * * *")] MyInformation myTimer,
+            CancellationToken cancellationToken)
         {
             await this.loggingBroker.LogInformationAsync($"C# Timer trigger function executed at: {DateTime.Now}");
 
             try
             {
-                await pdsClient.ValidateMailboxAccessAsync();
+                await pdsClient.ValidateMailboxAccessAsync(cancellationToken);
             }
             catch (Exception ex)
             {

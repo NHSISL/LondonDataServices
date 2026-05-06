@@ -3,6 +3,7 @@
 // ---------------------------------------------------------
 
 using System;
+using System.IO;
 using LHDS.Core.Models.Foundations.Mesh;
 using LHDS.Core.Models.Processings.Mesh.Exceptions;
 using Xeptions;
@@ -27,13 +28,13 @@ namespace LHDS.Core.Services.Processings.Mesh
             }
         }
 
-        public void ValidateMeshMessageOnSendMessage(string mexTo, string workflowId, byte[] fileContent)
+        public void ValidateMeshMessageOnSendMessage(string mexTo, string workflowId, Stream content)
         {
             Validate<InvalidMeshProcessingArgumentException>(
                 message: "Invalid mesh processing argument. Please correct the errors and try again.",
                 (Rule: IsInvalid(mexTo), Parameter: "MexTo"),
                 (Rule: IsInvalid(workflowId), Parameter: "MexWorkflowId"),
-                (Rule: IsInvalid(fileContent), Parameter: "FileContent"));
+                (Rule: IsInvalidForRead(content), Parameter: "Content"));
         }
 
         private static void ValidateSendMessage(MeshMessage message)
@@ -56,10 +57,10 @@ namespace LHDS.Core.Services.Processings.Mesh
             Message = "Text is required"
         };
 
-        private static dynamic IsInvalid(byte[] data) => new
+        private static dynamic IsInvalidForRead(Stream stream) => new
         {
-            Condition = (data == null || data.Length == 0),
-            Message = "Content is required"
+            Condition = stream == null || !stream.CanRead || stream.Length == 0,
+            Message = "Stream must be readable and contain data"
         };
 
         private static void Validate<T>(string message, params (dynamic Rule, string Parameter)[] validations)

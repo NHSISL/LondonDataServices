@@ -1,8 +1,10 @@
-﻿// ---------------------------------------------------------
+// ---------------------------------------------------------
 // Copyright (c) North East London ICB. All rights reserved.
 // ---------------------------------------------------------
 
+using System.IO;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using FluentAssertions;
 using Force.DeepCloner;
@@ -20,7 +22,6 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.Mesh
             // given
             string mexTo = GetRandomString();
             string mexWorkflowId = GetRandomString();
-            byte[] fileContent = Encoding.UTF8.GetBytes(GetRandomString());
             string mexSubject = GetRandomString();
             string mexLocalId = GetRandomString();
             string mexFileName = GetRandomString();
@@ -28,15 +29,11 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.Mesh
             string contentType = GetRandomString();
             string contentEncoding = GetRandomString();
             string accept = "text/plain";
-
-
-
             var randomMessageId = GetRandomString();
 
             MeshMessage randomMeshMessage = ComposeMessage.CreateMeshMessage(
                 mexTo,
                 mexWorkflowId,
-                fileContent,
                 mexSubject,
                 mexLocalId,
                 mexFileName,
@@ -52,22 +49,27 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.Mesh
             trackingOutputMeshMessage.TrackingInfo = randomTrackingMeshMessage.TrackingInfo;
             MeshMessage expectedMessage = trackingOutputMeshMessage.DeepClone();
 
+            using Stream inputStream = new MemoryStream(Encoding.UTF8.GetBytes(GetRandomString()));
+
             this.meshServiceMock.Setup(service =>
                 service.SendMessageAsync(
                     mexTo,
                     mexWorkflowId,
-                    fileContent,
+                    inputStream,
                     mexSubject,
                     mexLocalId,
                     mexFileName,
                     mexContentChecksum,
                     contentType,
                     contentEncoding,
-                    accept))
+                    accept,
+                    It.IsAny<CancellationToken>()))
                         .ReturnsAsync(ouputMeshMessage);
 
             this.meshServiceMock.Setup(service =>
-                service.RetrieveTrackingStatusByIdAsync(ouputMeshMessage.MessageId))
+                service.RetrieveTrackingStatusByIdAsync(
+                    ouputMeshMessage.MessageId,
+                    It.IsAny<CancellationToken>()))
                     .ReturnsAsync(trackingOutputMeshMessage);
 
             // when
@@ -75,7 +77,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.Mesh
                 await this.meshProcessingService.SendMessageAsync(
                     mexTo,
                     mexWorkflowId,
-                    fileContent,
+                    inputStream,
                     mexSubject,
                     mexLocalId,
                     mexFileName,
@@ -91,18 +93,21 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.Mesh
                 service.SendMessageAsync(
                     mexTo,
                     mexWorkflowId,
-                    fileContent,
+                    inputStream,
                     mexSubject,
                     mexLocalId,
                     mexFileName,
                     mexContentChecksum,
                     contentType,
                     contentEncoding,
-                    accept),
+                    accept,
+                    It.IsAny<CancellationToken>()),
                         Times.Once);
 
             this.meshServiceMock.Verify(service =>
-                service.RetrieveTrackingStatusByIdAsync(ouputMeshMessage.MessageId),
+                service.RetrieveTrackingStatusByIdAsync(
+                    ouputMeshMessage.MessageId,
+                    It.IsAny<CancellationToken>()),
                     Times.Once);
 
             this.meshServiceMock.VerifyNoOtherCalls();

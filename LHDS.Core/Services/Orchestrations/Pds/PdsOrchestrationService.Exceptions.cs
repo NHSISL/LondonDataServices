@@ -25,6 +25,10 @@ namespace LHDS.Core.Services.Orchestrations.Pds
             {
                 return await returningPdsAuditFunction();
             }
+            catch (OperationCanceledException)
+            {
+                throw;
+            }
             catch (NullConfigPdsOrchestrationException nullConfigPdsOrchestrationException)
             {
                 throw await CreateAndLogValidationExceptionAsync(nullConfigPdsOrchestrationException);
@@ -101,6 +105,10 @@ namespace LHDS.Core.Services.Orchestrations.Pds
             try
             {
                 return await returningPdsBooleanFunction();
+            }
+            catch (OperationCanceledException)
+            {
+                throw;
             }
             catch (NullConfigPdsOrchestrationException nullConfigPdsOrchestrationException)
             {
@@ -179,6 +187,10 @@ namespace LHDS.Core.Services.Orchestrations.Pds
             try
             {
                 return await returningPdsAuditListFunciton();
+            }
+            catch (OperationCanceledException)
+            {
+                throw;
             }
             catch (PdsOrchestrationValidationException pdsOrchestrationValidationException)
             {

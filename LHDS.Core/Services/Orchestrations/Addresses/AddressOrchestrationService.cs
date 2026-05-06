@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.IO.Compression;
 using System.Linq;
+using System.Text;
 using System.Threading.Tasks;
 using LHDS.Core.Brokers.Audits;
 using LHDS.Core.Brokers.CsvHelpers;
@@ -218,11 +219,18 @@ namespace LHDS.Core.Services.Orchestrations.Addresses
                     message: $"The file {filePath} could not be found.");
             }
 
+            //TODO: Refactor to stream data instead of loading batches into memory as strings
             List<string> csvLines = await fileBroker.ReadLinesBatchAsync(filePath, batchSize, skipCounter);
             string csvString = string.Join(Environment.NewLine, csvLines);
 
-            List<T> mappedObjects = await this.csvHelperBroker
-                .MapCsvToObjectAsync<T>(csvString, hasHeaderRecord: false, fieldMappings);
+            using Stream csvStream = new MemoryStream(Encoding.UTF8.GetBytes(csvString));
+            List<T> mappedObjects = new List<T>();
+
+            await foreach (var item in this.csvHelperBroker
+                .MapCsvToObjectAsync<T>(csvStream, hasHeaderRecord: false, fieldMappings))
+            {
+                mappedObjects.Add(item);
+            }
 
             return mappedObjects;
         }
@@ -699,7 +707,7 @@ namespace LHDS.Core.Services.Orchestrations.Addresses
                 { "USRN", 3 },
                 { "StreetDescription", 4 },
                 { "Locality", 5 },
-                { "TownName", 6 },                
+                { "TownName", 6 },
             };
 
             List<StreetDescriptor> streetDescriptors = await LoadAndMapCsvAsync<StreetDescriptor>(

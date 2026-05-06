@@ -46,7 +46,8 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
 
             // when
             ValueTask<string> RetrieveOptOutStatusTask =
-                this.optOutOrchestrationService.RetrieveOptOutStatusAsync(invalidStream, invalidText);
+                this.optOutOrchestrationService.RetrieveOptOutStatusAsync(
+                    invalidStream, invalidText, TestContext.Current.CancellationToken);
 
             OptOutOrchestrationValidationException actualException =
                 await Assert.ThrowsAsync<OptOutOrchestrationValidationException>(RetrieveOptOutStatusTask.AsTask);

@@ -1,8 +1,10 @@
-﻿// ---------------------------------------------------------
+// ---------------------------------------------------------
 // Copyright (c) North East London ICB. All rights reserved.
 // ---------------------------------------------------------
 
+using System.IO;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using FluentAssertions;
 using LHDS.Core.Models.Foundations.Mesh;
@@ -24,7 +26,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Mesh
             // given
             string mexTo = invalidInput;
             string mexWorkflowId = invalidInput;
-            byte[] fileContent = Encoding.UTF8.GetBytes(GetRandomString());
+            using Stream inputStream = new MemoryStream(Encoding.UTF8.GetBytes(GetRandomString()));
             string mexSubject = invalidInput;
             string mexLocalId = invalidInput;
             string mexFileName = invalidInput;
@@ -55,7 +57,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Mesh
                 this.meshService.SendMessageAsync(
                     mexTo,
                     mexWorkflowId,
-                    fileContent,
+                    inputStream,
                     mexSubject,
                     mexLocalId,
                     mexFileName,
@@ -75,14 +77,15 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Mesh
                 broker.SendMessageAsync(
                     mexTo,
                     mexWorkflowId,
-                    fileContent,
+                    It.IsAny<Stream>(),
                     mexSubject,
                     mexLocalId,
                     mexFileName,
                     mexContentChecksum,
                     contentType,
                     contentEncoding,
-                    accept),
+                    accept,
+                    It.IsAny<CancellationToken>()),
                         Times.Never);
 
             this.loggingBrokerMock.Verify(broker =>
@@ -94,16 +97,13 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Mesh
             this.loggingBrokerMock.VerifyNoOtherCalls();
         }
 
-        [Theory]
-        [InlineData(null)]
-        [InlineData(new byte[] { })]
-        public async Task ShouldThrowValidationExceptionOnSendMessageIfFileContentIsInvalidAsync(
-            byte[] invalidInput)
+        [Fact]
+        public async Task ShouldThrowValidationExceptionOnSendMessageIfStreamIsInvalidAsync()
         {
             // given
             string mexTo = GetRandomString();
             string mexWorkflowId = GetRandomString();
-            byte[] fileContent = invalidInput;
+            Stream inputStream = null;
             string mexSubject = GetRandomString();
             string mexLocalId = GetRandomString();
             string mexFileName = GetRandomString();
@@ -117,8 +117,8 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Mesh
                     message: "Invalid mesh message, please correct errors and try again.");
 
             invalidMeshMessageException.AddData(
-                key: nameof(MeshMessage.FileContent),
-                values: "Content is required");
+                key: "Content",
+                values: "Stream must be readable and contain data");
 
             var expectedMeshValidationException =
                 new MeshValidationException(
@@ -130,7 +130,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Mesh
                 this.meshService.SendMessageAsync(
                     mexTo,
                     mexWorkflowId,
-                    fileContent,
+                    inputStream,
                     mexSubject,
                     mexLocalId,
                     mexFileName,
@@ -150,14 +150,15 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Mesh
                 broker.SendMessageAsync(
                     mexTo,
                     mexWorkflowId,
-                    fileContent,
+                    It.IsAny<Stream>(),
                     mexSubject,
                     mexLocalId,
                     mexFileName,
                     mexContentChecksum,
                     contentType,
                     contentEncoding,
-                    accept),
+                    accept,
+                    It.IsAny<CancellationToken>()),
                         Times.Never);
 
             this.loggingBrokerMock.Verify(broker =>

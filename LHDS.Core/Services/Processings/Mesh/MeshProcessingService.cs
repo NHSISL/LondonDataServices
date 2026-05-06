@@ -1,8 +1,10 @@
-﻿// ---------------------------------------------------------
+// ---------------------------------------------------------
 // Copyright (c) North East London ICB. All rights reserved.
 // ---------------------------------------------------------
 
 using System.Collections.Generic;
+using System.IO;
+using System.Threading;
 using System.Threading.Tasks;
 using LHDS.Core.Brokers.Loggings;
 using LHDS.Core.Models.Foundations.Mesh;
@@ -23,25 +25,37 @@ namespace LHDS.Core.Services.Processings.Mesh
             this.loggingBroker = loggingBroker;
         }
 
-        public ValueTask<bool> ValidateMailboxAccessAsync() =>
+        public ValueTask<bool> ValidateMailboxAccessAsync(CancellationToken cancellationToken = default) =>
            TryCatch(async () =>
            {
-               return await this.meshService.ValidateMailboxAccessAsync();
+               cancellationToken.ThrowIfCancellationRequested();
+
+               return await this.meshService.ValidateMailboxAccessAsync(cancellationToken);
            });
 
-        public ValueTask<List<string>> RetrieveMessageIdsFromInboxAsync() =>
+        public ValueTask<List<string>> RetrieveMessageIdsFromInboxAsync(
+            CancellationToken cancellationToken = default) =>
          TryCatch(async () =>
             {
-                return await this.meshService.RetrieveMessageIdsFromInboxAsync();
+                cancellationToken.ThrowIfCancellationRequested();
+
+                return await this.meshService.RetrieveMessageIdsFromInboxAsync(cancellationToken);
             });
 
-        public ValueTask<MeshMessage> RetrieveAndAcknowledgeMessageByIdAsync(string messageId) =>
+        public ValueTask<MeshMessage> RetrieveAndAcknowledgeMessageByIdAsync(
+            string messageId,
+            Stream outputStream,
+            CancellationToken cancellationToken = default) =>
             TryCatch(async () =>
             {
+                cancellationToken.ThrowIfCancellationRequested();
                 ValidateMeshArgs(messageId);
-                MeshMessage retrievedMessage = await meshService.RetrieveMessageByIdAsync(messageId);
+
+                MeshMessage retrievedMessage = await meshService
+                    .RetrieveMessageByIdAsync(messageId, outputStream, cancellationToken);
+
                 ValidateMeshMessageIsNotNull(retrievedMessage);
-                bool ackResult = await meshService.AcknowledgeMessageByIdAsync(messageId);
+                await meshService.AcknowledgeMessageByIdAsync(messageId, cancellationToken);
 
                 return retrievedMessage;
             });
@@ -49,34 +63,37 @@ namespace LHDS.Core.Services.Processings.Mesh
         public ValueTask<MeshMessage> SendMessageAsync(
             string mexTo,
             string mexWorkflowId,
-            byte[] fileContent,
+            Stream content,
             string mexSubject = "",
             string mexLocalId = "",
             string mexFileName = "",
             string mexContentChecksum = "",
             string contentType = "application/octet-stream",
             string contentEncoding = "",
-            string accept = "application/json") =>
+            string accept = "application/json",
+            CancellationToken cancellationToken = default) =>
             TryCatch((ReturningMessageMeshFunction)(async () =>
             {
-                ValidateMeshMessageOnSendMessage(mexTo, mexWorkflowId, fileContent);
+                cancellationToken.ThrowIfCancellationRequested();
+                ValidateMeshMessageOnSendMessage(mexTo, mexWorkflowId, content);
 
                 MeshMessage sendMessageResult = await meshService.SendMessageAsync(
                     mexTo,
                     mexWorkflowId,
-                    fileContent,
+                    content,
                     mexSubject,
                     mexLocalId,
                     mexFileName,
                     mexContentChecksum,
                     contentType,
                     contentEncoding,
-                    accept);
+                    accept,
+                    cancellationToken);
 
                 ValidateSendMessage(sendMessageResult);
 
-                MeshMessage trackMessage =
-                    await this.meshService.RetrieveTrackingStatusByIdAsync(sendMessageResult.MessageId);
+                MeshMessage trackMessage = await this.meshService
+                    .RetrieveTrackingStatusByIdAsync(sendMessageResult.MessageId, cancellationToken);
 
                 ValidateMeshMessageIsNotNull(trackMessage);
                 sendMessageResult.TrackingInfo = trackMessage.TrackingInfo;
@@ -84,22 +101,30 @@ namespace LHDS.Core.Services.Processings.Mesh
                 return sendMessageResult;
             }));
 
-        public ValueTask<MeshMessage> RetrieveMessageByIdAsync(string messageId) =>
+        public ValueTask<MeshMessage> RetrieveMessageByIdAsync(
+            string messageId,
+            Stream outputStream,
+            CancellationToken cancellationToken = default) =>
             TryCatch(async () =>
             {
+                cancellationToken.ThrowIfCancellationRequested();
                 ValidateMeshArgs(messageId);
-                MeshMessage retrievedMessage = await meshService.RetrieveMessageByIdAsync(messageId);
+
+                MeshMessage retrievedMessage = await meshService
+                    .RetrieveMessageByIdAsync(messageId, outputStream, cancellationToken);
 
                 return retrievedMessage;
             });
 
-        public ValueTask<bool> AcknowledgeMessageByIdAsync(string messageId) =>
+        public ValueTask<bool> AcknowledgeMessageByIdAsync(
+            string messageId,
+            CancellationToken cancellationToken = default) =>
             TryCatch(async () =>
             {
+                cancellationToken.ThrowIfCancellationRequested();
                 ValidateMeshArgs(messageId);
-                bool ackResult = await meshService.AcknowledgeMessageByIdAsync(messageId);
 
-                return ackResult;
+                return await meshService.AcknowledgeMessageByIdAsync(messageId, cancellationToken);
             });
     }
 }

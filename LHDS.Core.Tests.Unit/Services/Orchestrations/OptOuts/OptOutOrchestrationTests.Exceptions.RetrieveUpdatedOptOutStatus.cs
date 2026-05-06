@@ -1,9 +1,11 @@
-﻿// ---------------------------------------------------------
+// ---------------------------------------------------------
 // Copyright (c) North East London ICB. All rights reserved.
 // ---------------------------------------------------------
 
 using System;
 using System.Collections.Generic;
+using System.IO;
+using System.Threading;
 using System.Threading.Tasks;
 using FluentAssertions;
 using LHDS.Core.Models.Foundations.Mesh;
@@ -27,14 +29,25 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
             List<Exception> exceptions = new List<Exception>();
 
             this.meshProcessingServiceMock.SetupSequence(service =>
-                service.RetrieveMessageIdsFromInboxAsync())
+                service.RetrieveMessageIdsFromInboxAsync(It.IsAny<CancellationToken>()))
                     .ReturnsAsync(randomMessageIds)
                     .ReturnsAsync(new List<string>());
 
             foreach (var id in randomMessageIds)
             {
+                string tempFilePath =
+                    System.IO.Path.Combine(System.IO.Path.GetTempPath(), System.Guid.NewGuid().ToString());
+
+                this.tempLocationBrokerMock.Setup(broker =>
+                    broker.GetUniqueHomeFilePath())
+                        .Returns(tempFilePath);
+
+                this.fileBrokerMock.Setup(broker =>
+                    broker.DeleteFileAsync(It.IsAny<string>()))
+                        .ReturnsAsync(true);
+
                 this.meshProcessingServiceMock.Setup(service =>
-                    service.RetrieveMessageByIdAsync(id))
+                    service.RetrieveMessageByIdAsync(id, It.IsAny<Stream>(), It.IsAny<CancellationToken>()))
                         .ThrowsAsync(dependencyValidationException);
 
                 var optOutOrchestrationDependencyValidationException =
@@ -64,7 +77,8 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
 
             // When
             ValueTask<List<MeshMessage>> actualMeshMessages =
-                this.optOutOrchestrationService.RetrieveUpdatedMeshConsentStatusesChangesAsync();
+                this.optOutOrchestrationService.RetrieveUpdatedMeshConsentStatusesChangesAsync(
+                    TestContext.Current.CancellationToken);
 
             OptOutOrchestrationServiceException actualOptOutOrchestrationServiceException =
                 await Assert.ThrowsAsync<OptOutOrchestrationServiceException>(actualMeshMessages.AsTask);
@@ -74,13 +88,13 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
                 .BeEquivalentTo(expectedOptOutOrchestrationServiceException);
 
             this.meshProcessingServiceMock.Verify(service =>
-                service.RetrieveMessageIdsFromInboxAsync(),
+                service.RetrieveMessageIdsFromInboxAsync(It.IsAny<CancellationToken>()),
                     Times.Once);
 
             foreach (var id in randomMessageIds)
             {
                 this.meshProcessingServiceMock.Verify(service =>
-                    service.RetrieveMessageByIdAsync(id),
+                    service.RetrieveMessageByIdAsync(id, It.IsAny<Stream>(), It.IsAny<CancellationToken>()),
                         Times.Once);
             }
 
@@ -119,14 +133,25 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
             List<Exception> exceptions = new List<Exception>();
 
             this.meshProcessingServiceMock.SetupSequence(service =>
-                service.RetrieveMessageIdsFromInboxAsync())
+                service.RetrieveMessageIdsFromInboxAsync(It.IsAny<CancellationToken>()))
                     .ReturnsAsync(randomMessageIds)
                     .ReturnsAsync(new List<string>());
 
             foreach (var id in randomMessageIds)
             {
+                string tempFilePath =
+                    System.IO.Path.Combine(System.IO.Path.GetTempPath(), System.Guid.NewGuid().ToString());
+
+                this.tempLocationBrokerMock.Setup(broker =>
+                    broker.GetUniqueHomeFilePath())
+                        .Returns(tempFilePath);
+
+                this.fileBrokerMock.Setup(broker =>
+                    broker.DeleteFileAsync(It.IsAny<string>()))
+                        .ReturnsAsync(true);
+
                 this.meshProcessingServiceMock.Setup(service =>
-                    service.RetrieveMessageByIdAsync(id))
+                    service.RetrieveMessageByIdAsync(id, It.IsAny<Stream>(), It.IsAny<CancellationToken>()))
                         .ThrowsAsync(dependencyException);
 
                 var optOutOrchestrationDependencyException =
@@ -156,7 +181,8 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
 
             // When
             ValueTask<List<MeshMessage>> actualMeshMessages =
-                this.optOutOrchestrationService.RetrieveUpdatedMeshConsentStatusesChangesAsync();
+                this.optOutOrchestrationService.RetrieveUpdatedMeshConsentStatusesChangesAsync(
+                    TestContext.Current.CancellationToken);
 
             OptOutOrchestrationServiceException actualOptOutOrchestrationServiceException =
                 await Assert.ThrowsAsync<OptOutOrchestrationServiceException>(actualMeshMessages.AsTask);
@@ -166,13 +192,13 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
                 .BeEquivalentTo(expectedOptOutOrchestrationServiceException);
 
             this.meshProcessingServiceMock.Verify(service =>
-                service.RetrieveMessageIdsFromInboxAsync(),
+                service.RetrieveMessageIdsFromInboxAsync(It.IsAny<CancellationToken>()),
                     Times.Once);
 
             foreach (var id in randomMessageIds)
             {
                 this.meshProcessingServiceMock.Verify(service =>
-                    service.RetrieveMessageByIdAsync(id),
+                    service.RetrieveMessageByIdAsync(id, It.IsAny<Stream>(), It.IsAny<CancellationToken>()),
                         Times.Once);
             }
 
@@ -209,7 +235,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
             var serviceException = new Exception();
 
             this.meshProcessingServiceMock.SetupSequence(service =>
-                service.RetrieveMessageIdsFromInboxAsync())
+                service.RetrieveMessageIdsFromInboxAsync(It.IsAny<CancellationToken>()))
                     .ReturnsAsync(randomMessageIds)
                     .ReturnsAsync(new List<string>());
 
@@ -225,8 +251,19 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
 
             foreach (var id in randomMessageIds)
             {
+                string tempFilePath =
+                    System.IO.Path.Combine(System.IO.Path.GetTempPath(), System.Guid.NewGuid().ToString());
+
+                this.tempLocationBrokerMock.Setup(broker =>
+                    broker.GetUniqueHomeFilePath())
+                        .Returns(tempFilePath);
+
+                this.fileBrokerMock.Setup(broker =>
+                    broker.DeleteFileAsync(It.IsAny<string>()))
+                        .ReturnsAsync(true);
+
                 this.meshProcessingServiceMock.Setup(service =>
-                    service.RetrieveMessageByIdAsync(id))
+                    service.RetrieveMessageByIdAsync(id, It.IsAny<Stream>(), It.IsAny<CancellationToken>()))
                         .ThrowsAsync(serviceException);
 
                 exceptions.Add(innerOptOutOrchestrationServiceException);
@@ -250,7 +287,8 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
 
             // When
             ValueTask<List<MeshMessage>> actualMeshMessages =
-                this.optOutOrchestrationService.RetrieveUpdatedMeshConsentStatusesChangesAsync();
+                this.optOutOrchestrationService.RetrieveUpdatedMeshConsentStatusesChangesAsync(
+                    TestContext.Current.CancellationToken);
 
             OptOutOrchestrationServiceException actualOptOutOrchestrationServiceException =
                 await Assert.ThrowsAsync<OptOutOrchestrationServiceException>(actualMeshMessages.AsTask);
@@ -260,13 +298,13 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
                 .BeEquivalentTo(expectedOptOutOrchestrationServiceException);
 
             this.meshProcessingServiceMock.Verify(service =>
-                service.RetrieveMessageIdsFromInboxAsync(),
+                service.RetrieveMessageIdsFromInboxAsync(It.IsAny<CancellationToken>()),
                     Times.Once);
 
             foreach (var id in randomMessageIds)
             {
                 this.meshProcessingServiceMock.Verify(service =>
-                    service.RetrieveMessageByIdAsync(id),
+                    service.RetrieveMessageByIdAsync(id, It.IsAny<Stream>(), It.IsAny<CancellationToken>()),
                         Times.Once);
             }
 
@@ -301,12 +339,13 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
                     innerException: dependancyValidationException.InnerException as Xeption);
 
             this.meshProcessingServiceMock.Setup(processings =>
-                processings.RetrieveMessageIdsFromInboxAsync())
+                processings.RetrieveMessageIdsFromInboxAsync(It.IsAny<CancellationToken>()))
                     .ThrowsAsync(dependancyValidationException);
 
             // When
             ValueTask<List<MeshMessage>> updateOptOutExpiredOptOutsToMeshIfExpiredTask =
-                this.optOutOrchestrationService.RetrieveUpdatedMeshConsentStatusesChangesAsync();
+                this.optOutOrchestrationService.RetrieveUpdatedMeshConsentStatusesChangesAsync(
+                    TestContext.Current.CancellationToken);
 
             OptOutOrchestrationDependencyValidationException actualException =
                 await Assert.ThrowsAsync<OptOutOrchestrationDependencyValidationException>(
@@ -317,7 +356,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
                 .BeEquivalentTo(expectedDependencyException);
 
             this.meshProcessingServiceMock.Verify(processings =>
-                processings.RetrieveMessageIdsFromInboxAsync(),
+                processings.RetrieveMessageIdsFromInboxAsync(It.IsAny<CancellationToken>()),
                     Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>
@@ -346,12 +385,13 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
                     innerException: dependancyException.InnerException as Xeption);
 
             this.meshProcessingServiceMock.Setup(processings =>
-                processings.RetrieveMessageIdsFromInboxAsync())
+                processings.RetrieveMessageIdsFromInboxAsync(It.IsAny<CancellationToken>()))
                     .ThrowsAsync(dependancyException);
 
             // When
             ValueTask<List<MeshMessage>> updateOptOutExpiredOptOutsToMeshIfExpiredTask =
-                this.optOutOrchestrationService.RetrieveUpdatedMeshConsentStatusesChangesAsync();
+                this.optOutOrchestrationService.RetrieveUpdatedMeshConsentStatusesChangesAsync(
+                    TestContext.Current.CancellationToken);
 
             OptOutOrchestrationDependencyException actualException =
                 await Assert.ThrowsAsync<OptOutOrchestrationDependencyException>(
@@ -362,7 +402,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
                 .BeEquivalentTo(expectedDependencyException);
 
             this.meshProcessingServiceMock.Verify(processings =>
-                processings.RetrieveMessageIdsFromInboxAsync(),
+                processings.RetrieveMessageIdsFromInboxAsync(It.IsAny<CancellationToken>()),
                     Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>
@@ -396,12 +436,13 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
                     failedOptOutOrchestrationServiceException);
 
             this.meshProcessingServiceMock.Setup(processings =>
-                processings.RetrieveMessageIdsFromInboxAsync())
+                processings.RetrieveMessageIdsFromInboxAsync(It.IsAny<CancellationToken>()))
                    .ThrowsAsync(serviceException);
 
             // when
             ValueTask<List<MeshMessage>> updateOptOutExpiredOptOutsToMeshIfExpiredTask =
-                this.optOutOrchestrationService.RetrieveUpdatedMeshConsentStatusesChangesAsync();
+                this.optOutOrchestrationService.RetrieveUpdatedMeshConsentStatusesChangesAsync(
+                    TestContext.Current.CancellationToken);
 
             OptOutOrchestrationServiceException actualException =
                 await Assert.ThrowsAsync<OptOutOrchestrationServiceException>(
@@ -412,7 +453,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
                 .BeEquivalentTo(expectedOptOrchestrationServiceException);
 
             this.meshProcessingServiceMock.Verify(processings =>
-                processings.RetrieveMessageIdsFromInboxAsync(),
+                processings.RetrieveMessageIdsFromInboxAsync(It.IsAny<CancellationToken>()),
                     Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>

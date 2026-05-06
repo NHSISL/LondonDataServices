@@ -3,6 +3,7 @@
 // ---------------------------------------------------------
 
 using System;
+using System.IO;
 using System.Threading.Tasks;
 using FluentAssertions;
 using LHDS.Core.Models.Foundations.Mesh;
@@ -34,12 +35,12 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Mesh
                     innerException: meshClientValidationException);
 
             this.meshBrokerMock.Setup(broker =>
-                broker.RetrieveMessageAsync(It.IsAny<string>()))
+                broker.RetrieveMessageAsync(It.IsAny<string>(), It.IsAny<Stream>(), default))
                     .ThrowsAsync(meshClientValidationException);
 
             // when
             ValueTask<MeshMessage> retrieveTrackingStatusTask =
-                this.meshService.RetrieveMessageByIdAsync(messageId);
+                this.meshService.RetrieveMessageByIdAsync(messageId, new MemoryStream());
 
             MeshServiceDependencyValidationException actualValidationException =
                 await Assert.ThrowsAsync<MeshServiceDependencyValidationException>(retrieveTrackingStatusTask.AsTask);
@@ -52,7 +53,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Mesh
             actualValidationException.Should().BeEquivalentTo(expectedDependencyValidationException);
 
             this.meshBrokerMock.Verify(broker =>
-                broker.RetrieveMessageAsync(It.IsAny<string>()),
+                broker.RetrieveMessageAsync(It.IsAny<string>(), It.IsAny<Stream>(), default),
                     Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>
@@ -80,12 +81,12 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Mesh
                     innerException: meshClientDependencyException);
 
             this.meshBrokerMock.Setup(broker =>
-                broker.RetrieveMessageAsync(It.IsAny<string>()))
+                broker.RetrieveMessageAsync(It.IsAny<string>(), It.IsAny<Stream>(), default))
                     .ThrowsAsync(meshClientDependencyException);
 
             // when
             ValueTask<MeshMessage> retrieveTrackingStatusTask =
-                this.meshService.RetrieveMessageByIdAsync(messageId);
+                this.meshService.RetrieveMessageByIdAsync(messageId, new MemoryStream());
 
             MeshServiceDependencyException actualDependencyException =
                 await Assert.ThrowsAsync<MeshServiceDependencyException>(retrieveTrackingStatusTask.AsTask);
@@ -94,7 +95,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Mesh
             actualDependencyException.Should().BeEquivalentTo(expectedDependencyException);
 
             this.meshBrokerMock.Verify(broker =>
-                broker.RetrieveMessageAsync(It.IsAny<string>()),
+                broker.RetrieveMessageAsync(It.IsAny<string>(), It.IsAny<Stream>(), default),
                     Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>
@@ -123,12 +124,12 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Mesh
                    innerException: failedMeshServiceException);
 
             this.meshBrokerMock.Setup(broker =>
-                broker.RetrieveMessageAsync(It.IsAny<string>()))
+                broker.RetrieveMessageAsync(It.IsAny<string>(), It.IsAny<Stream>(), default))
                     .ThrowsAsync(serviceException);
 
             // when
             ValueTask<MeshMessage> retrieveMessageByIdAsync =
-                this.meshService.RetrieveMessageByIdAsync(messageId);
+                this.meshService.RetrieveMessageByIdAsync(messageId, new MemoryStream());
 
             MeshServiceException actualMeshServiceException =
                 await Assert.ThrowsAsync<MeshServiceException>
@@ -139,7 +140,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Mesh
                 .BeEquivalentTo(expectedMeshServiceException);
 
             this.meshBrokerMock.Verify(broker =>
-                broker.RetrieveMessageAsync(It.IsAny<string>()),
+                broker.RetrieveMessageAsync(It.IsAny<string>(), It.IsAny<Stream>(), default),
                     Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>

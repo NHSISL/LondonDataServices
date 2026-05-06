@@ -33,7 +33,9 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
                 dateTimeBroker: this.dateTimeBrokerMock.Object,
                 identifierBroker: this.identifierBrokerMock.Object,
                 optOutConfiguration: invalidOptOutConfiguration,
-                meshConfiguration: this.meshConfiguration);
+                meshConfiguration: this.meshConfiguration,
+                tempLocationBroker: this.tempLocationBrokerMock.Object,
+                fileBroker: this.fileBrokerMock.Object);
 
             var nullConfigOptOutOrchestrationException =
                 new NullConfigOptOutOrchestrationException(
@@ -47,7 +49,8 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
 
             // When
             ValueTask<MeshMessage> pushExpOptOutsToMeshIfExpiredTask =
-                invalidOptOutOrchestrationService.PushExpiredOptOutsToMeshForRenewalAsync();
+                invalidOptOutOrchestrationService.PushExpiredOptOutsToMeshForRenewalAsync(
+                    TestContext.Current.CancellationToken);
 
             OptOutOrchestrationValidationException actualException =
                 await Assert.ThrowsAsync<OptOutOrchestrationValidationException>(
@@ -87,7 +90,9 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
                 dateTimeBroker: this.dateTimeBrokerMock.Object,
                 identifierBroker: this.identifierBrokerMock.Object,
                 optOutConfiguration: this.optOutConfiguration,
-                meshConfiguration: this.meshConfiguration);
+                meshConfiguration: this.meshConfiguration,
+                tempLocationBroker: this.tempLocationBrokerMock.Object,
+                fileBroker: this.fileBrokerMock.Object);
 
             var nullBlobContainersOptOutOrchestrationException =
                 new NullBlobContainersOptOutOrchestrationException(
@@ -101,7 +106,8 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
 
             // When
             ValueTask<MeshMessage> pushExpOptOutsToMeshIfExpiredTask =
-                invalidOptOutOrchestrationService.PushExpiredOptOutsToMeshForRenewalAsync();
+                invalidOptOutOrchestrationService.PushExpiredOptOutsToMeshForRenewalAsync(
+                    TestContext.Current.CancellationToken);
 
             OptOutOrchestrationValidationException actualException =
                 await Assert.ThrowsAsync<OptOutOrchestrationValidationException>(
@@ -161,7 +167,9 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
                 dateTimeBroker: this.dateTimeBrokerMock.Object,
                 identifierBroker: this.identifierBrokerMock.Object,
                 optOutConfiguration: invalidOptOutConfiguration,
-                meshConfiguration: this.meshConfiguration);
+                meshConfiguration: this.meshConfiguration,
+                tempLocationBroker: this.tempLocationBrokerMock.Object,
+                fileBroker: this.fileBrokerMock.Object);
 
             var invalidConfigOptOutOrchestrationException =
                 new InvalidConfigOptOutOrchestrationException(
@@ -182,7 +190,8 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
 
             // When
             ValueTask<MeshMessage> pushExpOptOutsToMeshIfExpiredTask =
-                invalidOptOutOrchestrationService.PushExpiredOptOutsToMeshForRenewalAsync();
+                invalidOptOutOrchestrationService.PushExpiredOptOutsToMeshForRenewalAsync(
+                    TestContext.Current.CancellationToken);
 
             OptOutOrchestrationValidationException actualException =
                 await Assert.ThrowsAsync<OptOutOrchestrationValidationException>(

@@ -83,8 +83,12 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Addresses
                     .ReturnsAsync(filteredRecords);
 
             this.csvHelperBrokerMock.Setup(service =>
-                service.MapCsvToObjectAsync<Address>(stringRecords, hasHeaderRecord, fieldMappings, true))
-                    .ReturnsAsync(outputAddresses);
+                service.MapCsvToObjectAsync<Address>(
+                    It.IsAny<Stream>(),
+                    hasHeaderRecord,
+                    fieldMappings,
+                    true))
+                    .Returns(outputAddresses.ToAsyncEnumerable());
 
             AddressOrchestrationService service = addressOrchestrationServiceMock.Object;
 
@@ -107,7 +111,11 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Addresses
                     Times.Once);
 
             this.csvHelperBrokerMock.Verify(service =>
-                service.MapCsvToObjectAsync<Address>(stringRecords, hasHeaderRecord, fieldMappings, true),
+                service.MapCsvToObjectAsync<Address>(
+                    It.IsAny<Stream>(),
+                    hasHeaderRecord,
+                    fieldMappings,
+                    true),
                     Times.Once);
 
             this.fileBrokerMock.VerifyNoOtherCalls();

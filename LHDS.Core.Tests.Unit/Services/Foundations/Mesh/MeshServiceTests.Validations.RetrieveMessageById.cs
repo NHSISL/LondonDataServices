@@ -2,6 +2,8 @@
 // Copyright (c) North East London ICB. All rights reserved.
 // ---------------------------------------------------------
 
+using System.IO;
+using System.Threading;
 using System.Threading.Tasks;
 using FluentAssertions;
 using LHDS.Core.Models.Foundations.Mesh;
@@ -23,22 +25,24 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Mesh
             // given
             string messageId = invalidText;
 
-            var invalidArgumentMeshException =
-                new InvalidArgumentMeshException(
-                    message: "Invalid Mesh argument(s), please correct the errors and try again.");
+            var invalidMeshMessageException =
+                new InvalidMeshMessageException(
+                    message: "Invalid mesh message, please correct errors and try again.");
 
-            invalidArgumentMeshException.AddData(
+            invalidMeshMessageException.AddData(
                 key: "MessageId",
                 values: "Text is required");
 
             var expectedMeshValidationException =
                 new MeshValidationException(
                     message: "Mesh validation errors occurred, please try again.",
-                    innerException: invalidArgumentMeshException);
+                    innerException: invalidMeshMessageException);
 
             // when
             ValueTask<MeshMessage> retrieveTrackingStatusTask =
-                this.meshService.RetrieveMessageByIdAsync(messageId);
+                this.meshService.RetrieveMessageByIdAsync(
+                    messageId,
+                    outputStream: Stream.Null);
 
             MeshValidationException actualMeshValidationException =
                 await Assert.ThrowsAsync<MeshValidationException>(
@@ -54,7 +58,10 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Mesh
                         Times.Once);
 
             this.meshBrokerMock.Verify(broker =>
-               broker.RetrieveMessageAsync(messageId),
+               broker.RetrieveMessageAsync(
+                    messageId,
+                    It.IsAny<Stream>(),
+                    It.IsAny<CancellationToken>()),
                    Times.Never);
 
             this.loggingBrokerMock.VerifyNoOtherCalls();

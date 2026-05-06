@@ -4,6 +4,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using LHDS.Core.Models.Foundations.Mesh;
 using LHDS.Core.Models.Foundations.Mesh.Exceptions;
@@ -20,13 +21,21 @@ namespace LHDS.Core.Services.Foundations.Mesh
                 (Rule: IsInvalid(messageId), Parameter: "MessageId"));
         }
 
-        public void ValidateMeshMessageOnSendMessage(string mexTo, string workflowId, byte[] fileContent)
+        public void ValidateMeshMessageOnSendMessage(string mexTo, string workflowId, Stream content)
         {
             Validate<InvalidMeshMessageException>(
                 message: "Invalid mesh message, please correct errors and try again.",
                 (Rule: IsInvalid(mexTo), Parameter: "MexTo"),
                 (Rule: IsInvalid(workflowId), Parameter: "MexWorkflowId"),
-                (Rule: IsInvalid(fileContent), Parameter: "FileContent"));
+                (Rule: IsInvalidForRead(content), Parameter: "Content"));
+        }
+
+        public void ValidateOnRetrieveMessageById(string messageId, Stream outputStream)
+        {
+            Validate<InvalidMeshMessageException>(
+                message: "Invalid mesh message, please correct errors and try again.",
+                (Rule: IsInvalid(messageId), Parameter: "MessageId"),
+                (Rule: IsInvalidForWrite(outputStream), Parameter: "OutputStream"));
         }
 
         public void ValidateMessageId(string messageId) =>
@@ -68,10 +77,16 @@ namespace LHDS.Core.Services.Foundations.Mesh
             Message = "Header value is required"
         };
 
-        private static dynamic IsInvalid(byte[] data) => new
+        private static dynamic IsInvalidForRead(Stream stream) => new
         {
-            Condition = (data == null || data.Length == 0),
-            Message = "Content is required"
+            Condition = stream == null || !stream.CanRead || (stream.CanSeek && stream.Length == 0),
+            Message = "Stream must be readable and contain data"
+        };
+
+        private static dynamic IsInvalidForWrite(Stream stream) => new
+        {
+            Condition = stream == null || !stream.CanWrite || (stream.CanSeek && stream.Length > 0),
+            Message = "Stream must be writable and empty"
         };
 
         private static bool IsInvalidKey(Dictionary<string, List<string>> dictionary, string key)

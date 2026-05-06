@@ -1,7 +1,8 @@
-﻿// ---------------------------------------------------------
+// ---------------------------------------------------------
 // Copyright (c) North East London ICB. All rights reserved.
 // ---------------------------------------------------------
 
+using System.Threading;
 using System.Threading.Tasks;
 using FluentAssertions;
 using Moq;
@@ -19,17 +20,18 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
             bool expectedResult = storageResult;
 
             meshProcessingServiceMock.Setup(processings =>
-               processings.ValidateMailboxAccessAsync())
+               processings.ValidateMailboxAccessAsync(It.IsAny<CancellationToken>()))
                    .ReturnsAsync(storageResult);
 
             // when
-            bool actualResult = await this.optOutOrchestrationService.ValidateMailboxAccessAsync();
+            bool actualResult = await this.optOutOrchestrationService
+                .ValidateMailboxAccessAsync(TestContext.Current.CancellationToken);
 
             //then
             actualResult.Should().Be(expectedResult);
 
             meshProcessingServiceMock.Verify(Processings =>
-                Processings.ValidateMailboxAccessAsync(),
+                Processings.ValidateMailboxAccessAsync(It.IsAny<CancellationToken>()),
                     Times.Once);
 
             this.optOutProcessingServiceMock.VerifyNoOtherCalls();

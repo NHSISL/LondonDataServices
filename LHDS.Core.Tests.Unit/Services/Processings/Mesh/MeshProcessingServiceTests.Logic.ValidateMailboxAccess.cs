@@ -2,6 +2,7 @@
 // Copyright (c) North East London ICB. All rights reserved.
 // ---------------------------------------------------------
 
+using System.Threading;
 using System.Threading.Tasks;
 using Moq;
 using Xunit;
@@ -15,11 +16,12 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.Mesh
         {
             // given
             // when
-            await this.meshProcessingService.ValidateMailboxAccessAsync();
+            await this.meshProcessingService.ValidateMailboxAccessAsync(
+                TestContext.Current.CancellationToken);
 
             // then
             this.meshServiceMock.Verify(service =>
-                service.ValidateMailboxAccessAsync(),
+                service.ValidateMailboxAccessAsync(It.IsAny<CancellationToken>()),
                     Times.Once);
 
             this.meshServiceMock.VerifyNoOtherCalls();

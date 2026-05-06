@@ -5,6 +5,7 @@
 using System;
 using System.IO;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using FluentAssertions;
 using LHDS.Core.Models.Foundations.Mesh;
@@ -51,7 +52,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.Mesh
                     contentType,
                     contentEncoding,
                     accept,
-                    default))
+                    It.IsAny<CancellationToken>()))
                         .ThrowsAsync(dependencyValidationException);
 
             Stream fileContent = new MemoryStream(Encoding.UTF8.GetBytes(GetRandomString()));
@@ -68,7 +69,8 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.Mesh
                     mexContentChecksum,
                     contentType,
                     contentEncoding,
-                    accept);
+                    accept,
+                    TestContext.Current.CancellationToken);
 
             MeshProcessingDependencyValidationException actualException =
                 await Assert.ThrowsAsync<MeshProcessingDependencyValidationException>(
@@ -89,7 +91,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.Mesh
                     contentType,
                     contentEncoding,
                     accept,
-                    default),
+                    It.IsAny<CancellationToken>()),
                     Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>
@@ -134,7 +136,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.Mesh
                     contentType,
                     contentEncoding,
                     accept,
-                    default))
+                    It.IsAny<CancellationToken>()))
                     .ThrowsAsync(dependencyException);
 
             Stream fileContent = new MemoryStream(Encoding.UTF8.GetBytes(GetRandomString()));
@@ -151,7 +153,8 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.Mesh
                     mexContentChecksum,
                     contentType,
                     contentEncoding,
-                    accept);
+                    accept,
+                    TestContext.Current.CancellationToken);
 
             MeshProcessingDependencyException actualException =
                 await Assert.ThrowsAsync<MeshProcessingDependencyException>(
@@ -172,7 +175,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.Mesh
                     contentType,
                     contentEncoding,
                     accept,
-                    default),
+                    It.IsAny<CancellationToken>()),
                         Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>
@@ -222,7 +225,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.Mesh
                     contentType,
                     contentEncoding,
                     accept,
-                    default))
+                    It.IsAny<CancellationToken>()))
                         .ThrowsAsync(serviceException);
 
             Stream fileContent = new MemoryStream(Encoding.UTF8.GetBytes(GetRandomString()));
@@ -239,7 +242,8 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.Mesh
                     mexContentChecksum,
                     contentType,
                     contentEncoding,
-                    accept);
+                    accept,
+                    TestContext.Current.CancellationToken);
 
             MeshProcessingServiceException actualException =
                 await Assert.ThrowsAsync<MeshProcessingServiceException>(retrieveSendMessageTask.AsTask);
@@ -259,7 +263,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.Mesh
                     contentType,
                     contentEncoding,
                     accept,
-                    default),
+                    It.IsAny<CancellationToken>()),
                         Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>

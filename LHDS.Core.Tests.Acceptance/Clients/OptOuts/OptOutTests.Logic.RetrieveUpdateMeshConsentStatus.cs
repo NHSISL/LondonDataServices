@@ -96,7 +96,8 @@ namespace LHDS.Core.Tests.Acceptance.Clients.OptOuts
             List<Message> expectedMessages = new List<Message>(messages);
 
             //When
-            var actualMessageList = await this.optOutClient.RetrieveUpdatedMeshConsentStatusesChangesAsync();
+            var actualMessageList = await this.optOutClient.RetrieveUpdatedMeshConsentStatusesChangesAsync(
+                TestContext.Current.CancellationToken);
 
             //Then
             actualMessageList.Should().BeEquivalentTo(expectedMessages);

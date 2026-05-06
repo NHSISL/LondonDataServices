@@ -3,6 +3,7 @@
 // ---------------------------------------------------------
 
 using System.IO;
+using System.Threading;
 using System.Threading.Tasks;
 using LHDS.Core.Models.Foundations.Mesh;
 using Moq;
@@ -20,20 +21,22 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.Mesh
             MeshMessage storageMessage = randomMessage;
 
             this.meshServiceMock.Setup(service =>
-                service.RetrieveMessageByIdAsync(randomMessage.MessageId, It.IsAny<Stream>(), default))
+                service.RetrieveMessageByIdAsync(randomMessage.MessageId, It.IsAny<Stream>(), It.IsAny<CancellationToken>()))
                     .ReturnsAsync(storageMessage);
 
             // when
             await this.meshProcessingService.RetrieveAndAcknowledgeMessageByIdAsync(
-                randomMessage.MessageId, new MemoryStream());
+                randomMessage.MessageId,
+                new MemoryStream(),
+                TestContext.Current.CancellationToken);
 
             // then
             this.meshServiceMock.Verify(service =>
-                service.RetrieveMessageByIdAsync(randomMessage.MessageId, It.IsAny<Stream>(), default),
+                service.RetrieveMessageByIdAsync(randomMessage.MessageId, It.IsAny<Stream>(), It.IsAny<CancellationToken>()),
                     Times.Once);
 
             this.meshServiceMock.Verify(service =>
-               service.AcknowledgeMessageByIdAsync(randomMessage.MessageId),
+               service.AcknowledgeMessageByIdAsync(randomMessage.MessageId, It.IsAny<CancellationToken>()),
                    Times.Once);
 
             this.meshServiceMock.VerifyNoOtherCalls();

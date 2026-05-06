@@ -3,6 +3,7 @@
 // ---------------------------------------------------------
 
 using System;
+using System.Threading;
 using System.Threading.Tasks;
 using FluentAssertions;
 using LHDS.Core.Models.Foundations.Mesh;
@@ -29,12 +30,14 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.Mesh
                     innerException: dependencyValidationException.InnerException as Xeption);
 
             this.meshServiceMock.Setup(service =>
-                service.AcknowledgeMessageByIdAsync(randomMessage.MessageId))
+                service.AcknowledgeMessageByIdAsync(randomMessage.MessageId, It.IsAny<CancellationToken>()))
                     .ThrowsAsync(dependencyValidationException);
 
             // when
             ValueTask<bool> acknowledgeTask =
-                this.meshProcessingService.AcknowledgeMessageByIdAsync(randomMessage.MessageId);
+                this.meshProcessingService.AcknowledgeMessageByIdAsync(
+                    randomMessage.MessageId,
+                    TestContext.Current.CancellationToken);
 
             MeshProcessingDependencyValidationException actualException =
                 await Assert.ThrowsAsync<MeshProcessingDependencyValidationException>(acknowledgeTask.AsTask);
@@ -43,7 +46,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.Mesh
             actualException.Should().BeEquivalentTo(expectedMeshProcessingDependencyValidationException);
 
             this.meshServiceMock.Verify(service =>
-                service.AcknowledgeMessageByIdAsync(randomMessage.MessageId),
+                service.AcknowledgeMessageByIdAsync(randomMessage.MessageId, It.IsAny<CancellationToken>()),
                     Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>
@@ -69,12 +72,14 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.Mesh
                     innerException: dependencyException.InnerException as Xeption);
 
             this.meshServiceMock.Setup(service =>
-                service.AcknowledgeMessageByIdAsync(randomMessage.MessageId))
+                service.AcknowledgeMessageByIdAsync(randomMessage.MessageId, It.IsAny<CancellationToken>()))
                     .ThrowsAsync(dependencyException);
 
             // when
             ValueTask<bool> acknowledgeTask =
-                this.meshProcessingService.AcknowledgeMessageByIdAsync(randomMessage.MessageId);
+                this.meshProcessingService.AcknowledgeMessageByIdAsync(
+                    randomMessage.MessageId,
+                    TestContext.Current.CancellationToken);
 
             MeshProcessingDependencyException actualException =
                 await Assert.ThrowsAsync<MeshProcessingDependencyException>(acknowledgeTask.AsTask);
@@ -83,7 +88,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.Mesh
             actualException.Should().BeEquivalentTo(expectedMeshProcessingDependencyException);
 
             this.meshServiceMock.Verify(service =>
-                service.AcknowledgeMessageByIdAsync(randomMessage.MessageId),
+                service.AcknowledgeMessageByIdAsync(randomMessage.MessageId, It.IsAny<CancellationToken>()),
                     Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>
@@ -114,12 +119,14 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.Mesh
                     innerException: failedMeshProcessingServiceException);
 
             this.meshServiceMock.Setup(service =>
-                service.AcknowledgeMessageByIdAsync(randomMessage.MessageId))
+                service.AcknowledgeMessageByIdAsync(randomMessage.MessageId, It.IsAny<CancellationToken>()))
                     .ThrowsAsync(serviceException);
 
             // when
             ValueTask<bool> acknowledgeTask =
-                this.meshProcessingService.AcknowledgeMessageByIdAsync(randomMessage.MessageId);
+                this.meshProcessingService.AcknowledgeMessageByIdAsync(
+                    randomMessage.MessageId,
+                    TestContext.Current.CancellationToken);
 
             MeshProcessingServiceException actualException =
                 await Assert.ThrowsAsync<MeshProcessingServiceException>(acknowledgeTask.AsTask);
@@ -128,7 +135,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.Mesh
             actualException.Should().BeEquivalentTo(expectedMeshProcessingServiveException);
 
             this.meshServiceMock.Verify(service =>
-                service.AcknowledgeMessageByIdAsync(randomMessage.MessageId),
+                service.AcknowledgeMessageByIdAsync(randomMessage.MessageId, It.IsAny<CancellationToken>()),
                     Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>

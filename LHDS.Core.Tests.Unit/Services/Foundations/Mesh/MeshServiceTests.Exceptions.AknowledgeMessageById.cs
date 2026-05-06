@@ -3,6 +3,7 @@
 // ---------------------------------------------------------
 
 using System;
+using System.Threading;
 using System.Threading.Tasks;
 using FluentAssertions;
 using LHDS.Core.Models.Foundations.Mesh.Exceptions;
@@ -31,12 +32,14 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Mesh
                    innerException: failedMeshServiceException);
 
             this.meshBrokerMock.Setup(broker =>
-                broker.AcknowledgeMessageByIdAsync(It.IsAny<string>()))
+                broker.AcknowledgeMessageByIdAsync(It.IsAny<string>(), It.IsAny<CancellationToken>()))
                     .ThrowsAsync(serviceException);
 
             // when
             ValueTask<bool> RetrieveAknowledgeMessageByIdTask =
-                this.meshService.AcknowledgeMessageByIdAsync(messageId);
+                this.meshService.AcknowledgeMessageByIdAsync(
+                    messageId,
+                    TestContext.Current.CancellationToken);
 
             MeshServiceException actualMeshServiceException =
                 await Assert.ThrowsAsync<MeshServiceException>
@@ -47,7 +50,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Mesh
                 .BeEquivalentTo(expectedMeshServiceException);
 
             this.meshBrokerMock.Verify(broker =>
-                broker.AcknowledgeMessageByIdAsync(It.IsAny<string>()),
+                broker.AcknowledgeMessageByIdAsync(It.IsAny<string>(), It.IsAny<CancellationToken>()),
                     Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>

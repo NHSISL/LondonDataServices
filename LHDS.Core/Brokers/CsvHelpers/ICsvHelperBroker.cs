@@ -3,22 +3,27 @@
 // ---------------------------------------------------------
 
 using System.Collections.Generic;
+using System.IO;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace LHDS.Core.Brokers.CsvHelpers
 {
     public interface ICsvHelperBroker
     {
-        ValueTask<List<T>> MapCsvToObjectAsync<T>(
-            string data,
+        IAsyncEnumerable<T> MapCsvToObjectAsync<T>(
+            Stream data,
             bool hasHeaderRecord,
-            Dictionary<string, int>? fieldMappings = null,
-            bool headerValidated = true);
+            Dictionary<string, int> fieldMappings = null,
+            bool? headerValidated = true,
+            CancellationToken cancellationToken = default);
 
-        ValueTask<string> MapObjectToCsvAsync<T>(
+        ValueTask MapObjectToCsvAsync<T>(
             List<T> @object,
+            Stream outputStream,
             bool addHeaderRecord,
-            Dictionary<string, int>? fieldMappings = null,
-            bool? shouldAddTrailingComma = false);
+            Dictionary<string, int> fieldMappings = null,
+            bool? shouldAddTrailingComma = false,
+            CancellationToken cancellationToken = default);
     }
 }

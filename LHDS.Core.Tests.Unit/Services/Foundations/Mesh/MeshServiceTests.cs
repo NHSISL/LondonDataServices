@@ -228,7 +228,6 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Mesh
         public static dynamic CreateRandomDynamicMeshMessageProperties(
             string mexTo,
             string mexWorkflowId,
-            byte[] fileContent,
             string mexSubject,
             string mexLocalId,
             string mexFileName,
@@ -253,7 +252,6 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Mesh
                     accept),
 
                 StringContent = GetRandomString(),
-                FileContent = fileContent,
                 TrackingInfo = GetRandomTrackingInfo()
             };
         }

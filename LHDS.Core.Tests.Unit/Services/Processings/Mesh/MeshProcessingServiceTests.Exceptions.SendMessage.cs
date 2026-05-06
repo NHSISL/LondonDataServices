@@ -3,7 +3,9 @@
 // ---------------------------------------------------------
 
 using System;
+using System.IO;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using FluentAssertions;
 using LHDS.Core.Models.Foundations.Mesh;
@@ -18,13 +20,13 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.Mesh
     {
         [Theory]
         [MemberData(nameof(DependencyValidationExceptions))]
-        public async Task ShouldThrowDependencyValidationExceptionOnSendMessageIfDependencyValidationErrorOccursAndLogItAsync(
+        public async Task
+            ShouldThrowDependencyValidationExceptionOnSendMessageIfDependencyValidationErrorOccursAndLogItAsync(
             Xeption dependencyValidationException)
         {
             // given
             string mexTo = GetRandomString();
             string mexWorkflowId = GetRandomString();
-            byte[] fileContent = Encoding.UTF8.GetBytes(GetRandomString());
             string mexSubject = GetRandomString();
             string mexLocalId = GetRandomString();
             string mexFileName = GetRandomString();
@@ -42,15 +44,18 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.Mesh
                 service.SendMessageAsync(
                     mexTo,
                     mexWorkflowId,
-                    fileContent,
+                    It.IsAny<Stream>(),
                     mexSubject,
                     mexLocalId,
                     mexFileName,
                     mexContentChecksum,
                     contentType,
                     contentEncoding,
-                    accept))
+                    accept,
+                    It.IsAny<CancellationToken>()))
                         .ThrowsAsync(dependencyValidationException);
+
+            Stream fileContent = new MemoryStream(Encoding.UTF8.GetBytes(GetRandomString()));
 
             // when
             ValueTask<MeshMessage> retrieveSendMessageTask =
@@ -64,10 +69,12 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.Mesh
                     mexContentChecksum,
                     contentType,
                     contentEncoding,
-                    accept);
+                    accept,
+                    TestContext.Current.CancellationToken);
 
             MeshProcessingDependencyValidationException actualException =
-                await Assert.ThrowsAsync<MeshProcessingDependencyValidationException>(retrieveSendMessageTask.AsTask);
+                await Assert.ThrowsAsync<MeshProcessingDependencyValidationException>(
+                    retrieveSendMessageTask.AsTask);
 
             // then
             actualException.Should().BeEquivalentTo(expectedMeshProcessingDependencyValidationException);
@@ -76,14 +83,15 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.Mesh
                 service.SendMessageAsync(
                     mexTo,
                     mexWorkflowId,
-                    fileContent,
+                    It.IsAny<Stream>(),
                     mexSubject,
                     mexLocalId,
                     mexFileName,
                     mexContentChecksum,
                     contentType,
                     contentEncoding,
-                    accept),
+                    accept,
+                    It.IsAny<CancellationToken>()),
                     Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>
@@ -103,7 +111,6 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.Mesh
             // given
             string mexTo = GetRandomString();
             string mexWorkflowId = GetRandomString();
-            byte[] fileContent = Encoding.UTF8.GetBytes(GetRandomString());
             string mexSubject = GetRandomString();
             string mexLocalId = GetRandomString();
             string mexFileName = GetRandomString();
@@ -121,15 +128,18 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.Mesh
                 service.SendMessageAsync(
                     mexTo,
                     mexWorkflowId,
-                    fileContent,
+                    It.IsAny<Stream>(),
                     mexSubject,
                     mexLocalId,
                     mexFileName,
                     mexContentChecksum,
                     contentType,
                     contentEncoding,
-                    accept))
+                    accept,
+                    It.IsAny<CancellationToken>()))
                     .ThrowsAsync(dependencyException);
+
+            Stream fileContent = new MemoryStream(Encoding.UTF8.GetBytes(GetRandomString()));
 
             // when
             ValueTask<MeshMessage> retrieveMessageAndAcknowledgeTask =
@@ -143,10 +153,12 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.Mesh
                     mexContentChecksum,
                     contentType,
                     contentEncoding,
-                    accept);
+                    accept,
+                    TestContext.Current.CancellationToken);
 
             MeshProcessingDependencyException actualException =
-                await Assert.ThrowsAsync<MeshProcessingDependencyException>(retrieveMessageAndAcknowledgeTask.AsTask);
+                await Assert.ThrowsAsync<MeshProcessingDependencyException>(
+                    retrieveMessageAndAcknowledgeTask.AsTask);
 
             // then
             actualException.Should().BeEquivalentTo(expectedMeshProcessingDependencyException);
@@ -155,14 +167,15 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.Mesh
                 service.SendMessageAsync(
                     mexTo,
                     mexWorkflowId,
-                    fileContent,
+                    It.IsAny<Stream>(),
                     mexSubject,
                     mexLocalId,
                     mexFileName,
                     mexContentChecksum,
                     contentType,
                     contentEncoding,
-                    accept),
+                    accept,
+                    It.IsAny<CancellationToken>()),
                         Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>
@@ -180,7 +193,6 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.Mesh
             // given
             string mexTo = GetRandomString();
             string mexWorkflowId = GetRandomString();
-            byte[] fileContent = Encoding.UTF8.GetBytes(GetRandomString());
             string mexSubject = GetRandomString();
             string mexLocalId = GetRandomString();
             string mexFileName = GetRandomString();
@@ -205,15 +217,18 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.Mesh
                 service.SendMessageAsync(
                     mexTo,
                     mexWorkflowId,
-                    fileContent,
+                    It.IsAny<Stream>(),
                     mexSubject,
                     mexLocalId,
                     mexFileName,
                     mexContentChecksum,
                     contentType,
                     contentEncoding,
-                    accept))
+                    accept,
+                    It.IsAny<CancellationToken>()))
                         .ThrowsAsync(serviceException);
+
+            Stream fileContent = new MemoryStream(Encoding.UTF8.GetBytes(GetRandomString()));
 
             // when
             ValueTask<MeshMessage> retrieveSendMessageTask =
@@ -227,7 +242,8 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.Mesh
                     mexContentChecksum,
                     contentType,
                     contentEncoding,
-                    accept);
+                    accept,
+                    TestContext.Current.CancellationToken);
 
             MeshProcessingServiceException actualException =
                 await Assert.ThrowsAsync<MeshProcessingServiceException>(retrieveSendMessageTask.AsTask);
@@ -239,14 +255,15 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.Mesh
                 service.SendMessageAsync(
                     mexTo,
                     mexWorkflowId,
-                    fileContent,
+                    It.IsAny<Stream>(),
                     mexSubject,
                     mexLocalId,
                     mexFileName,
                     mexContentChecksum,
                     contentType,
                     contentEncoding,
-                    accept),
+                    accept,
+                    It.IsAny<CancellationToken>()),
                         Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>

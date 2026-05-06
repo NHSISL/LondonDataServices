@@ -2,6 +2,7 @@
 // Copyright (c) North East London ICB. All rights reserved.
 // ---------------------------------------------------------
 
+using System.IO;
 using System.Text;
 using System.Threading.Tasks;
 using FluentAssertions;
@@ -21,8 +22,9 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Pds
         public async Task ShouldThrowValidationExceptionIfConfigurationIsNullOnPickupAndLogItAsync()
         {
             // Given
-            byte[] somePdsFile = Encoding.UTF8.GetBytes(GetRandomString());
+            byte[] somePdsFileBytes = Encoding.UTF8.GetBytes(GetRandomString());
             string someFileName = GetRandomString();
+            await using var somePdsStream = new MemoryStream(somePdsFileBytes);
             PdsConfiguration invalidPdsConfiguration = null;
 
             var invalidPdsOrchestrationService = new PdsOrchestrationService(
@@ -33,7 +35,9 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Pds
                 loggingBroker: loggingBrokerMock.Object,
                 dateTimeBroker: dateTimeBrokerMock.Object,
                 identifierBroker: identifierBrokerMock.Object,
-                pdsConfiguration: invalidPdsConfiguration);
+                pdsConfiguration: invalidPdsConfiguration,
+                tempLocationBroker: tempLocationBrokerMock.Object,
+                fileBroker: fileBrokerMock.Object);
 
             var nullConfigPdsOrchestrationException =
                 new NullConfigPdsOrchestrationException(
@@ -47,7 +51,10 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Pds
 
             // When
             ValueTask<PdsAudit> PickupFileAndSendToMeshTask =
-                invalidPdsOrchestrationService.PickupFileAndSendToMesh(pdsFile: somePdsFile, fileName: someFileName);
+                invalidPdsOrchestrationService.PickupFileAndSendToMesh(
+                    pdsStream: somePdsStream,
+                    fileName: someFileName,
+                    cancellationToken: TestContext.Current.CancellationToken);
 
             PdsOrchestrationValidationException actualException =
                 await Assert.ThrowsAsync<PdsOrchestrationValidationException>(
@@ -74,8 +81,9 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Pds
         public async Task ShouldThrowValidationExceptionIfBlobContainersIsNullonPickupAndLogItAsync()
         {
             // Given
-            byte[] somePdsFile = Encoding.UTF8.GetBytes(GetRandomString());
+            byte[] somePdsFileBytes = Encoding.UTF8.GetBytes(GetRandomString());
             string someFileName = GetRandomString();
+            await using var somePdsStream = new MemoryStream(somePdsFileBytes);
             BlobContainers invalidBlobContainers = null;
 
             var invalidPdsOrchestrationService = new PdsOrchestrationService(
@@ -86,7 +94,9 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Pds
                 loggingBroker: loggingBrokerMock.Object,
                 dateTimeBroker: dateTimeBrokerMock.Object,
                 identifierBroker: identifierBrokerMock.Object,
-                pdsConfiguration: pdsConfiguration);
+                pdsConfiguration: pdsConfiguration,
+                tempLocationBroker: tempLocationBrokerMock.Object,
+                fileBroker: fileBrokerMock.Object);
 
             var nullBlobContainersPdsOrchestrationException =
                 new NullBlobContainersPdsOrchestrationException(
@@ -100,7 +110,10 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Pds
 
             // When
             ValueTask<PdsAudit> PickupFileAndSendToMeshTask =
-                invalidPdsOrchestrationService.PickupFileAndSendToMesh(pdsFile: somePdsFile, fileName: someFileName);
+                invalidPdsOrchestrationService.PickupFileAndSendToMesh(
+                    pdsStream: somePdsStream,
+                    fileName: someFileName,
+                    cancellationToken: TestContext.Current.CancellationToken);
 
             PdsOrchestrationValidationException actualException =
                 await Assert.ThrowsAsync<PdsOrchestrationValidationException>(
@@ -130,7 +143,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Pds
         public async Task ShouldThrowValidationExceptionOnPickupFileAndSendIfArgsAreInvalidAndLogItAsync(
             string invalidText)
         {
-            byte[] pdsFile = null;
+            Stream pdsFile = null;
             string fileName = invalidText;
 
             var invalidArgumentPdsException =
@@ -138,8 +151,8 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Pds
                    message: "Invalid PDS argument(s), please correct the errors and try again.");
 
             invalidArgumentPdsException.AddData(
-                key: "pdsFile",
-                values: "Data is required");
+                key: "pdsStream",
+                values: "Stream is required");
 
             invalidArgumentPdsException.AddData(
                 key: "fileName",
@@ -152,7 +165,10 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Pds
 
             // when
             ValueTask<PdsAudit> PickupFileAndSendToMeshTask =
-                this.pdsOrchestrationService.PickupFileAndSendToMesh(pdsFile, fileName);
+                this.pdsOrchestrationService.PickupFileAndSendToMesh(
+                    pdsFile,
+                    fileName,
+                    TestContext.Current.CancellationToken);
 
             PdsOrchestrationValidationException actualPdsValidationException =
                 await Assert.ThrowsAsync<PdsOrchestrationValidationException>(PickupFileAndSendToMeshTask.AsTask);

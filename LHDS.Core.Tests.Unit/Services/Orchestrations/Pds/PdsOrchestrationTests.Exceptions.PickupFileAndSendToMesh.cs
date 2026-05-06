@@ -3,6 +3,7 @@
 // ---------------------------------------------------------
 
 using System;
+using System.IO;
 using System.Text;
 using System.Threading.Tasks;
 using FluentAssertions;
@@ -24,6 +25,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Pds
             var randomString = GetRandomString();
             var randomBytes = Encoding.UTF8.GetBytes(randomString);
             var randomReceivedFileName = GetRandomString();
+            await using var randomStream = new MemoryStream(randomBytes);
 
             var expectedDependencyException =
                 new PdsOrchestrationDependencyValidationException(
@@ -36,7 +38,10 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Pds
 
             //when
             ValueTask<PdsAudit> pickupFileAndSendToMeshTask =
-                this.pdsOrchestrationService.PickupFileAndSendToMesh(randomBytes, randomReceivedFileName);
+                this.pdsOrchestrationService.PickupFileAndSendToMesh(
+                    randomStream,
+                    randomReceivedFileName,
+                    TestContext.Current.CancellationToken);
 
             PdsOrchestrationDependencyValidationException actualException =
               await Assert.ThrowsAsync<PdsOrchestrationDependencyValidationException>(
@@ -72,6 +77,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Pds
             var randomString = GetRandomString();
             var randomBytes = Encoding.UTF8.GetBytes(randomString);
             var randomReceivedFileName = GetRandomString();
+            await using var randomStream = new MemoryStream(randomBytes);
 
             var expectedDependencyException =
                 new PdsOrchestrationDependencyException(
@@ -84,7 +90,10 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Pds
 
             // when
             ValueTask<PdsAudit> pickupFileAndSendToMeshTask =
-              this.pdsOrchestrationService.PickupFileAndSendToMesh(randomBytes, randomReceivedFileName);
+                this.pdsOrchestrationService.PickupFileAndSendToMesh(
+                    randomStream,
+                    randomReceivedFileName,
+                    TestContext.Current.CancellationToken);
 
             PdsOrchestrationDependencyException actualException =
                 await Assert.ThrowsAsync<PdsOrchestrationDependencyException>(pickupFileAndSendToMeshTask.AsTask);
@@ -117,6 +126,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Pds
             var randomString = GetRandomString();
             var randomBytes = Encoding.UTF8.GetBytes(randomString);
             var randomReceivedFileName = GetRandomString();
+            await using var randomStream = new MemoryStream(randomBytes);
             var serviceException = new Exception();
 
             var failedPdsOrchestrationServiceException =
@@ -135,7 +145,10 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Pds
 
             // when
             ValueTask<PdsAudit> pickupFileAndSendToMeshTask =
-                this.pdsOrchestrationService.PickupFileAndSendToMesh(randomBytes, randomReceivedFileName);
+                this.pdsOrchestrationService.PickupFileAndSendToMesh(
+                    randomStream,
+                    randomReceivedFileName,
+                    TestContext.Current.CancellationToken);
 
             PdsOrchestrationServiceException actualException =
                 await Assert.ThrowsAsync<PdsOrchestrationServiceException>(pickupFileAndSendToMeshTask.AsTask);

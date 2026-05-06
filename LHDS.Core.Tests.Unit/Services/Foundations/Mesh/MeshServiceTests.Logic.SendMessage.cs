@@ -1,8 +1,10 @@
-﻿// ---------------------------------------------------------
+// ---------------------------------------------------------
 // Copyright (c) North East London ICB. All rights reserved.
 // ---------------------------------------------------------
 
+using System.IO;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using FluentAssertions;
 using LHDS.Core.Models.Foundations.Mesh;
@@ -20,7 +22,6 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Mesh
             // given
             string mexTo = GetRandomString();
             string mexWorkflowId = GetRandomString();
-            byte[] fileContent = Encoding.UTF8.GetBytes(GetRandomString());
             string mexSubject = GetRandomString();
             string mexLocalId = GetRandomString();
             string mexFileName = GetRandomString();
@@ -33,7 +34,6 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Mesh
                 CreateRandomDynamicMeshMessageProperties(
                     mexTo,
                     mexWorkflowId,
-                    fileContent,
                     mexSubject,
                     mexLocalId,
                     mexFileName,
@@ -46,48 +46,49 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Mesh
             {
                 MessageId = dynamicMeshMessageProperties.MessageId,
                 Headers = dynamicMeshMessageProperties.Headers,
-                FileContent = dynamicMeshMessageProperties.FileContent,
                 TrackingInfo = MaptToMessageTrackingInfo(dynamicMeshMessageProperties.TrackingInfo)
             };
 
             var outputMessage = randomMessage;
 
-            MeshMessage randomMeshMessage = new MeshMessage
+            MeshMessage expectedMeshMessage = new MeshMessage
             {
                 MessageId = dynamicMeshMessageProperties.MessageId,
                 Headers = dynamicMeshMessageProperties.Headers,
-                FileContent = dynamicMeshMessageProperties.FileContent,
                 TrackingInfo = MaptToMeshMessageTrackingInfo(dynamicMeshMessageProperties.TrackingInfo)
             };
 
-            var expectedMeshMessage = randomMeshMessage;
+            using Stream inputStream = new MemoryStream(Encoding.UTF8.GetBytes(GetRandomString()));
 
             this.meshBrokerMock.Setup(broker =>
                 broker.SendMessageAsync(
                     mexTo,
                     mexWorkflowId,
-                    fileContent,
+                    inputStream,
                     mexSubject,
                     mexLocalId,
                     mexFileName,
                     mexContentChecksum,
                     contentType,
                     contentEncoding,
-                    accept))
+                    accept,
+                    It.IsAny<CancellationToken>()))
                         .ReturnsAsync(outputMessage);
 
             // when
             MeshMessage actualMeshMessage =
-                await this.meshService.SendMessageAsync(mexTo,
+                await this.meshService.SendMessageAsync(
+                    mexTo,
                     mexWorkflowId,
-                    fileContent,
+                    inputStream,
                     mexSubject,
                     mexLocalId,
                     mexFileName,
                     mexContentChecksum,
                     contentType,
                     contentEncoding,
-                    accept);
+                    accept,
+                    TestContext.Current.CancellationToken);
 
             // then
             actualMeshMessage.Should().BeEquivalentTo(expectedMeshMessage);
@@ -96,14 +97,15 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Mesh
                 broker.SendMessageAsync(
                     mexTo,
                     mexWorkflowId,
-                    fileContent,
+                    inputStream,
                     mexSubject,
                     mexLocalId,
                     mexFileName,
                     mexContentChecksum,
                     contentType,
                     contentEncoding,
-                    accept),
+                    accept,
+                    It.IsAny<CancellationToken>()),
                         Times.Once);
 
             this.meshBrokerMock.VerifyNoOtherCalls();
@@ -116,7 +118,6 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Mesh
             // given
             string mexTo = GetRandomString();
             string mexWorkflowId = GetRandomString();
-            byte[] fileContent = Encoding.UTF8.GetBytes(GetRandomString());
             string mexSubject = GetRandomString();
             string mexLocalId = GetRandomString();
             string mexFileName = GetRandomString();
@@ -129,7 +130,6 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Mesh
                 CreateRandomDynamicMeshMessageProperties(
                     mexTo,
                     mexWorkflowId,
-                    fileContent,
                     mexSubject,
                     mexLocalId,
                     mexFileName,
@@ -138,40 +138,35 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Mesh
                     contentEncoding,
                     accept);
 
-            var randomMessage = new Message
+            var outputMessage = new Message
             {
                 MessageId = dynamicMeshMessageProperties.MessageId,
                 Headers = dynamicMeshMessageProperties.Headers,
-                FileContent = dynamicMeshMessageProperties.FileContent,
                 TrackingInfo = MaptToMessageTrackingInfo(dynamicMeshMessageProperties.TrackingInfo)
             };
 
-            var inputMessage = randomMessage;
-            var outputMessage = inputMessage;
-
-            MeshMessage randomMeshMessage = new MeshMessage
+            MeshMessage expectedMeshMessage = new MeshMessage
             {
                 MessageId = dynamicMeshMessageProperties.MessageId,
                 Headers = dynamicMeshMessageProperties.Headers,
-                FileContent = dynamicMeshMessageProperties.FileContent,
                 TrackingInfo = MaptToMeshMessageTrackingInfo(dynamicMeshMessageProperties.TrackingInfo)
             };
 
-            var inputMeshMessage = randomMeshMessage;
-            var expectedMeshMessage = randomMeshMessage;
+            using Stream inputStream = new MemoryStream(Encoding.UTF8.GetBytes(GetRandomString()));
 
             this.meshBrokerMock.Setup(broker =>
                 broker.SendMessageAsync(
                     mexTo,
                     mexWorkflowId,
-                    fileContent,
+                    inputStream,
                     mexSubject,
                     mexLocalId,
                     mexFileName,
                     mexContentChecksum,
                     contentType,
                     contentEncoding,
-                    accept))
+                    accept,
+                    It.IsAny<CancellationToken>()))
                     .ReturnsAsync(outputMessage);
 
             // when
@@ -179,14 +174,15 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Mesh
                 await this.meshService.SendMessageAsync(
                     mexTo,
                     mexWorkflowId,
-                    fileContent,
+                    inputStream,
                     mexSubject,
                     mexLocalId,
                     mexFileName,
                     mexContentChecksum,
                     contentType,
                     contentEncoding,
-                    accept);
+                    accept,
+                    TestContext.Current.CancellationToken);
 
             // then
             actualMeshMessage.Should().BeEquivalentTo(expectedMeshMessage);
@@ -195,14 +191,15 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Mesh
                 broker.SendMessageAsync(
                     mexTo,
                     mexWorkflowId,
-                    fileContent,
+                    inputStream,
                     mexSubject,
                     mexLocalId,
                     mexFileName,
                     mexContentChecksum,
                     contentType,
                     contentEncoding,
-                    accept),
+                    accept,
+                    It.IsAny<CancellationToken>()),
                         Times.Once);
 
             this.meshBrokerMock.VerifyNoOtherCalls();

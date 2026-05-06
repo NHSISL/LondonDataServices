@@ -24,6 +24,10 @@ namespace LHDS.Core.Services.Orchestrations.OptOuts
             {
                 return await returningFunction();
             }
+            catch (OperationCanceledException)
+            {
+                throw;
+            }
             catch (NullBlobContainersOptOutOrchestrationException nullBlobContainersOptOutOrchestrationException)
             {
                 throw await CreateAndLogValidationExceptionAsync(nullBlobContainersOptOutOrchestrationException);
@@ -144,6 +148,10 @@ namespace LHDS.Core.Services.Orchestrations.OptOuts
             {
                 await returningNothingFunction();
             }
+            catch (OperationCanceledException)
+            {
+                throw;
+            }
             catch (NullBlobContainersOptOutOrchestrationException nullBlobContainersOptOutOrchestrationException)
             {
                 throw await CreateAndLogValidationExceptionAsync(nullBlobContainersOptOutOrchestrationException);
@@ -248,7 +256,7 @@ namespace LHDS.Core.Services.Orchestrations.OptOuts
             }
         }
 
-        private async ValueTask<OptOutOrchestrationValidationException> 
+        private async ValueTask<OptOutOrchestrationValidationException>
             CreateAndLogValidationExceptionAsync(Xeption exception)
         {
             var decryptionOrchestrationValidationException =

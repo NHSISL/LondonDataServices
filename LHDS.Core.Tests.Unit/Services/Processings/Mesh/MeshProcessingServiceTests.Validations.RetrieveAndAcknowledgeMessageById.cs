@@ -2,6 +2,7 @@
 // Copyright (c) North East London ICB. All rights reserved.
 // ---------------------------------------------------------
 
+using System.IO;
 using System.Threading.Tasks;
 using FluentAssertions;
 using LHDS.Core.Models.Foundations.Mesh;
@@ -39,7 +40,10 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.Mesh
 
             // when
             ValueTask<MeshMessage> retrieveMessageIdsFromInboxTask =
-                this.meshProcessingService.RetrieveAndAcknowledgeMessageByIdAsync(randomMessage.MessageId);
+                this.meshProcessingService.RetrieveAndAcknowledgeMessageByIdAsync(
+                    randomMessage.MessageId,
+                    Stream.Null,
+                    TestContext.Current.CancellationToken);
 
             MeshProcessingValidationException actualMeshProcessingValidationException =
                 await Assert.ThrowsAsync<MeshProcessingValidationException>(retrieveMessageIdsFromInboxTask.AsTask);

@@ -58,10 +58,18 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Decisions
                             csvs.All(csv => expectedDecisions.Any(
                                 decision => decision.Id == csv.DecisionId &&
                                     csv.NhsNumber == expectedHash))),
+                        It.IsAny<Stream>(),
                         true,
                         fieldMappings,
                         false))
-                    .ReturnsAsync(expectedCsvProcessedData);
+                    .Returns(ValueTask.CompletedTask)
+                    .Callback<List<DecisionCsv>, Stream, bool, Dictionary<string, int>, bool?,
+                        System.Threading.CancellationToken>(
+                        (items, stream, header, mappings, trailing, ct) =>
+                        {
+                            byte[] bytes = Encoding.UTF8.GetBytes(expectedCsvProcessedData);
+                            stream.Write(bytes, 0, bytes.Length);
+                        });
             }
             else
             {
@@ -71,10 +79,18 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Decisions
                             csvs.All(csv => expectedDecisions.Any(
                                 decision => decision.Id == csv.DecisionId &&
                                     csv.NhsNumber == decision.PatientNhsNumber))),
+                        It.IsAny<Stream>(),
                         true,
                         fieldMappings,
                         false))
-                    .ReturnsAsync(expectedCsvProcessedData);
+                    .Returns(ValueTask.CompletedTask)
+                    .Callback<List<DecisionCsv>, Stream, bool, Dictionary<string, int>, bool?,
+                        System.Threading.CancellationToken>(
+                        (items, stream, header, mappings, trailing, ct) =>
+                        {
+                            byte[] bytes = Encoding.UTF8.GetBytes(expectedCsvProcessedData);
+                            stream.Write(bytes, 0, bytes.Length);
+                        });
             }
 
             this.documentServiceMock
@@ -122,6 +138,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Decisions
                             csvs.All(csv => expectedDecisions.Any(
                                 decision => decision.Id == csv.DecisionId &&
                                     csv.NhsNumber == expectedHash))),
+                        It.IsAny<Stream>(),
                         true,
                         fieldMappings,
                         false),
@@ -141,6 +158,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Decisions
                             csvs.All(csv => expectedDecisions.Any(
                                 decision => decision.Id == csv.DecisionId &&
                                     csv.NhsNumber == decision.PatientNhsNumber))),
+                        It.IsAny<Stream>(),
                         true,
                         fieldMappings,
                         false),
@@ -202,9 +220,10 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Decisions
             this.csvHelperBrokerMock.Verify(broker =>
                 broker.MapObjectToCsvAsync(
                     It.IsAny<List<DecisionCsv>>(),
+                    It.IsAny<Stream>(),
                     It.IsAny<bool>(),
                     It.IsAny<Dictionary<string, int>>(),
-                    It.IsAny<bool>()),
+                    It.IsAny<bool?>()),
                 Times.Never());
 
             this.documentServiceMock.Verify(service =>

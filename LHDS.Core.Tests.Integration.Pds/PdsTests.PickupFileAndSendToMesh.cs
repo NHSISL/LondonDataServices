@@ -15,10 +15,6 @@ namespace LHDS.Core.Tests.Integration.Pds
         public async Task ShouldPickupFileAndSendToMeshAsync()
         {
             // Given
-            byte[] fileBytes =
-                File.ReadAllBytes(
-                    @"Resources\EmisPDSPatientExtract_247BB600-213A-494E-8E90-A4F9190F07DF_20230601T130544.csv");
-
             FileInfo fi =
                 new FileInfo(
                     @"Resources\EmisPDSPatientExtract_247BB600-213A-494E-8E90-A4F9190F07DF_20230601T130544.csv");
@@ -26,8 +22,17 @@ namespace LHDS.Core.Tests.Integration.Pds
             var fileName = fi.Name.Substring(0, fi.Name.Length - fi.Extension.Length);
 
             // When
+            await using FileStream fileStream =
+                new FileStream(
+                    fi.FullName,
+                    FileMode.Open,
+                    FileAccess.Read,
+                    FileShare.Read,
+                    bufferSize: 4096,
+                    useAsync: true);
+
             PdsAudit pdsAudit =
-                await pdsClient.PickupFileAndSendToMesh(pdsFile: fileBytes, fileName: fileName);
+                await pdsClient.PickupFileAndSendToMesh(pdsStream: fileStream, fileName: fileName);
 
             // Then
             pdsAudit.Should().NotBeNull();

@@ -1,9 +1,11 @@
-﻿// ---------------------------------------------------------
+// ---------------------------------------------------------
 // Copyright (c) North East London ICB. All rights reserved.
 // ---------------------------------------------------------
 
 using System;
 using System.Collections.Generic;
+using System.IO;
+using System.Threading;
 using System.Threading.Tasks;
 using FluentAssertions;
 using LHDS.Core.Models.Foundations.PdsAudits;
@@ -27,14 +29,25 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Pds
             List<Exception> exceptions = new List<Exception>();
 
             this.meshServiceMock.SetupSequence(service =>
-                service.RetrieveMessageIdsFromInboxAsync())
+                service.RetrieveMessageIdsFromInboxAsync(It.IsAny<CancellationToken>()))
                     .ReturnsAsync(randomMessageIds)
                     .ReturnsAsync(new List<string>());
 
             foreach (var id in randomMessageIds)
             {
+                string tempFilePath =
+                    System.IO.Path.Combine(System.IO.Path.GetTempPath(), System.Guid.NewGuid().ToString());
+
+                this.tempLocationBrokerMock.Setup(broker =>
+                    broker.GetUniqueHomeFilePath())
+                        .Returns(tempFilePath);
+
+                this.fileBrokerMock.Setup(broker =>
+                    broker.DeleteFileAsync(It.IsAny<string>()))
+                        .ReturnsAsync(true);
+
                 this.meshServiceMock.Setup(service =>
-                    service.RetrieveMessageByIdAsync(id))
+                    service.RetrieveMessageByIdAsync(id, It.IsAny<Stream>(), It.IsAny<CancellationToken>()))
                         .ThrowsAsync(dependencyValidationException);
 
                 var pdsOrchestrationDependencyValidationException =
@@ -64,7 +77,8 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Pds
 
             // When
             ValueTask<List<PdsAudit>> retreiveMessagesFromMeshAndUpdateStorageTask =
-                this.pdsOrchestrationService.RetreiveMessagesFromMeshAndUpdateStorage();
+                this.pdsOrchestrationService.RetreiveMessagesFromMeshAndUpdateStorage(
+                    TestContext.Current.CancellationToken);
 
             PdsOrchestrationServiceException actualPdsOrchestrationServiceException =
                 await Assert.ThrowsAsync<PdsOrchestrationServiceException>(
@@ -75,13 +89,13 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Pds
                 .BeEquivalentTo(expectedPdsOrchestrationServiceException);
 
             this.meshServiceMock.Verify(service =>
-                service.RetrieveMessageIdsFromInboxAsync(),
+                service.RetrieveMessageIdsFromInboxAsync(It.IsAny<CancellationToken>()),
                     Times.Once);
 
             foreach (var id in randomMessageIds)
             {
                 this.meshServiceMock.Verify(service =>
-                    service.RetrieveMessageByIdAsync(id),
+                    service.RetrieveMessageByIdAsync(id, It.IsAny<Stream>(), It.IsAny<CancellationToken>()),
                         Times.Once);
             }
 
@@ -120,14 +134,25 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Pds
             List<Exception> exceptions = new List<Exception>();
 
             this.meshServiceMock.SetupSequence(service =>
-                service.RetrieveMessageIdsFromInboxAsync())
+                service.RetrieveMessageIdsFromInboxAsync(It.IsAny<CancellationToken>()))
                     .ReturnsAsync(randomMessageIds)
                     .ReturnsAsync(new List<string>());
 
             foreach (var id in randomMessageIds)
             {
+                string tempFilePath =
+                    System.IO.Path.Combine(System.IO.Path.GetTempPath(), System.Guid.NewGuid().ToString());
+
+                this.tempLocationBrokerMock.Setup(broker =>
+                    broker.GetUniqueHomeFilePath())
+                        .Returns(tempFilePath);
+
+                this.fileBrokerMock.Setup(broker =>
+                    broker.DeleteFileAsync(It.IsAny<string>()))
+                        .ReturnsAsync(true);
+
                 this.meshServiceMock.Setup(service =>
-                    service.RetrieveMessageByIdAsync(id))
+                    service.RetrieveMessageByIdAsync(id, It.IsAny<Stream>(), It.IsAny<CancellationToken>()))
                         .ThrowsAsync(dependencyException);
 
                 var pdsOrchestrationDependencyException =
@@ -157,7 +182,8 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Pds
 
             // When
             ValueTask<List<PdsAudit>> retreiveMessagesFromMeshAndUpdateStorageTask =
-                this.pdsOrchestrationService.RetreiveMessagesFromMeshAndUpdateStorage();
+                this.pdsOrchestrationService.RetreiveMessagesFromMeshAndUpdateStorage(
+                    TestContext.Current.CancellationToken);
 
             PdsOrchestrationServiceException actualPdsOrchestrationServiceException =
                 await Assert.ThrowsAsync<PdsOrchestrationServiceException>(
@@ -168,13 +194,13 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Pds
                 .BeEquivalentTo(expectedPdsOrchestrationServiceException);
 
             this.meshServiceMock.Verify(service =>
-                service.RetrieveMessageIdsFromInboxAsync(),
+                service.RetrieveMessageIdsFromInboxAsync(It.IsAny<CancellationToken>()),
                     Times.Once);
 
             foreach (var id in randomMessageIds)
             {
                 this.meshServiceMock.Verify(service =>
-                    service.RetrieveMessageByIdAsync(id),
+                    service.RetrieveMessageByIdAsync(id, It.IsAny<Stream>(), It.IsAny<CancellationToken>()),
                         Times.Once);
             }
 
@@ -211,7 +237,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Pds
             var serviceException = new Exception();
 
             this.meshServiceMock.SetupSequence(service =>
-                service.RetrieveMessageIdsFromInboxAsync())
+                service.RetrieveMessageIdsFromInboxAsync(It.IsAny<CancellationToken>()))
                     .ReturnsAsync(randomMessageIds)
                     .ReturnsAsync(new List<string>());
 
@@ -227,8 +253,19 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Pds
 
             foreach (var id in randomMessageIds)
             {
+                string tempFilePath =
+                    System.IO.Path.Combine(System.IO.Path.GetTempPath(), System.Guid.NewGuid().ToString());
+
+                this.tempLocationBrokerMock.Setup(broker =>
+                    broker.GetUniqueHomeFilePath())
+                        .Returns(tempFilePath);
+
+                this.fileBrokerMock.Setup(broker =>
+                    broker.DeleteFileAsync(It.IsAny<string>()))
+                        .ReturnsAsync(true);
+
                 this.meshServiceMock.Setup(service =>
-                    service.RetrieveMessageByIdAsync(id))
+                    service.RetrieveMessageByIdAsync(id, It.IsAny<Stream>(), It.IsAny<CancellationToken>()))
                         .ThrowsAsync(serviceException);
 
                 exceptions.Add(innerPdsOrchestrationServiceException);
@@ -252,7 +289,8 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Pds
 
             // When
             ValueTask<List<PdsAudit>> retreiveMessagesFromMeshAndUpdateStorageTask =
-                 this.pdsOrchestrationService.RetreiveMessagesFromMeshAndUpdateStorage();
+                this.pdsOrchestrationService.RetreiveMessagesFromMeshAndUpdateStorage(
+                    TestContext.Current.CancellationToken);
 
             PdsOrchestrationServiceException actualPdsOrchestrationServiceException =
                 await Assert.ThrowsAsync<PdsOrchestrationServiceException>(
@@ -263,13 +301,13 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Pds
                 .BeEquivalentTo(expectedPdsOrchestrationServiceException);
 
             this.meshServiceMock.Verify(service =>
-                service.RetrieveMessageIdsFromInboxAsync(),
+                service.RetrieveMessageIdsFromInboxAsync(It.IsAny<CancellationToken>()),
                     Times.Once);
 
             foreach (var id in randomMessageIds)
             {
                 this.meshServiceMock.Verify(service =>
-                    service.RetrieveMessageByIdAsync(id),
+                    service.RetrieveMessageByIdAsync(id, It.IsAny<Stream>(), It.IsAny<CancellationToken>()),
                         Times.Once);
             }
 
@@ -302,12 +340,13 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Pds
                     innerException: dependancyValidationException.InnerException as Xeption);
 
             this.meshServiceMock.Setup(service =>
-              service.RetrieveMessageIdsFromInboxAsync())
+              service.RetrieveMessageIdsFromInboxAsync(It.IsAny<CancellationToken>()))
                 .ThrowsAsync(dependancyValidationException);
 
             //when
             ValueTask<List<PdsAudit>> retreiveMessagesFromMeshAndUpdateStorageTask =
-                this.pdsOrchestrationService.RetreiveMessagesFromMeshAndUpdateStorage();
+                this.pdsOrchestrationService.RetreiveMessagesFromMeshAndUpdateStorage(
+                    TestContext.Current.CancellationToken);
 
             PdsOrchestrationDependencyValidationException actualException =
                 await Assert.ThrowsAsync<PdsOrchestrationDependencyValidationException>(
@@ -318,7 +357,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Pds
                 .BeEquivalentTo(expectedDependencyException);
 
             this.meshServiceMock.Verify(broker =>
-                broker.RetrieveMessageIdsFromInboxAsync(),
+                broker.RetrieveMessageIdsFromInboxAsync(It.IsAny<CancellationToken>()),
                    Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>
@@ -346,12 +385,13 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Pds
                     innerException: dependancyException.InnerException as Xeption);
 
             this.meshServiceMock.Setup(service =>
-                service.RetrieveMessageIdsFromInboxAsync())
+                service.RetrieveMessageIdsFromInboxAsync(It.IsAny<CancellationToken>()))
                     .ThrowsAsync(dependancyException);
 
             // when
             ValueTask<List<PdsAudit>> retreiveMessagesFromMeshAndUpdateStorageTask =
-                this.pdsOrchestrationService.RetreiveMessagesFromMeshAndUpdateStorage();
+                this.pdsOrchestrationService.RetreiveMessagesFromMeshAndUpdateStorage(
+                    TestContext.Current.CancellationToken);
 
             PdsOrchestrationDependencyException actualException =
                 await Assert.ThrowsAsync<PdsOrchestrationDependencyException>(
@@ -362,7 +402,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Pds
                 .BeEquivalentTo(expectedDependencyException);
 
             this.meshServiceMock.Verify(service =>
-                service.RetrieveMessageIdsFromInboxAsync(),
+                service.RetrieveMessageIdsFromInboxAsync(It.IsAny<CancellationToken>()),
                    Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>
@@ -395,12 +435,13 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Pds
                     innerException: failedPdsOrchestrationServiceException);
 
             this.meshServiceMock.Setup(service =>
-                service.RetrieveMessageIdsFromInboxAsync())
+                service.RetrieveMessageIdsFromInboxAsync(It.IsAny<CancellationToken>()))
                     .ThrowsAsync(serviceException);
 
             // when
             ValueTask<List<PdsAudit>> retreiveMessagesFromMeshAndUpdateStorageTask =
-                this.pdsOrchestrationService.RetreiveMessagesFromMeshAndUpdateStorage();
+                this.pdsOrchestrationService.RetreiveMessagesFromMeshAndUpdateStorage(
+                    TestContext.Current.CancellationToken);
 
             PdsOrchestrationServiceException actualException =
                 await Assert.ThrowsAsync<PdsOrchestrationServiceException>(
@@ -411,7 +452,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Pds
                 .BeEquivalentTo(expectedPdsOrchestrationServiceException);
 
             this.meshServiceMock.Verify(service =>
-                service.RetrieveMessageIdsFromInboxAsync(),
+                service.RetrieveMessageIdsFromInboxAsync(It.IsAny<CancellationToken>()),
                     Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>

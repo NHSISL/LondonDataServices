@@ -3,6 +3,7 @@
 // ---------------------------------------------------------
 
 using System;
+using System.Threading;
 using System.Threading.Tasks;
 using LHDS.Core.Brokers.Loggings;
 using LHDS.Core.Clients;
@@ -25,13 +26,15 @@ namespace LHDS.Functions.OptOut
         }
 
         [Function("PushExpiredOptOutsToMeshForRenewalFunction")]
-        public async Task Run([TimerTrigger("%PushExpiredOptOutsToMeshTimerTrigger%")] MyInformation myTimer)
+        public async Task Run(
+            [TimerTrigger("%PushExpiredOptOutsToMeshTimerTrigger%")] MyInformation myTimer,
+            CancellationToken cancellationToken)
         {
             await this.loggingBroker.LogInformationAsync($"C# Timer trigger function executed at: {DateTime.Now}");
 
             try
             {
-                await optOutClient.PushExpiredOptOutsToMeshForRenewalAsync();
+                await optOutClient.PushExpiredOptOutsToMeshForRenewalAsync(cancellationToken);
             }
             catch (Exception ex)
             {

@@ -2,9 +2,10 @@
 // Copyright (c) North East London ICB. All rights reserved.
 // ---------------------------------------------------------
 
+using System.IO;
+using System.Threading;
 using System.Threading.Tasks;
 using FluentAssertions;
-using Force.DeepCloner;
 using LHDS.Core.Models.Foundations.Mesh;
 using Moq;
 using NEL.MESH.Models.Foundations.Mesh;
@@ -21,21 +22,30 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Mesh
             string randomMessageId = GetRandomString();
             string inputMessageId = randomMessageId;
             Message outputMessage = CreateRandomMessage();
-            Message expectedMessage = outputMessage.DeepClone();
 
             this.meshBrokerMock.Setup(broker =>
-                broker.RetrieveMessageAsync(inputMessageId))
+                broker.RetrieveMessageAsync(inputMessageId, It.IsAny<Stream>(), It.IsAny<CancellationToken>()))
                     .ReturnsAsync(outputMessage);
+
+            MeshMessage expectedMeshMessage = new MeshMessage
+            {
+                MessageId = outputMessage.MessageId,
+                Headers = outputMessage.Headers,
+            };
 
             // when
             MeshMessage actualMeshMessage =
-                await this.meshService.RetrieveMessageByIdAsync(inputMessageId);
+                await this.meshService.RetrieveMessageByIdAsync(
+                    inputMessageId,
+                    new MemoryStream(),
+                    TestContext.Current.CancellationToken);
 
             // then
-            actualMeshMessage.Should().BeEquivalentTo(expectedMessage);
+            actualMeshMessage.MessageId.Should().Be(expectedMeshMessage.MessageId);
+            actualMeshMessage.Headers.Should().BeEquivalentTo(expectedMeshMessage.Headers);
 
             this.meshBrokerMock.Verify(broker =>
-                broker.RetrieveMessageAsync(inputMessageId),
+                broker.RetrieveMessageAsync(inputMessageId, It.IsAny<Stream>(), It.IsAny<CancellationToken>()),
                     Times.Once);
 
             this.meshBrokerMock.VerifyNoOtherCalls();

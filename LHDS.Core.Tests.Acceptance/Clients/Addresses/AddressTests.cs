@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Security.Claims;
+using System.Text;
 using System.Threading.Tasks;
 using KellermanSoftware.CompareNetObjects;
 using LHDS.Core.Brokers.CsvHelpers;
@@ -442,12 +443,19 @@ namespace LHDS.Core.Tests.Acceptance.Clients.Addresses
                 { nameof(ResolvedAddress.UnstructuredPostalAddress), 21 }
             };
 
-            return await this.csvHelperBroker
+            using var outputStream = new MemoryStream();
+
+            await this.csvHelperBroker
                .MapObjectToCsvAsync(
                     @object: resolvedAddresses,
+                    outputStream: outputStream,
                     addHeaderRecord: true,
                     fieldMappings: fieldMappings,
                     shouldAddTrailingComma: true);
+
+            outputStream.Position = 0;
+
+            return new StreamReader(outputStream).ReadToEnd();
         }
 
         private async ValueTask<List<ResolvedAddress>> MapCsvToObject(string data)
@@ -478,11 +486,19 @@ namespace LHDS.Core.Tests.Acceptance.Clients.Addresses
                 { nameof(ResolvedAddress.UnstructuredPostalAddress), 21 }
             };
 
-            return await this.csvHelperBroker
+            using var stream = new MemoryStream(Encoding.UTF8.GetBytes(data));
+            var results = new List<ResolvedAddress>();
+
+            await foreach (var item in this.csvHelperBroker
                .MapCsvToObjectAsync<ResolvedAddress>(
-                    data,
+                    data: stream,
                     hasHeaderRecord: true,
-                    fieldMappings: fieldMappings);
+                    fieldMappings: fieldMappings))
+            {
+                results.Add(item);
+            }
+
+            return results;
         }
 
         private static List<Address> GetExpectedAddresses()

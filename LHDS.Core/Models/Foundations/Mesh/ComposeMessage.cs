@@ -11,7 +11,6 @@ namespace LHDS.Core.Models.Foundations.Mesh
         public static MeshMessage CreateMeshMessage(
         string mexTo,
         string mexWorkflowId,
-        byte[] fileContent,
         string mexSubject = "",
         string mexLocalId = "",
         string mexFileName = "",
@@ -23,7 +22,6 @@ namespace LHDS.Core.Models.Foundations.Mesh
             MeshMessage message = new MeshMessage();
             message.Headers.Add("mex-to", new List<string> { mexTo });
             message.Headers.Add("mex-workflowid", new List<string> { mexWorkflowId });
-            message.FileContent = fileContent;
 
             if (!string.IsNullOrWhiteSpace(mexSubject))
             {

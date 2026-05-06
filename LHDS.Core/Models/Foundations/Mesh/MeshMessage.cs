@@ -10,8 +10,6 @@ namespace LHDS.Core.Models.Foundations.Mesh
     {
         public string MessageId { get; set; } = string.Empty;
         public Dictionary<string, List<string>> Headers { get; set; } = new Dictionary<string, List<string>>();
-        public byte[] FileContent { get; set; } = new byte[0];
-
         public MessageTrackingInfo TrackingInfo { get; set; } = null!;
     }
 }

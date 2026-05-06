@@ -6,7 +6,6 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using LHDS.Core.Brokers.CsvHelpers;
 using LHDS.Core.Brokers.Hashing;
@@ -92,21 +91,15 @@ namespace LHDS.Core.Services.Orchestrations.Decisions
                     { nameof(DecisionCsv.InstructionDate), 4 }
                 };
 
-                string processedData = await this.csvHelperBroker
-                    .MapObjectToCsvAsync(
-                        @object: decisionCsvs.ToList(),
-                        addHeaderRecord: true,
-                        fieldMappings: fieldMappings,
-                        shouldAddTrailingComma: false);
-
                 string fileName = $"{this.decisionConfiguration.FolderName}/" +
                     $"{currentPollDate:yyyyMMddHHmmss}/" +
                     $"{this.decisionConfiguration.FilePrefix}_{currentPollDate:yyyyMMddHHmmss}.csv";
 
                 string container = this.blobContainers.Ingress;
                 string tempFile = Path.GetTempFileName();
-                ValidateDocumentRequirements(processedData);
 
+                //TODO: Review this implementation to avoid memory issues with large files.
+                //Consider streaming directly to blob storage if possible.
                 try
                 {
                     using (Stream fileStream = new FileStream(
@@ -115,8 +108,16 @@ namespace LHDS.Core.Services.Orchestrations.Decisions
                                FileAccess.Write,
                                FileShare.None))
                     {
-                        fileStream.Write(Encoding.UTF8.GetBytes(processedData));
+                        await this.csvHelperBroker
+                            .MapObjectToCsvAsync(
+                                @object: decisionCsvs.ToList(),
+                                outputStream: fileStream,
+                                addHeaderRecord: true,
+                                fieldMappings: fieldMappings,
+                                shouldAddTrailingComma: false);
                     }
+
+                    ValidateDocumentRequirements(fileName);
 
                     using (Stream tempDocument = new FileStream(
                                tempFile,
@@ -138,7 +139,7 @@ namespace LHDS.Core.Services.Orchestrations.Decisions
                     }
                 }
 
-               await this.decisionService.RecordAdoption(decisions);
+                await this.decisionService.RecordAdoption(decisions);
 
                 return decisions;
             });

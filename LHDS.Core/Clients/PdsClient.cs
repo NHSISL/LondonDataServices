@@ -3,6 +3,8 @@
 // ---------------------------------------------------------
 
 using System.Collections.Generic;
+using System.IO;
+using System.Threading;
 using System.Threading.Tasks;
 using LHDS.Core.Models.Clients.PdsClient.Exceptions;
 using LHDS.Core.Models.Foundations.PdsAudits;
@@ -21,11 +23,11 @@ namespace LHDS.Core.Clients
             this.pdsOrchestrationService = pdsOrchestrationService;
         }
 
-        public async ValueTask<bool> ValidateMailboxAccessAsync()
+        public async ValueTask<bool> ValidateMailboxAccessAsync(CancellationToken cancellationToken = default)
         {
             try
             {
-                return await this.pdsOrchestrationService.ValidateMailboxAccessAsync();
+                return await this.pdsOrchestrationService.ValidateMailboxAccessAsync(cancellationToken);
             }
             catch (PdsOrchestrationValidationException pdsOrchestrationValidationException)
             {
@@ -52,11 +54,15 @@ namespace LHDS.Core.Clients
             }
         }
 
-        public async ValueTask<PdsAudit> PickupFileAndSendToMesh(byte[] pdsFile, string fileName)
+        public async ValueTask<PdsAudit> PickupFileAndSendToMesh
+            (Stream pdsStream,
+            string fileName,
+            CancellationToken cancellationToken = default)
         {
             try
             {
-                return await this.pdsOrchestrationService.PickupFileAndSendToMesh(pdsFile, fileName);
+                return await this.pdsOrchestrationService
+                    .PickupFileAndSendToMesh(pdsStream, fileName, cancellationToken);
             }
             catch (PdsOrchestrationValidationException pdsOrchestrationValidationException)
             {
@@ -83,11 +89,13 @@ namespace LHDS.Core.Clients
             }
         }
 
-        public async ValueTask<List<PdsAudit>> RetreiveMessagesFromMeshAndUpdateStorage()
+        public async ValueTask<List<PdsAudit>> RetreiveMessagesFromMeshAndUpdateStorage(
+            CancellationToken cancellationToken = default)
         {
             try
             {
-                return await this.pdsOrchestrationService.RetreiveMessagesFromMeshAndUpdateStorage();
+                return await this.pdsOrchestrationService
+                    .RetreiveMessagesFromMeshAndUpdateStorage(cancellationToken);
             }
             catch (PdsOrchestrationValidationException pdsOrchestrationValidationException)
             {

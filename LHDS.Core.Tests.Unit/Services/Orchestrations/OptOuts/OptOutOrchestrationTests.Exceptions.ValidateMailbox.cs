@@ -1,8 +1,9 @@
-﻿// ---------------------------------------------------------
+// ---------------------------------------------------------
 // Copyright (c) North East London ICB. All rights reserved.
 // ---------------------------------------------------------
 
 using System;
+using System.Threading;
 using System.Threading.Tasks;
 using FluentAssertions;
 using LHDS.Core.Models.Orchestrations.OptOuts.Exceptions;
@@ -27,12 +28,12 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
                     innerException: dependancyValidationException.InnerException as Xeption);
 
             this.meshProcessingServiceMock.Setup(processing =>
-                processing.ValidateMailboxAccessAsync())
+                processing.ValidateMailboxAccessAsync(It.IsAny<CancellationToken>()))
                     .ThrowsAsync(dependancyValidationException);
 
             // when
             ValueTask<bool> validateMailboxAccessTask =
-                this.optOutOrchestrationService.ValidateMailboxAccessAsync();
+                this.optOutOrchestrationService.ValidateMailboxAccessAsync(TestContext.Current.CancellationToken);
 
             OptOutOrchestrationDependencyValidationException actualException =
                 await Assert.ThrowsAsync<OptOutOrchestrationDependencyValidationException>(
@@ -43,7 +44,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
                 .BeEquivalentTo(expectedDependencyException);
 
             this.meshProcessingServiceMock.Verify(processing =>
-                processing.ValidateMailboxAccessAsync(),
+                processing.ValidateMailboxAccessAsync(It.IsAny<CancellationToken>()),
                     Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>
@@ -72,12 +73,12 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
                     innerException: dependancyException.InnerException as Xeption);
 
             this.meshProcessingServiceMock.Setup(processing =>
-                processing.ValidateMailboxAccessAsync())
+                processing.ValidateMailboxAccessAsync(It.IsAny<CancellationToken>()))
                     .ThrowsAsync(dependancyException);
 
             // when
             ValueTask<bool> validateMailboxAccessTask =
-                this.optOutOrchestrationService.ValidateMailboxAccessAsync();
+                this.optOutOrchestrationService.ValidateMailboxAccessAsync(TestContext.Current.CancellationToken);
 
             OptOutOrchestrationDependencyException actualException =
                 await Assert.ThrowsAsync<OptOutOrchestrationDependencyException>(validateMailboxAccessTask.AsTask);
@@ -87,7 +88,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
                 .BeEquivalentTo(expectedDependencyException);
 
             this.meshProcessingServiceMock.Verify(processing =>
-                processing.ValidateMailboxAccessAsync(),
+                processing.ValidateMailboxAccessAsync(It.IsAny<CancellationToken>()),
                     Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>
@@ -121,12 +122,12 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
                     innerException: failedOptOutOrchestrationServiceException);
 
             this.meshProcessingServiceMock.Setup(processing =>
-                processing.ValidateMailboxAccessAsync())
+                processing.ValidateMailboxAccessAsync(It.IsAny<CancellationToken>()))
                     .ThrowsAsync(serviceException);
 
             // when
             ValueTask<bool> validateMailboxAccessTask =
-                this.optOutOrchestrationService.ValidateMailboxAccessAsync();
+                this.optOutOrchestrationService.ValidateMailboxAccessAsync(TestContext.Current.CancellationToken);
 
             OptOutOrchestrationServiceException actualException =
                 await Assert.ThrowsAsync<OptOutOrchestrationServiceException>(validateMailboxAccessTask.AsTask);
@@ -136,7 +137,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
                 .BeEquivalentTo(expectedOptOrchestrationServiceException);
 
             this.meshProcessingServiceMock.Verify(processing =>
-                processing.ValidateMailboxAccessAsync(),
+                processing.ValidateMailboxAccessAsync(It.IsAny<CancellationToken>()),
                     Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>

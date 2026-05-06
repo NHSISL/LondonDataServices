@@ -83,6 +83,13 @@ namespace LHDS.Core.Services.Orchestrations.OptOuts
                 (Rule: IsInvalid(batchReference), Parameter: "BatchReference"));
         }
 
+        private static void ValidateDocumentRequirements(string fileName)
+        {
+            Validate<InvalidArgumentOptOutOrchestrationException>(
+                message: "Invalid Retrieve Opt Out Status orchestration argument(s), please correct the errors and try again.",
+                (Rule: IsInvalid(fileName), Parameter: "FileName"));
+        }
+
         private static void ValidateDocumentRequirements(string content, string fileName)
         {
             Validate<InvalidArgumentOptOutOrchestrationException>(

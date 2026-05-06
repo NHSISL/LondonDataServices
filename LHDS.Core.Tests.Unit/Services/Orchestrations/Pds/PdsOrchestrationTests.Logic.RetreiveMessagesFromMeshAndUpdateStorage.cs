@@ -1,10 +1,11 @@
-﻿// ---------------------------------------------------------
+// ---------------------------------------------------------
 // Copyright (c) North East London ICB. All rights reserved.
 // ---------------------------------------------------------
 
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Threading;
 using System.Linq;
 using System.Threading.Tasks;
 using FluentAssertions;
@@ -41,7 +42,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Pds
                     .ReturnsAsync(identifier);
 
             this.meshServiceMock.SetupSequence(service =>
-                service.RetrieveMessageIdsFromInboxAsync())
+                service.RetrieveMessageIdsFromInboxAsync(It.IsAny<CancellationToken>()))
                     .ReturnsAsync(randomMessageIds)
                     .ReturnsAsync(new List<string>());
 
@@ -49,21 +50,30 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Pds
 
             foreach (var message in retrievedMessages)
             {
+                string tempFilePath =
+                    System.IO.Path.Combine(System.IO.Path.GetTempPath(), System.Guid.NewGuid().ToString());
+
+                this.tempLocationBrokerMock.Setup(broker =>
+                    broker.GetUniqueHomeFilePath())
+                        .Returns(tempFilePath);
+
+                this.fileBrokerMock.Setup(broker =>
+                    broker.DeleteFileAsync(It.IsAny<string>()))
+                        .ReturnsAsync(true);
+
                 this.meshServiceMock.Setup(service =>
-                    service.RetrieveMessageByIdAsync(message.MessageId))
+                    service.RetrieveMessageByIdAsync(message.MessageId, It.IsAny<Stream>(), It.IsAny<CancellationToken>()))
                         .ReturnsAsync(message);
 
                 string filename = message.Headers["mex-filename"].FirstOrDefault();
                 string cleanedFileName = filename.StartsWith("RESP_") ? filename.Substring("RESP_".Length) : filename;
-                string fileNameOutput = $"{pdsConfiguration.OutputFolder}/{cleanedFileName}";
 
                 string inputFileName = $"{pdsConfiguration.OutputFolder}/{cleanedFileName}";
-                Stream inputStream = new MemoryStream(message.FileContent);
                 Guid correlationId = Guid.Parse(message.Headers["mex-localid"].FirstOrDefault());
 
                 this.documentServiceMock
                     .Setup(service =>
-                        service.AddDocumentAsync(It.Is(SameStreamAs(inputStream)), inputFileName, inputContainer))
+                        service.AddDocumentAsync(It.IsAny<Stream>(), inputFileName, inputContainer))
                     .Returns(ValueTask.CompletedTask);
 
                 PdsAudit pdsAudit = new PdsAudit
@@ -90,7 +100,8 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Pds
 
             //when
             List<PdsAudit> actualPdsAudits =
-                await this.pdsOrchestrationService.RetreiveMessagesFromMeshAndUpdateStorage();
+                await this.pdsOrchestrationService.RetreiveMessagesFromMeshAndUpdateStorage(
+                    TestContext.Current.CancellationToken);
 
             //then
             actualPdsAudits.Should().BeEquivalentTo(expectedPdsAudits);
@@ -105,21 +116,19 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Pds
                     Times.Exactly(retrievedMessages.Count));
 
             this.meshServiceMock.Verify(service =>
-                service.RetrieveMessageIdsFromInboxAsync(),
+                service.RetrieveMessageIdsFromInboxAsync(It.IsAny<CancellationToken>()),
                     Times.Exactly(2));
 
             foreach (var message in retrievedMessages)
             {
                 this.meshServiceMock.Verify(service =>
-                    service.RetrieveMessageByIdAsync(message.MessageId),
+                    service.RetrieveMessageByIdAsync(message.MessageId, It.IsAny<Stream>(), It.IsAny<CancellationToken>()),
                         Times.Once);
 
                 string filename = message.Headers["mex-filename"].FirstOrDefault();
                 string cleanedFileName = filename.StartsWith("RESP_") ? filename.Substring("RESP_".Length) : filename;
-                string fileNameOutput = $"{pdsConfiguration.OutputFolder}/{cleanedFileName}";
 
                 string inputFileName = $"{pdsConfiguration.OutputFolder}/{cleanedFileName}";
-                Stream inputStream = new MemoryStream(message.FileContent);
                 Guid correlationId = Guid.Parse(message.Headers["mex-localid"].FirstOrDefault());
 
                 this.documentServiceMock.Verify(service =>
@@ -144,7 +153,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Pds
                         Times.Once);
 
                 this.meshServiceMock.Verify(service =>
-                    service.AcknowledgeMessageByIdAsync(message.MessageId),
+                    service.AcknowledgeMessageByIdAsync(message.MessageId, It.IsAny<CancellationToken>()),
                         Times.Exactly(1));
 
                 pdsAuditsList.Add(pdsAudit);
@@ -167,7 +176,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Pds
             List<MeshMessage> retrievedMessages = GetRandomMessages(randomMessageIds, mexWorkflowId);
 
             this.meshServiceMock.SetupSequence(service =>
-                service.RetrieveMessageIdsFromInboxAsync())
+                service.RetrieveMessageIdsFromInboxAsync(It.IsAny<CancellationToken>()))
                     .ReturnsAsync(randomMessageIds)
                     .ReturnsAsync(new List<string>());
 
@@ -175,8 +184,19 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Pds
 
             foreach (var message in retrievedMessages)
             {
+                string tempFilePath =
+                    System.IO.Path.Combine(System.IO.Path.GetTempPath(), System.Guid.NewGuid().ToString());
+
+                this.tempLocationBrokerMock.Setup(broker =>
+                    broker.GetUniqueHomeFilePath())
+                        .Returns(tempFilePath);
+
+                this.fileBrokerMock.Setup(broker =>
+                    broker.DeleteFileAsync(It.IsAny<string>()))
+                        .ReturnsAsync(true);
+
                 this.meshServiceMock.Setup(service =>
-                    service.RetrieveMessageByIdAsync(message.MessageId))
+                    service.RetrieveMessageByIdAsync(message.MessageId, It.IsAny<Stream>(), It.IsAny<CancellationToken>()))
                         .ReturnsAsync(message);
 
                 if (message.Headers["mex-workflowid"].FirstOrDefault() != this.pdsConfiguration.WorkflowId ||
@@ -190,19 +210,20 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Pds
 
             //when
             List<PdsAudit> actualPdsAudits =
-                await this.pdsOrchestrationService.RetreiveMessagesFromMeshAndUpdateStorage();
+                await this.pdsOrchestrationService.RetreiveMessagesFromMeshAndUpdateStorage(
+                    TestContext.Current.CancellationToken);
 
             //then
             actualPdsAudits.Should().BeEquivalentTo(expectedPdsAudits);
 
             this.meshServiceMock.Verify(service =>
-                service.RetrieveMessageIdsFromInboxAsync(),
+                service.RetrieveMessageIdsFromInboxAsync(It.IsAny<CancellationToken>()),
                     Times.Exactly(2));
 
             foreach (var message in retrievedMessages)
             {
                 this.meshServiceMock.Verify(service =>
-                    service.RetrieveMessageByIdAsync(message.MessageId),
+                    service.RetrieveMessageByIdAsync(message.MessageId, It.IsAny<Stream>(), It.IsAny<CancellationToken>()),
                         Times.Once);
 
                 if (message.Headers["mex-workflowid"].FirstOrDefault() != this.pdsConfiguration.WorkflowId ||

@@ -4,6 +4,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Threading;
 using System.Threading.Tasks;
 using FluentAssertions;
 using LHDS.Core.Models.Processings.Mesh.Exceptions;
@@ -27,12 +28,13 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.Mesh
                     innerException: dependencyValidationException.InnerException as Xeption);
 
             this.meshServiceMock.Setup(service =>
-                service.RetrieveMessageIdsFromInboxAsync())
+                service.RetrieveMessageIdsFromInboxAsync(It.IsAny<CancellationToken>()))
                     .ThrowsAsync(dependencyValidationException);
 
             // when
             ValueTask<List<string>> retrieveMessageByIdsTask =
-                this.meshProcessingService.RetrieveMessageIdsFromInboxAsync();
+                this.meshProcessingService.RetrieveMessageIdsFromInboxAsync(
+                    TestContext.Current.CancellationToken);
 
             MeshProcessingDependencyValidationException actualException =
                 await Assert.ThrowsAsync<MeshProcessingDependencyValidationException>(retrieveMessageByIdsTask.AsTask);
@@ -41,7 +43,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.Mesh
             actualException.Should().BeEquivalentTo(expectedMeshProcessingDependencyValidationException);
 
             this.meshServiceMock.Verify(service =>
-                service.RetrieveMessageIdsFromInboxAsync(),
+                service.RetrieveMessageIdsFromInboxAsync(It.IsAny<CancellationToken>()),
                     Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>
@@ -65,12 +67,13 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.Mesh
                     innerException: dependencyException.InnerException as Xeption);
 
             this.meshServiceMock.Setup(service =>
-                service.RetrieveMessageIdsFromInboxAsync())
+                service.RetrieveMessageIdsFromInboxAsync(It.IsAny<CancellationToken>()))
                     .ThrowsAsync(dependencyException);
 
             // when
             ValueTask<List<string>> retrieveMessageByIdsTask =
-                this.meshProcessingService.RetrieveMessageIdsFromInboxAsync();
+                this.meshProcessingService.RetrieveMessageIdsFromInboxAsync(
+                    TestContext.Current.CancellationToken);
 
             MeshProcessingDependencyException actualException =
                 await Assert.ThrowsAsync<MeshProcessingDependencyException>(retrieveMessageByIdsTask.AsTask);
@@ -79,7 +82,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.Mesh
             actualException.Should().BeEquivalentTo(expectedMeshProcessingDependencyException);
 
             this.meshServiceMock.Verify(service =>
-                service.RetrieveMessageIdsFromInboxAsync(),
+                service.RetrieveMessageIdsFromInboxAsync(It.IsAny<CancellationToken>()),
                     Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>
@@ -108,12 +111,13 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.Mesh
                     innerException: failedMeshProcessingServiceException);
 
             this.meshServiceMock.Setup(service =>
-                service.RetrieveMessageIdsFromInboxAsync())
+                service.RetrieveMessageIdsFromInboxAsync(It.IsAny<CancellationToken>()))
                     .ThrowsAsync(serviceException);
 
             // when
             ValueTask<List<string>> retrievRetrieveMessageIdsFromInboxTask =
-                this.meshProcessingService.RetrieveMessageIdsFromInboxAsync();
+                this.meshProcessingService.RetrieveMessageIdsFromInboxAsync(
+                    TestContext.Current.CancellationToken);
 
             MeshProcessingServiceException actualException =
                 await Assert.ThrowsAsync<MeshProcessingServiceException>(retrievRetrieveMessageIdsFromInboxTask.AsTask);
@@ -122,7 +126,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.Mesh
             actualException.Should().BeEquivalentTo(expectedMeshProcessingServiveException);
 
             this.meshServiceMock.Verify(service =>
-                service.RetrieveMessageIdsFromInboxAsync(),
+                service.RetrieveMessageIdsFromInboxAsync(It.IsAny<CancellationToken>()),
                     Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>

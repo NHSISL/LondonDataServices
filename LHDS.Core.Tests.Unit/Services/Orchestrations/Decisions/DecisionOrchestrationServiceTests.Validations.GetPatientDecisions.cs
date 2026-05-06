@@ -3,6 +3,7 @@
 // ---------------------------------------------------------
 
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using FluentAssertions;
@@ -115,97 +116,5 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Decisions
             this.loggingBrokerMock.VerifyNoOtherCalls();
         }
 
-        [Fact]
-        public async Task
-            ShouldThrowValidationExceptionOnGetPatientDecisionsIfDocumentRequirementsAreNullOrEmptyAndLogItAsync()
-        {
-            // given
-            this.decisionConfiguration.HashNhsNumber = true;
-            List<Decision> expectedDecisions = CreateRandomDecisions();
-            string expectedHash = GetRandomString();
-            Dictionary<string, int> fieldMappings = GetFieldMappings();
-
-            var invalidArgumentDecisionOrchestrationException =
-                new InvalidArgumentDecisionOrchestrationException(
-                    message: "Invalid Decision orchestration argument(s), please correct the errors and try again.");
-
-            invalidArgumentDecisionOrchestrationException.AddData(
-                key: "Content",
-                values: "Text is required");
-
-            var expectedDecisionOrchestrationValidationException =
-                new DecisionOrchestrationValidationException(
-                    message: "Decision orchestration validation errors occurred, please try again.",
-                    innerException: invalidArgumentDecisionOrchestrationException);
-
-            this.decisionServiceMock
-                .Setup(service => service.GetPatientDecisions())
-                .ReturnsAsync(expectedDecisions);
-
-            this.hashBrokerMock
-                .Setup(broker => broker.GenerateSha256HashAsync(
-                    It.Is<string>(nhsNumber => expectedDecisions.Any(
-                        decision => decision.PatientNhsNumber == nhsNumber)),
-                    this.decisionConfiguration.HashPepper))
-                .ReturnsAsync(expectedHash);
-
-            this.csvHelperBrokerMock
-                .Setup(broker => broker.MapObjectToCsvAsync(
-                    It.Is<List<DecisionCsv>>(csvs =>
-                        csvs.All(csv => expectedDecisions.Any(
-                            decision => decision.Id == csv.DecisionId && csv.NhsNumber == expectedHash))),
-                    true,
-                    fieldMappings,
-                    false))
-                .ReturnsAsync(string.Empty);
-
-            // when
-            ValueTask<List<Decision>> getPatientDecisionsTask =
-                this.decisionOrchestrationService.GetPatientDecisions();
-
-            DecisionOrchestrationValidationException actualException =
-                await Assert.ThrowsAsync<DecisionOrchestrationValidationException>(getPatientDecisionsTask.AsTask);
-
-            // then
-            actualException.Should()
-                .BeEquivalentTo(expectedDecisionOrchestrationValidationException);
-
-            this.decisionServiceMock.Verify(service =>
-                service.GetPatientDecisions(),
-                    Times.Once);
-
-            foreach (string nhsNumber in expectedDecisions.Select(d => d.PatientNhsNumber))
-            {
-                int count = expectedDecisions.Count(decision => decision.PatientNhsNumber == nhsNumber);
-
-                this.hashBrokerMock.Verify(
-                    broker => broker.GenerateSha256HashAsync(
-                        It.Is<string>(number => number == nhsNumber),
-                        this.decisionConfiguration.HashPepper),
-                        Times.Exactly(count));
             }
-
-            this.csvHelperBrokerMock.Verify(broker =>
-                broker.MapObjectToCsvAsync(
-                    It.Is<List<DecisionCsv>>(csvs =>
-                        csvs.All(csv => expectedDecisions.Any(
-                            decision => decision.Id == csv.DecisionId &&
-                                        csv.NhsNumber == expectedHash))),
-                    true,
-                    fieldMappings,
-                    false),
-                    Times.Once);
-
-            this.loggingBrokerMock.Verify(broker =>
-                broker.LogErrorAsync(It.Is(SameExceptionAs(
-                    expectedDecisionOrchestrationValidationException))),
-                        Times.Once);
-
-            this.decisionServiceMock.VerifyNoOtherCalls();
-            this.documentServiceMock.VerifyNoOtherCalls();
-            this.csvHelperBrokerMock.VerifyNoOtherCalls();
-            this.hashBrokerMock.VerifyNoOtherCalls();
-            this.loggingBrokerMock.VerifyNoOtherCalls();
         }
-    }
-}

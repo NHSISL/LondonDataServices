@@ -1,10 +1,11 @@
-﻿// ---------------------------------------------------------
+// ---------------------------------------------------------
 // Copyright (c) North East London ICB. All rights reserved.
 // ---------------------------------------------------------
 
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using FluentAssertions;
@@ -41,11 +42,17 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
 
             this.csvHelperBrokerMock.Setup(processing =>
                 processing.MapCsvToObjectAsync<OptOutIdentifier>(
-                    inputString,
+                    It.IsAny<Stream>(),
                     withHeader,
                     fieldMappings,
                     headerValidated))
-                        .ReturnsAsync(outputOptOuts);
+                        .Returns(outputOptOuts.ToAsyncEnumerable());
+
+            this.tempLocationBrokerMock.Setup(broker => broker.GetUniqueHomeFilePath())
+                .Returns(() => System.IO.Path.Combine(System.IO.Path.GetTempPath(), System.Guid.NewGuid().ToString()));
+
+            this.fileBrokerMock.Setup(broker => broker.DeleteFileAsync(It.IsAny<string>()))
+                .ReturnsAsync(true);
 
             foreach (var optOut in outputOptOuts)
             {
@@ -80,7 +87,8 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
 
             // When
             ValueTask<string> retrieveOptOutStatusTask =
-                this.optOutOrchestrationService.RetrieveOptOutStatusAsync(inputStream, randomRecieveName);
+                this.optOutOrchestrationService.RetrieveOptOutStatusAsync(
+                    inputStream, randomRecieveName, TestContext.Current.CancellationToken);
 
             OptOutOrchestrationServiceException actualOptOutOrchestrationServiceException =
                 await Assert.ThrowsAsync<OptOutOrchestrationServiceException>(retrieveOptOutStatusTask.AsTask);
@@ -91,7 +99,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
 
             this.csvHelperBrokerMock.Verify(processing =>
                 processing.MapCsvToObjectAsync<OptOutIdentifier>(
-                    inputString,
+                    It.IsAny<Stream>(),
                     withHeader,
                     fieldMappings,
                     headerValidated),
@@ -149,11 +157,17 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
 
             this.csvHelperBrokerMock.Setup(processing =>
                 processing.MapCsvToObjectAsync<OptOutIdentifier>(
-                    inputString,
+                    It.IsAny<Stream>(),
                     withHeader,
                     fieldMappings,
                     headerValidated))
-                        .ReturnsAsync(outputOptOuts);
+                        .Returns(outputOptOuts.ToAsyncEnumerable());
+
+            this.tempLocationBrokerMock.Setup(broker => broker.GetUniqueHomeFilePath())
+                .Returns(() => System.IO.Path.Combine(System.IO.Path.GetTempPath(), System.Guid.NewGuid().ToString()));
+
+            this.fileBrokerMock.Setup(broker => broker.DeleteFileAsync(It.IsAny<string>()))
+                .ReturnsAsync(true);
 
             foreach (var optOut in outputOptOuts)
             {
@@ -188,7 +202,8 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
 
             // When
             ValueTask<string> retrieveOptOutStatusTask =
-                this.optOutOrchestrationService.RetrieveOptOutStatusAsync(inputStream, randomRecieveName);
+                this.optOutOrchestrationService.RetrieveOptOutStatusAsync(
+                    inputStream, randomRecieveName, TestContext.Current.CancellationToken);
 
             OptOutOrchestrationServiceException actualOptOutOrchestrationServiceException =
                 await Assert.ThrowsAsync<OptOutOrchestrationServiceException>(retrieveOptOutStatusTask.AsTask);
@@ -199,7 +214,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
 
             this.csvHelperBrokerMock.Verify(processing =>
                 processing.MapCsvToObjectAsync<OptOutIdentifier>(
-                    inputString,
+                    It.IsAny<Stream>(),
                     withHeader,
                     fieldMappings,
                     headerValidated),
@@ -256,11 +271,17 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
 
             this.csvHelperBrokerMock.Setup(processing =>
                 processing.MapCsvToObjectAsync<OptOutIdentifier>(
-                    inputString,
+                    It.IsAny<Stream>(),
                     withHeader,
                     fieldMappings,
                     headerValidated))
-                        .ReturnsAsync(outputOptOuts);
+                        .Returns(outputOptOuts.ToAsyncEnumerable());
+
+            this.tempLocationBrokerMock.Setup(broker => broker.GetUniqueHomeFilePath())
+                .Returns(() => System.IO.Path.Combine(System.IO.Path.GetTempPath(), System.Guid.NewGuid().ToString()));
+
+            this.fileBrokerMock.Setup(broker => broker.DeleteFileAsync(It.IsAny<string>()))
+                .ReturnsAsync(true);
 
             var innerFailedOptOutOrchestrationServiceException =
                 new FailedOptOutOrchestrationServiceException(
@@ -299,7 +320,8 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
 
             // When
             ValueTask<string> retrieveOptOutStatusTask =
-                this.optOutOrchestrationService.RetrieveOptOutStatusAsync(inputStream, randomRecieveName);
+                this.optOutOrchestrationService.RetrieveOptOutStatusAsync(
+                    inputStream, randomRecieveName, TestContext.Current.CancellationToken);
 
             OptOutOrchestrationServiceException actualOptOutOrchestrationServiceException =
                 await Assert.ThrowsAsync<OptOutOrchestrationServiceException>(retrieveOptOutStatusTask.AsTask);
@@ -310,7 +332,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
 
             this.csvHelperBrokerMock.Verify(processing =>
                 processing.MapCsvToObjectAsync<OptOutIdentifier>(
-                    inputString,
+                    It.IsAny<Stream>(),
                     withHeader,
                     fieldMappings,
                     headerValidated),
@@ -355,13 +377,20 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
                         "fix the errors and try again.",
                     innerException: dependancyValidationException.InnerException as Xeption);
 
+            this.tempLocationBrokerMock.Setup(broker => broker.GetUniqueHomeFilePath())
+                .Returns(() => System.IO.Path.Combine(System.IO.Path.GetTempPath(), System.Guid.NewGuid().ToString()));
+
+            this.fileBrokerMock.Setup(broker => broker.DeleteFileAsync(It.IsAny<string>()))
+                .ReturnsAsync(true);
+
             this.csvHelperBrokerMock.Setup(processing =>
-                processing.MapCsvToObjectAsync<OptOutIdentifier>(It.IsAny<string>(), false, null, false))
-                    .ThrowsAsync(dependancyValidationException);
+                processing.MapCsvToObjectAsync<OptOutIdentifier>(It.IsAny<Stream>(), false, null, false))
+                    .Throws(dependancyValidationException);
 
             // when
             ValueTask<string> retrieveOptOutStatusTask =
-                this.optOutOrchestrationService.RetrieveOptOutStatusAsync(randomStream, randomRecieveName);
+                this.optOutOrchestrationService.RetrieveOptOutStatusAsync(
+                    randomStream, randomRecieveName, TestContext.Current.CancellationToken);
 
             OptOutOrchestrationDependencyValidationException actualException =
                 await Assert.ThrowsAsync<OptOutOrchestrationDependencyValidationException>(
@@ -372,7 +401,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
                 .BeEquivalentTo(expectedDependencyException);
 
             this.csvHelperBrokerMock.Verify(processing =>
-                processing.MapCsvToObjectAsync<OptOutIdentifier>(It.IsAny<string>(), false, null, false),
+                processing.MapCsvToObjectAsync<OptOutIdentifier>(It.IsAny<Stream>(), false, null, false),
                     Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>
@@ -405,17 +434,24 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
                     message: "Opt Out orchestration dependency error occurred, fix the errors and try again.",
                     innerException: dependancyException.InnerException as Xeption);
 
+            this.tempLocationBrokerMock.Setup(broker => broker.GetUniqueHomeFilePath())
+                .Returns(() => System.IO.Path.Combine(System.IO.Path.GetTempPath(), System.Guid.NewGuid().ToString()));
+
+            this.fileBrokerMock.Setup(broker => broker.DeleteFileAsync(It.IsAny<string>()))
+                .ReturnsAsync(true);
+
             this.csvHelperBrokerMock.Setup(processing =>
                 processing.MapCsvToObjectAsync<OptOutIdentifier>(
-                    It.IsAny<string>(),
+                    It.IsAny<Stream>(),
                     It.IsAny<bool>(),
                     It.IsAny<Dictionary<string, int>>(),
                     It.IsAny<bool>()))
-                    .ThrowsAsync(dependancyException);
+                    .Throws(dependancyException);
 
             // when
             ValueTask<string> retrieveOptOutStatusTask =
-                this.optOutOrchestrationService.RetrieveOptOutStatusAsync(randomStream, randomRecieveName);
+                this.optOutOrchestrationService.RetrieveOptOutStatusAsync(
+                    randomStream, randomRecieveName, TestContext.Current.CancellationToken);
 
             OptOutOrchestrationDependencyException actualException =
                 await Assert.ThrowsAsync<OptOutOrchestrationDependencyException>(retrieveOptOutStatusTask.AsTask);
@@ -426,7 +462,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
 
             this.csvHelperBrokerMock.Verify(processing =>
                 processing.MapCsvToObjectAsync<OptOutIdentifier>(
-                    It.IsAny<string>(),
+                    It.IsAny<Stream>(),
                     It.IsAny<bool>(),
                     It.IsAny<Dictionary<string, int>>(),
                     It.IsAny<bool>()),
@@ -466,17 +502,24 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
                     message: "Opt Out orchestration service error occurred, please contact support.",
                     innerException: failedOptOutOrchestrationServiceException);
 
+            this.tempLocationBrokerMock.Setup(broker => broker.GetUniqueHomeFilePath())
+                .Returns(() => System.IO.Path.Combine(System.IO.Path.GetTempPath(), System.Guid.NewGuid().ToString()));
+
+            this.fileBrokerMock.Setup(broker => broker.DeleteFileAsync(It.IsAny<string>()))
+                .ReturnsAsync(true);
+
             this.csvHelperBrokerMock.Setup(processing =>
                 processing.MapCsvToObjectAsync<OptOutIdentifier>(
-                    It.IsAny<string>(),
+                    It.IsAny<Stream>(),
                     It.IsAny<bool>(),
                     It.IsAny<Dictionary<string, int>>(),
                     It.IsAny<bool>()))
-                    .ThrowsAsync(serviceException);
+                    .Throws(serviceException);
 
             // when
             ValueTask<string> retrieveOptOutStatusTask =
-                this.optOutOrchestrationService.RetrieveOptOutStatusAsync(randomStream, randomRecieveName);
+                this.optOutOrchestrationService.RetrieveOptOutStatusAsync(
+                    randomStream, randomRecieveName, TestContext.Current.CancellationToken);
 
             OptOutOrchestrationServiceException actualException =
                 await Assert.ThrowsAsync<OptOutOrchestrationServiceException>(retrieveOptOutStatusTask.AsTask);
@@ -487,7 +530,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
 
             this.csvHelperBrokerMock.Verify(processing =>
                 processing.MapCsvToObjectAsync<OptOutIdentifier>(
-                    It.IsAny<string>(),
+                    It.IsAny<Stream>(),
                     It.IsAny<bool>(),
                     It.IsAny<Dictionary<string, int>>(),
                     It.IsAny<bool>()),

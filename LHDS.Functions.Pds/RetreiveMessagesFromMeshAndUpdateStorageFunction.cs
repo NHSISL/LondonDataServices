@@ -3,6 +3,7 @@
 // ---------------------------------------------------------
 
 using System;
+using System.Threading;
 using System.Threading.Tasks;
 using LHDS.Core.Brokers.Loggings;
 using LHDS.Core.Clients;
@@ -25,13 +26,15 @@ namespace LHDS.Functions.Pds
         }
 
         [Function("RetreiveMessagesFromMeshAndUpdateStorage")]
-        public async Task Run([TimerTrigger("0 */15 * * * *")] MyInformation myTimer)
+        public async Task Run(
+            [TimerTrigger("0 */15 * * * *")] MyInformation myTimer,
+            CancellationToken cancellationToken)
         {
             await this.loggingBroker.LogInformationAsync($"C# Timer trigger function executed at: {DateTime.Now}");
 
             try
             {
-                await pdsClient.RetreiveMessagesFromMeshAndUpdateStorage();
+                await pdsClient.RetreiveMessagesFromMeshAndUpdateStorage(cancellationToken);
             }
             catch (Exception ex)
             {

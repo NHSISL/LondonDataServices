@@ -19,12 +19,14 @@ using ISL.Security.Client.Models.Clients;
 using LHDS.Core.Brokers.Audits;
 using LHDS.Core.Brokers.CsvHelpers;
 using LHDS.Core.Brokers.DateTimes;
+using LHDS.Core.Brokers.Files;
 using LHDS.Core.Brokers.Identifiers;
 using LHDS.Core.Brokers.Loggings;
 using LHDS.Core.Brokers.Mesh;
 using LHDS.Core.Brokers.Securities;
 using LHDS.Core.Brokers.Storages.Blobs;
 using LHDS.Core.Brokers.Storages.Sql;
+using LHDS.Core.Brokers.TempLocations;
 using LHDS.Core.Models.Brokers.Mesh;
 using LHDS.Core.Models.Brokers.Storages.Blobs;
 using LHDS.Core.Models.Configurations;
@@ -244,6 +246,8 @@ namespace LHDS.Core.Clients.Extensions
             services.AddTransient<IDateTimeBroker, DateTimeBroker>();
             services.AddTransient<IIdentifierBroker, IdentifierBroker>();
             services.AddTransient<IAuditBroker, AuditBroker>();
+            services.AddTransient<ITempLocationBroker, TempLocationBroker>();
+            services.AddTransient<IFileBroker, FileBroker>();
 
             if (!acceptanceTest)
             {

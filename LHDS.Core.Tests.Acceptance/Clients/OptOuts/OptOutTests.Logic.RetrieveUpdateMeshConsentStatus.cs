@@ -4,13 +4,13 @@
 
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using FluentAssertions;
-using Force.DeepCloner;
 using LHDS.Core.Models.Foundations.OptOuts;
 using Moq;
-using NEL.MESH.Clients.Mailboxes;
 using NEL.MESH.Models.Foundations.Mesh;
 using Xunit;
 
@@ -53,30 +53,47 @@ namespace LHDS.Core.Tests.Acceptance.Clients.OptOuts
 
             byte[] fileContent = Encoding.ASCII.GetBytes(csvOptOutList.ToString());
 
-            Message message = ComposeMessage.CreateFileMessage(
-                mexTo,
-                mexWorkflowId,
-                fileContent,
-                mexLocalId: GetRandomString(),
-                mexFileName: fileName,
-                contentType: "text/plain");
+            Message message = new Message
+            {
+                MessageId = messageId,
+                Headers = new Dictionary<string, List<string>>
+                {
+                    { "mex-to", new List<string> { mexTo } },
+                    { "mex-workflowid", new List<string> { mexWorkflowId } },
+                    { "mex-localid", new List<string> { batchReference } },
+                    { "mex-filename", new List<string> { fileName } }
+                }
+            };
 
-            message.MessageId = messageId;
             List<Message> messages = new List<Message> { message };
 
             this.meshBrokerMock.SetupSequence(broker =>
-                broker.RetrieveMessageIdsAsync())
+                broker.RetrieveMessageIdsAsync(It.IsAny<CancellationToken>()))
                     .ReturnsAsync(messageIds)
                     .ReturnsAsync(new List<string>());
 
             foreach (var id in messageIds)
             {
                 this.meshBrokerMock.Setup(broker =>
-                    broker.RetrieveMessageAsync(id))
-                        .ReturnsAsync(message);
+                    broker.RetrieveMessageAsync(
+                        id,
+                        It.IsAny<Stream>(),
+                        It.IsAny<CancellationToken>()))
+                    .Callback<string, Stream, CancellationToken>((_, stream, _) =>
+                        stream.Write(fileContent))
+                    .ReturnsAsync(message);
             }
 
-            List<Message> expectedMessages = messages.DeepClone();
+            string optOutContainer = dependencyBroker.Configuration
+                .GetSection("blobStorage:BlobContainers:OptOut").Value;
+
+            string deltaFileName = $"{optOutConfiguration.OutputFolder}/{batchReference}_DeltaResponse.csv";
+
+            this.blobStorageBrokerMock.Setup(broker =>
+                broker.InsertFileAsync(It.IsAny<Stream>(), deltaFileName, optOutContainer))
+                    .Returns(ValueTask.CompletedTask);
+
+            List<Message> expectedMessages = new List<Message>(messages);
 
             //When
             var actualMessageList = await this.optOutClient.RetrieveUpdatedMeshConsentStatusesChangesAsync();
@@ -85,19 +102,26 @@ namespace LHDS.Core.Tests.Acceptance.Clients.OptOuts
             actualMessageList.Should().BeEquivalentTo(expectedMessages);
 
             this.meshBrokerMock.Verify(broker =>
-                broker.RetrieveMessageIdsAsync(),
+                broker.RetrieveMessageIdsAsync(It.IsAny<CancellationToken>()),
                     Times.Exactly(2));
 
             foreach (var id in messageIds)
             {
                 this.meshBrokerMock.Verify(broker =>
-                    broker.RetrieveMessageAsync(id),
-                        Times.Once);
+                    broker.RetrieveMessageAsync(
+                        id,
+                        It.IsAny<Stream>(),
+                        It.IsAny<CancellationToken>()),
+                            Times.Once);
 
                 this.meshBrokerMock.Verify(broker =>
-                    broker.AcknowledgeMessageByIdAsync(id),
+                    broker.AcknowledgeMessageByIdAsync(id, It.IsAny<CancellationToken>()),
                         Times.Once);
             }
+
+            this.blobStorageBrokerMock.Verify(broker =>
+                broker.InsertFileAsync(It.IsAny<Stream>(), deltaFileName, optOutContainer),
+                    Times.Once);
 
             foreach (OptOut optOut in randomOptOutList)
             {

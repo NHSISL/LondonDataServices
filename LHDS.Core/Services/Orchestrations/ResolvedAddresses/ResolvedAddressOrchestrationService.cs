@@ -80,31 +80,32 @@ namespace LHDS.Core.Services.Orchestrations.ResolvedAddresses
                 fileName: null,
                 correlationId: correlationId.ToString());
 
-            using (StreamReader streamReader = new StreamReader(input))
+            input.Position = 0;
+
+            Dictionary<string, int> fieldMappings =
+                new Dictionary<string, int>
+                {
+                    { nameof(ResolvedAddress.UniqueReference), 0 },
+                    { nameof(ResolvedAddress.UnstructuredPostalAddress), 2 }
+                };
+
+            List<ResolvedAddress> resolvedAddresses = new List<ResolvedAddress>();
+
+            await foreach (var item in this.csvHelperBroker
+                .MapCsvToObjectAsync<ResolvedAddress>(data: input, hasHeaderRecord: true, fieldMappings))
             {
-                input.Position = 0;
-                string content = streamReader.ReadToEnd();
-
-                Dictionary<string, int> fieldMappings =
-                    new Dictionary<string, int>
-                    {
-                        { nameof(ResolvedAddress.UniqueReference), 0 },
-                        { nameof(ResolvedAddress.UnstructuredPostalAddress), 2 }
-                    };
-
-                List<ResolvedAddress> resolvedAddresses = await this.csvHelperBroker
-                    .MapCsvToObjectAsync<ResolvedAddress>(data: content, hasHeaderRecord: true, fieldMappings);
-
-                await this.resolvedAddressProcessingService
-                    .BulkAddResolvedAddressesAsync(resolvedAddresses, fileName);
-
-                await this.auditBroker.LogAsync(
-                    auditType: "Resolved Address Upload",
-                    title: "Uploaded Resolved Addresses",
-                    message: $"Uploaded addresses to resolve with correlation id {correlationId}",
-                    fileName: null,
-                    correlationId: correlationId.ToString());
+                resolvedAddresses.Add(item);
             }
+
+            await this.resolvedAddressProcessingService
+                .BulkAddResolvedAddressesAsync(resolvedAddresses, fileName);
+
+            await this.auditBroker.LogAsync(
+                auditType: "Resolved Address Upload",
+                title: "Uploaded Resolved Addresses",
+                message: $"Uploaded addresses to resolve with correlation id {correlationId}",
+                fileName: null,
+                correlationId: correlationId.ToString());
         });
 
         public ValueTask MatchAddressDataAsync() =>
@@ -397,24 +398,24 @@ namespace LHDS.Core.Services.Orchestrations.ResolvedAddresses
                             { nameof(ResolvedAddress.Longitude), 25 }
                         };
 
-                    string processedData = await this.csvHelperBroker
+                    using Stream processedStream = new MemoryStream();
+
+                    await this.csvHelperBroker
                        .MapObjectToCsvAsync(
                         @object: processingResolvedAddressesList,
+                        outputStream: processedStream,
                         addHeaderRecord: true,
                         fieldMappings: fieldMappings,
                         shouldAddTrailingComma: false);
 
-                    byte[] processedBytes = Encoding.UTF8.GetBytes(processedData);
+                    processedStream.Position = 0;
                     batchReferenceIds.Add(batchReference);
                     string csvFileName = $"out/{batchReference}.csv";
 
-                    using (Stream processed = new MemoryStream(processedBytes))
-                    {
-                        await this.documentProcessingService.AddDocumentAsync(
-                            input: processed,
-                            csvFileName,
-                            container: blobContainers.Addresses);
-                    }
+                    await this.documentProcessingService.AddDocumentAsync(
+                        input: processedStream,
+                        csvFileName,
+                        container: blobContainers.Addresses);
 
                     List<ResolvedAddress> exportedResolvedAddressesList = processingResolvedAddressesList.DeepClone();
 

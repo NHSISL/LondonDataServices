@@ -32,7 +32,7 @@ namespace LHDS.Core.Tests.Integration.Pds
             var meshMessage = await this.meshService.SendMessageAsync(
                    mexTo: this.pdsConfiguration.To,
                    mexWorkflowId: this.pdsConfiguration.WorkflowId,
-                   fileContent: fileBytes,
+                   content: new MemoryStream(fileBytes),
                    mexSubject: string.Empty,
                    mexLocalId: this.identifierBroker.GetIdentifierAsync().ToString(),
                    mexFileName: fileName,

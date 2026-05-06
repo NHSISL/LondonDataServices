@@ -106,10 +106,18 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.ResolvedAddresses
             this.csvHelperBrokerMock.Setup(broker =>
                 broker.MapObjectToCsvAsync<ResolvedAddress>(
                     It.Is(SameResolvedAddressListAs(processingResolvedAddresses)),
+                    It.IsAny<Stream>(),
                     true,
                     fieldMappings,
                     false))
-                        .ReturnsAsync(ouputCsv);
+                        .Returns(ValueTask.CompletedTask)
+                        .Callback<List<ResolvedAddress>, Stream, bool, Dictionary<string, int>, bool?,
+                            System.Threading.CancellationToken>(
+                            (items, stream, header, mappings, trailing, ct) =>
+                            {
+                                byte[] bytes = Encoding.UTF8.GetBytes(ouputCsv);
+                                stream.Write(bytes, 0, bytes.Length);
+                            });
 
             byte[] inputData = Encoding.UTF8.GetBytes(ouputCsv);
             Stream inputStream = new MemoryStream(inputData);
@@ -165,6 +173,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.ResolvedAddresses
             this.csvHelperBrokerMock.Verify(broker =>
                 broker.MapObjectToCsvAsync<ResolvedAddress>(
                     It.Is(SameResolvedAddressListAs(processingResolvedAddresses)),
+                    It.IsAny<Stream>(),
                     true,
                     fieldMappings,
                     false),

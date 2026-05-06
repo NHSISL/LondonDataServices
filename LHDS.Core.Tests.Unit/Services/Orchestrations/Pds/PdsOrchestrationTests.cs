@@ -9,8 +9,10 @@ using System.Linq.Expressions;
 using System.Text;
 using KellermanSoftware.CompareNetObjects;
 using LHDS.Core.Brokers.DateTimes;
+using LHDS.Core.Brokers.Files;
 using LHDS.Core.Brokers.Identifiers;
 using LHDS.Core.Brokers.Loggings;
+using LHDS.Core.Brokers.TempLocations;
 using LHDS.Core.Models.Brokers.Storages.Blobs;
 using LHDS.Core.Models.Foundations.Documents;
 using LHDS.Core.Models.Foundations.Documents.Exceptions;
@@ -39,6 +41,8 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Pds
         private readonly Mock<ILoggingBroker> loggingBrokerMock;
         private readonly Mock<IDateTimeBroker> dateTimeBrokerMock;
         private readonly Mock<IIdentifierBroker> identifierBrokerMock;
+        private readonly Mock<ITempLocationBroker> tempLocationBrokerMock;
+        private readonly Mock<IFileBroker> fileBrokerMock;
         private readonly PdsConfiguration pdsConfiguration;
         private readonly BlobContainers blobContainers;
         private readonly ICompareLogic compareLogic;
@@ -97,6 +101,8 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Pds
             this.loggingBrokerMock = new Mock<ILoggingBroker>();
             this.dateTimeBrokerMock = new Mock<IDateTimeBroker>();
             this.identifierBrokerMock = new Mock<IIdentifierBroker>();
+            this.tempLocationBrokerMock = new Mock<ITempLocationBroker>();
+            this.fileBrokerMock = new Mock<IFileBroker>();
             this.compareLogic = new CompareLogic();
 
             this.pdsOrchestrationService = new PdsOrchestrationService(
@@ -107,7 +113,9 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Pds
                 loggingBroker: loggingBrokerMock.Object,
                 dateTimeBroker: dateTimeBrokerMock.Object,
                 identifierBroker: identifierBrokerMock.Object,
-                pdsConfiguration: pdsConfiguration
+                pdsConfiguration: pdsConfiguration,
+                tempLocationBroker: tempLocationBrokerMock.Object,
+                fileBroker: fileBrokerMock.Object
                 );
         }
 
@@ -180,7 +188,6 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Pds
                 MeshMessage message = ComposeMessage.CreateMeshMessage(
                     mexTo: GetRandomString(),
                     mexWorkflowId,
-                    fileContent: Encoding.UTF8.GetBytes(GetRandomString()),
                     mexSubject: GetRandomString(),
                     mexLocalId: Guid.NewGuid().ToString(),
                     mexFileName: fileName);

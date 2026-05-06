@@ -3,7 +3,9 @@
 // ---------------------------------------------------------
 
 using System;
+using System.IO;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using FluentAssertions;
 using Force.DeepCloner;
@@ -41,7 +43,6 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Pds
             MeshMessage outputMessage = ComposeMessage.CreateMeshMessage(
                 mexTo,
                 mexWorkflowId,
-                fileContent,
                 mexSubject,
                 mexLocalId,
                 mexFileName,
@@ -70,14 +71,15 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Pds
                 service.SendMessageAsync(
                     mexTo,
                     mexWorkflowId,
-                    fileContent,
+                    It.IsAny<Stream>(),
                     mexSubject,
                     mexLocalId,
                     mexFileName,
                     mexContentChecksum,
                     contentType,
                     contentEncoding,
-                    accept))
+                    accept,
+                    It.IsAny<CancellationToken>()))
                         .ReturnsAsync(outputMessage);
 
             this.pdsAuditServiceMock.Setup(service =>
@@ -86,9 +88,11 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Pds
 
             PdsAudit expectedPdsAudit = outputPdsAudit.DeepClone();
 
+            await using var inputStream = new MemoryStream(inputBytes);
+
             //when
             PdsAudit actualPdsAudit =
-                await this.pdsOrchestrationService.PickupFileAndSendToMesh(inputBytes, fileName);
+                await this.pdsOrchestrationService.PickupFileAndSendToMesh(inputStream, fileName);
 
             //then
             actualPdsAudit.Should().BeEquivalentTo(expectedPdsAudit);
@@ -101,14 +105,15 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Pds
               service.SendMessageAsync(
                     mexTo,
                     mexWorkflowId,
-                    fileContent,
+                    It.IsAny<Stream>(),
                     mexSubject,
                     mexLocalId,
                     mexFileName,
                     mexContentChecksum,
                     contentType,
                     contentEncoding,
-                    accept),
+                    accept,
+                    It.IsAny<CancellationToken>()),
                         Times.Once);
 
             this.identifierBrokerMock.Verify(broker =>

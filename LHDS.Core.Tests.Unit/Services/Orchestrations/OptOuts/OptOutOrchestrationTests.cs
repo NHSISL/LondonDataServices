@@ -13,8 +13,10 @@ using System.Text;
 using KellermanSoftware.CompareNetObjects;
 using LHDS.Core.Brokers.CsvHelpers;
 using LHDS.Core.Brokers.DateTimes;
+using LHDS.Core.Brokers.Files;
 using LHDS.Core.Brokers.Identifiers;
 using LHDS.Core.Brokers.Loggings;
+using LHDS.Core.Brokers.TempLocations;
 using LHDS.Core.Models.Brokers.Mesh;
 using LHDS.Core.Models.Brokers.Storages.Blobs;
 using LHDS.Core.Models.Foundations.Documents;
@@ -43,6 +45,8 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
         private readonly Mock<IOptOutProcessingService> optOutProcessingServiceMock;
         private readonly Mock<IDocumentProcessingService> documentProcessingServiceMock;
         private readonly Mock<IMeshProcessingService> meshProcessingServiceMock;
+        private readonly Mock<ITempLocationBroker> tempLocationBrokerMock;
+        private readonly Mock<IFileBroker> fileBrokerMock;
         private readonly OptOutOrchestrationService optOutOrchestrationService;
         private readonly Mock<ILoggingBroker> loggingBrokerMock;
         private readonly Mock<ICsvHelperBroker> csvHelperBrokerMock;
@@ -113,7 +117,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
                 MexOSName = inMemoryConfiguration["meshConfiguration:mexOSName"],
                 MexOSVersion = inMemoryConfiguration["meshConfiguration:mexOSVersion"],
 
-                TlsRootCertificates = 
+                TlsRootCertificates =
                     GetCertificates(inMemoryConfiguration
                         .GetSection("meshConfiguration:tlsRootCertificates")
                             .Get<List<string>>()),
@@ -129,6 +133,8 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
             this.optOutProcessingServiceMock = new Mock<IOptOutProcessingService>();
             this.documentProcessingServiceMock = new Mock<IDocumentProcessingService>();
             this.meshProcessingServiceMock = new Mock<IMeshProcessingService>();
+            this.tempLocationBrokerMock = new Mock<ITempLocationBroker>();
+            this.fileBrokerMock = new Mock<IFileBroker>();
             this.csvHelperBrokerMock = new Mock<ICsvHelperBroker>();
             this.loggingBrokerMock = new Mock<ILoggingBroker>();
             this.dateTimeBrokerMock = new Mock<IDateTimeBroker>();
@@ -145,7 +151,9 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
                 dateTimeBroker: this.dateTimeBrokerMock.Object,
                 identifierBroker: this.identifierBrokerMock.Object,
                 optOutConfiguration: this.optOutConfiguration,
-                meshConfiguration: this.meshConfiguration);
+                meshConfiguration: this.meshConfiguration,
+                tempLocationBroker: this.tempLocationBrokerMock.Object,
+                fileBroker: this.fileBrokerMock.Object);
         }
 
         private Expression<Func<Stream, bool>> SameStreamAs(Stream expectedStream)
@@ -367,15 +375,11 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
 
             foreach (var item in items)
             {
-                StringBuilder sb = new StringBuilder();
-                randomConsentedIdentifiers.ForEach(item => sb.AppendLine($"{item},"));
-
                 var message = CreateRandomMessage();
                 message.MessageId = item;
                 message.Headers["mex-localid"] = new List<string> { GetRandomString() };
                 message.Headers["mex-filename"] = new List<string> { GetRandomString() };
                 message.Headers["mex-messageid"] = new List<string> { GetRandomString() };
-                message.FileContent = Encoding.UTF8.GetBytes(sb.ToString());
                 message.Headers["mex-workflowid"] = new List<string> { workflowId };
                 messageList.Add(message);
             }

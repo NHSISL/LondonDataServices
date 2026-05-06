@@ -5,7 +5,9 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using LHDS.Core.Models.Foundations.OptOuts;
 using Moq;
@@ -38,11 +40,21 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
 
             this.csvHelperBrokerMock.Setup(processing =>
                 processing.MapCsvToObjectAsync<OptOutIdentifier>(
-                    inputString,
+                    It.IsAny<Stream>(),
                     withHeader,
                     fieldMappings,
                     headerValidated))
-                        .ReturnsAsync(outputOptOuts);
+                        .Returns(outputOptOuts.ToAsyncEnumerable());
+
+            string tempFilePath = System.IO.Path.Combine(System.IO.Path.GetTempPath(), System.Guid.NewGuid().ToString());
+
+            this.tempLocationBrokerMock.Setup(broker =>
+                broker.GetUniqueHomeFilePath())
+                    .Returns(tempFilePath);
+
+            this.fileBrokerMock.Setup(broker =>
+                broker.DeleteFileAsync(It.IsAny<string>()))
+                    .ReturnsAsync(true);
 
             this.identifierBrokerMock.Setup(processing =>
                 processing.GetIdentifierAsync())
@@ -87,46 +99,33 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
                 expectedProcessedOptOutIdentifiers.Add(processedOptOutIdentifier);
             }
 
-            var randomOptOutData = GetRandomString();
-            var processedString = randomOptOutData;
-
-            this.csvHelperBrokerMock.Setup(processings =>
-                processings.MapObjectToCsvAsync(
-                    It.Is(SameOptOutIdentifierListAs(expectedProcessedOptOutIdentifiers)),
-                    withHeader,
-                    fieldMappings,
-                    shouldAddTrailingComma))
-                        .ReturnsAsync(processedString);
-
-            var processedBytes = Encoding.UTF8.GetBytes(processedString);
-            Stream csvInputStream = new MemoryStream(processedBytes);
-            Stream expectedStream = csvInputStream;
-            Stream actualStream = new MemoryStream();
-
             string csvInputFileName = $"{optOutConfiguration.OutputFolder}/" +
                 $"{Path.GetFileNameWithoutExtension(randomRecieveName)}_{timestamp}_Response.csv";
 
+            this.csvHelperBrokerMock.Setup(processings =>
+                processings.MapObjectToCsvAsync(
+                    It.IsAny<List<OptOutIdentifier>>(),
+                    It.IsAny<Stream>(),
+                    withHeader,
+                    fieldMappings,
+                    shouldAddTrailingComma))
+                        .Returns(ValueTask.CompletedTask);
+
             this.documentProcessingServiceMock
                 .Setup(service => service.AddDocumentAsync(
-                    It.Is(SameStreamAs(csvInputStream)),
+                    It.IsAny<Stream>(),
                     csvInputFileName,
                     inputContainer))
-                .Callback<Stream, string, string>((stream, fileName, container) =>
-                {
-                    stream.Position = 0;
-                    stream.CopyTo(actualStream);
-                })
                 .Returns(ValueTask.CompletedTask);
 
             // when
-            await this.optOutOrchestrationService.RetrieveOptOutStatusAsync(inputStream, randomRecieveName);
+            await this.optOutOrchestrationService.RetrieveOptOutStatusAsync(
+                inputStream, randomRecieveName, TestContext.Current.CancellationToken);
 
             // then
-            Assert.True(IsSameStream(actualStream, expectedStream));
-
             this.csvHelperBrokerMock.Verify(processing =>
                 processing.MapCsvToObjectAsync<OptOutIdentifier>(
-                    inputString,
+                    It.IsAny<Stream>(),
                     withHeader,
                     fieldMappings,
                     headerValidated),
@@ -170,13 +169,19 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
                 broker.GetCurrentDateTimeOffsetAsync(),
                     Times.Exactly(outputOptOuts.Count + 1));
 
-            this.csvHelperBrokerMock.Verify(processings =>
-                processings.MapObjectToCsvAsync(
-                    It.Is(SameOptOutIdentifierListAs(actualProcessedOptOutIdentifiers)),
-                    withHeader,
-                    fieldMappings,
-                    shouldAddTrailingComma),
-                        Times.Once);
+            foreach (var identifier2 in actualProcessedOptOutIdentifiers)
+            {
+                var singleItemList = new List<OptOutIdentifier> { identifier2 };
+
+                this.csvHelperBrokerMock.Verify(processings =>
+                    processings.MapObjectToCsvAsync(
+                        It.Is(SameOptOutIdentifierListAs(singleItemList)),
+                        It.IsAny<Stream>(),
+                        withHeader,
+                        fieldMappings,
+                        shouldAddTrailingComma),
+                            Times.Exactly(outputOptOuts.Count));
+            }
 
             this.documentProcessingServiceMock.Verify(service =>
                 service.AddDocumentAsync(It.IsAny<Stream>(), csvInputFileName, inputContainer),

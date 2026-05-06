@@ -4,6 +4,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Text;
 using System.Threading.Tasks;
 using FluentAssertions;
@@ -34,7 +35,18 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
 
             this.optOutProcessingServiceMock.Setup(processing =>
                 processing.RetrieveAllExpiredOptOutsAsync(optOutConfiguration.ExpiredAfterDays))
-                    .ReturnsAsync(outputOptOuts); 
+                    .ReturnsAsync(outputOptOuts);
+
+            string tempFilePath =
+                System.IO.Path.Combine(System.IO.Path.GetTempPath(), System.Guid.NewGuid().ToString());
+
+            this.tempLocationBrokerMock.Setup(broker =>
+                broker.GetUniqueHomeFilePath())
+                    .Returns(tempFilePath);
+
+            this.fileBrokerMock.Setup(broker =>
+                broker.DeleteFileAsync(It.IsAny<string>()))
+                    .ReturnsAsync(true);
 
             StringBuilder processedOutputString = new StringBuilder();
 
@@ -59,7 +71,6 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
             MeshMessage outputMessage = ComposeMessage.CreateMeshMessage(
                 mexTo,
                 mexWorkflowId,
-                fileContent,
                 mexSubject,
                 mexLocalId,
                 mexFileName,
@@ -72,14 +83,15 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
                 processings.SendMessageAsync(
                     mexTo,
                     mexWorkflowId,
-                    fileContent,
+                    It.IsAny<Stream>(),
                     mexSubject,
                     mexLocalId,
                     mexFileName,
                     mexContentChecksum,
                     contentType,
                     contentEncoding,
-                    accept))
+                    accept,
+                    It.IsAny<System.Threading.CancellationToken>()))
                         .ReturnsAsync(outputMessage);
 
             foreach (var identifier in outputOptOuts)
@@ -98,7 +110,8 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
             }
 
             // When
-            await this.optOutOrchestrationService.PushExpiredOptOutsToMeshForRenewalAsync();
+            await this.optOutOrchestrationService.PushExpiredOptOutsToMeshForRenewalAsync(
+                TestContext.Current.CancellationToken);
 
             // Then
             this.optOutProcessingServiceMock.Verify(processings =>
@@ -109,14 +122,15 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
                 processings.SendMessageAsync(
                     mexTo,
                     mexWorkflowId,
-                    fileContent,
+                    It.IsAny<Stream>(),
                     mexSubject,
                     mexLocalId,
                     mexFileName,
                     mexContentChecksum,
                     contentType,
                     contentEncoding,
-                    accept),
+                    accept,
+                    It.IsAny<System.Threading.CancellationToken>()),
                         Times.Once);
 
             foreach (var identifier in outputOptOuts)
@@ -171,7 +185,8 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
 
             // When
             MeshMessage? actualMessage =
-                await this.optOutOrchestrationService.PushExpiredOptOutsToMeshForRenewalAsync();
+                await this.optOutOrchestrationService.PushExpiredOptOutsToMeshForRenewalAsync(
+                    TestContext.Current.CancellationToken);
 
             // Then
             actualMessage.Should().BeEquivalentTo(expectedMessage);

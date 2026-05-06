@@ -1,8 +1,12 @@
-﻿// ---------------------------------------------------------
+// ---------------------------------------------------------
 // Copyright (c) North East London ICB. All rights reserved.
 // ---------------------------------------------------------
 
+using System.IO;
+using System.IO;
 using System.Text;
+using System.Threading;
+using System.Threading;
 using System.Threading.Tasks;
 using FluentAssertions;
 using LHDS.Core.Models.Foundations.Mesh;
@@ -24,7 +28,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.Mesh
             // given
             string mexTo = invalidText;
             string mexWorkflowId = invalidText;
-            byte[] fileContent = Encoding.UTF8.GetBytes(GetRandomString());
+            using Stream fileContent = new MemoryStream(Encoding.UTF8.GetBytes(GetRandomString()));
             string mexSubject = invalidText;
             string mexLocalId = invalidText;
             string mexFileName = invalidText;
@@ -75,7 +79,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.Mesh
                 service.SendMessageAsync(
                     mexTo,
                     mexWorkflowId,
-                    fileContent,
+                    It.IsAny<Stream>(),
                     mexSubject,
                     mexLocalId,
                     mexFileName,
@@ -94,16 +98,13 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.Mesh
             this.loggingBrokerMock.VerifyNoOtherCalls();
         }
 
-        [Theory]
-        [InlineData(null)]
-        [InlineData(new byte[] { })]
-        public async Task ShouldThrowValidationExceptionOnSendMessageIfFileContentIsInvalidAsync(
-            byte[] invalidInput)
+        [Fact]
+        public async Task ShouldThrowValidationExceptionOnSendMessageIfStreamIsInvalidAsync()
         {
             // given
             string mexTo = GetRandomString();
             string mexWorkflowId = GetRandomString();
-            byte[] fileContent = invalidInput;
+            Stream fileContent = null;
             string mexSubject = GetRandomString();
             string mexLocalId = GetRandomString();
             string mexFileName = GetRandomString();
@@ -117,8 +118,8 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.Mesh
                     message: "Invalid mesh processing argument. Please correct the errors and try again.");
 
             invalidMeshProcessingArgumentException.AddData(
-                key: nameof(MeshMessage.FileContent),
-                values: "Content is required");
+                key: "Content",
+                values: "Stream must be readable and contain data");
 
             var expectedMeshProcessingValidationException =
                 new MeshProcessingValidationException(
@@ -130,7 +131,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.Mesh
                 this.meshProcessingService.SendMessageAsync(
                     mexTo,
                     mexWorkflowId,
-                    fileContent,
+                    It.IsAny<Stream>(),
                     mexSubject,
                     mexLocalId,
                     mexFileName,
@@ -150,7 +151,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.Mesh
                 service.SendMessageAsync(
                     mexTo,
                     mexWorkflowId,
-                    fileContent,
+                    It.IsAny<Stream>(),
                     mexSubject,
                     mexLocalId,
                     mexFileName,
@@ -175,7 +176,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.Mesh
             //Given
             string mexTo = GetRandomString();
             string mexWorkflowId = GetRandomString();
-            byte[] fileContent = Encoding.UTF8.GetBytes(GetRandomString());
+            using Stream fileContent = new MemoryStream(Encoding.UTF8.GetBytes(GetRandomString()));
             string mexSubject = GetRandomString();
             string mexLocalId = GetRandomString();
             string mexFileName = GetRandomString();
@@ -187,7 +188,6 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.Mesh
             MeshMessage returnMessage = ComposeMessage.CreateMeshMessage(
                 mexTo,
                 mexWorkflowId,
-                fileContent,
                 mexSubject,
                 mexLocalId,
                 mexFileName,
@@ -212,7 +212,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.Mesh
                 service.SendMessageAsync(
                     mexTo,
                     mexWorkflowId,
-                    fileContent,
+                    It.IsAny<Stream>(),
                     mexSubject,
                     mexLocalId,
                     mexFileName,
@@ -223,7 +223,9 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.Mesh
                         .ReturnsAsync(returnMessage);
 
             this.meshServiceMock.Setup(service =>
-                service.RetrieveTrackingStatusByIdAsync(returnMessage.MessageId))
+                service.RetrieveTrackingStatusByIdAsync(
+                    returnMessage.MessageId,
+                    It.IsAny<CancellationToken>()))
                 .ReturnsAsync(nullTrackingMessage);
 
             //When
@@ -251,7 +253,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.Mesh
                service.SendMessageAsync(
                     mexTo,
                     mexWorkflowId,
-                    fileContent,
+                    It.IsAny<Stream>(),
                     mexSubject,
                     mexLocalId,
                     mexFileName,
@@ -262,7 +264,9 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.Mesh
                         Times.Once);
 
             this.meshServiceMock.Verify(service =>
-                service.RetrieveTrackingStatusByIdAsync(returnMessage.MessageId),
+                service.RetrieveTrackingStatusByIdAsync(
+                    returnMessage.MessageId,
+                    It.IsAny<CancellationToken>()),
                     Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>

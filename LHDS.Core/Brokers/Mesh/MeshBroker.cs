@@ -2,8 +2,9 @@
 // Copyright (c) North East London ICB. All rights reserved.
 // ---------------------------------------------------------
 
-using System;
 using System.Collections.Generic;
+using System.IO;
+using System.Threading;
 using System.Threading.Tasks;
 using LHDS.Core.Models.Brokers.Mesh;
 using NEL.MESH.Clients;
@@ -33,56 +34,59 @@ namespace LHDS.Core.Brokers.Mesh
                 MexOSName = this.meshConfiguration.MexOSName,
                 MexOSVersion = this.meshConfiguration.MexOSVersion,
                 MaxChunkSizeInMegabytes = this.meshConfiguration.MaxChunkSizeInMegabytes,
+                MaxRequestTimeoutInSeconds = this.meshConfiguration.MaxRequestTimeoutInSeconds,
             };
 
             this.meshClient = new MeshClient(config);
         }
 
-        public async ValueTask<bool> HandshakeAsync() =>
-            await this.meshClient.Mailbox.HandshakeAsync();
+        public async ValueTask<bool> HandshakeAsync(CancellationToken cancellationToken = default) =>
+            await this.meshClient.Mailbox.HandshakeAsync(cancellationToken);
 
         public async ValueTask<Message> SendMessageAsync(
             string mexTo,
             string mexWorkflowId,
-            byte[] fileContent,
+            Stream content,
             string mexSubject = "",
             string mexLocalId = "",
             string mexFileName = "",
             string mexContentChecksum = "",
             string contentType = "application/octet-stream",
             string contentEncoding = "",
-            string accept = "application/json")
+            string accept = "application/json",
+            CancellationToken cancellationToken = default)
         {
-            try
-            {
-                return await this.meshClient.Mailbox.SendMessageAsync(
-                    mexTo: mexTo,
-                    mexWorkflowId: mexWorkflowId,
-                    fileContent: fileContent,
-                    mexSubject: mexSubject,
-                    mexLocalId: mexLocalId,
-                    mexFileName: mexFileName,
-                    mexContentChecksum: mexContentChecksum,
-                    contentType: contentType,
-                    contentEncoding: contentEncoding,
-                    accept: accept);
-            }
-            catch (Exception)
-            {
-                throw;
-            }
+            return await this.meshClient.Mailbox.SendMessageAsync(
+                mexTo: mexTo,
+                mexWorkflowId: mexWorkflowId,
+                content: content,
+                mexSubject: mexSubject,
+                mexLocalId: mexLocalId,
+                mexFileName: mexFileName,
+                mexContentChecksum: mexContentChecksum,
+                contentType: contentType,
+                contentEncoding: contentEncoding,
+                accept: accept,
+                cancellationToken: cancellationToken);
         }
 
-        public async ValueTask<Message> TrackMessageAsync(string messageId) =>
-            await this.meshClient.Mailbox.TrackMessageAsync(messageId);
+        public async ValueTask<Message> TrackMessageAsync(
+            string messageId,
+            CancellationToken cancellationToken = default) =>
+                await this.meshClient.Mailbox.TrackMessageAsync(messageId, cancellationToken);
 
-        public async ValueTask<List<string>> RetrieveMessageIdsAsync() =>
-            await this.meshClient.Mailbox.RetrieveMessagesAsync();
+        public async ValueTask<List<string>> RetrieveMessageIdsAsync(CancellationToken cancellationToken = default) =>
+            await this.meshClient.Mailbox.RetrieveMessagesAsync(cancellationToken);
 
-        public async ValueTask<Message> RetrieveMessageAsync(string messageId) =>
-            await this.meshClient.Mailbox.RetrieveMessageAsync(messageId);
+        public async ValueTask<Message> RetrieveMessageAsync(
+            string messageId,
+            Stream outputStream,
+            CancellationToken cancellationToken = default) =>
+            await this.meshClient.Mailbox.RetrieveMessageAsync(messageId, outputStream, cancellationToken);
 
-        public async ValueTask<bool> AcknowledgeMessageByIdAsync(string messageId) =>
-            await this.meshClient.Mailbox.AcknowledgeMessageAsync(messageId);
+        public async ValueTask<bool> AcknowledgeMessageByIdAsync(
+            string messageId,
+            CancellationToken cancellationToken = default) =>
+                await this.meshClient.Mailbox.AcknowledgeMessageAsync(messageId, cancellationToken);
     }
 }

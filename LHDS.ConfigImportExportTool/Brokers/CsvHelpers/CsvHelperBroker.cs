@@ -3,6 +3,8 @@
 // ---------------------------------------------------------
 
 using System.Collections.Generic;
+using System.IO;
+using System.Text;
 using System.Threading.Tasks;
 using NHSISL.CsvHelperClient.Clients;
 
@@ -22,8 +24,16 @@ namespace LHDS.ConfigImportExportTool.Brokers.CsvHelpers
             bool hasHeaderRecord,
             Dictionary<string, int> fieldMappings = null)
         {
-            return await csvClient
-                .MapCsvToObjectAsync<T>(data, hasHeaderRecord, fieldMappings);
+            using Stream stream = new MemoryStream(Encoding.UTF8.GetBytes(data ?? string.Empty));
+            var results = new List<T>();
+
+            await foreach (var item in csvClient
+                .MapCsvToObjectAsync<T>(stream, hasHeaderRecord, fieldMappings))
+            {
+                results.Add(item);
+            }
+
+            return results;
         }
 
         public async ValueTask<string> MapObjectToCsvAsync<T>(
@@ -32,8 +42,12 @@ namespace LHDS.ConfigImportExportTool.Brokers.CsvHelpers
             Dictionary<string, int> fieldMappings = null,
             bool? shouldAddTrailingComma = false)
         {
-            return await csvClient
-                .MapObjectToCsvAsync(@object, addHeaderRecord, fieldMappings, shouldAddTrailingComma);
+            using MemoryStream stream = new MemoryStream();
+
+            await csvClient
+                .MapObjectToCsvAsync(@object, stream, addHeaderRecord, fieldMappings, shouldAddTrailingComma);
+
+            return Encoding.UTF8.GetString(stream.ToArray());
         }
     }
 }

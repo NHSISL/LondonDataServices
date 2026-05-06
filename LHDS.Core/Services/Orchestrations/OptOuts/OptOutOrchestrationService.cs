@@ -7,11 +7,14 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using LHDS.Core.Brokers.CsvHelpers;
 using LHDS.Core.Brokers.DateTimes;
+using LHDS.Core.Brokers.Files;
 using LHDS.Core.Brokers.Identifiers;
 using LHDS.Core.Brokers.Loggings;
+using LHDS.Core.Brokers.TempLocations;
 using LHDS.Core.Models.Brokers.Mesh;
 using LHDS.Core.Models.Brokers.Storages.Blobs;
 using LHDS.Core.Models.Foundations.Mesh;
@@ -35,6 +38,8 @@ namespace LHDS.Core.Services.Orchestrations.OptOuts
         private readonly ILoggingBroker loggingBroker;
         private readonly OptOutConfiguration optOutConfiguration;
         private readonly MeshConfiguration meshConfiguration;
+        private readonly ITempLocationBroker tempLocationBroker;
+        private readonly IFileBroker fileBroker;
 
         public OptOutOrchestrationService(
             IOptOutProcessingService optOutProcessingService,
@@ -46,7 +51,9 @@ namespace LHDS.Core.Services.Orchestrations.OptOuts
             IIdentifierBroker identifierBroker,
             ILoggingBroker loggingBroker,
             OptOutConfiguration optOutConfiguration,
-            MeshConfiguration meshConfiguration)
+            MeshConfiguration meshConfiguration,
+            ITempLocationBroker tempLocationBroker,
+            IFileBroker fileBroker)
         {
             this.optOutProcessingService = optOutProcessingService;
             this.documentProcessingService = documentProcessingService;
@@ -58,120 +65,148 @@ namespace LHDS.Core.Services.Orchestrations.OptOuts
             this.loggingBroker = loggingBroker;
             this.optOutConfiguration = optOutConfiguration;
             this.meshConfiguration = meshConfiguration;
+            this.tempLocationBroker = tempLocationBroker;
+            this.fileBroker = fileBroker;
         }
 
-        public ValueTask<bool> ValidateMailboxAccessAsync() =>
+        public ValueTask<bool> ValidateMailboxAccessAsync(CancellationToken cancellationToken) =>
               TryCatch(async () =>
               {
-                  return await meshProcessingService.ValidateMailboxAccessAsync();
+                  cancellationToken.ThrowIfCancellationRequested();
+
+                  return await meshProcessingService.ValidateMailboxAccessAsync(cancellationToken);
               });
 
-        public ValueTask<string> RetrieveOptOutStatusAsync(Stream input, string fileName) =>
+        public ValueTask<string> RetrieveOptOutStatusAsync(
+            Stream input,
+            string fileName,
+            CancellationToken cancellationToken) =>
             TryCatch(async () =>
             {
+                cancellationToken.ThrowIfCancellationRequested();
                 ValidateConfigurationSettings();
                 ValidateArgumentsOnRetrieveOptOutStatus(input, fileName);
 
-                bool withHeader =
-                    optOutConfiguration.OptOutFileHasHeader;
-
+                bool withHeader = optOutConfiguration.OptOutFileHasHeader;
                 Dictionary<string, int>? fieldMappings = null;
-
-                bool shouldAddTrailingComma =
-                    optOutConfiguration.OptOutFileRequireTrailingComma;
-
-                var inputString = Encoding.UTF8.GetString(ReadAllBytesFromStream(input));
-
-                List<OptOutIdentifier> mappedOptOuts =
-                    await this.csvHelperBroker
-                        .MapCsvToObjectAsync<OptOutIdentifier>(
-                            data: inputString,
-                            hasHeaderRecord: withHeader,
-                            fieldMappings: null,
-                            headerValidated: false);
-
-                List<OptOutIdentifier> processedOptOutIdentifiers = new List<OptOutIdentifier>();
+                bool shouldAddTrailingComma = optOutConfiguration.OptOutFileRequireTrailingComma;
+                string csvTempFilePath = this.tempLocationBroker.GetUniqueHomeFilePath();
                 var exceptions = new List<Exception>();
+                bool isFirstRecord = true;
 
-                foreach (var optOut in mappedOptOuts)
+                try
                 {
-                    try
+                    await using (FileStream writeStream = new FileStream(
+                        csvTempFilePath,
+                        FileMode.Create,
+                        FileAccess.Write,
+                        FileShare.None,
+                        bufferSize: 4096,
+                        useAsync: true))
                     {
-                        OptOut processedOptOut = await TryCatch(async () =>
+                        await foreach (var optOut in this.csvHelperBroker
+                            .MapCsvToObjectAsync<OptOutIdentifier>(
+                                data: input,
+                                hasHeaderRecord: withHeader,
+                                fieldMappings: null,
+                                headerValidated: false))
                         {
-                            DateTimeOffset timeStamp = await this.dateTimeBroker.GetCurrentDateTimeOffsetAsync();
-                            var expirationDate = timeStamp.AddDays(-optOutConfiguration.ExpiredAfterDays);
+                            try
+                            {
+                                OptOut processedOptOut = await TryCatch(async () =>
+                                {
+                                    DateTimeOffset timeStamp =
+                                        await this.dateTimeBroker.GetCurrentDateTimeOffsetAsync();
 
-                            OptOut item = await this.optOutProcessingService
-                                .RetrieveOrAddOptOutAsync(
-                                    new OptOut
-                                    {
-                                        Id = await this.identifierBroker.GetIdentifierAsync(),
-                                        NhsNumber = optOut.NhsNumber,
-                                        Status = string.IsNullOrWhiteSpace(optOut.Status) ? "Unknown" : optOut.Status,
-                                        UniqueReference = optOut.UniqueReference,
-                                        CacheTime = expirationDate,
-                                        CreatedDate = timeStamp,
-                                        UpdatedDate = timeStamp,
-                                        CreatedBy = "System",
-                                        UpdatedBy = "System"
-                                    });
+                                    DateTimeOffset expirationDate =
+                                        timeStamp.AddDays(-optOutConfiguration.ExpiredAfterDays);
 
-                            return item;
-                        });
+                                    return await this.optOutProcessingService
+                                        .RetrieveOrAddOptOutAsync(
+                                            new OptOut
+                                            {
+                                                Id = await this.identifierBroker.GetIdentifierAsync(),
+                                                NhsNumber = optOut.NhsNumber,
+                                                Status = string.IsNullOrWhiteSpace(optOut.Status)
+                                                    ? "Unknown"
+                                                    : optOut.Status,
+                                                UniqueReference = optOut.UniqueReference,
+                                                CacheTime = expirationDate,
+                                                CreatedDate = timeStamp,
+                                                UpdatedDate = timeStamp,
+                                                CreatedBy = "System",
+                                                UpdatedBy = "System"
+                                            });
+                                });
 
-                        OptOutIdentifier processedOptOutIdentifier = new OptOutIdentifier
-                        {
-                            NhsNumber = processedOptOut.NhsNumber,
-                            UniqueReference = processedOptOut.UniqueReference,
-                            Status = processedOptOut.Status,
-                            StatusChangedDateTime = processedOptOut.CacheTime
-                        };
+                                var processedIdentifier = new OptOutIdentifier
+                                {
+                                    NhsNumber = processedOptOut.NhsNumber,
+                                    UniqueReference = processedOptOut.UniqueReference,
+                                    Status = processedOptOut.Status,
+                                    StatusChangedDateTime = processedOptOut.CacheTime
+                                };
 
-                        processedOptOutIdentifiers.Add(processedOptOutIdentifier);
+                                await this.csvHelperBroker.MapObjectToCsvAsync(
+                                    new List<OptOutIdentifier> { processedIdentifier },
+                                    writeStream,
+                                    addHeaderRecord: isFirstRecord && withHeader,
+                                    fieldMappings: fieldMappings,
+                                    shouldAddTrailingComma: shouldAddTrailingComma);
+
+                                isFirstRecord = false;
+                            }
+                            catch (Exception ex)
+                            {
+                                exceptions.Add(ex);
+                            }
+                        }
                     }
-                    catch (Exception ex)
+
+                    if (exceptions.Any())
                     {
-                        exceptions.Add(ex);
+                        throw new AggregateException(
+                            $"Unable to retrieve or add opt out for {exceptions.Count} mapped opt outs",
+                            exceptions);
                     }
-                }
-                if (exceptions.Any())
-                {
-                    throw new AggregateException(
-                        $"Unable to retrieve or add opt out for {exceptions.Count} mapped opt outs",
-                        exceptions);
-                }
 
-                string processedData = await this.csvHelperBroker
-                    .MapObjectToCsvAsync(processedOptOutIdentifiers, withHeader, fieldMappings, shouldAddTrailingComma);
+                    DateTimeOffset currentDateTimeOffset =
+                        await this.dateTimeBroker.GetCurrentDateTimeOffsetAsync();
 
-                byte[] processedBytes = Encoding.UTF8.GetBytes(processedData);
+                    string timeStamp = currentDateTimeOffset.ToString("yyyyMMddHHmmss");
 
-                DateTimeOffset currentDateTimeOffset =
-                    await this.dateTimeBroker.GetCurrentDateTimeOffsetAsync();
+                    string csvFileName = $"{optOutConfiguration.OutputFolder}/" +
+                        $"{Path.GetFileNameWithoutExtension(fileName)}_{timeStamp}_Response.csv";
 
-                string timeStamp = currentDateTimeOffset.ToString("yyyyMMddHHmmss");
+                    await using FileStream readStream = new FileStream(
+                        csvTempFilePath,
+                        FileMode.Open,
+                        FileAccess.Read,
+                        FileShare.Read,
+                        bufferSize: 4096,
+                        useAsync: true);
 
-                string csvFileName = $"{optOutConfiguration.OutputFolder}/" +
-                    $"{Path.GetFileNameWithoutExtension(fileName)}_{timeStamp}_Response.csv";
-
-                using (Stream processed = new MemoryStream(processedBytes))
-                {
                     await this.documentProcessingService.AddDocumentAsync(
-                        input: processed,
+                        input: readStream,
                         csvFileName,
                         container: blobContainers.OptOut);
-                }
 
-                return csvFileName;
+                    return csvFileName;
+                }
+                finally
+                {
+                    await this.fileBroker.DeleteFileAsync(csvTempFilePath);
+                }
             });
 
-        public ValueTask<MeshMessage> PushExpiredOptOutsToMeshForRenewalAsync() =>
+        public ValueTask<MeshMessage> PushExpiredOptOutsToMeshForRenewalAsync(CancellationToken cancellationToken) =>
           TryCatch(async () =>
           {
+              cancellationToken.ThrowIfCancellationRequested();
               ValidateConfigurationSettings();
-              bool shouldAddTrailingComma = this.optOutConfiguration.OptOutFileRequireTrailingComma;
 
+              // TODO: Consider implementing paging if the number of expired opt outs
+              // is expected to be large to avoid memory issues
               List<string> expiredOptOutIdentifiers = await
                   this.optOutProcessingService
                       .RetrieveAllExpiredOptOutsAsync(optOutConfiguration.ExpiredAfterDays);
@@ -181,33 +216,65 @@ namespace LHDS.Core.Services.Orchestrations.OptOuts
                   return null;
               }
 
-              StringBuilder csvExpiredOptOutIdentifiers = new StringBuilder();
-
-              foreach (var identifier in expiredOptOutIdentifiers)
-              {
-                  csvExpiredOptOutIdentifiers.AppendLine($"{identifier},");
-              }
-
               DateTimeOffset batchReferenceDateTime =
                   await this.dateTimeBroker.GetCurrentDateTimeOffsetAsync();
 
               string batchReference = batchReferenceDateTime.ToString("yyyyMMddHHmmss");
+              string tempFilePath = this.tempLocationBroker.GetUniqueHomeFilePath();
+              MeshMessage message;
 
-              MeshMessage message = await this.meshProcessingService.SendMessageAsync(
-                  mexTo: this.optOutConfiguration.To,
-                  mexWorkflowId: this.optOutConfiguration.WorkflowId,
-                  fileContent: Encoding.UTF8.GetBytes(csvExpiredOptOutIdentifiers.ToString()),
-                  mexSubject: string.Empty,
-                  mexLocalId: batchReference,
-                  mexFileName: $"{batchReference}.txt",
-                  mexContentChecksum: string.Empty,
-                  contentType: "text/plain",
-                  contentEncoding: string.Empty,
-                  accept: "application/json");
-
-              foreach (var identifier in expiredOptOutIdentifiers)
+              try
               {
-                  var dateTime = await this.dateTimeBroker.GetCurrentDateTimeOffsetAsync();
+                  await using (FileStream writeStream = new FileStream(
+                      tempFilePath,
+                      FileMode.Create,
+                      FileAccess.Write,
+                      FileShare.None,
+                      bufferSize: 4096,
+                      useAsync: true))
+                  {
+                      await using StreamWriter writer = new StreamWriter(
+                          writeStream,
+                          Encoding.UTF8,
+                          bufferSize: 4096,
+                          leaveOpen: true);
+
+                      foreach (string identifier in expiredOptOutIdentifiers)
+                      {
+                          await writer.WriteLineAsync($"{identifier},");
+                      }
+                  }
+
+                  await using FileStream readStream = new FileStream(
+                      tempFilePath,
+                      FileMode.Open,
+                      FileAccess.Read,
+                      FileShare.Read,
+                      bufferSize: 4096,
+                      useAsync: true);
+
+                  message = await this.meshProcessingService.SendMessageAsync(
+                      mexTo: this.optOutConfiguration.To,
+                      mexWorkflowId: this.optOutConfiguration.WorkflowId,
+                      content: readStream,
+                      mexSubject: string.Empty,
+                      mexLocalId: batchReference,
+                      mexFileName: $"{batchReference}.txt",
+                      mexContentChecksum: string.Empty,
+                      contentType: "text/plain",
+                      contentEncoding: string.Empty,
+                      accept: "application/json",
+                      cancellationToken: cancellationToken);
+              }
+              finally
+              {
+                  await this.fileBroker.DeleteFileAsync(tempFilePath);
+              }
+
+              //TODO:  Consider bulk update for better performance
+              foreach (string identifier in expiredOptOutIdentifiers)
+              {
+                  DateTimeOffset dateTime = await this.dateTimeBroker.GetCurrentDateTimeOffsetAsync();
 
                   OptOut modifiedOptOut = new OptOut
                   {
@@ -223,16 +290,19 @@ namespace LHDS.Core.Services.Orchestrations.OptOuts
               return message;
           });
 
-        public ValueTask<List<MeshMessage>> RetrieveUpdatedMeshConsentStatusesChangesAsync() =>
+        public ValueTask<List<MeshMessage>> RetrieveUpdatedMeshConsentStatusesChangesAsync(
+            CancellationToken cancellationToken) =>
             TryCatch(async () =>
                 {
+                    cancellationToken.ThrowIfCancellationRequested();
                     ValidateConfigurationSettings();
                     bool withHeader = this.optOutConfiguration.OptOutFileHasHeader;
                     List<string> messageIds;
                     List<MeshMessage> meshMessageList = new List<MeshMessage>();
                     var exceptions = new List<Exception>();
 
-                    while ((messageIds = await this.meshProcessingService.RetrieveMessageIdsFromInboxAsync()).Count > 0)
+                    while ((messageIds = await this.meshProcessingService
+                        .RetrieveMessageIdsFromInboxAsync(cancellationToken)).Count > 0)
                     {
                         foreach (string messageId in messageIds)
                         {
@@ -240,68 +310,129 @@ namespace LHDS.Core.Services.Orchestrations.OptOuts
                             {
                                 MeshMessage returnedMessage = await TryCatch(async () =>
                                 {
-                                    MeshMessage message = await meshProcessingService
-                                        .RetrieveMessageByIdAsync(messageId);
+                                    string tempFilePath = this.tempLocationBroker.GetUniqueHomeFilePath();
+                                    MeshMessage message;
 
-                                    if (GetKeyStringValue("mex-workflowid", message.Headers) !=
-                                        this.optOutConfiguration.WorkflowId)
+                                    try
                                     {
-                                        return null;
-                                    }
-
-                                    string[] delimiters = { "\r\n", "\n" };
-
-                                    List<string> consentedIdentifiers = Encoding.UTF8
-                                        .GetString(message.FileContent)
-                                            .Replace(",", string.Empty)
-                                                .Split(delimiters, StringSplitOptions.RemoveEmptyEntries).ToList();
-
-                                    ValidateLocalIdHeaderExists(message);
-                                    string batchReference = GetHeaderValue(message, "mex-localid");
-                                    ValidateBacthReferenceExists(batchReference);
-
-                                    List<OptOut> originalBatch = await this.optOutProcessingService
-                                        .RetrieveAllOptOutsByBatchReferenceAsync(batchReference);
-
-                                    List<OptOut> delta = await this.optOutProcessingService
-                                        .ConsolidateOptOutChangesAndReturnChangesOnly(
-                                            originalBatch,
-                                            consentedIdentifiers);
-
-                                    if (delta?.Count > 0)
-                                    {
-                                        List<OptOutIdentifier> differentIdentifiers = delta
-                                            .Select(identifier => new OptOutIdentifier
-                                            {
-                                                NhsNumber = identifier.NhsNumber,
-                                                UniqueReference = identifier.UniqueReference,
-                                                Status = identifier.Status,
-                                                StatusChangedDateTime = identifier.CacheTime
-                                            }).ToList();
-
-                                        string csvDifferences = await this.csvHelperBroker
-                                            .MapObjectToCsvAsync(
-                                                @object: differentIdentifiers,
-                                                addHeaderRecord: this.optOutConfiguration.OptOutFileHasHeader,
-                                                shouldAddTrailingComma: this.optOutConfiguration
-                                                    .OptOutFileRequireTrailingComma);
-
-                                        string fileName = $"{optOutConfiguration.OutputFolder}/" +
-                                            $"{batchReference}_DeltaResponse.csv";
-
-                                        ValidateDocumentRequirements(csvDifferences, fileName);
-                                        byte[] csvDifferencesBytes = Encoding.UTF8.GetBytes(csvDifferences);
-
-                                        using (Stream input = new MemoryStream(csvDifferencesBytes))
+                                        await using (FileStream outputStream = new FileStream(
+                                            tempFilePath,
+                                            FileMode.Create,
+                                            FileAccess.Write,
+                                            FileShare.None,
+                                            bufferSize: 4096,
+                                            useAsync: true))
                                         {
-                                            await this.documentProcessingService.AddDocumentAsync(
-                                            input, fileName, container: blobContainers.OptOut);
+                                            message = await meshProcessingService
+                                                .RetrieveMessageByIdAsync(
+                                                    messageId,
+                                                    outputStream,
+                                                    cancellationToken);
                                         }
+
+                                        if (GetKeyStringValue("mex-workflowid", message.Headers) !=
+                                            this.optOutConfiguration.WorkflowId)
+                                        {
+                                            return null;
+                                        }
+
+                                        string[] delimiters = { "\r\n", "\n" };
+
+                                        // TODO:  Refactor to stream and process line by line if file size is
+                                        // expected to be large to avoid memory issues
+                                        string fileContent;
+
+                                        await using (FileStream readStream = new FileStream(
+                                            tempFilePath,
+                                            FileMode.Open,
+                                            FileAccess.Read,
+                                            FileShare.Read,
+                                            bufferSize: 4096,
+                                            useAsync: true))
+                                        {
+                                            using StreamReader reader = new StreamReader(readStream, Encoding.UTF8);
+                                            fileContent = await reader.ReadToEndAsync();
+                                        }
+
+                                        List<string> consentedIdentifiers = fileContent
+                                            .Replace(",", string.Empty)
+                                                .Split(delimiters, StringSplitOptions.RemoveEmptyEntries)
+                                                    .ToList();
+
+                                        ValidateLocalIdHeaderExists(message);
+                                        string batchReference = GetHeaderValue(message, "mex-localid");
+                                        ValidateBacthReferenceExists(batchReference);
+
+                                        List<OptOut> originalBatch = await this.optOutProcessingService
+                                            .RetrieveAllOptOutsByBatchReferenceAsync(batchReference);
+
+                                        List<OptOut> delta = await this.optOutProcessingService
+                                            .ConsolidateOptOutChangesAndReturnChangesOnly(
+                                                originalBatch,
+                                                consentedIdentifiers);
+
+                                        if (delta?.Count > 0)
+                                        {
+                                            List<OptOutIdentifier> differentIdentifiers = delta
+                                                .Select(identifier => new OptOutIdentifier
+                                                {
+                                                    NhsNumber = identifier.NhsNumber,
+                                                    UniqueReference = identifier.UniqueReference,
+                                                    Status = identifier.Status,
+                                                    StatusChangedDateTime = identifier.CacheTime
+                                                }).ToList();
+
+                                            string fileName = $"{optOutConfiguration.OutputFolder}/" +
+                                                $"{batchReference}_DeltaResponse.csv";
+
+                                            string outputTempPath = this.tempLocationBroker.GetUniqueHomeFilePath();
+
+                                            try
+                                            {
+                                                await using (FileStream writeStream = new FileStream(
+                                                    outputTempPath,
+                                                    FileMode.Create,
+                                                    FileAccess.Write,
+                                                    FileShare.None,
+                                                    bufferSize: 4096,
+                                                    useAsync: true))
+                                                {
+                                                    await this.csvHelperBroker.MapObjectToCsvAsync(
+                                                        @object: differentIdentifiers,
+                                                        outputStream: writeStream,
+                                                        addHeaderRecord: this.optOutConfiguration.OptOutFileHasHeader,
+                                                        shouldAddTrailingComma: this.optOutConfiguration
+                                                            .OptOutFileRequireTrailingComma);
+                                                }
+
+                                                ValidateDocumentRequirements(fileName);
+
+                                                await using FileStream csvReadStream = new FileStream(
+                                                    outputTempPath,
+                                                    FileMode.Open,
+                                                    FileAccess.Read,
+                                                    FileShare.Read,
+                                                    bufferSize: 4096,
+                                                    useAsync: true);
+
+                                                await this.documentProcessingService.AddDocumentAsync(
+                                                    csvReadStream, fileName, container: blobContainers.OptOut);
+                                            }
+                                            finally
+                                            {
+                                                await this.fileBroker.DeleteFileAsync(outputTempPath);
+                                            }
+                                        }
+
+                                        await this.meshProcessingService
+                                            .AcknowledgeMessageByIdAsync(messageId, cancellationToken);
+
+                                        return message;
                                     }
-
-                                    await this.meshProcessingService.AcknowledgeMessageByIdAsync(messageId);
-
-                                    return message;
+                                    finally
+                                    {
+                                        await this.fileBroker.DeleteFileAsync(tempFilePath);
+                                    }
                                 });
 
                                 if (returnedMessage == null)
@@ -352,20 +483,6 @@ namespace LHDS.Core.Services.Orchestrations.OptOuts
                 : string.Empty;
 
             return value ?? string.Empty;
-        }
-
-        static byte[] ReadAllBytesFromStream(Stream stream)
-        {
-            if (stream.CanSeek)
-            {
-                stream.Seek(0, SeekOrigin.Begin);
-            }
-
-            using (MemoryStream memoryStream = new MemoryStream())
-            {
-                stream.CopyTo(memoryStream);
-                return memoryStream.ToArray();
-            }
         }
     }
 }

@@ -4,6 +4,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Security.Claims;
 using System.Security.Principal;
@@ -256,7 +257,7 @@ namespace LHDS.Core.Tests.Integration.OptOuts
             await this.meshService.SendMessageAsync(
                 mexTo: this.meshConfiguration.MailboxId,
                 mexWorkflowId: this.optOutConfiguration.WorkflowId,
-                fileContent: Encoding.UTF8.GetBytes(stringContent.ToString()),
+                content: new MemoryStream(Encoding.UTF8.GetBytes(stringContent.ToString())),
                 mexLocalId: batchReference,
                 mexFileName: batchReference,
                 contentType: "text/plain");

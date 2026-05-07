@@ -354,7 +354,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.EmisLandings
 
             string inputFileName = randomFileName;
             DateTimeOffset randomDateTime = GetRandomDateTimeOffset();
-            string tempFileName = GetRandomString();
+            string tempFileName = Path.GetTempFileName();
             string randomHash = GetRandomString(64);
             string container = blobContainers.EmisLanding;
 
@@ -486,6 +486,10 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.EmisLandings
                 service.ModifyIngestionTrackingAsync(It.Is(SameIngestionTrackingAs(downloadedIngestionTracking))))
                     .ReturnsAsync(uploadedIngestionTracking);
 
+            this.fileBrokerMock
+                .Setup(broker => broker.DeleteFileAsync(tempFileName))
+                    .ReturnsAsync(true);
+
             string expectedFileName = storageIngestionTracking.DecryptedFileName;
 
             // when
@@ -541,6 +545,10 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.EmisLandings
                 .Verify(broker => broker.GetTempFileName(),
                     Times.Once);
 
+            this.fileBrokerMock
+                .Verify(broker => broker.DeleteFileAsync(tempFileName),
+                    Times.Once);
+
             this.downloadProcessingServiceMock
                 .Verify(service =>
                     service.RetrieveDownloadByFileNameAsync(It.Is(SameDownloadAs(inputFileDownload))),
@@ -580,6 +588,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.EmisLandings
                 broker.GetCurrentDateTimeOffsetAsync(),
                     Times.Exactly(2));
 
+            this.fileBrokerMock.VerifyNoOtherCalls();
             this.downloadProcessingServiceMock.VerifyNoOtherCalls();
             this.hashBrokerMock.VerifyNoOtherCalls();
             this.dateTimeBrokerMock.VerifyNoOtherCalls();

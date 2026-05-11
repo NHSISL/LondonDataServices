@@ -125,7 +125,8 @@ namespace LHDS.Infrastructure.Services
                 {
                     PullRequest = new PullRequestEvent
                     {
-                        Types = ["opened", "edited", "synchronize", "reopened", "closed"]
+                        Types = ["opened", "edited", "synchronize", "reopened", "closed"],
+                        Branches = []
                     }
                 },
 

@@ -4,6 +4,7 @@
 
 using System;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using LHDS.Core.Models.Foundations.ObjectColumns;
 using Microsoft.EntityFrameworkCore;
@@ -14,19 +15,28 @@ namespace LHDS.Core.Brokers.Storages.Sql
     {
         public DbSet<ObjectColumn> ObjectColumns { get; set; }
 
-        public async ValueTask<ObjectColumn> InsertObjectColumnAsync(ObjectColumn objectColumn) =>
-            await InsertAsync(objectColumn);
+        public async ValueTask<ObjectColumn> InsertObjectColumnAsync(
+            ObjectColumn objectColumn,
+            CancellationToken cancellationToken = default) =>
+                await InsertAsync(objectColumn, cancellationToken);
 
-        public async ValueTask<IQueryable<ObjectColumn>> SelectAllObjectColumnsAsync() => 
-            await SelectAllAsync<ObjectColumn>();
+        public async ValueTask<IQueryable<ObjectColumn>> SelectAllObjectColumnsAsync(
+            CancellationToken cancellationToken = default) =>
+                await SelectAllAsync<ObjectColumn>(cancellationToken);
 
-        public async ValueTask<ObjectColumn> SelectObjectColumnByIdAsync(Guid objectColumnId) =>
-            await SelectAsync<ObjectColumn>(objectColumnId);
+        public async ValueTask<ObjectColumn> SelectObjectColumnByIdAsync(
+            Guid objectColumnId,
+            CancellationToken cancellationToken = default) =>
+                await SelectAsync<ObjectColumn>(new object[] { objectColumnId }, cancellationToken);
 
-        public async ValueTask<ObjectColumn> UpdateObjectColumnAsync(ObjectColumn objectColumn) =>
-            await UpdateAsync(objectColumn);
+        public async ValueTask<ObjectColumn> UpdateObjectColumnAsync(
+            ObjectColumn objectColumn,
+            CancellationToken cancellationToken = default) =>
+                await UpdateAsync(objectColumn, cancellationToken);
 
-        public async ValueTask<ObjectColumn> DeleteObjectColumnAsync(ObjectColumn objectColumn) =>
-            await DeleteAsync(objectColumn);
+        public async ValueTask<ObjectColumn> DeleteObjectColumnAsync(
+            ObjectColumn objectColumn,
+            CancellationToken cancellationToken = default) =>
+                await DeleteAsync(objectColumn, cancellationToken);
     }
 }

@@ -44,7 +44,7 @@
 		<PackageReference Include="NEL.MESH" Version="3.0.0" />
 		<PackageReference Include="RESTFulSense" Version="3.2.0" />
 		<PackageReference Include="SSH.NET" Version="2025.1.0" />
-		<PackageReference Include="STX.EFCore.Client" Version="2.0.0" />
+		<PackageReference Include="STX.EFCore.Client" Version="3.0.0" />
 		<PackageReference Include="Xeption" Version="2.9.0" />
 	</ItemGroup>
 

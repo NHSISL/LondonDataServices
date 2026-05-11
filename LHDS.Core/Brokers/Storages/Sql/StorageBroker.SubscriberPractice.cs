@@ -4,6 +4,7 @@
 
 using System;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using LHDS.Core.Models.Foundations.SubscriberPractices;
 using Microsoft.EntityFrameworkCore;
@@ -15,21 +16,27 @@ namespace LHDS.Core.Brokers.Storages.Sql
         public DbSet<SubscriberPractice> SubscriberPractices { get; set; }
 
         public async ValueTask<SubscriberPractice> InsertSubscriberPracticeAsync(
-            SubscriberPractice subscriberPractice) =>
-                await InsertAsync(subscriberPractice);
+            SubscriberPractice subscriberPractice,
+            CancellationToken cancellationToken = default) =>
+                await InsertAsync(subscriberPractice, cancellationToken);
 
-        public ValueTask<IQueryable<SubscriberPractice>> SelectAllSubscriberPracticesAsync() => 
-            SelectAllAsync<SubscriberPractice>();
+        public async ValueTask<IQueryable<SubscriberPractice>> SelectAllSubscriberPracticesAsync(
+            CancellationToken cancellationToken = default) =>
+                await SelectAllAsync<SubscriberPractice>(cancellationToken);
 
-        public async ValueTask<SubscriberPractice> SelectSubscriberPracticeByIdAsync(Guid subscriberPracticeId) =>
-            await SelectAsync<SubscriberPractice>(subscriberPracticeId);
+        public async ValueTask<SubscriberPractice> SelectSubscriberPracticeByIdAsync(
+            Guid subscriberPracticeId,
+            CancellationToken cancellationToken = default) =>
+                await SelectAsync<SubscriberPractice>(new object[] { subscriberPracticeId }, cancellationToken);
 
         public async ValueTask<SubscriberPractice> UpdateSubscriberPracticeAsync(
-            SubscriberPractice subscriberPractice) =>
-                await UpdateAsync(subscriberPractice);
+            SubscriberPractice subscriberPractice,
+            CancellationToken cancellationToken = default) =>
+                await UpdateAsync(subscriberPractice, cancellationToken);
 
         public async ValueTask<SubscriberPractice> DeleteSubscriberPracticeAsync(
-            SubscriberPractice subscriberPractice) =>
-                await DeleteAsync(subscriberPractice);
+            SubscriberPractice subscriberPractice,
+            CancellationToken cancellationToken = default) =>
+                await DeleteAsync(subscriberPractice, cancellationToken);
     }
 }

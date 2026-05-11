@@ -4,6 +4,7 @@
 
 using System;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using LHDS.Core.Models.Foundations.TerminologyArtifacts;
 using Microsoft.EntityFrameworkCore;
@@ -15,22 +16,27 @@ namespace LHDS.Core.Brokers.Storages.Sql
         public DbSet<TerminologyArtifact> TerminologyArtifacts { get; set; }
 
         public async ValueTask<TerminologyArtifact> InsertTerminologyArtifactAsync(
-            TerminologyArtifact terminologyArtifact) =>
-                await InsertAsync(terminologyArtifact);
+            TerminologyArtifact terminologyArtifact,
+            CancellationToken cancellationToken = default) =>
+                await InsertAsync(terminologyArtifact, cancellationToken);
 
-        public async ValueTask<IQueryable<TerminologyArtifact>> SelectAllTerminologyArtifactsAsync() =>
-            await SelectAllAsync<TerminologyArtifact>();
+        public async ValueTask<IQueryable<TerminologyArtifact>> SelectAllTerminologyArtifactsAsync(
+            CancellationToken cancellationToken = default) =>
+                await SelectAllAsync<TerminologyArtifact>(cancellationToken);
 
         public async ValueTask<TerminologyArtifact> SelectTerminologyArtifactByIdAsync(
-            Guid terminologyArtifactId) =>
-                await SelectAsync<TerminologyArtifact>(terminologyArtifactId);
+            Guid terminologyArtifactId,
+            CancellationToken cancellationToken = default) =>
+                await SelectAsync<TerminologyArtifact>(new object[] { terminologyArtifactId }, cancellationToken);
 
         public async ValueTask<TerminologyArtifact> UpdateTerminologyArtifactAsync(
-            TerminologyArtifact terminologyArtifact) =>
-                await UpdateAsync(terminologyArtifact);
+            TerminologyArtifact terminologyArtifact,
+            CancellationToken cancellationToken = default) =>
+                await UpdateAsync(terminologyArtifact, cancellationToken);
 
         public async ValueTask<TerminologyArtifact> DeleteTerminologyArtifactAsync(
-            TerminologyArtifact terminologyArtifact) =>
-                await DeleteAsync(terminologyArtifact);
+            TerminologyArtifact terminologyArtifact,
+            CancellationToken cancellationToken = default) =>
+                await DeleteAsync(terminologyArtifact, cancellationToken);
     }
 }

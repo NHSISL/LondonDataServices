@@ -103,11 +103,11 @@ namespace LHDS.Infrastructure.Services
             };
 
             string buildScriptPath = "../../../../.github/workflows/build.yml";
-            string directoryPath = Path.GetDirectoryName(buildScriptPath);
+            string? directoryPath = Path.GetDirectoryName(buildScriptPath);
 
             if (!Directory.Exists(directoryPath))
             {
-                Directory.CreateDirectory(directoryPath);
+                Directory.CreateDirectory(directoryPath!);
             }
 
             adotNetClient.SerializeAndWriteToFile(

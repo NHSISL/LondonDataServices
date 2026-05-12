@@ -27,8 +27,13 @@ namespace LHDS.Core.Brokers.Mesh
                 Password = this.meshConfiguration.Password,
                 SharedKey = this.meshConfiguration.SharedKey,
                 Url = this.meshConfiguration.Url,
-                TlsRootCertificates = this.meshConfiguration.TlsRootCertificates,
-                TlsIntermediateCertificates = this.meshConfiguration.TlsIntermediateCertificates,
+
+                TlsRootCertificates =
+                    this.meshConfiguration.TlsRootCertificates,
+
+                TlsIntermediateCertificates =
+                    this.meshConfiguration.TlsIntermediateCertificates,
+
                 ClientSigningCertificate = this.meshConfiguration.ClientSigningCertificate,
                 MexClientVersion = this.meshConfiguration.MexClientVersion,
                 MexOSName = this.meshConfiguration.MexOSName,

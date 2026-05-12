@@ -43,6 +43,13 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Addresses
             IQueryable<Address> existingAddresses = randomExistingAddresses.DeepClone();
             List<Address> randomAddressList = CreateRandomAddresses(numberOfRecords).ToList();
             List<Address> newAddresses = randomAddressList.DeepClone();
+            HashSet<string> existingUprns = existingAddresses.Select(a => a.UPRN).ToHashSet();
+
+            foreach (Address address in newAddresses.Where(
+                a => existingUprns.Contains(a.UPRN)))
+            {
+                address.UPRN = Guid.NewGuid().ToString();
+            }
 
             this.identifierBrokerMock.Setup(broker =>
                 broker.GetIdentifierAsync())

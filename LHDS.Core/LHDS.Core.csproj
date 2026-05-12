@@ -41,7 +41,7 @@
 		<PackageReference Include="Azure.Storage.Files.Shares" Version="12.23.0" />
 		<PackageReference Include="Azure.Storage.Queues" Version="12.23.0" />
 		<PackageReference Include="Microsoft.Extensions.Azure" Version="1.14.0" />
-		<PackageReference Include="NEL.MESH" Version="3.0.0" />
+		<PackageReference Include="NEL.MESH" Version="3.1.0" />
 		<PackageReference Include="RESTFulSense" Version="3.2.0" />
 		<PackageReference Include="SSH.NET" Version="2025.1.0" />
 		<PackageReference Include="STX.EFCore.Client" Version="3.0.0" />

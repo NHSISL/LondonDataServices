@@ -65,6 +65,9 @@
     <Project Path="LHDS.Infrastructure/LHDS.Infrastructure.csproj" Id="38293a51-c471-4c2e-b24b-858c812d79da">
       <BuildType Solution="Acceptance|*" Project="Debug" />
       <BuildType Solution="Test|*" Project="Debug" />
+      <Build Solution="Acceptance|*" Project="false" />
+      <Build Solution="Debug|*" Project="false" />
+      <Build Solution="Test|*" Project="false" />
     </Project>
   </Folder>
   <Folder Name="/Frontend/">

@@ -576,9 +576,14 @@ namespace LHDS.Core.Services.Orchestrations.Addresses
                 }
                 catch (Exception exception)
                 {
-                    ((Xeption)exception).AddData(
-                        $"LpiExtractionError in batch between lines {skipCounter} and {skipCounter + batchSize}.",
-                        lpiCsvFile);
+                    if (exception is Xeption xeption)
+                    {
+                        xeption.AddData(
+                            "LpiExtractionError in batch between lines" +
+                            $" {skipCounter} and" +
+                            $" {skipCounter + batchSize}.",
+                            lpiCsvFile);
+                    }
 
                     exceptions.Add(exception);
                 }
@@ -668,9 +673,14 @@ namespace LHDS.Core.Services.Orchestrations.Addresses
                 }
                 catch (Exception exception)
                 {
-                    ((Xeption)exception).AddData(
-                        $"BlpuExtractionError in batch between lines {skipCounter} and {skipCounter + batchSize}.",
-                        blpuCsvFile);
+                    if (exception is Xeption xeption)
+                    {
+                        xeption.AddData(
+                            "BlpuExtractionError in batch between lines" +
+                            $" {skipCounter} and" +
+                            $" {skipCounter + batchSize}.",
+                            blpuCsvFile);
+                    }
 
                     exceptions.Add(exception);
                 }

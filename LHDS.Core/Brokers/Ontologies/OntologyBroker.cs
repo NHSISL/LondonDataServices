@@ -32,7 +32,16 @@ namespace LHDS.Core.Brokers.Ontologies
         {
             string jsonResponse = await GetAsync<string>(relativeUrl);
             var deserializer = new FhirJsonDeserializer();
-            Bundle bundle = deserializer.Deserialize<Bundle>(jsonResponse);
+            Bundle bundle;
+
+            try
+            {
+                bundle = deserializer.Deserialize<Bundle>(jsonResponse);
+            }
+            catch (DeserializationFailedException ex) when (ex.PartialResult is Bundle partial)
+            {
+                bundle = partial;
+            }
 
             return bundle;
         }

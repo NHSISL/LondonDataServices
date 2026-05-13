@@ -162,6 +162,9 @@ namespace LHDS.Core.Services.Processings.OptOuts
 
             List<OptOut> delta = new List<OptOut>();
 
+            DateTimeOffset dateTime =
+                await this.dateTimeBroker.GetCurrentDateTimeOffsetAsync();
+
             foreach (var item in consentedList)
             {
                 if (item == null)
@@ -174,13 +177,9 @@ namespace LHDS.Core.Services.Processings.OptOuts
                     delta.Add(item);
                 }
 
-                var dateTime = await this.dateTimeBroker.GetCurrentDateTimeOffsetAsync();
-                item.UpdatedDate = dateTime;
                 item.CacheTime = dateTime;
                 item.LastSentToMesh = dateTime;
                 item.Status = "Opt-In";
-
-                await this.optOutService.ModifyOptOutAsync(item);
             }
 
             foreach (var nonConsentedListItem in nonConsentedList)
@@ -190,14 +189,18 @@ namespace LHDS.Core.Services.Processings.OptOuts
                     delta.Add(nonConsentedListItem);
                 }
 
-                var dateTime = await this.dateTimeBroker.GetCurrentDateTimeOffsetAsync();
-                nonConsentedListItem.UpdatedDate = dateTime;
                 nonConsentedListItem.CacheTime = dateTime;
                 nonConsentedListItem.LastSentToMesh = dateTime;
                 nonConsentedListItem.Status = "Opt-Out";
-
-                await this.optOutService.ModifyOptOutAsync(nonConsentedListItem);
             }
+
+            List<OptOut> allModifiedOptOuts = new List<OptOut>();
+            allModifiedOptOuts.AddRange(consentedList);
+            allModifiedOptOuts.AddRange(nonConsentedList);
+
+            await this.optOutService.BulkModifyOptOutsAsync(
+                allModifiedOptOuts,
+                "ConsolidateOptOutChanges");
 
             return delta;
         });

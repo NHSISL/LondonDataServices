@@ -320,6 +320,19 @@ namespace LHDS.Core.Services.Foundations.OptOuts
                 (Rule: IsInvalid(fileName), Parameter: nameof(fileName)));
         }
 
+        private void ValidateOnBulkModifyOptOuts(
+            List<OptOut> optOuts,
+            string fileName)
+        {
+            Validate<InvalidOptOutException>(
+                createException: () => new InvalidOptOutException(
+                    message: "Invalid optOut. Please correct the errors"
+                        + " and try again."),
+
+                (Rule: IsInvalid(optOuts), Parameter: nameof(optOuts)),
+                (Rule: IsInvalid(fileName), Parameter: nameof(fileName)));
+        }
+
         private static dynamic IsInvalid(List<OptOut> optOuts) => new
         {
             Condition = optOuts == null,

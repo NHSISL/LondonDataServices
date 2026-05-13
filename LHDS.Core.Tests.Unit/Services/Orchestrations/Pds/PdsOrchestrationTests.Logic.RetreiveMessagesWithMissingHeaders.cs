@@ -79,6 +79,10 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Pds
                     It.IsAny<CancellationToken>()),
                         Times.Once);
 
+            this.tempLocationBrokerMock.Verify(broker =>
+                broker.GetUniqueHomeFilePath(),
+                    Times.Once);
+
             this.tempLocationBrokerMock.VerifyNoOtherCalls();
             this.meshServiceMock.VerifyNoOtherCalls();
             this.documentServiceMock.VerifyNoOtherCalls();

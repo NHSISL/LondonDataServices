@@ -23,21 +23,31 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.OptOuts
             DateTimeOffset randomDateTimeOffset =
                 GetRandomDateTimeOffset();
 
-            int randomNumber = GetRandomNumber();
-            string randomBatchReference = GetRandomString();
-            List<OptOut> randomConsentList = CreateRandomOptOutList("Opt-In").ToList();
-            List<OptOut> randomNonConsentList = CreateRandomOptOutList("Opt-Out").ToList();
-            List<OptOut> randomUnknownList = CreateRandomOptOutList("Unknown").ToList();
+            List<OptOut> randomConsentList =
+                CreateRandomOptOutList("Opt-In").ToList();
+
+            List<OptOut> randomNonConsentList =
+                CreateRandomOptOutList("Opt-Out").ToList();
+
+            List<OptOut> randomUnknownList =
+                CreateRandomOptOutList("Unknown").ToList();
+
             List<OptOut> currentOptOutList = new List<OptOut>();
             currentOptOutList.AddRange(randomConsentList);
             currentOptOutList.AddRange(randomNonConsentList);
             currentOptOutList.AddRange(randomUnknownList);
             List<OptOut> currentOptOutInputList = currentOptOutList.DeepClone();
-            List<string> consentedNhsNumbers = new List<string> { randomNonConsentList.FirstOrDefault().NhsNumber };
+
+            List<string> consentedNhsNumbers =
+                new List<string>
+                {
+                    randomNonConsentList.FirstOrDefault().NhsNumber
+                };
 
             List<OptOut> consentedList = currentOptOutList
-                .Where(optOut => consentedNhsNumbers.Contains(optOut.NhsNumber))
-                    .ToList();
+                .Where(optOut =>
+                    consentedNhsNumbers.Contains(optOut.NhsNumber))
+                        .ToList();
 
             List<OptOut> nonConsentedList = currentOptOutList
                 .Except(consentedList).ToList();
@@ -60,7 +70,6 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.OptOuts
                     delta.Add(item);
                 }
 
-                item.UpdatedDate = randomDateTimeOffset;
                 item.CacheTime = randomDateTimeOffset;
                 item.LastSentToMesh = randomDateTimeOffset;
                 item.Status = "Opt-In";
@@ -73,85 +82,68 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.OptOuts
                     delta.Add(item);
                 }
 
-                item.UpdatedDate = randomDateTimeOffset;
                 item.CacheTime = randomDateTimeOffset;
                 item.LastSentToMesh = randomDateTimeOffset;
                 item.Status = "Opt-Out";
             }
 
+            List<OptOut> allModifiedOptOuts = new List<OptOut>();
+            allModifiedOptOuts.AddRange(consentedList);
+            allModifiedOptOuts.AddRange(nonConsentedList);
+
             List<OptOut> expectedOptOutList = delta.DeepClone();
 
             // when
-            List<OptOut> actualOptOutList = await this.optOutProcessingService
-                .ConsolidateOptOutChangesAndReturnChangesOnly(
-                currentOptOutInputList,
-                consentedIdentifiers: consentedNhsNumbers);
+            List<OptOut> actualOptOutList =
+                await this.optOutProcessingService
+                    .ConsolidateOptOutChangesAndReturnChangesOnly(
+                        currentOptOutInputList,
+                        consentedIdentifiers: consentedNhsNumbers);
 
             // then
             actualOptOutList.Should().BeEquivalentTo(expectedOptOutList);
 
             this.dateTimeBrokerMock.Verify(broker =>
                 broker.GetCurrentDateTimeOffsetAsync(),
-                    Times.Exactly(currentOptOutInputList.Count));
+                    Times.Once);
 
-            foreach (var item in consentedList)
-            {
-                if (item.Status != "Opt-In")
-                {
-                    delta.Add(item);
-                }
-
-                item.UpdatedDate = randomDateTimeOffset;
-                item.CacheTime = randomDateTimeOffset;
-                item.LastSentToMesh = randomDateTimeOffset;
-                item.Status = "Opt-In";
-
-                this.optOutServiceMock.Verify(service =>
-                   service.ModifyOptOutAsync(It.Is(SameOptOutAs(item))),
-                       Times.Once);
-            }
-
-            foreach (var item in nonConsentedList)
-            {
-                if (item.Status != "Opt-Out")
-                {
-                    delta.Add(item);
-                }
-
-                item.UpdatedDate = randomDateTimeOffset;
-                item.CacheTime = randomDateTimeOffset;
-                item.LastSentToMesh = randomDateTimeOffset;
-                item.Status = "Opt-Out";
-
-                this.optOutServiceMock.Verify(service =>
-                   service.ModifyOptOutAsync(It.Is(SameOptOutAs(item))),
-                       Times.Once);
-            }
+            this.optOutServiceMock.Verify(service =>
+                service.BulkModifyOptOutsAsync(
+                    It.Is<List<OptOut>>(list =>
+                        list.Count == allModifiedOptOuts.Count),
+                    "ConsolidateOptOutChanges"),
+                        Times.Once);
 
             this.optOutServiceMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
         }
 
         [Fact]
-        public async Task ShouldReturnEmptyOptOutListOnConsolidateChangesOnlyAsync()
+        public async Task
+            ShouldReturnEmptyOptOutListOnConsolidateChangesOnlyAsync()
         {
             // given
             DateTimeOffset randomDateTimeOffset =
                 GetRandomDateTimeOffset();
 
-            int randomNumber = GetRandomNumber();
-            string randomBatchReference = GetRandomString();
-            List<OptOut> randomConsentList = CreateRandomOptOutList("Opt-In").ToList();
-            List<OptOut> randomNonConsentList = CreateRandomOptOutList("Opt-Out").ToList();
+            List<OptOut> randomConsentList =
+                CreateRandomOptOutList("Opt-In").ToList();
+
+            List<OptOut> randomNonConsentList =
+                CreateRandomOptOutList("Opt-Out").ToList();
+
             List<OptOut> currentOptOutList = new List<OptOut>();
             currentOptOutList.AddRange(randomConsentList);
             currentOptOutList.AddRange(randomNonConsentList);
             List<OptOut> currentOptOutInputList = currentOptOutList.DeepClone();
-            List<string> consentedNhsNumbers = randomConsentList.Select(optOut => optOut.NhsNumber).ToList();
+
+            List<string> consentedNhsNumbers = randomConsentList
+                .Select(optOut => optOut.NhsNumber).ToList();
 
             List<OptOut> consentedList = currentOptOutList
-                .Where(optOut => consentedNhsNumbers.Contains(optOut.NhsNumber))
-                    .ToList();
+                .Where(optOut =>
+                    consentedNhsNumbers.Contains(optOut.NhsNumber))
+                        .ToList();
 
             List<OptOut> nonConsentedList = currentOptOutList
                 .Except(consentedList).ToList();
@@ -164,7 +156,6 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.OptOuts
 
             foreach (var item in consentedList)
             {
-                item.UpdatedDate = randomDateTimeOffset;
                 item.CacheTime = randomDateTimeOffset;
                 item.LastSentToMesh = randomDateTimeOffset;
                 item.Status = "Opt-In";
@@ -172,50 +163,37 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.OptOuts
 
             foreach (var item in nonConsentedList)
             {
-                item.UpdatedDate = randomDateTimeOffset;
                 item.CacheTime = randomDateTimeOffset;
                 item.LastSentToMesh = randomDateTimeOffset;
                 item.Status = "Opt-Out";
             }
 
+            List<OptOut> allModifiedOptOuts = new List<OptOut>();
+            allModifiedOptOuts.AddRange(consentedList);
+            allModifiedOptOuts.AddRange(nonConsentedList);
+
             List<OptOut> expectedOptOutList = delta.DeepClone();
 
             // when
-            List<OptOut> actualOptOutList = await this.optOutProcessingService
-                .ConsolidateOptOutChangesAndReturnChangesOnly(
-                currentOptOutInputList,
-                consentedIdentifiers: consentedNhsNumbers);
+            List<OptOut> actualOptOutList =
+                await this.optOutProcessingService
+                    .ConsolidateOptOutChangesAndReturnChangesOnly(
+                        currentOptOutInputList,
+                        consentedIdentifiers: consentedNhsNumbers);
 
             // then
             actualOptOutList.Should().BeEquivalentTo(expectedOptOutList);
 
             this.dateTimeBrokerMock.Verify(broker =>
                 broker.GetCurrentDateTimeOffsetAsync(),
-                    Times.Exactly(currentOptOutInputList.Count));
+                    Times.Once);
 
-            foreach (var item in consentedList)
-            {
-                item.UpdatedDate = randomDateTimeOffset;
-                item.CacheTime = randomDateTimeOffset;
-                item.LastSentToMesh = randomDateTimeOffset;
-                item.Status = "Opt-In";
-
-                this.optOutServiceMock.Verify(service =>
-                   service.ModifyOptOutAsync(It.Is(SameOptOutAs(item))),
-                       Times.Once);
-            }
-
-            foreach (var item in nonConsentedList)
-            {
-                item.UpdatedDate = randomDateTimeOffset;
-                item.CacheTime = randomDateTimeOffset;
-                item.LastSentToMesh = randomDateTimeOffset;
-                item.Status = "Opt-Out";
-
-                this.optOutServiceMock.Verify(service =>
-                   service.ModifyOptOutAsync(It.Is(SameOptOutAs(item))),
-                       Times.Once);
-            }
+            this.optOutServiceMock.Verify(service =>
+                service.BulkModifyOptOutsAsync(
+                    It.Is<List<OptOut>>(list =>
+                        list.Count == allModifiedOptOuts.Count),
+                    "ConsolidateOptOutChanges"),
+                        Times.Once);
 
             this.optOutServiceMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();

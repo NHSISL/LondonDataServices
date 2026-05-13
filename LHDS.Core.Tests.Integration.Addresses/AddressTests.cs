@@ -13,6 +13,7 @@ using LHDS.Core.Models.Brokers.Storages.Blobs;
 using LHDS.Core.Models.Foundations.Mesh;
 using LHDS.Core.Services.Foundations.Documents;
 using LHDS.Core.Services.Foundations.ResolvedAddresses;
+using Microsoft.Data.SqlClient;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
@@ -44,6 +45,15 @@ namespace LHDS.Core.Tests.Integration.Addresses
             IConfiguration configuration = configurationBuilder.Build();
             var windowsIdentity = WindowsIdentity.GetCurrent();
             var claimsPrincipal = new ClaimsPrincipal(windowsIdentity);
+
+            SqlAuthenticationProvider.SetProvider(
+                SqlAuthenticationMethod.ActiveDirectoryManagedIdentity,
+                new ActiveDirectoryAuthenticationProvider());
+
+            SqlAuthenticationProvider.SetProvider(
+                SqlAuthenticationMethod.ActiveDirectoryDefault,
+                new ActiveDirectoryAuthenticationProvider());
+
 
             //setup our DI
             var serviceProvider = new ServiceCollection()

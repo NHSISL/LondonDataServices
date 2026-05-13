@@ -3,18 +3,20 @@
 // ---------------------------------------------------------
 
 using System.Threading.Tasks;
+using Xunit;
 
 namespace LHDS.Core.Tests.Integration.Terminology
 {
-    public partial class TerminologyClients
+    public partial class TerminologyClientTests
     {
         [ReleaseCandidateFact]
-        public async Task ShouldRetrieveArtifactDetailsAsync()
+        public async Task ShouldRetrieveMetadataAsync()
         {
             //Given
+            string[] resourceTypes = new string[] { "CodeSystem", "ValueSet", "ConceptMap" };
 
             //When
-            await terminologyClient.RetrieveArtifactDetailsAsync();
+            await terminologyClient.RetrieveArtifactMetadataAsync(resourceTypes);
 
             //Then
         }

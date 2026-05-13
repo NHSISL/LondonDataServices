@@ -98,8 +98,10 @@ namespace LHDS.Core.Services.Foundations.OptOuts
                 return await this.storageBroker.DeleteOptOutAsync(maybeOptOut);
             });
 
-        public ValueTask BulkAddOptOutsAsync(List<OptOut> optOuts, string fileName) =>
-            throw new NotImplementedException();
+        public async ValueTask BulkAddOptOutsAsync(List<OptOut> optOuts, string fileName)
+        {
+            await BulkAddOrModifyBatchAsync(optOuts, fileName, 10000);
+        }
 
         internal virtual ValueTask BulkAddOrModifyBatchAsync(
             List<OptOut> optOuts,

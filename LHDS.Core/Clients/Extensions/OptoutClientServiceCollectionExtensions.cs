@@ -289,8 +289,7 @@ namespace LHDS.Core.Clients.Extensions
                 return X509CertificateLoader.LoadPkcs12(
                     certBytes,
                     password,
-                    X509KeyStorageFlags.EphemeralKeySet |
-                        X509KeyStorageFlags.Exportable);
+                    X509KeyStorageFlags.Exportable);
             }
             catch (CryptographicException)
             {

@@ -106,6 +106,11 @@ namespace LHDS.Core.Services.Foundations.OptOuts
                 await BulkAddOrModifyBatchAsync(optOuts, fileName, 10000);
             });
 
+        public ValueTask BulkModifyOptOutsAsync(
+            List<OptOut> optOuts,
+            string fileName) =>
+                throw new NotImplementedException();
+
         internal virtual async ValueTask BulkAddOrModifyBatchAsync(
             List<OptOut> optOuts,
             string fileName,

@@ -256,5 +256,20 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.OptOuts
                 CreateOptOutFiller(dateTimeOffset, userId)
                     .Create(count)
                         .ToList();
+
+        private int GetBatchSize(int count, int batchSize)
+        {
+            if (batchSize <= 0)
+            {
+                batchSize = 1;
+            }
+
+            if (count <= 0)
+            {
+                return 0;
+            }
+
+            return (count + batchSize - 1) / batchSize;
+        }
     }
 }

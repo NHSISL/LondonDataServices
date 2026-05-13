@@ -3,9 +3,12 @@
 // ---------------------------------------------------------
 
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using LHDS.Core.Brokers.Audits;
 using LHDS.Core.Brokers.DateTimes;
+using LHDS.Core.Brokers.Identifiers;
 using LHDS.Core.Brokers.Loggings;
 using LHDS.Core.Brokers.Securities;
 using LHDS.Core.Brokers.Storages.Sql;
@@ -18,18 +21,24 @@ namespace LHDS.Core.Services.Foundations.OptOuts
         private readonly IStorageBroker storageBroker;
         private readonly IDateTimeBroker dateTimeBroker;
         private readonly ISecurityAuditBroker securityAuditBroker;
+        private readonly IIdentifierBroker identifierBroker;
         private readonly ILoggingBroker loggingBroker;
+        private readonly IAuditBroker auditBroker;
 
         public OptOutService(
             IStorageBroker storageBroker,
             IDateTimeBroker dateTimeBroker,
             ISecurityAuditBroker securityAuditBroker,
-            ILoggingBroker loggingBroker)
+            IIdentifierBroker identifierBroker,
+            ILoggingBroker loggingBroker,
+            IAuditBroker auditBroker)
         {
             this.storageBroker = storageBroker;
             this.dateTimeBroker = dateTimeBroker;
             this.securityAuditBroker = securityAuditBroker;
+            this.identifierBroker = identifierBroker;
             this.loggingBroker = loggingBroker;
+            this.auditBroker = auditBroker;
         }
 
         public ValueTask<OptOut> AddOptOutAsync(OptOut optOut) =>
@@ -88,5 +97,14 @@ namespace LHDS.Core.Services.Foundations.OptOuts
 
                 return await this.storageBroker.DeleteOptOutAsync(maybeOptOut);
             });
+
+        public ValueTask BulkAddOptOutsAsync(List<OptOut> optOuts, string fileName) =>
+            throw new NotImplementedException();
+
+        internal virtual ValueTask BulkAddOrModifyBatchAsync(
+            List<OptOut> optOuts,
+            string fileName,
+            int batchSize) =>
+                throw new NotImplementedException();
     }
 }

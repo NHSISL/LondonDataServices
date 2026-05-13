@@ -7,7 +7,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Runtime.CompilerServices;
+using LHDS.Core.Brokers.Audits;
 using LHDS.Core.Brokers.DateTimes;
+using LHDS.Core.Brokers.Identifiers;
 using LHDS.Core.Brokers.Loggings;
 using LHDS.Core.Brokers.Securities;
 using LHDS.Core.Brokers.Storages.Sql;
@@ -27,7 +29,9 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.OptOuts
         private readonly Mock<IStorageBroker> storageBrokerMock;
         private readonly Mock<IDateTimeBroker> dateTimeBrokerMock;
         private readonly Mock<ISecurityAuditBroker> securityAuditBrokerMock;
+        private readonly Mock<IIdentifierBroker> identifierBrokerMock;
         private readonly Mock<ILoggingBroker> loggingBrokerMock;
+        private readonly Mock<IAuditBroker> auditBrokerMock;
         private readonly IOptOutService optOutService;
 
         public OptOutServiceTests()
@@ -35,13 +39,17 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.OptOuts
             this.storageBrokerMock = new Mock<IStorageBroker>();
             this.dateTimeBrokerMock = new Mock<IDateTimeBroker>();
             this.securityAuditBrokerMock = new Mock<ISecurityAuditBroker>();
+            this.identifierBrokerMock = new Mock<IIdentifierBroker>();
             this.loggingBrokerMock = new Mock<ILoggingBroker>();
+            this.auditBrokerMock = new Mock<IAuditBroker>();
 
             this.optOutService = new OptOutService(
                 storageBroker: this.storageBrokerMock.Object,
                 dateTimeBroker: this.dateTimeBrokerMock.Object,
                 securityAuditBroker: this.securityAuditBrokerMock.Object,
-                loggingBroker: this.loggingBrokerMock.Object);
+                identifierBroker: this.identifierBrokerMock.Object,
+                loggingBroker: this.loggingBrokerMock.Object,
+                auditBroker: this.auditBrokerMock.Object);
         }
 
         private static Expression<Func<Xeption, bool>> SameExceptionAs(Xeption expectedException) =>
@@ -240,5 +248,13 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.OptOuts
 
                 authenticationType: "Custom");
         }
+
+        private static List<OptOut> CreateRandomOptOuts(
+            int count,
+            DateTimeOffset dateTimeOffset,
+            string userId) =>
+                CreateOptOutFiller(dateTimeOffset, userId)
+                    .Create(count)
+                        .ToList();
     }
 }

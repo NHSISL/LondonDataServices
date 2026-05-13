@@ -110,5 +110,17 @@ namespace LHDS.Core.Services.Foundations.OptOuts
             string fileName,
             int batchSize) =>
                 throw new NotImplementedException();
+
+        internal virtual ValueTask<List<OptOut>>
+            ValidateOptOutsAndAssignIdAndAuditOnAddAsync(
+                List<OptOut> optOuts,
+                string fileName) =>
+                    throw new NotImplementedException();
+
+        internal virtual ValueTask<List<OptOut>>
+            ValidateOptOutsAndAssignAuditOnModifyAsync(
+                List<OptOut> optOuts,
+                string fileName) =>
+                    throw new NotImplementedException();
     }
 }

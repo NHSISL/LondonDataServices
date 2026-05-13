@@ -6,16 +6,15 @@ using System.Threading.Tasks;
 
 namespace LHDS.Core.Tests.Integration.Terminology
 {
-    public partial class TerminologyClients
+    public partial class TerminologyClientTests
     {
         [ReleaseCandidateFact]
-        public async Task ShouldRetrieveMetadataAsync()
+        public async Task ShouldRetrieveArtifactDetailsAsync()
         {
             //Given
-            string[] resourceTypes = new string[] { "CodeSystem", "ValueSet", "ConceptMap" };
 
             //When
-            await terminologyClient.RetrieveArtifactMetadataAsync(resourceTypes);
+            await terminologyClient.RetrieveArtifactDetailsAsync();
 
             //Then
         }

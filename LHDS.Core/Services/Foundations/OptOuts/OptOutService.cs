@@ -111,6 +111,7 @@ namespace LHDS.Core.Services.Foundations.OptOuts
             string fileName) =>
                 TryCatch(async () =>
                 {
+                    ValidateOnBulkModifyOptOuts(optOuts, fileName);
                     await BulkAddOrModifyBatchAsync(optOuts, fileName, 10000);
                 });
 

@@ -71,13 +71,13 @@ namespace LHDS.Core.Services.Processings.OptOuts
                     optOut.BatchReference ?? maybeOptOut.BatchReference;
 
                 maybeOptOut.CacheTime =
-                    optOut.CacheTime == DateTime.MinValue ? maybeOptOut.CacheTime : optOut.CacheTime;
+                    optOut.CacheTime == default ? maybeOptOut.CacheTime : optOut.CacheTime;
 
                 maybeOptOut.LastSentToMesh =
-                    optOut.LastSentToMesh == DateTime.MinValue ? maybeOptOut.LastSentToMesh: optOut.LastSentToMesh;
+                    optOut.LastSentToMesh == default ? maybeOptOut.LastSentToMesh : optOut.LastSentToMesh;
 
                 maybeOptOut.UpdatedDate =
-                    optOut.UpdatedDate == DateTime.MinValue ? maybeOptOut.UpdatedDate : optOut.UpdatedDate;
+                    optOut.UpdatedDate == default ? maybeOptOut.UpdatedDate : optOut.UpdatedDate;
 
                 return await this.optOutService.ModifyOptOutAsync(maybeOptOut);
             });

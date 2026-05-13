@@ -157,6 +157,7 @@ namespace LHDS.Core.Services.Processings.OptOuts
             }
 
             var consentedSet = new HashSet<string>(consentedIdentifiers);
+            var dateTime = await this.dateTimeBroker.GetCurrentDateTimeOffsetAsync();
 
             List<OptOut> consentedList = currentOptOutList
                 .Where(optOut => consentedSet.Contains(optOut.NhsNumber))
@@ -182,7 +183,8 @@ namespace LHDS.Core.Services.Processings.OptOuts
                     delta.Add(item);
                 }
 
-                item.CacheTime = dateTime;
+item.UpdatedDate = dateTime;
+item.CacheTime = dateTime;
                 item.LastSentToMesh = dateTime;
                 item.Status = "Opt-In";
             }
@@ -194,7 +196,8 @@ namespace LHDS.Core.Services.Processings.OptOuts
                     delta.Add(nonConsentedListItem);
                 }
 
-                nonConsentedListItem.CacheTime = dateTime;
+nonConsentedListItem.UpdatedDate = dateTime;
+nonConsentedListItem.CacheTime = dateTime;
                 nonConsentedListItem.LastSentToMesh = dateTime;
                 nonConsentedListItem.Status = "Opt-Out";
             }

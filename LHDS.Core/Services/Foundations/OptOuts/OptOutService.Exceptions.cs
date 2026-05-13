@@ -30,6 +30,28 @@ namespace LHDS.Core.Services.Foundations.OptOuts
             {
                 throw await CreateAndLogValidationExceptionAsync(invalidOptOutException);
             }
+            catch (AggregateException aggregateException)
+            {
+                var failedOptOutServiceException =
+                    new FailedOptOutServiceException(
+                        message: "Failed aggregate optOut service error"
+                            + " occurred, please contact support.",
+                        innerException: aggregateException);
+
+                throw await CreateAndLogServiceExceptionAsync(
+                    failedOptOutServiceException);
+            }
+            catch (Exception exception)
+            {
+                var failedOptOutServiceException =
+                    new FailedOptOutServiceException(
+                        message: "Failed optOut service error occurred,"
+                            + " please contact support.",
+                        innerException: exception);
+
+                throw await CreateAndLogServiceExceptionAsync(
+                    failedOptOutServiceException);
+            }
         }
 
         private async ValueTask<OptOut> TryCatch(ReturningOptOutFunction returningOptOutFunction)

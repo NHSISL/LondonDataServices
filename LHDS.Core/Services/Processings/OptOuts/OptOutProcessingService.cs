@@ -151,8 +151,10 @@ namespace LHDS.Core.Services.Processings.OptOuts
         {
             ValidateCurrentOptOutListProcessingOnConsolidate(currentOptOutList, consentedIdentifiers);
 
+            var consentedSet = new HashSet<string>(consentedIdentifiers);
+
             List<OptOut> consentedList = currentOptOutList
-                .Where(optOut => consentedIdentifiers.Contains(optOut.NhsNumber))
+                .Where(optOut => consentedSet.Contains(optOut.NhsNumber))
                     .ToList();
 
             List<OptOut> nonConsentedList = currentOptOutList

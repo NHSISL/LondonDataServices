@@ -78,7 +78,10 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Addresses
 
             await foreach (Address address in service
                 .MapDPADataToAddressesAsync(
-                    inputCsvFileName))
+                    inputCsvFileName)
+                .WithCancellation(
+                    TestContext.Current
+                        .CancellationToken))
             {
                 actualAddresses.Add(address);
             }

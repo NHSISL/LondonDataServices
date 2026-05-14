@@ -123,7 +123,9 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Addresses
             await foreach (Address address
                 in service.LoadAndMapCsvAsync<Address>(
                     inputCsvFilePath,
-                    fieldMappings))
+                    fieldMappings,
+                    TestContext.Current
+                        .CancellationToken))
             {
                 actualAddresses.Add(address);
             }

@@ -33,52 +33,31 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Addresses
             string lpiCsvFilePath = "ID21.csv";
             Guid randomGuid = Guid.NewGuid();
             Guid inputCorrelationId = randomGuid;
-            int inputSkipCounter = 0;
-            int inputBatchSize = this.batchSize;
-            List<string> returnedStringList = CreateRandomStringList();
             Xeption lpiException = new Xeption();
 
             this.identifierBrokerMock.Setup(broker =>
                 broker.GetIdentifierAsync())
                     .ReturnsAsync(inputCorrelationId);
 
-            this.fileBrokerMock.Setup(broker =>
-                broker.ReadLinesBatchAsync(lpiCsvFilePath, inputBatchSize, inputSkipCounter))
-                    .ReturnsAsync(returnedStringList);
-
             addressOrchestrationServiceMock.Setup(service =>
-                service.MapLPIDataToAddressesAsync(lpiCsvFilePath, inputBatchSize, inputSkipCounter))
-                    .ThrowsAsync(lpiException);
+                service.MapLPIDataToAddressesAsync(
+                    lpiCsvFilePath,
+                    default))
+                        .Throws(lpiException);
 
-            this.fileBrokerMock.Setup(broker =>
-                broker.ReadLinesBatchAsync(lpiCsvFilePath, inputBatchSize, inputSkipCounter + inputBatchSize))
-                    .ReturnsAsync([]);
-
-            Xeption expectedLpiException = new Xeption();
-
-            expectedLpiException.AddData(
-                $"LpiExtractionError in batch between lines {inputSkipCounter} " +
-                $"and {inputSkipCounter + inputBatchSize}.",
-                lpiCsvFilePath);
-
-            List<Exception> expectedExceptions = [expectedLpiException];
-
-            var expectedAggregateException =
-                new AggregateException(
-                    message: $"Errors occurred during loading of {expectedExceptions.Count} batches.",
-                    expectedExceptions);
-
-            AddressOrchestrationService service = addressOrchestrationServiceMock.Object;
+            AddressOrchestrationService service =
+                addressOrchestrationServiceMock.Object;
 
             // When
-            ValueTask readCsvDataTask = service.ProcessLPIAddressesAsync(lpiCsvFilePath);
+            ValueTask readCsvDataTask =
+                service.ProcessLPIAddressesAsync(lpiCsvFilePath);
 
-            AggregateException actualAggregateException =
-                await Assert.ThrowsAsync<AggregateException>(
+            Xeption actualException =
+                await Assert.ThrowsAsync<Xeption>(
                     readCsvDataTask.AsTask);
 
             // Then
-            actualAggregateException.Should().BeEquivalentTo(expectedAggregateException);
+            Assert.Same(lpiException, actualException);
 
             this.identifierBrokerMock.Verify(broker =>
                 broker.GetIdentifierAsync(),
@@ -98,49 +77,10 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Addresses
                     $"Starting processing file {lpiCsvFilePath}."),
                         Times.Once);
 
-            this.fileBrokerMock.Verify(broker =>
-                broker.ReadLinesBatchAsync(lpiCsvFilePath, inputBatchSize, inputSkipCounter),
-                    Times.Once);
-
-            this.auditBrokerMock.Verify(broker =>
-                broker.LogInformationAsync(
-                    "Address Import - LPI Processing",
-                    "Processing LPI File",
-                    $"Processing LPI File - Processing lines {inputSkipCounter} to " +
-                        $"{inputSkipCounter + inputBatchSize}. Correlation Id: {inputCorrelationId}.",
-                    lpiCsvFilePath,
-                    inputCorrelationId.ToString()),
-                        Times.Once);
-
-            this.loggingBrokerMock.Verify(broker =>
-                broker.LogInformationAsync(
-                    $"Processing LPI File - Processing lines {inputSkipCounter} to " +
-                        $"{inputSkipCounter + inputBatchSize}. Correlation Id: {inputCorrelationId}."),
-                        Times.Once);
-
             addressOrchestrationServiceMock.Verify(service =>
                 service.MapLPIDataToAddressesAsync(
                     lpiCsvFilePath,
-                    inputBatchSize,
-                    inputSkipCounter),
-                        Times.Once);
-
-            this.fileBrokerMock.Verify(broker =>
-                broker.ReadLinesBatchAsync(lpiCsvFilePath, inputBatchSize, inputSkipCounter + inputBatchSize),
-                    Times.Once);
-
-            this.auditBrokerMock.Verify(broker =>
-                broker.LogInformationAsync(
-                    "Address Import - LPI Processing",
-                    "Processing LPI File",
-                    $"Finished processing file {lpiCsvFilePath}.",
-                    lpiCsvFilePath,
-                    inputCorrelationId.ToString()),
-                        Times.Once);
-
-            this.loggingBrokerMock.Verify(broker =>
-                broker.LogInformationAsync(
-                    $"Finished processing file {lpiCsvFilePath}."),
+                    default),
                         Times.Once);
 
             this.fileBrokerMock.VerifyNoOtherCalls();

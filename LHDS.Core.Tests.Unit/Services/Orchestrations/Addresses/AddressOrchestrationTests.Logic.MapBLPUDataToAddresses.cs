@@ -4,6 +4,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using FluentAssertions;
 using LHDS.Core.Models.Foundations.Addresses;
@@ -32,8 +33,6 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Addresses
             { CallBase = true };
 
             string inputCsvFileName = GetRandomString();
-            int inputBatchSize = GetRandomNumber();
-            int inputSkipCounter = GetRandomNumber();
 
             Dictionary<string, int> inputFieldMappings = new Dictionary<string, int>
             {
@@ -191,25 +190,34 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Addresses
                 service.LoadAndMapCsvAsync<BLPUAddress>(
                     inputCsvFileName,
                     inputFieldMappings,
-                    inputBatchSize,
-                    inputSkipCounter))
-                        .ReturnsAsync(outputBlpuAddresses);
+                    default))
+                        .Returns(
+                            outputBlpuAddresses
+                                .ToAsyncEnumerable());
 
-            AddressOrchestrationService service = addressOrchestrationServiceMock.Object;
+            AddressOrchestrationService service =
+                addressOrchestrationServiceMock.Object;
 
             // When
-            List<Address> actualAddresses = await service
-                .MapBLPUDataToAddressesAsync(inputCsvFileName, inputBatchSize, inputSkipCounter);
+            List<Address> actualAddresses =
+                new List<Address>();
+
+            await foreach (Address address in service
+                .MapBLPUDataToAddressesAsync(
+                    inputCsvFileName))
+            {
+                actualAddresses.Add(address);
+            }
 
             // Then
-            actualAddresses.Should().BeEquivalentTo(expectedAddresses);
+            actualAddresses.Should()
+                .BeEquivalentTo(expectedAddresses);
 
             addressOrchestrationServiceMock.Verify(service =>
                 service.LoadAndMapCsvAsync<BLPUAddress>(
                     inputCsvFileName,
                     inputFieldMappings,
-                    inputBatchSize,
-                    inputSkipCounter),
+                    default),
                         Times.Once);
 
             this.fileBrokerMock.VerifyNoOtherCalls();

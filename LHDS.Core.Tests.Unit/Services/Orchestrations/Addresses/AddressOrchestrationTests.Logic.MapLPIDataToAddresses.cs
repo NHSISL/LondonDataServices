@@ -4,6 +4,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using FluentAssertions;
 using Force.DeepCloner;
@@ -21,7 +22,8 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Addresses
         public async Task ShouldMapLPIDataToAddresses()
         {
             // Given
-            var addressOrchestrationServiceMock = new Mock<AddressOrchestrationService>
+            var addressOrchestrationServiceMock =
+                new Mock<AddressOrchestrationService>
                (this.addressProcessingServiceMock.Object,
                 this.assignProcessingServiceMock.Object,
                 this.fileBrokerMock.Object,
@@ -33,10 +35,9 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Addresses
             { CallBase = true };
 
             string inputCsvFileName = GetRandomString();
-            int inputBatchSize = GetRandomNumber();
-            int inputSkipCounter = GetRandomNumber();
 
-            Dictionary<string, int> inputFieldMappings = new Dictionary<string, int>
+            Dictionary<string, int> inputFieldMappings =
+                new Dictionary<string, int>
             {
                 { "UPRN", 3 },
                 { "LogicalStatus", 6 },
@@ -55,15 +56,29 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Addresses
                 { "USRN", 21 },
             };
 
-            string multipleHistoricalsUprn = GetRandomString();
-            DateTimeOffset randomDateTimeOffset = GetRandomDateTimeOffset();
-            DateTimeOffset latestEndDate = randomDateTimeOffset.AddDays(5);
-            DateTimeOffset olderEndDate = randomDateTimeOffset.AddDays(3);
-            DateTimeOffset startDate = randomDateTimeOffset.AddDays(1);
-            string updatedMultipleHistoricalsPaoText = GetRandomString();
-            string oldMultipleHistoricalsPaoText = GetRandomString();
+            string multipleHistoricalsUprn =
+                GetRandomString();
 
-            List<LPIAddress> multipleHistoricalsLpiAddresses =
+            DateTimeOffset randomDateTimeOffset =
+                GetRandomDateTimeOffset();
+
+            DateTimeOffset latestEndDate =
+                randomDateTimeOffset.AddDays(5);
+
+            DateTimeOffset olderEndDate =
+                randomDateTimeOffset.AddDays(3);
+
+            DateTimeOffset startDate =
+                randomDateTimeOffset.AddDays(1);
+
+            string updatedMultipleHistoricalsPaoText =
+                GetRandomString();
+
+            string oldMultipleHistoricalsPaoText =
+                GetRandomString();
+
+            List<LPIAddress>
+                multipleHistoricalsLpiAddresses =
             [
                 new LPIAddress
                 {
@@ -71,7 +86,8 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Addresses
                     LogicalStatus = 8,
                     StartDate = startDate,
                     EndDate = latestEndDate,
-                    PAOText = updatedMultipleHistoricalsPaoText
+                    PAOText =
+                        updatedMultipleHistoricalsPaoText
                 },
                 new LPIAddress
                 {
@@ -79,7 +95,8 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Addresses
                     LogicalStatus = 8,
                     StartDate = startDate,
                     EndDate = olderEndDate,
-                    PAOText = oldMultipleHistoricalsPaoText
+                    PAOText =
+                        oldMultipleHistoricalsPaoText
                 },
                 new LPIAddress
                 {
@@ -87,15 +104,19 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Addresses
                     LogicalStatus = 8,
                     StartDate = startDate,
                     EndDate = null,
-                    PAOText = oldMultipleHistoricalsPaoText
+                    PAOText =
+                        oldMultipleHistoricalsPaoText
                 },
             ];
 
-            string multipleAlternativesUprn = GetRandomString();
+            string multipleAlternativesUprn =
+                GetRandomString();
+
             string approvedPaoText = GetRandomString();
             string alternativePaoText = GetRandomString();
 
-            List<LPIAddress> multipleAlternativesLpiAddresses =
+            List<LPIAddress>
+                multipleAlternativesLpiAddresses =
             [
                 new LPIAddress
                 {
@@ -127,7 +148,6 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Addresses
                 .. multipleHistoricalsLpiAddresses,
                 .. multipleAlternativesLpiAddresses];
 
-
             List<LPIAddress> inputLpiAddresses =
             [
                 new LPIAddress
@@ -136,7 +156,8 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Addresses
                     LogicalStatus = 8,
                     StartDate = startDate,
                     EndDate = latestEndDate,
-                    PAOText = updatedMultipleHistoricalsPaoText
+                    PAOText =
+                        updatedMultipleHistoricalsPaoText
                 },
                 new LPIAddress
                 {
@@ -148,14 +169,15 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Addresses
                 },
             ];
 
-            List<Address> outputAddresses = new List<Address>()
+            List<Address> outputAddresses =
+                new List<Address>()
             {
-
                 new Address
                 {
                     UPRN = multipleHistoricalsUprn,
                     SubBuildingName = "",
-                    BuildingName = updatedMultipleHistoricalsPaoText,
+                    BuildingName =
+                        updatedMultipleHistoricalsPaoText,
                     BuildingNumber = ""
                 },
                 new Address
@@ -167,53 +189,76 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Addresses
                 },
             };
 
-            List<Address> expectedAddresses = outputAddresses.DeepClone();
+            List<Address> expectedAddresses =
+                outputAddresses.DeepClone();
 
             addressOrchestrationServiceMock.Setup(service =>
                 service.LoadAndMapCsvAsync<LPIAddress>(
                     inputCsvFileName,
                     inputFieldMappings,
-                    inputBatchSize,
-                    inputSkipCounter))
-                        .ReturnsAsync(outputLpiAddresses);
+                    default))
+                        .Returns(
+                            outputLpiAddresses
+                                .ToAsyncEnumerable());
 
-            for (int i = 0; i < inputLpiAddresses.Count; i++)
+            for (int i = 0;
+                i < inputLpiAddresses.Count;
+                i++)
             {
-                addressOrchestrationServiceMock.Setup(service =>
-                    service.MapLPIAddressToAddress(inputLpiAddresses[i]))
-                        .Returns(outputAddresses[i]);
+                addressOrchestrationServiceMock
+                    .Setup(service =>
+                        service.MapLPIAddressToAddress(
+                            inputLpiAddresses[i]))
+                                .Returns(
+                                    outputAddresses[i]);
             }
 
-            AddressOrchestrationService service = addressOrchestrationServiceMock.Object;
+            AddressOrchestrationService service =
+                addressOrchestrationServiceMock.Object;
 
             // When
-            List<Address> actualAddresses = await service
-                .MapLPIDataToAddressesAsync(inputCsvFileName, inputBatchSize, inputSkipCounter);
+            List<Address> actualAddresses =
+                new List<Address>();
+
+            await foreach (Address address in service
+                .MapLPIDataToAddressesAsync(
+                    inputCsvFileName))
+            {
+                actualAddresses.Add(address);
+            }
 
             // Then
-            actualAddresses.Should().BeEquivalentTo(expectedAddresses);
+            actualAddresses.Should()
+                .BeEquivalentTo(expectedAddresses);
 
-            addressOrchestrationServiceMock.Verify(service =>
-                service.LoadAndMapCsvAsync<LPIAddress>(
-                    inputCsvFileName,
-                    inputFieldMappings,
-                    inputBatchSize,
-                    inputSkipCounter),
-                        Times.Once);
+            addressOrchestrationServiceMock.Verify(
+                service =>
+                    service.LoadAndMapCsvAsync<LPIAddress>(
+                        inputCsvFileName,
+                        inputFieldMappings,
+                        default),
+                            Times.Once);
 
-            for (int i = 0; i < inputLpiAddresses.Count; i++)
+            for (int i = 0;
+                i < inputLpiAddresses.Count;
+                i++)
             {
-                addressOrchestrationServiceMock.Verify(service =>
-                    service.MapLPIAddressToAddress(It.Is(SameLPIAddressAs(inputLpiAddresses[i]))),
-                        Times.Once);
+                addressOrchestrationServiceMock
+                    .Verify(service =>
+                        service.MapLPIAddressToAddress(
+                            It.Is(SameLPIAddressAs(
+                                inputLpiAddresses[i]))),
+                                    Times.Once);
             }
 
             this.fileBrokerMock.VerifyNoOtherCalls();
             this.csvHelperBrokerMock.VerifyNoOtherCalls();
             this.auditBrokerMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
-            this.addressProcessingServiceMock.VerifyNoOtherCalls();
-            this.assignProcessingServiceMock.VerifyNoOtherCalls();
+            this.addressProcessingServiceMock
+                .VerifyNoOtherCalls();
+            this.assignProcessingServiceMock
+                .VerifyNoOtherCalls();
             this.dateTimeBrokerMock.VerifyNoOtherCalls();
             this.identifierBrokerMock.VerifyNoOtherCalls();
         }

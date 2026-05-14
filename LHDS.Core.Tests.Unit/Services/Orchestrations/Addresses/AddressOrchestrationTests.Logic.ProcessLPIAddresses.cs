@@ -35,52 +35,43 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Addresses
             string inputLpiCsvFile = randomFile;
             Guid randomGuid = Guid.NewGuid();
             Guid inputCorrelationId = randomGuid;
-            int inputBatchSize = GetRandomNumber();
-            int numberOfBatches = GetRandomNumber();
-            int numberOfRecords = inputBatchSize * numberOfBatches;
-            List<string> returnedStringList = CreateRandomStringList(numberOfRecords);
-            IQueryable<Address> randomExistingAddresses = CreateRandomAddresses(numberOfRecords);
-            IQueryable<Address> databaseExistingAddresses = randomExistingAddresses.DeepClone();
-            IQueryable<Address> lpiFileExistingAddresses = randomExistingAddresses.DeepClone();
-            List<Address> randomAddressList = CreateRandomAddresses(numberOfRecords).ToList();
+            int numberOfRecords = GetRandomNumber();
+
+            IQueryable<Address> randomExistingAddresses =
+                CreateRandomAddresses(numberOfRecords);
+
+            IQueryable<Address> databaseExistingAddresses =
+                randomExistingAddresses.DeepClone();
+
+            List<Address> randomAddressList =
+                CreateRandomAddresses(numberOfRecords).ToList();
+
             List<Address> newAddresses = randomAddressList.DeepClone();
+
+            List<Address> lpiFileAddresses =
+                [.. newAddresses, .. databaseExistingAddresses.ToList()];
 
             this.identifierBrokerMock.Setup(broker =>
                 broker.GetIdentifierAsync())
                     .ReturnsAsync(inputCorrelationId);
 
-            for (int i = 0; i < numberOfBatches; i++)
-            {
-                int batchStartLine = i * inputBatchSize;
-                int batchEndLine = batchStartLine + inputBatchSize;
-                List<Address> batchNewAddresses = [.. newAddresses.GetRange(batchStartLine, inputBatchSize)];
+            addressOrchestrationServiceMock.Setup(service =>
+                service.MapLPIDataToAddressesAsync(
+                    inputLpiCsvFile,
+                    default))
+                        .Returns(
+                            lpiFileAddresses
+                                .ToAsyncEnumerable());
 
-                List<Address> batchExisitngAddresses = [
-                    .. databaseExistingAddresses.ToList().GetRange(batchStartLine, inputBatchSize)];
+            this.addressProcessingServiceMock.Setup(service =>
+                service.RetrieveAllAddressesAsync())
+                    .ReturnsAsync(databaseExistingAddresses);
 
-                List<Address> lpiFileBatchAddresses = [.. batchNewAddresses, .. batchExisitngAddresses];
-
-                this.fileBrokerMock.Setup(broker =>
-                    broker.ReadLinesBatchAsync(inputLpiCsvFile, inputBatchSize, i * inputBatchSize))
-                        .ReturnsAsync(returnedStringList.GetRange(batchStartLine, inputBatchSize));
-
-                addressOrchestrationServiceMock.Setup(service =>
-                    service.MapLPIDataToAddressesAsync(inputLpiCsvFile, inputBatchSize, i * inputBatchSize))
-                        .ReturnsAsync(lpiFileBatchAddresses);
-
-                this.addressProcessingServiceMock.Setup(service =>
-                    service.RetrieveAllAddressesAsync())
-                        .ReturnsAsync(databaseExistingAddresses);
-            }
-
-            this.fileBrokerMock.Setup(broker =>
-                broker.ReadLinesBatchAsync(inputLpiCsvFile, inputBatchSize, numberOfRecords))
-                    .ReturnsAsync([]);
-
-            AddressOrchestrationService service = addressOrchestrationServiceMock.Object;
+            AddressOrchestrationService service =
+                addressOrchestrationServiceMock.Object;
 
             // When
-            await service.ProcessLPIAddressesAsync(inputLpiCsvFile, inputBatchSize);
+            await service.ProcessLPIAddressesAsync(inputLpiCsvFile);
 
             // Then
             this.identifierBrokerMock.Verify(broker =>
@@ -101,61 +92,27 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Addresses
                     $"Starting processing file {inputLpiCsvFile}."),
                         Times.Once);
 
-            for (int i = 0; i < numberOfBatches; i++)
-            {
-                int batchStartLine = i * inputBatchSize;
-                int batchEndLine = batchStartLine + inputBatchSize;
-                List<Address> batchNewAddresses = [.. newAddresses.GetRange(batchStartLine, inputBatchSize)];
-
-                List<Address> batchExisitngAddresses = [
-                    .. databaseExistingAddresses.ToList().GetRange(batchStartLine, inputBatchSize)];
-
-                List<Address> lpiFileBatchAddresses = [.. batchNewAddresses, .. batchExisitngAddresses];
-
-                this.auditBrokerMock.Verify(broker =>
-                    broker.LogInformationAsync(
-                        "Address Import - LPI Processing",
-                        "Processing LPI File",
-                        $"Processing LPI File - Processing lines {batchStartLine} to " +
-                            $"{batchEndLine}. Correlation Id: {inputCorrelationId}.",
-                        inputLpiCsvFile,
-                        inputCorrelationId.ToString()),
-                            Times.Once);
-
-                this.loggingBrokerMock.Verify(broker =>
-                    broker.LogInformationAsync(
-                        $"Processing LPI File - Processing lines {batchStartLine} to " +
-                            $"{batchEndLine}. Correlation Id: {inputCorrelationId}."),
-                            Times.Once);
-
-                this.fileBrokerMock.Verify(broker =>
-                    broker.ReadLinesBatchAsync(inputLpiCsvFile, inputBatchSize, i * inputBatchSize),
+            addressOrchestrationServiceMock.Verify(service =>
+                service.MapLPIDataToAddressesAsync(
+                    inputLpiCsvFile,
+                    default),
                         Times.Once);
-
-                addressOrchestrationServiceMock.Verify(service =>
-                    service.MapLPIDataToAddressesAsync(inputLpiCsvFile, inputBatchSize, i * inputBatchSize),
-                        Times.Once);
-
-                this.addressProcessingServiceMock.Setup(service =>
-                    service.RetrieveAllAddressesAsync())
-                        .ReturnsAsync(databaseExistingAddresses);
-
-                this.addressProcessingServiceMock.Verify(service =>
-                service.BulkAddAddressesAsync(It.Is(SameAddressesAs(batchNewAddresses)), inputLpiCsvFile),
-                    Times.Once);
-
-                this.addressProcessingServiceMock.Verify(service =>
-                    service.BulkModifyAddressesAsync(It.Is(SameAddressesAs(batchExisitngAddresses)), inputLpiCsvFile),
-                        Times.Once);
-            }
-
-            this.fileBrokerMock.Verify(broker =>
-                broker.ReadLinesBatchAsync(inputLpiCsvFile, inputBatchSize, numberOfRecords),
-                    Times.Once);
 
             this.addressProcessingServiceMock.Verify(service =>
                 service.RetrieveAllAddressesAsync(),
-                    Times.Exactly(numberOfBatches));
+                    Times.Once);
+
+            this.addressProcessingServiceMock.Verify(service =>
+                service.BulkAddAddressesAsync(
+                    It.IsAny<List<Address>>(),
+                    inputLpiCsvFile),
+                        Times.Once);
+
+            this.addressProcessingServiceMock.Verify(service =>
+                service.BulkModifyAddressesAsync(
+                    It.IsAny<List<Address>>(),
+                    inputLpiCsvFile),
+                        Times.Once);
 
             this.auditBrokerMock.Verify(broker =>
                 broker.LogInformationAsync(

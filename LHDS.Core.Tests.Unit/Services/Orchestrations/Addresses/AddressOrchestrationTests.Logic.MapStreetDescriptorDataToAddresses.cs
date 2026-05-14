@@ -3,6 +3,7 @@
 // ---------------------------------------------------------
 
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using FluentAssertions;
 using Force.DeepCloner;
@@ -32,8 +33,6 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Addresses
             { CallBase = true };
 
             string inputCsvFileName = GetRandomString();
-            int inputBatchSize = GetRandomNumber();
-            int inputSkipCounter = GetRandomNumber();
 
             Dictionary<string, int> inputFieldMappings = new Dictionary<string, int>
             {
@@ -64,25 +63,34 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Addresses
                 service.LoadAndMapCsvAsync<StreetDescriptor>(
                     inputCsvFileName,
                     inputFieldMappings,
-                    inputBatchSize,
-                    inputSkipCounter))
-                        .ReturnsAsync(outputStreetDescriptors);
+                    default))
+                        .Returns(
+                            outputStreetDescriptors
+                                .ToAsyncEnumerable());
 
-            AddressOrchestrationService service = addressOrchestrationServiceMock.Object;
+            AddressOrchestrationService service =
+                addressOrchestrationServiceMock.Object;
 
             // When
-            List<Address> actualAddresses = await service
-                .MapStreetDescriptorDataToAddressesAsync(inputCsvFileName, inputBatchSize, inputSkipCounter);
+            List<Address> actualAddresses =
+                new List<Address>();
+
+            await foreach (Address address in service
+                .MapStreetDescriptorDataToAddressesAsync(
+                    inputCsvFileName))
+            {
+                actualAddresses.Add(address);
+            }
 
             // Then
-            actualAddresses.Should().BeEquivalentTo(expectedAddresses);
+            actualAddresses.Should()
+                .BeEquivalentTo(expectedAddresses);
 
             addressOrchestrationServiceMock.Verify(service =>
                 service.LoadAndMapCsvAsync<StreetDescriptor>(
                     inputCsvFileName,
                     inputFieldMappings,
-                    inputBatchSize,
-                    inputSkipCounter),
+                    default),
                         Times.Once);
 
             this.fileBrokerMock.VerifyNoOtherCalls();

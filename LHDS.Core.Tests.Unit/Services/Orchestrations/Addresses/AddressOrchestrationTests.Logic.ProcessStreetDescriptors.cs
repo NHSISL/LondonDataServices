@@ -35,13 +35,16 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Addresses
             string inputStreetDescriptorFile = randomFile;
             Guid randomGuid = Guid.NewGuid();
             Guid inputCorrelationId = randomGuid;
-            int inputBatchSize = GetRandomNumber();
-            int numberOfBatches = GetRandomNumber();
-            int numberOfRecords = inputBatchSize * numberOfBatches;
-            List<string> returnedStringList = CreateRandomStringList(numberOfRecords);
-            IQueryable<Address> randomAddresses = CreateRandomAddresses(numberOfRecords);
-            IQueryable<Address> retrievedAddresses = randomAddresses.DeepClone();
-            List<Address> streetDescriptorAddresses = randomAddresses.DeepClone().ToList();
+            int numberOfRecords = GetRandomNumber();
+
+            IQueryable<Address> randomAddresses =
+                CreateRandomAddresses(numberOfRecords);
+
+            IQueryable<Address> retrievedAddresses =
+                randomAddresses.DeepClone();
+
+            List<Address> streetDescriptorAddresses =
+                randomAddresses.DeepClone().ToList();
 
             this.identifierBrokerMock.Setup(broker =>
                 broker.GetIdentifierAsync())
@@ -54,40 +57,24 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Addresses
                 retrievedAddress.DependentLocality = string.Empty;
             }
 
-            for (int i = 0; i < numberOfBatches; i++)
-            {
-                int batchStartLine = i * inputBatchSize;
-                int batchEndLine = batchStartLine + inputBatchSize;
-                List<Address> batchExisitngAddresses = [
-                    .. streetDescriptorAddresses.ToList().GetRange(batchStartLine, inputBatchSize)];
+            addressOrchestrationServiceMock.Setup(service =>
+                service.MapStreetDescriptorDataToAddressesAsync(
+                    inputStreetDescriptorFile,
+                    default))
+                        .Returns(
+                            streetDescriptorAddresses
+                                .ToAsyncEnumerable());
 
-                this.fileBrokerMock.Setup(broker =>
-                    broker.ReadLinesBatchAsync(
-                        inputStreetDescriptorFile,
-                        inputBatchSize,
-                        i * inputBatchSize))
-                            .ReturnsAsync(returnedStringList.GetRange(batchStartLine, inputBatchSize));
+            this.addressProcessingServiceMock.Setup(service =>
+                service.RetrieveAllAddressesAsync())
+                    .ReturnsAsync(retrievedAddresses);
 
-                addressOrchestrationServiceMock.Setup(service =>
-                    service.MapStreetDescriptorDataToAddressesAsync(
-                        inputStreetDescriptorFile,
-                        inputBatchSize,
-                        i * inputBatchSize))
-                            .ReturnsAsync(batchExisitngAddresses);
-
-                this.addressProcessingServiceMock.Setup(service =>
-                    service.RetrieveAllAddressesAsync())
-                        .ReturnsAsync(retrievedAddresses);
-            }
-
-            this.fileBrokerMock.Setup(broker =>
-                broker.ReadLinesBatchAsync(inputStreetDescriptorFile, inputBatchSize, numberOfRecords))
-                    .ReturnsAsync([]);
-
-            AddressOrchestrationService service = addressOrchestrationServiceMock.Object;
+            AddressOrchestrationService service =
+                addressOrchestrationServiceMock.Object;
 
             // When
-            await service.ProcessStreetDescriptorDataAsync(inputStreetDescriptorFile, inputBatchSize);
+            await service.ProcessStreetDescriptorDataAsync(
+                inputStreetDescriptorFile);
 
             // Then
             this.identifierBrokerMock.Verify(broker =>
@@ -105,79 +92,40 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Addresses
 
             this.loggingBrokerMock.Verify(broker =>
                 broker.LogInformationAsync(
-                    $"Starting processing file {inputStreetDescriptorFile}."),
+                    $"Starting processing file " +
+                        $"{inputStreetDescriptorFile}."),
                         Times.Once);
 
-            for (int i = 0; i < numberOfBatches; i++)
-            {
-                int batchStartLine = i * inputBatchSize;
-                int batchEndLine = batchStartLine + inputBatchSize;
-                List<Address> batchExisitngAddresses = [
-                    .. streetDescriptorAddresses.ToList().GetRange(batchStartLine, inputBatchSize)];
-
-                this.fileBrokerMock.Verify(broker =>
-                    broker.ReadLinesBatchAsync(
-                        inputStreetDescriptorFile,
-                        inputBatchSize,
-                        i * inputBatchSize),
-                            Times.Once);
-
-                addressOrchestrationServiceMock.Verify(service =>
-                    service.MapStreetDescriptorDataToAddressesAsync(
-                        inputStreetDescriptorFile,
-                        inputBatchSize,
-                        i * inputBatchSize),
-                            Times.Once);
-
-                this.addressProcessingServiceMock.Setup(service =>
-                    service.RetrieveAllAddressesAsync())
-                        .ReturnsAsync(retrievedAddresses);
-
-                this.addressProcessingServiceMock.Verify(service =>
-                    service.BulkModifyAddressesAsync(
-                        It.Is(SameAddressesAs(batchExisitngAddresses)),
-                        inputStreetDescriptorFile),
-                            Times.Once);
-
-                this.auditBrokerMock.Verify(broker =>
-                    broker.LogInformationAsync(
-                        "Address Import - Street Descriptors Processing",
-                        "Processing Street Descriptors File",
-
-                        $"Processing Street Descriptors File - Processing lines {batchStartLine} to " +
-                            $"{batchEndLine}. Correlation Id: {inputCorrelationId}.",
-
-                        inputStreetDescriptorFile,
-                        inputCorrelationId.ToString()),
-                            Times.Once);
-
-                this.loggingBrokerMock.Verify(broker =>
-                    broker.LogInformationAsync(
-                        $"Processing Street Descriptors File - Processing lines {batchStartLine} to " +
-                            $"{batchEndLine}. Correlation Id: {inputCorrelationId}."),
-                            Times.Once);
-            }
-
-            this.fileBrokerMock.Verify(broker =>
-                broker.ReadLinesBatchAsync(inputStreetDescriptorFile, inputBatchSize, numberOfRecords),
-                    Times.Once);
+            addressOrchestrationServiceMock.Verify(service =>
+                service.MapStreetDescriptorDataToAddressesAsync(
+                    inputStreetDescriptorFile,
+                    default),
+                        Times.Once);
 
             this.addressProcessingServiceMock.Verify(service =>
                 service.RetrieveAllAddressesAsync(),
-                    Times.Exactly(numberOfBatches));
+                    Times.Once);
+
+            this.addressProcessingServiceMock.Verify(service =>
+                service.BulkModifyAddressesAsync(
+                    It.IsAny<List<Address>>(),
+                    inputStreetDescriptorFile),
+                        Times.Once);
 
             this.auditBrokerMock.Verify(broker =>
                broker.LogInformationAsync(
                    "Address Import - Street Descriptors Processing",
                    "Processing Street Descriptors File",
-                   $"Finished processing file {inputStreetDescriptorFile}.",
+                   $"Finished processing file " +
+                       $"{inputStreetDescriptorFile}.",
                    inputStreetDescriptorFile,
                    inputCorrelationId.ToString()),
                        Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>
                 broker.LogInformationAsync(
-                    $"Finished processing file {inputStreetDescriptorFile}."),
+                    $"Finished processing file " +
+                        $"{inputStreetDescriptorFile}."),
                         Times.Once);
 
             this.fileBrokerMock.VerifyNoOtherCalls();

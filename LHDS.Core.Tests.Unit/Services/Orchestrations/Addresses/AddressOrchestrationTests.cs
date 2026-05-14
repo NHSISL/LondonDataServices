@@ -43,7 +43,6 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Addresses
         private readonly ICompareLogic compareLogic;
         private readonly IAddressOrchestrationService addressOrchestrationService;
         private readonly ITestOutputHelper output;
-        private readonly int batchSize = 120000;
 
         public AddressOrchestrationServiceTests(ITestOutputHelper output)
         {

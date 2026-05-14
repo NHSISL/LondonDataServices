@@ -63,7 +63,9 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Addresses
                                     It.IsAny<
                                         Dictionary<
                                             string,
-                                            int>>()))
+                                            int>>(),
+                                    TestContext.Current
+                                        .CancellationToken))
                         {
                         }
                     });

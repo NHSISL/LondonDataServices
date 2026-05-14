@@ -3,6 +3,7 @@
 // ---------------------------------------------------------
 
 using System.Collections.Generic;
+using System.IO;
 using System.Threading.Tasks;
 
 namespace LHDS.Core.Brokers.Files
@@ -11,7 +12,9 @@ namespace LHDS.Core.Brokers.Files
     {
         ValueTask<bool> CheckIfFileExistsAsync(string path);
         ValueTask<bool> WriteToFileAsync(string path, string content);
+        ValueTask WriteToFileAsync(string path, Stream inputStream);
         ValueTask<byte[]> ReadFileAsync(string path);
+        ValueTask<Stream> ReadFileStreamAsync(string path);
         ValueTask<List<string>> ReadLinesBatchAsync(string path, int batchSize, int skipCounter);
         ValueTask<bool> DeleteFileAsync(string path);
         ValueTask<List<string>> GetListOfFilesAsync(string path, string searchPattern = "*");

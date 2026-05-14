@@ -33,52 +33,29 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Addresses
             string dpaCsvFilePath = "ID28.csv";
             Guid randomGuid = Guid.NewGuid();
             Guid inputCorrelationId = randomGuid;
-            int inputSkipCounter = 0;
-            int inputBatchSize = this.batchSize;
-            List<string> returnedStringList = CreateRandomStringList();
             Xeption dpaException = new Xeption();
 
             this.identifierBrokerMock.Setup(broker =>
                 broker.GetIdentifierAsync())
                     .ReturnsAsync(inputCorrelationId);
 
-            this.fileBrokerMock.Setup(broker =>
-                broker.ReadLinesBatchAsync(dpaCsvFilePath, inputBatchSize, inputSkipCounter))
-                    .ReturnsAsync(returnedStringList);
-
             addressOrchestrationServiceMock.Setup(service =>
-                service.MapDPADataToAddressesAsync(dpaCsvFilePath, inputBatchSize, inputSkipCounter))
-                    .ThrowsAsync(dpaException);
+                service.MapDPADataToAddressesAsync(dpaCsvFilePath))
+                    .Throws(dpaException);
 
-            this.fileBrokerMock.Setup(broker =>
-                broker.ReadLinesBatchAsync(dpaCsvFilePath, inputBatchSize, inputSkipCounter + inputBatchSize))
-                    .ReturnsAsync([]);
-
-            Xeption expectedDpaException = new Xeption();
-
-            expectedDpaException.AddData(
-                $"DpaExtractionError in batch between lines {inputSkipCounter} " +
-                $"and {inputSkipCounter + inputBatchSize}.",
-                dpaCsvFilePath);
-
-            List<Exception> expectedExceptions = [expectedDpaException];
-
-            var expectedAggregateException =
-                new AggregateException(
-                    message: $"Errors occurred during loading of {expectedExceptions.Count} batches.",
-                    expectedExceptions);
-
-            AddressOrchestrationService service = addressOrchestrationServiceMock.Object;
+            AddressOrchestrationService service =
+                addressOrchestrationServiceMock.Object;
 
             // When
-            ValueTask readCsvDataTask = service.ProcessDPAAddressesAsync(dpaCsvFilePath);
+            ValueTask readCsvDataTask =
+                service.ProcessDPAAddressesAsync(dpaCsvFilePath);
 
-            AggregateException actualAggregateException =
-                await Assert.ThrowsAsync<AggregateException>(
+            Xeption actualException =
+                await Assert.ThrowsAsync<Xeption>(
                     readCsvDataTask.AsTask);
 
             // Then
-            actualAggregateException.Should().BeEquivalentTo(expectedAggregateException);
+            Assert.Same(dpaException, actualException);
 
             this.identifierBrokerMock.Verify(broker =>
                 broker.GetIdentifierAsync(),
@@ -98,50 +75,9 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Addresses
                     $"Starting processing file {dpaCsvFilePath}."),
                         Times.Once);
 
-            this.fileBrokerMock.Verify(broker =>
-                broker.ReadLinesBatchAsync(dpaCsvFilePath, inputBatchSize, inputSkipCounter),
-                    Times.Once);
-
-            this.auditBrokerMock.Verify(broker =>
-                broker.LogInformationAsync(
-                    "Address Import - DPA Processing",
-                    "Processing DPA File",
-                    $"Processing DPA File - Processing lines {inputSkipCounter} to " +
-                        $"{inputSkipCounter + inputBatchSize}. Correlation Id: {inputCorrelationId}.",
-                    dpaCsvFilePath,
-                    inputCorrelationId.ToString()),
-                        Times.Once);
-
-            this.loggingBrokerMock.Verify(broker =>
-                broker.LogInformationAsync(
-                    $"Processing DPA File - Processing lines {inputSkipCounter} to " +
-                        $"{inputSkipCounter + inputBatchSize}. Correlation Id: {inputCorrelationId}."),
-                        Times.Once);
-
             addressOrchestrationServiceMock.Verify(service =>
-                service.MapDPADataToAddressesAsync(
-                    dpaCsvFilePath,
-                    inputBatchSize,
-                    inputSkipCounter),
-                        Times.Once);
-
-            this.fileBrokerMock.Verify(broker =>
-                broker.ReadLinesBatchAsync(dpaCsvFilePath, inputBatchSize, inputSkipCounter + inputBatchSize),
+                service.MapDPADataToAddressesAsync(dpaCsvFilePath),
                     Times.Once);
-
-            this.auditBrokerMock.Verify(broker =>
-                broker.LogInformationAsync(
-                    "Address Import - DPA Processing",
-                    "Processing DPA File",
-                    $"Finished processing file {dpaCsvFilePath}.",
-                    dpaCsvFilePath,
-                    inputCorrelationId.ToString()),
-                        Times.Once);
-
-            this.loggingBrokerMock.Verify(broker =>
-                broker.LogInformationAsync(
-                    $"Finished processing file {dpaCsvFilePath}."),
-                        Times.Once);
 
             this.fileBrokerMock.VerifyNoOtherCalls();
             this.csvHelperBrokerMock.VerifyNoOtherCalls();

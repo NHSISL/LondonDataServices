@@ -33,7 +33,6 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Addresses
             string lpiCsvFilePath = "ID24.csv";
             string blpuCsvFilePath = "ID21.csv";
             string streetDescriptorCsvFilePath = "ID15.csv";
-            int inputBatchSize = GetRandomNumber();
 
             List<string> fileList = [
                 dpaCsvFilePath,
@@ -59,19 +58,20 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Addresses
                     .ReturnsAsync(inputCorrelationId);
 
             addressOrchestrationServiceMock.Setup(service =>
-                 service.ProcessDPAAddressesAsync(dpaCsvFilePath, It.IsAny<int>()))
+                 service.ProcessDPAAddressesAsync(dpaCsvFilePath))
                      .ThrowsAsync(dpaException);
 
             addressOrchestrationServiceMock.Setup(service =>
-                service.ProcessLPIAddressesAsync(lpiCsvFilePath, It.IsAny<int>()))
+                service.ProcessLPIAddressesAsync(lpiCsvFilePath))
                     .ThrowsAsync(lpiException);
 
             addressOrchestrationServiceMock.Setup(service =>
-                service.ProcessBLPUAddressesAsync(blpuCsvFilePath, It.IsAny<int>()))
+                service.ProcessBLPUAddressesAsync(blpuCsvFilePath))
                     .ThrowsAsync(blpuException);
 
             addressOrchestrationServiceMock.Setup(service =>
-                service.ProcessStreetDescriptorDataAsync(streetDescriptorCsvFilePath, It.IsAny<int>()))
+                service.ProcessStreetDescriptorDataAsync(
+                    streetDescriptorCsvFilePath))
                     .ThrowsAsync(streetDescriptorException);
 
             Exception expectedDpaException = new Exception();
@@ -93,7 +93,9 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Addresses
             AddressOrchestrationService service = addressOrchestrationServiceMock.Object;
 
             // When
-            ValueTask readCsvDataTask = service.ReadCsvDataAndBulkAddAddressesAsync(inputTempPath, inputBatchSize);
+            ValueTask readCsvDataTask =
+                service.ReadCsvDataAndBulkAddAddressesAsync(
+                    inputTempPath);
 
             AggregateException actualAggregateException =
                 await Assert.ThrowsAsync<AggregateException>(

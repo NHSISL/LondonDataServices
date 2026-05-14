@@ -1,4 +1,4 @@
-﻿// ---------------------------------------------------------
+// ---------------------------------------------------------
 // Copyright (c) North East London ICB. All rights reserved.
 // ---------------------------------------------------------
 
@@ -33,16 +33,14 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Addresses
             { CallBase = true };
 
             string someFolderPath = GetRandomString();
-            int inputBatchSize = this.batchSize;
-
-            var expectedDependencyException =
+                        var expectedDependencyException =
                 new AddressOrchestrationDependencyValidationException(
                     message: "Address orchestration dependency validation error occurred, " +
                         "fix the errors and try again.",
                     innerException: dependencyValidationException.InnerException as Xeption);
 
             addressOrchestrationServiceMock.Setup(service =>
-                service.ReadCsvDataAndBulkAddAddressesAsync(someFolderPath, batchSize))
+                service.ReadCsvDataAndBulkAddAddressesAsync(someFolderPath))
                     .ThrowsAsync(dependencyValidationException);
 
             AddressOrchestrationService service = addressOrchestrationServiceMock.Object;
@@ -59,7 +57,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Addresses
                  .BeEquivalentTo(expectedDependencyException);
 
             addressOrchestrationServiceMock.Verify(service =>
-                service.ReadCsvDataAndBulkAddAddressesAsync(someFolderPath, batchSize),
+                service.ReadCsvDataAndBulkAddAddressesAsync(someFolderPath),
                     Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>
@@ -95,16 +93,14 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Addresses
             { CallBase = true };
 
             string someFolderPath = GetRandomString();
-            int inputBatchSize = this.batchSize;
-
-            var expectedDependencyException =
+                        var expectedDependencyException =
                 new AddressOrchestrationDependencyException(
                     message: "Address orchestration dependency error occurred, " +
                         "fix the errors and try again.",
                     innerException: dependencyException.InnerException as Xeption);
 
             addressOrchestrationServiceMock.Setup(service =>
-               service.ReadCsvDataAndBulkAddAddressesAsync(someFolderPath, batchSize))
+               service.ReadCsvDataAndBulkAddAddressesAsync(someFolderPath))
                    .ThrowsAsync(dependencyException);
 
             AddressOrchestrationService service = addressOrchestrationServiceMock.Object;
@@ -121,7 +117,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Addresses
                  .BeEquivalentTo(expectedDependencyException);
 
             addressOrchestrationServiceMock.Verify(service =>
-                service.ReadCsvDataAndBulkAddAddressesAsync(someFolderPath, batchSize),
+                service.ReadCsvDataAndBulkAddAddressesAsync(someFolderPath),
                     Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>
@@ -155,8 +151,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Addresses
             { CallBase = true };
 
             string someFolderPath = GetRandomString();
-            int inputBatchSize = this.batchSize;
-            var serviceException = new Exception();
+                        var serviceException = new Exception();
 
             var failedAddressPersistanceOrchestrationServiceException =
                 new FailedAddressOrchestrationServiceException(
@@ -169,7 +164,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Addresses
                     innerException: failedAddressPersistanceOrchestrationServiceException);
 
             addressOrchestrationServiceMock.Setup(service =>
-                service.ReadCsvDataAndBulkAddAddressesAsync(someFolderPath, batchSize))
+                service.ReadCsvDataAndBulkAddAddressesAsync(someFolderPath))
                     .ThrowsAsync(serviceException);
 
             AddressOrchestrationService service = addressOrchestrationServiceMock.Object;
@@ -186,7 +181,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Addresses
                  .BeEquivalentTo(expectedAddressOrchestrationServiceException);
 
             addressOrchestrationServiceMock.Verify(service =>
-                service.ReadCsvDataAndBulkAddAddressesAsync(someFolderPath, batchSize),
+                service.ReadCsvDataAndBulkAddAddressesAsync(someFolderPath),
                     Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>
@@ -220,8 +215,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Addresses
             { CallBase = true };
 
             string someFolderPath = GetRandomString();
-            int inputBatchSize = this.batchSize;
-            var aggregateException = new AggregateException();
+                        var aggregateException = new AggregateException();
 
             var failedAddressPersistanceOrchestrationServiceException =
                 new FailedAddressOrchestrationServiceException(
@@ -234,7 +228,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Addresses
                     innerException: failedAddressPersistanceOrchestrationServiceException);
 
             addressOrchestrationServiceMock.Setup(service =>
-                service.ReadCsvDataAndBulkAddAddressesAsync(someFolderPath, batchSize))
+                service.ReadCsvDataAndBulkAddAddressesAsync(someFolderPath))
                     .ThrowsAsync(aggregateException);
 
             AddressOrchestrationService service = addressOrchestrationServiceMock.Object;
@@ -251,7 +245,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Addresses
                  .BeEquivalentTo(expectedAddressOrchestrationServiceException);
 
             addressOrchestrationServiceMock.Verify(service =>
-               service.ReadCsvDataAndBulkAddAddressesAsync(someFolderPath, batchSize),
+               service.ReadCsvDataAndBulkAddAddressesAsync(someFolderPath),
                    Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>

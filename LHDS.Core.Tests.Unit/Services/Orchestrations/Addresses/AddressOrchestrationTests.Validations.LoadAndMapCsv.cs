@@ -19,7 +19,8 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Addresses
         public async Task ShouldThrowValidationExceptionOnLoadAndMapCsvIfFileDoesNotExistAsync()
         {
             // Given
-            var addressOrchestrationServiceMock = new Mock<AddressOrchestrationService>
+            var addressOrchestrationServiceMock =
+                new Mock<AddressOrchestrationService>
                (this.addressProcessingServiceMock.Object,
                 this.assignProcessingServiceMock.Object,
                 this.fileBrokerMock.Object,
@@ -31,47 +32,60 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Addresses
             { CallBase = true };
 
             string invalidFileName = GetRandomString();
-            int inputBatchSize = GetRandomNumber();
-            int inputSkipCounter = GetRandomNumber();
 
             var invalidFileAddressOrchestrationException =
                 new InvalidFileAddressOrchestrationException(
-                    message: $"The file {invalidFileName} could not be found.");
+                    message: $"The file {invalidFileName}" +
+                        $" could not be found.");
 
-            InvalidFileAddressOrchestrationException expectedFileAddressOrchestrationException =
-                invalidFileAddressOrchestrationException;
+            InvalidFileAddressOrchestrationException
+                expectedFileAddressOrchestrationException =
+                    invalidFileAddressOrchestrationException;
 
             this.fileBrokerMock.Setup(broker =>
                 broker.CheckIfFileExistsAsync(invalidFileName))
                     .ReturnsAsync(false);
 
-            AddressOrchestrationService service = addressOrchestrationServiceMock.Object;
+            AddressOrchestrationService service =
+                addressOrchestrationServiceMock.Object;
 
             // When
-            ValueTask<List<Address>> loadAndMapCsvTask = service.LoadAndMapCsvAsync<Address>(
-                invalidFileName,
-                It.IsAny<Dictionary<string, int>>(),
-                inputBatchSize,
-                inputSkipCounter);
-
-            InvalidFileAddressOrchestrationException actualFileAddressOrchestrationException =
-                await Assert.ThrowsAsync<InvalidFileAddressOrchestrationException>(
-                    loadAndMapCsvTask.AsTask);
+            InvalidFileAddressOrchestrationException
+                actualFileAddressOrchestrationException =
+                    await Assert.ThrowsAsync<
+                        InvalidFileAddressOrchestrationException>(
+                            async () =>
+                    {
+                        await foreach (Address item
+                            in service
+                                .LoadAndMapCsvAsync<Address>(
+                                    invalidFileName,
+                                    It.IsAny<
+                                        Dictionary<
+                                            string,
+                                            int>>()))
+                        {
+                        }
+                    });
 
             // Then
-            actualFileAddressOrchestrationException.Should()
-                .BeEquivalentTo(expectedFileAddressOrchestrationException);
+            actualFileAddressOrchestrationException
+                .Should().BeEquivalentTo(
+                    expectedFileAddressOrchestrationException);
 
             this.fileBrokerMock.Verify(broker =>
-                broker.CheckIfFileExistsAsync(invalidFileName),
-                    Times.Once);
+                broker.CheckIfFileExistsAsync(
+                    invalidFileName),
+                        Times.Once);
 
             this.fileBrokerMock.VerifyNoOtherCalls();
             this.csvHelperBrokerMock.VerifyNoOtherCalls();
             this.auditBrokerMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
-            this.addressProcessingServiceMock.VerifyNoOtherCalls();
-            this.assignProcessingServiceMock.VerifyNoOtherCalls();
+            this.addressProcessingServiceMock
+                .VerifyNoOtherCalls();
+            this.assignProcessingServiceMock
+                .VerifyNoOtherCalls();
             this.dateTimeBrokerMock.VerifyNoOtherCalls();
             this.identifierBrokerMock.VerifyNoOtherCalls();
         }

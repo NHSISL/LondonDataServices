@@ -1,0 +1,17 @@
+{
+  "name": "the-standard-reacttypescript-routing",
+  "version": "0.1.0",
+  "description": "Enforces routes pointing to pages, centralized route definitions, service-delegating guards, and prohibition of business authorization rules in JSX.",
+  "standard_version": "v0.1.0",
+  "skill_version": "v0.1.0",
+  "inputs": ["Route definition files in src/routes/**/* and routes.tsx"],
+  "outputs": [
+    "Centralized route definitions pointing to pages with service-delegating guards",
+    "Review feedback citing rule IDs"
+  ],
+  "dependencies": [
+    "the-standard-reacttypescript-pages",
+    "the-standard-reacttypescript-view-services"
+  ],
+  "applies_to": ["src/routes/**/*", "routes.tsx"]
+}

@@ -1,0 +1,29 @@
+{
+  "skill": "the-standard-reacttypescript-routing",
+  "rules": [
+    {
+      "id": "tsr-routing-001",
+      "severity": "ERROR",
+      "category": "Routes to Pages",
+      "rule": "Routes must point to page components — not low-level components."
+    },
+    {
+      "id": "tsr-routing-002",
+      "severity": "ERROR",
+      "category": "Centralized Definitions",
+      "rule": "Route definitions must be centralized in a single routes file."
+    },
+    {
+      "id": "tsr-routing-003",
+      "severity": "ERROR",
+      "category": "Service-Delegating Guards",
+      "rule": "Route guards must delegate access decisions to a service."
+    },
+    {
+      "id": "tsr-routing-004",
+      "severity": "ERROR",
+      "category": "No Auth Rules in JSX",
+      "rule": "Business authorization rules must not be embedded in JSX route definitions."
+    }
+  ]
+}

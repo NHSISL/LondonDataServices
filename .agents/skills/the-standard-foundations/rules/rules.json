@@ -1,0 +1,13 @@
+{
+  "skill": "the-standard-foundations",
+  "rules": [
+    { "id": "ts-foundations-001", "severity": "ERROR", "category": "Business Language", "rule": "Foundation service methods must use business language: Add, Retrieve, RetrieveAll, Modify, Remove — never Insert, Select, Update, Delete." },
+    { "id": "ts-foundations-002", "severity": "ERROR", "category": "Responsibility", "rule": "Foundation services must expose only CRUD operations; business-workflow methods must not appear." },
+    { "id": "ts-foundations-003", "severity": "ERROR", "category": "Validation", "rule": "Foundation services must perform structural validation (null checks, empty Guid, whitespace strings) on all inputs before calling the broker." },
+    { "id": "ts-foundations-004", "severity": "ERROR", "category": "Validation", "rule": "Foundation services must perform logical validation (date range, referential rules) where applicable." },
+    { "id": "ts-foundations-005", "severity": "ERROR", "category": "Responsibility", "rule": "Foundation services must integrate with exactly one entity broker." },
+    { "id": "ts-foundations-006", "severity": "ERROR", "category": "Exception Handling", "rule": "All broker exceptions must be caught and re-thrown as service-specific dependency exception models; unexpected exceptions must be wrapped in service exception models." },
+    { "id": "ts-foundations-007", "severity": "ERROR", "category": "Testing", "rule": "Every behavior must have a failing test written before the implementation (TDD)." },
+    { "id": "ts-foundations-008", "severity": "ERROR", "category": "Testing", "rule": "All test inputs and outputs must be randomized; expected variables must use DeepClone() to dereference from inputs." }
+  ]
+}

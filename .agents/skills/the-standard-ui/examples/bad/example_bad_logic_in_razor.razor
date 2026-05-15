@@ -1,0 +1,31 @@
+@* ---                                                                         *@
+@* skill: the-standard-ui                                                     *@
+@* type: example                                                               *@
+@* source-section: "3.2.1 Web Applications"                                   *@
+@* demonstrates: "ts-ui-001 — business logic and service calls in razor code block" *@
+@* ---                                                                         *@
+
+@* ❌ BAD: Logic, service call, and broker injection all inside the .razor file. *@
+
+@page "/students"
+@inject IStorageBroker StorageBroker @* ❌ broker injected directly *@
+
+<h1>Students</h1>
+
+@foreach (var student in students)
+{
+    <p style="color:blue">@student.Name</p>  @* ❌ inline style *@
+}
+
+@code {
+    private List<Student> students = new();
+
+    protected override async Task OnInitializedAsync()
+    {
+        // ❌ business logic and broker call directly in .razor
+        students = (await StorageBroker.SelectAllStudentsAsync()).ToList();
+
+        if (!students.Any())
+            students.Add(new Student { Name = "No students found" }); // ❌ hard-coded string
+    }
+}

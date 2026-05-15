@@ -1,0 +1,15 @@
+{
+  "skill": "the-standard-reacttypescript-async",
+  "version": "1.0.0",
+  "structure": {
+    "required_async_states": ["loading", "success", "empty", "failure"],
+    "stale_update_patterns": [
+      "mounted flag with cleanup",
+      "AbortController with abort cleanup",
+      "framework loader with built-in cancellation"
+    ],
+    "promise_all_usage": "independent operations only",
+    "sequential_execution": "required when second operation depends on first result",
+    "rejected_promise_handling": "try/catch required — no unhandled rejections"
+  }
+}

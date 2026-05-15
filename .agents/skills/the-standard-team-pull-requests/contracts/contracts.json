@@ -1,0 +1,28 @@
+{
+  "skill": "the-standard-team-pull-requests",
+  "version": "0.1.0",
+  "pr_title": {
+    "pattern": "[CATEGORY]: [Description Of Work Completed]",
+    "category_casing": "CAPS",
+    "description_casing": "Pascal Case",
+    "examples": [
+      "FOUNDATIONS: Add Student",
+      "BROKERS: Insert Student",
+      "CONTROLLERS: POST Student",
+      "MINOR FIX: Student Validation On Add",
+      "DATA: Add Student Migration"
+    ]
+  },
+  "issue_linking": {
+    "auto_close_single": "Closes #[issue-number]",
+    "auto_close_multiple": "Closes #10, closes #123",
+    "link_only": "#[issue-number]"
+  },
+  "description": {
+    "recommended_content": [
+      "Summary of what was done",
+      "Screenshots of controller responses (for CONTROLLERS/EXPOSERS PRs)",
+      "Issue links (Closes #n or #n)"
+    ]
+  }
+}

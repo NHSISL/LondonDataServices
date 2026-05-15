@@ -1,0 +1,11 @@
+{
+  "skill": "the-standard-csharp-comments",
+  "rules": [
+    { "id": "tsc-csharp-comments-001", "severity": "ERROR", "category": "Comment Usage", "rule": "Comments must only be used to explain what code cannot express — non-obvious intent, inaccessible code, or complex logic." },
+    { "id": "tsc-csharp-comments-002", "severity": "ERROR", "category": "Copyright", "rule": "Copyright headers must use the exact dashed-line // format." },
+    { "id": "tsc-csharp-comments-003", "severity": "ERROR", "category": "Method Documentation", "rule": "Methods performing inaccessible or complex operations must be documented with Purposing, Incomes, Outcomes, and Side Effects." },
+    { "id": "tsc-csharp-comments-004", "severity": "ERROR", "category": "Comment Usage", "rule": "Comments must not restate what the code already clearly expresses." },
+    { "id": "tsc-csharp-comments-005", "severity": "ERROR", "category": "Copyright", "rule": "Copyright headers must not use /* */ block comment syntax." },
+    { "id": "tsc-csharp-comments-006", "severity": "ERROR", "category": "Copyright", "rule": "Copyright headers must not use XML <copyright> tag syntax." }
+  ]
+}

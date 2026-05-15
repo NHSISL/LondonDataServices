@@ -1,0 +1,20 @@
+{
+  "skill": "the-standard-reacttypescript-view-services",
+  "version": "1.0.0",
+  "naming": {
+    "view_service_class": "{Domain}ViewService",
+    "view_service_interface": "I{Domain}ViewService",
+    "view_service_file": "{domain}ViewService.ts",
+    "view_service_interface_file": "i{domain}ViewService.ts"
+  },
+  "structure": {
+    "folder": "src/services/views/{domain}/",
+    "files_required": [
+      "{domain}ViewService.ts",
+      "i{domain}ViewService.ts"
+    ],
+    "allowed_imports": ["foundation services", "models"],
+    "forbidden_imports": ["react", "react-dom", "react-router-dom", "brokers", "pages", "components"],
+    "forbidden_content": ["JSX", "CSS class names", "Bootstrap class strings", "component names"]
+  }
+}

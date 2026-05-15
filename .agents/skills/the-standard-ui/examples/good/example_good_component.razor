@@ -1,0 +1,19 @@
+@* ---                                                         *@
+@* skill: the-standard-ui                                     *@
+@* type: example                                               *@
+@* source-section: "3.2.1 Web Applications"                   *@
+@* demonstrates: "ts-ui-001 — markup-only razor, inherits base" *@
+@* ---                                                         *@
+
+@* ✅ GOOD: .razor file contains only markup; inherits base class for all logic. *@
+
+@inherits StudentComponentBase
+
+<div class="student-list">
+    @foreach (StudentView studentView in StudentViews)
+    {
+        <StudentCard
+            StudentView="@studentView"
+            OnClick="@(() => SelectStudentAsync(studentView))" />
+    }
+</div>

@@ -1,0 +1,18 @@
+{
+  "name": "the-standard-team-pull-requests",
+  "version": "0.1.0",
+  "description": "Governs pull request title format, description content, issue linking, and screenshot expectations following The Standard Team practices.",
+  "the_standard_team_version": "v0.1.0",
+  "skill_version": "v0.1.0",
+  "inputs": [
+    "Pull request title",
+    "Pull request description"
+  ],
+  "outputs": [
+    "Compliant PR title in [CATEGORY]: [Description] format",
+    "PR description with context, optional screenshots, and correct issue links",
+    "Review feedback citing rule IDs"
+  ],
+  "dependencies": ["the-standard-team-branching", "the-standard-team-commits"],
+  "applies_to": ["*", ".git/*"]
+}

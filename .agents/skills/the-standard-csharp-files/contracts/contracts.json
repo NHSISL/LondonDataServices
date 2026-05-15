@@ -1,0 +1,18 @@
+{
+  "skill": "the-standard-csharp-files",
+  "version": "1.0.0",
+  "naming": {
+    "convention": "PascalCase",
+    "extension": ".cs",
+    "partial_class_separator": ".",
+    "patterns": {
+      "standard_file": "{PascalCaseName}.cs",
+      "partial_aspect": "{RootClass}.{Aspect}.cs",
+      "partial_sub_aspect": "{RootClass}.{Aspect}.{SubAspect}.cs"
+    },
+    "examples": {
+      "correct": ["Student.cs", "StudentService.cs", "StudentService.Validations.cs", "StudentService.Validations.Add.cs", "StudentService.Exceptions.cs"],
+      "incorrect": ["student.cs", "studentService.cs", "Student_Service.cs", "StudentServiceValidations.cs", "StudentService_Validations.cs"]
+    }
+  }
+}

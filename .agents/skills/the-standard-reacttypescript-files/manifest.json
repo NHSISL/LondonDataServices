@@ -1,0 +1,14 @@
+{
+  "name": "the-standard-reacttypescript-files",
+  "version": "0.1.0",
+  "description": "Enforces file naming conventions, extension rules, single-responsibility files, and project structure for Standard-compliant React + TypeScript + Vite projects.",
+  "standard_version": "v0.1.0",
+  "skill_version": "v0.1.0",
+  "inputs": ["Source file paths and names"],
+  "outputs": [
+    "Correctly named and placed source files",
+    "Review feedback citing rule IDs"
+  ],
+  "dependencies": [],
+  "applies_to": ["src/**/*"]
+}

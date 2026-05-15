@@ -1,0 +1,10 @@
+{
+  "skill": "the-standard-csharp-files",
+  "rules": [
+    { "id": "tsc-csharp-files-001", "severity": "ERROR", "category": "File Naming", "rule": "Every .cs file must be named using PascalCase followed by the .cs extension." },
+    { "id": "tsc-csharp-files-002", "severity": "ERROR", "category": "File Naming", "rule": "Partial class files must be named {RootClass}.{Aspect}.cs using a dot separator." },
+    { "id": "tsc-csharp-files-003", "severity": "ERROR", "category": "File Naming", "rule": "Partial class files with a sub-aspect must be named {RootClass}.{Aspect}.{SubAspect}.cs." },
+    { "id": "tsc-csharp-files-004", "severity": "ERROR", "category": "File Naming", "rule": "File names must not use camelCase, all-lowercase, underscores, or hyphens as word separators." },
+    { "id": "tsc-csharp-files-005", "severity": "ERROR", "category": "File Naming", "rule": "Partial class file names must not concatenate aspects without a dot separator." }
+  ]
+}

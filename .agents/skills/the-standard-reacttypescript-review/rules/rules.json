@@ -1,0 +1,53 @@
+{
+  "skill": "the-standard-reacttypescript-review",
+  "rules": [
+    {
+      "id": "tsr-review-001",
+      "severity": "ERROR",
+      "category": "Rule Citation",
+      "rule": "Every review comment must cite a rule ID from the Standard."
+    },
+    {
+      "id": "tsr-review-002",
+      "severity": "ERROR",
+      "category": "Concern Separation",
+      "rule": "Architectural concerns (ERROR) must be separated from style concerns (WARNING/INFO)."
+    },
+    {
+      "id": "tsr-review-003",
+      "severity": "ERROR",
+      "category": "No Personal Preferences",
+      "rule": "Review comments must not express personal preference — every comment must cite a rule."
+    },
+    {
+      "id": "tsr-review-004",
+      "severity": "WARNING",
+      "category": "Layer Identification",
+      "rule": "Each review comment must identify the Standard layer affected."
+    },
+    {
+      "id": "tsr-review-005",
+      "severity": "WARNING",
+      "category": "Minimal Fix",
+      "rule": "Suggest the smallest code change that satisfies the violated rule."
+    },
+    {
+      "id": "tsr-review-006",
+      "severity": "ERROR",
+      "category": "Layer Bypass",
+      "rule": "Block any PR that bypasses Standard layers — component calling broker directly, etc."
+    },
+    {
+      "id": "tsr-review-007",
+      "severity": "WARNING",
+      "category": "React Doctor Warnings",
+      "rule": "Flag React Developer Tools / React Doctor warnings about hooks, re-renders, or missing keys."
+    },
+    {
+      "id": "tsr-review-008",
+      "severity": "ERROR",
+      "category": "Generated Code",
+      "rule": "AI-generated or scaffolded code must satisfy all Standard rules — do not approve violations simply because code was generated."
+    }
+  ]
+}

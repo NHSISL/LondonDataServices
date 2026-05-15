@@ -1,0 +1,28 @@
+{
+  "skill": "the-standard-reacttypescript-brokers",
+  "version": "1.0.0",
+  "naming": {
+    "broker_class": "{domain}{Kind}Broker",
+    "broker_interface": "I{domain}{Kind}Broker",
+    "broker_file": "{domain}{Kind}Broker.ts",
+    "broker_interface_file": "i{domain}{Kind}Broker.ts"
+  },
+  "structure": {
+    "allowed_content": [
+      "external HTTP calls",
+      "storage read/write",
+      "mechanical JSON serialization",
+      "date/time retrieval",
+      "console/telemetry logging",
+      "navigation calls"
+    ],
+    "forbidden_content": [
+      "business rules",
+      "component-shaped data transformations",
+      "calls to services",
+      "calls to pages",
+      "calls to components"
+    ],
+    "return_types": "foundation model types only"
+  }
+}

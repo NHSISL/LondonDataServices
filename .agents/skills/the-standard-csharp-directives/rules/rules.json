@@ -1,0 +1,59 @@
+{
+  "skill": "the-standard-csharp-directives",
+  "rules": [
+    {
+      "id": "tsc-csharp-directives-001",
+      "severity": "ERROR",
+      "category": "Placement",
+      "rule": "All using directives must appear at the top of the file, outside any namespace declaration."
+    },
+    {
+      "id": "tsc-csharp-directives-002",
+      "severity": "ERROR",
+      "category": "Ordering and Grouping",
+      "rule": "Directives must be ordered in three groups: (1) System.*, (2) third-party, (3) internal/project. Groups separated by exactly one blank line."
+    },
+    {
+      "id": "tsc-csharp-directives-003",
+      "severity": "ERROR",
+      "category": "Ordering and Grouping",
+      "rule": "Groups must be separated by exactly one blank line — no more, no less."
+    },
+    {
+      "id": "tsc-csharp-directives-004",
+      "severity": "WARN",
+      "category": "Ordering and Grouping",
+      "rule": "Directives within each group must be sorted alphabetically (case-insensitive, ascending)."
+    },
+    {
+      "id": "tsc-csharp-directives-005",
+      "severity": "ERROR",
+      "category": "Ordering and Grouping",
+      "rule": "Each using directive must appear on its own line."
+    },
+    {
+      "id": "tsc-csharp-directives-006",
+      "severity": "ERROR",
+      "category": "Hygiene",
+      "rule": "Unused using directives must be removed before committing."
+    },
+    {
+      "id": "tsc-csharp-directives-007",
+      "severity": "ERROR",
+      "category": "Hygiene",
+      "rule": "using directives must not appear inside a namespace block."
+    },
+    {
+      "id": "tsc-csharp-directives-008",
+      "severity": "WARN",
+      "category": "Hygiene",
+      "rule": "using aliases must only be used to resolve genuine ambiguities, never for brevity alone."
+    },
+    {
+      "id": "tsc-csharp-directives-009",
+      "severity": "WARN",
+      "category": "Hygiene",
+      "rule": "using static directives must not be used unless The Standard explicitly permits them."
+    }
+  ]
+}

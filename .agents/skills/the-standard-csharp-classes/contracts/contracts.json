@@ -1,0 +1,20 @@
+{
+  "skill": "the-standard-csharp-classes",
+  "version": "1.0.0",
+  "naming": {
+    "models": { "convention": "Singular PascalCase", "forbidden_suffixes": ["Model", "Obj", "Entity", "Dto"] },
+    "services": { "convention": "Singular PascalCase + Service suffix", "forbidden_suffixes": ["BL", "BusinessLogic", "Manager"], "forbidden_prefixes": ["s (plural)"] },
+    "brokers": { "convention": "Singular PascalCase + Broker suffix", "forbidden_prefixes": ["s (plural)"] },
+    "controllers": { "convention": "Plural PascalCase + Controller suffix" },
+    "fields": { "convention": "camelCase", "forbidden_prefixes": ["_", "m_"], "forbidden_conventions": ["PascalCase"] }
+  },
+  "ordering": {
+    "object_initializer": "Property assignment order must match the property declaration order in the class definition",
+    "constructor_parameters": "Parameter order must match the field/property declaration order"
+  },
+  "structure": {
+    "field_reference": "Always use this. prefix for private field access",
+    "constructor_literals": "Named aliases required when passing literal values",
+    "new_expression": "Use var x = new Type(...); never Type x = new (...)"
+  }
+}

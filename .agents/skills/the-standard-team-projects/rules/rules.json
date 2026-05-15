@@ -1,0 +1,62 @@
+{
+  "skill": "the-standard-team-projects",
+  "version": "0.1.0",
+  "rules": [
+    {
+      "id": "tst-projects-001",
+      "severity": "ERROR",
+      "category": "Solution Structure",
+      "source_section": "4.1.2.1",
+      "rule": "A solution must include at minimum: an API project, a Build infrastructure project, a Provision infrastructure project, a Build test project, and an Acceptance test project."
+    },
+    {
+      "id": "tst-projects-002",
+      "severity": "ERROR",
+      "category": "Solution Structure",
+      "source_section": "4.1.2.1",
+      "rule": "Project names must follow the pattern {Product}.{Layer}."
+    },
+    {
+      "id": "tst-projects-003",
+      "severity": "ERROR",
+      "category": "Project Folder Structure",
+      "source_section": "4.1.2.1",
+      "rule": "The API project must organise code into: Brokers/, Models/, Services/, Controllers/, and Migrations/ (when EF Core is used)."
+    },
+    {
+      "id": "tst-projects-004",
+      "severity": "ERROR",
+      "category": "Project Folder Structure",
+      "source_section": "4.1.2.1",
+      "rule": "Models/ must be sub-organised by service layer. Each entity folder must contain an Exceptions/ subfolder."
+    },
+    {
+      "id": "tst-projects-005",
+      "severity": "ERROR",
+      "category": "Project Folder Structure",
+      "source_section": "4.1.2.1",
+      "rule": "Services/ must be sub-organised by service layer: Foundations/, Processings/, Orchestrations/, etc."
+    },
+    {
+      "id": "tst-projects-006",
+      "severity": "ERROR",
+      "category": "Project Folder Structure",
+      "source_section": "4.1.2.1",
+      "rule": "Test project folder structure must mirror the API project structure, grouping tests by Services/[Service Type]/[ServiceName]."
+    },
+    {
+      "id": "tst-projects-007",
+      "severity": "ERROR",
+      "category": "Prohibitions",
+      "source_section": "4.1.2.1",
+      "rule": "Projects must not use a flat folder structure — all code must be organised into the defined hierarchy."
+    },
+    {
+      "id": "tst-projects-008",
+      "severity": "ERROR",
+      "category": "Prohibitions",
+      "source_section": "4.1.2.1",
+      "rule": "Entity model folders must not omit the Exceptions/ subfolder."
+    }
+  ]
+}

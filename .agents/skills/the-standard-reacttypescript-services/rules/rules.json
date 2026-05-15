@@ -1,0 +1,47 @@
+{
+  "skill": "the-standard-reacttypescript-services",
+  "rules": [
+    {
+      "id": "tsr-foundation-001",
+      "severity": "ERROR",
+      "category": "Dependencies",
+      "rule": "A foundation service must depend only on brokers, models, and approved same-layer dependencies."
+    },
+    {
+      "id": "tsr-foundation-002",
+      "severity": "ERROR",
+      "category": "No React",
+      "rule": "A foundation service must not import React, useState, useEffect, or any React hook."
+    },
+    {
+      "id": "tsr-foundation-003",
+      "severity": "ERROR",
+      "category": "No JSX",
+      "rule": "A foundation service must not return JSX or contain JSX expressions."
+    },
+    {
+      "id": "tsr-foundation-004",
+      "severity": "ERROR",
+      "category": "Validate Before Broker",
+      "rule": "A foundation service must validate all inputs before calling a broker."
+    },
+    {
+      "id": "tsr-foundation-005",
+      "severity": "ERROR",
+      "category": "Exception Localization",
+      "rule": "A foundation service must catch broker exceptions and re-throw as domain-specific exceptions with meaningful context."
+    },
+    {
+      "id": "tsr-foundation-006",
+      "severity": "ERROR",
+      "category": "No Navigation",
+      "rule": "A foundation service must not perform page navigation."
+    },
+    {
+      "id": "tsr-foundation-007",
+      "severity": "ERROR",
+      "category": "No State Ownership",
+      "rule": "A foundation service must not own React state."
+    }
+  ]
+}

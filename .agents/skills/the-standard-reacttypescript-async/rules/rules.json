@@ -1,0 +1,35 @@
+{
+  "skill": "the-standard-reacttypescript-async",
+  "rules": [
+    {
+      "id": "tsr-async-001",
+      "severity": "ERROR",
+      "category": "State Coverage",
+      "rule": "Async page loading must explicitly handle loading, success, empty, and failure states."
+    },
+    {
+      "id": "tsr-async-002",
+      "severity": "ERROR",
+      "category": "Stale Update Protection",
+      "rule": "Effects performing async work must use a mounted flag or AbortController with cleanup."
+    },
+    {
+      "id": "tsr-async-003",
+      "severity": "ERROR",
+      "category": "Independent Parallelism",
+      "rule": "Use Promise.all only when operations are truly independent."
+    },
+    {
+      "id": "tsr-async-004",
+      "severity": "ERROR",
+      "category": "No Parallel Dependents",
+      "rule": "Dependent async operations must be executed sequentially — not with Promise.all."
+    },
+    {
+      "id": "tsr-async-005",
+      "severity": "ERROR",
+      "category": "No Ignored Rejections",
+      "rule": "Rejected promises must never be ignored. Every async effect must have try/catch."
+    }
+  ]
+}

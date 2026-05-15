@@ -1,0 +1,17 @@
+{
+  "name": "the-standard-reacttypescript-pages",
+  "version": "0.1.0",
+  "description": "Enforces page routing responsibility, view-service delegation through page hooks, loading/error/empty state coordination, and prohibition of broker calls and business rules in pages.",
+  "standard_version": "v0.1.0",
+  "skill_version": "v0.1.0",
+  "inputs": ["Page TSX files and page hook TS files in src/pages/**/*"],
+  "outputs": [
+    "Thin route-level page components coordinating loading, error, empty, and success states",
+    "Review feedback citing rule IDs"
+  ],
+  "dependencies": [
+    "the-standard-reacttypescript-view-services",
+    "the-standard-reacttypescript-components"
+  ],
+  "applies_to": ["src/pages/**/*"]
+}

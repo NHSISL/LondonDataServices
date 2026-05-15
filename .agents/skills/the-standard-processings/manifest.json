@@ -1,0 +1,11 @@
+{
+  "name": "the-standard-processings",
+  "version": "0.1.0",
+  "description": "Enforces processing service design: combination of foundation primitives into business workflows with no direct broker access.",
+  "the_standard_version": "v2.50.0",
+  "skill_version": "v0.1.0",
+  "inputs": ["C# processing service source file", "C# processing service test file"],
+  "outputs": ["Standard-compliant processing service code", "review feedback"],
+  "dependencies": ["the-standard-core", "the-standard-foundations"],
+  "applies_to": ["*ProcessingService*.cs", "*ProcessingServiceTests*.cs"]
+}

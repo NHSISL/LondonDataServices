@@ -1,0 +1,16 @@
+{
+  "skill": "the-standard-reacttypescript-models",
+  "version": "1.0.0",
+  "naming": {
+    "foundation_model": "src/models/foundations/{domain}/{Domain}.ts",
+    "view_model": "src/models/views/{domain}/{Domain}View.ts",
+    "prop_model": "src/models/components/{domain}/{Domain}Props.ts",
+    "error_model": "src/models/errors/{Domain}Error.ts"
+  },
+  "structure": {
+    "foundation_model_fields": "domain or API-facing fields only",
+    "view_model_fields": "display-ready fields produced by view service",
+    "prop_model_fields": "rendering input subset relevant to one component",
+    "behavior_in_models": "forbidden"
+  }
+}

@@ -1,0 +1,62 @@
+{
+  "skill": "the-standard-team-commits",
+  "version": "0.1.0",
+  "rules": [
+    {
+      "id": "tst-commits-001",
+      "severity": "ERROR",
+      "category": "TDD Commits",
+      "source_section": "4.1.3",
+      "rule": "Failing test commits must use the format: [Test Name] -> FAIL."
+    },
+    {
+      "id": "tst-commits-002",
+      "severity": "ERROR",
+      "category": "TDD Commits",
+      "source_section": "4.1.3",
+      "rule": "Passing implementation commits must use the format: [Test Name] -> PASS."
+    },
+    {
+      "id": "tst-commits-003",
+      "severity": "ERROR",
+      "category": "Non-TDD Commits",
+      "source_section": "4.1.3",
+      "rule": "Non-TDD commits must follow the format: [CATEGORY]: [Description Of Work Completed]."
+    },
+    {
+      "id": "tst-commits-004",
+      "severity": "ERROR",
+      "category": "Non-TDD Commits",
+      "source_section": "4.1.3",
+      "rule": "[CATEGORY] must always be in CAPS and taken from the approved category list."
+    },
+    {
+      "id": "tst-commits-005",
+      "severity": "ERROR",
+      "category": "Non-TDD Commits",
+      "source_section": "4.1.3",
+      "rule": "[Description Of Work Completed] must be written in Pascal Case."
+    },
+    {
+      "id": "tst-commits-006",
+      "severity": "ERROR",
+      "category": "Prohibitions",
+      "source_section": "4.1.3",
+      "rule": "TDD commit messages must not use the [CATEGORY]: [Description] format."
+    },
+    {
+      "id": "tst-commits-007",
+      "severity": "ERROR",
+      "category": "Prohibitions",
+      "source_section": "4.1.3",
+      "rule": "The category in a non-TDD commit must not be lowercase or mixed-case."
+    },
+    {
+      "id": "tst-commits-008",
+      "severity": "WARN",
+      "category": "Prohibitions",
+      "source_section": "4.1.3",
+      "rule": "Commit descriptions must not be vague (fix, update, changes, wip without context are forbidden)."
+    }
+  ]
+}

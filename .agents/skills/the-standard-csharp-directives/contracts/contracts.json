@@ -1,0 +1,34 @@
+{
+  "skill": "the-standard-csharp-directives",
+  "version": "1.0.0",
+  "ordering": {
+    "directive_groups": [
+      {
+        "group": 1,
+        "label": "System namespaces",
+        "pattern": "^using System(\\..+)?;$",
+        "sorted": "alphabetical-ascending"
+      },
+      {
+        "group": 2,
+        "label": "Third-party namespaces",
+        "pattern": "^using (?!System|{InternalRootNamespace}).*;$",
+        "sorted": "alphabetical-ascending"
+      },
+      {
+        "group": 3,
+        "label": "Internal / project namespaces",
+        "pattern": "^using {InternalRootNamespace}(\\..+)?;$",
+        "sorted": "alphabetical-ascending"
+      }
+    ],
+    "group_separator": "exactly one blank line"
+  },
+  "structure": {
+    "placement": "top of file, outside namespace block",
+    "one_directive_per_line": true,
+    "unused_directives": "forbidden",
+    "using_static": "forbidden unless Standard-permitted",
+    "alias_directives": "allowed only to resolve ambiguity"
+  }
+}

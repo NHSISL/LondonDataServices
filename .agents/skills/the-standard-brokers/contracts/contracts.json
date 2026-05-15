@@ -1,0 +1,22 @@
+{
+  "skill": "the-standard-brokers",
+  "version": "1.0.0",
+  "naming": {
+    "interface_pattern": "I{Technology?}{Entity}Broker — technology suffix on concrete class only",
+    "examples": {
+      "correct_interface": "IStorageBroker",
+      "correct_concrete_single": "StorageBroker",
+      "correct_concrete_multi_tech": "SqlStorageBroker",
+      "incorrect": "ISqlStorageBroker"
+    }
+  },
+  "methods": {
+    "storage": ["Insert{Entity}Async", "Select{Entity}ByIdAsync", "SelectAll{Entity}sAsync", "Update{Entity}Async", "Delete{Entity}ByIdAsync"],
+    "api": ["Post{Entity}Async", "Get{Entity}ByIdAsync", "GetAll{Entity}sAsync", "Put{Entity}Async", "Delete{Entity}ByIdAsync"],
+    "queue": ["Enqueue{Entity}Async", "Dequeue{Entity}Async"]
+  },
+  "structure": {
+    "partial_classes": "One root broker file (StorageBroker.cs) with per-entity partial files (StorageBroker.Students.cs)",
+    "configuration": "IConfiguration injected via constructor; never use static config"
+  }
+}

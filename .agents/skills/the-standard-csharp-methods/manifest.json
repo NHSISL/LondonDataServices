@@ -1,0 +1,19 @@
+{
+  "name": "the-standard-csharp-methods",
+  "version": "0.1.0",
+  "description": "Enforces method spacing, line length, parameter breaking, chaining, and return statement layout per The Standard C# Coding Standard v0.8.",
+  "csharp_standard_version": "v0.8",
+  "skill_version": "v0.1.0",
+  "inputs": [
+    "C# source file (*.cs)"
+  ],
+  "outputs": [
+    "Style-compliant C# source file with correctly formatted methods",
+    "Review feedback citing rule IDs"
+  ],
+  "dependencies": [
+    "the-standard-csharp-files",
+    "the-standard-csharp-classes"
+  ],
+  "applies_to": ["*.cs"]
+}

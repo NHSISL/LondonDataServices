@@ -47,6 +47,10 @@
       <BuildType Solution="Test|*" Project="Debug" />
     </Project>
     <Project Path="LHDS.Core.Tests.Integration.EmisLandings/LHDS.Core.Tests.Integration.EmisLandings.csproj" />
+    <Project Path="LHDS.Core.Tests.Integration.IDecide/LHDS.Core.Tests.Integration.IDecide.csproj">
+      <BuildType Solution="Acceptance|*" Project="Debug" />
+      <BuildType Solution="Test|*" Project="Debug" />
+    </Project>
     <Project Path="LHDS.Core.Tests.Integration.OptOuts/LHDS.Core.Tests.Integration.OptOuts.csproj" />
     <Project Path="LHDS.Core.Tests.Integration.Pds/LHDS.Core.Tests.Integration.Pds.csproj">
       <BuildType Solution="Acceptance|*" Project="Debug" />
@@ -106,8 +110,4 @@
       <BuildType Solution="Test|*" Project="Debug" />
     </Project>
   </Folder>
-  <Project Path="LHDS.Core.Tests.Integration.IDecide/LHDS.Core.Tests.Integration.IDecide.csproj">
-    <BuildType Solution="Acceptance|*" Project="Debug" />
-    <BuildType Solution="Test|*" Project="Debug" />
-  </Project>
 </Solution>

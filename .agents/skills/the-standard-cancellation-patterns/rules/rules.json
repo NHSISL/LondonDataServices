@@ -1,0 +1,125 @@
+{
+  "skill": "the-standard-cancellation-patterns",
+  "version": "0.1.0",
+  "rules": [
+    {
+      "id": "tsc-csharp-cp-001",
+      "severity": "ERROR",
+      "category": "Method Signature",
+      "source_section": "3.1",
+      "rule": "CancellationToken must be the last parameter in every method signature."
+    },
+    {
+      "id": "tsc-csharp-cp-002",
+      "severity": "ERROR",
+      "category": "Method Signature",
+      "source_section": "3.2",
+      "rule": "CancellationToken must default to `default` — never omit the default value."
+    },
+    {
+      "id": "tsc-csharp-cp-003",
+      "severity": "ERROR",
+      "category": "Method Signature",
+      "source_section": "3.3",
+      "rule": "CancellationToken must not be nullable (CancellationToken? is forbidden)."
+    },
+    {
+      "id": "tsc-csharp-cp-004",
+      "severity": "ERROR",
+      "category": "Method Signature",
+      "source_section": "3.4",
+      "rule": "The parameter must be named cancellationToken — abbreviated names (ct, token, cancelToken) are forbidden."
+    },
+    {
+      "id": "tsc-csharp-cp-005",
+      "severity": "WARN",
+      "category": "Applicability",
+      "source_section": "4.0",
+      "rule": "CancellationToken should be accepted by methods that perform database, HTTP, file, queue/messaging, long-running, orchestration fan-out, or parallel operations."
+    },
+    {
+      "id": "tsc-csharp-cp-006",
+      "severity": "WARN",
+      "category": "Applicability",
+      "source_section": "5.0",
+      "rule": "CancellationToken must not be added to trivial in-memory methods that perform no I/O and have no waiting behaviour."
+    },
+    {
+      "id": "tsc-csharp-cp-007",
+      "severity": "ERROR",
+      "category": "Token Propagation",
+      "source_section": "6.1",
+      "rule": "The same token must flow through every layer. The token must never be silently dropped."
+    },
+    {
+      "id": "tsc-csharp-cp-008",
+      "severity": "ERROR",
+      "category": "Token Propagation",
+      "source_section": "6.2",
+      "rule": "A new CancellationTokenSource must not be created to replace an upstream token. Use CreateLinkedTokenSource when a timeout must be added."
+    },
+    {
+      "id": "tsc-csharp-cp-009",
+      "severity": "ERROR",
+      "category": "Token Propagation",
+      "source_section": "6.3",
+      "rule": "When timeout behaviour is required, tokens must be linked using CancellationTokenSource.CreateLinkedTokenSource(cancellationToken, timeoutSource.Token)."
+    },
+    {
+      "id": "tsc-csharp-cp-017",
+      "severity": "ERROR",
+      "category": "Token Propagation",
+      "source_section": "6.4",
+      "rule": "Any method that accepts a CancellationToken must call cancellationToken.ThrowIfCancellationRequested() before executing dependency or long-running operations."
+    },
+    {
+      "id": "tsc-csharp-cp-010",
+      "severity": "ERROR",
+      "category": "TryCatch Exception Handling",
+      "source_section": "7.1",
+      "rule": "When a timeout source exists, catch (OperationCanceledException) when (timeoutSource.IsCancellationRequested) must always appear before the plain catch (OperationCanceledException) block."
+    },
+    {
+      "id": "tsc-csharp-cp-011",
+      "severity": "ERROR",
+      "category": "TryCatch Exception Handling",
+      "source_section": "7.2",
+      "rule": "A TimeoutException produced from a timeout-triggered OperationCanceledException must be wrapped and treated as a dependency failure."
+    },
+    {
+      "id": "tsc-csharp-cp-012",
+      "severity": "ERROR",
+      "category": "TryCatch Exception Handling",
+      "source_section": "7.3",
+      "rule": "OperationCanceledException must never be wrapped in any other exception type. It must always be rethrown with throw;."
+    },
+    {
+      "id": "tsc-csharp-cp-013",
+      "severity": "ERROR",
+      "category": "TryCatch Exception Handling",
+      "source_section": "7.4",
+      "rule": "When a method uses CancellationToken but has no timeout differentiation, catch (OperationCanceledException) must not be present."
+    },
+    {
+      "id": "tsc-csharp-cp-014",
+      "severity": "ERROR",
+      "category": "Parallel Orchestration",
+      "source_section": "8.0",
+      "rule": "The same CancellationToken must be passed to every parallel task in a Task.WhenAll fan-out."
+    },
+    {
+      "id": "tsc-csharp-cp-015",
+      "severity": "ERROR",
+      "category": "Testing",
+      "source_section": "9.1",
+      "rule": "Dependency exception tests must include TimeoutException in the Theory MemberData."
+    },
+    {
+      "id": "tsc-csharp-cp-016",
+      "severity": "ERROR",
+      "category": "Testing",
+      "source_section": "9.2",
+      "rule": "Tests must verify that a true cancellation results in OperationCanceledException propagating unwrapped."
+    }
+  ]
+}

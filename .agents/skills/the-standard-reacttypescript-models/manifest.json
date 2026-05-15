@@ -1,0 +1,14 @@
+{
+  "name": "the-standard-reacttypescript-models",
+  "version": "0.1.0",
+  "description": "Enforces model categorization, layer-appropriate model usage, and prohibition of behavior in models for Standard-compliant React + TypeScript + Vite projects.",
+  "standard_version": "v0.1.0",
+  "skill_version": "v0.1.0",
+  "inputs": ["TypeScript model files in src/models/**/*"],
+  "outputs": [
+    "Correctly categorized and behavior-free model types",
+    "Review feedback citing rule IDs"
+  ],
+  "dependencies": ["the-standard-reacttypescript-typescript"],
+  "applies_to": ["src/models/**/*"]
+}

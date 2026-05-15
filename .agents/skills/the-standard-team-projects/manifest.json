@@ -1,0 +1,17 @@
+{
+  "name": "the-standard-team-projects",
+  "version": "0.1.0",
+  "description": "Governs Visual Studio solution structure and project folder layout following The Standard Team practices.",
+  "the_standard_team_version": "v0.1.0",
+  "skill_version": "v0.1.0",
+  "inputs": [
+    "Solution file (*.sln)",
+    "Project folder structure"
+  ],
+  "outputs": [
+    "Compliant solution and project folder layout",
+    "Review feedback citing rule IDs"
+  ],
+  "dependencies": [],
+  "applies_to": ["*.sln", "*.csproj", "**/"]
+}

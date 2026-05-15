@@ -1,0 +1,59 @@
+{
+  "skill": "the-standard-csharp-variables",
+  "rules": [
+    {
+      "id": "tsc-csharp-variables-001",
+      "severity": "ERROR",
+      "category": "Naming",
+      "rule": "Variable names must be full English words — no abbreviations."
+    },
+    {
+      "id": "tsc-csharp-variables-002",
+      "severity": "ERROR",
+      "category": "Naming",
+      "rule": "Collection variables must be named with the plural form of the element type."
+    },
+    {
+      "id": "tsc-csharp-variables-003",
+      "severity": "ERROR",
+      "category": "Naming",
+      "rule": "Variable names must not embed the type (no List, Array, Obj suffixes)."
+    },
+    {
+      "id": "tsc-csharp-variables-004",
+      "severity": "ERROR",
+      "category": "Type Declaration",
+      "rule": "Use var when the declared type is immediately obvious from the right-hand side."
+    },
+    {
+      "id": "tsc-csharp-variables-005",
+      "severity": "ERROR",
+      "category": "Type Declaration",
+      "rule": "Use the explicit type when the right-hand side does not make the type immediately obvious."
+    },
+    {
+      "id": "tsc-csharp-variables-006",
+      "severity": "ERROR",
+      "category": "Line Length and Layout",
+      "rule": "When a variable declaration exceeds 120 characters, the right-hand side must be broken to the next line and indented by one level."
+    },
+    {
+      "id": "tsc-csharp-variables-007",
+      "severity": "WARN",
+      "category": "Line Length and Layout",
+      "rule": "Logically distinct groups of variable declarations must be separated by exactly one blank line."
+    },
+    {
+      "id": "tsc-csharp-variables-008",
+      "severity": "ERROR",
+      "category": "Naming",
+      "rule": "A null or default placeholder variable must be named maybe{Entity} (e.g., maybeStudent)."
+    },
+    {
+      "id": "tsc-csharp-variables-009",
+      "severity": "ERROR",
+      "category": "Line Length and Layout",
+      "rule": "Multiple variables must not be declared on the same line."
+    }
+  ]
+}

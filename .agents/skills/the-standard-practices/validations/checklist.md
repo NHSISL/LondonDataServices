@@ -1,67 +1,10 @@
-# The Standard Practices — Validation Checklist
+# The Standard Practices — Checklist
 
-Run this checklist when reviewing a PR, creating a branch, or making commits.
-
----
-
-## BRANCH NAMING
-
-- [ ] **prac-010** Branch name follows `users/[username]/[CATEGORY]-[entity]-[action]`.
-- [ ] **prac-011** Username is the contributor's GitHub username.
-- [ ] **prac-012** Category is from the Standard category list and is UPPER-CASE.
-- [ ] **prac-013** Entity is identified in the branch name.
-- [ ] **prac-014** Action is identified in the branch name.
-- [ ] **prac-021** Size suffix (MAJOR/MEDIUM/MINOR) reflects actual test count change.
-
----
-
-## TDD COMMIT DISCIPLINE
-
-- [ ] **prac-030** TDD commits use FAIL/PASS pattern.
-- [ ] **prac-031** Each `[FAIL]` commit contains exactly one failing test.
-- [ ] **prac-032** Each `[PASS]` commit contains exactly one implementation unit.
-- [ ] **prac-033** FAIL commits were preceded by a verified red test run.
-- [ ] **prac-034** PASS commits were preceded by a verified green full suite run.
-- [ ] **prac-035** No FAIL commit contains multiple tests. No PASS commit contains multiple unrelated implementation units.
-
----
-
-## PULL REQUESTS
-
-- [ ] **prac-040** PR title follows `[CATEGORY]: [Entity] - [Description]`.
-- [ ] **prac-041** Diff contains no sensitive data (secrets, API keys, passwords).
-- [ ] **prac-042** CI build and all tests pass.
-- [ ] **prac-043** A human reviewer has approved (not AI-only approval).
-- [ ] **prac-044** PR is focused on one category of work (no mixing).
-
----
-
-## CONFIGURATION
-
-- [ ] **prac-050** No environment-specific values hard-coded in source files.
-- [ ] **prac-051** Sensitive values are in environment variables or secrets management.
-- [ ] **prac-052** Local config files are in `.gitignore`.
-- [ ] **prac-053** CI/CD workflows use repository secrets.
-- [ ] **prac-054** No hard-coded production defaults in configuration model classes.
-
----
-
-## FORKING WORKFLOW (Open Source)
-
-- [ ] **prac-060** Contribution comes from a fork, not a direct branch on the official repo.
-- [ ] **prac-061** Contributor did not push directly to the official repository.
-- [ ] **prac-062** PR from fork has been reviewed and build is verified before merge.
-
----
-
-## RESULT
-
-| Category | PASS / FAIL |
-|---|---|
-| Branch Naming | |
-| TDD Commit Discipline | |
-| Pull Requests | |
-| Configuration | |
-| Forking Workflow | |
-
-**Overall: PASS only when every row is PASS.**
+- [ ] ts-practices-001: Work originates from a fork; no direct pushes to upstream.
+- [ ] ts-practices-002: Branch name matches `users/{handle}/{type}/{short-description}` in lowercase-kebab-case.
+- [ ] ts-practices-003: All commit messages use ALL-CAPS category prefix and imperative sentence format.
+- [ ] ts-practices-004: Each commit represents exactly one logical change.
+- [ ] ts-practices-005: Build is green and all tests pass before PR is submitted.
+- [ ] ts-practices-006: PR addresses exactly one concern.
+- [ ] ts-practices-007: No secrets, connection strings, or API keys in any committed file.
+- [ ] ts-practices-008: CI/CD pipeline is defined in YAML committed to the repository.

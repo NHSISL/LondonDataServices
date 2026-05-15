@@ -1,0 +1,17 @@
+{
+  "name": "the-standard-reacttypescript-accessibility",
+  "version": "0.1.0",
+  "description": "Enforces semantic HTML, accessible form labels, image alt text, keyboard navigation, and error message accessibility in React components and pages.",
+  "standard_version": "v0.1.0",
+  "skill_version": "v0.1.0",
+  "inputs": ["React TSX component and page files"],
+  "outputs": [
+    "Accessible components with semantic HTML, labeled inputs, and keyboard-navigable interactions",
+    "Review feedback citing rule IDs"
+  ],
+  "dependencies": [
+    "the-standard-reacttypescript-components",
+    "the-standard-reacttypescript-pages"
+  ],
+  "applies_to": ["*.tsx"]
+}

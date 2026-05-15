@@ -1,0 +1,69 @@
+{
+  "skill": "the-standard-team-branching",
+  "version": "0.1.0",
+  "rules": [
+    {
+      "id": "tst-branching-001",
+      "severity": "ERROR",
+      "category": "Forking Workflow",
+      "source_section": "4.1.1.1",
+      "rule": "All open-source contributions must follow the forking workflow: fork, clone, branch, push to fork, open PR."
+    },
+    {
+      "id": "tst-branching-002",
+      "severity": "ERROR",
+      "category": "Branch Naming",
+      "source_section": "4.1.1.2",
+      "rule": "Branch names must follow the pattern: users/[username]/[category]-[entity]-[action]."
+    },
+    {
+      "id": "tst-branching-003",
+      "severity": "ERROR",
+      "category": "Branch Naming",
+      "source_section": "4.1.1.3",
+      "rule": "[category] must be taken from the approved category list."
+    },
+    {
+      "id": "tst-branching-004",
+      "severity": "ERROR",
+      "category": "Branch Naming",
+      "source_section": "4.1.1.2",
+      "rule": "[username] must be the contributor's GitHub username."
+    },
+    {
+      "id": "tst-branching-005",
+      "severity": "ERROR",
+      "category": "Branch Naming",
+      "source_section": "4.1.1.2",
+      "rule": "[entity] must identify the model, service, or component being worked on."
+    },
+    {
+      "id": "tst-branching-006",
+      "severity": "ERROR",
+      "category": "Branch Naming",
+      "source_section": "4.1.1.2",
+      "rule": "[action] must describe what is being done to the entity."
+    },
+    {
+      "id": "tst-branching-007",
+      "severity": "ERROR",
+      "category": "Prohibitions",
+      "source_section": "4.1.1.1",
+      "rule": "Contributors must not push directly to the official repository."
+    },
+    {
+      "id": "tst-branching-008",
+      "severity": "ERROR",
+      "category": "Prohibitions",
+      "source_section": "4.1.1.2",
+      "rule": "Branch names must not deviate from the users/[username]/[category]-[entity]-[action] pattern."
+    },
+    {
+      "id": "tst-branching-009",
+      "severity": "ERROR",
+      "category": "Prohibitions",
+      "source_section": "4.1.1.3",
+      "rule": "Branch names must not use unapproved categories."
+    }
+  ]
+}

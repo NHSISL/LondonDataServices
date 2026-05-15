@@ -1,0 +1,32 @@
+{
+  "name": "the-standard-reacttypescript-review",
+  "version": "0.1.0",
+  "description": "Governs how pull request review feedback is structured, what architectural issues must be blocked, how AI-generated code is evaluated, and how personal preferences are excluded from reviews.",
+  "standard_version": "v0.1.0",
+  "skill_version": "v0.1.0",
+  "inputs": ["Pull request diffs on *.tsx and *.ts files"],
+  "outputs": [
+    "Review comments in format: {SEVERITY} {RULE-ID} / Problem / Why / Suggested fix"
+  ],
+  "dependencies": [
+    "the-standard-reacttypescript-files",
+    "the-standard-reacttypescript-typescript",
+    "the-standard-reacttypescript-models",
+    "the-standard-reacttypescript-brokers",
+    "the-standard-reacttypescript-services",
+    "the-standard-reacttypescript-view-services",
+    "the-standard-reacttypescript-components",
+    "the-standard-reacttypescript-pages",
+    "the-standard-reacttypescript-hooks",
+    "the-standard-reacttypescript-state",
+    "the-standard-reacttypescript-routing",
+    "the-standard-reacttypescript-styling",
+    "the-standard-reacttypescript-errors",
+    "the-standard-reacttypescript-async",
+    "the-standard-reacttypescript-vite",
+    "the-standard-reacttypescript-testing",
+    "the-standard-reacttypescript-accessibility",
+    "the-standard-reacttypescript-performance"
+  ],
+  "applies_to": ["*.tsx", "*.ts", "pull-requests"]
+}

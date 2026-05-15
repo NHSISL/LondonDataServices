@@ -1,0 +1,23 @@
+{
+  "skill": "the-standard-reacttypescript-components",
+  "version": "1.0.0",
+  "naming": {
+    "component_file": "{Domain}{Purpose}.tsx",
+    "prop_model": "{Domain}{Purpose}Props"
+  },
+  "structure": {
+    "folder": "src/components/{domain}/",
+    "data_flow": "props-first",
+    "forbidden_imports": ["brokers", "foundation services"],
+    "forbidden_content": [
+      "fetch() or HTTP calls",
+      "business rule conditionals in JSX",
+      "duplicate state from parent or view model"
+    ]
+  },
+  "accessibility": {
+    "interactive_elements": "must use semantic HTML (button, a, input, select)",
+    "onclick_on_div": "forbidden",
+    "keyboard_navigation": "must be preserved"
+  }
+}

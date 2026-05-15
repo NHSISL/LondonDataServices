@@ -1,0 +1,34 @@
+{
+  "skill": "the-standard-csharp-variables",
+  "version": "1.0.0",
+  "naming": {
+    "local_variables": {
+      "convention": "camelCase",
+      "full_words_required": true,
+      "abbreviations": "forbidden",
+      "type_in_name": "forbidden"
+    },
+    "collection_variables": {
+      "form": "plural of element type",
+      "examples_good": ["students", "courses", "addresses"],
+      "examples_bad": ["studentList", "studentArray", "courseCollection"]
+    },
+    "null_placeholder_variables": {
+      "pattern": "maybe{Entity}",
+      "examples_good": ["maybeStudent", "maybeCourse"],
+      "examples_bad": ["nullStudent", "defaultStudent", "tempStudent"]
+    }
+  },
+  "ordering": {
+    "declaration_groups": {
+      "separator": "exactly one blank line between logically distinct groups"
+    }
+  },
+  "structure": {
+    "var_usage": "when right-hand type is immediately obvious (new, cast, literal)",
+    "explicit_type_usage": "when right-hand type is not immediately obvious",
+    "multi_declaration_per_line": "forbidden",
+    "max_line_length": 120,
+    "line_break_strategy": "break right-hand side to next line, indent one level"
+  }
+}

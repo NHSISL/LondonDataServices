@@ -1,0 +1,14 @@
+{
+  "skill": "the-standard-exceptions",
+  "rules": [
+    { "id": "ts-exceptions-001", "severity": "ERROR", "category": "Hierarchy", "rule": "Each service must define a three-category exception hierarchy: {Entity}ValidationException, {Entity}DependencyException, {Entity}ServiceException." },
+    { "id": "ts-exceptions-002", "severity": "ERROR", "category": "Wrapping", "rule": "All broker/infrastructure exceptions must be caught and re-thrown wrapped as {Entity}DependencyException." },
+    { "id": "ts-exceptions-003", "severity": "ERROR", "category": "Wrapping", "rule": "All unexpected exceptions must be caught and re-thrown wrapped as {Entity}ServiceException." },
+    { "id": "ts-exceptions-004", "severity": "ERROR", "category": "Wrapping", "rule": "All validation failures must be thrown as {Entity}ValidationException with the specific validation error as the inner exception." },
+    { "id": "ts-exceptions-005", "severity": "ERROR", "category": "Hierarchy", "rule": "All custom exception classes must inherit from Xeption (or the project's designated base exception class)." },
+    { "id": "ts-exceptions-006", "severity": "ERROR", "category": "Wrapping", "rule": "All wrapping exceptions must receive the original exception as the innerException constructor argument." },
+    { "id": "ts-exceptions-007", "severity": "ERROR", "category": "Hierarchy", "rule": "Every exception class name must include the entity name (e.g., StudentValidationException, not ValidationException)." },
+    { "id": "ts-exceptions-008", "severity": "ERROR", "category": "Dependency Validation", "rule": "Infrastructure-reported validation failures must be wrapped as {Entity}DependencyValidationException." },
+    { "id": "ts-exceptions-009", "severity": "ERROR", "category": "Not Found", "rule": "A not-found condition after a retrieval must throw NotFound{Entity}Exception wrapped inside {Entity}ValidationException." }
+  ]
+}

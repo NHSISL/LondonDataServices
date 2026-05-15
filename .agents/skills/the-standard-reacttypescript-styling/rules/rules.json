@@ -1,0 +1,35 @@
+{
+  "skill": "the-standard-reacttypescript-styling",
+  "rules": [
+    {
+      "id": "tsr-styles-001",
+      "severity": "WARN",
+      "category": "Bootstrap Utility Classes",
+      "rule": "Use Bootstrap utility classes for layout and spacing when Bootstrap is the selected foundation."
+    },
+    {
+      "id": "tsr-styles-002",
+      "severity": "ERROR",
+      "category": "No Business Rules in Class Selection",
+      "rule": "Do not encode business rules in CSS class selection. Use view model fields for domain-driven class decisions."
+    },
+    {
+      "id": "tsr-styles-003",
+      "severity": "ERROR",
+      "category": "Component-Scoped Styles",
+      "rule": "Component-specific styles must be co-located with the component or in a named style module."
+    },
+    {
+      "id": "tsr-styles-004",
+      "severity": "ERROR",
+      "category": "Global Styles Discipline",
+      "rule": "Global stylesheets must contain only genuinely global concerns."
+    },
+    {
+      "id": "tsr-styles-005",
+      "severity": "WARN",
+      "category": "No Unnecessary Inline Styles",
+      "rule": "Do not use inline styles except for dynamic values that cannot be expressed with classes."
+    }
+  ]
+}

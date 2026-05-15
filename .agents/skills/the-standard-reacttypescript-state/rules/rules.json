@@ -1,0 +1,47 @@
+{
+  "skill": "the-standard-reacttypescript-state",
+  "rules": [
+    {
+      "id": "tsr-state-001",
+      "severity": "ERROR",
+      "category": "Locality",
+      "rule": "Keep state as local as possible. Elevate only when siblings genuinely share it."
+    },
+    {
+      "id": "tsr-state-002",
+      "severity": "ERROR",
+      "category": "Locality",
+      "rule": "Do not duplicate server data into multiple independent component states."
+    },
+    {
+      "id": "tsr-state-003",
+      "severity": "WARN",
+      "category": "URL State",
+      "rule": "Use URL state for route-significant, shareable, or bookmarkable state."
+    },
+    {
+      "id": "tsr-state-004",
+      "severity": "ERROR",
+      "category": "Component State",
+      "rule": "Use component state for local UI state with no meaning outside the component."
+    },
+    {
+      "id": "tsr-state-005",
+      "severity": "ERROR",
+      "category": "Application State",
+      "rule": "Use application-level state only for genuinely cross-cutting concerns."
+    },
+    {
+      "id": "tsr-state-006",
+      "severity": "ERROR",
+      "category": "Application State",
+      "rule": "Global state must not be used to avoid designing props."
+    },
+    {
+      "id": "tsr-state-007",
+      "severity": "ERROR",
+      "category": "Business Transitions",
+      "rule": "State transitions with business meaning must be handled through services, not directly in state setters."
+    }
+  ]
+}

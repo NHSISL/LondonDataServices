@@ -1,0 +1,41 @@
+{
+  "skill": "the-standard-reacttypescript-view-services",
+  "rules": [
+    {
+      "id": "tsr-viewservices-001",
+      "severity": "ERROR",
+      "category": "Coordinate Foundation Services",
+      "rule": "A view service must coordinate foundation services to produce view models."
+    },
+    {
+      "id": "tsr-viewservices-002",
+      "severity": "ERROR",
+      "category": "No JSX",
+      "rule": "A view service must not return JSX or contain JSX expressions."
+    },
+    {
+      "id": "tsr-viewservices-003",
+      "severity": "ERROR",
+      "category": "No React",
+      "rule": "A view service must not import React or any React hook."
+    },
+    {
+      "id": "tsr-viewservices-004",
+      "severity": "ERROR",
+      "category": "No Direct Broker Calls",
+      "rule": "A view service must not call brokers directly. Default flow: View Service → Foundation Service → Broker."
+    },
+    {
+      "id": "tsr-viewservices-005",
+      "severity": "WARN",
+      "category": "Data Transformation",
+      "rule": "A view service may aggregate, sort, filter, and map data into view models."
+    },
+    {
+      "id": "tsr-viewservices-006",
+      "severity": "ERROR",
+      "category": "No Rendering Concerns",
+      "rule": "A view service must not contain CSS class names, Bootstrap strings, or component names."
+    }
+  ]
+}

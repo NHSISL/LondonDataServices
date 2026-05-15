@@ -1,0 +1,28 @@
+{
+  "skill": "the-standard-reacttypescript-typescript",
+  "version": "1.0.0",
+  "structure": {
+    "tsconfig_required_options": {
+      "strict": true,
+      "noImplicitAny": true,
+      "strictNullChecks": true,
+      "noUncheckedIndexedAccess": true,
+      "exactOptionalPropertyTypes": true
+    },
+    "any_usage": "forbidden",
+    "unknown_usage": "required at unsafe external boundaries",
+    "barrel_files": "allowed only when they do not obscure layer direction"
+  },
+  "naming": {
+    "data_shapes": "use type keyword",
+    "behavioral_contracts": "use interface keyword",
+    "export_style": {
+      "services": "named export",
+      "brokers": "named export",
+      "models": "named export",
+      "hooks": "named export",
+      "pages": "default export allowed",
+      "components": "default export allowed when routing requires"
+    }
+  }
+}

@@ -1,0 +1,41 @@
+{
+  "skill": "the-standard-reacttypescript-typescript",
+  "rules": [
+    {
+      "id": "tsr-typescript-001",
+      "severity": "ERROR",
+      "category": "Strict Configuration",
+      "rule": "TypeScript must be configured with strict: true, noImplicitAny, strictNullChecks, noUncheckedIndexedAccess, and exactOptionalPropertyTypes."
+    },
+    {
+      "id": "tsr-typescript-002",
+      "severity": "ERROR",
+      "category": "Explicit Boundary Types",
+      "rule": "Explicit domain types must be used at all architectural boundaries — no implicit any or missing return types."
+    },
+    {
+      "id": "tsr-typescript-003",
+      "severity": "ERROR",
+      "category": "Type vs Interface",
+      "rule": "Use type for data shapes. Use interface for behavioral contracts (service and broker interfaces)."
+    },
+    {
+      "id": "tsr-typescript-004",
+      "severity": "ERROR",
+      "category": "No Any",
+      "rule": "any must not be used. Use unknown at unsafe boundaries and narrow to a known type."
+    },
+    {
+      "id": "tsr-typescript-005",
+      "severity": "ERROR",
+      "category": "Export Style",
+      "rule": "Services, brokers, models, hooks, and utilities must use named exports. Pages and components may use default exports only when routing conventions require it."
+    },
+    {
+      "id": "tsr-typescript-006",
+      "severity": "WARN",
+      "category": "Barrel Files",
+      "rule": "Barrel index.ts files must not obscure which architectural layer is being imported."
+    }
+  ]
+}

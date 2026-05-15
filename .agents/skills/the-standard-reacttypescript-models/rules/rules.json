@@ -1,0 +1,35 @@
+{
+  "skill": "the-standard-reacttypescript-models",
+  "rules": [
+    {
+      "id": "tsr-models-001",
+      "severity": "ERROR",
+      "category": "Foundation Models",
+      "rule": "Foundation models must represent domain or API-facing concepts only."
+    },
+    {
+      "id": "tsr-models-002",
+      "severity": "ERROR",
+      "category": "View Models",
+      "rule": "View models must represent UI-ready data produced by view services."
+    },
+    {
+      "id": "tsr-models-003",
+      "severity": "ERROR",
+      "category": "Component Prop Models",
+      "rule": "Component prop models must describe rendering input only."
+    },
+    {
+      "id": "tsr-models-004",
+      "severity": "ERROR",
+      "category": "Model Reuse",
+      "rule": "Raw API response models must not be used directly as component props when the UI requires a different shape."
+    },
+    {
+      "id": "tsr-models-005",
+      "severity": "ERROR",
+      "category": "No Behavior in Models",
+      "rule": "Models must not contain methods, functions, API calls, storage mutations, or navigation logic."
+    }
+  ]
+}

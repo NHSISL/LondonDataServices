@@ -38,7 +38,6 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Addresses
             int inputBatchSize = GetRandomNumber();
             int numberOfBatches = GetRandomNumber();
             int numberOfRecords = inputBatchSize * numberOfBatches;
-            List<string> returnedStringList = CreateRandomStringList(numberOfRecords);
             IQueryable<Address> randomExistingAddresses = CreateRandomAddresses(numberOfRecords);
             IQueryable<Address> existingAddresses = randomExistingAddresses.DeepClone();
             List<Address> randomAddressList = CreateRandomAddresses(numberOfRecords).ToList();
@@ -66,10 +65,6 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Addresses
 
                 List<Address> dpaFileBatchAddresses = [.. batchNewAddresses, .. batchExisitngAddresses];
 
-                this.fileBrokerMock.Setup(broker =>
-                    broker.ReadLinesBatchAsync(inputDpaCsvFile, inputBatchSize, i * inputBatchSize))
-                        .ReturnsAsync(returnedStringList.GetRange(batchStartLine, inputBatchSize));
-
                 addressOrchestrationServiceMock.Setup(service =>
                     service.MapDPADataToAddressesAsync(inputDpaCsvFile, inputBatchSize, i * inputBatchSize))
                         .ReturnsAsync(dpaFileBatchAddresses);
@@ -79,9 +74,10 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Addresses
                         .ReturnsAsync(existingAddresses);
             }
 
-            this.fileBrokerMock.Setup(broker =>
-                broker.ReadLinesBatchAsync(inputDpaCsvFile, inputBatchSize, numberOfRecords))
-                    .ReturnsAsync([]);
+            addressOrchestrationServiceMock.Setup(service =>
+                service.MapDPADataToAddressesAsync(
+                    inputDpaCsvFile, inputBatchSize, numberOfRecords))
+                        .ReturnsAsync([]);
 
             AddressOrchestrationService service = addressOrchestrationServiceMock.Object;
 
@@ -114,10 +110,6 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Addresses
                 List<Address> batchNewAddresses = [.. newAddresses.GetRange(batchStartLine, inputBatchSize)];
                 List<Address> batchExisitngAddresses = [.. existingAddresses.ToList().GetRange(batchStartLine, inputBatchSize)];
                 List<Address> dpaFileBatchAddresses = [.. batchNewAddresses, .. batchExisitngAddresses];
-
-                this.fileBrokerMock.Verify(broker =>
-                    broker.ReadLinesBatchAsync(inputDpaCsvFile, inputBatchSize, i * inputBatchSize),
-                        Times.Once);
 
                 addressOrchestrationServiceMock.Verify(service =>
                     service.MapDPADataToAddressesAsync(inputDpaCsvFile, inputBatchSize, i * inputBatchSize),
@@ -154,9 +146,10 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Addresses
                             Times.Once);
             }
 
-            this.fileBrokerMock.Verify(broker =>
-                broker.ReadLinesBatchAsync(inputDpaCsvFile, inputBatchSize, numberOfRecords),
-                    Times.Once);
+            addressOrchestrationServiceMock.Verify(service =>
+                service.MapDPADataToAddressesAsync(
+                    inputDpaCsvFile, inputBatchSize, numberOfRecords),
+                        Times.Once);
 
             this.addressProcessingServiceMock.Verify(service =>
                 service.RetrieveAllAddressesAsync(),

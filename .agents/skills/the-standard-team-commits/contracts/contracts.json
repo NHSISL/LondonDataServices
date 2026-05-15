@@ -1,0 +1,38 @@
+{
+  "skill": "the-standard-team-commits",
+  "version": "0.1.0",
+  "commit_formats": {
+    "tdd_fail": {
+      "pattern": "[Test Name] -> FAIL",
+      "example": "ShouldAddStudentAsync -> FAIL",
+      "when": "Committing a failing test in the TDD red phase"
+    },
+    "tdd_pass": {
+      "pattern": "[Test Name] -> PASS",
+      "example": "ShouldAddStudentAsync -> PASS",
+      "when": "Committing the implementation that makes the test pass"
+    },
+    "non_tdd": {
+      "pattern": "[CATEGORY]: [Description Of Work Completed]",
+      "examples": [
+        "DATA: Add Student Model",
+        "BROKERS: Insert Student",
+        "CONTROLLERS: POST Student",
+        "INFRA: Setup Build Project",
+        "CONFIG: Add AppSettings Development"
+      ],
+      "category_casing": "CAPS",
+      "description_casing": "Pascal Case",
+      "when": "Working on code that does not require tests (DATA, BROKERS, CONTROLLERS, INFRA, CONFIG, etc.)"
+    }
+  },
+  "tdd_required_for": [
+    "FOUNDATIONS", "PROCESSINGS", "ORCHESTRATIONS", "COORDINATIONS",
+    "MANAGEMENTS", "AGGREGATIONS", "VIEWS", "COMPONENTS", "PAGES",
+    "ACCEPTANCE", "INTEGRATION"
+  ],
+  "non_tdd_categories": [
+    "DATA", "BROKERS", "CONTROLLERS", "INFRA", "CONFIG",
+    "DOCUMENTATION", "DESIGN", "IMPORT", "STATUS", "PROVISION", "RELEASE"
+  ]
+}

@@ -1,0 +1,17 @@
+{
+  "name": "the-standard-reacttypescript-hooks",
+  "version": "0.1.0",
+  "description": "Enforces hook responsibility as React integration mechanisms — lifecycle and state only — not service replacements or business logic containers.",
+  "standard_version": "v0.1.0",
+  "skill_version": "v0.1.0",
+  "inputs": ["Custom hook TypeScript files in src/hooks/**/* and use*.ts"],
+  "outputs": [
+    "Typed React hooks integrating lifecycle with view services",
+    "Review feedback citing rule IDs"
+  ],
+  "dependencies": [
+    "the-standard-reacttypescript-view-services",
+    "the-standard-reacttypescript-pages"
+  ],
+  "applies_to": ["src/hooks/**/*", "use*.ts"]
+}

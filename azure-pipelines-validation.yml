@@ -27,7 +27,6 @@ variables:
 
 pool: lds-managed-devops-pool-ubuntuvm
 
-
 steps:
   - task: Bash@3
     displayName: "Check Lables"

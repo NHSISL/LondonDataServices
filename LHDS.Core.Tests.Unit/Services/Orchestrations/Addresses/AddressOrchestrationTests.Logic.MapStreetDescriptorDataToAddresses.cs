@@ -1,9 +1,8 @@
-﻿// ---------------------------------------------------------
+// ---------------------------------------------------------
 // Copyright (c) North East London ICB. All rights reserved.
 // ---------------------------------------------------------
 
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 using FluentAssertions;
 using Force.DeepCloner;
@@ -33,6 +32,8 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Addresses
             { CallBase = true };
 
             string inputCsvFileName = GetRandomString();
+            int inputBatchSize = 120000;
+            int inputSkipCounter = 0;
 
             Dictionary<string, int> inputFieldMappings = new Dictionary<string, int>
             {
@@ -63,27 +64,20 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Addresses
                 service.LoadAndMapCsvAsync<StreetDescriptor>(
                     inputCsvFileName,
                     inputFieldMappings,
-                    default))
-                        .Returns(
-                            outputStreetDescriptors
-                                .ToAsyncEnumerable());
+                    inputBatchSize,
+                    inputSkipCounter))
+                        .ReturnsAsync(
+                            outputStreetDescriptors);
 
             AddressOrchestrationService service =
                 addressOrchestrationServiceMock.Object;
 
             // When
             List<Address> actualAddresses =
-                new List<Address>();
-
-            await foreach (Address address in service
-                .MapStreetDescriptorDataToAddressesAsync(
-                    inputCsvFileName)
-                .WithCancellation(
-                    TestContext.Current
-                        .CancellationToken))
-            {
-                actualAddresses.Add(address);
-            }
+                await service.MapStreetDescriptorDataToAddressesAsync(
+                    inputCsvFileName,
+                    inputBatchSize,
+                    inputSkipCounter);
 
             // Then
             actualAddresses.Should()
@@ -93,7 +87,8 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Addresses
                 service.LoadAndMapCsvAsync<StreetDescriptor>(
                     inputCsvFileName,
                     inputFieldMappings,
-                    default),
+                    inputBatchSize,
+                    inputSkipCounter),
                         Times.Once);
 
             this.fileBrokerMock.VerifyNoOtherCalls();

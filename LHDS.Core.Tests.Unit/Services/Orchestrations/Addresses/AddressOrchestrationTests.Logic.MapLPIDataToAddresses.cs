@@ -1,10 +1,9 @@
-﻿// ---------------------------------------------------------
+// ---------------------------------------------------------
 // Copyright (c) North East London ICB. All rights reserved.
 // ---------------------------------------------------------
 
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 using FluentAssertions;
 using Force.DeepCloner;
@@ -35,6 +34,8 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Addresses
             { CallBase = true };
 
             string inputCsvFileName = GetRandomString();
+            int inputBatchSize = 120000;
+            int inputSkipCounter = 0;
 
             Dictionary<string, int> inputFieldMappings =
                 new Dictionary<string, int>
@@ -196,10 +197,10 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Addresses
                 service.LoadAndMapCsvAsync<LPIAddress>(
                     inputCsvFileName,
                     inputFieldMappings,
-                    default))
-                        .Returns(
-                            outputLpiAddresses
-                                .ToAsyncEnumerable());
+                    inputBatchSize,
+                    inputSkipCounter))
+                        .ReturnsAsync(
+                            outputLpiAddresses);
 
             for (int i = 0;
                 i < inputLpiAddresses.Count;
@@ -218,17 +219,10 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Addresses
 
             // When
             List<Address> actualAddresses =
-                new List<Address>();
-
-            await foreach (Address address in service
-                .MapLPIDataToAddressesAsync(
-                    inputCsvFileName)
-                .WithCancellation(
-                    TestContext.Current
-                        .CancellationToken))
-            {
-                actualAddresses.Add(address);
-            }
+                await service.MapLPIDataToAddressesAsync(
+                    inputCsvFileName,
+                    inputBatchSize,
+                    inputSkipCounter);
 
             // Then
             actualAddresses.Should()
@@ -239,7 +233,8 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Addresses
                     service.LoadAndMapCsvAsync<LPIAddress>(
                         inputCsvFileName,
                         inputFieldMappings,
-                        default),
+                        inputBatchSize,
+                        inputSkipCounter),
                             Times.Once);
 
             for (int i = 0;

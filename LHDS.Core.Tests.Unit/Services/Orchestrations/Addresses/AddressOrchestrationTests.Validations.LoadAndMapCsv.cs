@@ -1,4 +1,4 @@
-﻿// ---------------------------------------------------------
+// ---------------------------------------------------------
 // Copyright (c) North East London ICB. All rights reserved.
 // ---------------------------------------------------------
 
@@ -32,6 +32,8 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Addresses
             { CallBase = true };
 
             string invalidFileName = GetRandomString();
+            int inputBatchSize = 120000;
+            int inputSkipCounter = 0;
 
             var invalidFileAddressOrchestrationException =
                 new InvalidFileAddressOrchestrationException(
@@ -54,21 +56,16 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Addresses
                 actualFileAddressOrchestrationException =
                     await Assert.ThrowsAsync<
                         InvalidFileAddressOrchestrationException>(
-                            async () =>
-                    {
-                        await foreach (Address item
-                            in service
+                            () => service
                                 .LoadAndMapCsvAsync<Address>(
                                     invalidFileName,
                                     It.IsAny<
                                         Dictionary<
                                             string,
                                             int>>(),
-                                    TestContext.Current
-                                        .CancellationToken))
-                        {
-                        }
-                    });
+                                    inputBatchSize,
+                                    inputSkipCounter)
+                                .AsTask());
 
             // Then
             actualFileAddressOrchestrationException

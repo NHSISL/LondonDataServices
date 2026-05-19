@@ -1,4 +1,4 @@
-﻿// ---------------------------------------------------------
+// ---------------------------------------------------------
 // Copyright (c) North East London ICB. All rights reserved.
 // ---------------------------------------------------------
 
@@ -33,6 +33,8 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Addresses
             string streetDescriptorsCsvFilePath = "ID15.csv";
             Guid randomGuid = Guid.NewGuid();
             Guid inputCorrelationId = randomGuid;
+            int inputSkipCounter = 0;
+            int inputBatchSize = 120000;
             Xeption streetDescriptorsException = new Xeption();
 
             this.identifierBrokerMock.Setup(broker =>
@@ -42,24 +44,42 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Addresses
             addressOrchestrationServiceMock.Setup(service =>
                 service.MapStreetDescriptorDataToAddressesAsync(
                     streetDescriptorsCsvFilePath,
-                    default))
-                        .Throws(streetDescriptorsException);
+                    inputBatchSize,
+                    inputSkipCounter))
+                        .ThrowsAsync(streetDescriptorsException);
 
-            AddressOrchestrationService service =
-                addressOrchestrationServiceMock.Object;
+            addressOrchestrationServiceMock.Setup(service =>
+                service.MapStreetDescriptorDataToAddressesAsync(
+                    streetDescriptorsCsvFilePath,
+                    inputBatchSize,
+                    inputSkipCounter + inputBatchSize))
+                        .ReturnsAsync([]);
+
+            Xeption expectedStreetDescriptorsException = new Xeption();
+
+            expectedStreetDescriptorsException.AddData(
+                $"StreetDescriptorsExtractionError in batch between lines {inputSkipCounter} " +
+                $"and {inputSkipCounter + inputBatchSize}.",
+                streetDescriptorsCsvFilePath);
+
+            List<Exception> expectedExceptions = [expectedStreetDescriptorsException];
+
+            var expectedAggregateException =
+                new AggregateException(
+                    message: $"Errors occurred during loading of {expectedExceptions.Count} batches.",
+                    expectedExceptions);
+
+            AddressOrchestrationService service = addressOrchestrationServiceMock.Object;
 
             // When
-            ValueTask readCsvDataTask =
-                service.ProcessStreetDescriptorDataAsync(
-                    streetDescriptorsCsvFilePath);
+            ValueTask readCsvDataTask = service.ProcessStreetDescriptorDataAsync(streetDescriptorsCsvFilePath);
 
-            Xeption actualException =
-                await Assert.ThrowsAsync<Xeption>(
+            AggregateException actualAggregateException =
+                await Assert.ThrowsAsync<AggregateException>(
                     readCsvDataTask.AsTask);
 
             // Then
-            Assert.Same(
-                streetDescriptorsException, actualException);
+            actualAggregateException.Should().BeEquivalentTo(expectedAggregateException);
 
             this.identifierBrokerMock.Verify(broker =>
                 broker.GetIdentifierAsync(),
@@ -69,25 +89,44 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Addresses
                 broker.LogInformationAsync(
                     "Address Import - Street Descriptors Processing",
                     "Processing Street Descriptors File",
-                    $"Starting processing file " +
-                        $"{streetDescriptorsCsvFilePath}.",
+                    $"Starting processing file {streetDescriptorsCsvFilePath}.",
                     streetDescriptorsCsvFilePath,
                     inputCorrelationId.ToString()),
                         Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>
                 broker.LogInformationAsync(
-                    $"Starting processing file " +
-                        $"{streetDescriptorsCsvFilePath}."),
+                    $"Starting processing file {streetDescriptorsCsvFilePath}."),
                         Times.Once);
 
             addressOrchestrationServiceMock.Verify(service =>
                 service.MapStreetDescriptorDataToAddressesAsync(
                     streetDescriptorsCsvFilePath,
-                    default),
+                    inputBatchSize,
+                    inputSkipCounter),
                         Times.Once);
 
-            this.fileBrokerMock.VerifyNoOtherCalls();
+            addressOrchestrationServiceMock.Verify(service =>
+                service.MapStreetDescriptorDataToAddressesAsync(
+                    streetDescriptorsCsvFilePath,
+                    inputBatchSize,
+                    inputSkipCounter + inputBatchSize),
+                        Times.Once);
+
+            this.auditBrokerMock.Verify(broker =>
+                broker.LogInformationAsync(
+                    "Address Import - Street Descriptors Processing",
+                    "Processing Street Descriptors File",
+                    $"Finished processing file {streetDescriptorsCsvFilePath}.",
+                    streetDescriptorsCsvFilePath,
+                    inputCorrelationId.ToString()),
+                        Times.Once);
+
+            this.loggingBrokerMock.Verify(broker =>
+                broker.LogInformationAsync(
+                    $"Finished processing file {streetDescriptorsCsvFilePath}."),
+                        Times.Once);
+
             this.csvHelperBrokerMock.VerifyNoOtherCalls();
             this.auditBrokerMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();

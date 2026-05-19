@@ -1,4 +1,4 @@
-﻿// ---------------------------------------------------------
+// ---------------------------------------------------------
 // Copyright (c) North East London ICB. All rights reserved.
 // ---------------------------------------------------------
 
@@ -33,6 +33,8 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Addresses
             string lpiCsvFilePath = "ID21.csv";
             Guid randomGuid = Guid.NewGuid();
             Guid inputCorrelationId = randomGuid;
+            int inputSkipCounter = 0;
+            int inputBatchSize = 120000;
             Xeption lpiException = new Xeption();
 
             this.identifierBrokerMock.Setup(broker =>
@@ -40,24 +42,38 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Addresses
                     .ReturnsAsync(inputCorrelationId);
 
             addressOrchestrationServiceMock.Setup(service =>
-                service.MapLPIDataToAddressesAsync(
-                    lpiCsvFilePath,
-                    default))
-                        .Throws(lpiException);
+                service.MapLPIDataToAddressesAsync(lpiCsvFilePath, inputBatchSize, inputSkipCounter))
+                    .ThrowsAsync(lpiException);
 
-            AddressOrchestrationService service =
-                addressOrchestrationServiceMock.Object;
+            addressOrchestrationServiceMock.Setup(service =>
+                service.MapLPIDataToAddressesAsync(lpiCsvFilePath, inputBatchSize, inputSkipCounter + inputBatchSize))
+                    .ReturnsAsync([]);
+
+            Xeption expectedLpiException = new Xeption();
+
+            expectedLpiException.AddData(
+                $"LpiExtractionError in batch between lines {inputSkipCounter} " +
+                $"and {inputSkipCounter + inputBatchSize}.",
+                lpiCsvFilePath);
+
+            List<Exception> expectedExceptions = [expectedLpiException];
+
+            var expectedAggregateException =
+                new AggregateException(
+                    message: $"Errors occurred during loading of {expectedExceptions.Count} batches.",
+                    expectedExceptions);
+
+            AddressOrchestrationService service = addressOrchestrationServiceMock.Object;
 
             // When
-            ValueTask readCsvDataTask =
-                service.ProcessLPIAddressesAsync(lpiCsvFilePath);
+            ValueTask readCsvDataTask = service.ProcessLPIAddressesAsync(lpiCsvFilePath);
 
-            Xeption actualException =
-                await Assert.ThrowsAsync<Xeption>(
+            AggregateException actualAggregateException =
+                await Assert.ThrowsAsync<AggregateException>(
                     readCsvDataTask.AsTask);
 
             // Then
-            Assert.Same(lpiException, actualException);
+            actualAggregateException.Should().BeEquivalentTo(expectedAggregateException);
 
             this.identifierBrokerMock.Verify(broker =>
                 broker.GetIdentifierAsync(),
@@ -80,10 +96,31 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Addresses
             addressOrchestrationServiceMock.Verify(service =>
                 service.MapLPIDataToAddressesAsync(
                     lpiCsvFilePath,
-                    default),
+                    inputBatchSize,
+                    inputSkipCounter),
                         Times.Once);
 
-            this.fileBrokerMock.VerifyNoOtherCalls();
+            addressOrchestrationServiceMock.Verify(service =>
+                service.MapLPIDataToAddressesAsync(
+                    lpiCsvFilePath,
+                    inputBatchSize,
+                    inputSkipCounter + inputBatchSize),
+                        Times.Once);
+
+            this.auditBrokerMock.Verify(broker =>
+                broker.LogInformationAsync(
+                    "Address Import - LPI Processing",
+                    "Processing LPI File",
+                    $"Finished processing file {lpiCsvFilePath}.",
+                    lpiCsvFilePath,
+                    inputCorrelationId.ToString()),
+                        Times.Once);
+
+            this.loggingBrokerMock.Verify(broker =>
+                broker.LogInformationAsync(
+                    $"Finished processing file {lpiCsvFilePath}."),
+                        Times.Once);
+
             this.csvHelperBrokerMock.VerifyNoOtherCalls();
             this.auditBrokerMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();

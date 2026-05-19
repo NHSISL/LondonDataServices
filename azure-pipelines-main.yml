@@ -24,7 +24,6 @@ variables:
 
 pool: lds-managed-devops-pool-ubuntuvm
 
-
 workspace:
   clean: all
 

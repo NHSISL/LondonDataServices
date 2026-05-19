@@ -22,7 +22,7 @@ variables:
   - name: ConnectionStrings.DefaultConnection
     value: 'Server=localhost,1433;Database=LHDS-Acceptance-$(Build.BuildId);User Id=sa;Password=1Password;TrustServerCertificate=true'
 
-pool: isl-dev-devops-linux-vmss01
+pool: lds-managed-devops-pool-ubuntuvm
 
 
 workspace:

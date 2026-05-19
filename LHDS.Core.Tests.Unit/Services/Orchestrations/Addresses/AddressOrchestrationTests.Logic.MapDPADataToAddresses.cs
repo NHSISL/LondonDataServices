@@ -1,4 +1,4 @@
-﻿// ---------------------------------------------------------
+// ---------------------------------------------------------
 // Copyright (c) North East London ICB. All rights reserved.
 // ---------------------------------------------------------
 
@@ -33,6 +33,8 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Addresses
             { CallBase = true };
 
             string inputCsvFileName = GetRandomString();
+            int inputBatchSize = 120000;
+            int inputSkipCounter = 0;
 
             Dictionary<string, int> fieldMappings =
                 new Dictionary<string, int>
@@ -64,27 +66,20 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Addresses
                 service.LoadAndMapCsvAsync<Address>(
                     inputCsvFileName,
                     fieldMappings,
-                    default))
-                        .Returns(
-                            outputAddresses
-                                .ToAsyncEnumerable());
+                    inputBatchSize,
+                    inputSkipCounter))
+                        .ReturnsAsync(
+                            outputAddresses);
 
             AddressOrchestrationService service =
                 addressOrchestrationServiceMock.Object;
 
             // When
             List<Address> actualAddresses =
-                new List<Address>();
-
-            await foreach (Address address in service
-                .MapDPADataToAddressesAsync(
-                    inputCsvFileName)
-                .WithCancellation(
-                    TestContext.Current
-                        .CancellationToken))
-            {
-                actualAddresses.Add(address);
-            }
+                await service.MapDPADataToAddressesAsync(
+                    inputCsvFileName,
+                    inputBatchSize,
+                    inputSkipCounter);
 
             // Then
             actualAddresses.Should()
@@ -94,7 +89,8 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Addresses
                 service.LoadAndMapCsvAsync<Address>(
                     inputCsvFileName,
                     fieldMappings,
-                    default),
+                    inputBatchSize,
+                    inputSkipCounter),
                         Times.Once);
 
             this.fileBrokerMock.VerifyNoOtherCalls();

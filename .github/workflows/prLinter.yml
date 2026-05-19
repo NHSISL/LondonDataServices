@@ -139,7 +139,7 @@ jobs:
 
             NORMALIZED_PR_BODY=$(printf '%s' "$PR_BODY" | tr '\r\n' '  ' | tr -s ' ')
 
-            if printf '%s' "$NORMALIZED_PR_BODY" | grep -Piq "(close|closes|closed|fix|fixes|fixed|resolve|resolves|resolved)\s*(\[#[0-9]+\]|#[0-9]+|\[AB#[0-9]+\]|AB#[0-9]+)"; then
+            if printf '%s' "$NORMALIZED_PR_BODY" | grep -Piq "(close|closes|closed|fix|fixes|fixed|resolve|resolves|resolved)\s*(?:<a\b[^>]*>)?\s*(\[#[0-9]+\]|#[0-9]+|\[AB#[0-9]+\]|AB#[0-9]+)\s*(?:</a>)?"; then
               echo "Valid PR description."
             else
               echo "Error: PR description does not contain any links to issue(s)/task(s) (e.g., 'closes #123' / 'closes AB#123' / 'fixes #123' / 'fixes AB#123')."

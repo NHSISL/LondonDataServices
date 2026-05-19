@@ -138,7 +138,9 @@ jobs:
             fi
 
             NORMALIZED_PR_BODY=$(printf '%s' "$PR_BODY" | tr '\r\n' '  ' | tr -s ' ')
+            # Accept supported references: [#123], #123, [AB#123], AB#123.
             REFERENCE_PATTERN='(\[#[0-9]+\]|#[0-9]+\b|\[AB#[0-9]+\]|AB#[0-9]+\b)'
+            # Allow either anchor-wrapped references or plain references not followed by a dangling </a>.
             ASSOCIATION_PATTERN="(close|closes|closed|fix|fixes|fixed|resolve|resolves|resolved)\s*(?:(?:<a\b[^>]*>\s*${REFERENCE_PATTERN}\s*</a>)|(?:${REFERENCE_PATTERN}(?!\s*</a>)))"
 
             if printf '%s' "$NORMALIZED_PR_BODY" | grep -Piq "$ASSOCIATION_PATTERN"; then

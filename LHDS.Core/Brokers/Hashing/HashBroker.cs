@@ -38,21 +38,23 @@ namespace LHDS.Core.Brokers.Hashing
             }
 
             data.Position = 0;
-            using var memoryStream = new MemoryStream();
-            await data.CopyToAsync(memoryStream);
-            byte[] nhsBytes = memoryStream.ToArray();
+            using var sha256 = IncrementalHash.CreateHash(HashAlgorithmName.SHA256);
+            byte[] buffer = new byte[81920];
+            int bytesRead;
 
-            byte[] pepperBytes = !string.IsNullOrEmpty(pepper)
-                ? System.Text.Encoding.UTF8.GetBytes(pepper)
-                : Array.Empty<byte>();
+            while ((bytesRead = await data.ReadAsync(buffer)) > 0)
+            {
+                sha256.AppendData(buffer, 0, bytesRead);
+            }
 
-            byte[] combined = nhsBytes.Concat(pepperBytes).ToArray();
-            using var sha256 = SHA256.Create();
-            byte[] hashBytes = sha256.ComputeHash(combined);
+            if (!string.IsNullOrEmpty(pepper))
+            {
+                sha256.AppendData(System.Text.Encoding.UTF8.GetBytes(pepper));
+            }
 
-            var sha256Hash = BitConverter.ToString(hashBytes).Replace("-", "").ToLowerInvariant();
+            byte[] hashBytes = sha256.GetHashAndReset();
 
-            return sha256Hash;
+            return BitConverter.ToString(hashBytes).Replace("-", "").ToLowerInvariant();
         }
 
         public async ValueTask<string> GenerateSha256HashAsync(string? data, string? pepper = null)

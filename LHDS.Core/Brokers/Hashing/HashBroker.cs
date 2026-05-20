@@ -6,55 +6,90 @@ using System;
 using System.IO;
 using System.Linq;
 using System.Security.Cryptography;
+using System.Threading;
 using System.Threading.Tasks;
+using System.Text;
 
 namespace LHDS.Core.Brokers.Hashing
 {
     public class HashBroker : IHashBroker
     {
 
-        public async ValueTask<string> GenerateMd5HashAsync(Stream? data)
+        public async ValueTask<string> GenerateMd5HashAsync(
+            Stream? data,
+            CancellationToken cancellationToken = default)
         {
-            if (data == null)
+            cancellationToken.ThrowIfCancellationRequested();
+
+            if (data is null)
             {
                 return string.Empty;
             }
 
-            using (MD5 md5 = MD5.Create())
+            if (data.CanSeek)
             {
-                data.Position = 0;
-                byte[] hashBytes = md5.ComputeHash(data);
-                var md5Hash = BitConverter.ToString(hashBytes).Replace("-", "").ToLower();
-
-                return md5Hash;
-            }
-        }
-
-        public async ValueTask<string> GenerateSha256HashAsync(Stream? data, string? pepper = null)
-        {
-            if (data == null || data.Length == 0)
-            {
-                return string.Empty;
+                data.Seek(0, SeekOrigin.Begin);
             }
 
-            data.Position = 0;
-            using var sha256 = IncrementalHash.CreateHash(HashAlgorithmName.SHA256);
+            using var md5 =
+                IncrementalHash.CreateHash(HashAlgorithmName.MD5);
+
             byte[] buffer = new byte[81920];
             int bytesRead;
 
-            while ((bytesRead = await data.ReadAsync(buffer)) > 0)
+            while ((bytesRead =
+                await data.ReadAsync(buffer, cancellationToken)) > 0)
             {
+                cancellationToken.ThrowIfCancellationRequested();
+                md5.AppendData(buffer, 0, bytesRead);
+            }
+
+            byte[] hashBytes = md5.GetHashAndReset();
+
+            return Convert.ToHexString(hashBytes)
+                .ToLowerInvariant();
+        }
+
+        public async ValueTask<string> GenerateSha256HashAsync(
+            Stream? data,
+            string? pepper = null,
+            CancellationToken cancellationToken = default)
+        {
+            cancellationToken.ThrowIfCancellationRequested();
+
+            if (data is null)
+            {
+                return string.Empty;
+            }
+
+            if (data.CanSeek)
+            {
+                data.Seek(0, SeekOrigin.Begin);
+            }
+
+            using var sha256 =
+                IncrementalHash.CreateHash(HashAlgorithmName.SHA256);
+
+            byte[] buffer = new byte[81920];
+            int bytesRead;
+
+            while ((bytesRead =
+                await data.ReadAsync(buffer, cancellationToken)) > 0)
+            {
+                cancellationToken.ThrowIfCancellationRequested();
                 sha256.AppendData(buffer, 0, bytesRead);
             }
 
-            if (!string.IsNullOrEmpty(pepper))
+            if (!string.IsNullOrWhiteSpace(pepper))
             {
-                sha256.AppendData(System.Text.Encoding.UTF8.GetBytes(pepper));
+                sha256.AppendData(
+                    Encoding.UTF8.GetBytes(pepper));
             }
 
             byte[] hashBytes = sha256.GetHashAndReset();
 
-            return BitConverter.ToString(hashBytes).Replace("-", "").ToLowerInvariant();
+            return Convert.ToHexString(hashBytes)
+                .ToLowerInvariant();
         }
 
         public async ValueTask<string> GenerateSha256HashAsync(string? data, string? pepper = null)
@@ -64,10 +99,10 @@ namespace LHDS.Core.Brokers.Hashing
                 return string.Empty;
             }
 
-            byte[] dataBytes = System.Text.Encoding.UTF8.GetBytes(data);
+            byte[] dataBytes = Encoding.UTF8.GetBytes(data);
 
             byte[] pepperBytes = !string.IsNullOrEmpty(pepper)
-                ? System.Text.Encoding.UTF8.GetBytes(pepper)
+                ? Encoding.UTF8.GetBytes(pepper)
                 : Array.Empty<byte>();
 
             byte[] combined = dataBytes.Concat(pepperBytes).ToArray();

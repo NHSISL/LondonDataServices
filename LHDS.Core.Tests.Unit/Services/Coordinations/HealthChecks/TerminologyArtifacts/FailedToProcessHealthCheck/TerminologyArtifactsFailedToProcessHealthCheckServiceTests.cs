@@ -25,8 +25,8 @@ namespace LHDS.Core.Tests.Unit.Services.Coordinations.HealthChecks.TerminologyAr
         private readonly TerminologyArtifactsFailedToProcessHealthCheckService
             terminologyArtifactsFailedToProcessHealthCheckService;
 
-        private const string CheckName = "failedToProcess";
-        private const string CheckNameDescription = "Failed To Process";
+        private const string CheckName = "artifactErrors";
+        private const string CheckNameDescription = "Artifact Errors";
         private const int DegradedThresholdMinutes = 1440;
         private const int UnHealthyThresholdMinutes = 2880;
 

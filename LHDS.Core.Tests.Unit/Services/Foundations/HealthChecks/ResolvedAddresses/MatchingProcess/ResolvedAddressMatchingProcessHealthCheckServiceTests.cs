@@ -35,8 +35,8 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.HealthChecks.ResolvedAddress
             loggingBrokerMock = new Mock<ILoggingBroker>();
 
             var appSettingsStub = new Dictionary<string, string> {
-                {$"{ConfigSectionName}:DegradedThreshold", "30"},
-                {$"{ConfigSectionName}:Processing:UnHealthyThreshold", "15"},
+                {$"{ConfigSectionName}:DegradedThreshold", "15"},
+                {$"{ConfigSectionName}:UnHealthyThreshold", "30"},
             };
 
             this.inMemoryConfiguration = new ConfigurationBuilder()

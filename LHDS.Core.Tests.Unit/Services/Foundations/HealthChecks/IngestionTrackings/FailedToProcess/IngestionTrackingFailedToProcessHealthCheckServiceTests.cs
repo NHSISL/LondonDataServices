@@ -39,9 +39,9 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.HealthChecks.IngestionTracki
             loggingBrokerMock = new Mock<ILoggingBroker>();
 
             var appSettingsStub = new Dictionary<string, string> {
-                {"HealthChecks:IngestionTracking:Processing:DegradedThreshold", "1440"},
-                {"HealthChecks:IngestionTracking:Processing:UnHealthyThreshold", "2880"},
-                {"HealthChecks:IngestionTracking:Processing:RetryCount", "3"},
+                {"HealthChecks:IngestionTracking:FailedToProcess:DegradedThreshold", "1440"},
+                {"HealthChecks:IngestionTracking:FailedToProcess:UnHealthyThreshold", "2880"},
+                {"HealthChecks:IngestionTracking:FailedToProcess:RetryCount", "3"},
             };
 
             this.inMemoryConfiguration = new ConfigurationBuilder()

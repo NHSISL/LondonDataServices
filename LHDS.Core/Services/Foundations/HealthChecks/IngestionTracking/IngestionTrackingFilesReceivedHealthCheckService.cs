@@ -51,10 +51,11 @@ namespace LHDS.Core.Services.Foundations.HealthChecks.IngestionTracking
                 DateTimeOffset unHealthyThresholdDateTime = currentDateTime.AddMinutes(-1 * unHealthyThresholdMinutes);
                 var supplierQuery = await storageBroker.SelectAllSuppliersAsync();
 
-                List<Guid> supplierIds = supplierQuery
+                List<Supplier> suppliers = supplierQuery
                     .Where(i => i.IsIngestionTracked == true)
-                    .Select(supplier => supplier.Id)
                     .ToList();
+
+                var ingestionTrackingQuery = await storageBroker.SelectAllIngestionTrackingsAsync();
 
                 var dataDictionary = new Dictionary<string, object>
                 {
@@ -64,10 +65,9 @@ namespace LHDS.Core.Services.Foundations.HealthChecks.IngestionTracking
 
                 List<HealthCheckResult> results = new List<HealthCheckResult>();
 
-                foreach (Guid supplierId in supplierIds)
+                foreach (Supplier supplier in suppliers)
                 {
-                    Supplier supplier = await storageBroker.SelectSupplierByIdAsync(supplierId);
-                    var ingestionTrackingQuery = await storageBroker.SelectAllIngestionTrackingsAsync();
+                    Guid supplierId = supplier.Id;
 
                     var filteredQuery = ingestionTrackingQuery
                         .Where(ingestionTracking => ingestionTracking.SupplierId == supplierId)

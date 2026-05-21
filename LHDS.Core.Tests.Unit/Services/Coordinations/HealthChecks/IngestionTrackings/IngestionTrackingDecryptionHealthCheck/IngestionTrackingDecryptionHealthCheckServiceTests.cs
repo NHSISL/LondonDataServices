@@ -79,6 +79,7 @@ namespace LHDS.Core.Tests.Unit.Services.Coordinations.HealthChecks.IngestionTrac
                 .OnProperty(ingestionTracking => ingestionTracking.UpdatedBy).Use(user)
                 .OnProperty(ingestionTracking => ingestionTracking.UpdatedDate).Use(updatedDate)
                 .OnProperty(ingestionTracking => ingestionTracking.Decrypted).Use(false)
+                .OnProperty(ingestionTracking => ingestionTracking.FileDeleted).Use(false)
                 .OnProperty(ingestionTracking => ingestionTracking.IsProcessing).Use(false)
                 .OnProperty(ingestionTracking => ingestionTracking.Supplier).IgnoreIt()
                 .OnProperty(ingestionTracking => ingestionTracking.IngestionTrackingAudits).IgnoreIt();

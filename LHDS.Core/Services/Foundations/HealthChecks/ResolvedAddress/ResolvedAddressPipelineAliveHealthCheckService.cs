@@ -1,4 +1,8 @@
-﻿using System;
+// ---------------------------------------------------------
+// Copyright (c) North East London ICB. All rights reserved.
+// ---------------------------------------------------------
+
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -8,19 +12,19 @@ using LHDS.Core.Brokers.Storages.Sql;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
 
-namespace LHDS.Core.Services.Foundations.HealthChecks.TerminologyPolls
+namespace LHDS.Core.Services.Foundations.HealthChecks.ResolvedAddress
 {
-    public partial class TerminologyPollsNotPollingHealthCheckService : ITerminologyPollsHealthItemService
+    public partial class ResolvedAddressPipelineAliveHealthCheckService : IResolvedAddressHealthItemService
     {
         private readonly IStorageBroker storageBroker;
         private readonly IConfiguration configuration;
         private readonly IDateTimeBroker dateTimeBroker;
         private readonly ILoggingBroker loggingBroker;
-        private const string CheckName = "notPolling";
-        private const string CheckNameDescription = "Not Polling";
-        private const string ConfigSectionName = "HealthChecks:TerminologyPolls:NotPolling";
+        private const string CheckName = "pipelineAlive";
+        private const string CheckDescriptionName = "Pipeline Alive";
+        private const string ConfigSectionName = "HealthChecks:ResolvedAddress:PipelineAlive";
 
-        public TerminologyPollsNotPollingHealthCheckService(
+        public ResolvedAddressPipelineAliveHealthCheckService(
             IStorageBroker storageBroker,
             IConfiguration configuration,
             IDateTimeBroker dateTimeBroker,
@@ -44,76 +48,78 @@ namespace LHDS.Core.Services.Foundations.HealthChecks.TerminologyPolls
                 DateTimeOffset currentDateTime = await dateTimeBroker.GetCurrentDateTimeOffsetAsync();
                 DateTimeOffset degradedThresholdDateTime = currentDateTime.AddMinutes(-1 * degradedThresholdMinutes);
                 DateTimeOffset unHealthyThresholdDateTime = currentDateTime.AddMinutes(-1 * unHealthyThresholdMinutes);
-                var terminologyPollsQuery = await storageBroker.SelectAllTerminologyPollsAsync();
+                var resolvedAddressQuery = await storageBroker.SelectAllResolvedAddressesAsync();
 
-                if (!terminologyPollsQuery.Any())
+                if (!resolvedAddressQuery.Any())
                 {
                     var emptyValues = new Dictionary<string, object>
                     {
-                        { "description", CheckNameDescription },
-                        { "notPolling", 0 },
-                        { "degradedItems", 0 },
-                        { "unHealthyItems", 0 },
+                        { "description", CheckDescriptionName },
                         { "degradedThresholdMinutes", degradedThresholdMinutes.ToString() },
                         { "unHealthyThresholdMinutes", unHealthyThresholdMinutes.ToString() },
                         { "checkedAt", currentDateTime.ToString("o") },
-                        { "message", "No terminology poll records exist. The polling service has never run." },
-                        { "status", HealthStatus.Unhealthy.ToString() }
+                        { "message", "No resolved address records exist yet." },
+                        { "status", HealthStatus.Healthy.ToString() }
                     };
 
-                    return HealthCheckResult.Unhealthy(
+                    return HealthCheckResult.Healthy(
                         description: CheckName,
                         data: emptyValues);
                 }
 
-                int degradedCount = terminologyPollsQuery.Count(terminologyPoll =>
-                    terminologyPoll.LastPoll <= degradedThresholdDateTime &&
-                    terminologyPoll.LastPoll > unHealthyThresholdDateTime);
+                bool hasRecentActivity = resolvedAddressQuery
+                    .Any(resolvedAddress => resolvedAddress.CreatedDate >= degradedThresholdDateTime);
 
-                int unHealthyCount = terminologyPollsQuery
-                    .Count(terminologyPoll => terminologyPoll.LastPoll <= unHealthyThresholdDateTime);
+                bool hasActivityWithinUnhealthyWindow = resolvedAddressQuery
+                    .Any(resolvedAddress => resolvedAddress.CreatedDate >= unHealthyThresholdDateTime);
 
-                int totalCount = degradedCount + unHealthyCount;
+                string message;
 
-                string message = totalCount == 0
-                    ? $"Nothing to poll. All up to date."
-                    : $"{totalCount} not polling. Please check logs and function status.";
-
-                var vals = new Dictionary<string, object>
+                var values = new Dictionary<string, object>
                 {
-                    { "description", CheckNameDescription },
-                    { "notPolling", totalCount },
-                    { "degradedItems", degradedCount},
-                    { "unHealthyItems", unHealthyCount},
+                    { "description", CheckDescriptionName },
                     { "degradedThresholdMinutes", degradedThresholdMinutes.ToString() },
                     { "unHealthyThresholdMinutes", unHealthyThresholdMinutes.ToString() },
                     { "checkedAt", currentDateTime.ToString("o") },
-                    { "message", message }
                 };
 
-                if (unHealthyCount > 0)
+                if (!hasActivityWithinUnhealthyWindow)
                 {
-                    vals.Add("status", HealthStatus.Unhealthy.ToString());
+                    message = $"No resolved address records have been received in the last " +
+                        $"{unHealthyThresholdMinutes} minutes. " +
+                        $"The resolved address pipeline may have stopped. " +
+                        $"Please check logs and function status.";
+
+                    values.Add("message", message);
+                    values.Add("status", HealthStatus.Unhealthy.ToString());
 
                     return HealthCheckResult.Unhealthy(
                         description: CheckName,
-                        data: vals);
+                        data: values);
                 }
-                else if (degradedCount > 0)
+                else if (!hasRecentActivity)
                 {
-                    vals.Add("status", HealthStatus.Degraded.ToString());
+                    message = $"No resolved address records have been received in the last " +
+                        $"{degradedThresholdMinutes} minutes. " +
+                        $"The resolved address pipeline may be slow. " +
+                        $"Please check logs and function status.";
+
+                    values.Add("message", message);
+                    values.Add("status", HealthStatus.Degraded.ToString());
 
                     return HealthCheckResult.Degraded(
                         description: CheckName,
-                        data: vals);
+                        data: values);
                 }
                 else
                 {
-                    vals.Add("status", HealthStatus.Healthy.ToString());
+                    message = "Resolved address pipeline is alive. Recent activity detected.";
+                    values.Add("message", message);
+                    values.Add("status", HealthStatus.Healthy.ToString());
 
                     return HealthCheckResult.Healthy(
                         description: CheckName,
-                        data: vals);
+                        data: values);
                 }
             });
     }

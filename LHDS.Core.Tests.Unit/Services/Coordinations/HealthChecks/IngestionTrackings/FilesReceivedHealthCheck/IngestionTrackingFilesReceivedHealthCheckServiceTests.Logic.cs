@@ -48,10 +48,6 @@ namespace LHDS.Core.Tests.Unit.Services.Coordinations.HealthChecks.IngestionTrac
                     .ReturnsAsync(randomIngestionTrackedSuppliers);
 
             this.storageBrokerMock.Setup(broker =>
-                broker.SelectSupplierByIdAsync(randomSupplier.Id))
-                    .ReturnsAsync(randomSupplier);
-
-            this.storageBrokerMock.Setup(broker =>
                 broker.SelectAllIngestionTrackingsAsync())
                     .ReturnsAsync(randomUnhealthyTrackings);
 
@@ -70,10 +66,6 @@ namespace LHDS.Core.Tests.Unit.Services.Coordinations.HealthChecks.IngestionTrac
 
             this.storageBrokerMock.Verify(broker =>
                 broker.SelectAllSuppliersAsync(),
-                    Times.Once);
-
-            this.storageBrokerMock.Verify(broker =>
-                broker.SelectSupplierByIdAsync(randomSupplier.Id),
                     Times.Once);
 
             this.storageBrokerMock.Verify(broker =>
@@ -120,10 +112,6 @@ namespace LHDS.Core.Tests.Unit.Services.Coordinations.HealthChecks.IngestionTrac
                     .ReturnsAsync(randomIngestionTrackedSuppliers);
 
             this.storageBrokerMock.Setup(broker =>
-                broker.SelectSupplierByIdAsync(randomSupplier.Id))
-                    .ReturnsAsync(randomSupplier);
-
-            this.storageBrokerMock.Setup(broker =>
                 broker.SelectAllIngestionTrackingsAsync())
                     .ReturnsAsync(randomDegradedTrackings);
 
@@ -142,10 +130,6 @@ namespace LHDS.Core.Tests.Unit.Services.Coordinations.HealthChecks.IngestionTrac
 
             this.storageBrokerMock.Verify(broker =>
                 broker.SelectAllSuppliersAsync(),
-                    Times.Once);
-
-            this.storageBrokerMock.Verify(broker =>
-                broker.SelectSupplierByIdAsync(randomSupplier.Id),
                     Times.Once);
 
             this.storageBrokerMock.Verify(broker =>
@@ -192,10 +176,6 @@ namespace LHDS.Core.Tests.Unit.Services.Coordinations.HealthChecks.IngestionTrac
                     .ReturnsAsync(randomIngestionTrackedSuppliers);
 
             this.storageBrokerMock.Setup(broker =>
-                broker.SelectSupplierByIdAsync(randomSupplier.Id))
-                    .ReturnsAsync(randomSupplier);
-
-            this.storageBrokerMock.Setup(broker =>
                 broker.SelectAllIngestionTrackingsAsync())
                     .ReturnsAsync(randomHealthyTrackings);
 
@@ -214,10 +194,6 @@ namespace LHDS.Core.Tests.Unit.Services.Coordinations.HealthChecks.IngestionTrac
 
             this.storageBrokerMock.Verify(broker =>
                 broker.SelectAllSuppliersAsync(),
-                    Times.Once);
-
-            this.storageBrokerMock.Verify(broker =>
-                broker.SelectSupplierByIdAsync(randomSupplier.Id),
                     Times.Once);
 
             this.storageBrokerMock.Verify(broker =>

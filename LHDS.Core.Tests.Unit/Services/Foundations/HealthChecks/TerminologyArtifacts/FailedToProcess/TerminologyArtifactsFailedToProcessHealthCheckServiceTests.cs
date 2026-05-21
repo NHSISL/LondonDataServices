@@ -95,5 +95,35 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.HealthChecks.TerminologyArti
 
             return filler;
         }
+
+        private static List<TerminologyArtifact> CreateRandomNonErrorTerminologyArtifacts(
+            DateTimeOffset dateTimeOffset,
+            string resourceType,
+            int count)
+        {
+            return CreateNonErrorTerminologyArtifactsFiller(dateTimeOffset, resourceType)
+                .Create(count)
+                    .ToList();
+        }
+
+        private static Filler<TerminologyArtifact> CreateNonErrorTerminologyArtifactsFiller(
+            DateTimeOffset updatedDateTime,
+            string resourceType)
+        {
+            DateTimeOffset dateTimeOffset = DateTimeOffset.UtcNow;
+            string user = Guid.NewGuid().ToString();
+            var filler = new Filler<TerminologyArtifact>();
+
+            filler.Setup()
+                .OnType<DateTimeOffset>().Use(dateTimeOffset)
+                .OnType<DateTimeOffset?>().Use(dateTimeOffset)
+                .OnProperty(terminologyPolls => terminologyPolls.UpdatedDate).Use(updatedDateTime)
+                .OnProperty(terminologyPolls => terminologyPolls.ResourceType).Use(resourceType)
+                .OnProperty(terminologyPolls => terminologyPolls.IsError).Use(false)
+                .OnProperty(terminologyPolls => terminologyPolls.CreatedBy).Use(user)
+                .OnProperty(terminologyPolls => terminologyPolls.UpdatedBy).Use(user);
+
+            return filler;
+        }
     }
 }

@@ -24,8 +24,8 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.HealthChecks.TerminologyArti
         private readonly Mock<ILoggingBroker> loggingBrokerMock;
         private readonly ITerminologyArtifactsHealthItemService terminologyPollsHealthItemService;
         private readonly ICompareLogic compareLogic;
-        private const string CheckName = "failedToProcess";
-        private const string CheckNameDescription = "Failed To Process";
+        private const string CheckName = "artifactErrors";
+        private const string CheckNameDescription = "Artifact Errors";
         private const string ConfigSectionName = "HealthChecks:TerminologyArtifacts:FailedToProcess";
 
         public TerminologyArtifactsFailedToProcessHealthCheckServiceTests()

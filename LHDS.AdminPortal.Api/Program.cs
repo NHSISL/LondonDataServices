@@ -254,6 +254,9 @@ namespace LHDS.AdminPortal.Api
         private static void AddHealthApi(IServiceCollection services, IConfiguration configuration)
         {
             services.AddTransient
+                <IIngestionTrackingHealthItemService, IngestionTrackingPipelineAliveHealthCheckService>();
+
+            services.AddTransient
                 <IIngestionTrackingHealthItemService, IngestionTrackingDecryptionHealthCheckService>();
 
             services.AddTransient

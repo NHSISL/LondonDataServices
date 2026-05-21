@@ -306,6 +306,9 @@ namespace LHDS.AdminPortal.Api
                 <ITerminologyArtifactsHealthItemService, TerminologyArtifactsFailedToProcessHealthCheckService>();
 
             services.AddTransient
+                <ITerminologyArtifactsHealthItemService, TerminologyArtifactsNotDownloadedHealthCheckService>();
+
+            services.AddTransient
                 <IOptOutHealthItemService, OptOutsExpiredOptOutHealthCheckService>();
 
             services.AddHealthChecks()

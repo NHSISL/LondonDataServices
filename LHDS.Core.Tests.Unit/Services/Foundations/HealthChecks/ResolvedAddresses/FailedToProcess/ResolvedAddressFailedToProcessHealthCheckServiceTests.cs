@@ -40,8 +40,8 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.HealthChecks.ResolvedAddress
 
             var appSettingsStub = new Dictionary<string, string> {
                 {$"{ConfigSectionName}:DegradedThreshold", "1440"},
-                {$"{ConfigSectionName}:Processing:UnHealthyThreshold", "2880"},
-                {$"{ConfigSectionName}:Processing:RetryCount", "3"},
+                {$"{ConfigSectionName}:UnHealthyThreshold", "2880"},
+                {$"{ConfigSectionName}:RetryCount", "3"},
             };
 
             this.inMemoryConfiguration = new ConfigurationBuilder()

@@ -58,6 +58,7 @@ using LHDS.Core.Services.Foundations.HealthChecks.IngestionTracking;
 using LHDS.Core.Services.Foundations.HealthChecks.OptOut;
 using LHDS.Core.Services.Foundations.HealthChecks.ResolvedAddress;
 using LHDS.Core.Services.Foundations.HealthChecks.TerminologyArtifacts;
+using LHDS.Core.Services.Foundations.HealthChecks.PDS;
 using LHDS.Core.Services.Foundations.HealthChecks.TerminologyPolls;
 using LHDS.Core.Services.Foundations.IngestionTrackingAudits;
 using LHDS.Core.Services.Foundations.IngestionTrackings;
@@ -74,6 +75,7 @@ using LHDS.Core.Services.Orchestrations.HealthChecks.IngestionTrackings;
 using LHDS.Core.Services.Orchestrations.HealthChecks.OptOuts;
 using LHDS.Core.Services.Orchestrations.HealthChecks.ResolvedAddresses;
 using LHDS.Core.Services.Orchestrations.HealthChecks.TerminologyArtifacts;
+using LHDS.Core.Services.Orchestrations.HealthChecks.PdsAudits;
 using LHDS.Core.Services.Orchestrations.HealthChecks.TerminologyPolls;
 using LHDS.Core.Services.Processings.Addresses;
 using LHDS.Core.Services.Processings.DataSetSpecifications;
@@ -279,6 +281,9 @@ namespace LHDS.AdminPortal.Api
                 <IIngestionTrackingHealthItemService, IngestionTrackingStaleLastBatchCheckHealthCheckService>();
 
             services.AddTransient
+                <IIngestionTrackingHealthItemService, IngestionTrackingLastSeenHealthCheckService>();
+
+            services.AddTransient
                 <IResolvedAddressHealthItemService, ResolvedAddressProcessingHealthCheckService>();
 
             services.AddTransient
@@ -300,6 +305,9 @@ namespace LHDS.AdminPortal.Api
                 <IResolvedAddressHealthItemService, ResolvedAddressMatchQualityHealthCheckService>();
 
             services.AddTransient
+                <IResolvedAddressHealthItemService, ResolvedAddressRetryWarningHealthCheckService>();
+
+            services.AddTransient
                 <ITerminologyPollsHealthItemService, TerminologyPollsNotPollingHealthCheckService>();
 
             services.AddTransient
@@ -309,7 +317,16 @@ namespace LHDS.AdminPortal.Api
                 <ITerminologyArtifactsHealthItemService, TerminologyArtifactsNotDownloadedHealthCheckService>();
 
             services.AddTransient
+                <ITerminologyArtifactsHealthItemService, TerminologyArtifactsCoreNotDownloadedHealthCheckService>();
+
+            services.AddTransient
                 <IOptOutHealthItemService, OptOutsExpiredOptOutHealthCheckService>();
+
+            services.AddTransient
+                <IOptOutHealthItemService, OptOutPipelineAliveHealthCheckService>();
+
+            services.AddTransient
+                <IPdsHealthItemService, PdsAuditPipelineAliveHealthCheckService>();
 
             services.AddHealthChecks()
                 .AddCheck<IngestionTrackingHealthCheckOrchestrationService>("ingestionTrackingHealthChecks");
@@ -325,6 +342,9 @@ namespace LHDS.AdminPortal.Api
 
             services.AddHealthChecks()
                 .AddCheck<TerminologyArtifactsHealthCheckCoordinationService>("terminologyArtifactsHealthChecks");
+
+            services.AddHealthChecks()
+                .AddCheck<PdsAuditHealthCheckOrchestrationService>("pdsAuditHealthChecks");
 
             services.AddTransient<IHealthCheckPublisher, HealthCheckPublisherCoordinationService>();
 

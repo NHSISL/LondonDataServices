@@ -24,12 +24,6 @@ namespace LHDS.Core.Tests.Unit.Services.Coordinations.HealthChecks.IngestionTrac
             IQueryable<IngestionTracking> randomUnhealthyTrackings =
                 CreateRandomUnhealthyIngestionTrackings(randomSupplier.Id);
 
-            IQueryable<IngestionTracking> randomHealthyTrackings =
-                CreateRandomHealthyIngestionTrackings(randomSupplier.Id);
-
-            IQueryable<IngestionTracking> randomTrackings =
-                randomUnhealthyTrackings.Concat(randomHealthyTrackings);
-
             int expectedItemsCount = randomUnhealthyTrackings.Count();
 
             Dictionary<string, object> healthCheckResultValues =
@@ -59,7 +53,7 @@ namespace LHDS.Core.Tests.Unit.Services.Coordinations.HealthChecks.IngestionTrac
 
             this.storageBrokerMock.Setup(broker =>
                 broker.SelectAllIngestionTrackingsAsync())
-                    .ReturnsAsync(randomTrackings);
+                    .ReturnsAsync(randomUnhealthyTrackings);
 
             // when
             var result = await this.ingestionTrackingFilesReceivedHealthCheckService.GetHealthStatusAsync();
@@ -102,12 +96,6 @@ namespace LHDS.Core.Tests.Unit.Services.Coordinations.HealthChecks.IngestionTrac
             IQueryable<IngestionTracking> randomDegradedTrackings =
                 CreateRandomDegradedIngestionTrackings(randomSupplier.Id);
 
-            IQueryable<IngestionTracking> randomHealthyTrackings =
-                CreateRandomHealthyIngestionTrackings(randomSupplier.Id);
-
-            IQueryable<IngestionTracking> randomTrackings =
-                randomDegradedTrackings.Concat(randomHealthyTrackings);
-
             int expectedItemsCount = randomDegradedTrackings.Count();
 
             Dictionary<string, object> healthCheckResultValues =
@@ -137,7 +125,7 @@ namespace LHDS.Core.Tests.Unit.Services.Coordinations.HealthChecks.IngestionTrac
 
             this.storageBrokerMock.Setup(broker =>
                 broker.SelectAllIngestionTrackingsAsync())
-                    .ReturnsAsync(randomTrackings);
+                    .ReturnsAsync(randomDegradedTrackings);
 
             // when
             var result = await this.ingestionTrackingFilesReceivedHealthCheckService.GetHealthStatusAsync();
@@ -180,7 +168,7 @@ namespace LHDS.Core.Tests.Unit.Services.Coordinations.HealthChecks.IngestionTrac
             IQueryable<IngestionTracking> randomHealthyTrackings =
                 CreateRandomHealthyIngestionTrackings(randomSupplier.Id);
 
-            int expectedItemsCount = 0;
+            int expectedItemsCount = randomHealthyTrackings.Count();
 
             Dictionary<string, object> healthCheckResultValues =
                 GetHealthCheckResultValues(

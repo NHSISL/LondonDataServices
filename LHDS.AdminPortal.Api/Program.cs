@@ -276,6 +276,9 @@ namespace LHDS.AdminPortal.Api
                 <IIngestionTrackingHealthItemService, IngestionTrackingIncompleteBatchHealthCheckService>();
 
             services.AddTransient
+                <IIngestionTrackingHealthItemService, IngestionTrackingStaleLastBatchCheckHealthCheckService>();
+
+            services.AddTransient
                 <IResolvedAddressHealthItemService, ResolvedAddressProcessingHealthCheckService>();
 
             services.AddTransient

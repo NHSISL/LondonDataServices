@@ -329,6 +329,9 @@ namespace LHDS.AdminPortal.Api
                 <IOptOutHealthItemService, OptOutsExpiredOptOutHealthCheckService>();
 
             services.AddTransient
+                <IOptOutHealthItemService, OptOutsStuckHealthCheckService>();
+
+            services.AddTransient
                 <IOptOutHealthItemService, OptOutPipelineAliveHealthCheckService>();
 
             services.AddTransient

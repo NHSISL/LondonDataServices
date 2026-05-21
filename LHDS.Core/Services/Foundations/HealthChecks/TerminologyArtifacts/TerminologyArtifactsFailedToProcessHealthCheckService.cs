@@ -49,11 +49,11 @@ namespace LHDS.Core.Services.Foundations.HealthChecks.TerminologyArtifacts
 
                     var filteredQuery = terminologyArtifactsQuery.Where(terminologyArtifact => terminologyArtifact.IsError);
 
-                    var degradedQuery = terminologyArtifactsQuery.Where(terminologyPoll =>
+                    var degradedQuery = filteredQuery.Where(terminologyPoll =>
                         terminologyPoll.UpdatedDate <= degradedThresholdDateTime &&
                         terminologyPoll.UpdatedDate > unHealthyThresholdDateTime);
 
-                    var unHealthyQuery = terminologyArtifactsQuery
+                    var unHealthyQuery = filteredQuery
                         .Where(terminologyPoll => terminologyPoll.UpdatedDate <= unHealthyThresholdDateTime);
 
                     int codeSystemDegradedCount = degradedQuery

@@ -321,5 +321,79 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.HealthChecks.TerminologyArti
             this.storageBrokerMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
         }
+
+        [Fact]
+        public async Task ShouldExcludeNonErrorRecordsFromCountsAsync()
+        {
+            // given
+            DateTimeOffset randomDateTimeOffset = DateTimeOffset.UtcNow;
+            int randomNumber = GetRandomNumber();
+
+            int degradedThresholdMinutes = this.inMemoryConfiguration
+                .GetValue($"{ConfigSectionName}:DegradedThreshold", 1440);
+
+            int unHealthyThresholdMinutes = this.inMemoryConfiguration
+                .GetValue($"{ConfigSectionName}:UnHealthyThreshold", 2880);
+
+            List<TerminologyArtifact> nonErrorRecords = CreateRandomNonErrorTerminologyArtifacts(
+                dateTimeOffset: randomDateTimeOffset.AddMinutes(-unHealthyThresholdMinutes).AddSeconds(-1),
+                resourceType: "CodeSystem",
+                count: randomNumber);
+
+            this.dateTimeBrokerMock.Setup(broker =>
+                broker.GetCurrentDateTimeOffsetAsync())
+                    .ReturnsAsync(randomDateTimeOffset);
+
+            this.storageBrokerMock.Setup(broker =>
+                broker.SelectAllTerminologyArtifactsAsync())
+                    .ReturnsAsync(nonErrorRecords.AsQueryable());
+
+            string message = "Nothing to process. All up to date.";
+
+            var vals = new Dictionary<string, object>
+            {
+                { "description", CheckNameDescription },
+                { "failedToProcess", 0 },
+                { "degradedCodeSystemItems", 0 },
+                { "unHealthyCodeSystemItems", 0 },
+                { "degradedConceptMapItems", 0 },
+                { "unHealthyConceptMapItems", 0 },
+                { "degradedValueSetItems", 0 },
+                { "unHealthyValueItems", 0 },
+                { "degradedThresholdMinutes", degradedThresholdMinutes.ToString() },
+                { "unHealthyThresholdMinutes", unHealthyThresholdMinutes.ToString() },
+                { "checkedAt", randomDateTimeOffset.ToString("o") },
+                { "message", message },
+                { "status", HealthStatus.Healthy.ToString() }
+            };
+
+            HealthCheckResult expectedHealthCheckResult = HealthCheckResult.Healthy(
+                description: CheckName,
+                data: vals);
+
+            // when
+            HealthCheckResult actualHealthCheckResult =
+                await this.terminologyPollsHealthItemService.GetHealthStatusAsync();
+
+            // then
+            actualHealthCheckResult.Should().BeEquivalentTo(expectedHealthCheckResult, options =>
+                options.Using<DateTimeOffset>(ctx =>
+                    ctx.Subject.Should().BeCloseTo(ctx.Expectation, TimeSpan.FromSeconds(1)))
+                    .WhenTypeIs<DateTimeOffset>()
+                    .WithStrictOrdering()
+                    .ComparingByMembers<HealthCheckResult>());
+
+            this.dateTimeBrokerMock.Verify(broker =>
+                broker.GetCurrentDateTimeOffsetAsync(),
+                    Times.Once);
+
+            this.storageBrokerMock.Verify(broker =>
+                broker.SelectAllTerminologyArtifactsAsync(),
+                    Times.Once);
+
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
+            this.storageBrokerMock.VerifyNoOtherCalls();
+            this.loggingBrokerMock.VerifyNoOtherCalls();
+        }
     }
 }

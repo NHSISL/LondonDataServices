@@ -25,18 +25,22 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.HealthChecks
             await this.healthCheckPublisherService.PublishAsync(inputHealthReport, TestContext.Current.CancellationToken);
 
             // then
+            double statusCode = inputHealthReport.Status switch
+            {
+                HealthStatus.Healthy => 0,
+                HealthStatus.Degraded => 1,
+                HealthStatus.Unhealthy => 2,
+                _ => 3
+            };
+
+            this.telemetryBrokerMock.Verify(broker =>
+                broker.TrackMetricAsync(It.Is(SameMetricTelemetryAs(new MetricTelemetry("StatusCode", statusCode)))),
+                    Times.Exactly(inputHealthReport.Entries.Count));
+
             foreach (var entry in inputHealthReport.Entries)
             {
                 var eventTelemetry = new EventTelemetry(entry.Key);
                 eventTelemetry.Properties.Add("Status", inputHealthReport.Status.ToString());
-
-                eventTelemetry.Metrics.Add("StatusCode", inputHealthReport.Status switch
-                {
-                    HealthStatus.Healthy => 0,
-                    HealthStatus.Degraded => 1,
-                    HealthStatus.Unhealthy => 2,
-                    _ => 3
-                });
 
                 foreach (var reading in entry.Value.Data)
                 {
@@ -44,7 +48,6 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.HealthChecks
                     {
                         double metricValue = Convert.ToDouble(reading.Value);
                         var metric = new MetricTelemetry(reading.Key, metricValue);
-                        eventTelemetry.Metrics.Add(reading.Key, metricValue);
 
                         this.telemetryBrokerMock.Verify(broker =>
                             broker.TrackMetricAsync(It.Is(SameMetricTelemetryAs(metric))),

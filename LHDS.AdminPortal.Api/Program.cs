@@ -100,7 +100,7 @@ using Microsoft.Identity.Web;
 using Microsoft.IdentityModel.Logging;
 using Microsoft.OData.Edm;
 using Microsoft.OData.ModelBuilder;
-using Microsoft.OpenApi.Models;
+using Microsoft.OpenApi;
 
 namespace LHDS.AdminPortal.Api
 {

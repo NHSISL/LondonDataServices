@@ -31,13 +31,15 @@ namespace LHDS.Core.Services.Foundations.HealthChecks
                 var eventTelemetry = new EventTelemetry(entry.Key);
                 eventTelemetry.Properties.Add("Status", report.Status.ToString());
 
-                eventTelemetry.Metrics.Add("StatusCode", report.Status switch
+                double statusCode = report.Status switch
                 {
                     HealthStatus.Healthy => 0,
                     HealthStatus.Degraded => 1,
                     HealthStatus.Unhealthy => 2,
                     _ => 3
-                });
+                };
+
+                await telemetryBroker.TrackMetricAsync(new MetricTelemetry("StatusCode", statusCode));
 
                 foreach (var reading in entry.Value.Data)
                 {
@@ -45,8 +47,6 @@ namespace LHDS.Core.Services.Foundations.HealthChecks
                     {
                         double metricValue = Convert.ToDouble(reading.Value);
                         var metric = new MetricTelemetry(reading.Key, metricValue);
-                        eventTelemetry.Metrics.Add(reading.Key, metricValue);
-
                         await telemetryBroker.TrackMetricAsync(metric);
                     }
                     else if (reading.Value is DateTime dateTime)

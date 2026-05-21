@@ -22,6 +22,7 @@ namespace LHDS.Core.Services.Foundations.HealthChecks.TerminologyArtifacts
         private readonly ILoggingBroker loggingBroker;
         private const string CheckName = "coreNotDownloaded";
         private const string CheckNameDescription = "Core Not Downloaded";
+        private const string ConfigSectionName = "HealthChecks:TerminologyArtifacts:CoreNotDownloaded";
 
         public TerminologyArtifactsCoreNotDownloadedHealthCheckService(
             IStorageBroker storageBroker,

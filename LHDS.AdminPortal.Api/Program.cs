@@ -276,6 +276,9 @@ namespace LHDS.AdminPortal.Api
                 <IResolvedAddressHealthItemService, ResolvedAddressQueuedHealthCheckService>();
 
             services.AddTransient
+                <IResolvedAddressHealthItemService, ResolvedAddressExportHealthCheckService>();
+
+            services.AddTransient
                 <IResolvedAddressHealthItemService, ResolvedAddressFailedToProcessHealthCheckService>();
 
             services.AddTransient

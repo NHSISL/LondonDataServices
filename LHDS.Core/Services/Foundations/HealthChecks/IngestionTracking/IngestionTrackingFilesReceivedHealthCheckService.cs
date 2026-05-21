@@ -70,18 +70,19 @@ namespace LHDS.Core.Services.Foundations.HealthChecks.IngestionTracking
                     var ingestionTrackingQuery = await storageBroker.SelectAllIngestionTrackingsAsync();
 
                     var filteredQuery = ingestionTrackingQuery
-                        .Where(ingestionTracking => ingestionTracking.SupplierId == supplierId
-                            && ingestionTracking.CreatedDate <= degradedThresholdDateTime).ToList();
+                        .Where(ingestionTracking => ingestionTracking.SupplierId == supplierId)
+                        .ToList();
 
                     int itemsReceived = filteredQuery.Count();
 
-                    bool isDegraded = !filteredQuery.Any(ingestionTracking =>
-                        ingestionTracking.CreatedDate > degradedThresholdDateTime);
+                    bool hasRecentActivity = filteredQuery.Any(ingestionTracking =>
+                        ingestionTracking.CreatedDate >= degradedThresholdDateTime);
 
-                    bool isUnhealthy = !filteredQuery.Any(ingestionTracking =>
-                        ingestionTracking.CreatedDate <= degradedThresholdDateTime &&
-                        ingestionTracking.CreatedDate > unHealthyThresholdDateTime);
+                    bool hasActivityInUnhealthyWindow = filteredQuery.Any(ingestionTracking =>
+                        ingestionTracking.CreatedDate >= unHealthyThresholdDateTime);
 
+                    bool isDegraded = !hasRecentActivity && hasActivityInUnhealthyWindow;
+                    bool isUnhealthy = !hasActivityInUnhealthyWindow;
                     bool noNonHealthyItems = itemsReceived == 0;
 
                     HealthStatus status = (noNonHealthyItems, isUnhealthy, isDegraded) switch

@@ -82,6 +82,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.HealthChecks.ResolvedAddress
                 .OnType<DateTimeOffset>().Use(dateTimeOffset)
                 .OnProperty(resolvedAddress => resolvedAddress.IsProcessed).Use(isProcessed)
                 .OnProperty(resolvedAddress => resolvedAddress.IsExported).Use(isExported)
+                .OnProperty(resolvedAddress => resolvedAddress.HashedUnstructuredPostalAddress).Use(new char[32])
                 .OnProperty(resolvedAddress => resolvedAddress.CreatedBy).Use(user)
                 .OnProperty(resolvedAddress => resolvedAddress.UpdatedBy).Use(user);
 

@@ -78,6 +78,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.HealthChecks.ResolvedAddress
             filler.Setup()
                 .OnType<DateTimeOffset>().Use(dateTimeOffset)
                 .OnProperty(resolvedAddress => resolvedAddress.IsProcessing).Use(isProcessing)
+                .OnProperty(resolvedAddress => resolvedAddress.HashedUnstructuredPostalAddress).Use(new char[32])
                 .OnProperty(resolvedAddress => resolvedAddress.CreatedBy).Use(user)
                 .OnProperty(resolvedAddress => resolvedAddress.UpdatedBy).Use(user);
 

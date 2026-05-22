@@ -66,6 +66,7 @@ namespace LHDS.Core.Tests.Acceptance.Clients.Decryptions
             IngestionTracking addedIngestionTracking =
                 await this.ingestionTrackingService.AddIngestionTrackingAsync(ingestionTracking);
 
+            addedIngestionTracking.CreatedDate = dateTimeOffset.AddMinutes(-65);
             addedIngestionTracking.UpdatedDate = dateTimeOffset.AddMinutes(-65);
 
             await this.storageBroker.UpdateIngestionTrackingAsync(

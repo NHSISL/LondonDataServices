@@ -20,7 +20,6 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.OptOuts
             ShouldNotOverwriteCacheTimeWhenInputIsDefaultDateTimeOffsetAsync()
         {
             // given
-            DateTimeOffset randomDateTimeOffset = GetRandomDateTimeOffset();
             IQueryable<OptOut> allOptOuts = CreateRandomOptOuts();
             OptOut existingOptOut = SelectRandomOptOut(allOptOuts);
 
@@ -32,6 +31,53 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.OptOuts
             DateTimeOffset expectedCacheTime = existingOptOut.CacheTime;
             DateTimeOffset expectedLastSentToMesh = existingOptOut.LastSentToMesh;
             DateTimeOffset expectedUpdatedDate = existingOptOut.UpdatedDate;
+
+            this.optOutServiceMock.Setup(service =>
+                service.RetrieveAllOptOutsAsync())
+                    .ReturnsAsync(allOptOuts);
+
+            this.optOutServiceMock.Setup(service =>
+                service.ModifyOptOutAsync(It.IsAny<OptOut>()))
+                    .ReturnsAsync((OptOut o) => o);
+
+            // when
+            OptOut actualOptOut =
+                await this.optOutProcessingService
+                    .AddOrModifyOptOutAsync(inputOptOut);
+
+            // then
+            actualOptOut.CacheTime.Should().Be(expectedCacheTime);
+            actualOptOut.LastSentToMesh.Should().Be(expectedLastSentToMesh);
+            actualOptOut.UpdatedDate.Should().Be(expectedUpdatedDate);
+
+            this.optOutServiceMock.Verify(service =>
+                service.RetrieveAllOptOutsAsync(),
+                    Times.Once);
+
+            this.optOutServiceMock.Verify(service =>
+                service.ModifyOptOutAsync(It.IsAny<OptOut>()),
+                    Times.Once);
+
+            this.optOutServiceMock.VerifyNoOtherCalls();
+            this.loggingBrokerMock.VerifyNoOtherCalls();
+        }
+
+        [Fact]
+        public async Task
+            ShouldOverwriteDateTimeFieldsWhenInputIsNotDefaultDateTimeOffsetAsync()
+        {
+            // given
+            IQueryable<OptOut> allOptOuts = CreateRandomOptOuts();
+            OptOut existingOptOut = SelectRandomOptOut(allOptOuts);
+
+            OptOut inputOptOut = existingOptOut.DeepClone();
+            inputOptOut.CacheTime = GetRandomDateTimeOffset();
+            inputOptOut.LastSentToMesh = GetRandomDateTimeOffset();
+            inputOptOut.UpdatedDate = GetRandomDateTimeOffset();
+
+            DateTimeOffset expectedCacheTime = inputOptOut.CacheTime;
+            DateTimeOffset expectedLastSentToMesh = inputOptOut.LastSentToMesh;
+            DateTimeOffset expectedUpdatedDate = inputOptOut.UpdatedDate;
 
             this.optOutServiceMock.Setup(service =>
                 service.RetrieveAllOptOutsAsync())

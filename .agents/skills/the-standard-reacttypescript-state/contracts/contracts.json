@@ -1,0 +1,17 @@
+{
+  "skill": "the-standard-reacttypescript-state",
+  "version": "1.0.0",
+  "structure": {
+    "state_types": {
+      "local_component_state": "useState inside the component — for local UI only",
+      "url_state": "query params / path segments — for shareable/bookmarkable state",
+      "page_hook_state": "useState in use{Domain}Page — owns server data",
+      "application_state": "React context / global store — for cross-cutting concerns only"
+    },
+    "rules": {
+      "server_data_owner": "page hook only",
+      "global_state_reason": "must be cross-cutting — not prop-avoidance",
+      "business_transitions": "must call services — not direct setState"
+    }
+  }
+}

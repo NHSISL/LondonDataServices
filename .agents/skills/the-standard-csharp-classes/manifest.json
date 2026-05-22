@@ -1,0 +1,11 @@
+{
+  "name": "the-standard-csharp-classes",
+  "version": "0.1.0",
+  "description": "Enforces C# class naming, field conventions, this. referencing, and object instantiation rules.",
+  "csharp_standard_version": "v0.8",
+  "skill_version": "v0.1.0",
+  "inputs": ["C# source file"],
+  "outputs": ["Style-compliant C# source file", "review feedback"],
+  "dependencies": ["the-standard-csharp-files"],
+  "applies_to": ["*.cs"]
+}

@@ -6,7 +6,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using FluentAssertions;
 using Force.DeepCloner;
 using LHDS.Core.Models.Foundations.OptOuts;
 using Moq;
@@ -40,6 +39,13 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.OptOuts
                 randomNonConsentList.First().NhsNumber
             };
 
+            List<OptOut> consentedList = currentOptOutList
+                .Where(optOut => consentedNhsNumbers.Contains(optOut.NhsNumber))
+                    .ToList();
+
+            List<OptOut> nonConsentedList = currentOptOutList
+                .Except(consentedList).ToList();
+
             this.dateTimeBrokerMock.Setup(broker =>
                 broker.GetCurrentDateTimeOffsetAsync())
                     .ReturnsAsync(randomDateTimeOffset);
@@ -60,6 +66,38 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.OptOuts
                     Times.Once);
 
             this.dateTimeBrokerMock.VerifyNoOtherCalls();
+
+            foreach (var item in consentedList)
+            {
+                if (item == null)
+                {
+                    continue;
+                }
+
+                item.UpdatedDate = randomDateTimeOffset;
+                item.CacheTime = randomDateTimeOffset;
+                item.LastSentToMesh = randomDateTimeOffset;
+                item.Status = "Opt-In";
+
+                this.optOutServiceMock.Verify(service =>
+                   service.ModifyOptOutAsync(It.Is(SameOptOutAs(item))),
+                       Times.Once);
+            }
+
+            foreach (var item in nonConsentedList)
+            {
+                item.UpdatedDate = randomDateTimeOffset;
+                item.CacheTime = randomDateTimeOffset;
+                item.LastSentToMesh = randomDateTimeOffset;
+                item.Status = "Opt-Out";
+
+                this.optOutServiceMock.Verify(service =>
+                   service.ModifyOptOutAsync(It.Is(SameOptOutAs(item))),
+                       Times.Once);
+            }
+
+            this.optOutServiceMock.VerifyNoOtherCalls();
+            this.loggingBrokerMock.VerifyNoOtherCalls();
         }
     }
 }

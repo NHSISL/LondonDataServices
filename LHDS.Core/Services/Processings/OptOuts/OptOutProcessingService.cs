@@ -157,7 +157,6 @@ namespace LHDS.Core.Services.Processings.OptOuts
             }
 
             var consentedSet = new HashSet<string>(consentedIdentifiers);
-            var dateTime = await this.dateTimeBroker.GetCurrentDateTimeOffsetAsync();
 
             List<OptOut> consentedList = currentOptOutList
                 .Where(optOut => consentedSet.Contains(optOut.NhsNumber))
@@ -168,8 +167,12 @@ namespace LHDS.Core.Services.Processings.OptOuts
 
             List<OptOut> delta = new List<OptOut>();
 
-            DateTimeOffset dateTime =
-                await this.dateTimeBroker.GetCurrentDateTimeOffsetAsync();
+if (!consentedList.Any() && !nonConsentedList.Any())
+{
+    return delta;
+}
+
+var dateTime = await this.dateTimeBroker.GetCurrentDateTimeOffsetAsync();
 
             foreach (var item in consentedList)
             {

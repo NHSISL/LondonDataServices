@@ -58,6 +58,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.OptOuts
                     inputOptOuts, inputFileName, 10000, false),
                         Times.Once);
 
+            optOutServiceMock.VerifyNoOtherCalls();
             this.dateTimeBrokerMock.VerifyNoOtherCalls();
             this.identifierBrokerMock.VerifyNoOtherCalls();
             this.storageBrokerMock.VerifyNoOtherCalls();

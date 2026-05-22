@@ -63,7 +63,8 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.OptOuts
                 service.BulkAddOrModifyBatchAsync(
                     It.IsAny<List<OptOut>>(),
                     It.IsAny<string>(),
-                    It.IsAny<int>()))
+                    It.IsAny<int>(),
+                    It.IsAny<bool>()))
                         .ThrowsAsync(aggregateException);
 
             // when
@@ -84,7 +85,8 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.OptOuts
                 service.BulkAddOrModifyBatchAsync(
                     It.IsAny<List<OptOut>>(),
                     It.IsAny<string>(),
-                    It.IsAny<int>()),
+                    It.IsAny<int>(),
+                    It.IsAny<bool>()),
                         Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>
@@ -92,6 +94,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.OptOuts
                     expectedOptOutServiceException))),
                         Times.Once);
 
+            optOutServiceMock.VerifyNoOtherCalls();
             this.dateTimeBrokerMock.VerifyNoOtherCalls();
             this.storageBrokerMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
@@ -120,7 +123,8 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.OptOuts
                 service.BulkAddOrModifyBatchAsync(
                     It.IsAny<List<OptOut>>(),
                     It.IsAny<string>(),
-                    It.IsAny<int>()))
+                    It.IsAny<int>(),
+                    It.IsAny<bool>()))
                         .ThrowsAsync(serviceException);
 
             int randomCount = GetRandomNumber();
@@ -157,14 +161,24 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.OptOuts
             actualOptOutServiceException.Should()
                 .BeEquivalentTo(expectedOptOutServiceException);
 
+            optOutServiceMock.Verify(service =>
+                service.BulkAddOrModifyBatchAsync(
+                    It.IsAny<List<OptOut>>(),
+                    It.IsAny<string>(),
+                    It.IsAny<int>(),
+                    It.IsAny<bool>()),
+                        Times.Once);
+
             this.loggingBrokerMock.Verify(broker =>
                 broker.LogErrorAsync(It.Is(SameExceptionAs(
                     expectedOptOutServiceException))),
                         Times.Once);
 
+            optOutServiceMock.VerifyNoOtherCalls();
             this.dateTimeBrokerMock.VerifyNoOtherCalls();
             this.storageBrokerMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
+            this.identifierBrokerMock.VerifyNoOtherCalls();
         }
     }
 }

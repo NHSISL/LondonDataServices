@@ -208,7 +208,7 @@ namespace LHDS.Core.Services.Orchestrations.Decryptions
                         && ingestionTrackingItem.Decrypted == false
                         && ingestionTrackingItem.IsProcessing == false
                         && ingestionTrackingItem.RetryCount < 4
-                        && ingestionTrackingItem.UpdatedDate <
+                        && ingestionTrackingItem.CreatedDate <
                             currentDateTime.AddMinutes(-landingConfiguration.RelandIntervalInMinutes));
 
                 if (item == null)

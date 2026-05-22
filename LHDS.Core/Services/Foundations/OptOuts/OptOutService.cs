@@ -112,13 +112,14 @@ namespace LHDS.Core.Services.Foundations.OptOuts
                 TryCatch(async () =>
                 {
                     ValidateOnBulkModifyOptOuts(optOuts, fileName);
-                    await BulkAddOrModifyBatchAsync(optOuts, fileName, 10000);
+                    await BulkAddOrModifyBatchAsync(optOuts, fileName, 10000, allowInserts: false);
                 });
 
         internal virtual async ValueTask BulkAddOrModifyBatchAsync(
             List<OptOut> optOuts,
             string fileName,
-            int batchSize = 10000)
+            int batchSize = 10000,
+            bool allowInserts = true)
         {
             int totalRecords = optOuts.Count;
             var exceptions = new List<Exception>();
@@ -152,12 +153,44 @@ namespace LHDS.Core.Services.Foundations.OptOuts
                     {
                         if (newOptOuts.Count != 0)
                         {
-                            List<OptOut> validatedAddOptOuts =
-                                await ValidateOptOutsAndAssignIdAndAuditOnAddAsync(
-                                    newOptOuts, fileName);
+                            if (allowInserts)
+                            {
+                                List<OptOut> validatedAddOptOuts =
+                                    await ValidateOptOutsAndAssignIdAndAuditOnAddAsync(
+                                        newOptOuts, fileName);
 
-                            await this.storageBroker
-                                .BulkInsertOptOutsAsync(validatedAddOptOuts);
+                                await this.storageBroker
+                                    .BulkInsertOptOutsAsync(validatedAddOptOuts);
+                            }
+                            else
+                            {
+                                List<Audit> skippedAudits = newOptOuts
+                                    .Select(optOut => new Audit
+                                    {
+                                        AuditType = "OptOut",
+                                        Title = "Unable to modify optOut",
+
+                                        Message =
+                                            $"OptOut not found in storage - Id: {optOut.Id};"
+                                                + $" NhsNumber: {optOut.NhsNumber}"
+                                                + $" from file: {fileName}",
+
+                                        FileName = fileName,
+                                        LogLevel = "Error",
+                                    })
+                                    .ToList();
+
+                                await this.auditBroker.BulkLogAsync(skippedAudits);
+
+                                foreach (OptOut optOut in newOptOuts)
+                                {
+                                    await this.loggingBroker.LogWarningAsync(
+                                        message: $"Unable to modify optOut."
+                                            + $" OptOut not found in storage - Id: {optOut.Id};"
+                                            + $" NhsNumber: {optOut.NhsNumber}"
+                                            + $" from file: {fileName}");
+                                }
+                            }
                         }
                     }
                     catch (Exception insertException)
@@ -170,6 +203,18 @@ namespace LHDS.Core.Services.Foundations.OptOuts
                     {
                         if (existingOptOuts.Count != 0)
                         {
+                            Dictionary<Guid, OptOut> storageById =
+                                storageOptOuts.ToDictionary(optOut => optOut.Id);
+
+                            foreach (OptOut optOut in existingOptOuts)
+                            {
+                                if (storageById.TryGetValue(optOut.Id, out OptOut stored))
+                                {
+                                    optOut.CreatedDate = stored.CreatedDate;
+                                    optOut.CreatedBy = stored.CreatedBy;
+                                }
+                            }
+
                             List<OptOut> validatedModifyOptOuts =
                                 await ValidateOptOutsAndAssignAuditOnModifyAsync(
                                     existingOptOuts, fileName);

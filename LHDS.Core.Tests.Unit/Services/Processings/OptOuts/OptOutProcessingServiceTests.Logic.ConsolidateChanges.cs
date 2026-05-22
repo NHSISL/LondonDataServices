@@ -110,7 +110,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.OptOuts
             this.optOutServiceMock.Verify(service =>
                 service.BulkModifyOptOutsAsync(
                     It.Is<List<OptOut>>(list =>
-                        list.Count == allModifiedOptOuts.Count),
+                        this.compareLogic.Compare(list, allModifiedOptOuts).AreEqual),
                     "ConsolidateOptOutChanges"),
                         Times.Once);
 
@@ -191,9 +191,41 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.OptOuts
             this.optOutServiceMock.Verify(service =>
                 service.BulkModifyOptOutsAsync(
                     It.Is<List<OptOut>>(list =>
-                        list.Count == allModifiedOptOuts.Count),
+                        this.compareLogic.Compare(list, allModifiedOptOuts).AreEqual),
                     "ConsolidateOptOutChanges"),
                         Times.Once);
+
+            this.optOutServiceMock.VerifyNoOtherCalls();
+            this.loggingBrokerMock.VerifyNoOtherCalls();
+        }
+
+        [Fact]
+        public async Task
+            ShouldReturnEmptyOptOutListOnConsolidateChangesOnlyWhenCurrentOptOutListIsEmptyAsync()
+        {
+            // given
+            List<OptOut> emptyOptOutList = new List<OptOut>();
+            List<string> randomStringList = RandomStringList(GetRandomNumber());
+
+            // when
+            List<OptOut> actualOptOutList =
+                await this.optOutProcessingService
+                    .ConsolidateOptOutChangesAndReturnChangesOnly(
+                        emptyOptOutList,
+                        consentedIdentifiers: randomStringList);
+
+            // then
+            actualOptOutList.Should().BeEmpty();
+
+            this.dateTimeBrokerMock.Verify(broker =>
+                broker.GetCurrentDateTimeOffsetAsync(),
+                    Times.Never);
+
+            this.optOutServiceMock.Verify(service =>
+                service.BulkModifyOptOutsAsync(
+                    It.IsAny<List<OptOut>>(),
+                    It.IsAny<string>()),
+                        Times.Never);
 
             this.optOutServiceMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();

@@ -45,7 +45,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.OptOuts
 
             optOutServiceMock.Setup(service =>
                 service.BulkAddOrModifyBatchAsync(
-                    inputOptOuts, inputFileName, 10000))
+                    inputOptOuts, inputFileName, 10000, false))
                         .Returns(ValueTask.CompletedTask);
 
             // when
@@ -55,7 +55,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.OptOuts
             // then
             optOutServiceMock.Verify(service =>
                 service.BulkAddOrModifyBatchAsync(
-                    inputOptOuts, inputFileName, 10000),
+                    inputOptOuts, inputFileName, 10000, false),
                         Times.Once);
 
             this.dateTimeBrokerMock.VerifyNoOtherCalls();

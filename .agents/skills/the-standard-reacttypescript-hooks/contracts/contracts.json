@@ -1,0 +1,31 @@
+{
+  "skill": "the-standard-reacttypescript-hooks",
+  "version": "1.0.0",
+  "naming": {
+    "page_hook": "use{Domain}Page.ts",
+    "component_hook": "use{Purpose}.ts",
+    "folder_pages": "src/hooks/pages/ or co-located with page",
+    "folder_components": "src/hooks/components/ or co-located with component"
+  },
+  "structure": {
+    "page_hook_responsibilities": [
+      "manage isLoading state",
+      "manage error state",
+      "manage view model state",
+      "call view service in useEffect",
+      "protect against stale updates"
+    ],
+    "component_hook_responsibilities": [
+      "manage local UI state",
+      "modal open/closed",
+      "input text before submit",
+      "dropdown expanded/collapsed"
+    ],
+    "forbidden_in_hooks": [
+      "business rules",
+      "direct broker calls",
+      "direct fetch calls",
+      "domain logic (age thresholds, status classification)"
+    ]
+  }
+}

@@ -35,7 +35,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Decryptions
             randomIngestionTracking.IsProcessing = false;
             randomIngestionTracking.RetryCount = 0;
             randomIngestionTracking.LastAttempt = olderThanDateTimeOffset;
-            randomIngestionTracking.UpdatedDate = olderThanDateTimeOffset;
+            randomIngestionTracking.CreatedDate = olderThanDateTimeOffset;
             IngestionTracking storageIngestionTracking = randomIngestionTracking;
             var updatedIngestionTracking = storageIngestionTracking.DeepClone();
             updatedIngestionTracking.IsProcessing = true;

@@ -51,7 +51,7 @@ namespace LHDS.Core.Services.Foundations.ResolvedAddresses
 
                 await ValidateResolvedAddressOnAddAsync(resolvedAddressWithAddAuditApplied);
 
-                return await this.storageBroker.InsertResolvedAddressAsync(resolvedAddress);
+                return await this.storageBroker.InsertResolvedAddressAsync(resolvedAddressWithAddAuditApplied);
             });
 
         public ValueTask BulkAddResolvedAddressesAsync(List<ResolvedAddress> resolvedAddresses, string fileName) =>

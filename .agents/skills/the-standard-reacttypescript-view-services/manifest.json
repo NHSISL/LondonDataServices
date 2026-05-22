@@ -1,0 +1,17 @@
+{
+  "name": "the-standard-reacttypescript-view-services",
+  "version": "0.1.0",
+  "description": "Enforces view service coordination of foundation services, view model production, and prohibition of JSX, React, direct broker calls, and rendering concerns.",
+  "standard_version": "v0.1.0",
+  "skill_version": "v0.1.0",
+  "inputs": ["View service TypeScript files in src/services/views/**/*"],
+  "outputs": [
+    "TypeScript view service classes producing display-ready view models",
+    "Review feedback citing rule IDs"
+  ],
+  "dependencies": [
+    "the-standard-reacttypescript-services",
+    "the-standard-reacttypescript-models"
+  ],
+  "applies_to": ["src/services/views/**/*"]
+}

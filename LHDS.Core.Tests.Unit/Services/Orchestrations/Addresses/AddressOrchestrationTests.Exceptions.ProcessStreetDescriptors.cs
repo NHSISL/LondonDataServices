@@ -34,7 +34,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Addresses
             Guid randomGuid = Guid.NewGuid();
             Guid inputCorrelationId = randomGuid;
             int inputSkipCounter = 0;
-            int inputBatchSize = 120000;
+            int inputBatchSize = this.batchSize;
             Xeption streetDescriptorsException = new Xeption();
 
             this.identifierBrokerMock.Setup(broker =>

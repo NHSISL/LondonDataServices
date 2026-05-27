@@ -6,17 +6,17 @@ using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using LHDS.Core.Models.Brokers.Securities;
-using LHDS.Core.Models.Foundations.Addresses;
-using LHDS.Core.Services.Foundations.Addresses;
+using LHDS.Core.Models.Foundations.OptOuts;
+using LHDS.Core.Services.Foundations.OptOuts;
 using Moq;
 using Xunit;
 
-namespace LHDS.Core.Tests.Unit.Services.Foundations.Addresses
+namespace LHDS.Core.Tests.Unit.Services.Foundations.OptOuts
 {
-    public partial class AddressServiceTests
+    public partial class OptOutServiceTests
     {
         [Fact]
-        public async Task ShouldBulkModifyAddressesAsync()
+        public async Task ShouldBulkModifyOptOutsAsync()
         {
             // given
             int randomCount = GetRandomNumber();
@@ -25,14 +25,14 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Addresses
             string randomFileName = GetRandomString();
             string inputFileName = randomFileName;
 
-            List<Address> randomAddresses = CreateRandomAddresses(
+            List<OptOut> randomOptOuts = CreateRandomOptOuts(
                 count: randomCount,
                 randomDateTimeOffset,
                 userId: randomEntraUser.EntraUserId);
 
-            List<Address> inputAddresses = randomAddresses;
+            List<OptOut> inputOptOuts = randomOptOuts;
 
-            var addressServiceMock = new Mock<AddressService>(
+            var optOutServiceMock = new Mock<OptOutService>(
                 this.storageBrokerMock.Object,
                 this.dateTimeBrokerMock.Object,
                 this.securityAuditBrokerMock.Object,
@@ -43,19 +43,22 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Addresses
                 CallBase = true
             };
 
-            addressServiceMock.Setup(service =>
-                service.BulkAddOrModifyBatchAsync(inputAddresses, inputFileName, 10000, false))
-                    .Returns(ValueTask.CompletedTask);
+            optOutServiceMock.Setup(service =>
+                service.BulkAddOrModifyBatchAsync(
+                    inputOptOuts, inputFileName, 10000, false))
+                        .Returns(ValueTask.CompletedTask);
 
             // when
-            await addressServiceMock.Object
-                .BulkModifyAddressesAsync(inputAddresses, inputFileName);
+            await optOutServiceMock.Object
+                .BulkModifyOptOutsAsync(inputOptOuts, inputFileName);
 
             // then
-            addressServiceMock.Verify(service =>
-                service.BulkAddOrModifyBatchAsync(inputAddresses, inputFileName, 10000, false),
-                    Times.Once);
+            optOutServiceMock.Verify(service =>
+                service.BulkAddOrModifyBatchAsync(
+                    inputOptOuts, inputFileName, 10000, false),
+                        Times.Once);
 
+            optOutServiceMock.VerifyNoOtherCalls();
             this.dateTimeBrokerMock.VerifyNoOtherCalls();
             this.identifierBrokerMock.VerifyNoOtherCalls();
             this.storageBrokerMock.VerifyNoOtherCalls();

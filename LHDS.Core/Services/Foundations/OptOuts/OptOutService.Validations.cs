@@ -3,9 +3,11 @@
 // ---------------------------------------------------------
 
 using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using LHDS.Core.Models.Foundations.OptOuts;
 using LHDS.Core.Models.Foundations.OptOuts.Exceptions;
+using Xeptions;
 
 namespace LHDS.Core.Services.Foundations.OptOuts
 {
@@ -305,6 +307,38 @@ namespace LHDS.Core.Services.Foundations.OptOuts
             return true;
         }
 
+        private void ValidateOnBulkAddOptOuts(
+            List<OptOut> optOuts,
+            string fileName)
+        {
+            Validate<InvalidOptOutException>(
+                createException: () => new InvalidOptOutException(
+                    message: "Invalid optOut. Please correct the errors"
+                        + " and try again."),
+
+                (Rule: IsInvalid(optOuts), Parameter: nameof(optOuts)),
+                (Rule: IsInvalid(fileName), Parameter: nameof(fileName)));
+        }
+
+        private void ValidateOnBulkModifyOptOuts(
+            List<OptOut> optOuts,
+            string fileName)
+        {
+            Validate<InvalidOptOutException>(
+                createException: () => new InvalidOptOutException(
+                    message: "Invalid optOut. Please correct the errors"
+                        + " and try again."),
+
+                (Rule: IsInvalid(optOuts), Parameter: nameof(optOuts)),
+                (Rule: IsInvalid(fileName), Parameter: nameof(fileName)));
+        }
+
+        private static dynamic IsInvalid(List<OptOut> optOuts) => new
+        {
+            Condition = optOuts == null,
+            Message = "OptOuts is required"
+        };
+
         private static void Validate(params (dynamic Rule, string Parameter)[] validations)
         {
             var invalidOptOutException = new InvalidOptOutException(
@@ -321,6 +355,26 @@ namespace LHDS.Core.Services.Foundations.OptOuts
             }
 
             invalidOptOutException.ThrowIfContainsErrors();
+        }
+
+        private static void Validate<T>(
+            Func<T> createException,
+            params (dynamic Rule, string Parameter)[] validations)
+            where T : Xeption
+        {
+            T invalidDataException = createException();
+
+            foreach ((dynamic rule, string parameter) in validations)
+            {
+                if (rule.Condition)
+                {
+                    invalidDataException.UpsertDataList(
+                        key: parameter,
+                        value: rule.Message);
+                }
+            }
+
+            invalidDataException.ThrowIfContainsErrors();
         }
     }
 }

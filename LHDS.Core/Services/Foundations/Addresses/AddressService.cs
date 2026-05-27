@@ -82,7 +82,7 @@ namespace LHDS.Core.Services.Foundations.Addresses
                     IQueryable<Address> storageAddresses = (await this.storageBroker.SelectAllAddressesAsync())
                         .Where(address => batchIds.Contains(address.Id));
 
-                    List<Guid> existingIds = storageAddresses.Select(address => address.Id).ToList();
+                    HashSet<Guid> existingIds = storageAddresses.Select(address => address.Id).ToHashSet();
                     List<Address> existingAddresses = batch.Where(address => existingIds.Contains(address.Id)).ToList();
                     List<Address> newAddresses = batch.Where(address => !existingIds.Contains(address.Id)).ToList();
 

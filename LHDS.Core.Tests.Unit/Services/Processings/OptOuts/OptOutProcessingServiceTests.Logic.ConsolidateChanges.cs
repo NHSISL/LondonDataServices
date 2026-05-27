@@ -92,7 +92,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.OptOuts
 
             this.dateTimeBrokerMock.Verify(broker =>
                 broker.GetCurrentDateTimeOffsetAsync(),
-                    Times.Exactly(currentOptOutInputList.Count));
+                    Times.Once);
 
             foreach (var item in consentedList)
             {
@@ -191,7 +191,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.OptOuts
 
             this.dateTimeBrokerMock.Verify(broker =>
                 broker.GetCurrentDateTimeOffsetAsync(),
-                    Times.Exactly(currentOptOutInputList.Count));
+                    Times.Once);
 
             foreach (var item in consentedList)
             {

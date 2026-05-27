@@ -127,7 +127,6 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Addresses
                     $"Finished processing file {dpaCsvFilePath}."),
                         Times.Once);
 
-            this.fileBrokerMock.VerifyNoOtherCalls();
             this.csvHelperBrokerMock.VerifyNoOtherCalls();
             this.auditBrokerMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();

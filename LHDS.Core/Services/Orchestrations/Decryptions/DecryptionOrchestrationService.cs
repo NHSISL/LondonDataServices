@@ -145,6 +145,10 @@ namespace LHDS.Core.Services.Orchestrations.Decryptions
 
                         fileSize = decryptedDocument.Length;
 
+                        // Reset position to 0 after hashing - GenerateSha256HashAsync reads
+                        // the stream to EOF so without this the blob upload receives an empty stream.
+                        decryptedDocument.Position = 0;
+
                         await this.documentService.AddDocumentAsync(
                             input: decryptedDocument,
                             fileName: ingestionTracking.DecryptedFileName,
@@ -204,7 +208,7 @@ namespace LHDS.Core.Services.Orchestrations.Decryptions
                         && ingestionTrackingItem.Decrypted == false
                         && ingestionTrackingItem.IsProcessing == false
                         && ingestionTrackingItem.RetryCount < 4
-                        && ingestionTrackingItem.UpdatedDate <
+                        && ingestionTrackingItem.CreatedDate <
                             currentDateTime.AddMinutes(-landingConfiguration.RelandIntervalInMinutes));
 
                 if (item == null)

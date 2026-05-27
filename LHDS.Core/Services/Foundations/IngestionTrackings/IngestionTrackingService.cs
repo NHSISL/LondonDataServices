@@ -158,8 +158,8 @@ namespace LHDS.Core.Services.Foundations.IngestionTrackings
                         (await this.storageBroker.SelectAllIngestionTrackingsAsync())
                             .Where(ingestionTracking => batchIds.Contains(ingestionTracking.Id));
 
-                    List<Guid> existingIds = storageIngestionTrackings
-                        .Select(ingestionTracking => ingestionTracking.Id).ToList();
+                    HashSet<Guid> existingIds = storageIngestionTrackings
+                        .Select(ingestionTracking => ingestionTracking.Id).ToHashSet();
 
                     List<IngestionTracking> existingIngestionTrackings =
                         batch.Where(ingestionTracking => existingIds.Contains(ingestionTracking.Id)).ToList();

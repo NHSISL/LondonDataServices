@@ -51,7 +51,7 @@ namespace LHDS.Core.Services.Foundations.HealthChecks.IngestionTracking
                 var ingestionTrackingQuery = await storageBroker.SelectAllIngestionTrackingsAsync();
 
                 var filteredQuery = ingestionTrackingQuery.Where(ingestionTracking =>
-                !ingestionTracking.Decrypted && !ingestionTracking.IsProcessing);
+                    !ingestionTracking.Decrypted && !ingestionTracking.FileDeleted);
 
                 int degradedCount = filteredQuery
                     .Count(ingestionTracking =>

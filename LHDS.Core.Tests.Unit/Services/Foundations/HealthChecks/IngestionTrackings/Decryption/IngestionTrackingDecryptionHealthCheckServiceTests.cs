@@ -101,24 +101,24 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.HealthChecks.IngestionTracki
         private static List<IngestionTracking> CreateRandomIngestionTrackings(
             DateTimeOffset dateTimeOffset,
             bool isDecrypted,
-            bool isProcessing,
+            bool fileDeleted,
             int count)
         {
             return Enumerable.Range(0, count)
-                .Select(_ => CreateRandomIngestionTracking(dateTimeOffset, isDecrypted, isProcessing))
+                .Select(_ => CreateRandomIngestionTracking(dateTimeOffset, isDecrypted, fileDeleted))
                     .ToList();
         }
 
         private static IngestionTracking CreateRandomIngestionTracking(
             DateTimeOffset dateTimeOffset,
             bool isDecrypted,
-            bool isProcessing) =>
-                CreateIngestionTrackingFiller(dateTimeOffset, isDecrypted, isProcessing).Create();
+            bool fileDeleted) =>
+                CreateIngestionTrackingFiller(dateTimeOffset, isDecrypted, fileDeleted).Create();
 
         private static Filler<IngestionTracking> CreateIngestionTrackingFiller(
             DateTimeOffset dateTimeOffset,
             bool isDecrypted,
-            bool isProcessing)
+            bool fileDeleted)
         {
             string user = Guid.NewGuid().ToString();
             var filler = new Filler<IngestionTracking>();
@@ -127,7 +127,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.HealthChecks.IngestionTracki
                 .OnType<DateTimeOffset>().Use(dateTimeOffset)
                 .OnType<DateTimeOffset?>().Use(dateTimeOffset)
                 .OnProperty(ingestionTracking => ingestionTracking.Decrypted).Use(isDecrypted)
-                .OnProperty(ingestionTracking => ingestionTracking.IsProcessing).Use(isProcessing)
+                .OnProperty(ingestionTracking => ingestionTracking.FileDeleted).Use(fileDeleted)
                 .OnProperty(ingestionTracking => ingestionTracking.CreatedBy).Use(user)
                 .OnProperty(ingestionTracking => ingestionTracking.UpdatedBy).Use(user)
                 .OnProperty(ingestionTracking => ingestionTracking.IngestionTrackingAudits).IgnoreIt()

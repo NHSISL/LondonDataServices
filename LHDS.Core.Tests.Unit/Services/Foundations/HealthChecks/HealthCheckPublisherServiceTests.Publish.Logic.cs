@@ -27,24 +27,29 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.HealthChecks
             // then
             foreach (var entry in inputHealthReport.Entries)
             {
-                var eventTelemetry = new EventTelemetry(entry.Key);
-                eventTelemetry.Properties.Add("Status", inputHealthReport.Status.ToString());
-
-                eventTelemetry.Metrics.Add("StatusCode", inputHealthReport.Status switch
+                double statusCode = entry.Value.Status switch
                 {
                     HealthStatus.Healthy => 0,
                     HealthStatus.Degraded => 1,
                     HealthStatus.Unhealthy => 2,
                     _ => 3
-                });
+                };
+
+                this.telemetryBrokerMock.Verify(broker =>
+                    broker.TrackMetricAsync(
+                        It.Is(SameMetricTelemetryAs(
+                            new MetricTelemetry($"{entry.Key}.StatusCode", statusCode)))),
+                                Times.Once);
+
+                var eventTelemetry = new EventTelemetry(entry.Key);
+                eventTelemetry.Properties.Add("Status", entry.Value.Status.ToString());
 
                 foreach (var reading in entry.Value.Data)
                 {
                     if (reading.Value is int or long or float or double or decimal)
                     {
                         double metricValue = Convert.ToDouble(reading.Value);
-                        var metric = new MetricTelemetry(reading.Key, metricValue);
-                        eventTelemetry.Metrics.Add(reading.Key, metricValue);
+                        var metric = new MetricTelemetry($"{entry.Key}.{reading.Key}", metricValue);
 
                         this.telemetryBrokerMock.Verify(broker =>
                             broker.TrackMetricAsync(It.Is(SameMetricTelemetryAs(metric))),

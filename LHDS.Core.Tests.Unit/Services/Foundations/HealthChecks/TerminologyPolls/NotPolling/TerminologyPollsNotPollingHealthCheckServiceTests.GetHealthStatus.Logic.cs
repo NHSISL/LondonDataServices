@@ -299,5 +299,69 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.HealthChecks.TerminologyPoll
             this.storageBrokerMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
         }
+
+        [Fact]
+        public async Task ShouldGetHealthStatusAsUnhealthyWhenNoTerminologyPollRecordsExistAsync()
+        {
+            // given
+            DateTimeOffset randomDateTimeOffset = DateTimeOffset.UtcNow;
+
+            int degradedThresholdMinutes = this.inMemoryConfiguration
+                .GetValue($"{ConfigSectionName}:DegradedThreshold", 1440);
+
+            int unHealthyThresholdMinutes = this.inMemoryConfiguration
+                .GetValue($"{ConfigSectionName}:UnHealthyThreshold", 2880);
+
+            IQueryable<TerminologyPoll> emptyPolls = new List<TerminologyPoll>().AsQueryable();
+
+            var expectedVals = new Dictionary<string, object>
+            {
+                { "description", CheckNameDescription },
+                { "notPolling", 0 },
+                { "degradedItems", 0 },
+                { "unHealthyItems", 0 },
+                { "degradedThresholdMinutes", degradedThresholdMinutes.ToString() },
+                { "unHealthyThresholdMinutes", unHealthyThresholdMinutes.ToString() },
+                { "checkedAt", randomDateTimeOffset.ToString("o") },
+                { "message", "No terminology poll records exist. The polling service has never run." },
+                { "status", HealthStatus.Unhealthy.ToString() }
+            };
+
+            var expectedHealthCheckResult = HealthCheckResult.Unhealthy(
+                description: CheckName,
+                data: expectedVals);
+
+            this.dateTimeBrokerMock.Setup(broker =>
+                broker.GetCurrentDateTimeOffsetAsync())
+                    .ReturnsAsync(randomDateTimeOffset);
+
+            this.storageBrokerMock.Setup(broker =>
+                broker.SelectAllTerminologyPollsAsync())
+                    .ReturnsAsync(emptyPolls);
+
+            // when
+            HealthCheckResult actualHealthCheckResult =
+                await this.terminologyPollsHealthItemService.GetHealthStatusAsync();
+
+            // then
+            actualHealthCheckResult.Should().BeEquivalentTo(expectedHealthCheckResult, options =>
+                options.Using<DateTimeOffset>(ctx =>
+                    ctx.Subject.Should().BeCloseTo(ctx.Expectation, TimeSpan.FromSeconds(1)))
+                    .WhenTypeIs<DateTimeOffset>()
+                    .WithStrictOrdering()
+                    .ComparingByMembers<HealthCheckResult>());
+
+            this.dateTimeBrokerMock.Verify(broker =>
+                broker.GetCurrentDateTimeOffsetAsync(),
+                    Times.Once);
+
+            this.storageBrokerMock.Verify(broker =>
+                broker.SelectAllTerminologyPollsAsync(),
+                    Times.Once);
+
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
+            this.storageBrokerMock.VerifyNoOtherCalls();
+            this.loggingBrokerMock.VerifyNoOtherCalls();
+        }
     }
 }

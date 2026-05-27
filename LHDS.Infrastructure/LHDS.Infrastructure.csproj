@@ -12,7 +12,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="ADotNet" Version="4.2.0" />
+    <PackageReference Include="ADotNet" Version="4.3.0" />
   </ItemGroup>
 
 </Project>

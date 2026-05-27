@@ -39,8 +39,8 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.HealthChecks.ResolvedAddress
             loggingBrokerMock = new Mock<ILoggingBroker>();
 
             var appSettingsStub = new Dictionary<string, string> {
-                {$"{ConfigSectionName}:DegradedThreshold", "0.9"},
-                {$"{ConfigSectionName}:Processing:UnHealthyThresholdPercentage", "0.8"},
+                {$"{ConfigSectionName}:DegradedThresholdPercentage", "0.9"},
+                {$"{ConfigSectionName}:UnHealthyThresholdPercentage", "0.8"},
             };
 
             this.inMemoryConfiguration = new ConfigurationBuilder()
@@ -106,6 +106,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.HealthChecks.ResolvedAddress
             filler.Setup()
                 .OnType<DateTimeOffset>().Use(dateTimeOffset)
                 .OnProperty(resolvedAddress => resolvedAddress.MatchedWithAssign).Use(isMatched)
+                .OnProperty(resolvedAddress => resolvedAddress.HashedUnstructuredPostalAddress).Use(new char[32])
                 .OnProperty(resolvedAddress => resolvedAddress.CreatedBy).Use(user)
                 .OnProperty(resolvedAddress => resolvedAddress.UpdatedBy).Use(user);
 

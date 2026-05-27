@@ -13,6 +13,10 @@ namespace LHDS.Core
     {
         public StorageBroker CreateDbContext(string[] args)
         {
+            // This connection string is used exclusively for EF Core design-time tooling
+            // (e.g., Add-Migration, Update-Database on a developer machine). It is a
+            // LocalDB instance and is NOT used in any deployed environment. This is safe
+            // to commit — no production credentials are present.
             List<KeyValuePair<string, string>> config = new List<KeyValuePair<string, string>>
             {
                 new KeyValuePair<string, string>(

@@ -162,6 +162,13 @@ namespace LHDS.Core.Services.Processings.OptOuts
 
             List<OptOut> delta = new List<OptOut>();
 
+            if (!consentedList.Any() && !nonConsentedList.Any())
+            {
+                return delta;
+            }
+
+            var dateTime = await this.dateTimeBroker.GetCurrentDateTimeOffsetAsync();
+
             foreach (var item in consentedList)
             {
                 if (item == null)
@@ -174,7 +181,6 @@ namespace LHDS.Core.Services.Processings.OptOuts
                     delta.Add(item);
                 }
 
-                var dateTime = await this.dateTimeBroker.GetCurrentDateTimeOffsetAsync();
                 item.UpdatedDate = dateTime;
                 item.CacheTime = dateTime;
                 item.LastSentToMesh = dateTime;
@@ -190,7 +196,6 @@ namespace LHDS.Core.Services.Processings.OptOuts
                     delta.Add(nonConsentedListItem);
                 }
 
-                var dateTime = await this.dateTimeBroker.GetCurrentDateTimeOffsetAsync();
                 nonConsentedListItem.UpdatedDate = dateTime;
                 nonConsentedListItem.CacheTime = dateTime;
                 nonConsentedListItem.LastSentToMesh = dateTime;

@@ -3,6 +3,7 @@
 // ---------------------------------------------------------
 
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -14,6 +15,12 @@ namespace LHDS.Core.Brokers.Storages.Sql
     public partial class StorageBroker
     {
         public DbSet<OptOut> OptOuts { get; set; }
+
+        public async ValueTask BulkInsertOptOutsAsync(
+            List<OptOut> optOuts,
+            bool useTransaction = true,
+            CancellationToken cancellationToken = default) =>
+                await BulkInsertAsync(optOuts, useTransaction, cancellationToken);
 
         public async ValueTask<OptOut> InsertOptOutAsync(
             OptOut optout,
@@ -33,6 +40,12 @@ namespace LHDS.Core.Brokers.Storages.Sql
             OptOut optout,
             CancellationToken cancellationToken = default) =>
                 await UpdateAsync(optout, cancellationToken);
+
+        public async ValueTask BulkUpdateOptOutsAsync(
+            List<OptOut> optOuts,
+            bool useTransaction = true,
+            CancellationToken cancellationToken = default) =>
+                await BulkUpdateAsync(optOuts, useTransaction, cancellationToken);
 
         public async ValueTask<OptOut> DeleteOptOutAsync(
             OptOut optout,

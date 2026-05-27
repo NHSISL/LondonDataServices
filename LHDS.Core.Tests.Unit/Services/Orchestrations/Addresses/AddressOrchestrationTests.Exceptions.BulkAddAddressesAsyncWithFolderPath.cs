@@ -33,7 +33,8 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Addresses
             { CallBase = true };
 
             string someFolderPath = GetRandomString();
-                        var expectedDependencyException =
+
+            var expectedDependencyException =
                 new AddressOrchestrationDependencyValidationException(
                     message: "Address orchestration dependency validation error occurred, " +
                         "fix the errors and try again.",
@@ -93,7 +94,8 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Addresses
             { CallBase = true };
 
             string someFolderPath = GetRandomString();
-                        var expectedDependencyException =
+
+            var expectedDependencyException =
                 new AddressOrchestrationDependencyException(
                     message: "Address orchestration dependency error occurred, " +
                         "fix the errors and try again.",
@@ -151,7 +153,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Addresses
             { CallBase = true };
 
             string someFolderPath = GetRandomString();
-                        var serviceException = new Exception();
+            var serviceException = new Exception();
 
             var failedAddressPersistanceOrchestrationServiceException =
                 new FailedAddressOrchestrationServiceException(
@@ -215,7 +217,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Addresses
             { CallBase = true };
 
             string someFolderPath = GetRandomString();
-                        var aggregateException = new AggregateException();
+            var aggregateException = new AggregateException();
 
             var failedAddressPersistanceOrchestrationServiceException =
                 new FailedAddressOrchestrationServiceException(

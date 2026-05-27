@@ -1,4 +1,4 @@
-﻿// ---------------------------------------------------------
+// ---------------------------------------------------------
 // Copyright (c) North East London ICB. All rights reserved.
 // ---------------------------------------------------------
 
@@ -12,7 +12,7 @@ using LHDS.Core.Models.Foundations.OptOuts;
 using LHDS.Core.Services.Foundations.OptOuts;
 
 namespace LHDS.Core.Services.Processings.OptOuts
-{
+            {
     public partial class OptOutProcessingService : IOptOutProcessingService
     {
         private readonly IOptOutService optOutService;
@@ -167,12 +167,12 @@ namespace LHDS.Core.Services.Processings.OptOuts
 
             List<OptOut> delta = new List<OptOut>();
 
-if (!consentedList.Any() && !nonConsentedList.Any())
-{
-    return delta;
-}
+            if (!consentedList.Any() && !nonConsentedList.Any())
+            {
+                return delta;
+            }
 
-var dateTime = await this.dateTimeBroker.GetCurrentDateTimeOffsetAsync();
+            var dateTime = await this.dateTimeBroker.GetCurrentDateTimeOffsetAsync();
 
             foreach (var item in consentedList)
             {
@@ -186,8 +186,7 @@ var dateTime = await this.dateTimeBroker.GetCurrentDateTimeOffsetAsync();
                     delta.Add(item);
                 }
 
-item.UpdatedDate = dateTime;
-item.CacheTime = dateTime;
+                item.CacheTime = dateTime;
                 item.LastSentToMesh = dateTime;
                 item.Status = "Opt-In";
             }
@@ -199,8 +198,7 @@ item.CacheTime = dateTime;
                     delta.Add(nonConsentedListItem);
                 }
 
-nonConsentedListItem.UpdatedDate = dateTime;
-nonConsentedListItem.CacheTime = dateTime;
+                nonConsentedListItem.CacheTime = dateTime;
                 nonConsentedListItem.LastSentToMesh = dateTime;
                 nonConsentedListItem.Status = "Opt-Out";
             }
@@ -216,5 +214,5 @@ nonConsentedListItem.CacheTime = dateTime;
             return delta;
         });
     }
-}
+            }
 

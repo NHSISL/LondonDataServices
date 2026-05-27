@@ -282,8 +282,8 @@ namespace LHDS.Core.Services.Foundations.OptOuts
                         Title = "Unable to add optOut",
 
                         Message =
-                            $"Invalid optOut - Id: {optOut.Id};"
-                                + $" NhsNumber: {optOut.NhsNumber}"
+                            $"Invalid optOut - Id: {optOut?.Id};"
+                                + $" NhsNumber: {optOut?.NhsNumber}"
                                 + $" from file: {fileName}"
                                 + Environment.NewLine
                                 + $"Error: {exception.Message}",
@@ -296,8 +296,8 @@ namespace LHDS.Core.Services.Foundations.OptOuts
 
                     await this.loggingBroker.LogWarningAsync(
                         message: $"Unable to add optOut."
-                            + $" Invalid optOut - Id: {optOut.Id};"
-                            + $" NhsNumber: {optOut.NhsNumber}"
+                            + $" Invalid optOut - Id: {optOut?.Id};"
+                            + $" NhsNumber: {optOut?.NhsNumber}"
                             + $" from file: {fileName}"
                             + Environment.NewLine
                             + $"Error: {exception.Message}");
@@ -344,8 +344,8 @@ namespace LHDS.Core.Services.Foundations.OptOuts
                         Title = "Unable to modify optOut",
 
                         Message =
-                            $"Invalid optOut - Id: {optOut.Id};"
-                                + $" NhsNumber: {optOut.NhsNumber}"
+                            $"Invalid optOut - Id: {optOut?.Id};"
+                                + $" NhsNumber: {optOut?.NhsNumber}"
                                 + $" from file: {fileName}"
                                 + Environment.NewLine
                                 + $"Error: {exception.Message}",
@@ -358,8 +358,8 @@ namespace LHDS.Core.Services.Foundations.OptOuts
 
                     await this.loggingBroker.LogWarningAsync(
                         message: $"Unable to modify optOut."
-                            + $" Invalid optOut - Id: {optOut.Id};"
-                            + $" NhsNumber: {optOut.NhsNumber}"
+                            + $" Invalid optOut - Id: {optOut?.Id};"
+                            + $" NhsNumber: {optOut?.NhsNumber}"
                             + $" from file: {fileName}"
                             + Environment.NewLine
                             + $"Error: {exception.Message}");

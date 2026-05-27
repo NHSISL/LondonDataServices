@@ -154,13 +154,25 @@ namespace LHDS.Core.Services.Orchestrations.Pds
                                         .RetrieveMessageByIdAsync(id, outputStream, cancellationToken);
                                 }
 
-                                if (message.Headers["mex-workflowid"].FirstOrDefault() != this.pdsConfiguration.WorkflowId &&
-                                    message.Headers["mex-workflowid"].FirstOrDefault() != this.pdsConfiguration.ReturnWorkflowId)
+                                if (GetHeaderValue(message, "mex-workflowid") != this.pdsConfiguration.WorkflowId &&
+                                    GetHeaderValue(message, "mex-workflowid") != this.pdsConfiguration.ReturnWorkflowId)
                                 {
                                     return null;
                                 }
 
-                                string filename = message.Headers["mex-filename"].FirstOrDefault();
+                                string filename = GetHeaderValue(message, "mex-filename");
+
+                                if (string.IsNullOrWhiteSpace(filename))
+                                {
+                                    return null;
+                                }
+
+                                string localId = GetHeaderValue(message, "mex-localid");
+
+                                if (Guid.TryParse(localId, out Guid correlationId) is false)
+                                {
+                                    return null;
+                                }
 
                                 string cleanedFileName =
                                     filename.StartsWith("RESP_") ? filename.Substring("RESP_".Length) : filename;
@@ -181,7 +193,6 @@ namespace LHDS.Core.Services.Orchestrations.Pds
                                         container: blobContainers.Pds);
                                 }
 
-                                var correlationId = Guid.Parse(message.Headers["mex-localid"].FirstOrDefault());
                                 DateTimeOffset currentDate = await this.dateTimeBroker.GetCurrentDateTimeOffsetAsync();
 
                                 var pdsAudit = new PdsAudit
@@ -232,5 +243,15 @@ namespace LHDS.Core.Services.Orchestrations.Pds
 
             return pdsAudits;
         });
+
+        private static string GetHeaderValue(MeshMessage message, string key)
+        {
+            if (message.Headers.TryGetValue(key, out List<string> values))
+            {
+                return values?.FirstOrDefault() ?? string.Empty;
+            }
+
+            return string.Empty;
+        }
     }
 }

@@ -170,5 +170,191 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.OptOuts
             this.optOutServiceMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
         }
+
+        [Theory]
+        [MemberData(nameof(DependencyValidationExceptions))]
+        public async Task
+            ShouldThrowDependencyValidationExceptionOnConsolidateChangesOptOutsIfBulkModifyDependencyValidationErrorOccursAndLogItAsync(
+            Xeption dependencyValidationException)
+        {
+            // given
+            int randomNumber = GetRandomNumber();
+            string randomString = GetRandomString();
+            List<OptOut> randomOptOutsList = CreateRandomOptOutList(randomString);
+            List<string> randomStringList = RandomStringList(randomNumber);
+            DateTimeOffset randomDateTimeOffset = GetRandomDateTimeOffset();
+
+            var expectedOptOutProcessingDependencyValidationException =
+                new OptOutProcessingDependencyValidationException(
+                    message: "Opt out processing dependency validation error occurred, please contact support.",
+                    innerException: dependencyValidationException.InnerException as Xeption);
+
+            this.dateTimeBrokerMock.Setup(broker =>
+                broker.GetCurrentDateTimeOffsetAsync())
+                    .ReturnsAsync(randomDateTimeOffset);
+
+            this.optOutServiceMock.Setup(service =>
+                service.BulkModifyOptOutsAsync(
+                    It.IsAny<List<OptOut>>(),
+                    "ConsolidateOptOutChanges"))
+                        .ThrowsAsync(dependencyValidationException);
+
+            // when
+            ValueTask<List<OptOut>> ConsolidateChangesOptOutTask =
+                this.optOutProcessingService.ConsolidateOptOutChangesAndReturnChangesOnly(
+                    randomOptOutsList,
+                    randomStringList);
+
+            OptOutProcessingDependencyValidationException actualException =
+                await Assert.ThrowsAsync<OptOutProcessingDependencyValidationException>(
+                    ConsolidateChangesOptOutTask.AsTask);
+
+            // then
+            actualException.Should().BeEquivalentTo(
+                expectedOptOutProcessingDependencyValidationException);
+
+            this.dateTimeBrokerMock.Verify(broker =>
+                broker.GetCurrentDateTimeOffsetAsync(),
+                    Times.Once);
+
+            this.optOutServiceMock.Verify(service =>
+                service.BulkModifyOptOutsAsync(
+                    It.IsAny<List<OptOut>>(),
+                    "ConsolidateOptOutChanges"),
+                        Times.Once);
+
+            this.loggingBrokerMock.Verify(broker =>
+                 broker.LogErrorAsync(It.Is(SameExceptionAs(
+                    expectedOptOutProcessingDependencyValidationException))),
+                            Times.Once);
+
+            this.optOutServiceMock.VerifyNoOtherCalls();
+            this.loggingBrokerMock.VerifyNoOtherCalls();
+        }
+
+        [Theory]
+        [MemberData(nameof(DependencyExceptions))]
+        public async Task
+            ShouldThrowDependencyExceptionOnConsolidateChangesOptOutsIfBulkModifyDependencyErrorOccursAndLogItAsync(
+            Xeption dependencyException)
+        {
+            // given
+            int randomNumber = GetRandomNumber();
+            string randomString = GetRandomString();
+            List<OptOut> randomOptOutsList = CreateRandomOptOutList(randomString);
+            List<string> randomStringList = RandomStringList(randomNumber);
+            DateTimeOffset randomDateTimeOffset = GetRandomDateTimeOffset();
+
+            var expectedOptOutProcessingDependencyException =
+                new OptOutProcessingDependencyException(
+                    message: "Opt out processing dependency error occurred, please contact support.",
+                    dependencyException.InnerException as Xeption);
+
+            this.dateTimeBrokerMock.Setup(broker =>
+                broker.GetCurrentDateTimeOffsetAsync())
+                    .ReturnsAsync(randomDateTimeOffset);
+
+            this.optOutServiceMock.Setup(service =>
+                service.BulkModifyOptOutsAsync(
+                    It.IsAny<List<OptOut>>(),
+                    "ConsolidateOptOutChanges"))
+                        .ThrowsAsync(dependencyException);
+
+            // when
+            ValueTask<List<OptOut>> ConsolidateChangesOptOutTask =
+                this.optOutProcessingService.ConsolidateOptOutChangesAndReturnChangesOnly(
+                    randomOptOutsList,
+                    randomStringList);
+
+            OptOutProcessingDependencyException actualException =
+                await Assert.ThrowsAsync<OptOutProcessingDependencyException>(
+                    ConsolidateChangesOptOutTask.AsTask);
+
+            // then
+            actualException.Should().BeEquivalentTo(expectedOptOutProcessingDependencyException);
+
+            this.dateTimeBrokerMock.Verify(broker =>
+                broker.GetCurrentDateTimeOffsetAsync(),
+                    Times.Once);
+
+            this.optOutServiceMock.Verify(service =>
+                service.BulkModifyOptOutsAsync(
+                    It.IsAny<List<OptOut>>(),
+                    "ConsolidateOptOutChanges"),
+                        Times.Once);
+
+            this.loggingBrokerMock.Verify(broker =>
+                 broker.LogErrorAsync(It.Is(SameExceptionAs(
+                     expectedOptOutProcessingDependencyException))),
+                            Times.Once);
+
+            this.optOutServiceMock.VerifyNoOtherCalls();
+            this.loggingBrokerMock.VerifyNoOtherCalls();
+        }
+
+        [Fact]
+        public async Task
+            ShouldThrowServiceExceptionOnConsolidateChangesOptOutsIfBulkModifyServiceErrorOccursAsync()
+        {
+            // given
+            int randomNumber = GetRandomNumber();
+            string randomString = GetRandomString();
+            List<OptOut> randomOptOutsList = CreateRandomOptOutList(randomString);
+            List<string> randomStringList = RandomStringList(randomNumber);
+            DateTimeOffset randomDateTimeOffset = GetRandomDateTimeOffset();
+
+            var serviceException = new Exception();
+
+            var failedOptOutProcessingServiceException =
+                new FailedOptOutProcessingServiceException(
+                    message: "Failed opt out processing service error occurred, please contact support.",
+                    serviceException);
+
+            var expectedOptOutProcessingServiceException =
+                new OptOutProcessingServiceException(
+                    message: "Opt out processing service error occurred, please contact support.",
+                    innerException: failedOptOutProcessingServiceException);
+
+            this.dateTimeBrokerMock.Setup(broker =>
+                broker.GetCurrentDateTimeOffsetAsync())
+                    .ReturnsAsync(randomDateTimeOffset);
+
+            this.optOutServiceMock.Setup(service =>
+                service.BulkModifyOptOutsAsync(
+                    It.IsAny<List<OptOut>>(),
+                    "ConsolidateOptOutChanges"))
+                        .ThrowsAsync(serviceException);
+
+            // when
+            ValueTask<List<OptOut>> ConsolidateChangesOptOutTask =
+                this.optOutProcessingService.ConsolidateOptOutChangesAndReturnChangesOnly(
+                    randomOptOutsList,
+                    randomStringList);
+
+            OptOutProcessingServiceException actualException =
+                await Assert.ThrowsAsync<OptOutProcessingServiceException>(
+                    ConsolidateChangesOptOutTask.AsTask);
+
+            // then
+            actualException.Should().BeEquivalentTo(expectedOptOutProcessingServiceException);
+
+            this.dateTimeBrokerMock.Verify(broker =>
+                broker.GetCurrentDateTimeOffsetAsync(),
+                    Times.Once);
+
+            this.optOutServiceMock.Verify(service =>
+                service.BulkModifyOptOutsAsync(
+                    It.IsAny<List<OptOut>>(),
+                    "ConsolidateOptOutChanges"),
+                        Times.Once);
+
+            this.loggingBrokerMock.Verify(broker =>
+                 broker.LogErrorAsync(It.Is(SameExceptionAs(
+                     expectedOptOutProcessingServiceException))),
+                            Times.Once);
+
+            this.optOutServiceMock.VerifyNoOtherCalls();
+            this.loggingBrokerMock.VerifyNoOtherCalls();
+        }
     }
 }

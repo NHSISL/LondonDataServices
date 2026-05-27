@@ -46,7 +46,8 @@ namespace LHDS.Core.Services.Foundations.HealthChecks.ResolvedAddress
             DateTimeOffset degradedThresholdDateTime = currentDateTime.AddMinutes(-1 * degradedThresholdMinutes);
             DateTimeOffset unHealthyThresholdDateTime = currentDateTime.AddMinutes(-1 * unHealthyThresholdMinutes);
             var resolvedAddressQuery = await storageBroker.SelectAllResolvedAddressesAsync();
-            var filteredQuery = resolvedAddressQuery.Where(i => i.RetryCount >= retryCount);
+            var filteredQuery = resolvedAddressQuery.Where(i =>
+                i.RetryCount >= retryCount && !i.IsProcessed);
 
             int baseCount = filteredQuery.Count(resolvedAddress =>
                 resolvedAddress.UpdatedDate > degradedThresholdDateTime);

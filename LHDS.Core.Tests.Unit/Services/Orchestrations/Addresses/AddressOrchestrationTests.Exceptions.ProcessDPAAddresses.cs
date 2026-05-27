@@ -107,6 +107,12 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Addresses
                     inputSkipCounter + inputBatchSize),
                         Times.Once);
 
+            addressOrchestrationServiceMock.Verify(service =>
+                service.ProcessDPAAddressesAsync(dpaCsvFilePath, this.batchSize),
+                    Times.Once);
+
+            addressOrchestrationServiceMock.VerifyNoOtherCalls();
+
             this.auditBrokerMock.Verify(broker =>
                 broker.LogInformationAsync(
                     "Address Import - DPA Processing",

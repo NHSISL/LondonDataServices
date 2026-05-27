@@ -16,8 +16,8 @@ namespace LHDS.Core.Services.Foundations.HealthChecks.TerminologyArtifacts
         private readonly IConfiguration configuration;
         private readonly IDateTimeBroker dateTimeBroker;
         private readonly ILoggingBroker loggingBroker;
-        private const string CheckName = "failedToProcess";
-        private const string CheckNameDescription = "Failed To Process";
+        private const string CheckName = "artifactErrors";
+        private const string CheckNameDescription = "Artifact Errors";
         private const string ConfigSectionName = "HealthChecks:TerminologyArtifacts:FailedToProcess";
 
         public TerminologyArtifactsFailedToProcessHealthCheckService(
@@ -49,11 +49,11 @@ namespace LHDS.Core.Services.Foundations.HealthChecks.TerminologyArtifacts
 
                     var filteredQuery = terminologyArtifactsQuery.Where(terminologyArtifact => terminologyArtifact.IsError);
 
-                    var degradedQuery = terminologyArtifactsQuery.Where(terminologyPoll =>
+                    var degradedQuery = filteredQuery.Where(terminologyPoll =>
                         terminologyPoll.UpdatedDate <= degradedThresholdDateTime &&
                         terminologyPoll.UpdatedDate > unHealthyThresholdDateTime);
 
-                    var unHealthyQuery = terminologyArtifactsQuery
+                    var unHealthyQuery = filteredQuery
                         .Where(terminologyPoll => terminologyPoll.UpdatedDate <= unHealthyThresholdDateTime);
 
                     int codeSystemDegradedCount = degradedQuery

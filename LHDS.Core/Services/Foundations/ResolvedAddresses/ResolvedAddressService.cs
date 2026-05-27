@@ -227,6 +227,22 @@ namespace LHDS.Core.Services.Foundations.ResolvedAddresses
 
                         if (toUpdateResolvedAddresses.Count != 0)
                         {
+                            Dictionary<Guid, ResolvedAddress> storageById = retrievedResolvedAddresses
+                                .Where(resolvedAddress =>
+                                    existingIdsInDatabase.Contains(resolvedAddress.Id))
+                                .ToDictionary(resolvedAddress => resolvedAddress.Id);
+
+                            foreach (ResolvedAddress resolvedAddress in toUpdateResolvedAddresses)
+                            {
+                                if (storageById.TryGetValue(
+                                    resolvedAddress.Id,
+                                    out ResolvedAddress stored))
+                                {
+                                    resolvedAddress.CreatedDate = stored.CreatedDate;
+                                    resolvedAddress.CreatedBy = stored.CreatedBy;
+                                }
+                            }
+
                             await this.storageBroker.BulkUpdateResolvedAddressesAsync(toUpdateResolvedAddresses);
                         }
                     });

@@ -22,7 +22,7 @@ namespace LHDS.Core.Services.Foundations.HealthChecks.IngestionTracking
         private readonly ILoggingBroker loggingBroker;
         private const string CheckName = "processingQueue";
         private const string CheckDescriptionName = "Processing Queue";
-        private const string ConfigSectionName = "HealthChecks:IngestionTracking:FilesReceived";
+        private const string ConfigSectionName = "HealthChecks:IngestionTracking:Processing";
 
         public IngestionTrackingProcessingHealthCheckService(
             IStorageBroker storageBroker,

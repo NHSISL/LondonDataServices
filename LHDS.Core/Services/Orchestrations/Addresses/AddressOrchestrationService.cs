@@ -810,11 +810,14 @@ namespace LHDS.Core.Services.Orchestrations.Addresses
                     Dictionary<string, Address> streetDescriptorsDict =
                         streetDescriptorAddresses.ToDictionary(a => a.USRN, a => a);
 
+                    HashSet<string> chunkUsrns = streetDescriptorsDict.Keys.ToHashSet();
                     IQueryable<Address> addresses = await this.addressProcessingService.RetrieveAllAddressesAsync();
 
                     IQueryable<Address> missingSreetDataAddresses = addresses
-                        .Where(address => string.IsNullOrWhiteSpace(address.Thoroughfare)
-                            || string.IsNullOrWhiteSpace(address.PostTown));
+                        .Where(address => address.USRN != null
+                            && chunkUsrns.Contains(address.USRN)
+                            && (string.IsNullOrWhiteSpace(address.Thoroughfare)
+                                || string.IsNullOrWhiteSpace(address.PostTown)));
 
                     List<Address> updatedAddresses = [];
 

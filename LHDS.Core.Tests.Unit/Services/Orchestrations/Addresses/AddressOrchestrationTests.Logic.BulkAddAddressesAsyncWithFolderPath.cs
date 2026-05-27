@@ -34,10 +34,9 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Addresses
                 Path.GetDirectoryName(assembly),
                 "Resources/Services/Orchestrations/Addresses/");
 
-            int batchSize = 120000;
-
             addressOrchestrationServiceMock.Setup(service =>
-                service.ReadCsvDataAndBulkAddAddressesAsync(inputFolderPath, batchSize))
+                service.ReadCsvDataAndBulkAddAddressesAsync(
+                    inputFolderPath))
                     .Returns(ValueTask.CompletedTask);
 
             AddressOrchestrationService service = addressOrchestrationServiceMock.Object;
@@ -47,7 +46,8 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Addresses
 
             // Then
             addressOrchestrationServiceMock.Verify(service =>
-                service.ReadCsvDataAndBulkAddAddressesAsync(inputFolderPath, batchSize),
+                service.ReadCsvDataAndBulkAddAddressesAsync(
+                    inputFolderPath),
                     Times.Once);
 
             this.fileBrokerMock.VerifyNoOtherCalls();

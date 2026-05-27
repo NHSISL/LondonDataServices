@@ -40,7 +40,6 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Addresses
             string inputFileName = zipFileName;
             string randomTempPath = Path.GetTempPath();
             string ordinanceTempFolder = Path.Combine(randomTempPath, "OrdinanceData");
-            int batchSize = 120000;
 
             string ordinanceTempCsvFile =
                 Path.Combine(ordinanceTempFolder, "ShouldProcessZipFileWithOnlyCsvAddressesData.csv");
@@ -58,7 +57,8 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Addresses
                     .Returns(ValueTask.CompletedTask);
 
             addressOrchestrationServiceMock.Setup(service =>
-                service.ReadCsvDataAndBulkAddAddressesAsync(ordinanceTempFolder, batchSize))
+                service.ReadCsvDataAndBulkAddAddressesAsync(
+                    ordinanceTempFolder))
                     .Returns(ValueTask.CompletedTask);
 
             AddressOrchestrationService service = addressOrchestrationServiceMock.Object;
@@ -84,7 +84,8 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Addresses
                     Times.Once);
 
             addressOrchestrationServiceMock.Verify(service =>
-                service.ReadCsvDataAndBulkAddAddressesAsync(ordinanceTempFolder, batchSize),
+                service.ReadCsvDataAndBulkAddAddressesAsync(
+                    ordinanceTempFolder),
                     Times.Once);
 
             this.fileBrokerMock.Verify(service =>

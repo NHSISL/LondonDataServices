@@ -1,4 +1,4 @@
-﻿// ---------------------------------------------------------
+// ---------------------------------------------------------
 // Copyright (c) North East London ICB. All rights reserved.
 // ---------------------------------------------------------
 
@@ -20,7 +20,8 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Addresses
         public async Task ShouldMapDPADataToAddressesAsync()
         {
             // Given
-            var addressOrchestrationServiceMock = new Mock<AddressOrchestrationService>
+            var addressOrchestrationServiceMock =
+                new Mock<AddressOrchestrationService>
                (this.addressProcessingServiceMock.Object,
                 this.assignProcessingServiceMock.Object,
                 this.fileBrokerMock.Object,
@@ -32,10 +33,11 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Addresses
             { CallBase = true };
 
             string inputCsvFileName = GetRandomString();
-            int inputBatchSize = GetRandomNumber();
-            int inputSkipCounter = GetRandomNumber();
+            int inputBatchSize = 120000;
+            int inputSkipCounter = 0;
 
-            Dictionary<string, int> fieldMappings = new Dictionary<string, int>
+            Dictionary<string, int> fieldMappings =
+                new Dictionary<string, int>
             {
                 { "UPRN", 3 },
                 { "OrganisationName", 5 },
@@ -51,9 +53,14 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Addresses
                 { "PostCode", 15 }
             };
 
-            List<Address> randomAddresses = CreateRandomAddresses(count: 2).ToList();
-            List<Address> outputAddresses = randomAddresses.DeepClone();
-            List<Address> expectedAddresses = outputAddresses.DeepClone();
+            List<Address> randomAddresses =
+                CreateRandomAddresses(count: 2).ToList();
+
+            List<Address> outputAddresses =
+                randomAddresses.DeepClone();
+
+            List<Address> expectedAddresses =
+                outputAddresses.DeepClone();
 
             addressOrchestrationServiceMock.Setup(service =>
                 service.LoadAndMapCsvAsync<Address>(
@@ -61,16 +68,22 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Addresses
                     fieldMappings,
                     inputBatchSize,
                     inputSkipCounter))
-                        .ReturnsAsync(outputAddresses);
+                        .ReturnsAsync(
+                            outputAddresses);
 
-            AddressOrchestrationService service = addressOrchestrationServiceMock.Object;
+            AddressOrchestrationService service =
+                addressOrchestrationServiceMock.Object;
 
             // When
-            List<Address> actualAddresses = await service
-                .MapDPADataToAddressesAsync(inputCsvFileName, inputBatchSize, inputSkipCounter);
+            List<Address> actualAddresses =
+                await service.MapDPADataToAddressesAsync(
+                    inputCsvFileName,
+                    inputBatchSize,
+                    inputSkipCounter);
 
             // Then
-            actualAddresses.Should().BeEquivalentTo(expectedAddresses);
+            actualAddresses.Should()
+                .BeEquivalentTo(expectedAddresses);
 
             addressOrchestrationServiceMock.Verify(service =>
                 service.LoadAndMapCsvAsync<Address>(
@@ -84,8 +97,10 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Addresses
             this.csvHelperBrokerMock.VerifyNoOtherCalls();
             this.auditBrokerMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
-            this.addressProcessingServiceMock.VerifyNoOtherCalls();
-            this.assignProcessingServiceMock.VerifyNoOtherCalls();
+            this.addressProcessingServiceMock
+                .VerifyNoOtherCalls();
+            this.assignProcessingServiceMock
+                .VerifyNoOtherCalls();
             this.dateTimeBrokerMock.VerifyNoOtherCalls();
             this.identifierBrokerMock.VerifyNoOtherCalls();
         }

@@ -63,11 +63,11 @@ namespace LHDS.Core.Services.Foundations.Addresses
         TryCatch(async () =>
         {
             ValidateOnBulkModifyAddresses(addresses, fileName);
-            await BulkAddOrModifyBatchAsync(addresses, fileName);
+            await BulkAddOrModifyBatchAsync(addresses, fileName, batchSize: 10000, allowInserts: false);
         });
 
         virtual internal async ValueTask BulkAddOrModifyBatchAsync(
-            List<Address> addresses, string fileName, int batchSize = 10000)
+            List<Address> addresses, string fileName, int batchSize = 10000, bool allowInserts = true)
         {
             int totalRecords = addresses.Count;
             var exceptions = new List<Exception>();
@@ -90,10 +90,42 @@ namespace LHDS.Core.Services.Foundations.Addresses
                     {
                         if (newAddresses.Count != 0)
                         {
-                            List<Address> validatedAddAddresses =
-                                await ValidateAddressesAndAssignIdAndAuditOnAddAsync(newAddresses, fileName);
+                            if (allowInserts)
+                            {
+                                List<Address> validatedAddAddresses =
+                                    await ValidateAddressesAndAssignIdAndAuditOnAddAsync(newAddresses, fileName);
 
-                            await this.storageBroker.BulkInsertAddressesAsync(validatedAddAddresses);
+                                await this.storageBroker.BulkInsertAddressesAsync(validatedAddAddresses);
+                            }
+                            else
+                            {
+                                List<Audit> skippedAudits = newAddresses
+                                    .Select(address => new Audit
+                                    {
+                                        AuditType = "Address",
+                                        Title = "Unable to modify address",
+
+                                        Message =
+                                            $"Address not found in storage - Id: {address.Id};"
+                                                + $" UPRN: {address.UPRN}; USRN: {address.USRN}"
+                                                + $" from file: {fileName}",
+
+                                        FileName = fileName,
+                                        LogLevel = "Error",
+                                    })
+                                    .ToList();
+
+                                await this.auditBroker.BulkLogAsync(skippedAudits);
+
+                                foreach (Address address in newAddresses)
+                                {
+                                    await this.loggingBroker.LogWarningAsync(
+                                        message: $"Unable to modify address."
+                                            + $" Address not found in storage - Id: {address.Id};"
+                                            + $" UPRN: {address.UPRN}; USRN: {address.USRN}"
+                                            + $" from file: {fileName}");
+                                }
+                            }
                         }
                     }
                     catch (Exception insertException)
@@ -106,6 +138,18 @@ namespace LHDS.Core.Services.Foundations.Addresses
                     {
                         if (existingAddresses.Count != 0)
                         {
+                            Dictionary<Guid, Address> storageById =
+                                storageAddresses.ToDictionary(address => address.Id);
+
+                            foreach (Address address in existingAddresses)
+                            {
+                                if (storageById.TryGetValue(address.Id, out Address stored))
+                                {
+                                    address.CreatedDate = stored.CreatedDate;
+                                    address.CreatedBy = stored.CreatedBy;
+                                }
+                            }
+
                             List<Address> validatedModifyAddresses =
                                 await ValidateAddressesAndAssignAuditOnModifyAsync(existingAddresses, fileName);
 

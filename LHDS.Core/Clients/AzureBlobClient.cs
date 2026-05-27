@@ -6,8 +6,8 @@ namespace LHDS.Core.Clients
 {
     using System;
     using System.IO;
-    using System.Security.Cryptography;
     using System.Threading.Tasks;
+    using Azure.Storage;
     using Azure.Storage.Blobs;
     using Azure.Storage.Blobs.Models;
     using Azure.Storage.Sas;
@@ -40,13 +40,7 @@ namespace LHDS.Core.Clients
         {
             try
             {
-                byte[] contentHash;
-                using (var md5 = MD5.Create())
-                {
-                    input.Position = 0;
-                    contentHash = md5.ComputeHash(input);
-                }
-
+                input.Position = 0;
                 await loggingBroker.LogInformationAsync($"file:{fileName}, size:{input.Length}, container:{container}");
                 input.Position = 0;
                 var blobClient = blobServiceClient.GetBlobContainerClient(container).GetBlobClient(fileName);
@@ -54,19 +48,20 @@ namespace LHDS.Core.Clients
 
                 var options = new BlobUploadOptions
                 {
-                    HttpHeaders = new BlobHttpHeaders
-                    {
-                        ContentHash = contentHash
-                    },
                     ProgressHandler = new Progress<long>(progress =>
                     {
                         Console.WriteLine(
                             $"file: {fileName}, progress: {progress}/{streamLength}, " +
                             $"percent:{Math.Round(progress / (double)streamLength * 100.0, 2)}");
                     }),
-                    TransferOptions = new Azure.Storage.StorageTransferOptions()
+
+                    // Upload in 4 MB chunks rather than buffering the entire file in memory.
+                    // The previous MD5 ComputeHash + InitialTransferSize = input.Length was
+                    // loading multi-GB files fully into memory, OOM-killing the P1v3 worker process.
+                    TransferOptions = new StorageTransferOptions
                     {
-                        InitialTransferSize = input.Length
+                        MaximumTransferSize = 4 * 1024 * 1024,
+                        InitialTransferSize = 4 * 1024 * 1024
                     }
                 };
 

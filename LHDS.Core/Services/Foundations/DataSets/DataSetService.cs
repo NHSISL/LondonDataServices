@@ -38,7 +38,7 @@ namespace LHDS.Core.Services.Foundations.DataSets
                 DataSet dataSetWithAddAuditApplied = await ApplyAddAuditAsync(dataSet);
                 await ValidateDataSetOnAddAsync(dataSetWithAddAuditApplied);
 
-                return await this.storageBroker.InsertDataSetAsync(dataSet);
+                return await this.storageBroker.InsertDataSetAsync(dataSetWithAddAuditApplied);
             });
 
         public ValueTask<IQueryable<DataSet>> RetrieveAllDataSetsAsync() =>

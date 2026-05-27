@@ -223,5 +223,71 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.HealthChecks.ResolvedAddress
             this.storageBrokerMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
         }
+
+        [Fact]
+        public async Task ShouldGetHealthStatusAsHealthyWhenNoRecordsUpdatedInLast24HoursAsync()
+        {
+            // given
+            DateTimeOffset randomDateTimeOffset = DateTimeOffset.UtcNow;
+
+            double degradedThresholdPercentage = this.inMemoryConfiguration
+                .GetValue($"{ConfigSectionName}:DegradedThresholdPercentage", 0.9);
+
+            double unHealthyThresholdPercentage = this.inMemoryConfiguration
+                .GetValue($"{ConfigSectionName}:UnHealthyThresholdPercentage", 0.8);
+
+            List<ResolvedAddress> emptyRecords = new List<ResolvedAddress>();
+
+            this.dateTimeBrokerMock.Setup(broker =>
+                broker.GetCurrentDateTimeOffsetAsync())
+                    .ReturnsAsync(randomDateTimeOffset);
+
+            this.storageBrokerMock.Setup(broker =>
+                broker.SelectAllResolvedAddressesAsync())
+                    .ReturnsAsync(emptyRecords.AsQueryable());
+
+            string message = "No records updated in the last 24 hours.";
+
+            var vals = new Dictionary<string, object>
+            {
+                { "description", CheckDescriptionName },
+                { "averageMatchRate", 1.0 },
+                { "isDegraded", false },
+                { "isUnhealthy", false },
+                { "degradedThresholdPercentage", degradedThresholdPercentage.ToString() },
+                { "unHealthyThresholdPercentage", unHealthyThresholdPercentage.ToString() },
+                { "checkedAt", randomDateTimeOffset.ToString("o") },
+                { "message", message },
+                { "status", HealthStatus.Healthy.ToString() }
+            };
+
+            HealthCheckResult expectedHealthCheckResult = HealthCheckResult.Healthy(
+                description: "matchQuality",
+                data: vals);
+
+            // when
+            HealthCheckResult actualHealthCheckResult =
+                await this.resolvedAddressHealthItemService.GetHealthStatusAsync();
+
+            // then
+            actualHealthCheckResult.Should().BeEquivalentTo(expectedHealthCheckResult, options =>
+                options.Using<DateTimeOffset>(ctx =>
+                    ctx.Subject.Should().BeCloseTo(ctx.Expectation, TimeSpan.FromSeconds(1)))
+                    .WhenTypeIs<DateTimeOffset>()
+                    .WithStrictOrdering()
+                    .ComparingByMembers<HealthCheckResult>());
+
+            this.dateTimeBrokerMock.Verify(broker =>
+                broker.GetCurrentDateTimeOffsetAsync(),
+                    Times.Once);
+
+            this.storageBrokerMock.Verify(broker =>
+                broker.SelectAllResolvedAddressesAsync(),
+                    Times.Once);
+
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
+            this.storageBrokerMock.VerifyNoOtherCalls();
+            this.loggingBrokerMock.VerifyNoOtherCalls();
+        }
     }
 }

@@ -106,8 +106,7 @@ namespace LHDS.Core.Tests.Unit.Services.Coordinations.HealthChecks
                 {
                     case int or long or float or double or decimal:
                         double metricValue = Convert.ToDouble(value);
-                        string metricKey = GetUniqueKey(telemetry.Metrics, key);
-                        telemetry.Metrics.Add(metricKey, metricValue);
+                        string metricKey = GetUniqueKey(telemetry.Properties, key);
 
                         telemetryBrokerMock.Verify(broker =>
                             broker.TrackMetricAsync(It.Is(SameMetricTelemetryAs(new MetricTelemetry(metricKey, metricValue)))),

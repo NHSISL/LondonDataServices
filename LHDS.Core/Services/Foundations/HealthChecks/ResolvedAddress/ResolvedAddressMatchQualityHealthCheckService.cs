@@ -43,7 +43,28 @@ namespace LHDS.Core.Services.Foundations.HealthChecks.ResolvedAddress
             var filteredQuery = resolvedAddressQuery.Where(i => i.UpdatedDate >= queryCutOffDate);
             int totalCount = filteredQuery.Count();
             int matchedCount = filteredQuery.Where(i => i.MatchedWithAssign == true).Count();
-            double percentageMatched = (double) matchedCount / (double) totalCount;
+
+            if (totalCount == 0)
+            {
+                var emptyVals = new Dictionary<string, object>
+                {
+                    { "description", CheckDescriptionName },
+                    { "averageMatchRate", 1.0 },
+                    { "isDegraded", false },
+                    { "isUnhealthy", false },
+                    { "degradedThresholdPercentage", degradedThresholdPercentage.ToString() },
+                    { "unHealthyThresholdPercentage", unHealthyThresholdPercentage.ToString() },
+                    { "checkedAt", currentDateTime.ToString("o") },
+                    { "message", "No records updated in the last 24 hours." },
+                    { "status", HealthStatus.Healthy.ToString() }
+                };
+
+                return HealthCheckResult.Healthy(
+                    description: CheckName,
+                    data: emptyVals);
+            }
+
+            double percentageMatched = (double)matchedCount / (double)totalCount;
 
             bool isDegraded = (percentageMatched > unHealthyThresholdPercentage
                 && percentageMatched <= degradedThresholdPercentage);

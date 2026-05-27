@@ -1,4 +1,4 @@
-﻿// ---------------------------------------------------------
+// ---------------------------------------------------------
 // Copyright (c) North East London ICB. All rights reserved.
 // ---------------------------------------------------------
 
@@ -12,7 +12,7 @@ using LHDS.Core.Models.Foundations.OptOuts;
 using LHDS.Core.Services.Foundations.OptOuts;
 
 namespace LHDS.Core.Services.Processings.OptOuts
-{
+            {
     public partial class OptOutProcessingService : IOptOutProcessingService
     {
         private readonly IOptOutService optOutService;
@@ -151,6 +151,11 @@ namespace LHDS.Core.Services.Processings.OptOuts
         {
             ValidateCurrentOptOutListProcessingOnConsolidate(currentOptOutList, consentedIdentifiers);
 
+            if (!currentOptOutList.Any())
+            {
+                return new List<OptOut>();
+            }
+
             var consentedSet = new HashSet<string>(consentedIdentifiers);
 
             List<OptOut> consentedList = currentOptOutList
@@ -181,12 +186,9 @@ namespace LHDS.Core.Services.Processings.OptOuts
                     delta.Add(item);
                 }
 
-                item.UpdatedDate = dateTime;
                 item.CacheTime = dateTime;
                 item.LastSentToMesh = dateTime;
                 item.Status = "Opt-In";
-
-                await this.optOutService.ModifyOptOutAsync(item);
             }
 
             foreach (var nonConsentedListItem in nonConsentedList)
@@ -196,16 +198,21 @@ namespace LHDS.Core.Services.Processings.OptOuts
                     delta.Add(nonConsentedListItem);
                 }
 
-                nonConsentedListItem.UpdatedDate = dateTime;
                 nonConsentedListItem.CacheTime = dateTime;
                 nonConsentedListItem.LastSentToMesh = dateTime;
                 nonConsentedListItem.Status = "Opt-Out";
-
-                await this.optOutService.ModifyOptOutAsync(nonConsentedListItem);
             }
+
+            List<OptOut> allModifiedOptOuts = new List<OptOut>();
+            allModifiedOptOuts.AddRange(consentedList);
+            allModifiedOptOuts.AddRange(nonConsentedList);
+
+            await this.optOutService.BulkModifyOptOutsAsync(
+                allModifiedOptOuts,
+                "ConsolidateOptOutChanges");
 
             return delta;
         });
     }
-}
+            }
 

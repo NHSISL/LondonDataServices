@@ -46,13 +46,13 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.OptOuts
             List<OptOut> nonConsentedList = currentOptOutList
                 .Except(consentedList).ToList();
 
+            List<OptOut> allModifiedOptOuts = new List<OptOut>();
+            allModifiedOptOuts.AddRange(consentedList);
+            allModifiedOptOuts.AddRange(nonConsentedList);
+
             this.dateTimeBrokerMock.Setup(broker =>
                 broker.GetCurrentDateTimeOffsetAsync())
                     .ReturnsAsync(randomDateTimeOffset);
-
-            this.optOutServiceMock.Setup(service =>
-                service.ModifyOptOutAsync(It.IsAny<OptOut>()))
-                    .ReturnsAsync((OptOut o) => o);
 
             // when
             await this.optOutProcessingService
@@ -74,27 +74,24 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.OptOuts
                     continue;
                 }
 
-                item.UpdatedDate = randomDateTimeOffset;
                 item.CacheTime = randomDateTimeOffset;
                 item.LastSentToMesh = randomDateTimeOffset;
                 item.Status = "Opt-In";
-
-                this.optOutServiceMock.Verify(service =>
-                   service.ModifyOptOutAsync(It.Is(SameOptOutAs(item))),
-                       Times.Once);
             }
 
             foreach (var item in nonConsentedList)
             {
-                item.UpdatedDate = randomDateTimeOffset;
                 item.CacheTime = randomDateTimeOffset;
                 item.LastSentToMesh = randomDateTimeOffset;
                 item.Status = "Opt-Out";
-
-                this.optOutServiceMock.Verify(service =>
-                   service.ModifyOptOutAsync(It.Is(SameOptOutAs(item))),
-                       Times.Once);
             }
+
+            this.optOutServiceMock.Verify(service =>
+                service.BulkModifyOptOutsAsync(
+                    It.Is<List<OptOut>>(list =>
+                        this.compareLogic.Compare(list, allModifiedOptOuts).AreEqual),
+                    "ConsolidateOptOutChanges"),
+                        Times.Once);
 
             this.optOutServiceMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();

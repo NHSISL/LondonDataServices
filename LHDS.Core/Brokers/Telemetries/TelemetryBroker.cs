@@ -21,8 +21,7 @@ namespace LHDS.Core.Brokers.Telemetries
         public TelemetryBroker(IConfiguration configuration)
         {
             string connectionString = configuration["ApplicationInsights:ConnectionString"];
-            var telemetryConfiguration = TelemetryConfiguration.CreateDefault();
-            telemetryConfiguration.ConnectionString = connectionString;
+            var telemetryConfiguration = new TelemetryConfiguration { ConnectionString = connectionString };
             this.telemetryClient = new TelemetryClient(telemetryConfiguration);
         }
 

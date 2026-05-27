@@ -12,26 +12,26 @@
 	<ItemGroup>
 		<PackageReference Include="Attrify" Version="0.0.0.2" />
 		<PackageReference Include="Azure.Identity" Version="1.21.0" />
-		<PackageReference Include="Azure.Storage.Blobs" Version="12.27.0" />
-		<PackageReference Include="Azure.Storage.Queues" Version="12.23.0" />
-		<PackageReference Include="Azure.Storage.Files.Shares" Version="12.23.0" />
+		<PackageReference Include="Azure.Storage.Blobs" Version="12.28.0" />
+		<PackageReference Include="Azure.Storage.Queues" Version="12.26.0" />
+		<PackageReference Include="Azure.Storage.Files.Shares" Version="12.26.0" />
 		<PackageReference Include="EFxceptions" Version="10.0.0" />
-		<PackageReference Include="Microsoft.ApplicationInsights.AspNetCore" Version="2.23.0" />
+		<PackageReference Include="Microsoft.ApplicationInsights.AspNetCore" Version="3.1.1" />
 		<PackageReference Include="Microsoft.AspNet.WebApi.Client" Version="6.0.0" />
-		<PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="10.0.7" />
+		<PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="10.0.8" />
 		<PackageReference Include="Microsoft.AspNetCore.OData" Version="9.4.1" />
-		<PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="9.0.9" />
+		<PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="10.0.8" />
 		<PackageReference Include="Microsoft.Data.SqlClient.Extensions.Azure" Version="1.0.0" />
-		<PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="10.0.7" />
-		<PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="10.0.7">
+		<PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="10.0.8" />
+		<PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="10.0.8">
 			<IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
 			<PrivateAssets>all</PrivateAssets>
 		</PackageReference>
 		<PackageReference Include="Microsoft.Extensions.Azure" Version="1.14.0" />
-		<PackageReference Include="Microsoft.Identity.Web" Version="4.8.0" />
+		<PackageReference Include="Microsoft.Identity.Web" Version="4.9.0" />
 		<PackageReference Include="RESTFulSense" Version="3.2.0" />
 		<PackageReference Include="SshKeyGenerator" Version="1.1.51" />
-		<PackageReference Include="Swashbuckle.AspNetCore" Version="9.0.4" />
+		<PackageReference Include="Swashbuckle.AspNetCore" Version="10.1.7" />
 		<PackageReference Include="Tynamix.ObjectFiller" Version="1.5.9" />
 		<PackageReference Include="Xeption" Version="2.9.0" />
 	</ItemGroup>

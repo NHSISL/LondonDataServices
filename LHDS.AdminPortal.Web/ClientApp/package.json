@@ -70,7 +70,22 @@
     "typescript": "^4.7.4"
   },
   "overrides": {
-    "autoprefixer": "10.4.5"
+    "autoprefixer": "10.4.5",
+    "nth-check": ">=2.0.1",
+    "css-what": ">=5.0.1",
+    "css-select": ">=4.0.0",
+    "svgo": ">=2.0.0",
+    "postcss": ">=8.5.10",
+    "serialize-javascript": "7.0.5",
+    "semver": ">=7.5.2",
+    "ws": "8.20.1",
+    "yaml": ">=2.3.2",
+    "tmp": ">=0.2.4",
+    "uuid": ">=11.1.1",
+    "diff": ">=5.2.2",
+    "js-yaml": ">=4.1.1",
+    "minimatch": ">=5.1.9",
+    "nanoid": ">=3.3.8"
   },
   "resolutions": {
     "css-what": "^5.0.1",

@@ -86,7 +86,8 @@ namespace LHDS.Core.Clients
         {
             await loggingBroker.LogInformationAsync(fileName);
             var blobClient = this.blobServiceClient.GetBlobContainerClient(container).GetBlobClient(fileName);
-            var userDelegationKey = blobServiceClient.GetUserDelegationKey(DateTimeOffset.UtcNow, expiresOn);
+            var userDelegationKey = blobServiceClient.GetUserDelegationKey(
+                new BlobGetUserDelegationKeyOptions(expiresOn) { StartsOn = DateTimeOffset.UtcNow });
 
             var sasBuilder = new BlobSasBuilder()
             {

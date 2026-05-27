@@ -58,6 +58,7 @@ using LHDS.Core.Services.Foundations.HealthChecks.IngestionTracking;
 using LHDS.Core.Services.Foundations.HealthChecks.OptOut;
 using LHDS.Core.Services.Foundations.HealthChecks.ResolvedAddress;
 using LHDS.Core.Services.Foundations.HealthChecks.TerminologyArtifacts;
+using LHDS.Core.Services.Foundations.HealthChecks.PDS;
 using LHDS.Core.Services.Foundations.HealthChecks.TerminologyPolls;
 using LHDS.Core.Services.Foundations.IngestionTrackingAudits;
 using LHDS.Core.Services.Foundations.IngestionTrackings;
@@ -74,6 +75,7 @@ using LHDS.Core.Services.Orchestrations.HealthChecks.IngestionTrackings;
 using LHDS.Core.Services.Orchestrations.HealthChecks.OptOuts;
 using LHDS.Core.Services.Orchestrations.HealthChecks.ResolvedAddresses;
 using LHDS.Core.Services.Orchestrations.HealthChecks.TerminologyArtifacts;
+using LHDS.Core.Services.Orchestrations.HealthChecks.PdsAudits;
 using LHDS.Core.Services.Orchestrations.HealthChecks.TerminologyPolls;
 using LHDS.Core.Services.Processings.Addresses;
 using LHDS.Core.Services.Processings.DataSetSpecifications;
@@ -100,7 +102,7 @@ using Microsoft.Identity.Web;
 using Microsoft.IdentityModel.Logging;
 using Microsoft.OData.Edm;
 using Microsoft.OData.ModelBuilder;
-using Microsoft.OpenApi.Models;
+using Microsoft.OpenApi;
 
 namespace LHDS.AdminPortal.Api
 {
@@ -246,13 +248,19 @@ namespace LHDS.AdminPortal.Api
             app.UseForwardedHeaders();
             app.UseAuthorization();
             app.UseInvisibleApiMiddleware(invisibleApiKey);
-            app.MapControllers().WithOpenApi();
+            app.MapControllers();
         }
 
         private static void AddHealthApi(IServiceCollection services, IConfiguration configuration)
         {
             services.AddTransient
+                <IIngestionTrackingHealthItemService, IngestionTrackingPipelineAliveHealthCheckService>();
+
+            services.AddTransient
                 <IIngestionTrackingHealthItemService, IngestionTrackingDecryptionHealthCheckService>();
+
+            services.AddTransient
+                <IIngestionTrackingHealthItemService, IngestionTrackingDownloadHealthCheckService>();
 
             services.AddTransient
                 <IIngestionTrackingHealthItemService, IngestionTrackingProcessingHealthCheckService>();
@@ -261,13 +269,34 @@ namespace LHDS.AdminPortal.Api
                 <IIngestionTrackingHealthItemService, IngestionTrackingFailedToProcessHealthCheckService>();
 
             services.AddTransient
+                <IIngestionTrackingHealthItemService, IngestionTrackingRetryWarningHealthCheckService>();
+
+            services.AddTransient
+                <IIngestionTrackingHealthItemService, IngestionTrackingDeletedWithoutCompletionHealthCheckService>();
+
+            services.AddTransient
                 <IIngestionTrackingHealthItemService, IngestionTrackingFilesReceivedHealthCheckService>();
 
             services.AddTransient
                 <IIngestionTrackingHealthItemService, IngestionTrackingIncompleteBatchHealthCheckService>();
 
             services.AddTransient
+                <IIngestionTrackingHealthItemService, IngestionTrackingStaleLastBatchCheckHealthCheckService>();
+
+            services.AddTransient
+                <IIngestionTrackingHealthItemService, IngestionTrackingLastSeenHealthCheckService>();
+
+            services.AddTransient
+                <IResolvedAddressHealthItemService, ResolvedAddressPipelineAliveHealthCheckService>();
+
+            services.AddTransient
                 <IResolvedAddressHealthItemService, ResolvedAddressProcessingHealthCheckService>();
+
+            services.AddTransient
+                <IResolvedAddressHealthItemService, ResolvedAddressQueuedHealthCheckService>();
+
+            services.AddTransient
+                <IResolvedAddressHealthItemService, ResolvedAddressExportHealthCheckService>();
 
             services.AddTransient
                 <IResolvedAddressHealthItemService, ResolvedAddressFailedToProcessHealthCheckService>();
@@ -282,13 +311,31 @@ namespace LHDS.AdminPortal.Api
                 <IResolvedAddressHealthItemService, ResolvedAddressMatchQualityHealthCheckService>();
 
             services.AddTransient
+                <IResolvedAddressHealthItemService, ResolvedAddressRetryWarningHealthCheckService>();
+
+            services.AddTransient
                 <ITerminologyPollsHealthItemService, TerminologyPollsNotPollingHealthCheckService>();
 
             services.AddTransient
                 <ITerminologyArtifactsHealthItemService, TerminologyArtifactsFailedToProcessHealthCheckService>();
 
             services.AddTransient
+                <ITerminologyArtifactsHealthItemService, TerminologyArtifactsNotDownloadedHealthCheckService>();
+
+            services.AddTransient
+                <ITerminologyArtifactsHealthItemService, TerminologyArtifactsCoreNotDownloadedHealthCheckService>();
+
+            services.AddTransient
                 <IOptOutHealthItemService, OptOutsExpiredOptOutHealthCheckService>();
+
+            services.AddTransient
+                <IOptOutHealthItemService, OptOutsStuckHealthCheckService>();
+
+            services.AddTransient
+                <IOptOutHealthItemService, OptOutPipelineAliveHealthCheckService>();
+
+            services.AddTransient
+                <IPdsHealthItemService, PdsAuditPipelineAliveHealthCheckService>();
 
             services.AddHealthChecks()
                 .AddCheck<IngestionTrackingHealthCheckOrchestrationService>("ingestionTrackingHealthChecks");
@@ -304,6 +351,9 @@ namespace LHDS.AdminPortal.Api
 
             services.AddHealthChecks()
                 .AddCheck<TerminologyArtifactsHealthCheckCoordinationService>("terminologyArtifactsHealthChecks");
+
+            services.AddHealthChecks()
+                .AddCheck<PdsAuditHealthCheckOrchestrationService>("pdsAuditHealthChecks");
 
             services.AddTransient<IHealthCheckPublisher, HealthCheckPublisherCoordinationService>();
 

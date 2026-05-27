@@ -46,6 +46,26 @@ namespace LHDS.Core.Services.Foundations.HealthChecks.TerminologyPolls
                 DateTimeOffset unHealthyThresholdDateTime = currentDateTime.AddMinutes(-1 * unHealthyThresholdMinutes);
                 var terminologyPollsQuery = await storageBroker.SelectAllTerminologyPollsAsync();
 
+                if (!terminologyPollsQuery.Any())
+                {
+                    var emptyValues = new Dictionary<string, object>
+                    {
+                        { "description", CheckNameDescription },
+                        { "notPolling", 0 },
+                        { "degradedItems", 0 },
+                        { "unHealthyItems", 0 },
+                        { "degradedThresholdMinutes", degradedThresholdMinutes.ToString() },
+                        { "unHealthyThresholdMinutes", unHealthyThresholdMinutes.ToString() },
+                        { "checkedAt", currentDateTime.ToString("o") },
+                        { "message", "No terminology poll records exist. The polling service has never run." },
+                        { "status", HealthStatus.Unhealthy.ToString() }
+                    };
+
+                    return HealthCheckResult.Unhealthy(
+                        description: CheckName,
+                        data: emptyValues);
+                }
+
                 int degradedCount = terminologyPollsQuery.Count(terminologyPoll =>
                     terminologyPoll.LastPoll <= degradedThresholdDateTime &&
                     terminologyPoll.LastPoll > unHealthyThresholdDateTime);

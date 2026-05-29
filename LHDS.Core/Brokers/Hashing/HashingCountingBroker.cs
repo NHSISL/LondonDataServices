@@ -110,7 +110,6 @@ namespace LHDS.Core.Brokers.Hashing
                 if (disposing)
                 {
                     this.incrementalHash.Dispose();
-                    this.innerStream.Dispose();
                 }
 
                 this.disposed = true;

@@ -16,7 +16,7 @@ namespace LHDS.Core.Brokers.Storages.Sql
 
             modelBuilder.Entity<AddressToUprnFileLog>()
                 .Property(addressToUprnFileLog => addressToUprnFileLog.FileName)
-                .HasMaxLength(255)
+                .HasMaxLength(450)
                 .IsRequired();
 
             modelBuilder.Entity<AddressToUprnFileLog>()
@@ -33,7 +33,6 @@ namespace LHDS.Core.Brokers.Storages.Sql
 
             modelBuilder.Entity<AddressToUprnFileLog>()
                 .Property(addressToUprnFileLog => addressToUprnFileLog.Message)
-                .HasMaxLength(2000)
                 .IsRequired(false);
 
             modelBuilder.Entity<AddressToUprnFileLog>()

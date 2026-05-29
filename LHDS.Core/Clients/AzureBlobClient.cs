@@ -6,11 +6,13 @@ namespace LHDS.Core.Clients
 {
     using System;
     using System.IO;
+    using System.Security.Cryptography;
     using System.Threading.Tasks;
     using Azure.Storage;
     using Azure.Storage.Blobs;
     using Azure.Storage.Blobs.Models;
     using Azure.Storage.Sas;
+    using LHDS.Core.Brokers.Hashing;
     using LHDS.Core.Brokers.Loggings;
 
     public class AzureBlobClient : IAzureBlobClient
@@ -40,24 +42,21 @@ namespace LHDS.Core.Clients
         {
             try
             {
-                input.Position = 0;
-                await loggingBroker.LogInformationAsync($"file:{fileName}, size:{input.Length}, container:{container}");
-                input.Position = 0;
+                if (input.CanSeek)
+                    input.Position = 0;
+
+                await using var hashingStream = new HashingCountingBroker(input, HashAlgorithmName.MD5);
                 var blobClient = blobServiceClient.GetBlobContainerClient(container).GetBlobClient(fileName);
-                var streamLength = input.Length;
 
                 var options = new BlobUploadOptions
                 {
                     ProgressHandler = new Progress<long>(progress =>
                     {
-                        Console.WriteLine(
-                            $"file: {fileName}, progress: {progress}/{streamLength}, " +
-                            $"percent:{Math.Round(progress / (double)streamLength * 100.0, 2)}");
+                        Console.WriteLine($"file: {fileName}, progress: {progress}");
                     }),
 
-                    // Upload in 4 MB chunks rather than buffering the entire file in memory.
-                    // The previous MD5 ComputeHash + InitialTransferSize = input.Length was
-                    // loading multi-GB files fully into memory, OOM-killing the P1v3 worker process.
+                    // Upload in chunks: setting InitialTransferSize = input.Length buffers the
+                    // entire file in memory and OOM-kills the process on multi-GB files.
                     TransferOptions = new StorageTransferOptions
                     {
                         MaximumTransferSize = 4 * 1024 * 1024,
@@ -65,7 +64,12 @@ namespace LHDS.Core.Clients
                     }
                 };
 
-                await blobClient.UploadAsync(input, options);
+                await blobClient.UploadAsync(hashingStream.AsStream(), options);
+                long streamLength = hashingStream.BytesRead;
+                string hash = hashingStream.GetFinalHashHex();
+
+                await loggingBroker.LogInformationAsync(
+                    $"file:{fileName}, size:{streamLength}, hash:{hash}, container:{container}");
             }
             catch (Exception ex)
             {
@@ -73,6 +77,16 @@ namespace LHDS.Core.Clients
                 Console.WriteLine($"Unable to write blob: {fileName}");
                 throw;
             }
+        }
+
+        public async ValueTask<Stream> OpenReadAsync(string fileName, string container)
+        {
+            await loggingBroker.LogInformationAsync(fileName);
+
+            var blobClient = blobServiceClient
+                .GetBlobContainerClient(container).GetBlobClient(fileName);
+
+            return await blobClient.OpenReadAsync();
         }
 
         public async ValueTask DeleteFileAsync(string fileName, string container)

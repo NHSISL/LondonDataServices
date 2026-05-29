@@ -53,6 +53,16 @@ namespace LHDS.Core.Services.Foundations.Documents
                (Rule: IsInvalid(fileName), Parameter: "FileName"));
         }
 
+        private void ValidateRetrieveDocumentStreamByFileName(string fileName, string container)
+        {
+            Validate(
+                createException: () => new InvalidDocumentException(
+                    message: "Invalid document. Please correct the errors and try again."),
+
+               (Rule: IsInvalid(container), Parameter: "Container"),
+               (Rule: IsInvalid(fileName), Parameter: "FileName"));
+        }
+
         private static void ValidateStorageDocument(
             Stream data,
             string fileName)
@@ -65,13 +75,13 @@ namespace LHDS.Core.Services.Foundations.Documents
 
         private static dynamic IsInvalidInputStream(Stream? stream) => new
         {
-            Condition = stream is null || stream.Length == 0,
+            Condition = stream is null || (stream.CanSeek && stream.Length == 0),
             Message = "Stream is required"
         };
 
         private static dynamic IsInvalidOutputStream(Stream? stream) => new
         {
-            Condition = stream is null || stream.Length > 0,
+            Condition = stream is null || (stream.CanSeek && stream.Length > 0),
             Message = "Stream is required"
         };
 

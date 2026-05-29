@@ -6,11 +6,13 @@ namespace LHDS.Core.Clients
 {
     using System;
     using System.IO;
+    using System.Security.Cryptography;
     using System.Threading.Tasks;
     using Azure.Storage;
     using Azure.Storage.Blobs;
     using Azure.Storage.Blobs.Models;
     using Azure.Storage.Sas;
+    using LHDS.Core.Brokers.Hashing;
     using LHDS.Core.Brokers.Loggings;
 
     public class AzureBlobClient : IAzureBlobClient
@@ -40,26 +42,17 @@ namespace LHDS.Core.Clients
         {
             try
             {
-                long streamLength = -1;
-
                 if (input.CanSeek)
-                {
                     input.Position = 0;
-                    streamLength = input.Length;
-                }
 
-                await loggingBroker.LogInformationAsync($"file:{fileName}, size:{streamLength}, container:{container}");
+                await using var hashingStream = new HashingCountingBroker(input, HashAlgorithmName.MD5);
                 var blobClient = blobServiceClient.GetBlobContainerClient(container).GetBlobClient(fileName);
 
                 var options = new BlobUploadOptions
                 {
                     ProgressHandler = new Progress<long>(progress =>
                     {
-                        string progressText = streamLength > 0
-                            ? $"{progress}/{streamLength}, percent:{Math.Round(progress / (double)streamLength * 100.0, 2)}"
-                            : $"{progress}/unknown";
-
-                        Console.WriteLine($"file: {fileName}, progress: {progressText}");
+                        Console.WriteLine($"file: {fileName}, progress: {progress}");
                     }),
 
                     // Upload in chunks: setting InitialTransferSize = input.Length buffers the
@@ -71,7 +64,12 @@ namespace LHDS.Core.Clients
                     }
                 };
 
-                await blobClient.UploadAsync(input, options);
+                await blobClient.UploadAsync(hashingStream.AsStream(), options);
+                long streamLength = hashingStream.BytesRead;
+                string hash = hashingStream.GetFinalHashHex();
+
+                await loggingBroker.LogInformationAsync(
+                    $"file:{fileName}, size:{streamLength}, hash:{hash}, container:{container}");
             }
             catch (Exception ex)
             {

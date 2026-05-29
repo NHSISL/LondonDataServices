@@ -40,19 +40,26 @@ namespace LHDS.Core.Clients
         {
             try
             {
-                input.Position = 0;
-                await loggingBroker.LogInformationAsync($"file:{fileName}, size:{input.Length}, container:{container}");
-                input.Position = 0;
+                long streamLength = -1;
+
+                if (input.CanSeek)
+                {
+                    input.Position = 0;
+                    streamLength = input.Length;
+                }
+
+                await loggingBroker.LogInformationAsync($"file:{fileName}, size:{streamLength}, container:{container}");
                 var blobClient = blobServiceClient.GetBlobContainerClient(container).GetBlobClient(fileName);
-                var streamLength = input.Length;
 
                 var options = new BlobUploadOptions
                 {
                     ProgressHandler = new Progress<long>(progress =>
                     {
-                        Console.WriteLine(
-                            $"file: {fileName}, progress: {progress}/{streamLength}, " +
-                            $"percent:{Math.Round(progress / (double)streamLength * 100.0, 2)}");
+                        string progressText = streamLength > 0
+                            ? $"{progress}/{streamLength}, percent:{Math.Round(progress / (double)streamLength * 100.0, 2)}"
+                            : $"{progress}/unknown";
+
+                        Console.WriteLine($"file: {fileName}, progress: {progressText}");
                     }),
 
                     // Upload in 4 MB chunks rather than buffering the entire file in memory.
@@ -73,6 +80,16 @@ namespace LHDS.Core.Clients
                 Console.WriteLine($"Unable to write blob: {fileName}");
                 throw;
             }
+        }
+
+        public async ValueTask<Stream> OpenReadAsync(string fileName, string container)
+        {
+            await loggingBroker.LogInformationAsync(fileName);
+
+            var blobClient = blobServiceClient
+                .GetBlobContainerClient(container).GetBlobClient(fileName);
+
+            return await blobClient.OpenReadAsync();
         }
 
         public async ValueTask DeleteFileAsync(string fileName, string container)

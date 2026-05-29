@@ -4,6 +4,7 @@
 
 using System;
 using System.IO;
+using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
 using FluentAssertions;
@@ -33,7 +34,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Decryptions
             randomIngestionTracking.FileName = randomFileName;
             randomIngestionTracking.IsBatchComplete = false;
             IngestionTracking storageIngestionTracking = randomIngestionTracking;
-            string randomHash = GetRandomString(64);
+            string expectedHash = Convert.ToHexString(SHA256.HashData(randomDecryptedBytes)).ToLowerInvariant();
             using var storageStream = new MemoryStream(randomEncryptedBytes);
             var encryptedStreamStream = new MemoryStream();
             var decryptedStream = new MemoryStream();
@@ -83,10 +84,6 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Decryptions
                 })
                 .Returns(ValueTask.CompletedTask);
 
-            this.hashBrokerMock.Setup(broker =>
-                broker.GenerateSha256HashAsync(It.IsAny<Stream>(), null))
-                    .ReturnsAsync(randomHash);
-
             this.documentServiceMock
                 .Setup(service => service.AddDocumentAsync(
                     It.IsAny<Stream>(),
@@ -94,7 +91,6 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Decryptions
                     It.IsAny<string>()))
                 .Callback<Stream, string, string>((stream, fileName, container) =>
                 {
-                    stream.Position = 0;
                     stream.CopyTo(documentAddedToBlobstoreStream);
                 })
                 .Returns(ValueTask.CompletedTask);
@@ -106,7 +102,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Decryptions
             var updatedIngestionTracking = storageIngestionTracking.DeepClone();
             updatedIngestionTracking.Decrypted = true;
             updatedIngestionTracking.DecryptedFileSize = randomDecryptedBytes.Length;
-            updatedIngestionTracking.DecryptedFileSha256Hash = randomHash;
+            updatedIngestionTracking.DecryptedFileSha256Hash = expectedHash;
             updatedIngestionTracking.IsProcessing = false;
             updatedIngestionTracking.IsBatchComplete = false;
             updatedIngestionTracking.UpdatedDate = randomDateTimeOffset;
@@ -164,10 +160,6 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Decryptions
 
             this.ingestionTrackingServiceMock.Verify(service =>
                 service.ModifyIngestionTrackingAsync(It.Is(SameIngestionTrackingAs(updatedIngestionTracking))),
-                Times.Once);
-
-            this.hashBrokerMock.Verify(broker =>
-                broker.GenerateSha256HashAsync(It.IsAny<Stream>(), null),
                 Times.Once);
 
             this.dateTimeBrokerMock.Verify(broker =>

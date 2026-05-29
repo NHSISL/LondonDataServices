@@ -62,9 +62,8 @@ namespace LHDS.Core.Clients
                         Console.WriteLine($"file: {fileName}, progress: {progressText}");
                     }),
 
-                    // Upload in 4 MB chunks rather than buffering the entire file in memory.
-                    // The previous MD5 ComputeHash + InitialTransferSize = input.Length was
-                    // loading multi-GB files fully into memory, OOM-killing the P1v3 worker process.
+                    // Upload in chunks: setting InitialTransferSize = input.Length buffers the
+                    // entire file in memory and OOM-kills the process on multi-GB files.
                     TransferOptions = new StorageTransferOptions
                     {
                         MaximumTransferSize = 4 * 1024 * 1024,

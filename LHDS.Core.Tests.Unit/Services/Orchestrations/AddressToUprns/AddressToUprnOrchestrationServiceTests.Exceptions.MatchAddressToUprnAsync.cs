@@ -46,7 +46,8 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.AddressToUprns
             ValueTask matchTask = this.addressToUprnOrchestrationService.MatchAddressToUprnAsync(
                 input: CreateSingleAddressCsvStream(),
                 fileName: randomFileName,
-                correlationId: randomCorrelationId);
+                correlationId: randomCorrelationId,
+                cancellationToken: TestContext.Current.CancellationToken);
 
             AddressToUprnOrchestrationDependencyValidationException actualException =
                 await Assert.ThrowsAsync<AddressToUprnOrchestrationDependencyValidationException>(
@@ -101,7 +102,8 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.AddressToUprns
             ValueTask matchTask = this.addressToUprnOrchestrationService.MatchAddressToUprnAsync(
                 input: CreateSingleAddressCsvStream(),
                 fileName: randomFileName,
-                correlationId: randomCorrelationId);
+                correlationId: randomCorrelationId,
+                cancellationToken: TestContext.Current.CancellationToken);
 
             AddressToUprnOrchestrationDependencyException actualException =
                 await Assert.ThrowsAsync<AddressToUprnOrchestrationDependencyException>(matchTask.AsTask);
@@ -158,7 +160,8 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.AddressToUprns
             ValueTask matchTask = this.addressToUprnOrchestrationService.MatchAddressToUprnAsync(
                 input: CreateSingleAddressCsvStream(),
                 fileName: randomFileName,
-                correlationId: randomCorrelationId);
+                correlationId: randomCorrelationId,
+                cancellationToken: TestContext.Current.CancellationToken);
 
             AddressToUprnOrchestrationServiceException actualException =
                 await Assert.ThrowsAsync<AddressToUprnOrchestrationServiceException>(matchTask.AsTask);
@@ -269,7 +272,8 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.AddressToUprns
                 input: new MemoryStream(System.Text.Encoding.UTF8.GetBytes(
                     $"UnstructuredAddress\r\n\"{randomAddress}\"\r\n")),
                 fileName: randomFileName,
-                correlationId: randomCorrelationId);
+                correlationId: randomCorrelationId,
+                cancellationToken: TestContext.Current.CancellationToken);
 
             AddressToUprnOrchestrationDependencyException actualException =
                 await Assert.ThrowsAsync<AddressToUprnOrchestrationDependencyException>(matchTask.AsTask);

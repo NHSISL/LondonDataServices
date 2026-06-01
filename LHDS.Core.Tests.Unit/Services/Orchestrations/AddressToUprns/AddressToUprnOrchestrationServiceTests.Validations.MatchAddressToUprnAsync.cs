@@ -39,7 +39,8 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.AddressToUprns
             ValueTask matchTask = this.addressToUprnOrchestrationService.MatchAddressToUprnAsync(
                 input: invalidInput,
                 fileName: randomFileName,
-                correlationId: randomCorrelationId);
+                correlationId: randomCorrelationId,
+                cancellationToken: TestContext.Current.CancellationToken);
 
             AddressToUprnOrchestrationValidationException actualException =
                 await Assert.ThrowsAsync<AddressToUprnOrchestrationValidationException>(matchTask.AsTask);
@@ -89,7 +90,8 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.AddressToUprns
             ValueTask matchTask = this.addressToUprnOrchestrationService.MatchAddressToUprnAsync(
                 input: randomStream,
                 fileName: invalidFileName,
-                correlationId: randomCorrelationId);
+                correlationId: randomCorrelationId,
+                cancellationToken: TestContext.Current.CancellationToken);
 
             AddressToUprnOrchestrationValidationException actualException =
                 await Assert.ThrowsAsync<AddressToUprnOrchestrationValidationException>(matchTask.AsTask);
@@ -136,7 +138,8 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.AddressToUprns
             ValueTask matchTask = this.addressToUprnOrchestrationService.MatchAddressToUprnAsync(
                 input: randomStream,
                 fileName: randomFileName,
-                correlationId: emptyCorrelationId);
+                correlationId: emptyCorrelationId,
+                cancellationToken: TestContext.Current.CancellationToken);
 
             AddressToUprnOrchestrationValidationException actualException =
                 await Assert.ThrowsAsync<AddressToUprnOrchestrationValidationException>(matchTask.AsTask);

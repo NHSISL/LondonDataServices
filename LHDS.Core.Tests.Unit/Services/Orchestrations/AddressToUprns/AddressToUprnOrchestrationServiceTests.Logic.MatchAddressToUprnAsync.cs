@@ -21,6 +21,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.AddressToUprns
         public async Task ShouldMatchAddressToUprnWithSuccessStatusAsync()
         {
             // given
+            CancellationToken cancellationToken = TestContext.Current.CancellationToken;
             Guid randomCorrelationId = GetRandomGuid();
             Guid randomFileLogId = GetRandomGuid();
             string randomFileName = GetRandomString();
@@ -77,9 +78,9 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.AddressToUprns
                     bool addHeader,
                     Dictionary<string, int> mappings,
                     bool? trailingComma,
-                    CancellationToken ct) =>
+                    CancellationToken cancellationToken) =>
                 {
-                    await foreach (AddressToUprnCsv _ in objects.WithCancellation(ct)) { }
+                    await foreach (AddressToUprnCsv _ in objects.WithCancellation(cancellationToken)) { }
                 });
 
             this.documentServiceMock
@@ -100,7 +101,8 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.AddressToUprns
             await this.addressToUprnOrchestrationService.MatchAddressToUprnAsync(
                 input: inputStream,
                 fileName: randomFileName,
-                correlationId: randomCorrelationId);
+                correlationId: randomCorrelationId,
+                cancellationToken: cancellationToken);
 
             // then
             this.assignServiceMock.Verify(service =>
@@ -161,6 +163,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.AddressToUprns
         public async Task ShouldSetPartialSuccessStatusWhenIndividualAddressFailsAsync()
         {
             // given
+            CancellationToken cancellationToken = TestContext.Current.CancellationToken;
             Guid randomCorrelationId = GetRandomGuid();
             Guid randomFileLogId = GetRandomGuid();
             string randomFileName = GetRandomString();
@@ -211,9 +214,9 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.AddressToUprns
                     bool addHeader,
                     Dictionary<string, int> mappings,
                     bool? trailingComma,
-                    CancellationToken ct) =>
+                    CancellationToken cancellationToken) =>
                 {
-                    await foreach (AddressToUprnCsv _ in objects.WithCancellation(ct)) { }
+                    await foreach (AddressToUprnCsv _ in objects.WithCancellation(cancellationToken)) { }
                 });
 
             this.documentServiceMock
@@ -232,7 +235,8 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.AddressToUprns
                 input: new MemoryStream(System.Text.Encoding.UTF8.GetBytes(
                     $"UnstructuredAddress\r\n\"{randomAddress}\"\r\n")),
                 fileName: randomFileName,
-                correlationId: randomCorrelationId);
+                correlationId: randomCorrelationId,
+                cancellationToken: cancellationToken);
 
             // then
             this.addressToUprnFileLogServiceMock.Verify(service =>
@@ -300,6 +304,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.AddressToUprns
         public async Task ShouldSetFailedStatusWhenStreamIsNotSeekableAsync()
         {
             // given
+            CancellationToken cancellationToken = TestContext.Current.CancellationToken;
             Guid randomCorrelationId = GetRandomGuid();
             Guid randomFileLogId = GetRandomGuid();
             string randomFileName = GetRandomString();
@@ -331,7 +336,8 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.AddressToUprns
             await this.addressToUprnOrchestrationService.MatchAddressToUprnAsync(
                 input: nonSeekableStream,
                 fileName: randomFileName,
-                correlationId: randomCorrelationId);
+                correlationId: randomCorrelationId,
+                cancellationToken: cancellationToken);
 
             // then
             this.addressToUprnFileLogServiceMock.Verify(service =>
@@ -369,6 +375,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.AddressToUprns
         public async Task ShouldSetFailedStatusWhenFileSizeExceedsLimitAsync()
         {
             // given
+            CancellationToken cancellationToken = TestContext.Current.CancellationToken;
             Guid randomCorrelationId = GetRandomGuid();
             Guid randomFileLogId = GetRandomGuid();
             string randomFileName = GetRandomString();
@@ -404,7 +411,8 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.AddressToUprns
             await this.addressToUprnOrchestrationService.MatchAddressToUprnAsync(
                 input: oversizedStream,
                 fileName: randomFileName,
-                correlationId: randomCorrelationId);
+                correlationId: randomCorrelationId,
+                cancellationToken: cancellationToken);
 
             // then
             this.addressToUprnFileLogServiceMock.Verify(service =>
@@ -431,6 +439,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.AddressToUprns
         public async Task ShouldNotWriteErrorFileWhenAllAddressesSucceedAsync()
         {
             // given
+            CancellationToken cancellationToken = TestContext.Current.CancellationToken;
             Guid randomCorrelationId = GetRandomGuid();
             Guid randomFileLogId = GetRandomGuid();
             string randomFileName = GetRandomString();
@@ -481,9 +490,9 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.AddressToUprns
                     bool addHeader,
                     Dictionary<string, int> mappings,
                     bool? trailingComma,
-                    CancellationToken ct) =>
+                    CancellationToken cancellationToken) =>
                 {
-                    await foreach (AddressToUprnCsv _ in objects.WithCancellation(ct)) { }
+                    await foreach (AddressToUprnCsv _ in objects.WithCancellation(cancellationToken)) { }
                 });
 
             this.documentServiceMock
@@ -502,7 +511,8 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.AddressToUprns
                 input: new MemoryStream(System.Text.Encoding.UTF8.GetBytes(
                     $"UnstructuredAddress\r\n\"{randomAddress}\"\r\n")),
                 fileName: randomFileName,
-                correlationId: randomCorrelationId);
+                correlationId: randomCorrelationId,
+                cancellationToken: cancellationToken);
 
             // then
             this.documentServiceMock.Verify(service =>

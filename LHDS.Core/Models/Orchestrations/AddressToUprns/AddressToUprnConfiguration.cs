@@ -9,5 +9,6 @@ namespace LHDS.Core.Models.Orchestrations.AddressToUprns
         public string InboxFolder { get; set; } = "Inbox";
         public string OutboxFolder { get; set; } = "Outbox";
         public string ErrorFolder { get; set; } = "Error";
+        public int MaxFileSizeLimitMb { get; set; } = 35840;
     }
 }

@@ -3,7 +3,11 @@
 // ---------------------------------------------------------
 
 using System;
+using System.Collections.Generic;
 using System.IO;
+using System.IO.Pipelines;
+using System.Runtime.CompilerServices;
+using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using LHDS.Core.Brokers.Audits;
@@ -12,6 +16,8 @@ using LHDS.Core.Brokers.DateTimes;
 using LHDS.Core.Brokers.Identifiers;
 using LHDS.Core.Brokers.Loggings;
 using LHDS.Core.Models.Brokers.Storages.Blobs;
+using LHDS.Core.Models.Foundations.AddressToUprnFileLogs;
+using LHDS.Core.Models.Foundations.AssignAddresses;
 using LHDS.Core.Models.Orchestrations.AddressToUprns;
 using LHDS.Core.Services.Foundations.AddressToUprnFileLogs;
 using LHDS.Core.Services.Foundations.Assigns;
@@ -23,7 +29,7 @@ namespace LHDS.Core.Services.Orchestrations.AddressToUprns
     {
         private readonly IAssignService assignService;
         private readonly IDocumentService documentService;
-        private readonly AddressToUprnFileLogService addressToUprnFileLogService;
+        private readonly IAddressToUprnFileLogService addressToUprnFileLogService;
         private readonly ICsvHelperBroker csvHelperBroker;
         private readonly IDateTimeBroker dateTimeBroker;
         private readonly IAuditBroker auditBroker;
@@ -35,7 +41,7 @@ namespace LHDS.Core.Services.Orchestrations.AddressToUprns
         public AddressToUprnOrchestrationService(
             IAssignService assignService,
             IDocumentService documentService,
-            AddressToUprnFileLogService addressToUprnFileLogService,
+            IAddressToUprnFileLogService addressToUprnFileLogService,
             ICsvHelperBroker csvHelperBroker,
             IDateTimeBroker dateTimeBroker,
             IAuditBroker auditBroker,
@@ -63,36 +69,243 @@ namespace LHDS.Core.Services.Orchestrations.AddressToUprns
             CancellationToken cancellationToken = default) =>
         TryCatch(async () =>
         {
+            ValidateMatchAddressToUprnArguments(input, fileName, correlationId);
 
-            // at the start of the process create a timer to capture processing time.
-            // we will use this to populate the AddressToUprnFileLog record at the end of the process and then commit that to the database.
+            DateTimeOffset startTime = await this.dateTimeBroker.GetCurrentDateTimeOffsetAsync();
+            Guid fileLogId = await this.identifierBroker.GetIdentifierAsync();
 
-            // Read the stream line by line via the CSV helper broker to avoid loading the entire file into memory.  This will allow us to process files of any size, even those larger than available memory.
-            // The input stream is a single column CSV with a header row "UnstructuredAddress",
-            // and each subsequent row contains an unstructured address to be matched to a UPRN.
+            var addressToUprnFileLog = new AddressToUprnFileLog
+            {
+                Id = fileLogId,
+                FileName = fileName,
+                DateReceived = startTime,
+                SuccessStatus = SuccessStatus.Success
+            };
 
-            // Use the parse each line to create an AddressToUprnRequest object.
-            // Send the unstructured address to the assign service to match it to a UPRN.
+            long fileSizeLimitBytes = (long)this.addressToUprnConfiguration.MaxFileSizeLimitMb * 1024 * 1024;
 
-            // Assign will respond with an AssignAddress object.  We need to map this to a flat object AddressToUprnCsv.
-            // UnstructuredAddress
+            if (!input.CanSeek)
+            {
+                addressToUprnFileLog.SuccessStatus = SuccessStatus.Failed;
+                addressToUprnFileLog.Message = "Stream is not seekable.";
+                addressToUprnFileLog.DateProcessed = await this.dateTimeBroker.GetCurrentDateTimeOffsetAsync();
+                addressToUprnFileLog.Duration = addressToUprnFileLog.DateProcessed - startTime;
+                await this.addressToUprnFileLogService.AddAddressToUprnFileLogAsync(addressToUprnFileLog);
 
-            // Use the CsvHelperBroker to stream the results to a new CSV file with the above columns to the document service for storage in blob storage.
-            // Use the original filename, append "_matched" to the filename and save the file to blob storage for later review.  blobContainers.AddressToUprn + addressToUprnConfiguration.Outbox
+                await WriteErrorFileAsync(
+                    container: this.blobContainers.AddressToUprn,
+                    errorFolder: this.addressToUprnConfiguration.ErrorFolder,
+                    fileName: fileName,
+                    errorLine: "Stream is not seekable.",
+                    cancellationToken: cancellationToken);
 
-            // Exceptions /  Error handling:
-            // Errors must be written to a CSV file with the same filename as the input file, but with "_error" appended to the filename. blobContainers.AddressToUprn + addressToUprnConfiguration.Error
-            // Columns should be Error, CorrelationId, Message
+                return;
+            }
 
-            // If the file is not a valid CSV => Invalid CSV, %CorrelationId%, %ExceptionMessage% (as single line string, guard against commas in the strings)
-            // If the file is too large to process => File too large, %CorrelationId%, %ExceptionMessage% (as single line string, guard against commas in the strings)
+            if (input.Length > fileSizeLimitBytes)
+            {
+                addressToUprnFileLog.SuccessStatus = SuccessStatus.Failed;
 
-            // If any individual address fails i.e. timeout from assign service TimeOut, %CorrelationId%, Failed to process `%UnstructuredAddress%`. %ExceptionMessage% (as single line string, guard against commas in the strings)
-            // IMPORTANT: Unmatched addresses are not errors.
+                addressToUprnFileLog.Message =
+                    $"File too large, {correlationId}, " +
+                    $"File exceeds the maximum allowed size of " +
+                    $"{this.addressToUprnConfiguration.MaxFileSizeLimitMb} MB.";
 
+                addressToUprnFileLog.DateProcessed = await this.dateTimeBroker.GetCurrentDateTimeOffsetAsync();
+                addressToUprnFileLog.Duration = addressToUprnFileLog.DateProcessed - startTime;
+                await this.addressToUprnFileLogService.AddAddressToUprnFileLogAsync(addressToUprnFileLog);
 
-            //AddressToUprnFileLog has property SuccessStatus which should be set to Failed on failure to read the file or if the size limit is exceeded.
-            //For individual address failures i.e. timeout, we should still process the entire file, but the overall SuccessStatus in the AddressToUprnFileLog should be set to PartialSuccess.
+                await WriteErrorFileAsync(
+                    container: this.blobContainers.AddressToUprn,
+                    errorFolder: this.addressToUprnConfiguration.ErrorFolder,
+                    fileName: fileName,
+                    errorLine: $"File too large,\"{correlationId}\",\"{addressToUprnFileLog.Message}\"",
+                    cancellationToken: cancellationToken);
+
+                return;
+            }
+
+            string outboxContainer = this.blobContainers.AddressToUprn;
+            string outboxPath = $"{this.addressToUprnConfiguration.OutboxFolder}/{fileName}";
+            string errorPath = $"{this.addressToUprnConfiguration.ErrorFolder}/{fileName}";
+
+            Pipe outputPipe = new Pipe();
+            bool hasErrors = false;
+            int entryCount = 0;
+            int entriesMatched = 0;
+            int errorRowCount = 0;
+            List<string> errorLines = new List<string>();
+
+            async Task WriteOutputCsvAsync()
+            {
+                try
+                {
+                    await using Stream writerStream = outputPipe.Writer.AsStream();
+
+                    await this.csvHelperBroker.MapObjectToCsvAsync<AddressToUprnCsv>(
+                        @object: ProcessAddressesAsync(
+                            input: input,
+                            correlationId: correlationId,
+                            fileName: fileName,
+                            onEntryProcessed: (matched) =>
+                            {
+                                entryCount++;
+
+                                if (matched)
+                                {
+                                    entriesMatched++;
+                                }
+                            },
+                            onError: (errorLine) =>
+                            {
+                                hasErrors = true;
+                                errorRowCount++;
+                                errorLines.Add(errorLine);
+                            },
+                            cancellationToken: cancellationToken),
+                        outputStream: writerStream,
+                        addHeaderRecord: true,
+                        cancellationToken: cancellationToken);
+                }
+                catch (Exception ex)
+                {
+                    await outputPipe.Writer.CompleteAsync(ex);
+
+                    return;
+                }
+
+                await outputPipe.Writer.CompleteAsync();
+            }
+
+            await Task.WhenAll(
+                WriteOutputCsvAsync(),
+                this.documentService.AddDocumentAsync(
+                    input: outputPipe.Reader.AsStream(),
+                    fileName: outboxPath,
+                    container: outboxContainer).AsTask());
+
+            if (errorLines.Count > 0)
+            {
+                hasErrors = true;
+                StringBuilder errorCsvBuilder = new StringBuilder();
+                errorCsvBuilder.AppendLine("Error,CorrelationId,Message");
+
+                foreach (string errorLine in errorLines)
+                {
+                    errorCsvBuilder.AppendLine(errorLine);
+                }
+
+                byte[] errorBytes = Encoding.UTF8.GetBytes(errorCsvBuilder.ToString());
+                using Stream errorStream = new MemoryStream(errorBytes);
+
+                await this.documentService.AddDocumentAsync(
+                    input: errorStream,
+                    fileName: errorPath,
+                    container: outboxContainer);
+            }
+
+            int entriesUnmatched = entryCount - entriesMatched - errorRowCount;
+            addressToUprnFileLog.EntryCount = entryCount;
+            addressToUprnFileLog.EntriesMatched = entriesMatched;
+            addressToUprnFileLog.EntriesUnmatched = entriesUnmatched < 0 ? 0 : entriesUnmatched;
+            addressToUprnFileLog.ErrorRowCount = errorRowCount;
+            addressToUprnFileLog.SuccessStatus = hasErrors ? SuccessStatus.PartialSuccess : SuccessStatus.Success;
+            addressToUprnFileLog.DateProcessed = await this.dateTimeBroker.GetCurrentDateTimeOffsetAsync();
+            addressToUprnFileLog.Duration = addressToUprnFileLog.DateProcessed - startTime;
+
+            await this.addressToUprnFileLogService.AddAddressToUprnFileLogAsync(addressToUprnFileLog);
         });
+
+        private async IAsyncEnumerable<AddressToUprnCsv> ProcessAddressesAsync(
+            Stream input,
+            Guid correlationId,
+            string fileName,
+            Action<bool> onEntryProcessed,
+            Action<string> onError,
+            [EnumeratorCancellation] CancellationToken cancellationToken = default)
+        {
+            IAsyncEnumerable<AddressToUprnInputCsv> inputRows =
+                this.csvHelperBroker.MapCsvToObjectAsync<AddressToUprnInputCsv>(
+                    data: input,
+                    hasHeaderRecord: true,
+                    cancellationToken: cancellationToken);
+
+            await foreach (AddressToUprnInputCsv inputRow in inputRows.WithCancellation(cancellationToken))
+            {
+                string unstructuredAddress = inputRow.UnstructuredAddress;
+
+                AssignAddress assignAddress;
+
+                try
+                {
+                    assignAddress = await this.assignService.MatchAddressAsync(unstructuredAddress);
+                }
+                catch (Exception exception)
+                {
+                    string safeAddress = EscapeCsvField(unstructuredAddress);
+                    string safeMessage = EscapeCsvField(exception.Message);
+
+                    onError(
+                        $"TimeOut,\"{correlationId}\"," +
+                        $"\"Failed to process `{safeAddress}`. {safeMessage}\"");
+
+                    continue;
+                }
+
+                bool isMatched = assignAddress?.Matched ?? false;
+                onEntryProcessed(isMatched);
+
+                yield return new AddressToUprnCsv
+                {
+                    AddressFormat = assignAddress?.AddressFormat,
+                    PostcodeQuality = assignAddress?.PostcodeQuality,
+                    IsMatched = isMatched.ToString(),
+                    UPRN = assignAddress?.BestMatch?.UPRN,
+                    Qualifier = assignAddress?.BestMatch?.Qualifier,
+                    Classification = assignAddress?.BestMatch?.Classification,
+                    Algorithm = assignAddress?.BestMatch?.Algorithm,
+                    AddressNumber = assignAddress?.BestMatch?.ABPAddress?.Number,
+                    AddressStreet = assignAddress?.BestMatch?.ABPAddress?.Street,
+                    AddressTown = assignAddress?.BestMatch?.ABPAddress?.Town,
+                    AddressPostcode = assignAddress?.BestMatch?.ABPAddress?.Postcode,
+                    AddressOrganization = assignAddress?.BestMatch?.ABPAddress?.Organisation,
+                    MatchPatternFlat = assignAddress?.BestMatch?.MatchPattern?.Flat,
+                    MatchPatternBuilding = assignAddress?.BestMatch?.MatchPattern?.Building,
+                    MatchPatternNumber = assignAddress?.BestMatch?.MatchPattern?.Number,
+                    MatchPatternStreet = assignAddress?.BestMatch?.MatchPattern?.Street,
+                    MatchPatternPostCode = assignAddress?.BestMatch?.MatchPattern?.Postcode,
+                    CorrelationId = correlationId.ToString(),
+                    UnstructuredAddress = unstructuredAddress
+                };
+            }
+        }
+
+        private async ValueTask WriteErrorFileAsync(
+            string container,
+            string errorFolder,
+            string fileName,
+            string errorLine,
+            CancellationToken cancellationToken = default)
+        {
+            string errorPath = $"{errorFolder}/{fileName}";
+            string errorContent = $"Error,CorrelationId,Message\n{errorLine}\n";
+            byte[] errorBytes = Encoding.UTF8.GetBytes(errorContent);
+            using Stream errorStream = new MemoryStream(errorBytes);
+
+            await this.documentService.AddDocumentAsync(
+                input: errorStream,
+                fileName: errorPath,
+                container: container);
+        }
+
+        private static string EscapeCsvField(string value)
+        {
+            if (string.IsNullOrEmpty(value))
+            {
+                return value;
+            }
+
+            return value.Replace("\"", "\"\"");
+        }
     }
 }

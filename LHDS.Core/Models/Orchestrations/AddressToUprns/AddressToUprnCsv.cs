@@ -23,6 +23,7 @@ namespace LHDS.Core.Models.Orchestrations.AddressToUprns
         public string MatchPatternNumber { get; set; }
         public string MatchPatternStreet { get; set; }
         public string MatchPatternPostCode { get; set; }
+        public string CorrelationId { get; set; }
         public string UnstructuredAddress { get; set; }
     }
 }

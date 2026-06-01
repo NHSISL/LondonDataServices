@@ -5,6 +5,7 @@
 using System;
 using System.IO;
 using System.Security.Cryptography;
+using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -21,13 +22,18 @@ namespace LHDS.Core.Brokers.Hashing
     {
         private readonly Stream innerStream;
         private readonly IncrementalHash incrementalHash;
+        private readonly string? pepper;
         private long bytesRead;
         private bool disposed;
 
-        public HashingCountingBroker(Stream innerStream, HashAlgorithmName algorithmName)
+        public HashingCountingBroker(
+            Stream innerStream,
+            HashAlgorithmName algorithmName,
+            string? pepper = null)
         {
             this.innerStream = innerStream;
             this.incrementalHash = IncrementalHash.CreateHash(algorithmName);
+            this.pepper = pepper;
             this.bytesRead = 0;
         }
 
@@ -35,6 +41,11 @@ namespace LHDS.Core.Brokers.Hashing
 
         public string GetFinalHashHex()
         {
+            if (!string.IsNullOrWhiteSpace(this.pepper))
+            {
+                this.incrementalHash.AppendData(Encoding.UTF8.GetBytes(this.pepper));
+            }
+
             byte[] hashBytes = this.incrementalHash.GetHashAndReset();
 
             return Convert.ToHexString(hashBytes)

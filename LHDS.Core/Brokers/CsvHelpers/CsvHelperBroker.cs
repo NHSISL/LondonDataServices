@@ -35,7 +35,7 @@ namespace LHDS.Core.Brokers.CsvHelpers
         }
 
         public async ValueTask MapObjectToCsvAsync<T>(
-            List<T> @object,
+            IAsyncEnumerable<T> @object,
             Stream outputStream,
             bool addHeaderRecord,
             Dictionary<string, int> fieldMappings,

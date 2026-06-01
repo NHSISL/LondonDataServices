@@ -51,7 +51,8 @@ var host = new HostBuilder()
                 setup.AddConsole();
             })
             .AddDbContextFactory<StorageBroker>()
-            .AddAddressClient(context.Configuration, accessToken.Token);
+            .AddAddressClient(context.Configuration, accessToken.Token)
+            .AddAddressToUprnClient(context.Configuration, accessToken.Token);
     })
     .UseDefaultServiceProvider(options => options.ValidateScopes = false)
     .ConfigureFunctionsWorkerDefaults()

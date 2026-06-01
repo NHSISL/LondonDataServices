@@ -95,6 +95,7 @@ namespace LHDS.Core.Clients.Extensions
             AddressToUprnConfiguration addressToUprnConfiguration =
                 configuration.GetSection("addressToUprnSettings").Get<AddressToUprnConfiguration>();
 
+            ValidateAddressToUprnConfiguration(addressToUprnConfiguration);
             services.AddSingleton(addressToUprnConfiguration);
 
             var blobStorageSettings = configuration.GetSection("blobStorage").Get<BlobStorageSettings>();
@@ -164,6 +165,27 @@ namespace LHDS.Core.Clients.Extensions
         private static void AddOrchestrations(IServiceCollection services)
         {
             services.AddTransient<IAddressToUprnOrchestrationService, AddressToUprnOrchestrationService>();
+        }
+
+        private static void ValidateAddressToUprnConfiguration(AddressToUprnConfiguration? addressToUprnConfiguration)
+        {
+            if (addressToUprnConfiguration == null)
+            {
+                throw new InvalidConfigurationException(
+                    "Configuration section 'addressToUprnSettings' not defined.");
+            }
+
+            Validate(
+                createException: (message, errors) => new InvalidConfigurationException(message, null, errors),
+
+                (Rule: IsInvalid(addressToUprnConfiguration.InboxFolder),
+                    Parameter: "addressToUprnSettings__inboxFolder"),
+
+                (Rule: IsInvalid(addressToUprnConfiguration.OutboxFolder),
+                    Parameter: "addressToUprnSettings__outboxFolder"),
+
+                (Rule: IsInvalid(addressToUprnConfiguration.ErrorFolder),
+                    Parameter: "addressToUprnSettings__errorFolder"));
         }
 
         private static void ValidateBlobStorageSettings(BlobStorageSettings? blobStorageSettings)

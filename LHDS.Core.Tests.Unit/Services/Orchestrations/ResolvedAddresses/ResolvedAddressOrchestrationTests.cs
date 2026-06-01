@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Linq.Expressions;
+using System.Threading.Tasks;
 using FluentAssertions;
 using KellermanSoftware.CompareNetObjects;
 using LHDS.Core.Brokers.Audits;
@@ -122,6 +123,30 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.ResolvedAddresses
         {
             return actualResolvedAddressList =>
                 this.compareLogic.Compare(expectedResolvedAddressList, actualResolvedAddressList).AreEqual;
+        }
+
+        private Expression<Func<IAsyncEnumerable<ResolvedAddress>, bool>> SameResolvedAddressAsyncEnumerableAs(
+           List<ResolvedAddress> expectedResolvedAddressList)
+        {
+            return actualResolvedAddresses =>
+                this.compareLogic.Compare(
+                    expectedResolvedAddressList,
+                    CollectResolvedAddresses(actualResolvedAddresses)).AreEqual;
+        }
+
+        private static List<ResolvedAddress> CollectResolvedAddresses(IAsyncEnumerable<ResolvedAddress> source)
+        {
+            return Task.Run(async () =>
+            {
+                List<ResolvedAddress> items = new List<ResolvedAddress>();
+
+                await foreach (ResolvedAddress item in source)
+                {
+                    items.Add(item);
+                }
+
+                return items;
+            }).GetAwaiter().GetResult();
         }
 
         private bool CompareObjects(object expected, object actual)

@@ -104,11 +104,12 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
 
             this.csvHelperBrokerMock.Setup(processings =>
                 processings.MapObjectToCsvAsync(
-                    It.IsAny<List<OptOutIdentifier>>(),
+                    It.IsAny<IAsyncEnumerable<OptOutIdentifier>>(),
                     It.IsAny<Stream>(),
                     withHeader,
                     fieldMappings,
-                    shouldAddTrailingComma))
+                    shouldAddTrailingComma,
+                    It.IsAny<System.Threading.CancellationToken>()))
                         .Returns(ValueTask.CompletedTask);
 
             this.documentProcessingServiceMock
@@ -175,11 +176,12 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
 
                 this.csvHelperBrokerMock.Verify(processings =>
                     processings.MapObjectToCsvAsync(
-                        It.Is(SameOptOutIdentifierListAs(singleItemList)),
+                        It.IsAny<IAsyncEnumerable<OptOutIdentifier>>(),
                         It.IsAny<Stream>(),
                         withHeader,
                         fieldMappings,
-                        shouldAddTrailingComma),
+                        shouldAddTrailingComma,
+                        It.IsAny<System.Threading.CancellationToken>()),
                             Times.Exactly(outputOptOuts.Count));
             }
 

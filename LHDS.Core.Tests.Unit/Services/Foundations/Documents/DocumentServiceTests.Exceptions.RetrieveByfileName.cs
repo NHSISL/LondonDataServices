@@ -29,7 +29,8 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Documents
             var failedDocumentRequestException =
                 new FailedDocumentRequestException(
                     message: "Failed document request occurred, please contact support.",
-                    innerException: requestFailedException);
+                    innerException: requestFailedException,
+                    data: requestFailedException.Data);
 
             var expectedDependencyException =
                  new DocumentDependencyException(

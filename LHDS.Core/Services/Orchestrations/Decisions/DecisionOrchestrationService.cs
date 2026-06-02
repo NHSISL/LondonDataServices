@@ -5,7 +5,10 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
+using System.IO.Pipelines;
+using System.Runtime.CompilerServices;
+using System.Security.Cryptography;
+using System.Threading;
 using System.Threading.Tasks;
 using LHDS.Core.Brokers.CsvHelpers;
 using LHDS.Core.Brokers.Hashing;
@@ -35,8 +38,7 @@ namespace LHDS.Core.Services.Orchestrations.Decisions
             IHashBroker hashBroker,
             ILoggingBroker loggingBroker,
             BlobContainers blobContainers,
-            DecisionConfiguration decisionConfiguration
-            )
+            DecisionConfiguration decisionConfiguration)
         {
             this.decisionService = decisionService;
             this.documentService = documentService;
@@ -63,25 +65,6 @@ namespace LHDS.Core.Services.Orchestrations.Decisions
 
                 DateTimeOffset currentPollDate = DateTimeOffset.UtcNow;
 
-                List<Task<DecisionCsv>> decisionCsvTasks = decisions
-                    .Select(async decision => new DecisionCsv
-                    {
-                        DecisionId = decision.Id,
-
-                        NhsNumber = this.decisionConfiguration.HashNhsNumber
-                            ? await this.hashBroker.GenerateSha256HashAsync(
-                                decision.PatientNhsNumber,
-                                this.decisionConfiguration.HashPepper)
-                            : decision.PatientNhsNumber,
-
-                        PatientInstructionCategory = decision.DecisionTypeName,
-                        PatientInstructionState = decision.DecisionChoice,
-                        InstructionDate = decision.CreatedDate
-                    })
-                    .ToList();
-
-                DecisionCsv[] decisionCsvs = await Task.WhenAll(decisionCsvTasks);
-
                 Dictionary<string, int> fieldMappings = new Dictionary<string, int>
                 {
                     { nameof(DecisionCsv.DecisionId), 0 },
@@ -91,57 +74,82 @@ namespace LHDS.Core.Services.Orchestrations.Decisions
                     { nameof(DecisionCsv.InstructionDate), 4 }
                 };
 
-                string fileName = $"{this.decisionConfiguration.FolderName}/" +
+                string fileName =
+                    $"{this.decisionConfiguration.FolderName}/" +
                     $"{currentPollDate:yyyyMMddHHmmss}/" +
                     $"{this.decisionConfiguration.FilePrefix}_{currentPollDate:yyyyMMddHHmmss}.csv";
 
                 string container = this.blobContainers.Ingress;
-                string tempFile = Path.GetTempFileName();
+                ValidateDocumentRequirements(fileName);
+                Pipe pipe = new Pipe();
 
-                //TODO: Review this implementation to avoid memory issues with large files.
-                //Consider streaming directly to blob storage if possible.
-                try
+                using HashingCountingBroker hashingStream = new HashingCountingBroker(
+                    pipe.Reader.AsStream(),
+                    HashAlgorithmName.SHA256);
+
+                async Task WriteCsvToPipeAsync()
                 {
-                    using (Stream fileStream = new FileStream(
-                               tempFile,
-                               FileMode.Create,
-                               FileAccess.Write,
-                               FileShare.None))
+                    try
                     {
-                        await this.csvHelperBroker
-                            .MapObjectToCsvAsync(
-                                @object: decisionCsvs.ToList(),
-                                outputStream: fileStream,
-                                addHeaderRecord: true,
-                                fieldMappings: fieldMappings,
-                                shouldAddTrailingComma: false);
+                        await using Stream writerStream = pipe.Writer.AsStream();
+
+                        await this.csvHelperBroker.MapObjectToCsvAsync<DecisionCsv>(
+                            @object: ProjectDecisionsAsync(decisions),
+                            outputStream: writerStream,
+                            addHeaderRecord: true,
+                            fieldMappings: fieldMappings,
+                            shouldAddTrailingComma: false);
+                    }
+                    catch (Exception ex)
+                    {
+                        await pipe.Writer.CompleteAsync(ex);
+
+                        return;
                     }
 
-                    ValidateDocumentRequirements(fileName);
+                    await pipe.Writer.CompleteAsync();
+                }
 
-                    using (Stream tempDocument = new FileStream(
-                               tempFile,
-                               FileMode.Open,
-                               FileAccess.Read,
-                               FileShare.Read))
-                    {
-                        await this.documentService.AddDocumentAsync(
-                            input: tempDocument,
-                            fileName: fileName,
-                            container: container);
-                    }
-                }
-                finally
-                {
-                    if (File.Exists(tempFile))
-                    {
-                        File.Delete(tempFile);
-                    }
-                }
+                await Task.WhenAll(
+                    WriteCsvToPipeAsync(),
+                    this.documentService.AddDocumentAsync(
+                        input: hashingStream.AsStream(),
+                        fileName: fileName,
+                        container: container).AsTask());
+
+                await this.loggingBroker.LogInformationAsync(
+                    $"CSV uploaded: {hashingStream.BytesRead} bytes, " +
+                    $"SHA256: {hashingStream.GetFinalHashHex()}, " +
+                    $"File: {fileName}");
 
                 await this.decisionService.RecordAdoption(decisions);
 
                 return decisions;
             });
+
+        private async IAsyncEnumerable<DecisionCsv> ProjectDecisionsAsync(
+            List<Decision> decisions,
+            [EnumeratorCancellation] CancellationToken cancellationToken = default)
+        {
+            foreach (Decision decision in decisions)
+            {
+                cancellationToken.ThrowIfCancellationRequested();
+
+                string nhsNumber = this.decisionConfiguration.HashNhsNumber
+                    ? await this.hashBroker.GenerateSha256HashAsync(
+                        decision.PatientNhsNumber,
+                        this.decisionConfiguration.HashPepper)
+                    : decision.PatientNhsNumber;
+
+                yield return new DecisionCsv
+                {
+                    DecisionId = decision.Id,
+                    NhsNumber = nhsNumber,
+                    PatientInstructionCategory = decision.DecisionTypeName,
+                    PatientInstructionState = decision.DecisionChoice,
+                    InstructionDate = decision.CreatedDate
+                };
+            }
+        }
     }
 }

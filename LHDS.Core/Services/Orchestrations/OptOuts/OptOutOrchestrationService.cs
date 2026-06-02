@@ -148,8 +148,8 @@ namespace LHDS.Core.Services.Orchestrations.OptOuts
                                 };
 
                                 await this.csvHelperBroker.MapObjectToCsvAsync(
-                                    new List<OptOutIdentifier> { processedIdentifier },
-                                    writeStream,
+                                    @object: new[] { processedIdentifier }.ToAsyncEnumerable(),
+                                    outputStream: writeStream,
                                     addHeaderRecord: isFirstRecord && withHeader,
                                     fieldMappings: fieldMappings,
                                     shouldAddTrailingComma: shouldAddTrailingComma);
@@ -398,7 +398,7 @@ namespace LHDS.Core.Services.Orchestrations.OptOuts
                                                     useAsync: true))
                                                 {
                                                     await this.csvHelperBroker.MapObjectToCsvAsync(
-                                                        @object: differentIdentifiers,
+                                                        @object: differentIdentifiers.ToAsyncEnumerable(),
                                                         outputStream: writeStream,
                                                         addHeaderRecord: this.optOutConfiguration.OptOutFileHasHeader,
                                                         shouldAddTrailingComma: this.optOutConfiguration

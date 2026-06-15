@@ -26,7 +26,7 @@ namespace LHDS.AdminPortal.Api.Controllers
             this.subscriberAgreementService = subscriberAgreementService;
 
         [HttpPost]
-        [Authorize(Roles = "ISL.LDS.AdminApi.Administrators, ISL.LDS.AdminApi.SubscriberAgreements")]
+        [Authorize(Roles = "ISL.LDS.AdminApi.Administrators, ISL.LDS.AdminApi.Configurations, ISL.LDS.AdminApi.SubscriberAgreements")]
         public async ValueTask<ActionResult<SubscriberAgreement>> PostSubscriberAgreementAsync(SubscriberAgreement subscriberAgreement)
         {
             try
@@ -67,7 +67,7 @@ namespace LHDS.AdminPortal.Api.Controllers
 #if DEBUG
         [EnableQuery(PageSize = 5000)]
 #endif
-        [Authorize(Roles = "ISL.LDS.AdminApi.Administrators, ISL.LDS.AdminApi.SubscriberAgreements, ISL.LDS.AdminApi.ReadOnly")]
+        [Authorize(Roles = "ISL.LDS.AdminApi.Administrators, ISL.LDS.AdminApi.Configurations, ISL.LDS.AdminApi.SubscriberAgreements, ISL.LDS.AdminApi.ReadOnly")]
         public async ValueTask<ActionResult<IQueryable<SubscriberAgreement>>> Get()
         {
             try
@@ -88,7 +88,7 @@ namespace LHDS.AdminPortal.Api.Controllers
         }
 
         [HttpGet("{subscriberAgreementId}")]
-        [Authorize(Roles = "ISL.LDS.AdminApi.Administrators, ISL.LDS.AdminApi.SubscriberAgreements, ISL.LDS.AdminApi.ReadOnly")]
+        [Authorize(Roles = "ISL.LDS.AdminApi.Administrators, ISL.LDS.AdminApi.Configurations, ISL.LDS.AdminApi.SubscriberAgreements, ISL.LDS.AdminApi.ReadOnly")]
         public async ValueTask<ActionResult<SubscriberAgreement>> GetSubscriberAgreementByIdAsync(Guid subscriberAgreementId)
         {
             try
@@ -117,7 +117,7 @@ namespace LHDS.AdminPortal.Api.Controllers
         }
 
         [HttpPut]
-        [Authorize(Roles = "ISL.LDS.AdminApi.Administrators, ISL.LDS.AdminApi.SubscriberAgreements")]
+        [Authorize(Roles = "ISL.LDS.AdminApi.Administrators, ISL.LDS.AdminApi.Configurations, ISL.LDS.AdminApi.SubscriberAgreements")]
         public async ValueTask<ActionResult<SubscriberAgreement>> PutSubscriberAgreementAsync(SubscriberAgreement subscriberAgreement)
         {
             try
@@ -157,7 +157,7 @@ namespace LHDS.AdminPortal.Api.Controllers
         }
 
         [HttpDelete("{subscriberAgreementId}")]
-        [Authorize(Roles = "ISL.LDS.AdminApi.Administrators, ISL.LDS.AdminApi.SubscriberAgreements")]
+        [Authorize(Roles = "ISL.LDS.AdminApi.Administrators, ISL.LDS.AdminApi.Configurations, ISL.LDS.AdminApi.SubscriberAgreements")]
         public async ValueTask<ActionResult<SubscriberAgreement>> DeleteSubscriberAgreementByIdAsync(Guid subscriberAgreementId)
         {
             try

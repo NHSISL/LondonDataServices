@@ -141,7 +141,7 @@ namespace LHDS.Infrastructure.Services
                     },
                     {
                         "requireIssueOrTask",
-                        new RequireIssueOrTaskJob()
+                        new RequireIssueOrTaskJobV2(excludedAuthors: "perirrs")
                         {
                             Name = "Require Issue Or Task Association",
                         }

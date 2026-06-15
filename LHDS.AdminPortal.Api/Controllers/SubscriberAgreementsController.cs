@@ -88,7 +88,7 @@ namespace LHDS.AdminPortal.Api.Controllers
         }
 
         [HttpGet("{subscriberAgreementId}")]
-        [Authorize(Roles = "ISL.LDS.AdminApi.Administrators, ISL.LDS.AdminApi.SubscriberAgreements, ISL.LDS.AdminApi.ReadOnly")]
+        [Authorize(Roles = "ISL.LDS.AdminApi.Administrators, ISL.LDS.AdminApi.Configurations, ISL.LDS.AdminApi.SubscriberAgreements, ISL.LDS.AdminApi.ReadOnly")]
         public async ValueTask<ActionResult<SubscriberAgreement>> GetSubscriberAgreementByIdAsync(Guid subscriberAgreementId)
         {
             try

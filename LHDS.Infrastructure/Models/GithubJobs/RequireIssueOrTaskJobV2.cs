@@ -9,6 +9,11 @@ using System.ComponentModel;
 using ADotNet.Models.Pipelines.GithubPipelines.DotNets.Tasks;
 using YamlDotNet.Serialization;
 
+// Vendored copy of ADotNet's nullable-disabled source. This project enables
+// nullable reference types, so opt this file out to keep it identical to
+// upstream (the "public new" property redeclarations control YAML order).
+#nullable disable
+
 namespace ADotNet.Models.Pipelines.GithubPipelines.DotNets
 {
     public sealed class RequireIssueOrTaskJobV2 : Job

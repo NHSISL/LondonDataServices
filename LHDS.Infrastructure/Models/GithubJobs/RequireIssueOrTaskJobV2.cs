@@ -9,18 +9,13 @@ using System.ComponentModel;
 using ADotNet.Models.Pipelines.GithubPipelines.DotNets.Tasks;
 using YamlDotNet.Serialization;
 
-// Vendored copy of ADotNet's nullable-disabled source. This project enables
-// nullable reference types, so opt this file out to keep it identical to
-// upstream (the "public new" property redeclarations control YAML order).
-#nullable disable
-
 namespace ADotNet.Models.Pipelines.GithubPipelines.DotNets
 {
     public sealed class RequireIssueOrTaskJobV2 : Job
     {
-        // excludedAuthors is a CSV of PR author logins (e.g. "dependabot[bot]" or
-        // "app,dependabot[bot]"). The require-issue check is skipped - and the job
-        // still succeeds - when the PR author matches one of them.
+        // This job will check that the pull request is associated with an issue or task.
+        // The excludedAuthors is an optional comma separated value parameter that can be used to exclude named 
+        // PR author logins from this requirement (e.g. "dependabot[bot]" or "app,dependabot[bot]").
         public RequireIssueOrTaskJobV2(string excludedAuthors)
         {
             RunsOn = "ubuntu-latest";

@@ -67,7 +67,7 @@ namespace LHDS.AdminPortal.Api.Controllers
 #if DEBUG
         [EnableQuery(PageSize = 5000)]
 #endif
-        [Authorize(Roles = "ISL.LDS.AdminApi.Administrators, ISL.LDS.AdminApi.Configurations, ISL.LDS.AdminApi.SubscriberAgreements, ISL.LDS.AdminApi.SubscriberAgreements.ReadOnly")]
+        [Authorize(Roles = "ISL.LDS.AdminApi.Administrators, ISL.LDS.AdminApi.Configurations, ISL.LDS.AdminApi.SubscriberAgreements, ISL.LDS.AdminApi.SubscriberAgreements.ReadOnly, ISL.LDS.AdminApi.ReadOnly")]
         public async ValueTask<ActionResult<IQueryable<SubscriberAgreement>>> Get()
         {
             try
@@ -88,7 +88,7 @@ namespace LHDS.AdminPortal.Api.Controllers
         }
 
         [HttpGet("{subscriberAgreementId}")]
-        [Authorize(Roles = "ISL.LDS.AdminApi.Administrators, ISL.LDS.AdminApi.Configurations, ISL.LDS.AdminApi.SubscriberAgreements, ISL.LDS.AdminApi.SubscriberAgreements.ReadOnly")]
+        [Authorize(Roles = "ISL.LDS.AdminApi.Administrators, ISL.LDS.AdminApi.Configurations, ISL.LDS.AdminApi.SubscriberAgreements, ISL.LDS.AdminApi.SubscriberAgreements.ReadOnly, ISL.LDS.AdminApi.ReadOnly")]
         public async ValueTask<ActionResult<SubscriberAgreement>> GetSubscriberAgreementByIdAsync(Guid subscriberAgreementId)
         {
             try

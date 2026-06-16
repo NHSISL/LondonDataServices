@@ -29,6 +29,7 @@ namespace LHDS.AdminPortal.Api.Tests.Unit.Controllers.SubscriberAgreements
                 "ISL.LDS.AdminApi.Administrators",
                 "ISL.LDS.AdminApi.Configurations",
                 "ISL.LDS.AdminApi.SubscriberAgreements",
+                "ISL.LDS.AdminApi.SubscriberAgreements.ReadOnly",
                 "ISL.LDS.AdminApi.ReadOnly"
             };
 

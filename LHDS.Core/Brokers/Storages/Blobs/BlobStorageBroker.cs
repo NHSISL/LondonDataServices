@@ -22,6 +22,9 @@ namespace LHDS.Core.Brokers.Storages.Blobs
         public async ValueTask SelectByFileNameAsync(Stream output, string fileName, string container) =>
             await azureBlobClient.DownloadFileAsync(output, fileName, container);
 
+        public async ValueTask<Stream> OpenReadByFileNameAsync(string fileName, string container) =>
+            await azureBlobClient.OpenReadAsync(fileName, container);
+
         public async ValueTask DeleteFileAsync(string fileName, string container) =>
             await azureBlobClient.DeleteFileAsync(fileName, container);
 

@@ -112,12 +112,13 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
                     }).ToList();
 
                 csvHelperBrokerMock.Setup(processings =>
-                    processings.MapObjectToCsvAsync<OptOutIdentifier>(
-                        It.Is(SameOptOutIdentifierListAs(differentIdentifiers)),
+                    processings.MapObjectToCsvAsync(
+                        It.Is(SameOptOutIdentifierAsyncEnumerableAs(differentIdentifiers)),
                         It.IsAny<Stream>(),
                         withHeader,
                         fieldMappings,
-                        shouldAddTrailingComma))
+                        shouldAddTrailingComma,
+                        It.IsAny<System.Threading.CancellationToken>()))
                             .Returns(ValueTask.CompletedTask);
 
                 string inputFileName = $"{optOutConfiguration.OutputFolder}/{batchReference}_DeltaResponse.csv";
@@ -181,12 +182,13 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
                     optOutConfiguration.OptOutFileRequireTrailingComma);
 
                 csvHelperBrokerMock.Verify(processings =>
-                    processings.MapObjectToCsvAsync<OptOutIdentifier>(
-                        It.Is(SameOptOutIdentifierListAs(differentIdentifiers)),
+                    processings.MapObjectToCsvAsync(
+                        It.Is(SameOptOutIdentifierAsyncEnumerableAs(differentIdentifiers)),
                         It.IsAny<Stream>(),
                         withHeader,
                         fieldMappings,
-                        shouldAddTrailingComma),
+                        shouldAddTrailingComma,
+                        It.IsAny<System.Threading.CancellationToken>()),
                             Times.Exactly(outputMessageIds.Count));
 
                 string inputFileName = $"{optOutConfiguration.OutputFolder}/{batchReference}_DeltaResponse.csv";
@@ -275,12 +277,13 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
                         this.optOutConfiguration.OptOutFileRequireTrailingComma);
 
                     this.csvHelperBrokerMock.Setup(processings =>
-                        processings.MapObjectToCsvAsync<OptOutIdentifier>(
-                            It.Is(SameOptOutIdentifierListAs(differentIdentifiers)),
+                        processings.MapObjectToCsvAsync(
+                            It.Is(SameOptOutIdentifierAsyncEnumerableAs(differentIdentifiers)),
                             It.IsAny<Stream>(),
                             withHeader,
                             fieldMappings,
-                            shouldAddTrailingComma))
+                            shouldAddTrailingComma,
+                            It.IsAny<System.Threading.CancellationToken>()))
                                 .Returns(ValueTask.CompletedTask);
 
                     Document document = new Document

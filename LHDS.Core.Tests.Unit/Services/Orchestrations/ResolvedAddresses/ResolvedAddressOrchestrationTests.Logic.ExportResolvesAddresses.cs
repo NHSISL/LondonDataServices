@@ -104,14 +104,15 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.ResolvedAddresses
             string ouputCsv = GetRandomString();
 
             this.csvHelperBrokerMock.Setup(broker =>
-                broker.MapObjectToCsvAsync<ResolvedAddress>(
-                    It.Is(SameResolvedAddressListAs(processingResolvedAddresses)),
+                broker.MapObjectToCsvAsync(
+                    It.Is(SameResolvedAddressAsyncEnumerableAs(processingResolvedAddresses)),
                     It.IsAny<Stream>(),
                     true,
                     fieldMappings,
-                    false))
+                    false,
+                    It.IsAny<System.Threading.CancellationToken>()))
                         .Returns(ValueTask.CompletedTask)
-                        .Callback<List<ResolvedAddress>, Stream, bool, Dictionary<string, int>, bool?,
+                        .Callback<IAsyncEnumerable<ResolvedAddress>, Stream, bool, Dictionary<string, int>, bool?,
                             System.Threading.CancellationToken>(
                             (items, stream, header, mappings, trailing, ct) =>
                             {
@@ -171,12 +172,13 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.ResolvedAddresses
                         Times.Once);
 
             this.csvHelperBrokerMock.Verify(broker =>
-                broker.MapObjectToCsvAsync<ResolvedAddress>(
-                    It.Is(SameResolvedAddressListAs(processingResolvedAddresses)),
+                broker.MapObjectToCsvAsync(
+                    It.Is(SameResolvedAddressAsyncEnumerableAs(processingResolvedAddresses)),
                     It.IsAny<Stream>(),
                     true,
                     fieldMappings,
-                    false),
+                    false,
+                    It.IsAny<System.Threading.CancellationToken>()),
                         Times.Once);
 
             this.documentProcessingServiceMock.Verify(processing =>

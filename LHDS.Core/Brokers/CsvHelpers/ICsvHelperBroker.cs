@@ -19,7 +19,7 @@ namespace LHDS.Core.Brokers.CsvHelpers
             CancellationToken cancellationToken = default);
 
         ValueTask MapObjectToCsvAsync<T>(
-            List<T> @object,
+            IAsyncEnumerable<T> @object,
             Stream outputStream,
             bool addHeaderRecord,
             Dictionary<string, int> fieldMappings = null,

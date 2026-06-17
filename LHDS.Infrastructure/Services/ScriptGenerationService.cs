@@ -141,9 +141,16 @@ namespace LHDS.Infrastructure.Services
                     },
                     {
                         "requireIssueOrTask",
-                        new RequireIssueOrTaskJob()
+                        new RequireIssueOrTaskJobV2(excludedAuthors: "dependabot[bot]")
                         {
                             Name = "Require Issue Or Task Association",
+                        }
+                    },
+                    {
+                        "setAuthorAsPrAssignee",
+                        new SetAuthorAsPrAssigneeJob(runsOn: BuildMachines.UbuntuLatest)
+                        {
+                            Name = "Set Author As PR Assignee",
                         }
                     }
                 }

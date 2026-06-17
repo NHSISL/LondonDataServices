@@ -12,6 +12,7 @@ namespace LHDS.Core.Clients
     {
         ValueTask UploadFileAsync(Stream input, string fileName, string container);
         ValueTask DownloadFileAsync(Stream output, string fileName, string container);
+        ValueTask<Stream> OpenReadAsync(string fileName, string container);
         ValueTask DeleteFileAsync(string fileName, string container);
         ValueTask<Uri> GetDownloadUriAsync(string fileName, string container, DateTimeOffset expiresOn);
     }

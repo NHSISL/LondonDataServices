@@ -5,7 +5,6 @@
 using System;
 using System.Linq;
 using System.Threading.Tasks;
-using Attrify.Attributes;
 using LHDS.Core.Models.Foundations.ObjectColumns;
 using LHDS.Core.Models.Foundations.ObjectColumns.Exceptions;
 using LHDS.Core.Services.Foundations.ObjectColumns;
@@ -13,9 +12,6 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.OData.Query;
 using RESTFulSense.Controllers;
-#if RELEASE
-using Microsoft.AspNetCore.Authorization;
-#endif
 
 namespace LHDS.AdminPortal.Api.Controllers
 {

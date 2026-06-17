@@ -10,6 +10,7 @@ using System.Linq;
 using System.Linq.Expressions;
 using System.Security.Cryptography.X509Certificates;
 using System.Text;
+using System.Threading.Tasks;
 using KellermanSoftware.CompareNetObjects;
 using LHDS.Core.Brokers.CsvHelpers;
 using LHDS.Core.Brokers.DateTimes;
@@ -423,6 +424,37 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
 
             return actualOptOutIdentifierList =>
                 CompareList(expectedOptOutIdentifierList, actualOptOutIdentifierList);
+        }
+
+        private Expression<Func<IAsyncEnumerable<OptOutIdentifier>, bool>> SameOptOutIdentifierAsyncEnumerableAs(
+           List<OptOutIdentifier> expectedOptOutIdentifierList)
+        {
+            return actualOptOutIdentifiers =>
+                CompareAsyncEnumerableToList(expectedOptOutIdentifierList, actualOptOutIdentifiers);
+        }
+
+        private bool CompareAsyncEnumerableToList(
+            List<OptOutIdentifier> expected,
+            IAsyncEnumerable<OptOutIdentifier> actual)
+        {
+            List<OptOutIdentifier> actualList = CollectOptOutIdentifiers(actual);
+
+            return compareLogic.Compare(expected, actualList).AreEqual;
+        }
+
+        private static List<OptOutIdentifier> CollectOptOutIdentifiers(IAsyncEnumerable<OptOutIdentifier> source)
+        {
+            return Task.Run(async () =>
+            {
+                List<OptOutIdentifier> items = new List<OptOutIdentifier>();
+
+                await foreach (OptOutIdentifier item in source)
+                {
+                    items.Add(item);
+                }
+
+                return items;
+            }).GetAwaiter().GetResult();
         }
 
         private bool CompareList(List<OptOutIdentifier> expected, List<OptOutIdentifier> actual)

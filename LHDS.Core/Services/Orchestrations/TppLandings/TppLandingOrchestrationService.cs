@@ -6,9 +6,9 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Security.Cryptography;
 using System.Threading.Tasks;
 using LHDS.Core.Brokers.DateTimes;
-using LHDS.Core.Brokers.Files;
 using LHDS.Core.Brokers.Hashing;
 using LHDS.Core.Brokers.Identifiers;
 using LHDS.Core.Brokers.Loggings;
@@ -18,7 +18,6 @@ using LHDS.Core.Models.Foundations.IngestionTrackingAudits;
 using LHDS.Core.Models.Foundations.IngestionTrackings;
 using LHDS.Core.Models.Foundations.SubscriberAgreements;
 using LHDS.Core.Models.Orchestrations.EmisLandings;
-using LHDS.Core.Services.Foundations.FileNameValidations;
 using LHDS.Core.Services.Orchestrations.TppLandings;
 using LHDS.Core.Services.Processings.DataSetSpecifications;
 using LHDS.Core.Services.Processings.Documents;
@@ -39,8 +38,6 @@ namespace LHDS.Core.Services.Orchestrations.Tpp
         private readonly ILoggingBroker loggingBroker;
         private readonly IDateTimeBroker dateTimeBroker;
         private readonly IIdentifierBroker identifierBroker;
-        private readonly IHashBroker hashBroker;
-        private readonly IFileBroker fileBroker;
         private readonly LandingConfiguration landingConfiguration;
 
         public TppLandingOrchestrationService(
@@ -53,8 +50,6 @@ namespace LHDS.Core.Services.Orchestrations.Tpp
             ILoggingBroker loggingBroker,
             IDateTimeBroker dateTimeBroker,
             IIdentifierBroker identifierBroker,
-            IHashBroker hashBroker,
-            IFileBroker fileBroker,
             LandingConfiguration landingConfiguration)
         {
             this.documentProcessingService = documentProcessingService;
@@ -66,8 +61,6 @@ namespace LHDS.Core.Services.Orchestrations.Tpp
             this.loggingBroker = loggingBroker;
             this.dateTimeBroker = dateTimeBroker;
             this.identifierBroker = identifierBroker;
-            this.hashBroker = hashBroker;
-            this.fileBroker = fileBroker;
             this.landingConfiguration = landingConfiguration;
         }
 
@@ -264,32 +257,28 @@ namespace LHDS.Core.Services.Orchestrations.Tpp
                             $"'{maybeIngestionTracking.DecryptedFileName}'." +
                                 Environment.NewLine + $"RetryCount: {maybeIngestionTracking.RetryCount}");
 
-                string tempFilePath = await this.fileBroker.GetTempFileName();
-
                 try
                 {
-                    using (FileStream writeFileStream =
-                        new FileStream(tempFilePath, FileMode.Create, FileAccess.ReadWrite))
-                    {
-                        await this.documentProcessingService.RetrieveDocumentByFileNameAsync(
-                            output: writeFileStream,
+                    Stream blobReadStream =
+                        await this.documentProcessingService.RetrieveDocumentStreamByFileNameAsync(
                             fileName: maybeIngestionTracking.FileName,
                             container: blobContainers.TppLanding);
-                    }
 
-                    using (FileStream readFileStream =
-                        new FileStream(tempFilePath, FileMode.Open, FileAccess.ReadWrite))
+                    await using (blobReadStream)
                     {
-                        string decryptedFileSha256Hash =
-                            await this.hashBroker.GenerateSha256HashAsync(data: readFileStream);
+                        IHashingCountingBroker hashingCountingBroker =
+                            new HashingCountingBroker(blobReadStream, HashAlgorithmName.SHA256);
 
-                        maybeIngestionTracking.DecryptedFileSize = readFileStream.Length;
-                        maybeIngestionTracking.DecryptedFileSha256Hash = decryptedFileSha256Hash;
+                        await using (hashingCountingBroker)
+                        {
+                            await this.documentProcessingService.AddDocumentAsync(
+                                input: hashingCountingBroker.AsStream(),
+                                fileName: maybeIngestionTracking.DecryptedFileName,
+                                container: blobContainers.Ingress);
 
-                        await this.documentProcessingService.AddDocumentAsync(
-                            input: readFileStream,
-                            fileName: maybeIngestionTracking.DecryptedFileName,
-                            container: blobContainers.Ingress);
+                            maybeIngestionTracking.DecryptedFileSize = hashingCountingBroker.BytesRead;
+                            maybeIngestionTracking.DecryptedFileSha256Hash = hashingCountingBroker.GetFinalHashHex();
+                        }
                     }
 
                     await LogAudit(
@@ -316,10 +305,6 @@ namespace LHDS.Core.Services.Orchestrations.Tpp
                         maybeIngestionTracking);
 
                     throw;
-                }
-                finally
-                {
-                    await this.fileBroker.DeleteFileAsync(tempFilePath);
                 }
             }
 

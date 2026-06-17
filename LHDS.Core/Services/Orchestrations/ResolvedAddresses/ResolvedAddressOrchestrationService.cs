@@ -402,7 +402,7 @@ namespace LHDS.Core.Services.Orchestrations.ResolvedAddresses
 
                     await this.csvHelperBroker
                        .MapObjectToCsvAsync(
-                        @object: processingResolvedAddressesList,
+                        @object: processingResolvedAddressesList.ToAsyncEnumerable(),
                         outputStream: processedStream,
                         addHeaderRecord: true,
                         fieldMappings: fieldMappings,

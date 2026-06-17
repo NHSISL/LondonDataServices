@@ -12,6 +12,7 @@ namespace LHDS.Core.Brokers.Storages.Blobs
     {
         ValueTask InsertFileAsync(Stream input, string fileName, string container);
         ValueTask SelectByFileNameAsync(Stream output, string fileName, string container);
+        ValueTask<Stream> OpenReadByFileNameAsync(string fileName, string container);
         ValueTask DeleteFileAsync(string fileName, string container);
         ValueTask<string> GetDownloadLinkAsync(string fileName, string container, DateTimeOffset expiresOn);
     }

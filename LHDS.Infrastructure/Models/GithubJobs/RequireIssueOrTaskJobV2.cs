@@ -1,16 +1,14 @@
-// ---------------------------------------------------------------------------
-// Copyright (c) Hassan Habib & Shri Humrudha Jagathisun All rights reserved.
-// Licensed under the MIT License.
-// See License.txt in the project root for license information.
-// ---------------------------------------------------------------------------
+// ---------------------------------------------------------
+// Copyright (c) North East London ICB. All rights reserved.
+// ---------------------------------------------------------
 
-using System.Collections.Generic;
 using System.ComponentModel;
 using ADotNet.Models.Pipelines.GithubPipelines.DotNets.Tasks;
 using YamlDotNet.Serialization;
 
 namespace ADotNet.Models.Pipelines.GithubPipelines.DotNets
 {
+#pragma warning disable CS8618 // Non-nullable field is uninitialized
     public sealed class RequireIssueOrTaskJobV2 : Job
     {
         // This job will check that the pull request is associated with an issue or task.
@@ -137,5 +135,6 @@ namespace ADotNet.Models.Pipelines.GithubPipelines.DotNets
 
         [YamlMember(Order = 12, Alias = "permissions", DefaultValuesHandling = DefaultValuesHandling.OmitDefaults)]
         public new Dictionary<string, string> Permissions { get; set; }
+#pragma warning restore CS8618 // Non-nullable field is uninitialized
     }
 }

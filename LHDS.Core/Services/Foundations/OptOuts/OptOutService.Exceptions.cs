@@ -16,8 +16,43 @@ namespace LHDS.Core.Services.Foundations.OptOuts
 {
     public partial class OptOutService
     {
+        private delegate ValueTask ReturningNothingFunction();
         private delegate ValueTask<OptOut> ReturningOptOutFunction();
         private delegate ValueTask<IQueryable<OptOut>> ReturningOptOutsFunction();
+
+        private async ValueTask TryCatch(ReturningNothingFunction returningNothingFunction)
+        {
+            try
+            {
+                await returningNothingFunction();
+            }
+            catch (InvalidOptOutException invalidOptOutException)
+            {
+                throw await CreateAndLogValidationExceptionAsync(invalidOptOutException);
+            }
+            catch (AggregateException aggregateException)
+            {
+                var failedOptOutServiceException =
+                    new FailedOptOutServiceException(
+                        message: "Failed aggregate optOut service error"
+                            + " occurred, please contact support.",
+                        innerException: aggregateException);
+
+                throw await CreateAndLogServiceExceptionAsync(
+                    failedOptOutServiceException);
+            }
+            catch (Exception exception)
+            {
+                var failedOptOutServiceException =
+                    new FailedOptOutServiceException(
+                        message: "Failed optOut service error occurred,"
+                            + " please contact support.",
+                        innerException: exception);
+
+                throw await CreateAndLogServiceExceptionAsync(
+                    failedOptOutServiceException);
+            }
+        }
 
         private async ValueTask<OptOut> TryCatch(ReturningOptOutFunction returningOptOutFunction)
         {

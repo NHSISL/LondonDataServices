@@ -31,8 +31,6 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.TppLandings
                 loggingBrokerMock.Object,
                 dateTimeBrokerMock.Object,
                 identifierBrokerMock.Object,
-                hashBrokerMock.Object,
-                fileBrokerMock.Object,
                 landingConfiguration)
             {
                 CallBase = true
@@ -53,7 +51,6 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.TppLandings
                     Times.Once);
 
             this.ingestionTrackingProcessingServiceMock.VerifyNoOtherCalls();
-            this.hashBrokerMock.VerifyNoOtherCalls();
             this.dateTimeBrokerMock.VerifyNoOtherCalls();
             this.dataSetSpecificationProcessingServiceMock.VerifyNoOtherCalls();
             this.subscriberAgreementProcessingServiceMock.VerifyNoOtherCalls();

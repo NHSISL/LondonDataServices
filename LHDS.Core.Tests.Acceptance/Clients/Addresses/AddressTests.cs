@@ -446,8 +446,8 @@ namespace LHDS.Core.Tests.Acceptance.Clients.Addresses
             using var outputStream = new MemoryStream();
 
             await this.csvHelperBroker
-               .MapObjectToCsvAsync(
-                    @object: resolvedAddresses,
+               .MapObjectToCsvAsync<ResolvedAddress>(
+                    @object: resolvedAddresses.ToAsyncEnumerable(),
                     outputStream: outputStream,
                     addHeaderRecord: true,
                     fieldMappings: fieldMappings,

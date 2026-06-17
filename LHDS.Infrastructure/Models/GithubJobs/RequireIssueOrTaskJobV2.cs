@@ -9,6 +9,8 @@ using System.ComponentModel;
 using ADotNet.Models.Pipelines.GithubPipelines.DotNets.Tasks;
 using YamlDotNet.Serialization;
 
+#nullable disable
+
 namespace ADotNet.Models.Pipelines.GithubPipelines.DotNets
 {
     public sealed class RequireIssueOrTaskJobV2 : Job

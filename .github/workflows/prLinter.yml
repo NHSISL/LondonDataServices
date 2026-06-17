@@ -109,7 +109,7 @@ jobs:
               console.log(`PR Body: ${prBody}`);
     - name: Check For Associated Issues Or Tasks
       id: check_for_issues_or_tasks
-      if: ${{ !contains(',perirrs,', format(',{0},', steps.get_pr_info.outputs.prOwner)) }}
+      if: ${{ !contains(',dependabot[bot],', format(',{0},', steps.get_pr_info.outputs.prOwner)) }}
       env:
         PR_BODY: ${{ steps.get_pr_info.outputs.description }}
       run: >2-

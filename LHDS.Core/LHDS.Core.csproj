@@ -6,7 +6,7 @@
 		<ImplicitUsings>disable</ImplicitUsings>
 		<OutputType>Library</OutputType>
 		<NoWarn>CS1998,CS8632</NoWarn>
-		<Version>0.5.0.5</Version>
+		<Version>0.6.0.0</Version>
 	</PropertyGroup>
 
 	<ItemGroup>
@@ -20,7 +20,7 @@
 		<PackageReference Include="Microsoft.ApplicationInsights" Version="2.23.0" />
 		<PackageReference Include="Microsoft.Extensions.Configuration" Version="10.0.7" />
 		<PackageReference Include="Microsoft.Extensions.Diagnostics.HealthChecks.Abstractions" Version="10.0.7" />
-		<PackageReference Include="NHSISL.CsvHelperClient" Version="2.0.0" />
+		<PackageReference Include="NHSISL.CsvHelperClient" Version="3.1.0" />
 		<PackageReference Include="SshKeyGenerator" Version="1.1.51" />
 		<PackageReference Include="Azure.Security.KeyVault.Secrets" Version="4.8.0" />
 		<PackageReference Include="BouncyCastle.Cryptography" Version="2.6.2" />

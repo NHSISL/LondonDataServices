@@ -5,6 +5,7 @@
 using System;
 using System.IO;
 using System.Linq;
+using System.Security.Cryptography;
 using System.Threading.Tasks;
 using LHDS.Core.Brokers.DateTimes;
 using LHDS.Core.Brokers.Hashing;
@@ -140,19 +141,16 @@ namespace LHDS.Core.Services.Orchestrations.Decryptions
                         FileAccess.Read,
                         FileShare.Read))
                     {
-                        decryptedFileSha256Hash =
-                            await this.hashBroker.GenerateSha256HashAsync(decryptedDocument);
-
-                        fileSize = decryptedDocument.Length;
-
-                        // Reset position to 0 after hashing - GenerateSha256HashAsync reads
-                        // the stream to EOF so without this the blob upload receives an empty stream.
-                        decryptedDocument.Position = 0;
+                        IHashingCountingBroker hashingCountingBroker =
+                            new HashingCountingBroker(decryptedDocument, HashAlgorithmName.SHA256);
 
                         await this.documentService.AddDocumentAsync(
-                            input: decryptedDocument,
+                            input: hashingCountingBroker.AsStream(),
                             fileName: ingestionTracking.DecryptedFileName,
                             container: blobContainers.Ingress);
+
+                        decryptedFileSha256Hash = hashingCountingBroker.GetFinalHashHex();
+                        fileSize = hashingCountingBroker.BytesRead;
                     }
                 }
                 catch (Exception ex)

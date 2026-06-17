@@ -13,24 +13,6 @@
       <BuildType Solution="Test|*" Project="Debug" />
     </Project>
   </Folder>
-  <Folder Name="/ConfigImportExportTool/">
-    <Project Path="LHDS.ConfigImportExportTool.Tests.Acceptance/LHDS.ConfigImportExportTool.Tests.Acceptance.csproj">
-      <BuildType Solution="Acceptance|*" Project="Debug" />
-      <BuildType Solution="Test|*" Project="Debug" />
-    </Project>
-    <Project Path="LHDS.ConfigImportExportTool.Tests.Integration/LHDS.ConfigImportExportTool.Tests.Integration.csproj">
-      <BuildType Solution="Acceptance|*" Project="Debug" />
-      <BuildType Solution="Test|*" Project="Debug" />
-    </Project>
-    <Project Path="LHDS.ConfigImportExportTool.Tests.Unit/LHDS.ConfigImportExportTool.Tests.Unit.csproj">
-      <BuildType Solution="Acceptance|*" Project="Debug" />
-      <BuildType Solution="Test|*" Project="Debug" />
-    </Project>
-    <Project Path="LHDS.ConfigImportExportTool/LHDS.ConfigImportExportTool.csproj">
-      <BuildType Solution="Acceptance|*" Project="Debug" />
-      <BuildType Solution="Test|*" Project="Debug" />
-    </Project>
-  </Folder>
   <Folder Name="/Core/">
     <Project Path="LHDS.Core.SeedGenerator/LHDS.Core.SeedGenerator.csproj">
       <BuildType Solution="Acceptance|*" Project="Debug" />

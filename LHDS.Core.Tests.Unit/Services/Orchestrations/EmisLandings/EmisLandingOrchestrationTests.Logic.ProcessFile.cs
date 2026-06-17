@@ -6,6 +6,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
 using FluentAssertions;
@@ -40,8 +41,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.EmisLandings
 
             string inputFileName = randomFileName;
             DateTimeOffset randomDateTime = GetRandomDateTimeOffset();
-            string tempFileName = GetRandomString();
-            string randomHash = GetRandomString(64);
+            string tempFileName = Path.GetTempFileName();
             string container = blobContainers.EmisLanding;
 
             var emisLandingOrchestrationServiceMock = new Mock<EmisLandingOrchestrationService>(
@@ -191,16 +191,19 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.EmisLandings
                 })
                 .Returns(ValueTask.CompletedTask);
 
-            this.hashBrokerMock.Setup(broker =>
-                broker.GenerateSha256HashAsync(It.IsAny<Stream>(), null))
-                    .ReturnsAsync(randomHash);
-
             this.documentProcessingServiceMock
                 .Setup(service => service.AddDocumentAsync(
                     It.IsAny<Stream>(),
                     downloadingIngestionTracking.EncryptedFileName,
                     container))
+                .Callback<Stream, string, string>((stream, fileName, cont) =>
+                {
+                    stream.CopyTo(Stream.Null);
+                })
                 .Returns(ValueTask.CompletedTask);
+
+            byte[] downloadedBytes = Encoding.UTF8.GetBytes(filename);
+            string expectedHash = Convert.ToHexString(SHA256.HashData(downloadedBytes)).ToLowerInvariant();
 
             IngestionTracking downloadedIngestionTracking = downloadingIngestionTracking.DeepClone();
             downloadedIngestionTracking.IsDownloaded = true;
@@ -209,8 +212,8 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.EmisLandings
             downloadedIngestionTracking.RetryCount = 0;
             downloadedIngestionTracking.FileDeleted = false;
             downloadedIngestionTracking.LastSeen = randomDateTime;
-            downloadedIngestionTracking.EncryptedFileSize = downloadedContent.Length;
-            downloadedIngestionTracking.EncryptedFileSha256Hash = randomHash;
+            downloadedIngestionTracking.EncryptedFileSize = downloadedBytes.Length;
+            downloadedIngestionTracking.EncryptedFileSha256Hash = expectedHash;
             IngestionTracking uploadedIngestionTracking = downloadedIngestionTracking.DeepClone();
 
             this.ingestionTrackingProcessingServiceMock.InSequence(mockSequence).Setup(service =>
@@ -294,10 +297,6 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.EmisLandings
                     service.RetrieveDownloadByFileNameAsync(It.Is(SameDownloadAs(inputFileDownload))),
                         Times.Once);
 
-            this.hashBrokerMock.Verify(broker =>
-                broker.GenerateSha256HashAsync(It.IsAny<Stream>(), null),
-                    Times.Once);
-
             this.documentProcessingServiceMock
                 .Verify(service => service.AddDocumentAsync(
                     It.IsAny<Stream>(),
@@ -355,7 +354,6 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.EmisLandings
             string inputFileName = randomFileName;
             DateTimeOffset randomDateTime = GetRandomDateTimeOffset();
             string tempFileName = Path.GetTempFileName();
-            string randomHash = GetRandomString(64);
             string container = blobContainers.EmisLanding;
 
             IngestionTracking storageIngestionTracking =
@@ -460,16 +458,19 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.EmisLandings
                 })
                 .Returns(ValueTask.CompletedTask);
 
-            this.hashBrokerMock.Setup(broker =>
-                broker.GenerateSha256HashAsync(It.IsAny<Stream>(), null))
-                    .ReturnsAsync(randomHash);
-
             this.documentProcessingServiceMock
                 .Setup(service => service.AddDocumentAsync(
                     It.IsAny<Stream>(),
                     downloadingIngestionTracking.EncryptedFileName,
                     container))
+                .Callback<Stream, string, string>((stream, fileName, cont) =>
+                {
+                    stream.CopyTo(Stream.Null);
+                })
                 .Returns(ValueTask.CompletedTask);
+
+            byte[] downloadedBytes = Encoding.UTF8.GetBytes(storageIngestionTracking.FileName);
+            string expectedHash = Convert.ToHexString(SHA256.HashData(downloadedBytes)).ToLowerInvariant();
 
             IngestionTracking downloadedIngestionTracking = downloadingIngestionTracking.DeepClone();
             downloadedIngestionTracking.IsDownloaded = true;
@@ -479,7 +480,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.EmisLandings
             downloadedIngestionTracking.FileDeleted = false;
             downloadedIngestionTracking.LastSeen = randomDateTime;
             downloadedIngestionTracking.EncryptedFileSize = downloadedContent.Length;
-            downloadedIngestionTracking.EncryptedFileSha256Hash = randomHash;
+            downloadedIngestionTracking.EncryptedFileSha256Hash = expectedHash;
             IngestionTracking uploadedIngestionTracking = downloadedIngestionTracking.DeepClone();
 
             this.ingestionTrackingProcessingServiceMock.InSequence(mockSequence).Setup(service =>
@@ -553,10 +554,6 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.EmisLandings
                 .Verify(service =>
                     service.RetrieveDownloadByFileNameAsync(It.Is(SameDownloadAs(inputFileDownload))),
                         Times.Once);
-
-            this.hashBrokerMock.Verify(broker =>
-                broker.GenerateSha256HashAsync(It.IsAny<Stream>(), null),
-                    Times.Once);
 
             this.documentProcessingServiceMock
                 .Verify(service => service.AddDocumentAsync(

@@ -217,7 +217,8 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Ingress
         {
             return Enumerable.Range(start: 0, count: GetRandomNumber())
                 .Select(number => GetRandomString())
-                    .ToList();
+                    .Distinct()
+                        .ToList();
         }
 
         private static IngestionTracking CreateRandomIngestionTracking() =>

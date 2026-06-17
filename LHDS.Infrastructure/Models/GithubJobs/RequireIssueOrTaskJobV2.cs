@@ -16,7 +16,7 @@ namespace ADotNet.Models.Pipelines.GithubPipelines.DotNets
         // This job will check that the pull request is associated with an issue or task.
         // The excludedAuthors is an optional comma separated value parameter that can be used to exclude named 
         // PR author logins from this requirement (e.g. "dependabot[bot]" or "app,dependabot[bot]").
-        public RequireIssueOrTaskJobV2(string excludedAuthors)
+        public RequireIssueOrTaskJobV2(string excludedAuthors = "")
         {
             RunsOn = "ubuntu-latest";
 

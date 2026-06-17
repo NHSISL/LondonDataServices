@@ -3,6 +3,7 @@
 // ---------------------------------------------------------
 
 using System;
+using System.IO;
 using System.Threading.Tasks;
 using Azure;
 using EFxceptions.Models.Exceptions;
@@ -17,6 +18,7 @@ namespace LHDS.Core.Services.Foundations.Documents
         private delegate ValueTask ReturningNothingFunction();
         private delegate ValueTask<Document> ReturningDocumentFunction();
         private delegate ValueTask<string> ReturningStringFunction();
+        private delegate ValueTask<Stream> ReturningStreamFunction();
 
         private async ValueTask TryCatch(ReturningNothingFunction returningNothingFunction)
         {
@@ -42,7 +44,8 @@ namespace LHDS.Core.Services.Foundations.Documents
                 {
                     var failedRequestException = new FailedDocumentRequestException(
                         message: "Failed document request occurred, please contact support.",
-                        innerException: requestFailedException);
+                        innerException: requestFailedException,
+                        data: requestFailedException.Data);
 
                     throw await CreateAndLogDependencyExceptionAsync(failedRequestException);
                 }
@@ -85,7 +88,8 @@ namespace LHDS.Core.Services.Foundations.Documents
             {
                 var failedRequestException = new FailedDocumentRequestException(
                     message: "Failed document request occurred, please contact support.",
-                    innerException: requestFailedException);
+                    innerException: requestFailedException,
+                    data: requestFailedException.Data);
 
                 throw await CreateAndLogDependencyExceptionAsync(failedRequestException);
             }
@@ -114,7 +118,38 @@ namespace LHDS.Core.Services.Foundations.Documents
             {
                 var failedRequestException = new FailedDocumentRequestException(
                     message: "Failed document request occurred, please contact support.",
-                    innerException: requestFailedException);
+                    innerException: requestFailedException,
+                    data: requestFailedException.Data);
+
+                throw await CreateAndLogDependencyExceptionAsync(failedRequestException);
+            }
+            catch (Exception exception)
+            {
+                var failedDocumentBlobServiceException =
+                    new FailedDocumentServiceException(
+                        message: "Failed document service error occurred, please contact support.",
+                        innerException: exception);
+
+                throw await CreateAndLogServiceExceptionAsync(failedDocumentBlobServiceException);
+            }
+        }
+
+        private async ValueTask<Stream> TryCatch(ReturningStreamFunction returningStreamFunction)
+        {
+            try
+            {
+                return await returningStreamFunction();
+            }
+            catch (InvalidDocumentException invalidDocumentException)
+            {
+                throw await CreateAndLogValidationExceptionAsync(invalidDocumentException);
+            }
+            catch (RequestFailedException requestFailedException)
+            {
+                var failedRequestException = new FailedDocumentRequestException(
+                    message: "Failed document request occurred, please contact support.",
+                    innerException: requestFailedException,
+                    data: requestFailedException.Data);
 
                 throw await CreateAndLogDependencyExceptionAsync(failedRequestException);
             }

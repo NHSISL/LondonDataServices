@@ -3,6 +3,7 @@
 // ---------------------------------------------------------
 
 using System;
+using System.IO;
 using System.Threading.Tasks;
 using LHDS.Core.Models.Foundations.Documents;
 using LHDS.Core.Models.Foundations.Documents.Exceptions;
@@ -16,6 +17,7 @@ namespace LHDS.Core.Services.Processings.Documents
         private delegate ValueTask ReturningNothingFunction();
         private delegate ValueTask<Document> ReturningDocumentProcessingFunction();
         private delegate ValueTask<string> ReturningStringFunction();
+        private delegate ValueTask<Stream> ReturningStreamFunction();
 
         private async ValueTask TryCatch(ReturningNothingFunction returningNothingFunction)
         {
@@ -116,6 +118,43 @@ namespace LHDS.Core.Services.Processings.Documents
             catch (DocumentProcessingValidationException documentProcessingValidationException)
             {
                 throw await CreateAndLogValidationExceptionAsync(documentProcessingValidationException);
+            }
+            catch (DocumentDependencyValidationException documentDependencyValidationException)
+            {
+                throw await CreateAndLogDependencyValidationExceptionAsync(documentDependencyValidationException);
+            }
+            catch (DocumentDependencyException documentDependencyException)
+            {
+                throw await CreateAndLogDependencyExceptionAsync(documentDependencyException);
+            }
+            catch (DocumentServiceException documentServiceException)
+            {
+                throw await CreateAndLogDependencyExceptionAsync(documentServiceException);
+            }
+            catch (Exception exception)
+            {
+                var failedDocumentProcessingServiceException =
+                    new FailedDocumentProcessingServiceException(
+                        message: "Failed document processing service error occurred, please contact support.",
+                        innerException: exception);
+
+                throw await CreateAndLogServiceExceptionAsync(failedDocumentProcessingServiceException);
+            }
+        }
+
+        private async ValueTask<Stream> TryCatch(ReturningStreamFunction returningStreamFunction)
+        {
+            try
+            {
+                return await returningStreamFunction();
+            }
+            catch (InvalidArgumentsDocumentProcessingException exception)
+            {
+                throw await CreateAndLogValidationExceptionAsync(exception);
+            }
+            catch (DocumentValidationException documentValidationException)
+            {
+                throw await CreateAndLogDependencyValidationExceptionAsync(documentValidationException);
             }
             catch (DocumentDependencyValidationException documentDependencyValidationException)
             {

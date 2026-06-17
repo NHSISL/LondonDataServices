@@ -52,7 +52,6 @@ steps:
       jsonTargetFiles:  |
         LHDS.AdminPortal.Api/appsettings.ContinuousIntegration.json
         LHDS.Core.Tests.Acceptance/appsettings.ContinuousIntegration.json
-        LHDS.ConfigImportExportTool.Tests.Acceptance/appsettings.ContinuousIntegration.json
 
   - task: Bash@3
     displayName: "Show AppSettings for CI"
@@ -61,7 +60,6 @@ steps:
       script: |
         cat LHDS.AdminPortal.Api/appsettings.ContinuousIntegration.json
         cat LHDS.Core.Tests.Acceptance/appsettings.ContinuousIntegration.json
-        cat LHDS.ConfigImportExportTool.Tests.Acceptance/appsettings.ContinuousIntegration.json
 
   - task: AzureCLI@2
     displayName: "Add Service Connection to Environment"
@@ -98,6 +96,20 @@ steps:
       version: 22.x
       checkLatest: true
 
+  - task: Bash@3
+    displayName: "Free Disk Space"
+    inputs:
+      targetType: inline
+      script: |
+        df -h
+        sudo rm -rf /usr/local/lib/android
+        sudo rm -rf /usr/share/dotnet
+        sudo rm -rf /opt/ghc
+        sudo rm -rf /usr/local/.ghcup
+        sudo apt-get clean
+        docker system prune -af || true
+        df -h
+
   - task: DotNetCoreCLI@2
     displayName: "Dotnet Restore"
     inputs:
@@ -111,13 +123,14 @@ steps:
     inputs:
       command: "build"
       projects: "**/*.csproj"
-      arguments: "--warnaserror"
+      arguments: "--no-restore --configuration Release --warnaserror -p:DebugType=none -p:DebugSymbols=false"
 
   - task: DotNetCoreCLI@2
     displayName: C# Unit Tests
     inputs:
       command: 'test'
       projects: '**/*.Tests.Unit.csproj'
+      arguments: '--no-build --configuration Release'
 
   - task: Bash@3
     enabled: true
@@ -212,7 +225,7 @@ steps:
     inputs: 
       command: 'test'
       projects: '**/*.Tests.Acceptance.csproj'
-      arguments: '--environment ASPNETCORE_ENVIRONMENT=ContinuousIntegration'
+      arguments: '--no-build --configuration Release --environment ASPNETCORE_ENVIRONMENT=ContinuousIntegration'
       envVars: 'ASPNETCORE_ENVIRONMENT=ContinuousIntegration'
       environmentVariables: |
         MESHCONFIGURATION__MAILBOXID=$(MESHCONFIGURATION__MAILBOXID)

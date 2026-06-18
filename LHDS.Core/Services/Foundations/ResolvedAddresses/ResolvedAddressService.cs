@@ -92,7 +92,7 @@ namespace LHDS.Core.Services.Foundations.ResolvedAddresses
                 ValidateStorageResolvedAddress(maybeResolvedAddress, resolvedAddress.Id);
 
                 ResolvedAddress ResolvedAddressWithModifyAuditAppliedEnsured =
-                  await this.securityAuditBroker.EnsureAddAuditValuesRemainsUnchangedOnModifyAsync(
+                  await this.securityAuditBroker.EnsureOtherAuditValuesRemainsUnchangedOnModifyAsync(
                       resolvedAddress,
                       maybeResolvedAddress);
 

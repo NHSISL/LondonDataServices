@@ -74,7 +74,7 @@ namespace LHDS.Core.Services.Foundations.SpecificationObjects
 
                 SpecificationObject specificationObjectWithModifyAuditValuesEnsured =
                 await this.securityAuditBroker.
-                    EnsureAddAuditValuesRemainsUnchangedOnModifyAsync(
+                    EnsureOtherAuditValuesRemainsUnchangedOnModifyAsync(
                         specificationObject,
                         maybeSpecificationObject);
 

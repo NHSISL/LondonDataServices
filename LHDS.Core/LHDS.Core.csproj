@@ -1,4 +1,4 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
 
 	<PropertyGroup>
 		<TargetFramework>net10.0</TargetFramework>
@@ -16,9 +16,9 @@
 	<ItemGroup>
 		<PackageReference Include="Azure.Identity" Version="1.21.0" />
 		<PackageReference Include="FluentAssertions" Version="[7.2.2]" />
-		<PackageReference Include="ISL.Security.Client" Version="4.0.0" />
+		<PackageReference Include="ISL.Security.Client" Version="5.0.0" />
 		<PackageReference Include="Microsoft.ApplicationInsights" Version="2.23.0" />
-		<PackageReference Include="Microsoft.Extensions.Configuration" Version="10.0.7" />
+		<PackageReference Include="Microsoft.Extensions.Configuration" Version="10.0.8" />
 		<PackageReference Include="Microsoft.Extensions.Diagnostics.HealthChecks.Abstractions" Version="10.0.7" />
 		<PackageReference Include="NHSISL.CsvHelperClient" Version="3.1.0" />
 		<PackageReference Include="SshKeyGenerator" Version="1.1.51" />
@@ -34,9 +34,9 @@
 		  <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
 		</PackageReference>
 		<PackageReference Include="Microsoft.Extensions.Logging" Version="10.0.7" />
-		<PackageReference Include="Microsoft.Extensions.Configuration.Binder" Version="10.0.7" />
-		<PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="10.0.7" />
-		<PackageReference Include="Microsoft.Extensions.Configuration.EnvironmentVariables" Version="10.0.7" />
+		<PackageReference Include="Microsoft.Extensions.Configuration.Binder" Version="10.0.8" />
+		<PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="10.0.8" />
+		<PackageReference Include="Microsoft.Extensions.Configuration.EnvironmentVariables" Version="10.0.8" />
 		<PackageReference Include="Azure.Storage.Blobs" Version="12.27.0" />
 		<PackageReference Include="Azure.Storage.Files.Shares" Version="12.23.0" />
 		<PackageReference Include="Azure.Storage.Queues" Version="12.23.0" />

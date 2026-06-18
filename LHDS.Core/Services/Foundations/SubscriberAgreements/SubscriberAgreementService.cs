@@ -74,7 +74,7 @@ namespace LHDS.Core.Services.Foundations.SubscriberAgreements
                 ValidateStorageSubscriberAgreement(maybeSubscriberAgreement, subscriberAgreement.Id);
 
                 SubscriberAgreement SubscriberAgreementWithModifyAuditAppliedEnsured =
-                   await this.securityAuditBroker.EnsureAddAuditValuesRemainsUnchangedOnModifyAsync(
+                   await this.securityAuditBroker.EnsureOtherAuditValuesRemainsUnchangedOnModifyAsync(
                        subscriberAgreement,
                        maybeSubscriberAgreement);
 

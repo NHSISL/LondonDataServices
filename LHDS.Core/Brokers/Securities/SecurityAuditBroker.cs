@@ -1,4 +1,4 @@
-﻿// ---------------------------------------------------------
+// ---------------------------------------------------------
 // Copyright (c) North East London ICB. All rights reserved.
 // ---------------------------------------------------------
 
@@ -113,11 +113,11 @@ namespace LHDS.Core.Brokers.Securities
         /// <param name="entity">The entity being modified.</param>
         /// <param name="storageEntity">The original stored entity used to preserve original audit values.</param>
         /// <returns>The entity with original add audit values retained.</returns>
-        public async ValueTask<T> EnsureAddAuditValuesRemainsUnchangedOnModifyAsync<T>(
+        public async ValueTask<T> EnsureOtherAuditValuesRemainsUnchangedOnModifyAsync<T>(
             T entity,
             T storageEntity) =>
                 await this.securityClient.Audits
-                    .EnsureAddAuditValuesRemainsUnchangedOnModifyAsync(entity, storageEntity, securityConfigurations);
+                    .EnsureOtherAuditValuesRemainsUnchangedOnModifyAsync(entity, storageEntity, securityConfigurations);
 
         /// <summary>
         /// Retrieves the current user identifier from the given claims principal.

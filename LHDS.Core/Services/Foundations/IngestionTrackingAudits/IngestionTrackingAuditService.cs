@@ -74,7 +74,7 @@ namespace LHDS.Core.Services.Foundations.IngestionTrackingAudits
                 ValidateStorageIngestionTrackingAudit(maybeAudit, audit.Id);
 
                 IngestionTrackingAudit auditWithModifyAuditAppliedEnsured =
-                    await this.securityAuditBroker.EnsureAddAuditValuesRemainsUnchangedOnModifyAsync(
+                    await this.securityAuditBroker.EnsureOtherAuditValuesRemainsUnchangedOnModifyAsync(
                         auditWithModifyAuditApplied,
                         maybeAudit);
 

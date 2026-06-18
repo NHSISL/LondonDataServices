@@ -46,7 +46,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.ResolvedAddresses
                     .ReturnsAsync(randomEntraUserId);
 
             this.securityAuditBrokerMock.Setup(broker =>
-                broker.EnsureAddAuditValuesRemainsUnchangedOnModifyAsync(
+                broker.EnsureOtherAuditValuesRemainsUnchangedOnModifyAsync(
                     inputResolvedAddress,
                     storageResolvedAddress))
                         .ReturnsAsync(inputResolvedAddress);
@@ -79,7 +79,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.ResolvedAddresses
                     Times.Once);
 
             this.securityAuditBrokerMock.Verify(broker =>
-                broker.EnsureAddAuditValuesRemainsUnchangedOnModifyAsync(
+                broker.EnsureOtherAuditValuesRemainsUnchangedOnModifyAsync(
                     inputResolvedAddress,
                     storageResolvedAddress),
                         Times.Once);

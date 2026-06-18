@@ -74,7 +74,7 @@ namespace LHDS.Core.Services.Foundations.ObjectColumns
                 ValidateStorageObjectColumn(maybeObjectColumn, objectColumn.Id);
 
                 ObjectColumn objectColumnWithModifyAuditAppliedEnsured =
-                   await this.securityAuditBroker.EnsureAddAuditValuesRemainsUnchangedOnModifyAsync(
+                   await this.securityAuditBroker.EnsureOtherAuditValuesRemainsUnchangedOnModifyAsync(
                        objectColumn,
                        maybeObjectColumn);
 

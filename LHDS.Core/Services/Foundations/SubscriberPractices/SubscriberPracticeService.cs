@@ -74,7 +74,7 @@ namespace LHDS.Core.Services.Foundations.SubscriberPractices
                 ValidateStorageSubscriberPractice(maybeSubscriberPractice, subscriberPractice.Id);
 
                 SubscriberPractice SubscriberPracticeWithModifyAuditAppliedEnsured =
-                   await this.securityAuditBroker.EnsureAddAuditValuesRemainsUnchangedOnModifyAsync(
+                   await this.securityAuditBroker.EnsureOtherAuditValuesRemainsUnchangedOnModifyAsync(
                        subscriberPractice,
                        maybeSubscriberPractice);
 

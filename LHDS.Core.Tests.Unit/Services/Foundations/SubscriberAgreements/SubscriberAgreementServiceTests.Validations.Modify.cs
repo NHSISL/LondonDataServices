@@ -547,7 +547,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.SubscriberAgreements
                     .ReturnsAsync(storageSubscriberAgreement);
 
             this.securityAuditBrokerMock.Setup(service =>
-                service.EnsureAddAuditValuesRemainsUnchangedOnModifyAsync(
+                service.EnsureOtherAuditValuesRemainsUnchangedOnModifyAsync(
                     invalidSubscriberAgreement, storageSubscriberAgreement))
                         .ReturnsAsync(invalidSubscriberAgreement);
 
@@ -580,7 +580,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.SubscriberAgreements
                     Times.Once);
 
             this.securityAuditBrokerMock.Verify(service =>
-                service.EnsureAddAuditValuesRemainsUnchangedOnModifyAsync(
+                service.EnsureOtherAuditValuesRemainsUnchangedOnModifyAsync(
                     invalidSubscriberAgreement, storageSubscriberAgreement),
                         Times.Once);
 
@@ -649,7 +649,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.SubscriberAgreements
                     .ReturnsAsync(storageSubscriberAgreement);
 
             this.securityAuditBrokerMock.Setup(service =>
-               service.EnsureAddAuditValuesRemainsUnchangedOnModifyAsync(
+               service.EnsureOtherAuditValuesRemainsUnchangedOnModifyAsync(
                    invalidSubscriberAgreement, storageSubscriberAgreement))
                        .ReturnsAsync(invalidSubscriberAgreement);
 
@@ -681,7 +681,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.SubscriberAgreements
                     Times.Once);
 
             this.securityAuditBrokerMock.Verify(service =>
-                service.EnsureAddAuditValuesRemainsUnchangedOnModifyAsync(
+                service.EnsureOtherAuditValuesRemainsUnchangedOnModifyAsync(
                     invalidSubscriberAgreement, storageSubscriberAgreement),
                         Times.Once);
 
@@ -740,7 +740,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.SubscriberAgreements
                     .ReturnsAsync(storageSubscriberAgreement);
 
             this.securityAuditBrokerMock.Setup(broker =>
-                broker.EnsureAddAuditValuesRemainsUnchangedOnModifyAsync(
+                broker.EnsureOtherAuditValuesRemainsUnchangedOnModifyAsync(
                     invalidSubscriberAgreement,
                     storageSubscriberAgreement))
                         .ReturnsAsync(invalidSubscriberAgreement);
@@ -775,7 +775,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.SubscriberAgreements
                     Times.Once);
 
             this.securityAuditBrokerMock.Verify(broker =>
-                broker.EnsureAddAuditValuesRemainsUnchangedOnModifyAsync(
+                broker.EnsureOtherAuditValuesRemainsUnchangedOnModifyAsync(
                     invalidSubscriberAgreement,
                     storageSubscriberAgreement),
                         Times.Once);

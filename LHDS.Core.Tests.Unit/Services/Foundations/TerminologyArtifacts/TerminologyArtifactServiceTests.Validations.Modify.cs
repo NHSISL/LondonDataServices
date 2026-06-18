@@ -444,7 +444,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.TerminologyArtifacts
                     .ReturnsAsync(randomUserId);
 
             this.securityAuditBrokerMock.Setup(broker =>
-                broker.EnsureAddAuditValuesRemainsUnchangedOnModifyAsync(
+                broker.EnsureOtherAuditValuesRemainsUnchangedOnModifyAsync(
                     invalidTerminologyArtifact, storageTerminologyArtifact))
                         .ReturnsAsync(invalidTerminologyArtifact);
 
@@ -473,7 +473,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.TerminologyArtifacts
                     Times.Once);
 
             this.securityAuditBrokerMock.Verify(broker =>
-                broker.EnsureAddAuditValuesRemainsUnchangedOnModifyAsync(
+                broker.EnsureOtherAuditValuesRemainsUnchangedOnModifyAsync(
                     invalidTerminologyArtifact, storageTerminologyArtifact),
                         Times.Once);
 
@@ -539,7 +539,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.TerminologyArtifacts
                     .ReturnsAsync(storageTerminologyArtifact);
 
             this.securityAuditBrokerMock.Setup(broker =>
-                broker.EnsureAddAuditValuesRemainsUnchangedOnModifyAsync(
+                broker.EnsureOtherAuditValuesRemainsUnchangedOnModifyAsync(
                     invalidTerminologyArtifact, storageTerminologyArtifact))
                         .ReturnsAsync(invalidTerminologyArtifact);
 
@@ -572,7 +572,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.TerminologyArtifacts
                     Times.Once);
 
             this.securityAuditBrokerMock.Verify(broker =>
-                broker.EnsureAddAuditValuesRemainsUnchangedOnModifyAsync(
+                broker.EnsureOtherAuditValuesRemainsUnchangedOnModifyAsync(
                     invalidTerminologyArtifact, storageTerminologyArtifact),
                         Times.Once);
 
@@ -632,7 +632,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.TerminologyArtifacts
                     .ReturnsAsync(storageTerminologyArtifact);
 
             this.securityAuditBrokerMock.Setup(broker =>
-                broker.EnsureAddAuditValuesRemainsUnchangedOnModifyAsync(
+                broker.EnsureOtherAuditValuesRemainsUnchangedOnModifyAsync(
                     invalidTerminologyArtifact, storageTerminologyArtifact))
                         .ReturnsAsync(invalidTerminologyArtifact);
 
@@ -665,7 +665,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.TerminologyArtifacts
                     Times.Once);
 
             this.securityAuditBrokerMock.Verify(broker =>
-                broker.EnsureAddAuditValuesRemainsUnchangedOnModifyAsync(
+                broker.EnsureOtherAuditValuesRemainsUnchangedOnModifyAsync(
                     invalidTerminologyArtifact, storageTerminologyArtifact),
                         Times.Once);
 

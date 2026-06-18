@@ -460,7 +460,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.SubscriberPractices
                     .ReturnsAsync(storageSubscriberPractice);
 
             this.securityAuditBrokerMock.Setup(broker =>
-                broker.EnsureAddAuditValuesRemainsUnchangedOnModifyAsync(
+                broker.EnsureOtherAuditValuesRemainsUnchangedOnModifyAsync(
                     invalidSubscriberPractice, storageSubscriberPractice))
                         .ReturnsAsync(invalidSubscriberPractice);
 
@@ -493,7 +493,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.SubscriberPractices
                     Times.Once);
 
             this.securityAuditBrokerMock.Verify(broker =>
-                broker.EnsureAddAuditValuesRemainsUnchangedOnModifyAsync(
+                broker.EnsureOtherAuditValuesRemainsUnchangedOnModifyAsync(
                     invalidSubscriberPractice, storageSubscriberPractice),
                         Times.Once);
 
@@ -553,7 +553,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.SubscriberPractices
                     .ReturnsAsync(storageSubscriberPractice);
 
             this.securityAuditBrokerMock.Setup(broker =>
-               broker.EnsureAddAuditValuesRemainsUnchangedOnModifyAsync(
+               broker.EnsureOtherAuditValuesRemainsUnchangedOnModifyAsync(
                    invalidSubscriberPractice, storageSubscriberPractice))
                        .ReturnsAsync(invalidSubscriberPractice);
 
@@ -585,7 +585,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.SubscriberPractices
                     Times.Once);
 
             this.securityAuditBrokerMock.Verify(broker =>
-                broker.EnsureAddAuditValuesRemainsUnchangedOnModifyAsync(
+                broker.EnsureOtherAuditValuesRemainsUnchangedOnModifyAsync(
                     invalidSubscriberPractice, storageSubscriberPractice),
                         Times.Once);
 
@@ -644,7 +644,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.SubscriberPractices
                     .ReturnsAsync(storageSubscriberPractice);
 
             this.securityAuditBrokerMock.Setup(broker =>
-               broker.EnsureAddAuditValuesRemainsUnchangedOnModifyAsync(
+               broker.EnsureOtherAuditValuesRemainsUnchangedOnModifyAsync(
                    invalidSubscriberPractice, storageSubscriberPractice))
                        .ReturnsAsync(invalidSubscriberPractice);
 
@@ -678,7 +678,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.SubscriberPractices
                     Times.Once);
 
             this.securityAuditBrokerMock.Verify(broker =>
-                broker.EnsureAddAuditValuesRemainsUnchangedOnModifyAsync(
+                broker.EnsureOtherAuditValuesRemainsUnchangedOnModifyAsync(
                     invalidSubscriberPractice, storageSubscriberPractice),
                         Times.Once);
 

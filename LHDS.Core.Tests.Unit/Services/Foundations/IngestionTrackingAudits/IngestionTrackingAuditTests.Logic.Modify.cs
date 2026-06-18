@@ -40,7 +40,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.IngestionTrackingAudits
                     .ReturnsAsync(storageIngestionTrackingAudit);
 
             this.securityAuditBrokerMock.Setup(broker =>
-                broker.EnsureAddAuditValuesRemainsUnchangedOnModifyAsync(
+                broker.EnsureOtherAuditValuesRemainsUnchangedOnModifyAsync(
                     inputIngestionTrackingAudit,
                     storageIngestionTrackingAudit))
                         .ReturnsAsync(inputIngestionTrackingAudit);
@@ -69,7 +69,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.IngestionTrackingAudits
                     Times.Once);
 
             this.securityAuditBrokerMock.Verify(broker =>
-                broker.EnsureAddAuditValuesRemainsUnchangedOnModifyAsync(
+                broker.EnsureOtherAuditValuesRemainsUnchangedOnModifyAsync(
                     inputIngestionTrackingAudit,
                     storageIngestionTrackingAudit),
                         Times.Once);

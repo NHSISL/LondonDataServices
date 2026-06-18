@@ -52,7 +52,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.TerminologyArtifacts
                     .ReturnsAsync(storageTerminologyArtifact);
 
             this.securityAuditBrokerMock.Setup(broker =>
-                broker.EnsureAddAuditValuesRemainsUnchangedOnModifyAsync(
+                broker.EnsureOtherAuditValuesRemainsUnchangedOnModifyAsync(
                     inputTerminologyArtifact, storageTerminologyArtifact))
                         .ReturnsAsync(inputTerminologyArtifact);
 
@@ -80,7 +80,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.TerminologyArtifacts
                     Times.Once);
 
             this.securityAuditBrokerMock.Verify(broker =>
-                broker.EnsureAddAuditValuesRemainsUnchangedOnModifyAsync(
+                broker.EnsureOtherAuditValuesRemainsUnchangedOnModifyAsync(
                     inputTerminologyArtifact, storageTerminologyArtifact),
                         Times.Once);
 

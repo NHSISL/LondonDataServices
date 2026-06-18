@@ -1,4 +1,4 @@
-﻿// ---------------------------------------------------------
+// ---------------------------------------------------------
 // Copyright (c) North East London ICB. All rights reserved.
 // ---------------------------------------------------------
 
@@ -200,7 +200,11 @@ namespace LHDS.Core.Clients.Extensions
                 services.AddTransient<ISecurityBroker>(_ => new SecurityBroker(claimsPrincipal));
 
                 services.AddTransient<ISecurityAuditBroker>(_ =>
-                    new SecurityAuditBroker(claimsPrincipal, new SecurityConfigurations()));
+                    new SecurityAuditBroker(claimsPrincipal, new SecurityConfigurations
+                {
+                    CreatedWhenPropertyName = "CreatedDate",
+                    UpdatedWhenPropertyName = "UpdatedDate"
+                }));
             }
             else
             {

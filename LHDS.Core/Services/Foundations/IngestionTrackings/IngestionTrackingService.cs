@@ -108,7 +108,7 @@ namespace LHDS.Core.Services.Foundations.IngestionTrackings
                 ValidateStorageIngestionTracking(maybeIngestionTracking, ingestionTrackingId: ingestionTracking.Id);
 
                 IngestionTracking IngestionTrackingWithModifyAuditAppliedEnsured =
-                  await this.securityAuditBroker.EnsureAddAuditValuesRemainsUnchangedOnModifyAsync(
+                  await this.securityAuditBroker.EnsureOtherAuditValuesRemainsUnchangedOnModifyAsync(
                       ingestionTrackingWithModifyAuditApplied,
                       maybeIngestionTracking);
 

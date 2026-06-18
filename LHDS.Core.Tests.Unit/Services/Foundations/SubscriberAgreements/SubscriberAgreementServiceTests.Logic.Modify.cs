@@ -53,7 +53,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.SubscriberAgreements
                     .ReturnsAsync(storageSubscriberAgreement);
 
             this.securityAuditBrokerMock.Setup(broker =>
-                broker.EnsureAddAuditValuesRemainsUnchangedOnModifyAsync(
+                broker.EnsureOtherAuditValuesRemainsUnchangedOnModifyAsync(
                     inputSubscriberAgreement,
                     storageSubscriberAgreement))
                         .ReturnsAsync(updatedSubscriberAgreement);
@@ -86,7 +86,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.SubscriberAgreements
                     Times.Once);
 
             this.securityAuditBrokerMock.Verify(broker =>
-                broker.EnsureAddAuditValuesRemainsUnchangedOnModifyAsync(
+                broker.EnsureOtherAuditValuesRemainsUnchangedOnModifyAsync(
                     inputSubscriberAgreement,
                     storageSubscriberAgreement),
                         Times.Once);

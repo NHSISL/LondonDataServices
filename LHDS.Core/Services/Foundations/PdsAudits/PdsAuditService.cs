@@ -74,7 +74,7 @@ namespace LHDS.Core.Services.Foundations.PdsAudits
 
                 PdsAudit pdsAuditWithModifyAuditValuesEnsured =
                     await this.securityAuditBroker.
-                        EnsureAddAuditValuesRemainsUnchangedOnModifyAsync(
+                        EnsureOtherAuditValuesRemainsUnchangedOnModifyAsync(
                             pdsAudit,
                             maybePdsAudit);
 

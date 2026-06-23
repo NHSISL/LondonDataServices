@@ -5,8 +5,6 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Attrify.Attributes;
 using FluentAssertions;
 using LHDS.AdminPortal.Api.Controllers;
@@ -30,6 +28,8 @@ namespace LHDS.AdminPortal.Api.Tests.Unit.Controllers.SubscriberAgreements
             {
                 "ISL.LDS.AdminApi.Administrators",
                 "ISL.LDS.AdminApi.Configurations",
+                "ISL.LDS.AdminApi.SubscriberAgreements",
+                "ISL.LDS.AdminApi.SubscriberAgreements.ReadOnly",
                 "ISL.LDS.AdminApi.ReadOnly"
             };
 

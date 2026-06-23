@@ -7,6 +7,7 @@ on:
     - synchronize
     - reopened
     - closed
+    branches: []
 jobs:
   label:
     name: Label
@@ -80,26 +81,6 @@ jobs:
               break;
             }
           }
-    - name: Set Author As PR Assignee
-      uses: actions/github-script@v6
-      with:
-        github-token: ${{ secrets.GITHUB_TOKEN }}
-        script: >
-          const pr = context.payload.pull_request;
-          if (!pr) {
-            console.log('No pull request context available.');
-            return;
-          }
-
-          const author = pr.user.login;
-          console.log(`Assigning PR to author: ${author}`);
-
-          await github.rest.issues.addAssignees({
-            owner: context.repo.owner,
-            repo: context.repo.repo,
-            issue_number: pr.number,
-            assignees: [author]
-          });
     permissions:
       contents: read
       pull-requests: write
@@ -128,7 +109,7 @@ jobs:
               console.log(`PR Body: ${prBody}`);
     - name: Check For Associated Issues Or Tasks
       id: check_for_issues_or_tasks
-      if: ${{ steps.get_pr_info.outputs.prOwner != 'dependabot[bot]' }}
+      if: ${{ !contains(',dependabot[bot],', format(',{0},', steps.get_pr_info.outputs.prOwner)) }}
       env:
         PR_BODY: ${{ steps.get_pr_info.outputs.description }}
       run: >2-
@@ -149,3 +130,41 @@ jobs:
     permissions:
       contents: read
       pull-requests: read
+  setAuthorAsPrAssignee:
+    name: Set Author As PR Assignee
+    runs-on: ubuntu-latest
+    steps:
+    - name: Set Author As PR Assignee
+      uses: actions/github-script@v6
+      with:
+        github-token: ${{ secrets.GITHUB_TOKEN }}
+        script: >
+          const pr = context.payload.pull_request;
+
+          if (!pr) {
+            console.log('No pull request context available.');
+            return;
+          }
+
+
+          const author = pr.user.login;
+
+          if (author.endsWith('[bot]')) {
+            console.log(`Skipping bot author: ${author}`);
+            return;
+          }
+
+
+          console.log(`Assigning PR to author: ${author}`);
+
+
+          await github.rest.issues.addAssignees({
+            owner: context.repo.owner,
+            repo: context.repo.repo,
+            issue_number: pr.number,
+            assignees: [author]
+          });
+    permissions:
+      contents: read
+      issues: write
+      pull-requests: write

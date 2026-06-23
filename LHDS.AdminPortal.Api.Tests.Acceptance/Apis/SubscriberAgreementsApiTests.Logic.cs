@@ -168,8 +168,8 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.SubscriberAgreements
             // when
             OdataResponse<SubscriberAgreement> actualPage =
                 await this.apiBroker.GetSubscriberAgreementsOdataResponseAsync(
-                    $"odata/subscriberAgreements?$top=1" +
-                    $"&$filter=id eq {firstRandomSubscriberAgreement.Id}" +
+                    $"odata/subscriberAgreements" +
+                    $"?$filter=id eq {firstRandomSubscriberAgreement.Id}" +
                     $" or id eq {secondRandomSubscriberAgreement.Id}");
 
             // then
@@ -189,7 +189,7 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.SubscriberAgreements
             // when
             OdataResponse<SubscriberAgreement> actualPage =
                 await this.apiBroker.GetSubscriberAgreementsOdataResponseAsync(
-                    $"odata/subscriberAgreements?$top=1&$filter=id eq {randomSubscriberAgreement.Id}");
+                    $"odata/subscriberAgreements?$filter=id eq {randomSubscriberAgreement.Id}");
 
             // then
             actualPage.NextLink.Should().BeNullOrEmpty();

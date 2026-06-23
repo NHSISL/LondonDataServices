@@ -65,7 +65,7 @@ namespace LHDS.AdminPortal.Api.Controllers
         [EnableQuery(PageSize = 50)]
 #endif
 #if DEBUG
-        [EnableQuery(PageSize = 5000)]
+        [EnableQuery(PageSize = 1)]
 #endif
         [Authorize(Roles = "ISL.LDS.AdminApi.Administrators, ISL.LDS.AdminApi.Configurations, ISL.LDS.AdminApi.SubscriberAgreements, ISL.LDS.AdminApi.SubscriberAgreements.ReadOnly, ISL.LDS.AdminApi.ReadOnly")]
         public async ValueTask<ActionResult<IQueryable<SubscriberAgreement>>> Get()

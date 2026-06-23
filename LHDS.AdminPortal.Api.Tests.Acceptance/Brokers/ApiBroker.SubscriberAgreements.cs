@@ -5,6 +5,7 @@
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using LHDS.AdminPortal.Api.Tests.Acceptance.Models.OdataResponses;
 using LHDS.AdminPortal.Api.Tests.Acceptance.Models.SubscriberAgreements;
 
 namespace LHDS.AdminPortal.Api.Tests.Acceptance.Brokers
@@ -21,6 +22,10 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Brokers
 
         public async ValueTask<List<SubscriberAgreement>> GetAllSubscriberAgreementsAsync() =>
           await this.apiFactoryClient.GetContentAsync<List<SubscriberAgreement>>($"{SubscriberAgreementsRelativeUrl}/");
+
+        public async ValueTask<OdataResponse<SubscriberAgreement>> GetSubscriberAgreementsOdataResponseAsync(
+            string relativeOdataUrl) =>
+                await this.GetOdataResponseAsync<SubscriberAgreement>(relativeOdataUrl);
 
         public async ValueTask<SubscriberAgreement> PutSubscriberAgreementAsync(SubscriberAgreement subscriberAgreement) =>
             await this.apiFactoryClient.PutContentAsync(SubscriberAgreementsRelativeUrl, subscriberAgreement);

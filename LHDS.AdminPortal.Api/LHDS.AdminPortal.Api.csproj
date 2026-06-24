@@ -41,6 +41,10 @@
 	</ItemGroup>
 
 	<ItemGroup>
+		<InternalsVisibleTo Include="LHDS.AdminPortal.Api.Tests.Acceptance" />
+	</ItemGroup>
+
+	<ItemGroup>
 		<Content Update="local.appsettings.json" Condition="Exists('local.appsettings.json')">
 			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
 		</Content>

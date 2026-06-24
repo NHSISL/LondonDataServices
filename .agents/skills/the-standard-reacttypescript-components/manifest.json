@@ -1,0 +1,17 @@
+{
+  "name": "the-standard-reacttypescript-components",
+  "version": "0.1.0",
+  "description": "Enforces component rendering responsibility, props-first data flow, no broker/service calls, business-rule-free JSX, accessibility, and size discipline.",
+  "standard_version": "v0.1.0",
+  "skill_version": "v0.1.0",
+  "inputs": ["React TSX component files in src/components/**/*"],
+  "outputs": [
+    "Focused, accessible, props-driven React components",
+    "Review feedback citing rule IDs"
+  ],
+  "dependencies": [
+    "the-standard-reacttypescript-models",
+    "the-standard-reacttypescript-view-services"
+  ],
+  "applies_to": ["src/components/**/*"]
+}

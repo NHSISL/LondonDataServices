@@ -1,9 +1,11 @@
-﻿// ---------------------------------------------------------
+// ---------------------------------------------------------
 // Copyright (c) North East London ICB. All rights reserved.
 // ---------------------------------------------------------
 
 using System;
 using System.Collections.Generic;
+using System.IO;
+using System.Threading;
 using System.Threading.Tasks;
 using FluentAssertions;
 using LHDS.Core.Models.Foundations.Mesh;
@@ -27,14 +29,25 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
             List<string> retrievedMessageIds = new List<string> { retrievedMessage.MessageId };
 
             this.meshProcessingServiceMock.SetupSequence(service =>
-                service.RetrieveMessageIdsFromInboxAsync())
+                service.RetrieveMessageIdsFromInboxAsync(It.IsAny<CancellationToken>()))
                     .ReturnsAsync(retrievedMessageIds)
                     .ReturnsAsync(new List<string>());
 
             retrievedMessage.Headers.Remove("mex-localid");
 
+            string tempFilePath =
+                System.IO.Path.Combine(System.IO.Path.GetTempPath(), System.Guid.NewGuid().ToString());
+
+            this.tempLocationBrokerMock.Setup(broker =>
+                broker.GetUniqueHomeFilePath())
+                    .Returns(tempFilePath);
+
+            this.fileBrokerMock.Setup(broker =>
+                broker.DeleteFileAsync(It.IsAny<string>()))
+                    .ReturnsAsync(true);
+
             this.meshProcessingServiceMock.Setup(service =>
-                service.RetrieveMessageByIdAsync(It.IsAny<string>()))
+                service.RetrieveMessageByIdAsync(It.IsAny<string>(), It.IsAny<Stream>(), It.IsAny<CancellationToken>()))
                     .ReturnsAsync(retrievedMessage);
 
             var invalidMeshMessageOrchestrationException =
@@ -68,7 +81,8 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
 
             // When
             ValueTask<List<MeshMessage>> actualMeshMessages =
-                this.optOutOrchestrationService.RetrieveUpdatedMeshConsentStatusesChangesAsync();
+                this.optOutOrchestrationService.RetrieveUpdatedMeshConsentStatusesChangesAsync(
+                    TestContext.Current.CancellationToken);
 
             OptOutOrchestrationServiceException actualOptOutOrchestrationServiceException =
                 await Assert.ThrowsAsync<OptOutOrchestrationServiceException>(actualMeshMessages.AsTask);
@@ -78,11 +92,11 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
                 .BeEquivalentTo(expectedOptOutOrchestrationServiceException);
 
             this.meshProcessingServiceMock.Verify(service =>
-                 service.RetrieveMessageIdsFromInboxAsync(),
+                 service.RetrieveMessageIdsFromInboxAsync(It.IsAny<CancellationToken>()),
                      Times.Once);
 
             this.meshProcessingServiceMock.Verify(service =>
-                service.RetrieveMessageByIdAsync(randomMessage.MessageId),
+                service.RetrieveMessageByIdAsync(randomMessage.MessageId, It.IsAny<Stream>(), It.IsAny<CancellationToken>()),
                     Times.Once);
 
             var expectedOptOutOrchestrationValidationLoggingException =

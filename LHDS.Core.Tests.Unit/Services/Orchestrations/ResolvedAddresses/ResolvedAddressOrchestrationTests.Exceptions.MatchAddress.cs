@@ -299,7 +299,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.ResolvedAddresses
 
             this.auditBrokerMock.Verify(broker =>
                 broker.BulkLogAsync(It.IsAny<List<Audit>>()),
-                    Times.Once());
+                    Times.Once);
 
             this.documentProcessingServiceMock.VerifyNoOtherCalls();
             this.resolvedAddressProcessingServiceMock.VerifyNoOtherCalls();
@@ -447,7 +447,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.ResolvedAddresses
 
             this.auditBrokerMock.Verify(broker =>
                 broker.BulkLogAsync(It.IsAny<List<Audit>>()),
-                    Times.Once());
+                    Times.Once);
 
             this.documentProcessingServiceMock.VerifyNoOtherCalls();
             this.resolvedAddressProcessingServiceMock.VerifyNoOtherCalls();
@@ -597,7 +597,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.ResolvedAddresses
 
             this.auditBrokerMock.Verify(broker =>
                 broker.BulkLogAsync(It.IsAny<List<Audit>>()),
-                    Times.Once());
+                    Times.Once);
 
             this.documentProcessingServiceMock.VerifyNoOtherCalls();
             this.resolvedAddressProcessingServiceMock.VerifyNoOtherCalls();

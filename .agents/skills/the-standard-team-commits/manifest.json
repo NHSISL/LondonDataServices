@@ -1,0 +1,16 @@
+{
+  "name": "the-standard-team-commits",
+  "version": "0.1.0",
+  "description": "Governs git commit message format for TDD-driven and non-TDD work following The Standard Team practices.",
+  "the_standard_team_version": "v0.1.0",
+  "skill_version": "v0.1.0",
+  "inputs": [
+    "Git commit message"
+  ],
+  "outputs": [
+    "Compliant commit message in [Test Name] -> FAIL|PASS or [CATEGORY]: [Description] format",
+    "Review feedback citing rule IDs"
+  ],
+  "dependencies": ["the-standard-team-branching"],
+  "applies_to": [".git/*", "commit messages"]
+}

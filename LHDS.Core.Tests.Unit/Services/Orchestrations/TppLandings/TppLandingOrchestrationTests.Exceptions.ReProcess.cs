@@ -43,12 +43,14 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.TppLandings
                 loggingBrokerMock.Object,
                 dateTimeBrokerMock.Object,
                 identifierBrokerMock.Object,
-                hashBrokerMock.Object,
-                fileBrokerMock.Object,
                 landingConfiguration)
             {
                 CallBase = true
             };
+
+            this.dateTimeBrokerMock.Setup(broker =>
+                broker.GetCurrentDateTimeOffsetAsync())
+                    .ReturnsAsync(GetRandomDateTimeOffset());
 
             this.ingestionTrackingProcessingServiceMock.Setup(service =>
                 service.RetrieveAllIngestionTrackingsAsync())
@@ -64,6 +66,10 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.TppLandings
             // then
             actualException.Should().BeEquivalentTo(expectedDependencyException);
 
+            this.dateTimeBrokerMock.Verify(broker =>
+                broker.GetCurrentDateTimeOffsetAsync(),
+                    Times.Once);
+
             this.ingestionTrackingProcessingServiceMock.Verify(service =>
                 service.RetrieveAllIngestionTrackingsAsync(),
                     Times.Once);
@@ -74,7 +80,6 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.TppLandings
                        Times.Once);
 
             this.ingestionTrackingProcessingServiceMock.VerifyNoOtherCalls();
-            this.hashBrokerMock.VerifyNoOtherCalls();
             this.dateTimeBrokerMock.VerifyNoOtherCalls();
             this.documentProcessingServiceMock.VerifyNoOtherCalls();
             this.ingestionTrackingProcessingAuditServiceMock.VerifyNoOtherCalls();
@@ -110,12 +115,14 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.TppLandings
                 loggingBrokerMock.Object,
                 dateTimeBrokerMock.Object,
                 identifierBrokerMock.Object,
-                hashBrokerMock.Object,
-                fileBrokerMock.Object,
                 landingConfiguration)
             {
                 CallBase = true
             };
+
+            this.dateTimeBrokerMock.Setup(broker =>
+                broker.GetCurrentDateTimeOffsetAsync())
+                    .ReturnsAsync(GetRandomDateTimeOffset());
 
             this.ingestionTrackingProcessingServiceMock.Setup(service =>
                 service.RetrieveAllIngestionTrackingsAsync())
@@ -131,6 +138,10 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.TppLandings
             // then
             actualException.Should().BeEquivalentTo(expectedDependencyException);
 
+            this.dateTimeBrokerMock.Verify(broker =>
+                broker.GetCurrentDateTimeOffsetAsync(),
+                    Times.Once);
+
             this.ingestionTrackingProcessingServiceMock.Verify(service =>
                 service.RetrieveAllIngestionTrackingsAsync(),
                     Times.Once);
@@ -141,7 +152,6 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.TppLandings
                         Times.Once);
 
             this.ingestionTrackingProcessingServiceMock.VerifyNoOtherCalls();
-            this.hashBrokerMock.VerifyNoOtherCalls();
             this.dateTimeBrokerMock.VerifyNoOtherCalls();
             this.documentProcessingServiceMock.VerifyNoOtherCalls();
             this.ingestionTrackingProcessingAuditServiceMock.VerifyNoOtherCalls();
@@ -179,12 +189,14 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.TppLandings
                 loggingBrokerMock.Object,
                 dateTimeBrokerMock.Object,
                 identifierBrokerMock.Object,
-                hashBrokerMock.Object,
-                fileBrokerMock.Object,
                 landingConfiguration)
             {
                 CallBase = true
             };
+
+            this.dateTimeBrokerMock.Setup(broker =>
+                broker.GetCurrentDateTimeOffsetAsync())
+                    .ReturnsAsync(GetRandomDateTimeOffset());
 
             this.ingestionTrackingProcessingServiceMock.Setup(service =>
                 service.RetrieveAllIngestionTrackingsAsync())
@@ -200,6 +212,10 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.TppLandings
             // then
             actualException.Should().BeEquivalentTo(expectedTppOrchestrationServiceException);
 
+            this.dateTimeBrokerMock.Verify(broker =>
+                broker.GetCurrentDateTimeOffsetAsync(),
+                    Times.Once);
+
             this.ingestionTrackingProcessingServiceMock.Verify(service =>
                 service.RetrieveAllIngestionTrackingsAsync(),
                     Times.Once);
@@ -210,7 +226,6 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.TppLandings
                         Times.Once);
 
             this.ingestionTrackingProcessingServiceMock.VerifyNoOtherCalls();
-            this.hashBrokerMock.VerifyNoOtherCalls();
             this.dateTimeBrokerMock.VerifyNoOtherCalls();
             this.documentProcessingServiceMock.VerifyNoOtherCalls();
             this.ingestionTrackingProcessingAuditServiceMock.VerifyNoOtherCalls();

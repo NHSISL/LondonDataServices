@@ -4,6 +4,7 @@
 
 using System;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using LHDS.Core.Models.Foundations.DataSetSpecifications;
 using Microsoft.EntityFrameworkCore;
@@ -15,18 +16,27 @@ namespace LHDS.Core.Brokers.Storages.Sql
         public DbSet<DataSetSpecification> DataSetSpecifications { get; set; }
 
         public async ValueTask<DataSetSpecification> InsertDataSetSpecificationAsync(
-            DataSetSpecification dataSetSpecification) => await InsertAsync(dataSetSpecification);
+            DataSetSpecification dataSetSpecification,
+            CancellationToken cancellationToken = default) =>
+                await InsertAsync(dataSetSpecification, cancellationToken);
 
-        public async ValueTask<IQueryable<DataSetSpecification>> SelectAllDataSetSpecificationsAsync() => 
-            await SelectAllAsync<DataSetSpecification>();
+        public async ValueTask<IQueryable<DataSetSpecification>> SelectAllDataSetSpecificationsAsync(
+            CancellationToken cancellationToken = default) =>
+                await SelectAllAsync<DataSetSpecification>(cancellationToken);
 
         public async ValueTask<DataSetSpecification> SelectDataSetSpecificationByIdAsync(
-            Guid dataSetSpecificationId) => await SelectAsync<DataSetSpecification>(dataSetSpecificationId);
+            Guid dataSetSpecificationId,
+            CancellationToken cancellationToken = default) =>
+                await SelectAsync<DataSetSpecification>(new object[] { dataSetSpecificationId }, cancellationToken);
 
         public async ValueTask<DataSetSpecification> UpdateDataSetSpecificationAsync(
-            DataSetSpecification dataSetSpecification) => await UpdateAsync(dataSetSpecification);
+            DataSetSpecification dataSetSpecification,
+            CancellationToken cancellationToken = default) =>
+                await UpdateAsync(dataSetSpecification, cancellationToken);
 
         public async ValueTask<DataSetSpecification> DeleteDataSetSpecificationAsync(
-            DataSetSpecification dataSetSpecification) => await DeleteAsync(dataSetSpecification);
+            DataSetSpecification dataSetSpecification,
+            CancellationToken cancellationToken = default) =>
+                await DeleteAsync(dataSetSpecification, cancellationToken);
     }
 }

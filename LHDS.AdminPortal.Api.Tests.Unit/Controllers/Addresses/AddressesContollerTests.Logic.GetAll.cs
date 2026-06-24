@@ -40,7 +40,7 @@ namespace LHDS.AdminPortal.Api.Tests.Unit.Controllers.Addresses
 
             this.addressServiceMock.Verify(service =>
                 service.RetrieveAllAddressesAsync(),
-                    Times.Once());
+                    Times.Once);
 
             this.addressServiceMock.VerifyNoOtherCalls();
         }

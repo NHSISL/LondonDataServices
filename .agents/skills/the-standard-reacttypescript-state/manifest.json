@@ -1,0 +1,17 @@
+{
+  "name": "the-standard-reacttypescript-state",
+  "version": "0.1.0",
+  "description": "Governs where state lives, prevents duplication of server data, requires business-meaningful transitions to go through services, and prohibits using global state to avoid prop design.",
+  "standard_version": "v0.1.0",
+  "skill_version": "v0.1.0",
+  "inputs": ["TypeScript and TSX files declaring or consuming React state"],
+  "outputs": [
+    "State with clear ownership at the appropriate scope",
+    "Review feedback citing rule IDs"
+  ],
+  "dependencies": [
+    "the-standard-reacttypescript-hooks",
+    "the-standard-reacttypescript-view-services"
+  ],
+  "applies_to": ["*.ts", "*.tsx"]
+}

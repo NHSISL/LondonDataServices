@@ -1,0 +1,20 @@
+{
+  "skill": "the-standard-reacttypescript-testing",
+  "version": "1.0.0",
+  "tools": {
+    "unit_tests": "Vitest",
+    "component_tests": "React Testing Library",
+    "e2e_tests": "Playwright or equivalent"
+  },
+  "mock_boundaries": {
+    "service_tests": "mock broker interface",
+    "component_tests": "mock service interface",
+    "page_tests": "mock view service interface"
+  },
+  "required_coverage_per_layer": {
+    "foundation_service": ["happy path", "validation failure", "exception localization"],
+    "view_service": ["aggregation", "view model field mapping"],
+    "component": ["visible text rendering", "user interaction", "accessibility"],
+    "page": ["loading state", "error state", "empty state", "success state"]
+  }
+}

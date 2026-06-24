@@ -83,7 +83,7 @@ namespace LHDS.AdminPortal.Api.Tests.Unit.Controllers.TerminologyArtifacts
 
             this.terminologyArtifactsServiceMock.Verify(service =>
                 service.RetrieveTerminologyArtifactByIdAsync(It.IsAny<Guid>()),
-                    Times.Once());
+                    Times.Once);
 
             this.terminologyArtifactsServiceMock.VerifyNoOtherCalls();
         }

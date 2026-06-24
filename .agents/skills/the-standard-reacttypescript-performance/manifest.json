@@ -1,0 +1,17 @@
+{
+  "name": "the-standard-reacttypescript-performance",
+  "version": "0.1.0",
+  "description": "Governs memoisation policy, object/function creation in render paths, component size, context update scope, bundle size, and lazy-loading strategy.",
+  "standard_version": "v0.1.0",
+  "skill_version": "v0.1.0",
+  "inputs": ["React TSX component files", "vite.config.ts"],
+  "outputs": [
+    "Components with no speculative memoisation and stable references",
+    "Review feedback citing rule IDs"
+  ],
+  "dependencies": [
+    "the-standard-reacttypescript-components",
+    "the-standard-reacttypescript-vite"
+  ],
+  "applies_to": ["*.tsx", "vite.config.ts"]
+}

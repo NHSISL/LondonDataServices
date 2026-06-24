@@ -1,8 +1,10 @@
-﻿// ---------------------------------------------------------
+// ---------------------------------------------------------
 // Copyright (c) North East London ICB. All rights reserved.
 // ---------------------------------------------------------
 
 using System.Collections.Generic;
+using System.IO;
+using System.Threading;
 using System.Threading.Tasks;
 using LHDS.Core.Brokers.Loggings;
 using LHDS.Core.Brokers.Mesh;
@@ -16,102 +18,114 @@ namespace LHDS.Core.Services.Foundations.Mesh
         private readonly IMeshBroker meshBroker;
         private readonly ILoggingBroker loggingBroker;
 
-        public MeshService(
-            IMeshBroker meshBroker,
-            ILoggingBroker loggingBroker)
+        public MeshService(IMeshBroker meshBroker, ILoggingBroker loggingBroker)
         {
             this.meshBroker = meshBroker;
             this.loggingBroker = loggingBroker;
         }
 
-        public ValueTask<bool> ValidateMailboxAccessAsync() =>
+        public ValueTask<bool> ValidateMailboxAccessAsync(CancellationToken cancellationToken = default) =>
             TryCatch(async () =>
             {
-                return await this.meshBroker.HandshakeAsync();
+                cancellationToken.ThrowIfCancellationRequested();
+
+                return await this.meshBroker.HandshakeAsync(cancellationToken);
             });
 
         public ValueTask<MeshMessage> SendMessageAsync(
             string mexTo,
             string mexWorkflowId,
-            byte[] fileContent,
+            Stream content,
             string mexSubject = "",
             string mexLocalId = "",
             string mexFileName = "",
             string mexContentChecksum = "",
             string contentType = "application/octet-stream",
             string contentEncoding = "",
-            string accept = "application/json") =>
+            string accept = "application/json",
+            CancellationToken cancellationToken = default) =>
             TryCatch(async () =>
             {
-                ValidateMeshMessageOnSendMessage(mexTo, mexWorkflowId, fileContent);
+                cancellationToken.ThrowIfCancellationRequested();
+                ValidateMeshMessageOnSendMessage(mexTo, mexWorkflowId, content);
 
                 Message brokerSendMessage = await this.meshBroker
                     .SendMessageAsync(
                         mexTo,
                         mexWorkflowId,
-                        fileContent,
+                        content,
                         mexSubject,
                         mexLocalId,
                         mexFileName,
                         mexContentChecksum,
                         contentType,
                         contentEncoding,
-                        accept);
+                        accept,
+                        cancellationToken);
 
-                MeshMessage resultMeshMessage = MessageToMeshMessage(brokerSendMessage);
-
-                return resultMeshMessage;
+                return MessageToMeshMessage(brokerSendMessage);
             });
 
-        public ValueTask<MeshMessage> RetrieveTrackingStatusByIdAsync(string messageId) =>
+        public ValueTask<MeshMessage> RetrieveTrackingStatusByIdAsync(
+            string messageId,
+            CancellationToken cancellationToken = default) =>
             TryCatch(async () =>
             {
+                cancellationToken.ThrowIfCancellationRequested();
                 ValidateMessageId(messageId);
-                Message brokerTrackMessage = await this.meshBroker.TrackMessageAsync(messageId);
-                MeshMessage resultMeshMessage = MessageToMeshMessage(brokerTrackMessage);
 
-                return resultMeshMessage;
+                Message brokerTrackMessage =
+                    await this.meshBroker.TrackMessageAsync(messageId, cancellationToken);
+
+                return MessageToMeshMessage(brokerTrackMessage);
             });
 
-        public ValueTask<List<string>> RetrieveMessageIdsFromInboxAsync() =>
+        public ValueTask<List<string>> RetrieveMessageIdsFromInboxAsync(
+            CancellationToken cancellationToken = default) =>
             TryCatch(async () =>
             {
-                List<string> messages = await this.meshBroker.RetrieveMessageIdsAsync();
+                cancellationToken.ThrowIfCancellationRequested();
 
-                return messages;
+                return await this.meshBroker.RetrieveMessageIdsAsync(cancellationToken);
             });
 
-        public ValueTask<MeshMessage> RetrieveMessageByIdAsync(string messageId) =>
+        public ValueTask<MeshMessage> RetrieveMessageByIdAsync(
+            string messageId,
+            Stream outputStream,
+            CancellationToken cancellationToken = default) =>
             TryCatch(async () =>
             {
+                cancellationToken.ThrowIfCancellationRequested();
+                ValidateOnRetrieveMessageById(messageId, outputStream);
+
+                Message brokerRetrieveMessage = await this.meshBroker
+                    .RetrieveMessageAsync(messageId, outputStream, cancellationToken);
+
+                return MessageToMeshMessage(brokerRetrieveMessage);
+            });
+
+        public ValueTask<bool> AcknowledgeMessageByIdAsync(
+            string messageId,
+            CancellationToken cancellationToken = default) =>
+            TryCatch(async () =>
+            {
+                cancellationToken.ThrowIfCancellationRequested();
                 ValidateMessageId(messageId);
-                Message brokerRetrieveMessage = await this.meshBroker.RetrieveMessageAsync(messageId);
-                MeshMessage resultMeshMessage = MessageToMeshMessage(brokerRetrieveMessage);
 
-                return resultMeshMessage;
+                return await this.meshBroker.AcknowledgeMessageByIdAsync(messageId, cancellationToken);
             });
 
-        public ValueTask<bool> AcknowledgeMessageByIdAsync(string messageId) =>
-            TryCatch(async () =>
-            {
-                ValidateMessageId(messageId);
-                bool acknowledgedResult = await this.meshBroker.AcknowledgeMessageByIdAsync(messageId);
-
-                return acknowledgedResult;
-            });
-
-        public static MeshMessage MessageToMeshMessage(Message message)
+        private static MeshMessage MessageToMeshMessage(Message message)
         {
             return new MeshMessage
             {
                 MessageId = message.MessageId,
                 Headers = message.Headers,
-                FileContent = message.FileContent,
                 TrackingInfo = ConvertToMeshMessageTrackingInfo(message.TrackingInfo)
             };
         }
 
-        public static MessageTrackingInfo ConvertToMeshMessageTrackingInfo(TrackingInfo trackingInfo)
+        private static MessageTrackingInfo ConvertToMeshMessageTrackingInfo(TrackingInfo trackingInfo)
         {
             if (trackingInfo == null)
             {
@@ -153,7 +167,7 @@ namespace LHDS.Core.Services.Foundations.Mesh
             };
         }
 
-        public static TrackingInfo ConvertToMessageTrackingInfo(MessageTrackingInfo trackingInfo)
+        private static TrackingInfo ConvertToMessageTrackingInfo(MessageTrackingInfo trackingInfo)
         {
             if (trackingInfo == null)
             {

@@ -20,33 +20,40 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.SubscriberPractices
         {
             // given
             DateTimeOffset randomDateTimeOffset = GetRandomDateTimeOffset();
-            EntraUser randomEntraUser = CreateRandomEntraUser();
+            string randomUserId = GetRandomStringWithLengthOf(50);
 
             SubscriberPractice randomSubscriberPractice =
-                CreateRandomModifySubscriberPractice(randomDateTimeOffset, randomEntraUser.EntraUserId);
+                CreateRandomModifySubscriberPractice(randomDateTimeOffset, randomUserId);
 
             SubscriberPractice inputSubscriberPractice = randomSubscriberPractice.DeepClone();
-            inputSubscriberPractice.CreatedBy = Guid.NewGuid().ToString();
-            inputSubscriberPractice.CreatedDate = randomDateTimeOffset.AddDays(1);
             SubscriberPractice storageSubscriberPractice = randomSubscriberPractice.DeepClone();
-            storageSubscriberPractice.UpdatedDate = storageSubscriberPractice.CreatedDate;
+            storageSubscriberPractice.UpdatedDate = inputSubscriberPractice.CreatedDate;
             SubscriberPractice updatedSubscriberPractice = inputSubscriberPractice.DeepClone();
             updatedSubscriberPractice.CreatedBy = storageSubscriberPractice.CreatedBy;
             updatedSubscriberPractice.CreatedDate = storageSubscriberPractice.CreatedDate;
             SubscriberPractice expectedSubscriberPractice = updatedSubscriberPractice.DeepClone();
             Guid subscriberPracticeId = inputSubscriberPractice.Id;
 
+            this.securityAuditBrokerMock.Setup(broker =>
+                broker.ApplyModifyAuditValuesAsync(inputSubscriberPractice))
+                    .ReturnsAsync(inputSubscriberPractice);
+
             this.dateTimeBrokerMock.Setup(broker =>
                 broker.GetCurrentDateTimeOffsetAsync())
                     .ReturnsAsync(randomDateTimeOffset);
 
-            this.securityBrokerMock.Setup(broker =>
-                broker.GetCurrentUserAsync())
-                    .ReturnsAsync(randomEntraUser);
+            this.securityAuditBrokerMock.Setup(broker =>
+                broker.GetUserIdAsync())
+                    .ReturnsAsync(randomUserId);
 
             this.storageBrokerMock.Setup(broker =>
                 broker.SelectSubscriberPracticeByIdAsync(subscriberPracticeId))
                     .ReturnsAsync(storageSubscriberPractice);
+
+            this.securityAuditBrokerMock.Setup(broker =>
+                broker.EnsureAddAuditValuesRemainsUnchangedOnModifyAsync(
+                    inputSubscriberPractice, storageSubscriberPractice))
+                        .ReturnsAsync(inputSubscriberPractice);
 
             this.storageBrokerMock.Setup(broker =>
                 broker.UpdateSubscriberPracticeAsync(inputSubscriberPractice))
@@ -59,24 +66,33 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.SubscriberPractices
             // then
             actualSubscriberPractice.Should().BeEquivalentTo(expectedSubscriberPractice);
 
+            this.securityAuditBrokerMock.Verify(broker =>
+                broker.ApplyModifyAuditValuesAsync(inputSubscriberPractice),
+                    Times.Once);
+
             this.dateTimeBrokerMock.Verify(broker =>
                 broker.GetCurrentDateTimeOffsetAsync(),
-                    Times.Exactly(2));
+                    Times.Once);
 
-            this.securityBrokerMock.Verify(broker =>
-                broker.GetCurrentUserAsync(),
-                    Times.Exactly(2));
+            this.securityAuditBrokerMock.Verify(broker =>
+                broker.GetUserIdAsync(),
+                    Times.Once);
 
             this.storageBrokerMock.Verify(broker =>
                 broker.SelectSubscriberPracticeByIdAsync(inputSubscriberPractice.Id),
                     Times.Once);
 
+            this.securityAuditBrokerMock.Verify(broker =>
+                broker.EnsureAddAuditValuesRemainsUnchangedOnModifyAsync(
+                    inputSubscriberPractice, storageSubscriberPractice),
+                        Times.Once);
+
             this.storageBrokerMock.Verify(broker =>
                 broker.UpdateSubscriberPracticeAsync(inputSubscriberPractice),
                     Times.Once);
 
+            this.securityAuditBrokerMock.VerifyNoOtherCalls();
             this.dateTimeBrokerMock.VerifyNoOtherCalls();
-            this.securityBrokerMock.VerifyNoOtherCalls();
             this.storageBrokerMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
         }

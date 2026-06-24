@@ -44,7 +44,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.TerminologyPolls
             terminologyPollServiceMock.Verify(service =>
                 service.EnsureCreatedAuditPropertiesIsSameAsStorageAsync(
                     inputTerminologyPoll, maybeTerminologyPoll),
-                        Times.Once());
+                        Times.Once);
 
             terminologyPollServiceMock.VerifyNoOtherCalls();
             this.dateTimeBrokerMock.VerifyNoOtherCalls();

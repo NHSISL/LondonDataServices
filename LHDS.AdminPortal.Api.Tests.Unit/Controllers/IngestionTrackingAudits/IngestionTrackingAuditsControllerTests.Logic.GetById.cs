@@ -44,7 +44,7 @@ namespace LHDS.AdminPortal.Api.Tests.Unit.Controllers.IngestionTrackingAudits
 
             this.ingestionTrackingAuditServiceMock.Verify(service =>
                 service.RetrieveIngestionTrackingAuditByIdAsync(inputId),
-                    Times.Once());
+                    Times.Once);
 
             this.ingestionTrackingAuditServiceMock.VerifyNoOtherCalls();
         }

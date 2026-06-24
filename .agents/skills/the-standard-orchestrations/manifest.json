@@ -1,0 +1,11 @@
+{
+  "name": "the-standard-orchestrations",
+  "version": "0.1.0",
+  "description": "Enforces orchestration service design: multi-entity coordination through services with no direct broker access.",
+  "the_standard_version": "v2.50.0",
+  "skill_version": "v0.1.0",
+  "inputs": ["C# orchestration service source file", "C# orchestration service test file"],
+  "outputs": ["Standard-compliant orchestration service code", "review feedback"],
+  "dependencies": ["the-standard-core", "the-standard-foundations", "the-standard-processings"],
+  "applies_to": ["*OrchestrationService*.cs", "*OrchestrationServiceTests*.cs"]
+}

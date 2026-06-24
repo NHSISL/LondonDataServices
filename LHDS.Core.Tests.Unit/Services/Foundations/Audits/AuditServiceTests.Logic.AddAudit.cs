@@ -85,7 +85,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Audits
 
             this.identifierBrokerMock.Verify(broker =>
                 broker.GetIdentifierAsync(),
-                    Times.Once());
+                    Times.Once);
 
             this.storageBrokerMock.Verify(broker =>
                 broker.InsertAuditAsync(It.Is(SameAuditAs(inputAudit))),

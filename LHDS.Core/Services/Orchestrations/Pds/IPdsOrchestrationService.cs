@@ -3,6 +3,8 @@
 // ---------------------------------------------------------
 
 using System.Collections.Generic;
+using System.IO;
+using System.Threading;
 using System.Threading.Tasks;
 using LHDS.Core.Models.Foundations.PdsAudits;
 
@@ -10,8 +12,12 @@ namespace LHDS.Core.Services.Orchestrations.Pds
 {
     public interface IPdsOrchestrationService
     {
-        ValueTask<PdsAudit> PickupFileAndSendToMesh(byte[] pdsFile, string fileName);
-        ValueTask<List<PdsAudit>> RetreiveMessagesFromMeshAndUpdateStorage();
-        ValueTask<bool> ValidateMailboxAccessAsync();
+        ValueTask<PdsAudit> PickupFileAndSendToMesh(
+            Stream pdsStream,
+            string fileName,
+            CancellationToken cancellationToken = default);
+
+        ValueTask<List<PdsAudit>> RetreiveMessagesFromMeshAndUpdateStorage(CancellationToken cancellationToken = default);
+        ValueTask<bool> ValidateMailboxAccessAsync(CancellationToken cancellationToken = default);
     }
 }

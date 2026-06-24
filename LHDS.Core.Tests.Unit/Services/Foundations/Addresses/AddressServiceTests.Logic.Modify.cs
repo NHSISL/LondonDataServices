@@ -58,7 +58,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Addresses
 
             this.securityAuditBrokerMock.Verify(service =>
                service.ApplyModifyAuditValuesAsync(inputAddress),
-                    Times.Once());
+                    Times.Once);
 
             this.dateTimeBrokerMock.Verify(broker =>
                 broker.GetCurrentDateTimeOffsetAsync(),

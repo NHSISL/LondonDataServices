@@ -45,7 +45,7 @@ namespace LHDS.AdminPortal.Api.Tests.Unit.Controllers.Suppliers
 
             this.supplierServiceMock.Verify(service =>
                 service.RetrieveAllSuppliersAsync(),
-                    Times.Once());
+                    Times.Once);
 
             this.supplierServiceMock.VerifyNoOtherCalls();
         }

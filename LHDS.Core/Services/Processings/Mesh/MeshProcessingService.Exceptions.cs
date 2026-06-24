@@ -24,6 +24,10 @@ namespace LHDS.Core.Services.Processings.Mesh
             {
                 return await returningBoolMeshFunction();
             }
+            catch (OperationCanceledException)
+            {
+                throw;
+            }
             catch (InvalidMeshProcessingArgumentException exception)
             {
                 throw await CreateAndLogValidationExceptionAsync(exception);
@@ -60,6 +64,10 @@ namespace LHDS.Core.Services.Processings.Mesh
             try
             {
                 return await returningMessageMeshFunction();
+            }
+            catch (OperationCanceledException)
+            {
+                throw;
             }
             catch (InvalidMeshProcessingArgumentException exception)
             {
@@ -105,6 +113,10 @@ namespace LHDS.Core.Services.Processings.Mesh
             try
             {
                 return await returningStringsMeshFunction();
+            }
+            catch (OperationCanceledException)
+            {
+                throw;
             }
             catch (MeshValidationException meshValidationException)
             {

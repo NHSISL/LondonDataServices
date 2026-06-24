@@ -1,0 +1,35 @@
+{
+  "skill": "the-standard-reacttypescript-accessibility",
+  "rules": [
+    {
+      "id": "tsr-accessibility-001",
+      "severity": "ERROR",
+      "category": "Semantic HTML",
+      "rule": "Interactive UI must use semantic HTML elements — button, a, input, select, textarea."
+    },
+    {
+      "id": "tsr-accessibility-002",
+      "severity": "ERROR",
+      "category": "Form Labels",
+      "rule": "Every form input must have an accessible label via label[htmlFor] or aria-label."
+    },
+    {
+      "id": "tsr-accessibility-003",
+      "severity": "ERROR",
+      "category": "Image Alt Text",
+      "rule": "All img elements must have an alt attribute — descriptive for informative images, empty string for decorative."
+    },
+    {
+      "id": "tsr-accessibility-004",
+      "severity": "ERROR",
+      "category": "Keyboard Navigation",
+      "rule": "All interactive elements must be reachable and operable by keyboard."
+    },
+    {
+      "id": "tsr-accessibility-005",
+      "severity": "ERROR",
+      "category": "Accessible Error Messages",
+      "rule": "Error messages must be rendered in visible text and associated with the relevant control."
+    }
+  ]
+}

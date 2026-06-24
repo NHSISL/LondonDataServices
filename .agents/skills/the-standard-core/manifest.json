@@ -1,0 +1,17 @@
+{
+  "name": "the-standard-core",
+  "version": "0.1.0",
+  "description": "Enforces the foundational theory, purposing, modeling, simulation, and principles of The Standard.",
+  "the_standard_version": "v2.50.0",
+  "skill_version": "v0.1.0",
+  "inputs": [
+    "C# source file",
+    "architectural decision"
+  ],
+  "outputs": [
+    "Standard-compliant code",
+    "architectural review feedback"
+  ],
+  "dependencies": [],
+  "applies_to": ["*.cs"]
+}

@@ -36,7 +36,9 @@ namespace LHDS.Core.Tests.Acceptance.Clients.Addresses
 
             foreach (ResolvedAddress resolvedAddress in randomResolvedAddresses)
             {
-                await this.storageBroker.InsertResolvedAddressAsync(resolvedAddress);
+                await this.storageBroker.InsertResolvedAddressAsync(
+                    resolvedAddress,
+                    cancellationToken: TestContext.Current.CancellationToken);
                 AssignAddress randomAssignAddress = CreateRandomAssignAddress(randomDateTimeOffset);
 
                 this.wireMockServer

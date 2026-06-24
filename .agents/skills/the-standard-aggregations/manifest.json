@@ -1,0 +1,11 @@
+{
+  "name": "the-standard-aggregations",
+  "version": "0.1.0",
+  "description": "Enforces aggregation service design: fan-out coordination of multiple orchestration services with no data transformation.",
+  "the_standard_version": "v2.50.0",
+  "skill_version": "v0.1.0",
+  "inputs": ["C# aggregation service source file", "C# aggregation service test file"],
+  "outputs": ["Standard-compliant aggregation service code", "review feedback"],
+  "dependencies": ["the-standard-core", "the-standard-orchestrations"],
+  "applies_to": ["*AggregationService*.cs", "*ManagementService*.cs", "*AggregationServiceTests*.cs"]
+}

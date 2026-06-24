@@ -1,0 +1,47 @@
+{
+  "skill": "the-standard-reacttypescript-errors",
+  "rules": [
+    {
+      "id": "tsr-errors-001",
+      "severity": "ERROR",
+      "category": "Broker Layer",
+      "rule": "Brokers must expose external failures by throwing — not by converting them into UI messages."
+    },
+    {
+      "id": "tsr-errors-002",
+      "severity": "ERROR",
+      "category": "Foundation Service Layer",
+      "rule": "Foundation services must catch broker exceptions and re-throw as domain-specific exceptions."
+    },
+    {
+      "id": "tsr-errors-003",
+      "severity": "WARN",
+      "category": "View Service Layer",
+      "rule": "View services may convert service errors into view-friendly error models."
+    },
+    {
+      "id": "tsr-errors-004",
+      "severity": "ERROR",
+      "category": "Page Layer",
+      "rule": "Pages must render an error state explicitly — not silently render nothing."
+    },
+    {
+      "id": "tsr-errors-005",
+      "severity": "ERROR",
+      "category": "Component Layer",
+      "rule": "Components must not inspect raw infrastructure errors (error.status, error.code)."
+    },
+    {
+      "id": "tsr-errors-006",
+      "severity": "ERROR",
+      "category": "No Silent Swallowing",
+      "rule": "Errors must never be silently swallowed without logging or re-throwing."
+    },
+    {
+      "id": "tsr-errors-007",
+      "severity": "ERROR",
+      "category": "Logging",
+      "rule": "Unexpected suppressed errors must be logged through an approved logging broker."
+    }
+  ]
+}

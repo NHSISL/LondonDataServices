@@ -6,11 +6,15 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using LHDS.Core.Brokers.DateTimes;
+using LHDS.Core.Brokers.Files;
 using LHDS.Core.Brokers.Identifiers;
 using LHDS.Core.Brokers.Loggings;
+using LHDS.Core.Brokers.TempLocations;
 using LHDS.Core.Models.Brokers.Storages.Blobs;
+using LHDS.Core.Models.Foundations.Mesh;
 using LHDS.Core.Models.Foundations.PdsAudits;
 using LHDS.Core.Models.Orchestrations.Pds;
 using LHDS.Core.Services.Foundations.Documents;
@@ -29,6 +33,8 @@ namespace LHDS.Core.Services.Orchestrations.Pds
         private readonly IDateTimeBroker dateTimeBroker;
         private readonly IIdentifierBroker identifierBroker;
         private readonly PdsConfiguration pdsConfiguration;
+        private readonly ITempLocationBroker tempLocationBroker;
+        private readonly IFileBroker fileBroker;
 
         public PdsOrchestrationService(
             IPdsAuditService pdsAuditService,
@@ -38,8 +44,9 @@ namespace LHDS.Core.Services.Orchestrations.Pds
             ILoggingBroker loggingBroker,
             IDateTimeBroker dateTimeBroker,
             IIdentifierBroker identifierBroker,
-            PdsConfiguration pdsConfiguration
-            )
+            PdsConfiguration pdsConfiguration,
+            ITempLocationBroker tempLocationBroker,
+            IFileBroker fileBroker)
         {
             this.pdsAuditService = pdsAuditService;
             this.documentService = documentService;
@@ -49,36 +56,46 @@ namespace LHDS.Core.Services.Orchestrations.Pds
             this.dateTimeBroker = dateTimeBroker;
             this.identifierBroker = identifierBroker;
             this.pdsConfiguration = pdsConfiguration;
+            this.tempLocationBroker = tempLocationBroker;
+            this.fileBroker = fileBroker;
         }
 
-        public ValueTask<bool> ValidateMailboxAccessAsync() =>
+        public ValueTask<bool> ValidateMailboxAccessAsync(
+            CancellationToken cancellationToken = default) =>
             TryCatch(async () =>
             {
-                return await meshService.ValidateMailboxAccessAsync();
+                cancellationToken.ThrowIfCancellationRequested();
+
+                return await meshService.ValidateMailboxAccessAsync(cancellationToken);
             });
 
-        public ValueTask<PdsAudit> PickupFileAndSendToMesh(byte[] pdsFile, string fileName) =>
+        public ValueTask<PdsAudit> PickupFileAndSendToMesh(
+            Stream pdsStream,
+            string fileName,
+            CancellationToken cancellationToken = default) =>
         TryCatch(async () =>
         {
+            cancellationToken.ThrowIfCancellationRequested();
             ValidateConfigurationSettings();
             ValidateBlobContainers();
-            ValidatePdsArgs(pdsFile, fileName);
+            ValidatePdsArgs(pdsStream, fileName);
 
             DateTimeOffset timeStamp = await this.dateTimeBroker.GetCurrentDateTimeOffsetAsync();
             Guid id = await this.identifierBroker.GetIdentifierAsync();
             Guid correlationId = await this.identifierBroker.GetIdentifierAsync();
 
-            var meshMessage = await this.meshService.SendMessageAsync(
-                   mexTo: this.pdsConfiguration.To,
-                   mexWorkflowId: this.pdsConfiguration.WorkflowId,
-                   fileContent: pdsFile,
-                   mexSubject: string.Empty,
-                   mexLocalId: correlationId.ToString(),
-                   mexFileName: fileName,
-                   mexContentChecksum: string.Empty,
-                   contentType: "text/plain",
-                   contentEncoding: string.Empty,
-                   accept: "application/json");
+            await this.meshService.SendMessageAsync(
+                mexTo: this.pdsConfiguration.To,
+                mexWorkflowId: this.pdsConfiguration.WorkflowId,
+                content: pdsStream,
+                mexSubject: string.Empty,
+                mexLocalId: correlationId.ToString(),
+                mexFileName: fileName,
+                mexContentChecksum: string.Empty,
+                contentType: "text/plain",
+                contentEncoding: string.Empty,
+                accept: "application/json",
+                cancellationToken: cancellationToken);
 
             PdsAudit pdsAuditItem = await this.pdsAuditService
                 .AddPdsAuditAsync(
@@ -98,9 +115,11 @@ namespace LHDS.Core.Services.Orchestrations.Pds
             return pdsAuditItem;
         });
 
-        public ValueTask<List<PdsAudit>> RetreiveMessagesFromMeshAndUpdateStorage() =>
+        public ValueTask<List<PdsAudit>> RetreiveMessagesFromMeshAndUpdateStorage(
+            CancellationToken cancellationToken = default) =>
         TryCatch(async () =>
         {
+            cancellationToken.ThrowIfCancellationRequested();
             ValidateConfigurationSettings();
             ValidateBlobContainers();
 
@@ -109,7 +128,8 @@ namespace LHDS.Core.Services.Orchestrations.Pds
 
             var exceptions = new List<Exception>();
 
-            while ((messageIds = await this.meshService.RetrieveMessageIdsFromInboxAsync()).Count > 0)
+            while ((messageIds = await this.meshService
+                .RetrieveMessageIdsFromInboxAsync(cancellationToken)).Count > 0)
             {
                 foreach (var id in messageIds)
                 {
@@ -117,46 +137,77 @@ namespace LHDS.Core.Services.Orchestrations.Pds
                     {
                         PdsAudit pdsAudit = await TryCatch(async () =>
                         {
-                            var message = await this.meshService.RetrieveMessageByIdAsync(id);
+                            string tempFilePath = this.tempLocationBroker.GetUniqueHomeFilePath();
+                            MeshMessage message;
 
-                            if (message.Headers["mex-workflowid"].FirstOrDefault() != this.pdsConfiguration.WorkflowId &&
-                                message.Headers["mex-workflowid"].FirstOrDefault() != this.pdsConfiguration.ReturnWorkflowId)
+                            try
                             {
-                                return null;
+                                await using (FileStream outputStream = new FileStream(
+                                    tempFilePath,
+                                    FileMode.Create,
+                                    FileAccess.Write,
+                                    FileShare.None,
+                                    bufferSize: 4096,
+                                    useAsync: true))
+                                {
+                                    message = await this.meshService
+                                        .RetrieveMessageByIdAsync(id, outputStream, cancellationToken);
+                                }
+
+                                if (message.Headers["mex-workflowid"].FirstOrDefault() != this.pdsConfiguration.WorkflowId &&
+                                    message.Headers["mex-workflowid"].FirstOrDefault() != this.pdsConfiguration.ReturnWorkflowId)
+                                {
+                                    return null;
+                                }
+
+                                string filename = message.Headers["mex-filename"].FirstOrDefault();
+
+                                string cleanedFileName =
+                                    filename.StartsWith("RESP_") ? filename.Substring("RESP_".Length) : filename;
+
+                                string fileName = $"{pdsConfiguration.OutputFolder}/{cleanedFileName}";
+
+                                await using (FileStream inputStream = new FileStream(
+                                    tempFilePath,
+                                    FileMode.Open,
+                                    FileAccess.Read,
+                                    FileShare.Read,
+                                    bufferSize: 4096,
+                                    useAsync: true))
+                                {
+                                    await this.documentService.AddDocumentAsync(
+                                        inputStream,
+                                        fileName,
+                                        container: blobContainers.Pds);
+                                }
+
+                                var correlationId = Guid.Parse(message.Headers["mex-localid"].FirstOrDefault());
+                                DateTimeOffset currentDate = await this.dateTimeBroker.GetCurrentDateTimeOffsetAsync();
+
+                                var pdsAudit = new PdsAudit
+                                {
+                                    Id = await this.identifierBroker.GetIdentifierAsync(),
+                                    CorrelationId = correlationId,
+                                    FileName = fileName,
+                                    Message = $"Received message from mesh with id {message.MessageId}",
+                                    MessageId = message.MessageId,
+                                    CreatedDate = currentDate,
+                                    UpdatedDate = currentDate,
+                                    CreatedBy = "System",
+                                    UpdatedBy = "System"
+                                };
+
+                                await this.pdsAuditService.AddPdsAuditAsync(pdsAudit);
+
+                                await this.meshService
+                                    .AcknowledgeMessageByIdAsync(message.MessageId, cancellationToken);
+
+                                return pdsAudit;
                             }
-
-                            string filename = message.Headers["mex-filename"].FirstOrDefault();
-                            
-                            string cleanedFileName = 
-                                filename.StartsWith("RESP_") ? filename.Substring("RESP_".Length) : filename;
-                                
-                            string fileName = $"{pdsConfiguration.OutputFolder}/{cleanedFileName}";
-
-                            using (Stream input = new MemoryStream(message.FileContent))
+                            finally
                             {
-                                await this.documentService.AddDocumentAsync(input, fileName, container: blobContainers.Pds);
+                                await this.fileBroker.DeleteFileAsync(tempFilePath);
                             }
-
-                            var correlationId = Guid.Parse(message.Headers["mex-localid"].FirstOrDefault());
-                            DateTimeOffset currentDate = await this.dateTimeBroker.GetCurrentDateTimeOffsetAsync();
-
-                            var pdsAudit = new PdsAudit
-                            {
-                                Id = await this.identifierBroker.GetIdentifierAsync(),
-                                CorrelationId = correlationId,
-                                FileName = fileName,
-                                Message = $"Received message from mesh with id {message.MessageId}",
-                                MessageId = message.MessageId,
-                                CreatedDate = currentDate,
-                                UpdatedDate = currentDate,
-                                CreatedBy = "System",
-                                UpdatedBy = "System"
-                            };
-
-                            await this.pdsAuditService.AddPdsAuditAsync(pdsAudit);
-                            await this.meshService.AcknowledgeMessageByIdAsync(message.MessageId);
-
-                            return pdsAudit;
                         });
 
                         if (pdsAudit == null)

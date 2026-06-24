@@ -1,232 +1,43 @@
-# Copilot Instructions
+---
+applyTo: "**"
+---
 
-## Code Style Rules
+# Copilot Instructions — The Standard Repository Rules
 
-### Line Length
+## Pull Request Rules
 
--   All `.cs` source files must adhere to the following rule:
-    -   No line of code should exceed **120 characters** in length.
-    -   This includes comments, string literals, and code.
-    -   Exception: automatically generated files may be ignored if they
-        cannot be reformatted safely.
--   **How to measure (raw file characters, per-line only):**
-    -   Count based on **raw file characters**, not editor rendering.
-    -   **Tabs count as 4 characters** for measurement.
-    -   Trailing whitespace must be removed.
-    -   **Per-physical-line measurement ONLY.** The unit of measurement
-        is a **single newline-delimited line**.
-        -   **Never** add or aggregate the lengths of multiple lines.
-        -   A wrapped invocation is compliant if **each** physical line
-            is ≤ 120 characters.
-    -   Ignore soft wrapping (on-screen wrapping that doesn't insert a
-        newline).
+- PR title must follow the format: `[CATEGORY]: [Description Of Work Completed]` (tst-pull-requests-001)
+- `[CATEGORY]` must be in CAPS and taken from the approved category list (tst-pull-requests-002)
+- `[Description Of Work Completed]` must be in Pascal Case (tst-pull-requests-003)
+- PR title category must not be lowercase or mixed-case — `foundations:` and `Foundations:` are both wrong (tst-pull-requests-008)
+- PR title description must not be vague — `fix`, `update`, `changes`, `wip` without specifics are forbidden (tst-pull-requests-009)
+- PR title must not use a category not in the approved category list (tst-pull-requests-010)
+- To auto-close an issue on merge, add `Closes #[issue-number]` anywhere in the PR description (tst-pull-requests-005)
+- To close multiple issues, list each separately: `Closes #10, closes #123` (tst-pull-requests-006)
+- To link an issue without auto-closing, use `#[issue-number]` without a keyword (tst-pull-requests-007)
 
-### Code Formatting
+PR title examples: `FOUNDATIONS: Add Student` · `BROKERS: Insert Student` · `CONTROLLERS: POST Student`
 
--   Single-line instructions must follow each other with **no blank
-    lines** in between.
--   Multi-line instructions must always be preceded by **exactly one
-    blank line**.
--   If a multi-line instruction is followed by further instructions, it
-    must also be followed by **exactly one blank line**.
--   **Exception (block first statement):** If a statement is the **first
-    statement inside a block**---i.e., directly after `{`---**no
-    preceding blank line** is required.
--   Any C# `return` statement must be preceded by **exactly one blank
-    line** unless it is the first statement in a block.
--   If a constructor/method name would push a line past 120 characters,
-    move `new`, the call, or the arguments to the next line.
--   Always format so that **no single physical line exceeds 120
-    characters**, even when calls span multiple lines.
--   **Definition of a blank line (updated):**\
-    A blank line is any physical line that contains **no visible
-    characters**.\
-    After trimming whitespace, the line must be empty.\
-    Lines containing only spaces or tabs **are valid blank lines**.
--   **Method separation:** Method declarations must be preceded by
-    **exactly one blank line** after the closing brace of the previous
-    member.
--   **Argument indentation:**
-    -   For multi-line method or constructor calls, the first line ends
-        before the first argument.\
-    -   Each wrapped argument line must be indented **one additional
-        indentation level** (usually 4 spaces).\
-    -   Do **not** use extra indentation levels.\
-    -   The closing `)` must align with the start of the call.
+## Commit Message Rules
 
-### Enforcement
+TDD commits — use FAIL/PASS format for all TDD-required categories:
 
--   Copilot should **not generate code** that exceeds the 120-character
-    line limit.
--   When writing new C# code, Copilot should:
-    -   Break up long method/constructor calls across multiple lines.
-    -   Use string interpolation or verbatim strings with proper line
-        breaks where needed.
-    -   Format long LINQ queries across multiple lines.
-    -   Wrap parameters and arguments for readability.
-    -   Insert a blank line before any `return` following other
-        statements.
-    -   Prefer moving `new` or the method invocation to the next line
-        when appropriate.
+- When committing a failing test: `[Test Name] -> FAIL` e.g., `ShouldAddStudentAsync -> FAIL` (tst-commits-001)
+- When committing the passing implementation: `[Test Name] -> PASS` e.g., `ShouldAddStudentAsync -> PASS` (tst-commits-002)
+- TDD commits must not use the `[CATEGORY]: [Description]` format (tst-commits-006)
 
-### Review Guidelines (strict)
+Non-TDD commits — use category format for all non-TDD categories:
 
--   Copilot must:
-    -   Evaluate **each physical line independently**.
-    -   Flag a violation only when a **single physical line** exceeds
-        120 characters.
-    -   When flagging, include line number and measured character count.
-    -   Suggest multiline formatting only when the offending line
-        exceeds 120.
-    -   **Not** flag whitespace-only lines; they are valid blank lines.
-    -   Flag missing blank lines before `return`.
--   **Operator lines:**
-    -   Measure compliance per physical line.\
-    -   Do not combine operator lines with continuations.\
-    -   Operator-at-end style is preferred.
--   **Block-first statement exemption:**
-    -   Do not require a preceding blank line if the previous meaningful
-        line ends with `{`.
+- Format: `[CATEGORY]: [Description Of Work Completed]` e.g., `BROKERS: Insert Student` (tst-commits-003)
+- `[CATEGORY]` must always be in CAPS and taken from the approved category list (tst-commits-004)
+- `[Description Of Work Completed]` must be in Pascal Case (tst-commits-005)
+- Category must not be lowercase or mixed-case (tst-commits-007)
+- Description must not be vague — `fix`, `update`, `changes`, `wip` without context are forbidden (tst-commits-008)
 
-### Examples
+## Approved Categories
 
-#### ✅ Correct (first statement inside a block; no blank line required)
+TDD required (use FAIL/PASS commit pairs):
+FOUNDATIONS, PROCESSINGS, ORCHESTRATIONS, COORDINATIONS, MANAGEMENTS, AGGREGATIONS, VIEWS, COMPONENTS, PAGES, ACCEPTANCE, INTEGRATION
 
-``` csharp
-public void Foo()
-{
-    DoSomething(
-        x,
-        y);
-}
-```
-
-#### ❌ Incorrect (blank line required between two statements)
-
-``` csharp
-DoSomething();
-DoSomethingElse(
-    x,
-    y);
-```
-
-#### ✅ Correct (wrapped invocation; each line ≤ 120)
-
-``` csharp
-Validate(
-    createException: () => new InvalidDecisionPollException(
-        message: "Invalid decisionPoll. Please correct the errors and try again."),
-
-    (Rule: IsInvalid(decisionPoll.Id), Parameter: nameof(DecisionPoll.Id)));
-```
-
-#### ❌ Incorrect (single line \> 120)
-
-``` csharp
-Validate(createException: () => new InvalidDecisionPollException(message: "Invalid decisionPoll. Please correct the errors and try again."));
-```
-
-------------------------------------------------------------------------
-
-### Code Formatting Rule Examples
-
-#### ✅ Correct (return with blank line)
-
-``` csharp
-var user = users.FirstOrDefault(u => u.Id == id);
-
-return user;
-```
-
-#### ❌ Incorrect
-
-``` csharp
-var user = users.FirstOrDefault(u => u.Id == id);
-return user;
-```
-
-------------------------------------------------------------------------
-
-### Argument Indentation Examples
-
-#### ✅ Correct
-
-``` csharp
-DoSomething(
-    firstArgument: "value1",
-    secondArgument: "value2",
-    thirdArgument: "value3");
-```
-
-#### ❌ Incorrect (extra indentation)
-
-``` csharp
-DoSomething(
-        firstArgument: "value1",
-        secondArgument: "value2",
-        thirdArgument: "value3");
-```
-
-#### ❌ Incorrect (misaligned closing parenthesis)
-
-``` csharp
-DoSomething(
-    firstArgument: "value1",
-    secondArgument: "value2",
-    thirdArgument: "value3"
-    );
-```
-
-------------------------------------------------------------------------
-
-### More Formatting Examples
-
-#### ✅ Correct
-
-``` csharp
-var filteredUsers = users
-    .Where(u => u.IsActive && u.LastLoginDate >= DateTime.UtcNow.AddDays(-30))
-    .OrderByDescending(u => u.LastLoginDate)
-    .Select(u => new
-    {
-        u.Id,
-        u.Name,
-        u.Email,
-        LastSeen = u.LastLoginDate.ToString("yyyy-MM-dd HH:mm:ss")
-    })
-    .ToList();
-```
-
-#### ❌ Incorrect
-
-``` csharp
-var filteredUsers = users.Where(u => u.IsActive && u.LastLoginDate >= DateTime.UtcNow.AddDays(-30)).OrderByDescending(u => u.LastLoginDate).Select(u => new { u.Id, u.Name, u.Email, LastSeen = u.LastLoginDate.ToString("yyyy-MM-dd HH:mm:ss") }).ToList();
-```
-
-------------------------------------------------------------------------
-
-### Rationale
-
--   **Per-line measurement** prevents false positives in wrapped calls.
--   **Tabs count as 4 characters** ensures consistent line-length
-    calculation.
--   **Whitespace-only blank lines count as blank** and match VS
-    behaviour.
--   **Return visibility** improves readability.
--   **Argument indentation** improves consistency.
--   **Block-first patterns** avoid unnecessary whitespace noise.
-
-------------------------------------------------------------------------
-
-## Supporting .editorconfig Settings
-
-``` ini
-[*.{cs,vb,ts,tsx}]
-guidelines = 120
-indent_style = space
-indent_size = 4
-trim_trailing_whitespace = true
-end_of_line = crlf
-
-dotnet_sort_system_directives_first = true
-```
+Non-TDD (use `[CATEGORY]: [Description]` format):
+DATA, BROKERS, CONTROLLERS, INFRA, CONFIG, DOCUMENTATION, DESIGN, IMPORT, STATUS, PROVISION, RELEASE

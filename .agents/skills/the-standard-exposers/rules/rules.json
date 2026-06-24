@@ -1,0 +1,11 @@
+{
+  "skill": "the-standard-exposers",
+  "rules": [
+    { "id": "ts-exposers-001", "severity": "ERROR", "category": "Naming", "rule": "Controller class names must be plural to match the REST resource (e.g., StudentsController, not StudentController)." },
+    { "id": "ts-exposers-002", "severity": "ERROR", "category": "HTTP Verb Mapping", "rule": "HTTP verbs must map to service operations: POST→Add, GET→Retrieve, PUT→Modify, DELETE→Remove." },
+    { "id": "ts-exposers-003", "severity": "ERROR", "category": "Response Codes", "rule": "Actions must return correct HTTP status codes: POST→201 Created, GET→200/404, PUT→200, DELETE→200, validation failure→400, unexpected error→500." },
+    { "id": "ts-exposers-004", "severity": "ERROR", "category": "Exception Mapping", "rule": "Controllers must catch service-layer exceptions and map them to the correct IActionResult." },
+    { "id": "ts-exposers-005", "severity": "ERROR", "category": "Dependencies", "rule": "Controllers must depend only on service-layer interfaces; broker injection is forbidden." },
+    { "id": "ts-exposers-006", "severity": "ERROR", "category": "Exception Mapping", "rule": "Controller action bodies must be thin: one service call plus exception mapping only." }
+  ]
+}

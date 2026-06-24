@@ -41,7 +41,7 @@ namespace LHDS.AdminPortal.Api.Tests.Unit.Controllers.PdsAudits
 
             this.pdsAuditServiceMock.Verify(service =>
                 service.RetrievePdsAuditByIdAsync(inputId),
-                    Times.Once());
+                    Times.Once);
 
             this.pdsAuditServiceMock.VerifyNoOtherCalls();
         }

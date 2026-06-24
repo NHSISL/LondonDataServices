@@ -1,0 +1,28 @@
+{
+  "skill": "the-standard-reacttypescript-performance",
+  "version": "1.0.0",
+  "structure": {
+    "memoisation": {
+      "allowed_when": "profiler trace or production metric shows measured problem",
+      "forbidden_when": "speculative, by default, or habit"
+    },
+    "stable_references": {
+      "constants": "defined at module scope",
+      "callbacks": "useCallback only with profiler evidence"
+    },
+    "component_size": {
+      "split_at": "natural responsibility boundaries"
+    },
+    "context": {
+      "split_by": "update frequency — auth, theme, domain data are separate providers"
+    },
+    "bundle_review": {
+      "tool": "vite-bundle-visualizer or equivalent",
+      "required_before": "adding any new dependency"
+    },
+    "lazy_loading": {
+      "api": "React.lazy + Suspense",
+      "applies_to": "route-level features with meaningful bundle impact"
+    }
+  }
+}

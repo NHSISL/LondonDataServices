@@ -1,0 +1,47 @@
+{
+  "skill": "the-standard-reacttypescript-hooks",
+  "rules": [
+    {
+      "id": "tsr-hooks-001",
+      "severity": "ERROR",
+      "category": "Lifecycle and State",
+      "rule": "A hook may manage React lifecycle and state. This is its primary permitted responsibility."
+    },
+    {
+      "id": "tsr-hooks-002",
+      "severity": "ERROR",
+      "category": "Not a Service Replacement",
+      "rule": "A hook must not replace a foundation service. Fetching and filtering data with business rules must move to services."
+    },
+    {
+      "id": "tsr-hooks-003",
+      "severity": "ERROR",
+      "category": "No Business Rules",
+      "rule": "A hook must not contain core business rules."
+    },
+    {
+      "id": "tsr-hooks-004",
+      "severity": "ERROR",
+      "category": "View Service Access",
+      "rule": "A page hook may call a view service injected as a parameter — not instantiated inside the hook."
+    },
+    {
+      "id": "tsr-hooks-005",
+      "severity": "ERROR",
+      "category": "Effect Stale Update Protection",
+      "rule": "Effects that perform async work must use a mounted flag or AbortController and clean up in the effect return."
+    },
+    {
+      "id": "tsr-hooks-006",
+      "severity": "WARN",
+      "category": "No useEffect for Transformation",
+      "rule": "Do not use useEffect for data transformation. Use view services or render-time derivation instead."
+    },
+    {
+      "id": "tsr-hooks-007",
+      "severity": "ERROR",
+      "category": "No Suppressed Warnings",
+      "rule": "Do not suppress hook dependency warnings without a documented reason."
+    }
+  ]
+}

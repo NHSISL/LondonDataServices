@@ -1,0 +1,13 @@
+{
+  "skill": "the-standard-testing",
+  "rules": [
+    { "id": "ts-testing-001", "severity": "ERROR", "category": "TDD Cycle", "rule": "A failing test must exist before any implementation code is written for a behavior." },
+    { "id": "ts-testing-002", "severity": "ERROR", "category": "TDD Cycle", "rule": "The failing test must be confirmed to fail for the correct reason before implementation is written." },
+    { "id": "ts-testing-003", "severity": "ERROR", "category": "Naming", "rule": "Test method names must follow: ShouldDo{Outcome}[When{Condition}]Async." },
+    { "id": "ts-testing-004", "severity": "ERROR", "category": "Structure", "rule": "Every test must be structured with // given, // when, and // then comment sections." },
+    { "id": "ts-testing-005", "severity": "ERROR", "category": "Randomization", "rule": "All test input values must be randomized using Filler<T> or equivalent; hard-coded domain values are forbidden." },
+    { "id": "ts-testing-006", "severity": "ERROR", "category": "Randomization", "rule": "Expected variables must be created using DeepClone() to dereference them from input variables." },
+    { "id": "ts-testing-007", "severity": "ERROR", "category": "Mock Verification", "rule": "Every test must end with Times.Once verification on expected mock calls and VerifyNoOtherCalls() on all mocks." },
+    { "id": "ts-testing-008", "severity": "ERROR", "category": "Structure", "rule": "Test classes must be partial and organized to mirror the partial class structure of the system under test." }
+  ]
+}

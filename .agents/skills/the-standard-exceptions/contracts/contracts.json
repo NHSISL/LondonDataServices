@@ -1,0 +1,34 @@
+{
+  "skill": "the-standard-exceptions",
+  "version": "1.0.0",
+  "naming": {
+    "validation_exception": "{Entity}ValidationException",
+    "dependency_exception": "{Entity}DependencyException",
+    "dependency_validation_exception": "{Entity}DependencyValidationException",
+    "service_exception": "{Entity}ServiceException",
+    "not_found_exception": "NotFound{Entity}Exception",
+    "already_exists_exception": "AlreadyExists{Entity}Exception",
+    "invalid_exception": "Invalid{Entity}Exception"
+  },
+  "structure": {
+    "base_class": "Xeption",
+    "inner_exception_required": true,
+    "entity_name_in_class_name": true
+  },
+  "hierarchy": {
+    "level_1_categories": [
+      "{Entity}ValidationException",
+      "{Entity}DependencyException",
+      "{Entity}DependencyValidationException",
+      "{Entity}ServiceException"
+    ],
+    "level_2_specifics": [
+      "NotFound{Entity}Exception",
+      "AlreadyExists{Entity}Exception",
+      "Null{Entity}Exception",
+      "Invalid{Entity}Exception",
+      "FailedService{Entity}Exception",
+      "FailedStorage{Entity}Exception"
+    ]
+  }
+}

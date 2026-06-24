@@ -35,23 +35,18 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Addresses
             Guid inputCorrelationId = randomGuid;
             int inputSkipCounter = 0;
             int inputBatchSize = this.batchSize;
-            List<string> returnedStringList = CreateRandomStringList();
             Xeption blpuException = new Xeption();
 
             this.identifierBrokerMock.Setup(broker =>
                 broker.GetIdentifierAsync())
                     .ReturnsAsync(inputCorrelationId);
 
-            this.fileBrokerMock.Setup(broker =>
-                broker.ReadLinesBatchAsync(blpuCsvFilePath, inputBatchSize, inputSkipCounter))
-                    .ReturnsAsync(returnedStringList);
-
             addressOrchestrationServiceMock.Setup(service =>
                 service.MapBLPUDataToAddressesAsync(blpuCsvFilePath, inputBatchSize, inputSkipCounter))
                     .ThrowsAsync(blpuException);
 
-            this.fileBrokerMock.Setup(broker =>
-                broker.ReadLinesBatchAsync(blpuCsvFilePath, inputBatchSize, inputSkipCounter + inputBatchSize))
+            addressOrchestrationServiceMock.Setup(service =>
+                service.MapBLPUDataToAddressesAsync(blpuCsvFilePath, inputBatchSize, inputSkipCounter + inputBatchSize))
                     .ReturnsAsync([]);
 
             Xeption expectedBlpuException = new Xeption();
@@ -98,28 +93,6 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Addresses
                     $"Starting processing file {blpuCsvFilePath}."),
                         Times.Once);
 
-            this.fileBrokerMock.Verify(broker =>
-                broker.ReadLinesBatchAsync(blpuCsvFilePath, inputBatchSize, inputSkipCounter),
-                    Times.Once);
-
-            this.auditBrokerMock.Verify(broker =>
-                broker.LogInformationAsync(
-                    "Address Import - BLPU Processing",
-                    "Processing BLPU File",
-
-                    $"Processing BLPU File - Processing lines {inputSkipCounter} to " +
-                        $"{inputSkipCounter + inputBatchSize}. Correlation Id: {inputCorrelationId}.",
-
-                    blpuCsvFilePath,
-                    inputCorrelationId.ToString()),
-                        Times.Once);
-
-            this.loggingBrokerMock.Verify(broker =>
-                broker.LogInformationAsync(
-                    $"Processing BLPU File - Processing lines {inputSkipCounter} to " +
-                        $"{inputSkipCounter + inputBatchSize}. Correlation Id: {inputCorrelationId}."),
-                        Times.Once);
-
             addressOrchestrationServiceMock.Verify(service =>
                 service.MapBLPUDataToAddressesAsync(
                     blpuCsvFilePath,
@@ -127,9 +100,12 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Addresses
                     inputSkipCounter),
                         Times.Once);
 
-            this.fileBrokerMock.Verify(broker =>
-                broker.ReadLinesBatchAsync(blpuCsvFilePath, inputBatchSize, inputSkipCounter + inputBatchSize),
-                    Times.Once);
+            addressOrchestrationServiceMock.Verify(service =>
+                service.MapBLPUDataToAddressesAsync(
+                    blpuCsvFilePath,
+                    inputBatchSize,
+                    inputSkipCounter + inputBatchSize),
+                        Times.Once);
 
             this.auditBrokerMock.Verify(broker =>
                 broker.LogInformationAsync(
@@ -145,7 +121,6 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Addresses
                     $"Finished processing file {blpuCsvFilePath}."),
                         Times.Once);
 
-            this.fileBrokerMock.VerifyNoOtherCalls();
             this.csvHelperBrokerMock.VerifyNoOtherCalls();
             this.auditBrokerMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();

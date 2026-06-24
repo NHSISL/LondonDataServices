@@ -4,6 +4,7 @@
 
 using System.Collections.Generic;
 using System.IO;
+using System.Threading;
 using System.Threading.Tasks;
 using LHDS.Core.Models.Clients.OptOutClient.Exceptions;
 using LHDS.Core.Models.Foundations.Mesh;
@@ -23,11 +24,11 @@ namespace LHDS.Core.Clients
             this.optOutOrchestrationService = optOutOrchestrationService;
         }
 
-        public async ValueTask<bool> ValidateMailboxAccessAsync()
+        public async ValueTask<bool> ValidateMailboxAccessAsync(CancellationToken cancellationToken = default)
         {
             try
             {
-                return await this.optOutOrchestrationService.ValidateMailboxAccessAsync();
+                return await this.optOutOrchestrationService.ValidateMailboxAccessAsync(cancellationToken);
             }
             catch (OptOutOrchestrationValidationException optOutOrchestrationValidationException)
             {
@@ -54,11 +55,15 @@ namespace LHDS.Core.Clients
             }
         }
 
-        public async ValueTask<string> RetrieveOptOutStatusAsync(Stream input, string fileName)
+        public async ValueTask<string> RetrieveOptOutStatusAsync(
+            Stream input,
+            string fileName,
+            CancellationToken cancellationToken = default)
         {
             try
             {
-                return await this.optOutOrchestrationService.RetrieveOptOutStatusAsync(input, fileName);
+                return await this.optOutOrchestrationService
+                    .RetrieveOptOutStatusAsync(input, fileName, cancellationToken);
             }
             catch (OptOutOrchestrationValidationException optOutOrchestrationValidationException)
             {
@@ -85,11 +90,13 @@ namespace LHDS.Core.Clients
             }
         }
 
-        public async ValueTask<MeshMessage> PushExpiredOptOutsToMeshForRenewalAsync()
+        public async ValueTask<MeshMessage> PushExpiredOptOutsToMeshForRenewalAsync(
+            CancellationToken cancellationToken = default)
         {
             try
             {
-                return await this.optOutOrchestrationService.PushExpiredOptOutsToMeshForRenewalAsync();
+                return await this.optOutOrchestrationService
+                    .PushExpiredOptOutsToMeshForRenewalAsync(cancellationToken);
             }
             catch (OptOutOrchestrationValidationException optOutOrchestrationValidationException)
             {
@@ -116,11 +123,13 @@ namespace LHDS.Core.Clients
             }
         }
 
-        public async ValueTask<List<MeshMessage>> RetrieveUpdatedMeshConsentStatusesChangesAsync()
+        public async ValueTask<List<MeshMessage>> RetrieveUpdatedMeshConsentStatusesChangesAsync(
+            CancellationToken cancellationToken = default)
         {
             try
             {
-                return await this.optOutOrchestrationService.RetrieveUpdatedMeshConsentStatusesChangesAsync();
+                return await this.optOutOrchestrationService
+                    .RetrieveUpdatedMeshConsentStatusesChangesAsync(cancellationToken);
             }
             catch (OptOutOrchestrationValidationException optOutOrchestrationValidationException)
             {

@@ -1,0 +1,30 @@
+{
+  "skill": "the-standard-cancellation-patterns",
+  "version": "0.1.0",
+  "signatures": {
+    "cancellation_token_position": "last",
+    "cancellation_token_default": "default",
+    "cancellation_token_nullable": false,
+    "canonical_parameter_name": "cancellationToken",
+    "forbidden_names": ["token", "ct", "cancelToken"]
+  },
+  "trycatch": {
+    "timeout_catch_order": "catch (OperationCanceledException) when (timeoutSource.IsCancellationRequested) MUST precede plain catch (OperationCanceledException)",
+    "operation_cancelled_rethrow": "throw; — must never be wrapped in any exception type",
+    "timeout_exception_treatment": "dependency failure — convert to TimeoutException and wrap via CreateAndLogDependencyException"
+  },
+  "token_propagation": {
+    "layers": ["Controller", "Coordination", "Orchestration", "Foundation", "Broker", "Dependency"],
+    "drop_token": false,
+    "new_source_without_linking": false,
+    "link_method": "CancellationTokenSource.CreateLinkedTokenSource(cancellationToken, timeoutSource.Token)",
+    "throw_if_cancellation_requested": "cancellationToken.ThrowIfCancellationRequested() must be called before executing dependency or long-running operations (tsc-csharp-cp-017)"
+  },
+  "parallel": {
+    "same_token_to_all_tasks": true
+  },
+  "testing": {
+    "timeout_exception_in_member_data": true,
+    "operation_cancelled_must_not_be_wrapped": true
+  }
+}

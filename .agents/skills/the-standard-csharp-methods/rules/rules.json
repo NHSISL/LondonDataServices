@@ -1,0 +1,59 @@
+{
+  "skill": "the-standard-csharp-methods",
+  "rules": [
+    {
+      "id": "tsc-csharp-methods-001",
+      "severity": "ERROR",
+      "category": "Spacing",
+      "rule": "A blank line must appear immediately before a return statement when other statements precede it in the same method body."
+    },
+    {
+      "id": "tsc-csharp-methods-002",
+      "severity": "ERROR",
+      "category": "Line Length",
+      "rule": "No line in a method may exceed 120 characters."
+    },
+    {
+      "id": "tsc-csharp-methods-003",
+      "severity": "ERROR",
+      "category": "Parameter Breaking",
+      "rule": "When a method call or declaration exceeds 120 characters, each parameter must be placed on its own line, aligned with the opening parenthesis."
+    },
+    {
+      "id": "tsc-csharp-methods-004",
+      "severity": "ERROR",
+      "category": "Parameter Breaking",
+      "rule": "Named parameters must be used when calling a method with literal arguments."
+    },
+    {
+      "id": "tsc-csharp-methods-005",
+      "severity": "ERROR",
+      "category": "Abstraction",
+      "rule": "A method body must operate at a single level of abstraction."
+    },
+    {
+      "id": "tsc-csharp-methods-006",
+      "severity": "ERROR",
+      "category": "Spacing",
+      "rule": "Multiple consecutive single-argument method calls that form a logical stack must be written one per line with no blank lines between them."
+    },
+    {
+      "id": "tsc-csharp-methods-007",
+      "severity": "WARN",
+      "category": "Chaining",
+      "rule": "LINQ or fluent chains that exceed 120 characters must be broken so each chained call starts on its own line, indented by one level."
+    },
+    {
+      "id": "tsc-csharp-methods-008",
+      "severity": "ERROR",
+      "category": "Chaining",
+      "rule": "A line break must not be introduced inside one chained call's argument list while other chained calls remain on the same line."
+    },
+    {
+      "id": "tsc-csharp-methods-009",
+      "severity": "ERROR",
+      "category": "Naming",
+      "rule": "Method names must be full English words — no abbreviations."
+    }
+  ]
+}

@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using FluentAssertions;
+using LHDS.AdminPortal.Api.Tests.Acceptance.Models.OdataResponses;
 using LHDS.AdminPortal.Api.Tests.Acceptance.Models.SubscriberAgreements;
 using RESTFulSense.Exceptions;
 using Xunit;
@@ -133,6 +134,70 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.SubscriberAgreements
                 .Excluding(property => property.UpdatedDate));
 
             await Assert.ThrowsAsync<HttpResponseNotFoundException>(getSubscriberAgreementbyIdTask.AsTask);
+        }
+
+        [Fact]
+        public async Task ShouldGetPageOfSubscriberAgreementsWithTopParameterAsync()
+        {
+            // given
+            SubscriberAgreement firstRandomSubscriberAgreement = await PostRandomSubscriberAgreementAsync();
+            SubscriberAgreement secondRandomSubscriberAgreement = await PostRandomSubscriberAgreementAsync();
+
+            // when
+            OdataResponse<SubscriberAgreement> actualPage =
+                await this.apiBroker.GetSubscriberAgreementsOdataResponseAsync(
+                    $"odata/subscriberAgreements?$top=1" +
+                    $"&$filter=id eq {firstRandomSubscriberAgreement.Id}" +
+                    $" or id eq {secondRandomSubscriberAgreement.Id}");
+
+            // then
+            actualPage.Items.Count.Should().Be(1);
+
+            // cleanup
+            await this.apiBroker.DeleteSubscriberAgreementByIdAsync(firstRandomSubscriberAgreement.Id);
+            await this.apiBroker.DeleteSubscriberAgreementByIdAsync(secondRandomSubscriberAgreement.Id);
+        }
+
+        [Fact]
+        public async Task ShouldReturnNextLinkOnGetAllSubscriberAgreementsWhenMoreItemsExistAsync()
+        {
+            // given
+            SubscriberAgreement firstRandomSubscriberAgreement = await PostRandomSubscriberAgreementAsync();
+            SubscriberAgreement secondRandomSubscriberAgreement = await PostRandomSubscriberAgreementAsync();
+
+            // when
+            OdataResponse<SubscriberAgreement> actualPage =
+                await this.apiBroker.GetSubscriberAgreementsOdataResponseAsync(
+                    $"odata/subscriberAgreements" +
+                    $"?$filter=id eq {firstRandomSubscriberAgreement.Id}" +
+                    $" or id eq {secondRandomSubscriberAgreement.Id}" +
+                    $"&pageSize=1");
+
+            // then
+            actualPage.NextLink.Should().NotBeNullOrEmpty();
+
+            // cleanup
+            await this.apiBroker.DeleteSubscriberAgreementByIdAsync(firstRandomSubscriberAgreement.Id);
+            await this.apiBroker.DeleteSubscriberAgreementByIdAsync(secondRandomSubscriberAgreement.Id);
+        }
+
+        [Fact]
+        public async Task ShouldNotReturnNextLinkOnLastPageOfGetAllSubscriberAgreementsAsync()
+        {
+            // given
+            SubscriberAgreement randomSubscriberAgreement = await PostRandomSubscriberAgreementAsync();
+
+            // when
+            OdataResponse<SubscriberAgreement> actualPage =
+                await this.apiBroker.GetSubscriberAgreementsOdataResponseAsync(
+                    $"odata/subscriberAgreements?$filter=id eq {randomSubscriberAgreement.Id}" +
+                    $"&pageSize=1");
+
+            // then
+            actualPage.NextLink.Should().BeNullOrEmpty();
+
+            // cleanup
+            await this.apiBroker.DeleteSubscriberAgreementByIdAsync(randomSubscriberAgreement.Id);
         }
     }
 }

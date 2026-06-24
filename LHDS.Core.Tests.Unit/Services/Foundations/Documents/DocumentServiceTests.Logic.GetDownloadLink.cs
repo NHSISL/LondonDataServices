@@ -44,7 +44,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Documents
 
             this.dateTimeBrokerMock.Verify(broker =>
                 broker.GetCurrentDateTimeOffsetAsync(),
-                    Times.Once());
+                    Times.Once);
 
             this.blobStorageBrokerMock.Verify(broker =>
                 broker.GetDownloadLinkAsync(inputFileName, encryptedFileContainer, inputExpireTime),

@@ -123,7 +123,7 @@ namespace LHDS.Core.Services.Processings.OptOuts
                     .Where(optOut =>
                         optOut.CacheTime < expirationDate
                         && optOut.LastSentToMesh < lastSentExpirationDate)
-                    .OrderBy(optOut => optOut.CreatedDate)
+                    .OrderBy(optOut => optOut.LastSentToMesh)
                     .Select(optOut => optOut.NhsNumber)
                     .Take(10000)
                     .ToList();
@@ -151,8 +151,10 @@ namespace LHDS.Core.Services.Processings.OptOuts
         {
             ValidateCurrentOptOutListProcessingOnConsolidate(currentOptOutList, consentedIdentifiers);
 
+            var consentedSet = new HashSet<string>(consentedIdentifiers);
+
             List<OptOut> consentedList = currentOptOutList
-                .Where(optOut => consentedIdentifiers.Contains(optOut.NhsNumber))
+                .Where(optOut => consentedSet.Contains(optOut.NhsNumber))
                     .ToList();
 
             List<OptOut> nonConsentedList = currentOptOutList

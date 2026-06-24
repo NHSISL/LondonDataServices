@@ -43,7 +43,7 @@ namespace LHDS.AdminPortal.Api.Tests.Unit.Controllers.DataTypes
 
             this.dataTypeServiceMock.Verify(service =>
                 service.RetrieveAllDataTypesAsync(),
-                    Times.Once());
+                    Times.Once);
 
             this.dataTypeServiceMock.VerifyNoOtherCalls();
         }

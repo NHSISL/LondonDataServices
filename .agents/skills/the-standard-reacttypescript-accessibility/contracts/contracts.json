@@ -1,0 +1,26 @@
+{
+  "skill": "the-standard-reacttypescript-accessibility",
+  "version": "1.0.0",
+  "structure": {
+    "interactive_elements": {
+      "actions": "button[type=button]",
+      "navigation": "a[href]",
+      "text_input": "input with label",
+      "multi_line": "textarea with label",
+      "dropdown": "select with label",
+      "forbidden_substitutes": "div[onClick], span[onClick] without ARIA"
+    },
+    "images": {
+      "informative": "alt with descriptive text",
+      "decorative": "alt empty string"
+    },
+    "form_labels": {
+      "preferred": "label[htmlFor] paired with input[id]",
+      "alternative": "aria-label on input when visible label not suitable"
+    },
+    "error_messages": {
+      "association": "aria-describedby linking error text to input",
+      "visibility": "rendered as visible text — not hidden or tooltip-only"
+    }
+  }
+}

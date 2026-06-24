@@ -41,7 +41,7 @@ namespace LHDS.AdminPortal.Api.Tests.Unit.Controllers.EmisLandings
 
             this.emisLandingCoordinationServiceMock.Verify(service =>
                 service.RetrieveListOfDocumentsToProcessAsync(subscriberAgreementId),
-                    Times.Once());
+                    Times.Once);
 
             this.emisLandingCoordinationServiceMock.VerifyNoOtherCalls();
         }

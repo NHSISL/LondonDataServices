@@ -1,0 +1,30 @@
+{
+  "skill": "the-standard-csharp-methods",
+  "version": "1.0.0",
+  "naming": {
+    "method_names": {
+      "convention": "PascalCase",
+      "full_words_required": true,
+      "abbreviations": "forbidden"
+    }
+  },
+  "ordering": {
+    "return_statement": {
+      "blank_line_before": "required when preceded by one or more statements"
+    },
+    "parameter_breaking": {
+      "max_line_length": 120,
+      "break_strategy": "one parameter per line, aligned with opening parenthesis"
+    },
+    "chained_calls": {
+      "max_line_length": 120,
+      "break_strategy": "each chained call on its own line, indented one level",
+      "mixed_uglification": "forbidden"
+    }
+  },
+  "structure": {
+    "single_abstraction_level": true,
+    "stacked_calls_blank_lines": "none between consecutive stacked calls",
+    "named_parameters_for_literals": true
+  }
+}

@@ -1,0 +1,18 @@
+{
+  "skill": "the-standard-reacttypescript-vite",
+  "version": "1.0.0",
+  "structure": {
+    "env_convention": "VITE_ prefix required for all client-exposed variables",
+    "secrets": "forbidden in any .env file committed to source control",
+    "path_aliases": {
+      "@": "./src",
+      "@brokers": "./src/brokers",
+      "@services": "./src/services",
+      "@models": "./src/models",
+      "@components": "./src/components",
+      "@pages": "./src/pages"
+    },
+    "plugin_documentation": "comment required before each plugin entry",
+    "build_warnings": "must be triaged — not silently ignored"
+  }
+}

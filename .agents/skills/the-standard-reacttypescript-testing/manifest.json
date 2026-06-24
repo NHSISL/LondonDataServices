@@ -1,0 +1,19 @@
+{
+  "name": "the-standard-reacttypescript-testing",
+  "version": "0.1.0",
+  "description": "Governs what each layer must test, where mocks are permitted, prohibits snapshot overuse and React-internal testing, and requires component testing through visible behavior.",
+  "standard_version": "v0.1.0",
+  "skill_version": "v0.1.0",
+  "inputs": ["Test files: *.test.ts, *.test.tsx, *.spec.ts, *.spec.tsx"],
+  "outputs": [
+    "Layer-appropriate tests covering public behavior with mocks only at architectural boundaries",
+    "Review feedback citing rule IDs"
+  ],
+  "dependencies": [
+    "the-standard-reacttypescript-services",
+    "the-standard-reacttypescript-view-services",
+    "the-standard-reacttypescript-components",
+    "the-standard-reacttypescript-pages"
+  ],
+  "applies_to": ["*.test.ts", "*.test.tsx", "*.spec.ts", "*.spec.tsx"]
+}

@@ -5,6 +5,7 @@
 using System;
 using System.IO;
 using System.Linq;
+using System.Security.Cryptography;
 using System.Threading.Tasks;
 using LHDS.Core.Brokers.DateTimes;
 using LHDS.Core.Brokers.Hashing;
@@ -85,8 +86,9 @@ namespace LHDS.Core.Services.Orchestrations.Decryptions
 
                 string decryptedFileSha256Hash = string.Empty;
                 long fileSize = 0;
-                string encryptedTempFile = Path.GetTempFileName();
-                string decryptedTempFile = Path.GetTempFileName();
+                string tempDir = landingConfiguration.TempFilePath;
+                string encryptedTempFile = Path.Combine(tempDir, $"{Guid.NewGuid()}_enc.tmp");
+                string decryptedTempFile = Path.Combine(tempDir, $"{Guid.NewGuid()}_dec.tmp");
 
                 try
                 {
@@ -139,15 +141,16 @@ namespace LHDS.Core.Services.Orchestrations.Decryptions
                         FileAccess.Read,
                         FileShare.Read))
                     {
-                        decryptedFileSha256Hash =
-                            await this.hashBroker.GenerateSha256HashAsync(decryptedDocument);
-
-                        fileSize = decryptedDocument.Length;
+                        IHashingCountingBroker hashingCountingBroker =
+                            new HashingCountingBroker(decryptedDocument, HashAlgorithmName.SHA256);
 
                         await this.documentService.AddDocumentAsync(
-                            input: decryptedDocument,
+                            input: hashingCountingBroker.AsStream(),
                             fileName: ingestionTracking.DecryptedFileName,
                             container: blobContainers.Ingress);
+
+                        decryptedFileSha256Hash = hashingCountingBroker.GetFinalHashHex();
+                        fileSize = hashingCountingBroker.BytesRead;
                     }
                 }
                 catch (Exception ex)
@@ -191,10 +194,7 @@ namespace LHDS.Core.Services.Orchestrations.Decryptions
         public ValueTask<string?> GetNextItemToBeDecrypted() =>
             TryCatch(async () =>
             {
-                DateTimeOffset olderThanDateTimeOffset =
-                    await this.dateTimeBroker.GetCurrentDateTimeOffsetAsync();
-
-                olderThanDateTimeOffset.AddMinutes(-15);
+                DateTimeOffset currentDateTime = await this.dateTimeBroker.GetCurrentDateTimeOffsetAsync();
 
                 IQueryable<IngestionTracking> allIngestionTrackings =
                     await this.ingestionTrackingService.RetrieveAllIngestionTrackingsAsync();
@@ -206,7 +206,8 @@ namespace LHDS.Core.Services.Orchestrations.Decryptions
                         && ingestionTrackingItem.Decrypted == false
                         && ingestionTrackingItem.IsProcessing == false
                         && ingestionTrackingItem.RetryCount < 4
-                        && ingestionTrackingItem.LastAttempt <= olderThanDateTimeOffset);
+                        && ingestionTrackingItem.CreatedDate <
+                            currentDateTime.AddMinutes(-landingConfiguration.RelandIntervalInMinutes));
 
                 if (item == null)
                 {

@@ -29,6 +29,10 @@ namespace LHDS.Core.Services.Foundations.Mesh
             {
                 throw await CreateAndLogValidationExceptionAsync(invalidArgumentMeshException);
             }
+            catch (OperationCanceledException)
+            {
+                throw;
+            }
             catch (Exception exception)
             {
                 var failedMeshServiceException =
@@ -57,6 +61,10 @@ namespace LHDS.Core.Services.Foundations.Mesh
             catch (InvalidArgumentMeshException invalidArgumentMeshException)
             {
                 throw await CreateAndLogValidationExceptionAsync(invalidArgumentMeshException);
+            }
+            catch (OperationCanceledException)
+            {
+                throw;
             }
             catch (MeshClientValidationException meshClientValidationException)
             {
@@ -91,6 +99,10 @@ namespace LHDS.Core.Services.Foundations.Mesh
             {
                 return await returningListofStringsMeshFunction();
             }
+            catch (OperationCanceledException)
+            {
+                throw;
+            }
             catch (MeshClientValidationException meshClientValidationException)
             {
                 throw await CreateAndLogDependencyValidationExceptionAsync(meshClientValidationException);
@@ -115,6 +127,10 @@ namespace LHDS.Core.Services.Foundations.Mesh
             try
             {
                 return await returningStringMeshFunction();
+            }
+            catch (OperationCanceledException)
+            {
+                throw;
             }
             catch (InvalidArgumentMeshException invalidArgumentMeshException)
             {
@@ -165,7 +181,7 @@ namespace LHDS.Core.Services.Foundations.Mesh
             return meshServiceDependencyException;
         }
 
-        private async ValueTask<MeshServiceDependencyValidationException> 
+        private async ValueTask<MeshServiceDependencyValidationException>
             CreateAndLogDependencyValidationExceptionAsync(Xeption exception)
         {
             var meshServiceDependencyValidationException =

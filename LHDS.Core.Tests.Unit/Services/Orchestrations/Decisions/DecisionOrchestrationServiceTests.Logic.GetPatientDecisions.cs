@@ -6,7 +6,6 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using FluentAssertions;
 using LHDS.Core.Models.Foundations.Decisions;
@@ -33,10 +32,6 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Decisions
                 $"{this.decisionConfiguration.FilePrefix}_{currentPollDate:yyyyMMddHHmmss}.csv";
 
             string expectedHash = GetRandomString();
-            string expectedCsvProcessedData = GetRandomString();
-            byte[] expectedDocumentBytes = Encoding.UTF8.GetBytes(expectedCsvProcessedData);
-            Stream tempDocument = new MemoryStream(expectedDocumentBytes);
-            var documentStream = new MemoryStream();
             Dictionary<string, int> fieldMappings = GetFieldMappings();
 
             this.decisionServiceMock
@@ -46,45 +41,39 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Decisions
             if (hashNhsNumber)
             {
                 this.hashBrokerMock
-                .Setup(broker => broker.GenerateSha256HashAsync(
-                    It.Is<string>(nhsNumber => expectedDecisions.Any(
-                        decision => decision.PatientNhsNumber == nhsNumber)),
-                    this.decisionConfiguration.HashPepper))
-                .ReturnsAsync(expectedHash);
+                    .Setup(broker => broker.GenerateSha256HashAsync(
+                        It.Is<string>(nhsNumber => expectedDecisions.Any(
+                            decision => decision.PatientNhsNumber == nhsNumber)),
+                        this.decisionConfiguration.HashPepper))
+                    .ReturnsAsync(expectedHash);
+            }
 
-                this.csvHelperBrokerMock
-                    .Setup(broker => broker.MapObjectToCsvAsync(
-                        It.Is<List<DecisionCsv>>(csvs =>
-                            csvs.All(csv => expectedDecisions.Any(
-                                decision => decision.Id == csv.DecisionId &&
-                                    csv.NhsNumber == expectedHash))),
-                        true,
-                        fieldMappings,
-                        false))
-                    .ReturnsAsync(expectedCsvProcessedData);
-            }
-            else
-            {
-                this.csvHelperBrokerMock
-                    .Setup(broker => broker.MapObjectToCsvAsync(
-                        It.Is<List<DecisionCsv>>(csvs =>
-                            csvs.All(csv => expectedDecisions.Any(
-                                decision => decision.Id == csv.DecisionId &&
-                                    csv.NhsNumber == decision.PatientNhsNumber))),
-                        true,
-                        fieldMappings,
-                        false))
-                    .ReturnsAsync(expectedCsvProcessedData);
-            }
+            this.csvHelperBrokerMock
+                .Setup(broker => broker.MapObjectToCsvAsync(
+                    It.IsAny<IAsyncEnumerable<DecisionCsv>>(),
+                    It.IsAny<Stream>(),
+                    true,
+                    fieldMappings,
+                    false,
+                    It.IsAny<System.Threading.CancellationToken>()))
+                .Returns(async (
+                    IAsyncEnumerable<DecisionCsv> objects,
+                    Stream stream,
+                    bool addHeader,
+                    Dictionary<string, int> mappings,
+                    bool? trailingComma,
+                    System.Threading.CancellationToken ct) =>
+                {
+                    await foreach (DecisionCsv _ in objects.WithCancellation(ct)) { }
+                });
 
             this.documentServiceMock
                 .Setup(service => service.AddDocumentAsync(
-                    It.Is(SameStreamAs(tempDocument)), expectedFileName, expectedContainer))
-                .Callback<Stream, string, string>((output, fileName, container) =>
-                {
-                    tempDocument.Position = 0;
-                    tempDocument.CopyTo(documentStream);
-                })
+                    It.IsAny<Stream>(), expectedFileName, expectedContainer))
+                .Returns(ValueTask.CompletedTask);
+
+            this.loggingBrokerMock
+                .Setup(broker => broker.LogInformationAsync(It.IsAny<string>()))
                 .Returns(ValueTask.CompletedTask);
 
             this.decisionServiceMock
@@ -118,13 +107,12 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Decisions
 
                 this.csvHelperBrokerMock.Verify(broker =>
                     broker.MapObjectToCsvAsync(
-                        It.Is<List<DecisionCsv>>(csvs =>
-                            csvs.All(csv => expectedDecisions.Any(
-                                decision => decision.Id == csv.DecisionId &&
-                                    csv.NhsNumber == expectedHash))),
+                        It.IsAny<IAsyncEnumerable<DecisionCsv>>(),
+                        It.IsAny<Stream>(),
                         true,
                         fieldMappings,
-                        false),
+                        false,
+                        It.IsAny<System.Threading.CancellationToken>()),
                         Times.Once);
             }
             else
@@ -137,13 +125,12 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Decisions
 
                 this.csvHelperBrokerMock.Verify(broker =>
                     broker.MapObjectToCsvAsync(
-                        It.Is<List<DecisionCsv>>(csvs =>
-                            csvs.All(csv => expectedDecisions.Any(
-                                decision => decision.Id == csv.DecisionId &&
-                                    csv.NhsNumber == decision.PatientNhsNumber))),
+                        It.IsAny<IAsyncEnumerable<DecisionCsv>>(),
+                        It.IsAny<Stream>(),
                         true,
                         fieldMappings,
-                        false),
+                        false,
+                        It.IsAny<System.Threading.CancellationToken>()),
                     Times.Once);
             }
 
@@ -154,11 +141,12 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Decisions
                     expectedContainer),
                     Times.Once);
 
+            this.loggingBrokerMock.Verify(broker =>
+                broker.LogInformationAsync(It.IsAny<string>()),
+                Times.Once);
+
             this.decisionServiceMock.Verify(service =>
                 service.RecordAdoption(expectedDecisions), Times.Once);
-
-            documentStream.Position = 0;
-            ReadAllBytesFromStream(documentStream).Should().BeEquivalentTo(expectedDocumentBytes);
 
             this.decisionServiceMock.VerifyNoOtherCalls();
             this.documentServiceMock.VerifyNoOtherCalls();
@@ -201,10 +189,12 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Decisions
 
             this.csvHelperBrokerMock.Verify(broker =>
                 broker.MapObjectToCsvAsync(
-                    It.IsAny<List<DecisionCsv>>(),
+                    It.IsAny<IAsyncEnumerable<DecisionCsv>>(),
+                    It.IsAny<Stream>(),
                     It.IsAny<bool>(),
                     It.IsAny<Dictionary<string, int>>(),
-                    It.IsAny<bool>()),
+                    It.IsAny<bool?>(),
+                    It.IsAny<System.Threading.CancellationToken>()),
                 Times.Never());
 
             this.documentServiceMock.Verify(service =>

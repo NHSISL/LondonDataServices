@@ -1,0 +1,14 @@
+{
+  "name": "the-standard-reacttypescript-typescript",
+  "version": "0.1.0",
+  "description": "Enforces strict TypeScript configuration, explicit boundary types, type vs interface conventions, no-any rule, named exports, and barrel file hygiene.",
+  "standard_version": "v0.1.0",
+  "skill_version": "v0.1.0",
+  "inputs": ["TypeScript source files (*.ts, *.tsx)", "tsconfig.json"],
+  "outputs": [
+    "Type-safe TypeScript source with explicit boundary types",
+    "Review feedback citing rule IDs"
+  ],
+  "dependencies": ["the-standard-reacttypescript-files"],
+  "applies_to": ["*.ts", "*.tsx"]
+}

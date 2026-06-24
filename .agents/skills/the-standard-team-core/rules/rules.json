@@ -1,0 +1,83 @@
+{
+  "skill": "the-standard-team-core",
+  "version": "0.1.0",
+  "rules": [
+    {
+      "id": "tst-core-001",
+      "severity": "ERROR",
+      "category": "Purpose Document",
+      "source_section": "1.0",
+      "rule": "Every engineering team must define and document an Overall Purpose covering Business Nature, Business Goals, and Future Considerations."
+    },
+    {
+      "id": "tst-core-002",
+      "severity": "ERROR",
+      "category": "Purpose Document",
+      "source_section": "1.0.0",
+      "rule": "Business Nature must state what the business is in plain, non-technical language."
+    },
+    {
+      "id": "tst-core-003",
+      "severity": "ERROR",
+      "category": "Purpose Document",
+      "source_section": "1.0.1",
+      "rule": "Business Goals must state what the business aims to deliver to its customers."
+    },
+    {
+      "id": "tst-core-004",
+      "severity": "ERROR",
+      "category": "Purpose Document",
+      "source_section": "1.0.2",
+      "rule": "Future Considerations must state the anticipated growth or evolution of the business scope."
+    },
+    {
+      "id": "tst-core-005",
+      "severity": "ERROR",
+      "category": "Scenarios",
+      "source_section": "1.1",
+      "rule": "Scenarios must be written in BDD format using exactly three clauses: GIVEN (actor), WHEN (interaction), THEN (outcome)."
+    },
+    {
+      "id": "tst-core-006",
+      "severity": "ERROR",
+      "category": "Scenarios",
+      "source_section": "1.1",
+      "rule": "Scenarios must be non-technical and written from the end-user's perspective."
+    },
+    {
+      "id": "tst-core-007",
+      "severity": "ERROR",
+      "category": "Scenarios",
+      "source_section": "1.1",
+      "rule": "Scenario outcomes (THEN) must express results that could be advertised to non-technical stakeholders."
+    },
+    {
+      "id": "tst-core-008",
+      "severity": "WARN",
+      "category": "Scenarios",
+      "source_section": "1.1",
+      "rule": "Chained scenarios must explicitly reference the prior scenario they build on."
+    },
+    {
+      "id": "tst-core-009",
+      "severity": "ERROR",
+      "category": "Prohibitions",
+      "source_section": "1.1",
+      "rule": "Scenarios must not contain API endpoints, HTTP status codes, database terms, or UI implementation details unless the business itself is technical."
+    },
+    {
+      "id": "tst-core-010",
+      "severity": "ERROR",
+      "category": "Prohibitions",
+      "source_section": "1.0",
+      "rule": "A purpose document must not omit any of the three required sections: Business Nature, Business Goals, Future Considerations."
+    },
+    {
+      "id": "tst-core-011",
+      "severity": "ERROR",
+      "category": "Prohibitions",
+      "source_section": "1.1",
+      "rule": "A scenario must not omit the actor (GIVEN), the interaction (WHEN), or the outcome (THEN)."
+    }
+  ]
+}

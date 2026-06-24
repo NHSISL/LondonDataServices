@@ -97,7 +97,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.SubscriberAgreements
             this.loggingBrokerMock.Verify(broker =>
                 broker.LogErrorAsync(It.Is(SameExceptionAs(
                     expectedSubscriberAgreementProcessingValidationException))),
-                        Times.Once());
+                        Times.Once);
 
             this.subscriberAgreementServiceMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();

@@ -15,7 +15,7 @@ using RESTFulSense.Controllers;
 
 namespace LHDS.AdminPortal.Api.Controllers
 {
-    [Authorize(Roles = "ISL.LDS.AdminApi.Administrators, ISL.LDS.AdminApi.Configurations")]
+    [Authorize]
     [ApiController]
     [Route("api/[controller]")]
     public class SubscriberAgreementsController : RESTFulController
@@ -61,12 +61,7 @@ namespace LHDS.AdminPortal.Api.Controllers
         }
 
         [HttpGet]
-#if !DEBUG
-        [EnableQuery(PageSize = 50)]
-#endif
-#if DEBUG
         [EnableQuery(PageSize = 1)]
-#endif
         [Authorize(Roles = "ISL.LDS.AdminApi.Administrators, ISL.LDS.AdminApi.Configurations, ISL.LDS.AdminApi.SubscriberAgreements, ISL.LDS.AdminApi.SubscriberAgreements.ReadOnly, ISL.LDS.AdminApi.ReadOnly")]
         public async ValueTask<ActionResult<IQueryable<SubscriberAgreement>>> Get()
         {

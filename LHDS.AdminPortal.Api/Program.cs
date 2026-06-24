@@ -245,7 +245,7 @@ namespace LHDS.AdminPortal.Api
             app.UseForwardedHeaders();
             app.UseAuthorization();
             app.UseInvisibleApiMiddleware(invisibleApiKey);
-            app.MapControllers().WithOpenApi();
+            app.MapControllers();
         }
 
         private static void AddHealthApi(IServiceCollection services, IConfiguration configuration)

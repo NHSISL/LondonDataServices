@@ -22,13 +22,15 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance
     {
         static AcceptanceTestApplicationFactory()
         {
-            // Use a small OData page size in acceptance tests so paging and
-            // next-link behaviour can be exercised with only a couple of records.
+            // Use a large default OData page size so bulk "get all" and $expand
+            // tests return everything in a single page. Tests that specifically
+            // exercise paging request a smaller page via the "pageSize"
+            // querystring value instead.
             Program.TestConfigurationOverrides = builder =>
             {
                 builder.Configuration.AddInMemoryCollection(new Dictionary<string, string>
                 {
-                    ["OdataConfigurations:PageSize"] = "1"
+                    ["OdataConfigurations:PageSize"] = "5000"
                 });
             };
         }

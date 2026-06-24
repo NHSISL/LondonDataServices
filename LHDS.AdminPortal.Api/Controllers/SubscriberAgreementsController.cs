@@ -15,7 +15,7 @@ using RESTFulSense.Controllers;
 
 namespace LHDS.AdminPortal.Api.Controllers
 {
-    [Authorize(Roles = "ISL.LDS.AdminApi.Administrators, ISL.LDS.AdminApi.Configurations")]
+    [Authorize]
     [ApiController]
     [Route("api/[controller]")]
     public class SubscriberAgreementsController : RESTFulController

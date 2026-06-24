@@ -10,11 +10,8 @@ using LHDS.Core.Models.Foundations.TerminologyArtifacts.Exceptions;
 using LHDS.Core.Services.Foundations.TerminologyArtifacts;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.OData.Query;
+using LHDS.AdminPortal.Api.Models.Attributes;
 using RESTFulSense.Controllers;
-#if RELEASE
-using Microsoft.AspNetCore.Authorization;
-#endif
 
 namespace LHDS.AdminPortal.Api.Controllers
 {
@@ -68,12 +65,7 @@ namespace LHDS.AdminPortal.Api.Controllers
 
         [Authorize(Roles = "ISL.LDS.AdminApi.TerminologyArtifact, ISL.LDS.AdminApi.Administrators, ISL.LDS.AdminApi.ReadOnly")]
         [HttpGet]
-#if !DEBUG
-        [EnableQuery(PageSize = 50)]
-#endif
-#if DEBUG
-        [EnableQuery(PageSize = 5000)]
-#endif
+        [EnableConfiguredQuery]
         public async ValueTask<ActionResult<IQueryable<TerminologyArtifact>>> Get()
         {
             try

@@ -1,0 +1,76 @@
+{
+  "skill": "the-standard-team-pull-requests",
+  "version": "0.1.0",
+  "rules": [
+    {
+      "id": "tst-pull-requests-001",
+      "severity": "ERROR",
+      "category": "PR Title",
+      "source_section": "4.1.4",
+      "rule": "PR title must follow the format: [CATEGORY]: [Description Of Work Completed]."
+    },
+    {
+      "id": "tst-pull-requests-002",
+      "severity": "ERROR",
+      "category": "PR Title",
+      "source_section": "4.1.4",
+      "rule": "[CATEGORY] must be in CAPS and taken from the approved category list."
+    },
+    {
+      "id": "tst-pull-requests-003",
+      "severity": "ERROR",
+      "category": "PR Title",
+      "source_section": "4.1.4",
+      "rule": "[Description Of Work Completed] must be written in Pascal Case."
+    },
+    {
+      "id": "tst-pull-requests-004",
+      "severity": "WARN",
+      "category": "PR Description",
+      "source_section": "4.1.4",
+      "rule": "The PR description should include additional information helpful to the approver, such as screenshots of controller responses."
+    },
+    {
+      "id": "tst-pull-requests-005",
+      "severity": "ERROR",
+      "category": "PR Description",
+      "source_section": "4.1.4",
+      "rule": "To auto-close an issue on merge, add 'Closes #[issue-number]' in the PR description."
+    },
+    {
+      "id": "tst-pull-requests-006",
+      "severity": "ERROR",
+      "category": "PR Description",
+      "source_section": "4.1.4",
+      "rule": "To auto-close multiple issues, list each separately: 'Closes #10, closes #123'."
+    },
+    {
+      "id": "tst-pull-requests-007",
+      "severity": "WARN",
+      "category": "PR Description",
+      "source_section": "4.1.4",
+      "rule": "To link an issue without auto-closing, add #[issue-number] without a keyword."
+    },
+    {
+      "id": "tst-pull-requests-008",
+      "severity": "ERROR",
+      "category": "Prohibitions",
+      "source_section": "4.1.4",
+      "rule": "PR title category must not be lowercase or mixed-case."
+    },
+    {
+      "id": "tst-pull-requests-009",
+      "severity": "WARN",
+      "category": "Prohibitions",
+      "source_section": "4.1.4",
+      "rule": "PR title description must not be vague."
+    },
+    {
+      "id": "tst-pull-requests-010",
+      "severity": "ERROR",
+      "category": "Prohibitions",
+      "source_section": "4.1.4",
+      "rule": "PR title must not use a category that is not in the approved category list."
+    }
+  ]
+}

@@ -3,6 +3,7 @@
 // ---------------------------------------------------------
 
 using System.Collections.Generic;
+using System.Threading;
 using System.Threading.Tasks;
 using FluentAssertions;
 using Moq;
@@ -20,19 +21,20 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Mesh
             List<string> expectedMessages = outputMessages;
 
             this.meshBrokerMock.Setup(broker =>
-                broker.RetrieveMessageIdsAsync())
+                broker.RetrieveMessageIdsAsync(It.IsAny<CancellationToken>()))
                     .ReturnsAsync(outputMessages);
 
             // when
             List<string> actualMessages =
-                await this.meshService.RetrieveMessageIdsFromInboxAsync();
+                await this.meshService.RetrieveMessageIdsFromInboxAsync(
+                    TestContext.Current.CancellationToken);
 
             // then
             actualMessages.Should().BeSameAs(expectedMessages);
 
             this.meshBrokerMock.Verify(broker =>
-                broker.RetrieveMessageIdsAsync(),
-                    Times.Once());
+                broker.RetrieveMessageIdsAsync(It.IsAny<CancellationToken>()),
+                    Times.Once);
 
             this.meshBrokerMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();

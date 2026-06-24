@@ -20,10 +20,10 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.SubscriberAgreements
         {
             // given
             DateTimeOffset randomDateTimeOffset = GetRandomDateTimeOffset();
-            EntraUser randomEntraUser = CreateRandomEntraUser();
+            string randomUserId = GetRandomStringWithLengthOf(50);
 
             SubscriberAgreement randomSubscriberAgreement =
-                CreateRandomModifySubscriberAgreement(randomDateTimeOffset, randomEntraUser.EntraUserId);
+                CreateRandomModifySubscriberAgreement(randomDateTimeOffset, randomUserId);
 
             SubscriberAgreement inputSubscriberAgreement = randomSubscriberAgreement.DeepClone();
             inputSubscriberAgreement.CreatedBy = Guid.NewGuid().ToString();
@@ -36,17 +36,27 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.SubscriberAgreements
             SubscriberAgreement expectedSubscriberAgreement = updatedSubscriberAgreement.DeepClone();
             Guid subscriberAgreementId = inputSubscriberAgreement.Id;
 
+            this.securityAuditBrokerMock.Setup(broker =>
+                broker.ApplyModifyAuditValuesAsync(inputSubscriberAgreement))
+                    .ReturnsAsync(inputSubscriberAgreement);
+
             this.dateTimeBrokerMock.Setup(broker =>
                 broker.GetCurrentDateTimeOffsetAsync())
                     .ReturnsAsync(randomDateTimeOffset);
 
-            this.securityBrokerMock.Setup(broker =>
-                broker.GetCurrentUserAsync())
-                    .ReturnsAsync(randomEntraUser);
+            this.securityAuditBrokerMock.Setup(broker =>
+                broker.GetUserIdAsync())
+                    .ReturnsAsync(randomUserId);
 
             this.storageBrokerMock.Setup(broker =>
                 broker.SelectSubscriberAgreementByIdAsync(subscriberAgreementId))
                     .ReturnsAsync(storageSubscriberAgreement);
+
+            this.securityAuditBrokerMock.Setup(broker =>
+                broker.EnsureAddAuditValuesRemainsUnchangedOnModifyAsync(
+                    inputSubscriberAgreement,
+                    storageSubscriberAgreement))
+                        .ReturnsAsync(updatedSubscriberAgreement);
 
             this.storageBrokerMock.Setup(broker =>
                 broker.UpdateSubscriberAgreementAsync(inputSubscriberAgreement))
@@ -59,24 +69,34 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.SubscriberAgreements
             // then
             actualSubscriberAgreement.Should().BeEquivalentTo(expectedSubscriberAgreement);
 
+            this.securityAuditBrokerMock.Verify(broker =>
+                broker.ApplyModifyAuditValuesAsync(inputSubscriberAgreement),
+                    Times.Once);
+
             this.dateTimeBrokerMock.Verify(broker =>
                 broker.GetCurrentDateTimeOffsetAsync(),
-                    Times.Exactly(2));
+                    Times.Once);
 
-            this.securityBrokerMock.Verify(broker =>
-                broker.GetCurrentUserAsync(),
-                    Times.Exactly(2));
+            this.securityAuditBrokerMock.Verify(broker =>
+                broker.GetUserIdAsync(),
+                    Times.Once);
 
             this.storageBrokerMock.Verify(broker =>
                 broker.SelectSubscriberAgreementByIdAsync(inputSubscriberAgreement.Id),
                     Times.Once);
 
+            this.securityAuditBrokerMock.Verify(broker =>
+                broker.EnsureAddAuditValuesRemainsUnchangedOnModifyAsync(
+                    inputSubscriberAgreement,
+                    storageSubscriberAgreement),
+                        Times.Once);
+
             this.storageBrokerMock.Verify(broker =>
                 broker.UpdateSubscriberAgreementAsync(inputSubscriberAgreement),
                     Times.Once);
 
+            this.securityAuditBrokerMock.VerifyNoOtherCalls();
             this.dateTimeBrokerMock.VerifyNoOtherCalls();
-            this.securityBrokerMock.VerifyNoOtherCalls();
             this.storageBrokerMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
         }

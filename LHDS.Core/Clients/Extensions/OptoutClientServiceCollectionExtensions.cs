@@ -19,12 +19,14 @@ using ISL.Security.Client.Models.Clients;
 using LHDS.Core.Brokers.Audits;
 using LHDS.Core.Brokers.CsvHelpers;
 using LHDS.Core.Brokers.DateTimes;
+using LHDS.Core.Brokers.Files;
 using LHDS.Core.Brokers.Identifiers;
 using LHDS.Core.Brokers.Loggings;
 using LHDS.Core.Brokers.Mesh;
 using LHDS.Core.Brokers.Securities;
 using LHDS.Core.Brokers.Storages.Blobs;
 using LHDS.Core.Brokers.Storages.Sql;
+using LHDS.Core.Brokers.TempLocations;
 using LHDS.Core.Models.Brokers.Mesh;
 using LHDS.Core.Models.Brokers.Storages.Blobs;
 using LHDS.Core.Models.Configurations;
@@ -42,6 +44,7 @@ using LHDS.Core.Services.Processings.OptOuts;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Xeptions;
 
 namespace LHDS.Core.Clients.Extensions
 {
@@ -206,6 +209,8 @@ namespace LHDS.Core.Clients.Extensions
             services.AddTransient<ICsvHelperBroker, CsvHelperBroker>();
             services.AddTransient<IDateTimeBroker, DateTimeBroker>();
             services.AddTransient<IIdentifierBroker, IdentifierBroker>();
+            services.AddTransient<ITempLocationBroker, TempLocationBroker>();
+            services.AddTransient<IFileBroker, FileBroker>();
 
             if (!acceptanceTest)
             {
@@ -281,7 +286,10 @@ namespace LHDS.Core.Clients.Extensions
             try
             {
                 // Try to load as PKCS#12
-                return X509CertificateLoader.LoadPkcs12(certBytes, password);
+                return X509CertificateLoader.LoadPkcs12(
+                    certBytes,
+                    password,
+                    X509KeyStorageFlags.Exportable);
             }
             catch (CryptographicException)
             {
@@ -341,6 +349,8 @@ namespace LHDS.Core.Clients.Extensions
             }
 
             Validate(
+                createException: (message, errors) => new InvalidConfigurationException(message, null, errors),
+
                 (Rule: IsInvalid(meshConfigurationSettings.MailboxId),
                     Parameter: "meshConfiguration__mailboxId"),
 
@@ -365,6 +375,8 @@ namespace LHDS.Core.Clients.Extensions
             if (acceptanceTest)
             {
                 Validate(
+                createException: (message, errors) => new InvalidConfigurationException(message, null, errors),
+
                     (Rule: IsInvalid(meshConfigurationSettings.TlsRootCertificates),
                         Parameter: "meshConfiguration__tlsRootCertificates__0"),
 
@@ -385,6 +397,8 @@ namespace LHDS.Core.Clients.Extensions
             }
 
             Validate(
+                createException: (message, errors) => new InvalidConfigurationException(message, null, errors),
+
                 (Rule: IsInvalid(optOutConfiguration.ExpiredAfterDays),
                     Parameter: "optOutSettings__expiredAfterDays"),
 
@@ -416,6 +430,8 @@ namespace LHDS.Core.Clients.Extensions
             }
 
             Validate(
+                createException: (message, errors) => new InvalidConfigurationException(message, null, errors),
+
                 (Rule: IsInvalid(blobStorageSettings.AzureBlobServiceUri),
                     Parameter: "blobStorage__azureBlobServiceUri"),
 
@@ -447,7 +463,10 @@ namespace LHDS.Core.Clients.Extensions
             Message = "Configuration value does not exist"
         };
 
-        private static void Validate(params (dynamic Rule, string Parameter)[] validations)
+        private static void Validate<T>(
+            Func<string, IDictionary, T> createException,
+            params (dynamic Rule, string Parameter)[] validations)
+            where T : Xeption
         {
             StringBuilder validationErrors = new StringBuilder();
             validationErrors.AppendLine("Configuration error(s):");
@@ -457,8 +476,7 @@ namespace LHDS.Core.Clients.Extensions
             {
                 if (rule.Condition)
                 {
-                    validationErrors.AppendLine(
-                        $"{parameter} -> Configuration value does not exist or does not meet validation criteria");
+                    validationErrors.AppendLine($"{parameter}");
 
                     if (errors.Contains(parameter))
                     {
@@ -470,11 +488,11 @@ namespace LHDS.Core.Clients.Extensions
                 }
             }
 
-            var invalidConfigurationException = new InvalidConfigurationException(
-                message: validationErrors.ToString(),
-                data: errors);
+            T invalidDataException = createException(
+                validationErrors.ToString(),
+                errors);
 
-            invalidConfigurationException.ThrowIfContainsErrors();
+            invalidDataException.ThrowIfContainsErrors();
         }
 
         /// <summary>

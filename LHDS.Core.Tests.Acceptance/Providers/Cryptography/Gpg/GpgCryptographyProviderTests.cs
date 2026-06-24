@@ -1,4 +1,4 @@
-﻿// ---------------------------------------------------------
+// ---------------------------------------------------------
 // Copyright (c) North East London ICB. All rights reserved.
 // ---------------------------------------------------------
 
@@ -6,8 +6,8 @@ using System.IO;
 using LHDS.Core.Models.Processings.SubscriberCredentials;
 using LHDS.Core.Providers.Cryptography;
 using LHDS.Core.Providers.Cryptography.Gpg;
-using Tynamix.ObjectFiller;
-using Xunit.Abstractions;
+using Xunit;using Tynamix.ObjectFiller;
+
 
 namespace LHDS.Core.Tests.Acceptance.Providers.Cryptography.Gpg
 {
@@ -52,3 +52,4 @@ namespace LHDS.Core.Tests.Acceptance.Providers.Cryptography.Gpg
         }
     }
 }
+

@@ -140,7 +140,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.ResolvedAddresses
 
             this.dateTimeBrokerMock.Verify(broker =>
                 broker.GetCurrentDateTimeOffsetAsync(),
-                    Times.Once());
+                    Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>
                 broker.LogErrorAsync(It.Is(SameExceptionAs(
@@ -238,7 +238,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.ResolvedAddresses
                 this.storageBrokerMock.Object,
                 this.identifierBrokerMock.Object,
                 this.dateTimeBrokerMock.Object,
-                this.securityBrokerMock.Object,
+                this.securityAuditBrokerMock.Object,
                 this.loggingBrokerMock.Object,
                 this.auditBrokerMock.Object)
             {
@@ -263,10 +263,6 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.ResolvedAddresses
                     message: "Resolved address service error occurred, please contact support.",
                     innerException: failedResolvedAddressServiceException);
 
-            this.dateTimeBrokerMock.Setup(broker =>
-                broker.GetCurrentDateTimeOffsetAsync())
-                    .ThrowsAsync(serviceException);
-
             // when
             ValueTask addResolvedAddressTask = resolvedAddressServiceMock.Object
                 .BulkAddResolvedAddressesAsync(resolvedAddresses: someResolvedAddresses, fileName: someFileName);
@@ -281,16 +277,15 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.ResolvedAddresses
 
             resolvedAddressServiceMock.Verify(service =>
                 service.BulkInsertBatch(It.IsAny<List<ResolvedAddress>>(), It.IsAny<int>(), It.IsAny<string>()),
-                    Times.Once());
+                    Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>
                 broker.LogErrorAsync(It.Is(SameExceptionAs(
                     expectedResolvedAddressServiceException))),
                         Times.Once);
 
-            resolvedAddressServiceMock.VerifyNoOtherCalls();
+            this.securityAuditBrokerMock.VerifyNoOtherCalls();
             this.dateTimeBrokerMock.VerifyNoOtherCalls();
-            this.securityBrokerMock.VerifyNoOtherCalls();
             this.storageBrokerMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
         }

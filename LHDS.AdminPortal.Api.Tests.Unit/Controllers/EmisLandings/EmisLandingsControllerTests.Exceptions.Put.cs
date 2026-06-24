@@ -44,7 +44,7 @@ namespace LHDS.AdminPortal.Api.Tests.Unit.Controllers.EmisLandings
 
             this.emisLandingCoordinationServiceMock.Verify(service =>
                 service.RedecryptDocumentByIngestionIdAsync(someIngestionTrackingId),
-                    Times.Once());
+                    Times.Once);
 
             this.emisLandingCoordinationServiceMock.VerifyNoOtherCalls();
         }
@@ -72,7 +72,7 @@ namespace LHDS.AdminPortal.Api.Tests.Unit.Controllers.EmisLandings
 
             this.emisLandingCoordinationServiceMock.Verify(service =>
                 service.RedecryptDocumentByIngestionIdAsync(someIngestionTrackingId),
-                    Times.Once());
+                    Times.Once);
 
             this.emisLandingCoordinationServiceMock.VerifyNoOtherCalls();
         }

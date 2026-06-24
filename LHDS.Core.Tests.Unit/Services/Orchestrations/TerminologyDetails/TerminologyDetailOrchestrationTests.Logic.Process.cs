@@ -76,7 +76,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.TerminologyDetails
 
             this.ontologyProcessingServiceMock.Verify(service =>
                 service.RetrieveArtifactDetailsAsync(undownloadedTerminologyArtifact.FullUrl),
-                    Times.Once());
+                    Times.Once);
 
             this.documentProcessingServiceMock.Verify(service =>
                 service.AddDocumentAsync(It.IsAny<Stream>(), inputFileName, inputContainer),

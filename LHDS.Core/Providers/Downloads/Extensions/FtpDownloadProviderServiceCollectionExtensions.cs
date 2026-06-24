@@ -49,7 +49,8 @@ namespace LHDS.Core.Providers.Downloads.Extensions
             }
 
             Validate(
-                createException: (message, errors) => new InvalidConfigurationException(message, null, errors),
+                createException: () => new InvalidConfigurationException(
+                    message: "Invalid ftp download provider settings."),
 
                 (Rule: IsInvalid(ftpDownloadProviderSettings.FtpPort),
                     Parameter: "ftpDownload__ftpPort"),
@@ -77,7 +78,7 @@ namespace LHDS.Core.Providers.Downloads.Extensions
         };
 
         private static void Validate<T>(
-            Func<string, IDictionary, T> createException,
+            Func<T> createException,
             params (dynamic Rule, string Parameter)[] validations)
             where T : Xeption
         {
@@ -101,10 +102,7 @@ namespace LHDS.Core.Providers.Downloads.Extensions
                 }
             }
 
-            T invalidDataException = createException(
-                validationErrors.ToString(),
-                errors);
-
+            T invalidDataException = createException();
             invalidDataException.ThrowIfContainsErrors();
         }
     }

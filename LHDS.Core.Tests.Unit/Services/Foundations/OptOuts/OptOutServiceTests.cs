@@ -7,7 +7,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Runtime.CompilerServices;
+using LHDS.Core.Brokers.Audits;
 using LHDS.Core.Brokers.DateTimes;
+using LHDS.Core.Brokers.Identifiers;
 using LHDS.Core.Brokers.Loggings;
 using LHDS.Core.Brokers.Securities;
 using LHDS.Core.Brokers.Storages.Sql;
@@ -26,22 +28,28 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.OptOuts
     {
         private readonly Mock<IStorageBroker> storageBrokerMock;
         private readonly Mock<IDateTimeBroker> dateTimeBrokerMock;
-        private readonly Mock<ISecurityBroker> securityBrokerMock;
+        private readonly Mock<ISecurityAuditBroker> securityAuditBrokerMock;
+        private readonly Mock<IIdentifierBroker> identifierBrokerMock;
         private readonly Mock<ILoggingBroker> loggingBrokerMock;
+        private readonly Mock<IAuditBroker> auditBrokerMock;
         private readonly IOptOutService optOutService;
 
         public OptOutServiceTests()
         {
             this.storageBrokerMock = new Mock<IStorageBroker>();
             this.dateTimeBrokerMock = new Mock<IDateTimeBroker>();
-            this.securityBrokerMock = new Mock<ISecurityBroker>();
+            this.securityAuditBrokerMock = new Mock<ISecurityAuditBroker>();
+            this.identifierBrokerMock = new Mock<IIdentifierBroker>();
             this.loggingBrokerMock = new Mock<ILoggingBroker>();
+            this.auditBrokerMock = new Mock<IAuditBroker>();
 
             this.optOutService = new OptOutService(
                 storageBroker: this.storageBrokerMock.Object,
                 dateTimeBroker: this.dateTimeBrokerMock.Object,
-                securityBroker: this.securityBrokerMock.Object,
-                loggingBroker: this.loggingBrokerMock.Object);
+                securityAuditBroker: this.securityAuditBrokerMock.Object,
+                identifierBroker: this.identifierBrokerMock.Object,
+                loggingBroker: this.loggingBrokerMock.Object,
+                auditBroker: this.auditBrokerMock.Object);
         }
 
         private static Expression<Func<Xeption, bool>> SameExceptionAs(Xeption expectedException) =>

@@ -20,22 +20,26 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.PdsAudits
         {
             // given
             DateTimeOffset randomDateTimeOffset = GetRandomDateTimeOffset();
-            EntraUser randomEntraUser = CreateRandomEntraUser();
+            string randomUserId = GetRandomStringWithLengthOf(50);
 
             PdsAudit randomPdsAudit = 
-                CreateRandomPdsAudit(randomDateTimeOffset, randomEntraUser.EntraUserId);
+                CreateRandomPdsAudit(randomDateTimeOffset, randomUserId);
 
             PdsAudit inputPdsAudit = randomPdsAudit;
             PdsAudit storagePdsAudit = inputPdsAudit;
             PdsAudit expectedPdsAudit = storagePdsAudit.DeepClone();
 
+            this.securityAuditBrokerMock.Setup(broker =>
+                broker.ApplyAddAuditValuesAsync(inputPdsAudit))
+                    .ReturnsAsync(inputPdsAudit);
+
             this.dateTimeBrokerMock.Setup(broker =>
                 broker.GetCurrentDateTimeOffsetAsync())
                     .ReturnsAsync(randomDateTimeOffset);
 
-            this.securityBrokerMock.Setup(broker =>
-                broker.GetCurrentUserAsync())
-                    .ReturnsAsync(randomEntraUser);
+            this.securityAuditBrokerMock.Setup(broker =>
+                broker.GetUserIdAsync())
+                    .ReturnsAsync(randomUserId);
 
             this.storageBrokerMock.Setup(broker =>
                 broker.InsertPdsAuditAsync(inputPdsAudit))
@@ -48,20 +52,24 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.PdsAudits
             // then
             actualPdsAudit.Should().BeEquivalentTo(expectedPdsAudit);
 
+            this.securityAuditBrokerMock.Verify(broker =>
+                broker.ApplyAddAuditValuesAsync(inputPdsAudit),
+                    Times.Once);
+
             this.dateTimeBrokerMock.Verify(broker =>
                 broker.GetCurrentDateTimeOffsetAsync(),
-                    Times.Exactly(2));
+                    Times.Once);
 
-            this.securityBrokerMock.Verify(broker =>
-                broker.GetCurrentUserAsync(),
-                    Times.Exactly(2));
+            this.securityAuditBrokerMock.Verify(broker =>
+                broker.GetUserIdAsync(),
+                    Times.Once);
 
             this.storageBrokerMock.Verify(broker =>
                 broker.InsertPdsAuditAsync(inputPdsAudit),
                     Times.Once);
 
             this.dateTimeBrokerMock.VerifyNoOtherCalls();
-            this.securityBrokerMock.VerifyNoOtherCalls();
+            this.securityAuditBrokerMock.VerifyNoOtherCalls();
             this.storageBrokerMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
         }

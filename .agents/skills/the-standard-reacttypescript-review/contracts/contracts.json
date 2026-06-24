@@ -1,0 +1,11 @@
+{
+  "skill": "the-standard-reacttypescript-review",
+  "version": "1.0.0",
+  "review_output_format": "{SEVERITY} {RULE-ID} / {Problem description} / {Why it violates the rule} / {Suggested fix}",
+  "severity_levels": {
+    "ERROR": "Blocks merge — architectural violation or broken Standard rule",
+    "WARNING": "Should be addressed — style or quality concern weakening the Standard",
+    "INFO": "Educational note — does not block merge"
+  },
+  "example_comment": "ERROR tsr-broker-001 / StudentBroker calls axios directly in a view service / Brokers must be the only layer calling HTTP clients / Move the axios call into a dedicated StudentBroker"
+}

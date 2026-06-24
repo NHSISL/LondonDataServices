@@ -1,0 +1,19 @@
+{
+  "name": "the-standard-csharp-variables",
+  "version": "0.1.0",
+  "description": "Enforces variable naming, type declaration style, pluralization, line-length breakdown, and multi-declaration spacing per The Standard C# Coding Standard v0.8.",
+  "csharp_standard_version": "v0.8",
+  "skill_version": "v0.1.0",
+  "inputs": [
+    "C# source file (*.cs)"
+  ],
+  "outputs": [
+    "Style-compliant C# source file with correctly declared and named variables",
+    "Review feedback citing rule IDs"
+  ],
+  "dependencies": [
+    "the-standard-csharp-files",
+    "the-standard-csharp-classes"
+  ],
+  "applies_to": ["*.cs"]
+}

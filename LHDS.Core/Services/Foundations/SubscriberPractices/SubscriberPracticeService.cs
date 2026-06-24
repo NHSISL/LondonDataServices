@@ -17,18 +17,18 @@ namespace LHDS.Core.Services.Foundations.SubscriberPractices
     {
         private readonly IStorageBroker storageBroker;
         private readonly IDateTimeBroker dateTimeBroker;
-        private readonly ISecurityBroker securityBroker;
+        private readonly ISecurityAuditBroker securityAuditBroker;
         private readonly ILoggingBroker loggingBroker;
 
         public SubscriberPracticeService(
             IStorageBroker storageBroker,
             IDateTimeBroker dateTimeBroker,
-            ISecurityBroker securityBroker,
+            ISecurityAuditBroker securityAuditBroker,
             ILoggingBroker loggingBroker)
         {
             this.storageBroker = storageBroker;
             this.dateTimeBroker = dateTimeBroker;
-            this.securityBroker = securityBroker;
+            this.securityAuditBroker = securityAuditBroker;
             this.loggingBroker = loggingBroker;
         }
 
@@ -36,7 +36,7 @@ namespace LHDS.Core.Services.Foundations.SubscriberPractices
             TryCatch(async () =>
             {
                 SubscriberPractice subscriberPracticeWithAddAuditApplied =
-                    await ApplyAddAuditAsync(subscriberPractice);
+                    await this.securityAuditBroker.ApplyAddAuditValuesAsync(subscriberPractice);
 
                 await ValidateSubscriberPracticeOnAddAsync(subscriberPracticeWithAddAuditApplied);
 
@@ -62,10 +62,10 @@ namespace LHDS.Core.Services.Foundations.SubscriberPractices
         public ValueTask<SubscriberPractice> ModifySubscriberPracticeAsync(SubscriberPractice subscriberPractice) =>
             TryCatch(async () =>
             {
-                SubscriberPractice osubscriberPracticeWithModifyAuditApplied =
-                    await ApplyModifyAuditAsync(subscriberPractice);
+                SubscriberPractice subscriberPracticeWithModifyAuditApplied =
+                    await this.securityAuditBroker.ApplyModifyAuditValuesAsync(subscriberPractice);
 
-                await ValidateSubscriberPracticeOnModifyAsync(osubscriberPracticeWithModifyAuditApplied);
+                await ValidateSubscriberPracticeOnModifyAsync(subscriberPracticeWithModifyAuditApplied);
 
                 SubscriberPractice maybeSubscriberPractice =
                     await this.storageBroker.SelectSubscriberPracticeByIdAsync(
@@ -74,7 +74,7 @@ namespace LHDS.Core.Services.Foundations.SubscriberPractices
                 ValidateStorageSubscriberPractice(maybeSubscriberPractice, subscriberPractice.Id);
 
                 SubscriberPractice SubscriberPracticeWithModifyAuditAppliedEnsured =
-                   await EnsureCreatedAuditPropertiesIsSameAsStorageAsync(
+                   await this.securityAuditBroker.EnsureAddAuditValuesRemainsUnchangedOnModifyAsync(
                        subscriberPractice,
                        maybeSubscriberPractice);
 
@@ -97,39 +97,5 @@ namespace LHDS.Core.Services.Foundations.SubscriberPractices
 
                 return await this.storageBroker.DeleteSubscriberPracticeAsync(maybeSubscriberPractice);
             });
-
-        virtual internal async ValueTask<SubscriberPractice> ApplyAddAuditAsync(SubscriberPractice subscriberPractice)
-        {
-            ValidateSubscriberPracticeIsNotNull(subscriberPractice);
-            var auditDateTimeOffset = await this.dateTimeBroker.GetCurrentDateTimeOffsetAsync();
-            var auditUser = await this.securityBroker.GetCurrentUserAsync();
-            subscriberPractice.CreatedBy = auditUser?.EntraUserId.ToString() ?? string.Empty;
-            subscriberPractice.CreatedDate = auditDateTimeOffset;
-            subscriberPractice.UpdatedBy = auditUser?.EntraUserId.ToString() ?? string.Empty;
-            subscriberPractice.UpdatedDate = auditDateTimeOffset;
-
-            return subscriberPractice;
-        }
-
-        virtual internal async ValueTask<SubscriberPractice> ApplyModifyAuditAsync(SubscriberPractice subscriberPractice)
-        {
-            ValidateSubscriberPracticeIsNotNull(subscriberPractice);
-            var auditDateTimeOffset = await this.dateTimeBroker.GetCurrentDateTimeOffsetAsync();
-            var auditUser = await this.securityBroker.GetCurrentUserAsync();
-            subscriberPractice.UpdatedBy = auditUser?.EntraUserId.ToString() ?? string.Empty;
-            subscriberPractice.UpdatedDate = auditDateTimeOffset;
-
-            return subscriberPractice;
-        }
-
-        virtual internal async ValueTask<SubscriberPractice> EnsureCreatedAuditPropertiesIsSameAsStorageAsync(
-            SubscriberPractice subscriberPractice,
-            SubscriberPractice maybeSubscriberPractice)
-        {
-            subscriberPractice.CreatedDate = maybeSubscriberPractice.CreatedDate;
-            subscriberPractice.CreatedBy = maybeSubscriberPractice.CreatedBy;
-
-            return subscriberPractice;
-        }
     }
 }

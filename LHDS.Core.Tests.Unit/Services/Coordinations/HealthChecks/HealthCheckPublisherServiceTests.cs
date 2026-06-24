@@ -111,7 +111,7 @@ namespace LHDS.Core.Tests.Unit.Services.Coordinations.HealthChecks
 
                         telemetryBrokerMock.Verify(broker =>
                             broker.TrackMetricAsync(It.Is(SameMetricTelemetryAs(new MetricTelemetry(metricKey, metricValue)))),
-                                Times.Once());
+                                Times.Once);
 
                         break;
 

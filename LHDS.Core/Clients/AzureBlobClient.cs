@@ -8,9 +8,11 @@ namespace LHDS.Core.Clients
     using System.IO;
     using System.Security.Cryptography;
     using System.Threading.Tasks;
+    using Azure.Storage;
     using Azure.Storage.Blobs;
     using Azure.Storage.Blobs.Models;
     using Azure.Storage.Sas;
+    using LHDS.Core.Brokers.Hashing;
     using LHDS.Core.Brokers.Loggings;
 
     public class AzureBlobClient : IAzureBlobClient
@@ -40,37 +42,34 @@ namespace LHDS.Core.Clients
         {
             try
             {
-                byte[] contentHash;
-                using (var md5 = MD5.Create())
-                {
+                if (input.CanSeek)
                     input.Position = 0;
-                    contentHash = md5.ComputeHash(input);
-                }
 
-                await loggingBroker.LogInformationAsync($"file:{fileName}, size:{input.Length}, container:{container}");
-                input.Position = 0;
+                await using var hashingStream = new HashingCountingBroker(input, HashAlgorithmName.MD5);
                 var blobClient = blobServiceClient.GetBlobContainerClient(container).GetBlobClient(fileName);
-                var streamLength = input.Length;
 
                 var options = new BlobUploadOptions
                 {
-                    HttpHeaders = new BlobHttpHeaders
-                    {
-                        ContentHash = contentHash
-                    },
                     ProgressHandler = new Progress<long>(progress =>
                     {
-                        Console.WriteLine(
-                            $"file: {fileName}, progress: {progress}/{streamLength}, " +
-                            $"percent:{Math.Round(progress / (double)streamLength * 100.0, 2)}");
+                        Console.WriteLine($"file: {fileName}, progress: {progress}");
                     }),
-                    TransferOptions = new Azure.Storage.StorageTransferOptions()
+
+                    // Upload in chunks: setting InitialTransferSize = input.Length buffers the
+                    // entire file in memory and OOM-kills the process on multi-GB files.
+                    TransferOptions = new StorageTransferOptions
                     {
-                        InitialTransferSize = input.Length
+                        MaximumTransferSize = 4 * 1024 * 1024,
+                        InitialTransferSize = 4 * 1024 * 1024
                     }
                 };
 
-                await blobClient.UploadAsync(input, options);
+                await blobClient.UploadAsync(hashingStream.AsStream(), options);
+                long streamLength = hashingStream.BytesRead;
+                string hash = hashingStream.GetFinalHashHex();
+
+                await loggingBroker.LogInformationAsync(
+                    $"file:{fileName}, size:{streamLength}, hash:{hash}, container:{container}");
             }
             catch (Exception ex)
             {
@@ -78,6 +77,16 @@ namespace LHDS.Core.Clients
                 Console.WriteLine($"Unable to write blob: {fileName}");
                 throw;
             }
+        }
+
+        public async ValueTask<Stream> OpenReadAsync(string fileName, string container)
+        {
+            await loggingBroker.LogInformationAsync(fileName);
+
+            var blobClient = blobServiceClient
+                .GetBlobContainerClient(container).GetBlobClient(fileName);
+
+            return await blobClient.OpenReadAsync();
         }
 
         public async ValueTask DeleteFileAsync(string fileName, string container)
@@ -91,7 +100,11 @@ namespace LHDS.Core.Clients
         {
             await loggingBroker.LogInformationAsync(fileName);
             var blobClient = this.blobServiceClient.GetBlobContainerClient(container).GetBlobClient(fileName);
-            var userDelegationKey = blobServiceClient.GetUserDelegationKey(DateTimeOffset.UtcNow, expiresOn);
+            var userDelegationKey = blobServiceClient.GetUserDelegationKey(
+                new Azure.Storage.Blobs.Models.BlobGetUserDelegationKeyOptions(expiresOn)
+                {
+                    StartsOn = DateTimeOffset.UtcNow
+                });
 
             var sasBuilder = new BlobSasBuilder()
             {

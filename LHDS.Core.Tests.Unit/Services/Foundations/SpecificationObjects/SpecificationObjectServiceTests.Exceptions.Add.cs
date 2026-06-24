@@ -34,8 +34,8 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.SpecificationObjects
                     message: "SpecificationObject dependency error occurred, please contact support.",
                     innerException: failedSpecificationObjectStorageException);
 
-            this.dateTimeBrokerMock.Setup(broker =>
-                broker.GetCurrentDateTimeOffsetAsync())
+            this.securityAuditBrokerMock.Setup(broker =>
+                broker.ApplyAddAuditValuesAsync(It.IsAny<SpecificationObject>()))
                     .ThrowsAsync(sqlException);
 
             // when
@@ -50,9 +50,13 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.SpecificationObjects
             actualSpecificationObjectDependencyException.Should()
                 .BeEquivalentTo(expectedSpecificationObjectDependencyException);
 
+            this.securityAuditBrokerMock.Verify(broker =>
+                broker.ApplyAddAuditValuesAsync(It.IsAny<SpecificationObject>()),
+                    Times.Once);
+
             this.dateTimeBrokerMock.Verify(broker =>
                 broker.GetCurrentDateTimeOffsetAsync(),
-                    Times.Once);
+                    Times.Never);
 
             this.storageBrokerMock.Verify(broker =>
                 broker.InsertSpecificationObjectAsync(It.IsAny<SpecificationObject>()),
@@ -63,6 +67,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.SpecificationObjects
                     expectedSpecificationObjectDependencyException))),
                         Times.Once);
 
+            this.securityAuditBrokerMock.VerifyNoOtherCalls();
             this.dateTimeBrokerMock.VerifyNoOtherCalls();
             this.storageBrokerMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
@@ -89,8 +94,8 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.SpecificationObjects
                     message: "SpecificationObject dependency validation occurred, please try again.",
                     innerException: alreadyExistsSpecificationObjectException);
 
-            this.dateTimeBrokerMock.Setup(broker =>
-                broker.GetCurrentDateTimeOffsetAsync())
+            this.securityAuditBrokerMock.Setup(broker =>
+                broker.ApplyAddAuditValuesAsync(It.IsAny<SpecificationObject>()))
                     .ThrowsAsync(duplicateKeyException);
 
             // when
@@ -105,9 +110,13 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.SpecificationObjects
             actualSpecificationObjectDependencyValidationException.Should()
                 .BeEquivalentTo(expectedSpecificationObjectDependencyValidationException);
 
+            this.securityAuditBrokerMock.Verify(broker =>
+                broker.ApplyAddAuditValuesAsync(It.IsAny<SpecificationObject>()),
+                    Times.Once);
+
             this.dateTimeBrokerMock.Verify(broker =>
                 broker.GetCurrentDateTimeOffsetAsync(),
-                    Times.Once);
+                    Times.Never);
 
             this.storageBrokerMock.Verify(broker =>
                 broker.InsertSpecificationObjectAsync(It.IsAny<SpecificationObject>()),
@@ -118,6 +127,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.SpecificationObjects
                     expectedSpecificationObjectDependencyValidationException))),
                         Times.Once);
 
+            this.securityAuditBrokerMock.VerifyNoOtherCalls();
             this.dateTimeBrokerMock.VerifyNoOtherCalls();
             this.storageBrokerMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
@@ -144,8 +154,8 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.SpecificationObjects
                     message: "SpecificationObject dependency validation occurred, please try again.",
                     innerException: invalidSpecificationObjectReferenceException);
 
-            this.dateTimeBrokerMock.Setup(broker =>
-                broker.GetCurrentDateTimeOffsetAsync())
+            this.securityAuditBrokerMock.Setup(broker =>
+                broker.ApplyAddAuditValuesAsync(It.IsAny<SpecificationObject>()))
                     .ThrowsAsync(foreignKeyConstraintConflictException);
 
             // when
@@ -160,9 +170,13 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.SpecificationObjects
             actualSpecificationObjectDependencyValidationException.Should()
                 .BeEquivalentTo(expectedSpecificationObjectValidationException);
 
+            this.securityAuditBrokerMock.Verify(broker =>
+                broker.ApplyAddAuditValuesAsync(It.IsAny<SpecificationObject>()),
+                    Times.Once);
+
             this.dateTimeBrokerMock.Verify(broker =>
                 broker.GetCurrentDateTimeOffsetAsync(),
-                    Times.Once());
+                    Times.Never);
 
             this.loggingBrokerMock.Verify(broker =>
                 broker.LogErrorAsync(It.Is(SameExceptionAs(
@@ -173,6 +187,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.SpecificationObjects
                 broker.InsertSpecificationObjectAsync(someSpecificationObject),
                     Times.Never());
 
+            this.securityAuditBrokerMock.VerifyNoOtherCalls();
             this.dateTimeBrokerMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
             this.storageBrokerMock.VerifyNoOtherCalls();
@@ -197,8 +212,8 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.SpecificationObjects
                     message: "SpecificationObject dependency error occurred, please contact support.",
                     innerException: failedSpecificationObjectStorageException);
 
-            this.dateTimeBrokerMock.Setup(broker =>
-                broker.GetCurrentDateTimeOffsetAsync())
+            this.securityAuditBrokerMock.Setup(broker =>
+                broker.ApplyAddAuditValuesAsync(It.IsAny<SpecificationObject>()))
                     .ThrowsAsync(databaseUpdateException);
 
             // when
@@ -213,9 +228,13 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.SpecificationObjects
             actualSpecificationObjectDependencyException.Should()
                 .BeEquivalentTo(expectedSpecificationObjectDependencyException);
 
+            this.securityAuditBrokerMock.Verify(broker =>
+                broker.ApplyAddAuditValuesAsync(It.IsAny<SpecificationObject>()),
+                    Times.Once);
+
             this.dateTimeBrokerMock.Verify(broker =>
                 broker.GetCurrentDateTimeOffsetAsync(),
-                    Times.Once);
+                    Times.Never);
 
             this.storageBrokerMock.Verify(broker =>
                 broker.InsertSpecificationObjectAsync(It.IsAny<SpecificationObject>()),
@@ -226,6 +245,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.SpecificationObjects
                     expectedSpecificationObjectDependencyException))),
                         Times.Once);
 
+            this.securityAuditBrokerMock.VerifyNoOtherCalls();
             this.dateTimeBrokerMock.VerifyNoOtherCalls();
             this.storageBrokerMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
@@ -248,8 +268,8 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.SpecificationObjects
                     message: "SpecificationObject service error occurred, please contact support.",
                     innerException: failedSpecificationObjectServiceException);
 
-            this.dateTimeBrokerMock.Setup(broker =>
-                broker.GetCurrentDateTimeOffsetAsync())
+            this.securityAuditBrokerMock.Setup(broker =>
+                broker.ApplyAddAuditValuesAsync(It.IsAny<SpecificationObject>()))
                     .ThrowsAsync(serviceException);
 
             // when
@@ -264,9 +284,13 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.SpecificationObjects
             actualSpecificationObjectServiceException.Should()
                 .BeEquivalentTo(expectedSpecificationObjectServiceException);
 
+            this.securityAuditBrokerMock.Verify(broker =>
+                broker.ApplyAddAuditValuesAsync(It.IsAny<SpecificationObject>()),
+                    Times.Once);
+
             this.dateTimeBrokerMock.Verify(broker =>
                 broker.GetCurrentDateTimeOffsetAsync(),
-                    Times.Once);
+                    Times.Never);
 
             this.storageBrokerMock.Verify(broker =>
                 broker.InsertSpecificationObjectAsync(It.IsAny<SpecificationObject>()),
@@ -277,6 +301,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.SpecificationObjects
                     expectedSpecificationObjectServiceException))),
                         Times.Once);
 
+            this.securityAuditBrokerMock.VerifyNoOtherCalls();
             this.dateTimeBrokerMock.VerifyNoOtherCalls();
             this.storageBrokerMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();

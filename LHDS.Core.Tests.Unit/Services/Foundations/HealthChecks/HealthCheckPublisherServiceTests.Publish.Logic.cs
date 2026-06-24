@@ -22,7 +22,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.HealthChecks
             HealthReport inputHealthReport = randomHealthReport;
 
             // when
-            await this.healthCheckPublisherService.PublishAsync(inputHealthReport, default);
+            await this.healthCheckPublisherService.PublishAsync(inputHealthReport, TestContext.Current.CancellationToken);
 
             // then
             foreach (var entry in inputHealthReport.Entries)
@@ -48,7 +48,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.HealthChecks
 
                         this.telemetryBrokerMock.Verify(broker =>
                             broker.TrackMetricAsync(It.Is(SameMetricTelemetryAs(metric))),
-                                Times.Once());
+                                Times.Once);
                     }
                     else if (reading.Value is DateTime dateTime)
                     {
@@ -66,7 +66,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.HealthChecks
 
                 this.telemetryBrokerMock.Verify(broker =>
                     broker.TrackEventAsync(It.Is(SameEventTelemetryAs(eventTelemetry))),
-                        Times.Once());
+                        Times.Once);
             }
 
             this.telemetryBrokerMock.VerifyNoOtherCalls();

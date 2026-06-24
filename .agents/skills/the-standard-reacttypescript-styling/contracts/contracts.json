@@ -1,0 +1,13 @@
+{
+  "skill": "the-standard-reacttypescript-styling",
+  "version": "1.0.0",
+  "structure": {
+    "global_stylesheet": "global concerns only — resets, typography base, CSS custom properties",
+    "component_styles": "co-located CSS module or adjacent CSS file",
+    "bootstrap": "use utility classes for layout and spacing when available"
+  },
+  "rules": {
+    "class_selection_business_rules": "forbidden — use view model fields",
+    "inline_styles": "allowed only for dynamic values not expressible as classes"
+  }
+}

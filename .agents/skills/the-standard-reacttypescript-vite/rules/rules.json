@@ -1,0 +1,41 @@
+{
+  "skill": "the-standard-reacttypescript-vite",
+  "rules": [
+    {
+      "id": "tsr-vite-001",
+      "severity": "ERROR",
+      "category": "No Business Logic",
+      "rule": "Vite configuration must not contain business logic."
+    },
+    {
+      "id": "tsr-vite-002",
+      "severity": "ERROR",
+      "category": "Public Environment Convention",
+      "rule": "All client-exposed environment variables must use the VITE_ prefix."
+    },
+    {
+      "id": "tsr-vite-003",
+      "severity": "ERROR",
+      "category": "No Secrets",
+      "rule": "Secrets must never be placed in frontend environment variable files."
+    },
+    {
+      "id": "tsr-vite-004",
+      "severity": "WARN",
+      "category": "Consistent Path Aliases",
+      "rule": "Path aliases must be used sparingly and consistently using the recommended set."
+    },
+    {
+      "id": "tsr-vite-005",
+      "severity": "ERROR",
+      "category": "Documented Plugins",
+      "rule": "Every Vite plugin must have a comment explaining its purpose."
+    },
+    {
+      "id": "tsr-vite-006",
+      "severity": "WARN",
+      "category": "Build Warnings as Signals",
+      "rule": "Build warnings must be triaged in review — resolved or documented."
+    }
+  ]
+}

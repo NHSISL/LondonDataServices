@@ -1,0 +1,14 @@
+{
+  "name": "the-standard-reacttypescript-vite",
+  "version": "0.1.0",
+  "description": "Enforces infrastructure-only Vite configuration, VITE_* env convention, no secrets, consistent path aliases, documented plugins, and build warning treatment.",
+  "standard_version": "v0.1.0",
+  "skill_version": "v0.1.0",
+  "inputs": ["vite.config.ts, vite.config.js, .env* files"],
+  "outputs": [
+    "Minimal, infrastructure-only Vite configuration with documented plugins and safe environment variables",
+    "Review feedback citing rule IDs"
+  ],
+  "dependencies": ["the-standard-reacttypescript-files"],
+  "applies_to": ["vite.config.*", ".env*"]
+}

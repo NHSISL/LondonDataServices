@@ -32,8 +32,8 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.OptOuts
                 message: "OptOut dependency error occurred, please contact support.",
                 innerException: failedOptOutStorageException);
 
-            this.dateTimeBrokerMock.Setup(broker =>
-                broker.GetCurrentDateTimeOffsetAsync())
+            this.securityAuditBrokerMock.Setup(broker =>
+                broker.ApplyAddAuditValuesAsync(It.IsAny<OptOut>()))
                     .ThrowsAsync(sqlException);
 
             // when
@@ -48,9 +48,13 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.OptOuts
             actualOptOutDependencyException.Should()
                 .BeEquivalentTo(expectedOptOutDependencyException);
 
+            this.securityAuditBrokerMock.Verify(broker =>
+                broker.ApplyAddAuditValuesAsync(It.IsAny<OptOut>()),
+                    Times.Once);
+
             this.dateTimeBrokerMock.Verify(broker =>
                 broker.GetCurrentDateTimeOffsetAsync(),
-                    Times.Once);
+                    Times.Never);
 
             this.storageBrokerMock.Verify(broker =>
                 broker.InsertOptOutAsync(It.IsAny<OptOut>()),
@@ -61,6 +65,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.OptOuts
                     expectedOptOutDependencyException))),
                         Times.Once);
 
+            this.securityAuditBrokerMock.VerifyNoOtherCalls();
             this.dateTimeBrokerMock.VerifyNoOtherCalls();
             this.storageBrokerMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
@@ -86,8 +91,8 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.OptOuts
                 message: "OptOut dependency validation occurred, please try again.",
                 innerException: alreadyExistsOptOutException);
 
-            this.dateTimeBrokerMock.Setup(broker =>
-                broker.GetCurrentDateTimeOffsetAsync())
+            this.securityAuditBrokerMock.Setup(broker =>
+                broker.ApplyAddAuditValuesAsync(It.IsAny<OptOut>()))
                     .ThrowsAsync(duplicateKeyException);
 
             // when
@@ -102,9 +107,13 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.OptOuts
             actualOptOutDependencyValidationException.Should()
                 .BeEquivalentTo(expectedOptOutDependencyValidationException);
 
+            this.securityAuditBrokerMock.Verify(broker =>
+                broker.ApplyAddAuditValuesAsync(It.IsAny<OptOut>()),
+                    Times.Once);
+
             this.dateTimeBrokerMock.Verify(broker =>
                 broker.GetCurrentDateTimeOffsetAsync(),
-                    Times.Once);
+                    Times.Never);
 
             this.storageBrokerMock.Verify(broker =>
                 broker.InsertOptOutAsync(It.IsAny<OptOut>()),
@@ -115,6 +124,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.OptOuts
                     expectedOptOutDependencyValidationException))),
                         Times.Once);
 
+            this.securityAuditBrokerMock.VerifyNoOtherCalls();
             this.dateTimeBrokerMock.VerifyNoOtherCalls();
             this.storageBrokerMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
@@ -139,8 +149,8 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.OptOuts
                 message: "OptOut dependency validation occurred, please try again.",
                 innerException: invalidOptOutReferenceException);
 
-            this.dateTimeBrokerMock.Setup(broker =>
-                broker.GetCurrentDateTimeOffsetAsync())
+            this.securityAuditBrokerMock.Setup(broker =>
+                broker.ApplyAddAuditValuesAsync(It.IsAny<OptOut>()))
                     .ThrowsAsync(foreignKeyConstraintConflictException);
 
             // when
@@ -155,9 +165,13 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.OptOuts
             actualOptOutDependencyValidationException.Should()
                 .BeEquivalentTo(expectedOptOutValidationException);
 
+            this.securityAuditBrokerMock.Verify(broker =>
+                broker.ApplyAddAuditValuesAsync(It.IsAny<OptOut>()),
+                    Times.Once);
+
             this.dateTimeBrokerMock.Verify(broker =>
                 broker.GetCurrentDateTimeOffsetAsync(),
-                    Times.Once());
+                    Times.Never);
 
             this.loggingBrokerMock.Verify(broker =>
                 broker.LogErrorAsync(It.Is(SameExceptionAs(
@@ -168,6 +182,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.OptOuts
                 broker.InsertOptOutAsync(someOptOut),
                     Times.Never());
 
+            this.securityAuditBrokerMock.VerifyNoOtherCalls();
             this.dateTimeBrokerMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
             this.storageBrokerMock.VerifyNoOtherCalls();
@@ -190,8 +205,8 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.OptOuts
                 message: "OptOut dependency error occurred, please contact support.",
                 innerException: failedOptOutStorageException);
 
-            this.dateTimeBrokerMock.Setup(broker =>
-                broker.GetCurrentDateTimeOffsetAsync())
+            this.securityAuditBrokerMock.Setup(broker =>
+                broker.ApplyAddAuditValuesAsync(It.IsAny<OptOut>()))
                     .ThrowsAsync(databaseUpdateException);
 
             // when
@@ -206,9 +221,13 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.OptOuts
             actualOptOutDependencyException.Should()
                 .BeEquivalentTo(expectedOptOutDependencyException);
 
+            this.securityAuditBrokerMock.Verify(broker =>
+                broker.ApplyAddAuditValuesAsync(It.IsAny<OptOut>()),
+                    Times.Once);
+
             this.dateTimeBrokerMock.Verify(broker =>
                 broker.GetCurrentDateTimeOffsetAsync(),
-                    Times.Once);
+                    Times.Never);
 
             this.storageBrokerMock.Verify(broker =>
                 broker.InsertOptOutAsync(It.IsAny<OptOut>()),
@@ -219,6 +238,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.OptOuts
                     expectedOptOutDependencyException))),
                         Times.Once);
 
+            this.securityAuditBrokerMock.VerifyNoOtherCalls();
             this.dateTimeBrokerMock.VerifyNoOtherCalls();
             this.storageBrokerMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
@@ -239,8 +259,8 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.OptOuts
                 message: "OptOut service error occurred, please contact support.",
                 innerException: failedOptOutServiceException);
 
-            this.dateTimeBrokerMock.Setup(broker =>
-                broker.GetCurrentDateTimeOffsetAsync())
+            this.securityAuditBrokerMock.Setup(broker =>
+                broker.ApplyAddAuditValuesAsync(It.IsAny<OptOut>()))
                     .ThrowsAsync(serviceException);
 
             // when
@@ -255,9 +275,13 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.OptOuts
             actualOptOutServiceException.Should()
                 .BeEquivalentTo(expectedOptOutServiceException);
 
+            this.securityAuditBrokerMock.Verify(broker =>
+                broker.ApplyAddAuditValuesAsync(It.IsAny<OptOut>()),
+                    Times.Once);
+
             this.dateTimeBrokerMock.Verify(broker =>
                 broker.GetCurrentDateTimeOffsetAsync(),
-                    Times.Once);
+                    Times.Never);
 
             this.storageBrokerMock.Verify(broker =>
                 broker.InsertOptOutAsync(It.IsAny<OptOut>()),
@@ -268,6 +292,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.OptOuts
                     expectedOptOutServiceException))),
                         Times.Once);
 
+            this.securityAuditBrokerMock.VerifyNoOtherCalls();
             this.dateTimeBrokerMock.VerifyNoOtherCalls();
             this.storageBrokerMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();

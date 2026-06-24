@@ -32,7 +32,7 @@ namespace LHDS.Core.Tests.Unit.Services.Coordinations.AddressCoordinations
 
             this.resolvedAddressOrchestrationServiceMock.Verify(service =>
                 service.ExportResolvedAddressesAsync(),
-                    Times.Once());
+                    Times.Once);
 
             this.resolvedAddressOrchestrationServiceMock.VerifyNoOtherCalls();
             this.addressOrchestrationServiceMock.VerifyNoOtherCalls();

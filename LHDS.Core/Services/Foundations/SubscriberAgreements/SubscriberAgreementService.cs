@@ -17,18 +17,18 @@ namespace LHDS.Core.Services.Foundations.SubscriberAgreements
     {
         private readonly IStorageBroker storageBroker;
         private readonly IDateTimeBroker dateTimeBroker;
-        private readonly ISecurityBroker securityBroker;
+        private readonly ISecurityAuditBroker securityAuditBroker;
         private readonly ILoggingBroker loggingBroker;
 
         public SubscriberAgreementService(
             IStorageBroker storageBroker,
             IDateTimeBroker dateTimeBroker,
-            ISecurityBroker securityBroker,
+            ISecurityAuditBroker securityAuditBroker,
             ILoggingBroker loggingBroker)
         {
             this.storageBroker = storageBroker;
             this.dateTimeBroker = dateTimeBroker;
-            this.securityBroker = securityBroker;
+            this.securityAuditBroker = securityAuditBroker;
             this.loggingBroker = loggingBroker;
         }
 
@@ -36,7 +36,7 @@ namespace LHDS.Core.Services.Foundations.SubscriberAgreements
             TryCatch(async () =>
             {
                 SubscriberAgreement subscriberAgreementWithAddAuditApplied =
-                    await ApplyAddAuditAsync(subscriberAgreement);
+                    await this.securityAuditBroker.ApplyAddAuditValuesAsync(subscriberAgreement);
 
                 await ValidateSubscriberAgreementOnAddAsync(subscriberAgreementWithAddAuditApplied);
 
@@ -62,10 +62,10 @@ namespace LHDS.Core.Services.Foundations.SubscriberAgreements
         public ValueTask<SubscriberAgreement> ModifySubscriberAgreementAsync(SubscriberAgreement subscriberAgreement) =>
             TryCatch(async () =>
             {
-                SubscriberAgreement osubscriberAgreementWithModifyAuditApplied =
-                    await ApplyModifyAuditAsync(subscriberAgreement);
+                SubscriberAgreement subscriberAgreementWithModifyAuditApplied =
+                    await this.securityAuditBroker.ApplyModifyAuditValuesAsync(subscriberAgreement);
 
-                await ValidateSubscriberAgreementOnModifyAsync(osubscriberAgreementWithModifyAuditApplied);
+                await ValidateSubscriberAgreementOnModifyAsync(subscriberAgreementWithModifyAuditApplied);
 
                 SubscriberAgreement maybeSubscriberAgreement =
                     await this.storageBroker.SelectSubscriberAgreementByIdAsync(
@@ -74,7 +74,7 @@ namespace LHDS.Core.Services.Foundations.SubscriberAgreements
                 ValidateStorageSubscriberAgreement(maybeSubscriberAgreement, subscriberAgreement.Id);
 
                 SubscriberAgreement SubscriberAgreementWithModifyAuditAppliedEnsured =
-                   await EnsureCreatedAuditPropertiesIsSameAsStorageAsync(
+                   await this.securityAuditBroker.EnsureAddAuditValuesRemainsUnchangedOnModifyAsync(
                        subscriberAgreement,
                        maybeSubscriberAgreement);
 
@@ -97,39 +97,5 @@ namespace LHDS.Core.Services.Foundations.SubscriberAgreements
 
                 return await this.storageBroker.DeleteSubscriberAgreementAsync(maybeSubscriberAgreement);
             });
-
-        virtual internal async ValueTask<SubscriberAgreement> ApplyAddAuditAsync(SubscriberAgreement subscriberAgreement)
-        {
-            ValidateSubscriberAgreementIsNotNull(subscriberAgreement);
-            var auditDateTimeOffset = await this.dateTimeBroker.GetCurrentDateTimeOffsetAsync();
-            var auditUser = await this.securityBroker.GetCurrentUserAsync();
-            subscriberAgreement.CreatedBy = auditUser?.EntraUserId.ToString() ?? string.Empty;
-            subscriberAgreement.CreatedDate = auditDateTimeOffset;
-            subscriberAgreement.UpdatedBy = auditUser?.EntraUserId.ToString() ?? string.Empty;
-            subscriberAgreement.UpdatedDate = auditDateTimeOffset;
-
-            return subscriberAgreement;
-        }
-
-        virtual internal async ValueTask<SubscriberAgreement> ApplyModifyAuditAsync(SubscriberAgreement subscriberAgreement)
-        {
-            ValidateSubscriberAgreementIsNotNull(subscriberAgreement);
-            var auditDateTimeOffset = await this.dateTimeBroker.GetCurrentDateTimeOffsetAsync();
-            var auditUser = await this.securityBroker.GetCurrentUserAsync();
-            subscriberAgreement.UpdatedBy = auditUser?.EntraUserId.ToString() ?? string.Empty;
-            subscriberAgreement.UpdatedDate = auditDateTimeOffset;
-
-            return subscriberAgreement;
-        }
-
-        virtual internal async ValueTask<SubscriberAgreement> EnsureCreatedAuditPropertiesIsSameAsStorageAsync(
-            SubscriberAgreement subscriberAgreement,
-            SubscriberAgreement maybeSubscriberAgreement)
-        {
-            subscriberAgreement.CreatedDate = maybeSubscriberAgreement.CreatedDate;
-            subscriberAgreement.CreatedBy = maybeSubscriberAgreement.CreatedBy;
-
-            return subscriberAgreement;
-        }
     }
 }

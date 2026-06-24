@@ -44,7 +44,7 @@ namespace LHDS.AdminPortal.Api.Tests.Unit.Controllers.ResolvedAddresses
 
             this.resolvedAddressServiceMock.Verify(service =>
                 service.RetrieveResolvedAddressByIdAsync(inputId),
-                    Times.Once());
+                    Times.Once);
 
             this.resolvedAddressServiceMock.VerifyNoOtherCalls();
         }

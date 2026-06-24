@@ -1,0 +1,10 @@
+{
+  "skill": "the-standard-versioning",
+  "rules": [
+    { "id": "ts-versioning-001", "severity": "ERROR", "category": "Package Versioning", "rule": "All NuGet packages must use Semantic Versioning: MAJOR.MINOR.PATCH." },
+    { "id": "ts-versioning-002", "severity": "ERROR", "category": "Package Versioning", "rule": "MAJOR for breaking changes; MINOR for new features; PATCH for bug fixes." },
+    { "id": "ts-versioning-003", "severity": "ERROR", "category": "Broker Contract Versioning", "rule": "Breaking broker contract changes must use the SPAL strategy: introduce new method alongside old, deprecate old, remove only after migration." },
+    { "id": "ts-versioning-004", "severity": "ERROR", "category": "API Versioning", "rule": "RESTful API version must be expressed in the URL path: /api/v{n}/{resource}. Query-string and header versioning must not be used." },
+    { "id": "ts-versioning-005", "severity": "ERROR", "category": "Package Versioning", "rule": "Every package release must have a CHANGELOG or release notes entry." }
+  ]
+}

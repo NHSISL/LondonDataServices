@@ -2,12 +2,13 @@
 // Copyright (c) North East London ICB. All rights reserved.
 // ---------------------------------------------------------
 
-using System;
+using System.Collections.Generic;
+using System.IO;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using FluentAssertions;
 using Moq;
-using NEL.MESH.Clients.Mailboxes;
 using NEL.MESH.Models.Foundations.Mesh;
 using Xunit;
 
@@ -29,37 +30,38 @@ namespace LHDS.Core.Tests.Acceptance.Clients.Pds
             string contentType = "text/plain";
             string contentEncoding = string.Empty;
             string accept = "application/json";
-            Guid identifier = await this.identifierBroker.GetIdentifierAsync();
-            string mexLocalId = identifier.ToString();
 
-            Message message = ComposeMessage.CreateFileMessage(
-                mexTo: mexTo,
-                mexWorkflowId: mexWorkflowId,
-                fileContent: pdsFile,
-                mexSubject: mexSubject,
-                It.IsAny<string>(),
-                mexFileName: fileName,
-                mexContentChecksum: mexContentChecksum,
-                contentType: contentType,
-                contentEncoding: contentEncoding,
-                accept: accept);
+            Message message = new Message
+            {
+                MessageId = messageId,
+                Headers = new Dictionary<string, List<string>>
+                {
+                    { "mex-to", new List<string> { mexTo } },
+                    { "mex-workflowid", new List<string> { mexWorkflowId } },
+                    { "mex-filename", new List<string> { fileName } }
+                }
+            };
 
             this.meshBrokerMock.Setup(broker =>
                 broker.SendMessageAsync(
                     mexTo,
                     mexWorkflowId,
-                    pdsFile,
+                    It.IsAny<Stream>(),
                     mexSubject,
                     It.IsAny<string>(),
                     fileName,
                     mexContentChecksum,
                     contentType,
                     contentEncoding,
-                    accept))
+                    accept,
+                    It.IsAny<CancellationToken>()))
                 .ReturnsAsync(message);
 
             //When
-            var actualPdsAudit = await pdsClient.PickupFileAndSendToMesh(pdsFile, fileName);
+            await using var pdsStream = new MemoryStream(pdsFile);
+
+            var actualPdsAudit = await pdsClient
+                .PickupFileAndSendToMesh(pdsStream, fileName, TestContext.Current.CancellationToken);
 
             //Then
             actualPdsAudit.Should().NotBeNull();
@@ -69,14 +71,15 @@ namespace LHDS.Core.Tests.Acceptance.Clients.Pds
                 broker.SendMessageAsync(
                     mexTo,
                     mexWorkflowId,
-                    pdsFile,
+                    It.IsAny<Stream>(),
                     mexSubject,
                     It.IsAny<string>(),
                     fileName,
                     mexContentChecksum,
                     contentType,
                     contentEncoding,
-                    accept),
+                    accept,
+                    It.IsAny<CancellationToken>()),
                         Times.Once);
 
             await this.pdsAuditService.RemovePdsAuditByIdAsync(actualPdsAudit.Id);

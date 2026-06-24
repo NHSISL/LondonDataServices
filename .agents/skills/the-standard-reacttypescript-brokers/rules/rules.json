@@ -1,0 +1,41 @@
+{
+  "skill": "the-standard-reacttypescript-brokers",
+  "rules": [
+    {
+      "id": "tsr-brokers-001",
+      "severity": "ERROR",
+      "category": "Single External Concern",
+      "rule": "A broker must wrap exactly one external concern."
+    },
+    {
+      "id": "tsr-brokers-002",
+      "severity": "ERROR",
+      "category": "No Business Rules",
+      "rule": "A broker must not contain business rules."
+    },
+    {
+      "id": "tsr-brokers-003",
+      "severity": "ERROR",
+      "category": "No Component Shaping",
+      "rule": "A broker must not shape data for components. Return foundation model types only."
+    },
+    {
+      "id": "tsr-brokers-004",
+      "severity": "WARN",
+      "category": "Mechanical Serialization",
+      "rule": "A broker may perform mechanical serialization and deserialization only when required by the external dependency."
+    },
+    {
+      "id": "tsr-brokers-005",
+      "severity": "ERROR",
+      "category": "Replaceable Interface",
+      "rule": "Every broker must have a corresponding interface. Services must depend on the interface, not the concrete class."
+    },
+    {
+      "id": "tsr-brokers-006",
+      "severity": "ERROR",
+      "category": "No Upstream Calls",
+      "rule": "A broker must not call services, pages, or components."
+    }
+  ]
+}

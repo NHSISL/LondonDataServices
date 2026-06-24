@@ -34,8 +34,8 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.SubscriberAgreements
                     message: "SubscriberAgreement dependency error occurred, please contact support.",
                     innerException: failedSubscriberAgreementStorageException);
 
-            this.dateTimeBrokerMock.Setup(broker =>
-                broker.GetCurrentDateTimeOffsetAsync())
+            this.securityAuditBrokerMock.Setup(broker =>
+                broker.ApplyAddAuditValuesAsync(It.IsAny<SubscriberAgreement>()))
                     .ThrowsAsync(sqlException);
 
             // when
@@ -50,9 +50,13 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.SubscriberAgreements
             actualSubscriberAgreementDependencyException.Should()
                 .BeEquivalentTo(expectedSubscriberAgreementDependencyException);
 
+            this.securityAuditBrokerMock.Verify(broker =>
+                broker.ApplyAddAuditValuesAsync(It.IsAny<SubscriberAgreement>()),
+                    Times.Once);
+
             this.dateTimeBrokerMock.Verify(broker =>
                 broker.GetCurrentDateTimeOffsetAsync(),
-                    Times.Once);
+                    Times.Never);
 
             this.storageBrokerMock.Verify(broker =>
                 broker.InsertSubscriberAgreementAsync(It.IsAny<SubscriberAgreement>()),
@@ -63,6 +67,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.SubscriberAgreements
                     expectedSubscriberAgreementDependencyException))),
                         Times.Once);
 
+            this.securityAuditBrokerMock.VerifyNoOtherCalls();
             this.dateTimeBrokerMock.VerifyNoOtherCalls();
             this.storageBrokerMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
@@ -89,8 +94,8 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.SubscriberAgreements
                     message: "SubscriberAgreement dependency validation occurred, please try again.",
                     innerException: alreadyExistsSubscriberAgreementException);
 
-            this.dateTimeBrokerMock.Setup(broker =>
-                broker.GetCurrentDateTimeOffsetAsync())
+            this.securityAuditBrokerMock.Setup(broker =>
+                broker.ApplyAddAuditValuesAsync(It.IsAny<SubscriberAgreement>()))
                     .ThrowsAsync(duplicateKeyException);
 
             // when
@@ -105,9 +110,13 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.SubscriberAgreements
             actualSubscriberAgreementDependencyValidationException.Should()
                 .BeEquivalentTo(expectedSubscriberAgreementDependencyValidationException);
 
+            this.securityAuditBrokerMock.Verify(broker =>
+                broker.ApplyAddAuditValuesAsync(It.IsAny<SubscriberAgreement>()),
+                    Times.Once);
+
             this.dateTimeBrokerMock.Verify(broker =>
                 broker.GetCurrentDateTimeOffsetAsync(),
-                    Times.Once);
+                    Times.Never);
 
             this.storageBrokerMock.Verify(broker =>
                 broker.InsertSubscriberAgreementAsync(It.IsAny<SubscriberAgreement>()),
@@ -118,6 +127,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.SubscriberAgreements
                     expectedSubscriberAgreementDependencyValidationException))),
                         Times.Once);
 
+            this.securityAuditBrokerMock.VerifyNoOtherCalls();
             this.dateTimeBrokerMock.VerifyNoOtherCalls();
             this.storageBrokerMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
@@ -144,8 +154,8 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.SubscriberAgreements
                     message: "SubscriberAgreement dependency validation occurred, please try again.",
                     innerException: invalidSubscriberAgreementReferenceException);
 
-            this.dateTimeBrokerMock.Setup(broker =>
-                broker.GetCurrentDateTimeOffsetAsync())
+            this.securityAuditBrokerMock.Setup(broker =>
+                broker.ApplyAddAuditValuesAsync(It.IsAny<SubscriberAgreement>()))
                     .ThrowsAsync(foreignKeyConstraintConflictException);
 
             // when
@@ -160,9 +170,13 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.SubscriberAgreements
             actualSubscriberAgreementDependencyValidationException.Should()
                 .BeEquivalentTo(expectedSubscriberAgreementValidationException);
 
+            this.securityAuditBrokerMock.Verify(broker =>
+                broker.ApplyAddAuditValuesAsync(It.IsAny<SubscriberAgreement>()),
+                    Times.Once);
+
             this.dateTimeBrokerMock.Verify(broker =>
                 broker.GetCurrentDateTimeOffsetAsync(),
-                    Times.Once());
+                    Times.Never);
 
             this.loggingBrokerMock.Verify(broker =>
                 broker.LogErrorAsync(It.Is(SameExceptionAs(
@@ -173,6 +187,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.SubscriberAgreements
                 broker.InsertSubscriberAgreementAsync(someSubscriberAgreement),
                     Times.Never());
 
+            this.securityAuditBrokerMock.VerifyNoOtherCalls();
             this.dateTimeBrokerMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
             this.storageBrokerMock.VerifyNoOtherCalls();
@@ -197,8 +212,8 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.SubscriberAgreements
                     message: "SubscriberAgreement dependency error occurred, please contact support.",
                     innerException: failedSubscriberAgreementStorageException);
 
-            this.dateTimeBrokerMock.Setup(broker =>
-                broker.GetCurrentDateTimeOffsetAsync())
+            this.securityAuditBrokerMock.Setup(broker =>
+                broker.ApplyAddAuditValuesAsync(It.IsAny<SubscriberAgreement>()))
                     .ThrowsAsync(databaseUpdateException);
 
             // when
@@ -213,9 +228,13 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.SubscriberAgreements
             actualSubscriberAgreementDependencyException.Should()
                 .BeEquivalentTo(expectedSubscriberAgreementDependencyException);
 
+            this.securityAuditBrokerMock.Verify(broker =>
+                broker.ApplyAddAuditValuesAsync(It.IsAny<SubscriberAgreement>()),
+                    Times.Once);
+
             this.dateTimeBrokerMock.Verify(broker =>
                 broker.GetCurrentDateTimeOffsetAsync(),
-                    Times.Once);
+                    Times.Never);
 
             this.storageBrokerMock.Verify(broker =>
                 broker.InsertSubscriberAgreementAsync(It.IsAny<SubscriberAgreement>()),
@@ -226,6 +245,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.SubscriberAgreements
                     expectedSubscriberAgreementDependencyException))),
                         Times.Once);
 
+            this.securityAuditBrokerMock.VerifyNoOtherCalls();
             this.dateTimeBrokerMock.VerifyNoOtherCalls();
             this.storageBrokerMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
@@ -248,8 +268,8 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.SubscriberAgreements
                     message: "SubscriberAgreement service error occurred, please contact support.",
                     innerException: failedSubscriberAgreementServiceException);
 
-            this.dateTimeBrokerMock.Setup(broker =>
-                broker.GetCurrentDateTimeOffsetAsync())
+            this.securityAuditBrokerMock.Setup(broker =>
+                broker.ApplyAddAuditValuesAsync(It.IsAny<SubscriberAgreement>()))
                     .ThrowsAsync(serviceException);
 
             // when
@@ -264,9 +284,13 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.SubscriberAgreements
             actualSubscriberAgreementServiceException.Should()
                 .BeEquivalentTo(expectedSubscriberAgreementServiceException);
 
+            this.securityAuditBrokerMock.Verify(broker =>
+                broker.ApplyAddAuditValuesAsync(It.IsAny<SubscriberAgreement>()),
+                    Times.Once);
+
             this.dateTimeBrokerMock.Verify(broker =>
                 broker.GetCurrentDateTimeOffsetAsync(),
-                    Times.Once);
+                    Times.Never);
 
             this.storageBrokerMock.Verify(broker =>
                 broker.InsertSubscriberAgreementAsync(It.IsAny<SubscriberAgreement>()),
@@ -277,6 +301,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.SubscriberAgreements
                     expectedSubscriberAgreementServiceException))),
                         Times.Once);
 
+            this.securityAuditBrokerMock.VerifyNoOtherCalls();
             this.dateTimeBrokerMock.VerifyNoOtherCalls();
             this.storageBrokerMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();

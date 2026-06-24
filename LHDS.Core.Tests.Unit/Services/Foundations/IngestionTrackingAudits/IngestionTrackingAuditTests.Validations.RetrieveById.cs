@@ -95,7 +95,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.IngestionTrackingAudits
 
             this.storageBrokerMock.Verify(broker =>
                 broker.SelectIngestionTrackingAuditByIdAsync(It.IsAny<Guid>()),
-                    Times.Once());
+                    Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>
                 broker.LogErrorAsync(It.Is(SameExceptionAs(

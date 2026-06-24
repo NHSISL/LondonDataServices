@@ -3,10 +3,11 @@
 // ---------------------------------------------------------
 
 using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
-using LHDS.Core.Models.Brokers.Securities;
 using LHDS.Core.Models.Foundations.OptOuts;
 using LHDS.Core.Models.Foundations.OptOuts.Exceptions;
+using Xeptions;
 
 namespace LHDS.Core.Services.Foundations.OptOuts
 {
@@ -14,7 +15,8 @@ namespace LHDS.Core.Services.Foundations.OptOuts
     {
         private async ValueTask ValidateOptOutOnAddAsync(OptOut optOut)
         {
-            EntraUser currentUser = await this.securityBroker.GetCurrentUserAsync();
+            ValidateOptOutIsNotNull(optOut);
+            string currentUserId = await this.securityAuditBroker.GetUserIdAsync();
 
             Validate(
                 (Rule: IsInvalid(optOut.Id), Parameter: nameof(OptOut.Id)),
@@ -29,7 +31,7 @@ namespace LHDS.Core.Services.Foundations.OptOuts
                 (Rule: IsInvalidNhsNumber(optOut.NhsNumber), Parameter: nameof(OptOut.NhsNumber)),
 
                 (Rule: IsNotSame(
-                    first: currentUser.EntraUserId,
+                    first: currentUserId,
                     second: optOut.CreatedBy),
                 Parameter: nameof(OptOut.CreatedBy)),
 
@@ -56,7 +58,8 @@ namespace LHDS.Core.Services.Foundations.OptOuts
 
         private async ValueTask ValidateOptOutOnModifyAsync(OptOut optOut)
         {
-            EntraUser currentUser = await this.securityBroker.GetCurrentUserAsync();
+            ValidateOptOutIsNotNull(optOut);
+            string currentUserId = await this.securityAuditBroker.GetUserIdAsync();
 
             Validate(
                 (Rule: IsInvalid(optOut.Id), Parameter: nameof(OptOut.Id)),
@@ -71,7 +74,7 @@ namespace LHDS.Core.Services.Foundations.OptOuts
                 (Rule: IsInvalidNhsNumber(optOut.NhsNumber), Parameter: nameof(OptOut.NhsNumber)),
 
                 (Rule: IsNotSame(
-                    first: currentUser.EntraUserId,
+                    first: currentUserId,
                     second: optOut.UpdatedBy),
                 Parameter: nameof(OptOut.UpdatedBy)),
 
@@ -136,7 +139,7 @@ namespace LHDS.Core.Services.Foundations.OptOuts
             OptOut optOut,
             OptOut maybeOptOut)
         {
-            EntraUser auditUser = await this.securityBroker.GetCurrentUserAsync();
+            string auditUserId = await this.securityAuditBroker.GetUserIdAsync();
 
             Validate(
                 (Rule: IsNotSame(
@@ -158,7 +161,7 @@ namespace LHDS.Core.Services.Foundations.OptOuts
                  Parameter: nameof(OptOut.UpdatedDate)),
 
                 (Rule: IsNotSame(
-                    auditUser.EntraUserId.ToString(),
+                    auditUserId,
                     optOut.UpdatedBy,
                     nameof(OptOut.UpdatedBy)),
                  Parameter: nameof(OptOut.UpdatedBy))
@@ -304,6 +307,38 @@ namespace LHDS.Core.Services.Foundations.OptOuts
             return true;
         }
 
+        private void ValidateOnBulkAddOptOuts(
+            List<OptOut> optOuts,
+            string fileName)
+        {
+            Validate<InvalidOptOutException>(
+                createException: () => new InvalidOptOutException(
+                    message: "Invalid optOut. Please correct the errors"
+                        + " and try again."),
+
+                (Rule: IsInvalid(optOuts), Parameter: nameof(optOuts)),
+                (Rule: IsInvalid(fileName), Parameter: nameof(fileName)));
+        }
+
+        private void ValidateOnBulkModifyOptOuts(
+            List<OptOut> optOuts,
+            string fileName)
+        {
+            Validate<InvalidOptOutException>(
+                createException: () => new InvalidOptOutException(
+                    message: "Invalid optOut. Please correct the errors"
+                        + " and try again."),
+
+                (Rule: IsInvalid(optOuts), Parameter: nameof(optOuts)),
+                (Rule: IsInvalid(fileName), Parameter: nameof(fileName)));
+        }
+
+        private static dynamic IsInvalid(List<OptOut> optOuts) => new
+        {
+            Condition = optOuts == null,
+            Message = "OptOuts is required"
+        };
+
         private static void Validate(params (dynamic Rule, string Parameter)[] validations)
         {
             var invalidOptOutException = new InvalidOptOutException(
@@ -320,6 +355,26 @@ namespace LHDS.Core.Services.Foundations.OptOuts
             }
 
             invalidOptOutException.ThrowIfContainsErrors();
+        }
+
+        private static void Validate<T>(
+            Func<T> createException,
+            params (dynamic Rule, string Parameter)[] validations)
+            where T : Xeption
+        {
+            T invalidDataException = createException();
+
+            foreach ((dynamic rule, string parameter) in validations)
+            {
+                if (rule.Condition)
+                {
+                    invalidDataException.UpsertDataList(
+                        key: parameter,
+                        value: rule.Message);
+                }
+            }
+
+            invalidDataException.ThrowIfContainsErrors();
         }
     }
 }

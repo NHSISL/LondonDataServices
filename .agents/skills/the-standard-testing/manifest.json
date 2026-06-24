@@ -1,0 +1,11 @@
+{
+  "name": "the-standard-testing",
+  "version": "0.1.0",
+  "description": "Enforces TDD discipline, test naming, FAIL/PASS cycle, randomization, mocking, and test organization across all layers.",
+  "the_standard_version": "v2.50.0",
+  "skill_version": "v0.1.0",
+  "inputs": ["C# unit test file"],
+  "outputs": ["Standard-compliant unit test code", "review feedback"],
+  "dependencies": ["the-standard-core", "the-standard-foundations"],
+  "applies_to": ["*Tests*.cs"]
+}

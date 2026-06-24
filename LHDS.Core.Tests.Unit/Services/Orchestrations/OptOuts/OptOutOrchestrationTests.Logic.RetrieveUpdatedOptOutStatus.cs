@@ -1,10 +1,11 @@
-﻿// ---------------------------------------------------------
+// ---------------------------------------------------------
 // Copyright (c) North East London ICB. All rights reserved.
 // ---------------------------------------------------------
 
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Threading;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -45,34 +46,51 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
             List<OptOut> changedConsentedItems = CreateRandomOptOuts(count: GetRandomNumber());
             string[] delimiters = { "\r\n", "\n" };
 
-            List<string> consentedIdentifiers = Encoding.UTF8
-                .GetString(outputMessages[0].FileContent)
-                    .Replace(",", string.Empty)
-                        .Split(delimiters, StringSplitOptions.RemoveEmptyEntries)
-                            .ToList();
+            List<string> consentedIdentifiers = randomConsentedIdentifiers;
 
             randomConsentedIdentifiers.Should().BeEquivalentTo(consentedIdentifiers);
 
             meshProcessingServiceMock.SetupSequence(processings =>
-                processings.RetrieveMessageIdsFromInboxAsync())
+                processings.RetrieveMessageIdsFromInboxAsync(It.IsAny<CancellationToken>()))
                     .ReturnsAsync(outputMessageIds)
                     .ReturnsAsync(new List<string>());
 
+            var tempFileSequence = this.tempLocationBrokerMock.SetupSequence(broker =>
+                broker.GetUniqueHomeFilePath());
+
+            foreach (string messageId in outputMessageIds)
+            {
+                tempFileSequence
+                    .Returns(System.IO.Path.Combine(System.IO.Path.GetTempPath(), System.Guid.NewGuid().ToString()))
+                    .Returns(System.IO.Path.Combine(System.IO.Path.GetTempPath(), System.Guid.NewGuid().ToString()));
+            }
+
+            this.fileBrokerMock.Setup(broker =>
+                broker.DeleteFileAsync(It.IsAny<string>()))
+                    .ReturnsAsync(true);
+
             List<MeshMessage> meshMessageList = new List<MeshMessage>();
-            List<KeyValuePair<Stream, Stream>> streamAssertions = new List<KeyValuePair<Stream, Stream>>();
 
             foreach (string messageId in outputMessageIds)
             {
                 var testMessage = outputMessages.First(message => message.MessageId == messageId);
 
+                string consentedFileContent = string.Join(
+                    "\r\n",
+                    randomConsentedIdentifiers.Select(id => $"{id},"));
+
                 this.meshProcessingServiceMock.Setup(processing =>
-                    processing.RetrieveMessageByIdAsync(messageId))
+                    processing.RetrieveMessageByIdAsync(messageId, It.IsAny<Stream>(), It.IsAny<CancellationToken>()))
+                        .Callback<string, Stream, System.Threading.CancellationToken>((id, stream, ct) =>
+                        {
+                            byte[] bytes = Encoding.UTF8.GetBytes(consentedFileContent);
+                            stream.Write(bytes, 0, bytes.Length);
+                        })
                         .ReturnsAsync(testMessage);
 
                 meshMessageList.Add(testMessage);
 
                 string batchReference = GetHeaderValue(testMessage, "mex-localid");
-                string meshMessageId = GetHeaderValue(testMessage, "mex-messageid");
 
                 optOutProcessingServiceMock.Setup(processings =>
                     processings.RetrieveAllOptOutsByBatchReferenceAsync(batchReference))
@@ -93,21 +111,15 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
                         StatusChangedDateTime = identifier.CacheTime
                     }).ToList();
 
-                string csvDifferences = CreateNewCsvList(
-                    differentIdentifiers,
-                    this.optOutConfiguration.OptOutFileRequireTrailingComma);
-
                 csvHelperBrokerMock.Setup(processings =>
-                    processings.MapObjectToCsvAsync<OptOutIdentifier>(
-                        It.Is(SameOptOutIdentifierListAs(differentIdentifiers)),
+                    processings.MapObjectToCsvAsync(
+                        It.Is(SameOptOutIdentifierAsyncEnumerableAs(differentIdentifiers)),
+                        It.IsAny<Stream>(),
                         withHeader,
                         fieldMappings,
-                        shouldAddTrailingComma))
-                            .ReturnsAsync(csvDifferences);
-
-                Stream inputStream = new MemoryStream(Encoding.UTF8.GetBytes(csvDifferences));
-                Stream actualStream = new MemoryStream();
-                streamAssertions.Add(new KeyValuePair<Stream, Stream>(inputStream, actualStream));
+                        shouldAddTrailingComma,
+                        It.IsAny<System.Threading.CancellationToken>()))
+                            .Returns(ValueTask.CompletedTask);
 
                 string inputFileName = $"{optOutConfiguration.OutputFolder}/{batchReference}_DeltaResponse.csv";
 
@@ -116,11 +128,6 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
                         It.IsAny<Stream>(),
                         inputFileName,
                         inputContainer))
-                    .Callback<Stream, string, string>((stream, fileName, container) =>
-                    {
-                        stream.Position = 0;
-                        stream.CopyTo(actualStream);
-                    })
                     .Returns(ValueTask.CompletedTask);
             }
 
@@ -128,18 +135,14 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
 
             // When
             List<MeshMessage> actualMeshMessageList =
-                await this.optOutOrchestrationService.RetrieveUpdatedMeshConsentStatusesChangesAsync();
+                await this.optOutOrchestrationService.RetrieveUpdatedMeshConsentStatusesChangesAsync(
+                    TestContext.Current.CancellationToken);
 
             // Then
             actualMeshMessageList.Should().BeEquivalentTo(expectedMeshMessageList);
 
-            foreach (var item in streamAssertions)
-            {
-                Assert.True(IsSameStream(item.Key, item.Value));
-            }
-
             meshProcessingServiceMock.Verify(Processings =>
-                Processings.RetrieveMessageIdsFromInboxAsync(),
+                Processings.RetrieveMessageIdsFromInboxAsync(It.IsAny<CancellationToken>()),
                     Times.Exactly(2));
 
             foreach (string messageId in outputMessageIds)
@@ -147,8 +150,8 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
                 var message = outputMessages.First(message => message.MessageId == messageId);
 
                 this.meshProcessingServiceMock.Verify(processings =>
-                    processings.RetrieveMessageByIdAsync(messageId),
-                        Times.Once());
+                    processings.RetrieveMessageByIdAsync(messageId, It.IsAny<Stream>(), It.IsAny<CancellationToken>()),
+                        Times.Once);
 
                 meshMessageList.Add(message);
 
@@ -179,22 +182,24 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
                     optOutConfiguration.OptOutFileRequireTrailingComma);
 
                 csvHelperBrokerMock.Verify(processings =>
-                    processings.MapObjectToCsvAsync<OptOutIdentifier>(
-                        It.Is(SameOptOutIdentifierListAs(differentIdentifiers)),
+                    processings.MapObjectToCsvAsync(
+                        It.Is(SameOptOutIdentifierAsyncEnumerableAs(differentIdentifiers)),
+                        It.IsAny<Stream>(),
                         withHeader,
                         fieldMappings,
-                        shouldAddTrailingComma),
+                        shouldAddTrailingComma,
+                        It.IsAny<System.Threading.CancellationToken>()),
                             Times.Exactly(outputMessageIds.Count));
 
                 string inputFileName = $"{optOutConfiguration.OutputFolder}/{batchReference}_DeltaResponse.csv";
 
                 documentProcessingServiceMock.Verify(processings =>
                     processings.AddDocumentAsync(It.IsAny<Stream>(), inputFileName, inputContainer),
-                        Times.Once());
+                        Times.Once);
 
                 this.meshProcessingServiceMock.Verify(processings =>
-                    processings.AcknowledgeMessageByIdAsync(messageId),
-                        Times.Once());
+                    processings.AcknowledgeMessageByIdAsync(messageId, It.IsAny<CancellationToken>()),
+                        Times.Once);
             }
 
             this.optOutProcessingServiceMock.VerifyNoOtherCalls();
@@ -229,7 +234,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
                 }
 
                 meshProcessingServiceMock.SetupSequence(processings =>
-                    processings.RetrieveMessageIdsFromInboxAsync())
+                    processings.RetrieveMessageIdsFromInboxAsync(It.IsAny<CancellationToken>()))
                         .ReturnsAsync(outputMessageIds)
                         .ReturnsAsync(new List<string>());
 
@@ -241,7 +246,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
 
                     // Get message
                     this.meshProcessingServiceMock.Setup(processing =>
-                        processing.RetrieveMessageByIdAsync(messageId))
+                        processing.RetrieveMessageByIdAsync(messageId, It.IsAny<Stream>(), It.IsAny<CancellationToken>()))
                             .ReturnsAsync(message);
 
                     meshMessageList.Add(message);
@@ -272,34 +277,36 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
                         this.optOutConfiguration.OptOutFileRequireTrailingComma);
 
                     this.csvHelperBrokerMock.Setup(processings =>
-                        processings.MapObjectToCsvAsync<OptOutIdentifier>(
-                            It.Is(SameOptOutIdentifierListAs(differentIdentifiers)),
+                        processings.MapObjectToCsvAsync(
+                            It.Is(SameOptOutIdentifierAsyncEnumerableAs(differentIdentifiers)),
+                            It.IsAny<Stream>(),
                             withHeader,
                             fieldMappings,
-                            shouldAddTrailingComma))
-                                .ReturnsAsync(csvDifferences);
+                            shouldAddTrailingComma,
+                            It.IsAny<System.Threading.CancellationToken>()))
+                                .Returns(ValueTask.CompletedTask);
 
                     Document document = new Document
                     {
-                        //DocumentData = Encoding.UTF8.GetBytes(csvDifferences),
                         FileName = $"{optOutConfiguration.OutputFolder}/{batchReference}_DeltaResponse.csv",
                     };
 
                     this.meshProcessingServiceMock.Setup(processings =>
-                        processings.AcknowledgeMessageByIdAsync(messageId));
+                        processings.AcknowledgeMessageByIdAsync(messageId, It.IsAny<CancellationToken>()));
                 }
 
                 List<MeshMessage> expectedMeshMessageList = meshMessageList.DeepClone();
 
                 // When
                 List<MeshMessage> actualMeshMessageList =
-                    await this.optOutOrchestrationService.RetrieveUpdatedMeshConsentStatusesChangesAsync();
+                    await this.optOutOrchestrationService.RetrieveUpdatedMeshConsentStatusesChangesAsync(
+                        TestContext.Current.CancellationToken);
 
                 // Then
                 actualMeshMessageList.Should().BeEquivalentTo(expectedMessages);
 
                 meshProcessingServiceMock.Verify(Processings =>
-                    Processings.RetrieveMessageIdsFromInboxAsync(),
+                    Processings.RetrieveMessageIdsFromInboxAsync(It.IsAny<CancellationToken>()),
                         Times.Once);
 
                 foreach (string messageId in outputMessageIds)
@@ -308,8 +315,8 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
 
                     // Get message
                     this.meshProcessingServiceMock.Verify(processings =>
-                        processings.RetrieveMessageByIdAsync(messageId),
-                            Times.Once());
+                        processings.RetrieveMessageByIdAsync(messageId, It.IsAny<Stream>(), It.IsAny<CancellationToken>()),
+                            Times.Once);
 
                     meshMessageList.Add(message);
 
@@ -357,16 +364,12 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
 
             string[] delimiters = { "\r\n", "\n" };
 
-            List<string> consentedIdentifiers = Encoding.UTF8
-                .GetString(outputMessages[0].FileContent)
-                    .Replace(",", string.Empty)
-                        .Split(delimiters, StringSplitOptions.RemoveEmptyEntries)
-                            .ToList();
+            List<string> consentedIdentifiers = randomConsentedIdentifiers;
 
             randomConsentedIdentifiers.Should().BeEquivalentTo(consentedIdentifiers);
 
             meshProcessingServiceMock.SetupSequence(processings =>
-                processings.RetrieveMessageIdsFromInboxAsync())
+                processings.RetrieveMessageIdsFromInboxAsync(It.IsAny<CancellationToken>()))
                     .ReturnsAsync(outputMessageIds)
                     .ReturnsAsync(new List<string>());
 
@@ -374,8 +377,19 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
             {
                 var testMessage = outputMessages.First(message => message.MessageId == messageId);
 
+                string tempFilePath =
+                    System.IO.Path.Combine(System.IO.Path.GetTempPath(), System.Guid.NewGuid().ToString());
+
+                this.tempLocationBrokerMock.Setup(broker =>
+                    broker.GetUniqueHomeFilePath())
+                        .Returns(tempFilePath);
+
+                this.fileBrokerMock.Setup(broker =>
+                    broker.DeleteFileAsync(It.IsAny<string>()))
+                        .ReturnsAsync(true);
+
                 this.meshProcessingServiceMock.Setup(processing =>
-                    processing.RetrieveMessageByIdAsync(messageId))
+                    processing.RetrieveMessageByIdAsync(messageId, It.IsAny<Stream>(), It.IsAny<CancellationToken>()))
                         .ReturnsAsync(testMessage);
             }
 
@@ -383,13 +397,14 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
 
             // When
             List<MeshMessage> actualMeshMessageList =
-                await this.optOutOrchestrationService.RetrieveUpdatedMeshConsentStatusesChangesAsync();
+                await this.optOutOrchestrationService.RetrieveUpdatedMeshConsentStatusesChangesAsync(
+                    TestContext.Current.CancellationToken);
 
             // Then
             actualMeshMessageList.Should().BeEquivalentTo(expectedMeshMessageList);
 
             meshProcessingServiceMock.Verify(Processings =>
-                Processings.RetrieveMessageIdsFromInboxAsync(),
+                Processings.RetrieveMessageIdsFromInboxAsync(It.IsAny<CancellationToken>()),
                     Times.Exactly(2));
 
             foreach (string messageId in outputMessageIds)
@@ -398,8 +413,8 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
 
                 // Get message
                 this.meshProcessingServiceMock.Verify(processings =>
-                    processings.RetrieveMessageByIdAsync(messageId),
-                        Times.Once());
+                    processings.RetrieveMessageByIdAsync(messageId, It.IsAny<Stream>(), It.IsAny<CancellationToken>()),
+                        Times.Once);
             }
 
             this.optOutProcessingServiceMock.VerifyNoOtherCalls();

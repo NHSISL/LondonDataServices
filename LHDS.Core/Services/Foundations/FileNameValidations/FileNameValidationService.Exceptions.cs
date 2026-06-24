@@ -1,0 +1,98 @@
+// ---------------------------------------------------------
+// Copyright (c) North East London ICB. All rights reserved.
+// ---------------------------------------------------------
+
+using System;
+using System.Text.RegularExpressions;
+using System.Threading.Tasks;
+using LHDS.Core.Models.Foundations.FileNameValidation.Exceptions;
+using LHDS.Core.Models.Foundations.FileNameValidations.Exceptions;
+using Xeptions;
+
+namespace LHDS.Core.Services.Foundations.FileNameValidations
+{
+    public partial class FileNameValidationService
+    {
+        private delegate ValueTask<bool> ReturningBoolFunction();
+
+        private async ValueTask<bool> TryCatch(ReturningBoolFunction returningBoolFunction)
+        {
+            try
+            {
+                return await returningBoolFunction();
+            }
+            catch (InvalidArgumentFileNameValidationServiceException invalidArgumentFileNameException)
+            {
+                throw CreateAndLogValidationException(invalidArgumentFileNameException);
+            }
+            catch (RegexParseException regexParseException)
+            {
+                var invalidRegexFileNameValidationException =
+                    new InvalidRegexFileNameValidationException(
+                        message: "Invalid regex pattern occurred, fix errors and try again.",
+                        innerException: regexParseException);
+
+                throw CreateAndLogDependencyValidationException(invalidRegexFileNameValidationException);
+            }
+            catch (RegexMatchTimeoutException regexMatchTimeoutException)
+            {
+                var invalidRegexFileNameValidationException =
+                    new InvalidRegexFileNameValidationException(
+                        message: "Invalid regex pattern occurred, fix errors and try again.",
+                        innerException: regexMatchTimeoutException);
+
+                throw CreateAndLogDependencyValidationException(invalidRegexFileNameValidationException);
+            }
+            catch (ArgumentNullException argumentNullException)
+            {
+                var invalidRegexFileNameValidationException =
+                    new InvalidRegexFileNameValidationException(
+                        message: "Invalid regex pattern occurred, fix errors and try again.",
+                        innerException: argumentNullException);
+
+                throw CreateAndLogDependencyValidationException(invalidRegexFileNameValidationException);
+            }
+            catch (Exception exception)
+            {
+                var failedFileNameValidationServiceException =
+                    new FailedFileNameValidationServiceException(
+                        message: "Failed file name validation service error occurred, please contact support.",
+                        innerException: exception);
+
+                throw CreateAndLogServiceException(failedFileNameValidationServiceException);
+            }
+        }
+
+        private FileNameValidationException CreateAndLogValidationException(Xeption exception)
+        {
+            var fileNameValidationException =
+                new FileNameValidationException(
+                    message: "File name validation error occurred, please try again.",
+                    innerException: exception);
+
+            return fileNameValidationException;
+        }
+
+        private FileNameValidationDependencyValidationException CreateAndLogDependencyValidationException(
+           Xeption exception)
+        {
+            var fileNameValidationDependencyValidationException =
+                new FileNameValidationDependencyValidationException(
+                    message: "File name validation dependency validation error occurred, fix errors and try again.",
+                    innerException: exception);
+
+            return fileNameValidationDependencyValidationException;
+        }
+
+
+        private FileNameValidationServiceException CreateAndLogServiceException(Xeption exception)
+        {
+            var fileNameValidationServiceException =
+                new FileNameValidationServiceException(
+                    message: "File name validation service error occurred, please contact support.",
+                    innerException: exception);
+
+            return fileNameValidationServiceException;
+        }
+    }
+}

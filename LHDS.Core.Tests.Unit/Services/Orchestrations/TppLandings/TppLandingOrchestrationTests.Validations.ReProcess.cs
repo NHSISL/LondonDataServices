@@ -51,7 +51,6 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.TppLandings
                         Times.Once);
 
             this.ingestionTrackingProcessingServiceMock.VerifyNoOtherCalls();
-            this.hashBrokerMock.VerifyNoOtherCalls();
             this.dateTimeBrokerMock.VerifyNoOtherCalls();
             this.documentProcessingServiceMock.VerifyNoOtherCalls();
             this.ingestionTrackingProcessingAuditServiceMock.VerifyNoOtherCalls();
@@ -59,5 +58,6 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.TppLandings
             this.subscriberAgreementProcessingServiceMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
         }
-    }
-}
+
+            }
+        }

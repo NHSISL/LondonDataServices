@@ -1,0 +1,15 @@
+{
+  "skill": "the-standard-reacttypescript-pages",
+  "version": "1.0.0",
+  "naming": {
+    "page_component": "{Domain}Page.tsx",
+    "page_hook": "use{Domain}Page.ts",
+    "folder": "src/pages/{domain}/"
+  },
+  "structure": {
+    "required_files": ["{Domain}Page.tsx", "use{Domain}Page.ts"],
+    "allowed_calls": ["view service (via page hook)"],
+    "forbidden_calls": ["brokers", "fetch", "foundation services directly"],
+    "required_states": ["loading", "error", "empty", "success"]
+  }
+}

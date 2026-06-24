@@ -20,10 +20,10 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.PdsAudits
         {
             // given
             DateTimeOffset randomDateTimeOffset = GetRandomDateTimeOffset();
-            EntraUser randomEntraUser = CreateRandomEntraUser();
+            string randomUserId = GetRandomStringWithLengthOf(50);
 
             PdsAudit randomPdsAudit =
-                CreateRandomModifyPdsAudit(randomDateTimeOffset, randomEntraUser.EntraUserId);
+                CreateRandomModifyPdsAudit(randomDateTimeOffset, randomUserId);
 
             PdsAudit inputPdsAudit = randomPdsAudit;
             PdsAudit storagePdsAudit = inputPdsAudit.DeepClone();
@@ -32,17 +32,27 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.PdsAudits
             PdsAudit expectedPdsAudit = updatedPdsAudit.DeepClone();
             Guid pdsAuditId = inputPdsAudit.Id;
 
+            this.securityAuditBrokerMock.Setup(broker =>
+                broker.ApplyModifyAuditValuesAsync(inputPdsAudit))
+                    .ReturnsAsync(inputPdsAudit);
+
             this.dateTimeBrokerMock.Setup(broker =>
                 broker.GetCurrentDateTimeOffsetAsync())
                     .ReturnsAsync(randomDateTimeOffset);
 
-            this.securityBrokerMock.Setup(broker =>
-                broker.GetCurrentUserAsync())
-                    .ReturnsAsync(randomEntraUser);
+            this.securityAuditBrokerMock.Setup(broker =>
+                broker.GetUserIdAsync())
+                    .ReturnsAsync(randomUserId);
 
             this.storageBrokerMock.Setup(broker =>
                 broker.SelectPdsAuditByIdAsync(pdsAuditId))
                     .ReturnsAsync(storagePdsAudit);
+
+            this.securityAuditBrokerMock.Setup(broker =>
+                broker.EnsureAddAuditValuesRemainsUnchangedOnModifyAsync(
+                    inputPdsAudit,
+                    storagePdsAudit))
+                        .ReturnsAsync(inputPdsAudit);
 
             this.storageBrokerMock.Setup(broker =>
                 broker.UpdatePdsAuditAsync(inputPdsAudit))
@@ -55,22 +65,33 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.PdsAudits
             // then
             actualPdsAudit.Should().BeEquivalentTo(expectedPdsAudit);
 
+            this.securityAuditBrokerMock.Verify(broker =>
+                broker.ApplyModifyAuditValuesAsync(inputPdsAudit),
+                    Times.Once);
+
             this.dateTimeBrokerMock.Verify(broker =>
                 broker.GetCurrentDateTimeOffsetAsync(),
-                    Times.Exactly(2));
+                    Times.Once);
 
-            this.securityBrokerMock.Verify(broker =>
-                broker.GetCurrentUserAsync(),
-                    Times.Exactly(2));
+            this.securityAuditBrokerMock.Verify(broker =>
+                broker.GetUserIdAsync(),
+                    Times.Once);
 
             this.storageBrokerMock.Verify(broker =>
                 broker.SelectPdsAuditByIdAsync(inputPdsAudit.Id),
                     Times.Once);
 
+            this.securityAuditBrokerMock.Verify(broker =>
+                broker.EnsureAddAuditValuesRemainsUnchangedOnModifyAsync(
+                    inputPdsAudit,
+                    storagePdsAudit),
+                        Times.Once);
+
             this.storageBrokerMock.Verify(broker =>
                 broker.UpdatePdsAuditAsync(inputPdsAudit),
                     Times.Once);
 
+            this.securityAuditBrokerMock.VerifyNoOtherCalls();
             this.storageBrokerMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
             this.dateTimeBrokerMock.VerifyNoOtherCalls();

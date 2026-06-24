@@ -80,7 +80,7 @@ namespace LHDS.AdminPortal.Api.Tests.Unit.Controllers.SubscriberPractices
 
             this.subscriberPracticeServiceMock.Verify(service =>
                 service.RetrieveSubscriberPracticeByIdAsync(It.IsAny<Guid>()),
-                    Times.Once());
+                    Times.Once);
 
             this.subscriberPracticeServiceMock.VerifyNoOtherCalls();
         }

@@ -33,7 +33,9 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Pds
                 loggingBroker: loggingBrokerMock.Object,
                 dateTimeBroker: dateTimeBrokerMock.Object,
                 identifierBroker: identifierBrokerMock.Object,
-                pdsConfiguration: pdsConfiguration);
+                pdsConfiguration: pdsConfiguration,
+                tempLocationBroker: tempLocationBrokerMock.Object,
+                fileBroker: fileBrokerMock.Object);
 
             var nullBlobContainersPdsOrchestrationException =
                 new NullBlobContainersPdsOrchestrationException(
@@ -47,7 +49,8 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Pds
 
             // When
             ValueTask<List<PdsAudit>> PickupFileAndSendToMeshTask =
-                invalidPdsOrchestrationService.RetreiveMessagesFromMeshAndUpdateStorage();
+                invalidPdsOrchestrationService.RetreiveMessagesFromMeshAndUpdateStorage(
+                    TestContext.Current.CancellationToken);
 
             PdsOrchestrationValidationException actualException =
                 await Assert.ThrowsAsync<PdsOrchestrationValidationException>(

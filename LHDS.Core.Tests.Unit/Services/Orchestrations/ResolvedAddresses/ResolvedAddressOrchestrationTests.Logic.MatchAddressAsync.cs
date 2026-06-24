@@ -127,23 +127,23 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.ResolvedAddresses
 
             this.resolvedAddressProcessingServiceMock.Verify(processing =>
                  processing.ModifyResolvedAddressAsync(It.Is(SameResolvedAddressAs(lockedResolvedAddress))),
-                     Times.Once());
+                     Times.Once);
 
             this.resolvedAddressProcessingServiceMock.Verify(processing =>
                processing.ModifyResolvedAddressAsync(It.Is(SameResolvedAddressAs(newResolvedAddress))),
-                   Times.Once());
+                   Times.Once);
 
             this.assignProcessingServiceMock.Verify(processing =>
                 processing.MatchAddressAsync(inputResolvedAddress),
-                    Times.Once());
+                    Times.Once);
 
             this.addressProcessingServiceMock.Verify(processing =>
                 processing.RetrieveAddressByUPRNAsync(matchedUprn),
-                    Times.Once());
+                    Times.Once);
 
             this.auditBrokerMock.Verify(broker =>
                 broker.BulkLogAsync(It.IsAny<List<Audit>>()),
-                    Times.Once());
+                    Times.Once);
 
             this.documentProcessingServiceMock.VerifyNoOtherCalls();
             this.resolvedAddressProcessingServiceMock.VerifyNoOtherCalls();
@@ -257,19 +257,19 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.ResolvedAddresses
 
             this.resolvedAddressProcessingServiceMock.Verify(processing =>
                  processing.ModifyResolvedAddressAsync(It.Is(SameResolvedAddressAs(lockedResolvedAddress))),
-                     Times.Once());
+                     Times.Once);
 
             this.assignProcessingServiceMock.Verify(processing =>
                 processing.MatchAddressAsync(inputResolvedAddress),
-                    Times.Once());
+                    Times.Once);
 
             this.resolvedAddressProcessingServiceMock.Verify(processing =>
                processing.ModifyResolvedAddressAsync(It.Is(SameResolvedAddressAs(resolvedAddress))),
-                   Times.Once());
+                   Times.Once);
 
             this.auditBrokerMock.Verify(broker =>
                 broker.BulkLogAsync(It.IsAny<List<Audit>>()),
-                    Times.Once());
+                    Times.Once);
 
             this.documentProcessingServiceMock.VerifyNoOtherCalls();
             this.resolvedAddressProcessingServiceMock.VerifyNoOtherCalls();

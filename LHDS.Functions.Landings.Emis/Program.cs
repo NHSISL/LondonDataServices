@@ -10,6 +10,7 @@ using LHDS.Core.Brokers.Storages.Sql;
 using LHDS.Core.Clients.Extensions;
 using LHDS.Core.Providers.Cryptography.Extensions;
 using LHDS.Core.Providers.Downloads.Extensions;
+using Microsoft.Data.SqlClient;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -32,6 +33,14 @@ var host = new HostBuilder()
         var credential = new DefaultAzureCredential();
         var tokenRequestContext = new TokenRequestContext(new[] { "https://graph.microsoft.com/.default" });
         AccessToken accessToken = credential.GetTokenAsync(tokenRequestContext).Result;
+
+        SqlAuthenticationProvider.SetProvider(
+            SqlAuthenticationMethod.ActiveDirectoryManagedIdentity,
+            new ActiveDirectoryAuthenticationProvider());
+
+        SqlAuthenticationProvider.SetProvider(
+            SqlAuthenticationMethod.ActiveDirectoryDefault,
+            new ActiveDirectoryAuthenticationProvider());
 
         services
             .AddLogging(setup =>

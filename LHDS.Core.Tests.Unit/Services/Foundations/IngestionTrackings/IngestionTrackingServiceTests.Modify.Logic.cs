@@ -20,10 +20,10 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.IngestionTrackings
         {
             // given
             DateTimeOffset randomDateTimeOffset = GetRandomDateTimeOffset();
-            EntraUser randomEntraUser = CreateRandomEntraUser();
+            string randomUserId = GetRandomStringWithLengthOf(50);
 
             IngestionTracking randomIngestionTracking =
-                CreateRandomModifyIngestionTracking(randomDateTimeOffset, randomEntraUser.EntraUserId);
+                CreateRandomModifyIngestionTracking(randomDateTimeOffset, randomUserId);
 
             IngestionTracking inputIngestionTracking = randomIngestionTracking;
             IngestionTracking storageIngestionTracking = inputIngestionTracking.DeepClone();
@@ -32,17 +32,26 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.IngestionTrackings
             IngestionTracking expectedIngestionTracking = updatedIngestionTracking.DeepClone();
             Guid ingestionTrackingId = inputIngestionTracking.Id;
 
+            this.securityAuditBrokerMock.Setup(broker =>
+                broker.ApplyModifyAuditValuesAsync(inputIngestionTracking))
+                    .ReturnsAsync(inputIngestionTracking);
+
             this.dateTimeBrokerMock.Setup(broker =>
                 broker.GetCurrentDateTimeOffsetAsync())
                     .ReturnsAsync(randomDateTimeOffset);
 
-            this.securityBrokerMock.Setup(broker =>
-                broker.GetCurrentUserAsync())
-                    .ReturnsAsync(randomEntraUser);
+            this.securityAuditBrokerMock.Setup(broker =>
+                broker.GetUserIdAsync())
+                    .ReturnsAsync(randomUserId);
 
             this.storageBrokerMock.Setup(broker =>
                 broker.SelectIngestionTrackingByIdAsync(ingestionTrackingId))
                     .ReturnsAsync(storageIngestionTracking);
+
+            this.securityAuditBrokerMock.Setup(broker =>
+                broker.EnsureAddAuditValuesRemainsUnchangedOnModifyAsync(
+                    inputIngestionTracking,
+                    storageIngestionTracking));
 
             this.storageBrokerMock.Setup(broker =>
                 broker.UpdateIngestionTrackingAsync(inputIngestionTracking))
@@ -55,26 +64,35 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.IngestionTrackings
             // then
             actualIngestionTracking.Should().BeEquivalentTo(expectedIngestionTracking);
 
+            this.securityAuditBrokerMock.Verify(broker =>
+                broker.ApplyModifyAuditValuesAsync(inputIngestionTracking),
+                    Times.Once);
+
             this.dateTimeBrokerMock.Verify(broker =>
                 broker.GetCurrentDateTimeOffsetAsync(),
-                    Times.Exactly(2));
+                    Times.Once);
 
-            this.securityBrokerMock.Verify(broker =>
-                broker.GetCurrentUserAsync(),
-                    Times.Exactly(2));
+            this.securityAuditBrokerMock.Verify(broker =>
+                broker.GetUserIdAsync(),
+                    Times.Once);
 
             this.storageBrokerMock.Verify(broker =>
                 broker.SelectIngestionTrackingByIdAsync(inputIngestionTracking.Id),
                     Times.Once);
 
+            this.securityAuditBrokerMock.Verify(broker =>
+                broker.EnsureAddAuditValuesRemainsUnchangedOnModifyAsync(
+                    inputIngestionTracking,
+                    storageIngestionTracking),
+                        Times.Once);
+
             this.storageBrokerMock.Verify(broker =>
                 broker.UpdateIngestionTrackingAsync(inputIngestionTracking),
                     Times.Once);
 
+            this.securityAuditBrokerMock.VerifyNoOtherCalls();
             this.dateTimeBrokerMock.VerifyNoOtherCalls();
             this.storageBrokerMock.VerifyNoOtherCalls();
-            this.securityBrokerMock.VerifyNoOtherCalls();
-            this.securityAuditBrokerMock.VerifyNoOtherCalls();
             this.auditBrokerMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
         }

@@ -20,10 +20,10 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.DataSetSpecifications
         {
             // given
             DateTimeOffset randomDateTimeOffset = GetRandomDateTimeOffset();
-            EntraUser randomEntraUser = CreateRandomEntraUser();
+            string randomEntraUserId = GetRandomStringWithLengthOf(50);
             
             DataSetSpecification randomDataSetSpecification = CreateRandomDataSetSpecification(
-                randomDateTimeOffset, randomEntraUser.EntraUserId);
+                randomDateTimeOffset, randomEntraUserId);
 
             DataSetSpecification inputDataSetSpecification = randomDataSetSpecification;
             DataSetSpecification storageDataSetSpecification = randomDataSetSpecification;

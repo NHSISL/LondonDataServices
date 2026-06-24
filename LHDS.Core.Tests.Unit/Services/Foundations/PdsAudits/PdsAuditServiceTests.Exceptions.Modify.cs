@@ -34,8 +34,8 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.PdsAudits
                     message: "PdsAudit dependency error occurred, please contact support.",
                     innerException: failedPdsAuditStorageException);
 
-            this.dateTimeBrokerMock.Setup(broker =>
-                broker.GetCurrentDateTimeOffsetAsync())
+            this.securityAuditBrokerMock.Setup(broker =>
+                broker.ApplyModifyAuditValuesAsync(randomPdsAudit))
                     .ThrowsAsync(sqlException);
 
             // when
@@ -50,9 +50,13 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.PdsAudits
             actualPdsAuditDependencyException.Should()
                 .BeEquivalentTo(expectedPdsAuditDependencyException);
 
+            this.securityAuditBrokerMock.Verify(broker =>
+                broker.ApplyModifyAuditValuesAsync(randomPdsAudit),
+                    Times.Once);
+
             this.dateTimeBrokerMock.Verify(broker =>
                 broker.GetCurrentDateTimeOffsetAsync(),
-                    Times.Once);
+                    Times.Never);
 
             this.storageBrokerMock.Verify(broker =>
                 broker.SelectPdsAuditByIdAsync(randomPdsAudit.Id),
@@ -67,6 +71,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.PdsAudits
                 broker.UpdatePdsAuditAsync(randomPdsAudit),
                     Times.Never);
 
+            this.securityAuditBrokerMock.VerifyNoOtherCalls();
             this.dateTimeBrokerMock.VerifyNoOtherCalls();
             this.storageBrokerMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
@@ -93,8 +98,8 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.PdsAudits
                     message: "PdsAudit dependency validation occurred, please try again.",
                     innerException: invalidPdsAuditReferenceException);
 
-            this.dateTimeBrokerMock.Setup(broker =>
-                broker.GetCurrentDateTimeOffsetAsync())
+            this.securityAuditBrokerMock.Setup(broker =>
+                broker.ApplyModifyAuditValuesAsync(somePdsAudit))
                     .ThrowsAsync(foreignKeyConstraintConflictException);
 
             // when
@@ -109,9 +114,13 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.PdsAudits
             actualPdsAuditDependencyValidationException.Should()
                 .BeEquivalentTo(expectedPdsAuditDependencyValidationException);
 
+            this.securityAuditBrokerMock.Verify(broker =>
+                broker.ApplyModifyAuditValuesAsync(somePdsAudit),
+                    Times.Once);
+
             this.dateTimeBrokerMock.Verify(broker =>
                 broker.GetCurrentDateTimeOffsetAsync(),
-                    Times.Once);
+                    Times.Never);
 
             this.storageBrokerMock.Verify(broker =>
                 broker.SelectPdsAuditByIdAsync(somePdsAudit.Id),
@@ -125,6 +134,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.PdsAudits
                 broker.UpdatePdsAuditAsync(somePdsAudit),
                     Times.Never);
 
+            this.securityAuditBrokerMock.VerifyNoOtherCalls();
             this.dateTimeBrokerMock.VerifyNoOtherCalls();
             this.storageBrokerMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
@@ -147,8 +157,8 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.PdsAudits
                     message: "PdsAudit dependency error occurred, please contact support.",
                     innerException: failedPdsAuditStorageException);
 
-            this.dateTimeBrokerMock.Setup(broker =>
-                broker.GetCurrentDateTimeOffsetAsync())
+            this.securityAuditBrokerMock.Setup(broker =>
+                broker.ApplyModifyAuditValuesAsync(randomPdsAudit))
                     .ThrowsAsync(databaseUpdateException);
 
             // when
@@ -163,9 +173,13 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.PdsAudits
             actualPdsAuditDependencyException.Should()
                 .BeEquivalentTo(expectedPdsAuditDependencyException);
 
+            this.securityAuditBrokerMock.Verify(broker =>
+                broker.ApplyModifyAuditValuesAsync(randomPdsAudit),
+                    Times.Once);
+
             this.dateTimeBrokerMock.Verify(broker =>
                 broker.GetCurrentDateTimeOffsetAsync(),
-                    Times.Once);
+                    Times.Never);
 
             this.storageBrokerMock.Verify(broker =>
                 broker.SelectPdsAuditByIdAsync(randomPdsAudit.Id),
@@ -180,6 +194,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.PdsAudits
                 broker.UpdatePdsAuditAsync(randomPdsAudit),
                     Times.Never);
 
+            this.securityAuditBrokerMock.VerifyNoOtherCalls();
             this.dateTimeBrokerMock.VerifyNoOtherCalls();
             this.storageBrokerMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
@@ -202,8 +217,8 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.PdsAudits
                     message: "PdsAudit dependency validation occurred, please try again.",
                     innerException: lockedPdsAuditException);
 
-            this.dateTimeBrokerMock.Setup(broker =>
-                broker.GetCurrentDateTimeOffsetAsync())
+            this.securityAuditBrokerMock.Setup(broker =>
+                broker.ApplyModifyAuditValuesAsync(randomPdsAudit))
                     .ThrowsAsync(databaseUpdateConcurrencyException);
 
             // when
@@ -218,9 +233,13 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.PdsAudits
             actualPdsAuditDependencyValidationException.Should()
                 .BeEquivalentTo(expectedPdsAuditDependencyValidationException);
 
+            this.securityAuditBrokerMock.Verify(broker =>
+                broker.ApplyModifyAuditValuesAsync(randomPdsAudit),
+                    Times.Once);
+
             this.dateTimeBrokerMock.Verify(broker =>
                 broker.GetCurrentDateTimeOffsetAsync(),
-                    Times.Once);
+                    Times.Never);
 
             this.storageBrokerMock.Verify(broker =>
                 broker.SelectPdsAuditByIdAsync(randomPdsAudit.Id),
@@ -235,6 +254,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.PdsAudits
                 broker.UpdatePdsAuditAsync(randomPdsAudit),
                     Times.Never);
 
+            this.securityAuditBrokerMock.VerifyNoOtherCalls();
             this.dateTimeBrokerMock.VerifyNoOtherCalls();
             this.storageBrokerMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
@@ -257,8 +277,8 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.PdsAudits
                     message: "PdsAudit service error occurred, please contact support.",
                     innerException: failedPdsAuditServiceException);
 
-            this.dateTimeBrokerMock.Setup(broker =>
-                broker.GetCurrentDateTimeOffsetAsync())
+            this.securityAuditBrokerMock.Setup(broker =>
+                broker.ApplyModifyAuditValuesAsync(randomPdsAudit))
                     .ThrowsAsync(serviceException);
 
             // when
@@ -273,9 +293,13 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.PdsAudits
             actualPdsAuditServiceException.Should()
                 .BeEquivalentTo(expectedPdsAuditServiceException);
 
+            this.securityAuditBrokerMock.Verify(broker =>
+                broker.ApplyModifyAuditValuesAsync(randomPdsAudit),
+                    Times.Once);
+
             this.dateTimeBrokerMock.Verify(broker =>
                 broker.GetCurrentDateTimeOffsetAsync(),
-                    Times.Once);
+                    Times.Never);
 
             this.storageBrokerMock.Verify(broker =>
                 broker.SelectPdsAuditByIdAsync(randomPdsAudit.Id),
@@ -290,6 +314,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.PdsAudits
                 broker.UpdatePdsAuditAsync(randomPdsAudit),
                     Times.Never);
 
+            this.securityAuditBrokerMock.VerifyNoOtherCalls();
             this.dateTimeBrokerMock.VerifyNoOtherCalls();
             this.storageBrokerMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();

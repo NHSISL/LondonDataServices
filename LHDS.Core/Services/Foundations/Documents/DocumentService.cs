@@ -45,6 +45,14 @@ namespace LHDS.Core.Services.Foundations.Documents
                  ValidateStorageDocument(output, fileName);
              });
 
+        public ValueTask<Stream> RetrieveDocumentStreamByFileNameAsync(string fileName, string container) =>
+            TryCatch(async () =>
+            {
+                ValidateRetrieveDocumentStreamByFileName(fileName, container);
+
+                return await this.blobStorageBroker.OpenReadByFileNameAsync(fileName, container);
+            });
+
         public ValueTask RemoveDocumentByFileNameAsync(string fileName, string container) =>
            TryCatch(async () =>
            {

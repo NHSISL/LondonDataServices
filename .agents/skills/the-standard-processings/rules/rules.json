@@ -1,0 +1,11 @@
+{
+  "skill": "the-standard-processings",
+  "rules": [
+    { "id": "ts-processings-001", "severity": "ERROR", "category": "Design", "rule": "Processing services must combine two or more foundation service primitives to form a business workflow." },
+    { "id": "ts-processings-002", "severity": "ERROR", "category": "Design", "rule": "Processing services must expose higher-order business verbs (Ensure, Process, Upsert, Calculate), not raw CRUD verbs." },
+    { "id": "ts-processings-003", "severity": "ERROR", "category": "Design", "rule": "Processing services must depend only on foundation services or other processing services; never on brokers directly." },
+    { "id": "ts-processings-004", "severity": "ERROR", "category": "Design", "rule": "Cross-cutting workflow concerns must be handled inside the processing service." },
+    { "id": "ts-processings-005", "severity": "ERROR", "category": "Testing", "rule": "Every behavior must have a failing test written before the implementation (TDD)." },
+    { "id": "ts-processings-006", "severity": "ERROR", "category": "Testing", "rule": "All test inputs and outputs must be randomized; expected variables must use DeepClone()." }
+  ]
+}

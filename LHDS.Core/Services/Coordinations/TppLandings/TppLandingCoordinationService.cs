@@ -5,6 +5,7 @@
 using System;
 using System.Threading.Tasks;
 using LHDS.Core.Brokers.Loggings;
+using LHDS.Core.Services.Foundations.FileNameValidations;
 using LHDS.Core.Services.Orchestrations.Ingress;
 using LHDS.Core.Services.Orchestrations.TppLandings;
 
@@ -14,15 +15,19 @@ namespace LHDS.Core.Services.Coordinations.TppLandings
     {
         private readonly ITppLandingOrchestrationService tppOrchestrationService;
         private readonly IIngressOrchestrationService ingressOrchestrationService;
+        private readonly IFileNameValidationService fileNameValidationService;
+
         private readonly ILoggingBroker loggingBroker;
 
         public TppLandingCoordinationService(
             ITppLandingOrchestrationService tppOrchestrationService,
             IIngressOrchestrationService ingressOrchestrationService,
+            IFileNameValidationService fileNameValidationService,
             ILoggingBroker loggingBroker)
         {
             this.tppOrchestrationService = tppOrchestrationService;
             this.ingressOrchestrationService = ingressOrchestrationService;
+            this.fileNameValidationService = fileNameValidationService;
             this.loggingBroker = loggingBroker;
         }
 
@@ -44,5 +49,20 @@ namespace LHDS.Core.Services.Coordinations.TppLandings
                 ValidateArgumentsOnReProcess(supplierId);
                 await this.tppOrchestrationService.ReProcessAsync(supplierId);
             });
+
+        public async ValueTask<bool> ShouldValidateFileNameAsync(
+            string fileName,
+            string includePattern,
+            string excludePattern)
+            {
+                ValidateFileNameOnProcess(fileName);
+
+                bool isFileNameValid = await this.fileNameValidationService.ShouldProcessFileAsync(
+                    fileName: fileName,
+                    includePattern: includePattern,
+                    excludePattern: excludePattern);
+
+                return isFileNameValid;
+            }
     }
 }

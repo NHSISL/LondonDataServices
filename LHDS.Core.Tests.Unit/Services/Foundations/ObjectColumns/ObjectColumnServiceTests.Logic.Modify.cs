@@ -6,7 +6,6 @@ using System;
 using System.Threading.Tasks;
 using FluentAssertions;
 using Force.DeepCloner;
-using LHDS.Core.Models.Brokers.Securities;
 using LHDS.Core.Models.Foundations.ObjectColumns;
 using Moq;
 using Xunit;
@@ -20,10 +19,10 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.ObjectColumns
         {
             // given
             DateTimeOffset randomDateTimeOffset = GetRandomDateTimeOffset();
-            EntraUser randomEntraUser = CreateRandomEntraUser();
+            string randomUserId = GetRandomStringWithLengthOf(50);
 
-            ObjectColumn randomObjectColumn = 
-                CreateRandomModifyObjectColumn(randomDateTimeOffset, randomEntraUser.EntraUserId);
+            ObjectColumn randomObjectColumn =
+                CreateRandomModifyObjectColumn(randomDateTimeOffset, randomUserId);
 
             ObjectColumn inputObjectColumn = randomObjectColumn;
             ObjectColumn storageObjectColumn = inputObjectColumn.DeepClone();
@@ -32,17 +31,27 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.ObjectColumns
             ObjectColumn expectedObjectColumn = updatedObjectColumn.DeepClone();
             Guid objectColumnId = inputObjectColumn.Id;
 
+            this.securityAuditBrokerMock.Setup(broker =>
+                broker.ApplyModifyAuditValuesAsync(inputObjectColumn))
+                    .ReturnsAsync(inputObjectColumn);
+
             this.dateTimeBrokerMock.Setup(broker =>
                 broker.GetCurrentDateTimeOffsetAsync())
                     .ReturnsAsync(randomDateTimeOffset);
 
-            this.securityBrokerMock.Setup(broker =>
-                broker.GetCurrentUserAsync())
-                    .ReturnsAsync(randomEntraUser);
+            this.securityAuditBrokerMock.Setup(broker =>
+                broker.GetUserIdAsync())
+                    .ReturnsAsync(randomUserId);
 
             this.storageBrokerMock.Setup(broker =>
                 broker.SelectObjectColumnByIdAsync(objectColumnId))
                     .ReturnsAsync(storageObjectColumn);
+
+            this.securityAuditBrokerMock.Setup(broker =>
+                broker.EnsureAddAuditValuesRemainsUnchangedOnModifyAsync(
+                    inputObjectColumn,
+                    storageObjectColumn))
+                        .ReturnsAsync(inputObjectColumn);
 
             this.storageBrokerMock.Setup(broker =>
                 broker.UpdateObjectColumnAsync(inputObjectColumn))
@@ -55,24 +64,34 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.ObjectColumns
             // then
             actualObjectColumn.Should().BeEquivalentTo(expectedObjectColumn);
 
+            this.securityAuditBrokerMock.Verify(broker =>
+                broker.ApplyModifyAuditValuesAsync(inputObjectColumn),
+                    Times.Once);
+
             this.dateTimeBrokerMock.Verify(broker =>
                 broker.GetCurrentDateTimeOffsetAsync(),
-                    Times.Exactly(2));
+                    Times.Once);
 
-            this.securityBrokerMock.Verify(broker =>
-                broker.GetCurrentUserAsync(),
-                    Times.Exactly(2));
+            this.securityAuditBrokerMock.Verify(broker =>
+                broker.GetUserIdAsync(),
+                    Times.Once);
 
             this.storageBrokerMock.Verify(broker =>
                 broker.SelectObjectColumnByIdAsync(inputObjectColumn.Id),
                     Times.Once);
 
+            this.securityAuditBrokerMock.Verify(broker =>
+                broker.EnsureAddAuditValuesRemainsUnchangedOnModifyAsync(
+                    inputObjectColumn,
+                    storageObjectColumn),
+                        Times.Once);
+
             this.storageBrokerMock.Verify(broker =>
                 broker.UpdateObjectColumnAsync(inputObjectColumn),
                     Times.Once);
 
+            this.securityAuditBrokerMock.VerifyNoOtherCalls();
             this.dateTimeBrokerMock.VerifyNoOtherCalls();
-            this.securityBrokerMock.VerifyNoOtherCalls();
             this.storageBrokerMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
         }

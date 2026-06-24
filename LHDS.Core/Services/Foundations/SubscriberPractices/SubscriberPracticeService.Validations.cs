@@ -15,7 +15,8 @@ namespace LHDS.Core.Services.Foundations.SubscriberPractices
     {
         private async ValueTask ValidateSubscriberPracticeOnAddAsync(SubscriberPractice subscriberPractice)
         {
-            EntraUser currentUser = await this.securityBroker.GetCurrentUserAsync();
+            ValidateSubscriberPracticeIsNotNull(subscriberPractice);
+            string currentUserId = await this.securityAuditBroker.GetUserIdAsync();
 
             Validate(
                 createException: () => new InvalidSubscriberPracticeException(
@@ -50,7 +51,7 @@ namespace LHDS.Core.Services.Foundations.SubscriberPractices
                 Parameter: nameof(SubscriberPractice.UpdatedDate)),
 
                  (Rule: IsNotSame(
-                    first: currentUser.EntraUserId,
+                    first: currentUserId,
                     second: subscriberPractice.CreatedBy),
                 Parameter: nameof(SubscriberPractice.CreatedBy)),
 
@@ -65,7 +66,8 @@ namespace LHDS.Core.Services.Foundations.SubscriberPractices
 
         private async ValueTask ValidateSubscriberPracticeOnModifyAsync(SubscriberPractice subscriberPractice)
         {
-            EntraUser currentUser = await this.securityBroker.GetCurrentUserAsync();
+            ValidateSubscriberPracticeIsNotNull(subscriberPractice);
+            string currentUserId = await this.securityAuditBroker.GetUserIdAsync();
 
             Validate(
                 createException: () => new InvalidSubscriberPracticeException(
@@ -94,7 +96,7 @@ namespace LHDS.Core.Services.Foundations.SubscriberPractices
                     Parameter: nameof(SubscriberPractice.UpdatedBy)),
 
                 (Rule: IsNotSame(
-                    first: currentUser.EntraUserId,
+                    first: currentUserId,
                     second: subscriberPractice.UpdatedBy),
                 Parameter: nameof(SubscriberPractice.UpdatedBy)),
 

@@ -1,0 +1,17 @@
+{
+  "name": "the-standard-reacttypescript-services",
+  "version": "0.1.0",
+  "description": "Enforces foundation service dependency rules, input validation, exception localization, and prohibition of React, JSX, navigation, and state in services.",
+  "standard_version": "v0.1.0",
+  "skill_version": "v0.1.0",
+  "inputs": ["Foundation service TypeScript files in src/services/foundations/**/*"],
+  "outputs": [
+    "Pure TypeScript foundation service classes with validation and exception partials",
+    "Review feedback citing rule IDs"
+  ],
+  "dependencies": [
+    "the-standard-reacttypescript-brokers",
+    "the-standard-reacttypescript-models"
+  ],
+  "applies_to": ["src/services/foundations/**/*"]
+}

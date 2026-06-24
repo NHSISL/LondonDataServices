@@ -1,4 +1,4 @@
-﻿// ---------------------------------------------------------
+// ---------------------------------------------------------
 // Copyright (c) North East London ICB. All rights reserved.
 // ---------------------------------------------------------
 
@@ -17,10 +17,13 @@ using LHDS.Core.Models.Orchestrations.Pds;
 using LHDS.Core.Services.Foundations.Documents;
 using LHDS.Core.Services.Foundations.Mesh;
 using LHDS.Core.Services.Foundations.PdsAudits;
+using Microsoft.Data.SqlClient;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using Xunit.Abstractions;
+
+
+using Xunit;
 
 namespace LHDS.Core.Tests.Integration.Pds
 {
@@ -50,6 +53,14 @@ namespace LHDS.Core.Tests.Integration.Pds
             IConfiguration configuration = configurationBuilder.Build();
             var windowsIdentity = WindowsIdentity.GetCurrent();
             var claimsPrincipal = new ClaimsPrincipal(windowsIdentity);
+
+            SqlAuthenticationProvider.SetProvider(
+                SqlAuthenticationMethod.ActiveDirectoryManagedIdentity,
+                new ActiveDirectoryAuthenticationProvider());
+
+            SqlAuthenticationProvider.SetProvider(
+                SqlAuthenticationMethod.ActiveDirectoryDefault,
+                new ActiveDirectoryAuthenticationProvider());
 
             //setup our DI
             var serviceProvider = new ServiceCollection()
@@ -90,3 +101,4 @@ namespace LHDS.Core.Tests.Integration.Pds
         }
     }
 }
+

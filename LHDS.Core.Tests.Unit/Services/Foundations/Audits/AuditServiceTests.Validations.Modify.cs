@@ -161,7 +161,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Audits
 
             auditServiceMock.Verify(service =>
                 service.ApplyModifyAuditAsync(invalidAudit),
-                    Times.Once());
+                    Times.Once);
 
             this.dateTimeBrokerMock.Verify(broker =>
                 broker.GetCurrentDateTimeOffsetAsync(),
@@ -174,7 +174,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Audits
             this.loggingBrokerMock.Verify(broker =>
                 broker.LogErrorAsync(It.Is(SameExceptionAs(
                     expectedAuditValidationException))),
-                        Times.Once());
+                        Times.Once);
 
             this.storageBrokerMock.Verify(broker =>
                 broker.UpdateAuditAsync(It.IsAny<Audit>()),
@@ -248,7 +248,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Audits
 
             auditServiceMock.Verify(service =>
                 service.ApplyModifyAuditAsync(invalidAudit),
-                    Times.Once());
+                    Times.Once);
 
             this.dateTimeBrokerMock.Verify(broker =>
                 broker.GetCurrentDateTimeOffsetAsync(),
@@ -340,7 +340,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Audits
 
             auditServiceMock.Verify(service =>
                 service.ApplyModifyAuditAsync(invalidAudit),
-                    Times.Once());
+                    Times.Once);
 
             this.dateTimeBrokerMock.Verify(broker =>
                 broker.GetCurrentDateTimeOffsetAsync(),
@@ -420,7 +420,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Audits
 
             auditServiceMock.Verify(service =>
                 service.ApplyModifyAuditAsync(invalidAudit),
-                    Times.Once());
+                    Times.Once);
 
             this.storageBrokerMock.Verify(broker =>
                 broker.SelectAuditByIdAsync(nonExistAudit.Id),
@@ -516,7 +516,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Audits
 
             auditServiceMock.Verify(service =>
                 service.ApplyModifyAuditAsync(invalidAudit),
-                    Times.Once());
+                    Times.Once);
 
             this.dateTimeBrokerMock.Verify(broker =>
                 broker.GetCurrentDateTimeOffsetAsync(),
@@ -609,7 +609,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Audits
 
             auditServiceMock.Verify(service =>
                 service.ApplyModifyAuditAsync(invalidAudit),
-                    Times.Once());
+                    Times.Once);
 
             this.dateTimeBrokerMock.Verify(broker =>
                 broker.GetCurrentDateTimeOffsetAsync(),
@@ -698,7 +698,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Audits
 
             auditServiceMock.Verify(service =>
                 service.ApplyModifyAuditAsync(invalidAudit),
-                    Times.Once());
+                    Times.Once);
 
             this.dateTimeBrokerMock.Verify(broker =>
                 broker.GetCurrentDateTimeOffsetAsync(),

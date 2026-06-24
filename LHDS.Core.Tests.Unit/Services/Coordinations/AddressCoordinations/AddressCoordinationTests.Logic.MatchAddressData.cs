@@ -21,7 +21,7 @@ namespace LHDS.Core.Tests.Unit.Services.Coordinations.AddressCoordinations
             // Then
             this.resolvedAddressOrchestrationServiceMock.Verify(service =>
                 service.MatchAddressDataAsync(),
-                    Times.Once());
+                    Times.Once);
 
             this.addressOrchestrationServiceMock.VerifyNoOtherCalls();
             this.resolvedAddressOrchestrationServiceMock.VerifyNoOtherCalls();

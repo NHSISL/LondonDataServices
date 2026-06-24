@@ -1,0 +1,11 @@
+{
+  "skill": "the-standard-aggregations",
+  "rules": [
+    { "id": "ts-aggregations-001", "severity": "ERROR", "category": "Design", "rule": "Aggregation services must fan out calls to multiple orchestration services in sequence or in parallel." },
+    { "id": "ts-aggregations-002", "severity": "ERROR", "category": "Design", "rule": "Aggregation services must expose a single entry-point method that triggers the aggregated workflow." },
+    { "id": "ts-aggregations-003", "severity": "ERROR", "category": "Design", "rule": "Aggregation services must depend only on orchestration services (or processing services where no orchestration exists)." },
+    { "id": "ts-aggregations-004", "severity": "ERROR", "category": "Design", "rule": "Aggregation services must return results only; they must not perform data transformation or enforce business rules." },
+    { "id": "ts-aggregations-005", "severity": "ERROR", "category": "Testing", "rule": "Every behavior must have a failing test written before the implementation (TDD)." },
+    { "id": "ts-aggregations-006", "severity": "ERROR", "category": "Testing", "rule": "All test inputs and outputs must be randomized; expected variables must use DeepClone()." }
+  ]
+}

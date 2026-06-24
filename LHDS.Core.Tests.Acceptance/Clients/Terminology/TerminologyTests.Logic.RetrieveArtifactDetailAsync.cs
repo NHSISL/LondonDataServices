@@ -56,7 +56,7 @@ namespace LHDS.Core.Tests.Acceptance.Clients.Terminology
                             .WithBody("test"));
 
             //When
-            await this.terminologyClient.RetrieveArtifactDetailsAsync();
+            await this.terminologyClient.RetrieveArtifactDetailsAsync();                                                                                                                                                                
 
             //Then
             TerminologyArtifact retrievedTerminologyArtifact =

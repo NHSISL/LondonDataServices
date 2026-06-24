@@ -30,7 +30,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.ResolvedAddresses
         private readonly Mock<IStorageBroker> storageBrokerMock;
         private readonly Mock<IIdentifierBroker> identifierBrokerMock;
         private readonly Mock<IDateTimeBroker> dateTimeBrokerMock;
-        private readonly Mock<ISecurityBroker> securityBrokerMock;
+        private readonly Mock<ISecurityAuditBroker> securityAuditBrokerMock;
         private readonly Mock<ILoggingBroker> loggingBrokerMock;
         private readonly Mock<IAuditBroker> auditBrokerMock;
         private readonly IResolvedAddressService resolvedAddressService;
@@ -42,7 +42,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.ResolvedAddresses
             this.storageBrokerMock = new Mock<IStorageBroker>();
             this.identifierBrokerMock = new Mock<IIdentifierBroker>();
             this.dateTimeBrokerMock = new Mock<IDateTimeBroker>();
-            this.securityBrokerMock = new Mock<ISecurityBroker>();
+            this.securityAuditBrokerMock = new Mock<ISecurityAuditBroker>();
             this.loggingBrokerMock = new Mock<ILoggingBroker>();
             this.auditBrokerMock = new Mock<IAuditBroker>();
 
@@ -50,7 +50,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.ResolvedAddresses
                 storageBroker: this.storageBrokerMock.Object,
                 identifierBroker: this.identifierBrokerMock.Object,
                 dateTimeBroker: this.dateTimeBrokerMock.Object,
-                securityBroker: this.securityBrokerMock.Object,
+                securityAuditBroker: this.securityAuditBrokerMock.Object,
                 loggingBroker: this.loggingBrokerMock.Object,
                 auditBroker: this.auditBrokerMock.Object);
         }
@@ -176,9 +176,10 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.ResolvedAddresses
             return filler;
         }
 
-        private EntraUser CreateRandomEntraUser(string entraUserId = "")
+        private EntraUser CreateRandomEntraUser(string randomEntraUserId = "")
         {
-            var userId = string.IsNullOrWhiteSpace(entraUserId) ? GetRandomStringWithLengthOf(255) : entraUserId;
+            var userId = string.IsNullOrWhiteSpace(randomEntraUserId) ? 
+                GetRandomStringWithLengthOf(255) : randomEntraUserId;
 
             return new EntraUser(
                 entraUserId: userId,

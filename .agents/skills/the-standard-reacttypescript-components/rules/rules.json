@@ -1,0 +1,59 @@
+{
+  "skill": "the-standard-reacttypescript-components",
+  "rules": [
+    {
+      "id": "tsr-components-001",
+      "severity": "ERROR",
+      "category": "Rendering Responsibility",
+      "rule": "A component must render UI. Its primary output is JSX."
+    },
+    {
+      "id": "tsr-components-002",
+      "severity": "ERROR",
+      "category": "Props-First Data Flow",
+      "rule": "A component must receive data through props unless it is an approved page-level container or application shell."
+    },
+    {
+      "id": "tsr-components-003",
+      "severity": "ERROR",
+      "category": "No Infrastructure Calls",
+      "rule": "A component must not call brokers or make HTTP requests directly."
+    },
+    {
+      "id": "tsr-components-004",
+      "severity": "ERROR",
+      "category": "No Infrastructure Calls",
+      "rule": "A component must not call foundation services directly."
+    },
+    {
+      "id": "tsr-components-005",
+      "severity": "ERROR",
+      "category": "No Business Rules in JSX",
+      "rule": "A component must not embed business rule conditionals in JSX. Business-meaning values must come from view model fields."
+    },
+    {
+      "id": "tsr-components-006",
+      "severity": "ERROR",
+      "category": "Rendering Responsibility",
+      "rule": "A component must be small enough to understand at a glance. Mixed data loading, transformation, event orchestration, and rendering requires splitting."
+    },
+    {
+      "id": "tsr-components-007",
+      "severity": "ERROR",
+      "category": "Props-First Data Flow",
+      "rule": "Non-trivial components must define a typed prop model."
+    },
+    {
+      "id": "tsr-components-008",
+      "severity": "ERROR",
+      "category": "Props-First Data Flow",
+      "rule": "A component must not duplicate state that already exists in a parent, page hook, or view model."
+    },
+    {
+      "id": "tsr-components-009",
+      "severity": "ERROR",
+      "category": "Accessibility",
+      "rule": "Interactive elements must use semantic HTML and be keyboard accessible."
+    }
+  ]
+}

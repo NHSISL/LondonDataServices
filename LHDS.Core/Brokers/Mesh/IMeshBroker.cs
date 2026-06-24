@@ -3,6 +3,8 @@
 // ---------------------------------------------------------
 
 using System.Collections.Generic;
+using System.IO;
+using System.Threading;
 using System.Threading.Tasks;
 using NEL.MESH.Models.Foundations.Mesh;
 
@@ -10,23 +12,29 @@ namespace LHDS.Core.Brokers.Mesh
 {
     public interface IMeshBroker
     {
-        ValueTask<bool> HandshakeAsync();
+        ValueTask<bool> HandshakeAsync(CancellationToken cancellationToken = default);
 
         ValueTask<Message> SendMessageAsync(
             string mexTo,
             string mexWorkflowId,
-            byte[] fileContent,
+            Stream content,
             string mexSubject = "",
             string mexLocalId = "",
             string mexFileName = "",
             string mexContentChecksum = "",
             string contentType = "application/octet-stream",
             string contentEncoding = "",
-            string accept = "application/json");
+            string accept = "application/json",
+            CancellationToken cancellationToken = default);
 
-        ValueTask<Message> TrackMessageAsync(string messageId);
-        ValueTask<List<string>> RetrieveMessageIdsAsync();
-        ValueTask<Message> RetrieveMessageAsync(string messageId);
-        ValueTask<bool> AcknowledgeMessageByIdAsync(string messageId);
+        ValueTask<Message> TrackMessageAsync(string messageId, CancellationToken cancellationToken = default);
+        ValueTask<List<string>> RetrieveMessageIdsAsync(CancellationToken cancellationToken = default);
+
+        ValueTask<Message> RetrieveMessageAsync(
+            string messageId,
+            Stream outputStream,
+            CancellationToken cancellationToken = default);
+
+        ValueTask<bool> AcknowledgeMessageByIdAsync(string messageId, CancellationToken cancellationToken = default);
     }
 }

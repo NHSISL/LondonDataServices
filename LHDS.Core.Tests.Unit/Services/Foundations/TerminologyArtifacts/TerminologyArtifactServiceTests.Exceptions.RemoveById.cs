@@ -206,7 +206,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.TerminologyArtifacts
 
             this.storageBrokerMock.Verify(broker =>
                 broker.SelectTerminologyArtifactByIdAsync(It.IsAny<Guid>()),
-                        Times.Once());
+                        Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>
                 broker.LogErrorAsync(It.Is(SameExceptionAs(

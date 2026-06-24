@@ -27,7 +27,6 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.IngestionTrackings
     {
         private readonly Mock<IStorageBroker> storageBrokerMock;
         private readonly Mock<IDateTimeBroker> dateTimeBrokerMock;
-        private readonly Mock<ISecurityBroker> securityBrokerMock;
         private readonly Mock<ISecurityAuditBroker> securityAuditBrokerMock;
         private readonly Mock<IAuditBroker> auditBrokerMock;
         private readonly Mock<ILoggingBroker> loggingBrokerMock;
@@ -37,7 +36,6 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.IngestionTrackings
         {
             this.storageBrokerMock = new Mock<IStorageBroker>();
             this.dateTimeBrokerMock = new Mock<IDateTimeBroker>();
-            this.securityBrokerMock = new Mock<ISecurityBroker>();
             this.securityAuditBrokerMock = new Mock<ISecurityAuditBroker>();
             this.auditBrokerMock = new Mock<IAuditBroker>();
             this.loggingBrokerMock = new Mock<ILoggingBroker>();
@@ -45,7 +43,6 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.IngestionTrackings
             this.ingestionTrackingService = new IngestionTrackingService(
                 storageBroker: this.storageBrokerMock.Object,
                 dateTimeBroker: this.dateTimeBrokerMock.Object,
-                securityBroker: this.securityBrokerMock.Object,
                 securityAuditBroker: this.securityAuditBrokerMock.Object,
                 auditBroker: this.auditBrokerMock.Object,
                 loggingBroker: this.loggingBrokerMock.Object);

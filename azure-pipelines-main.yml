@@ -22,8 +22,7 @@ variables:
   - name: ConnectionStrings.DefaultConnection
     value: 'Server=localhost,1433;Database=LHDS-Acceptance-$(Build.BuildId);User Id=sa;Password=1Password;TrustServerCertificate=true'
 
-pool: isl-dev-devops-linux-vmss01
-
+pool: lds-managed-devops-pool-ubuntuvm
 
 workspace:
   clean: all
@@ -48,7 +47,6 @@ steps:
       targetFiles: |
         LHDS.AdminPortal.Api/appsettings.ContinuousIntegration.json
         LHDS.Core.Tests.Acceptance/appsettings.ContinuousIntegration.json
-        LHDS.ConfigImportExportTool.Tests.Acceptance/appsettings.ContinuousIntegration.json
   - task: Bash@3
     displayName: "Show AppSettings for CI"
     inputs:
@@ -56,7 +54,6 @@ steps:
       script: |
         cat LHDS.AdminPortal.Api/appsettings.ContinuousIntegration.json
         cat LHDS.Core.Tests.Acceptance/appsettings.ContinuousIntegration.json
-        cat LHDS.ConfigImportExportTool.Tests.Acceptance/appsettings.ContinuousIntegration.json
   - task: AzureCLI@2
     displayName: "Add Service Connection to Environment"
     inputs:
@@ -82,7 +79,7 @@ steps:
   - task: UseDotNet@2
     displayName: "Install .NET Core SDK"
     inputs:
-      version: 9.x
+      version: 10.x
       performMultiLevelLookup: true
       includePreviewVersions: true # Required for preview versions
 

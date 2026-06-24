@@ -20,22 +20,26 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.IngestionTrackings
         {
             // given
             DateTimeOffset randomDateTimeOffset = GetRandomDateTimeOffset();
-            EntraUser randomEntraUser = CreateRandomEntraUser();
+            string randomUserId = GetRandomStringWithLengthOf(50);
 
             IngestionTracking randomIngestionTracking =
-                CreateRandomIngestionTracking(randomDateTimeOffset, randomEntraUser.EntraUserId);
+                CreateRandomIngestionTracking(randomDateTimeOffset, randomUserId);
 
             IngestionTracking inputIngestionTracking = randomIngestionTracking;
             IngestionTracking storageIngestionTracking = inputIngestionTracking;
             IngestionTracking expectedIngestionTracking = storageIngestionTracking.DeepClone();
 
+            this.securityAuditBrokerMock.Setup(broker =>
+                broker.ApplyAddAuditValuesAsync(inputIngestionTracking))
+                    .ReturnsAsync(inputIngestionTracking);
+
             this.dateTimeBrokerMock.Setup(broker =>
                 broker.GetCurrentDateTimeOffsetAsync())
                     .ReturnsAsync(randomDateTimeOffset);
 
-            this.securityBrokerMock.Setup(broker =>
-                broker.GetCurrentUserAsync())
-                    .ReturnsAsync(randomEntraUser);
+            this.securityAuditBrokerMock.Setup(broker =>
+                broker.GetUserIdAsync())
+                    .ReturnsAsync(randomUserId);
 
             this.storageBrokerMock.Setup(broker =>
                 broker.InsertIngestionTrackingAsync(inputIngestionTracking))
@@ -48,22 +52,25 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.IngestionTrackings
             // then
             actualIngestionTracking.Should().BeEquivalentTo(expectedIngestionTracking);
 
+            this.securityAuditBrokerMock.Verify(broker =>
+                broker.ApplyAddAuditValuesAsync(inputIngestionTracking),
+                    Times.Once);
+
             this.dateTimeBrokerMock.Verify(broker =>
                 broker.GetCurrentDateTimeOffsetAsync(),
-                    Times.Exactly(2));
+                    Times.Once);
 
-            this.securityBrokerMock.Verify(broker =>
-                broker.GetCurrentUserAsync(),
-                    Times.Exactly(2));
+            this.securityAuditBrokerMock.Verify(broker =>
+                broker.GetUserIdAsync(),
+                    Times.Once);
 
             this.storageBrokerMock.Verify(broker =>
                 broker.InsertIngestionTrackingAsync(inputIngestionTracking),
                     Times.Once);
 
-            this.dateTimeBrokerMock.VerifyNoOtherCalls();
-            this.securityBrokerMock.VerifyNoOtherCalls();
-            this.storageBrokerMock.VerifyNoOtherCalls();
             this.securityAuditBrokerMock.VerifyNoOtherCalls();
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
+            this.storageBrokerMock.VerifyNoOtherCalls();
             this.auditBrokerMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
         }

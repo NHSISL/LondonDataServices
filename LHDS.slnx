@@ -13,24 +13,6 @@
       <BuildType Solution="Test|*" Project="Debug" />
     </Project>
   </Folder>
-  <Folder Name="/ConfigImportExportTool/">
-    <Project Path="LHDS.ConfigImportExportTool.Tests.Acceptance/LHDS.ConfigImportExportTool.Tests.Acceptance.csproj">
-      <BuildType Solution="Acceptance|*" Project="Debug" />
-      <BuildType Solution="Test|*" Project="Debug" />
-    </Project>
-    <Project Path="LHDS.ConfigImportExportTool.Tests.Integration/LHDS.ConfigImportExportTool.Tests.Integration.csproj">
-      <BuildType Solution="Acceptance|*" Project="Debug" />
-      <BuildType Solution="Test|*" Project="Debug" />
-    </Project>
-    <Project Path="LHDS.ConfigImportExportTool.Tests.Unit/LHDS.ConfigImportExportTool.Tests.Unit.csproj">
-      <BuildType Solution="Acceptance|*" Project="Debug" />
-      <BuildType Solution="Test|*" Project="Debug" />
-    </Project>
-    <Project Path="LHDS.ConfigImportExportTool/LHDS.ConfigImportExportTool.csproj">
-      <BuildType Solution="Acceptance|*" Project="Debug" />
-      <BuildType Solution="Test|*" Project="Debug" />
-    </Project>
-  </Folder>
   <Folder Name="/Core/">
     <Project Path="LHDS.Core.SeedGenerator/LHDS.Core.SeedGenerator.csproj">
       <BuildType Solution="Acceptance|*" Project="Debug" />
@@ -47,6 +29,10 @@
       <BuildType Solution="Test|*" Project="Debug" />
     </Project>
     <Project Path="LHDS.Core.Tests.Integration.EmisLandings/LHDS.Core.Tests.Integration.EmisLandings.csproj" />
+    <Project Path="LHDS.Core.Tests.Integration.IDecide/LHDS.Core.Tests.Integration.IDecide.csproj">
+      <BuildType Solution="Acceptance|*" Project="Debug" />
+      <BuildType Solution="Test|*" Project="Debug" />
+    </Project>
     <Project Path="LHDS.Core.Tests.Integration.OptOuts/LHDS.Core.Tests.Integration.OptOuts.csproj" />
     <Project Path="LHDS.Core.Tests.Integration.Pds/LHDS.Core.Tests.Integration.Pds.csproj">
       <BuildType Solution="Acceptance|*" Project="Debug" />
@@ -61,6 +47,13 @@
     <Project Path="LHDS.Core/LHDS.Core.csproj">
       <BuildType Solution="Acceptance|*" Project="Debug" />
       <BuildType Solution="Test|*" Project="Debug" />
+    </Project>
+    <Project Path="LHDS.Infrastructure/LHDS.Infrastructure.csproj" Id="38293a51-c471-4c2e-b24b-858c812d79da">
+      <BuildType Solution="Acceptance|*" Project="Debug" />
+      <BuildType Solution="Test|*" Project="Debug" />
+      <Build Solution="Acceptance|*" Project="false" />
+      <Build Solution="Debug|*" Project="false" />
+      <Build Solution="Test|*" Project="false" />
     </Project>
   </Folder>
   <Folder Name="/Frontend/">
@@ -99,8 +92,4 @@
       <BuildType Solution="Test|*" Project="Debug" />
     </Project>
   </Folder>
-  <Project Path="LHDS.Core.Tests.Integration.IDecide/LHDS.Core.Tests.Integration.IDecide.csproj">
-    <BuildType Solution="Acceptance|*" Project="Debug" />
-    <BuildType Solution="Test|*" Project="Debug" />
-  </Project>
 </Solution>

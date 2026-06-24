@@ -4,13 +4,12 @@
 
 using System;
 using System.Threading.Tasks;
-using Xunit;
 
 namespace LHDS.Core.Tests.Integration.EmisLandings
 {
     public partial class LandingTests
     {
-        [Fact]
+        [ReleaseCandidateFact]
         public async Task ShouldRedecryptFilesAsync()
         {
             try

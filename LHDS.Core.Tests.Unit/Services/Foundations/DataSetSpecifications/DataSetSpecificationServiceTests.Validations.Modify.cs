@@ -6,10 +6,8 @@ using System;
 using System.Threading.Tasks;
 using FluentAssertions;
 using Force.DeepCloner;
-using LHDS.Core.Models.Brokers.Securities;
 using LHDS.Core.Models.Foundations.DataSetSpecifications;
 using LHDS.Core.Models.Foundations.DataSetSpecifications.Exceptions;
-using LHDS.Core.Services.Foundations.DataSetSpecifications;
 using Moq;
 using Xunit;
 
@@ -68,7 +66,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.DataSetSpecifications
         {
             // given
             DateTimeOffset randomDateTimeOffset = GetRandomDateTimeOffset();
-            EntraUser randomEntraUser = CreateRandomEntraUser();
+            string randomEntraUserId = GetRandomStringWithLengthOf(50);
 
             var invalidDataSetSpecification = new DataSetSpecification
             {
@@ -77,6 +75,9 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.DataSetSpecifications
                 CreatedBy = invalidText,
                 UpdatedBy = invalidText
             };
+
+            DateTimeOffset startDate = randomDateTimeOffset.AddSeconds(-90);
+            DateTimeOffset endDate = randomDateTimeOffset.AddSeconds(0);
 
             var invalidDataSetSpecificationException =
                 new InvalidDataSetSpecificationException(
@@ -106,18 +107,40 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.DataSetSpecifications
                 key: nameof(DataSetSpecification.CreatedBy),
                 values: "Text is required");
 
+            invalidDataSetSpecificationException.AddData(
+                key: nameof(DataSetSpecification.UpdatedDate),
+                values:
+                new[] {
+                    "Date is required",
+                    $"Date is the same as {nameof(DataSetSpecification.CreatedDate)}",
+                    $"Date is not recent. Expected a value between {startDate} and {endDate} " +
+                    $"but found {invalidDataSetSpecification.UpdatedDate}"
+                });
+
+            invalidDataSetSpecificationException.AddData(
+                key: nameof(DataSetSpecification.UpdatedBy),
+                values:
+                    [
+                        "Text is required",
+                        $"Expected value to be '{randomEntraUserId}' but found '{invalidText}'."
+                    ]);
+
             var expectedDataSetSpecificationValidationException =
                 new DataSetSpecificationValidationException(
                     message: "DataSetSpecification validation errors occurred, please try again.",
                     innerException: invalidDataSetSpecificationException);
 
+            this.securityAuditBrokerMock.Setup(broker =>
+                broker.ApplyModifyAuditValuesAsync(invalidDataSetSpecification))
+                .ReturnsAsync(invalidDataSetSpecification);
+
             this.dateTimeBrokerMock.Setup(broker =>
                 broker.GetCurrentDateTimeOffsetAsync())
                 .ReturnsAsync(randomDateTimeOffset);
 
-            this.securityBrokerMock.Setup(broker =>
-                broker.GetCurrentUserAsync())
-                .ReturnsAsync(randomEntraUser);
+            this.securityAuditBrokerMock.Setup(broker =>
+                broker.GetUserIdAsync())
+                .ReturnsAsync(randomEntraUserId);
 
             // when
             ValueTask<DataSetSpecification> modifyDataSetSpecificationTask =
@@ -131,13 +154,17 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.DataSetSpecifications
             actualDataSetSpecificationValidationException.Should()
                 .BeEquivalentTo(expectedDataSetSpecificationValidationException);
 
+            this.securityAuditBrokerMock.Verify(broker =>
+                broker.ApplyModifyAuditValuesAsync(invalidDataSetSpecification),
+                    Times.Once);
+
             this.dateTimeBrokerMock.Verify(broker =>
                 broker.GetCurrentDateTimeOffsetAsync(),
-                    Times.Exactly(2)); // ApplyModifyAuditAsync + IsNotRecentAsync
+                    Times.Once);
 
-            this.securityBrokerMock.Verify(broker =>
-                broker.GetCurrentUserAsync(),
-                    Times.Exactly(2)); // ApplyModifyAuditAsync + Validation
+            this.securityAuditBrokerMock.Verify(broker =>
+                broker.GetUserIdAsync(),
+                    Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>
                 broker.LogErrorAsync(It.Is(SameExceptionAs(
@@ -148,8 +175,8 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.DataSetSpecifications
                 broker.UpdateDataSetSpecificationAsync(It.IsAny<DataSetSpecification>()),
                     Times.Never);
 
+            this.securityAuditBrokerMock.VerifyNoOtherCalls();
             this.dateTimeBrokerMock.VerifyNoOtherCalls();
-            this.securityBrokerMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
             this.storageBrokerMock.VerifyNoOtherCalls();
         }
@@ -159,12 +186,12 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.DataSetSpecifications
         {
             // given 
             DateTimeOffset randomDateTimeOffset = GetRandomDateTimeOffset();
-            EntraUser randomEntraUser = CreateRandomEntraUser();
+            string randomEntraUserId = GetRandomStringWithLengthOf(50);
 
             DataSetSpecification invalidDataSetSpecification =
                 CreateRandomModifyDataSetSpecification(
                     randomDateTimeOffset,
-                    randomEntraUser.EntraUserId);
+                    randomEntraUserId);
 
             invalidDataSetSpecification.SupplierSpecificationVersion = GetRandomString(11);
             invalidDataSetSpecification.OurSpecificationVersion = GetRandomString(11);
@@ -191,13 +218,17 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.DataSetSpecifications
                     message: "DataSetSpecification validation errors occurred, please try again.",
                     innerException: invalidDataSetSpecificationException);
 
+            this.securityAuditBrokerMock.Setup(service =>
+                service.ApplyModifyAuditValuesAsync(invalidDataSetSpecification))
+                    .ReturnsAsync(invalidDataSetSpecification);
+
             this.dateTimeBrokerMock.Setup(broker =>
                 broker.GetCurrentDateTimeOffsetAsync())
                     .ReturnsAsync(randomDateTimeOffset);
 
-            this.securityBrokerMock.Setup(broker =>
-                broker.GetCurrentUserAsync())
-                    .ReturnsAsync(randomEntraUser);
+            this.securityAuditBrokerMock.Setup(broker =>
+                broker.GetUserIdAsync())
+                    .ReturnsAsync(randomEntraUserId);
 
             // when
             ValueTask<DataSetSpecification> modifyDataSetSpecificationTask =
@@ -211,13 +242,17 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.DataSetSpecifications
             actualDataSetSpecificationValidationException.Should()
                 .BeEquivalentTo(expectedDataSetSpecificationValidationException);
 
+            this.securityAuditBrokerMock.Verify(broker =>
+                broker.ApplyModifyAuditValuesAsync(invalidDataSetSpecification),
+                    Times.Once);
+
             this.dateTimeBrokerMock.Verify(broker =>
                 broker.GetCurrentDateTimeOffsetAsync(),
-                    Times.Exactly(2));
+                    Times.Once);
 
-            this.securityBrokerMock.Verify(broker =>
-                broker.GetCurrentUserAsync(),
-                    Times.Exactly(2));
+            this.securityAuditBrokerMock.Verify(broker =>
+                broker.GetUserIdAsync(),
+                    Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>
                 broker.LogErrorAsync(It.Is(SameExceptionAs(
@@ -228,8 +263,8 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.DataSetSpecifications
                 broker.UpdateDataSetSpecificationAsync(It.IsAny<DataSetSpecification>()),
                     Times.Never);
 
+            this.securityAuditBrokerMock.VerifyNoOtherCalls();
             this.dateTimeBrokerMock.VerifyNoOtherCalls();
-            this.securityBrokerMock.VerifyNoOtherCalls();
             this.storageBrokerMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
         }
@@ -239,36 +274,31 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.DataSetSpecifications
         {
             // given
             DateTimeOffset randomDateTimeOffset = GetRandomDateTimeOffset();
-            EntraUser randomEntraUser = CreateRandomEntraUser();
+            string randomEntraUserId = GetRandomStringWithLengthOf(50);
             DateTimeOffset startDate = randomDateTimeOffset.AddSeconds(-90);
             DateTimeOffset endDate = randomDateTimeOffset.AddSeconds(0);
 
             DataSetSpecification randomDataSetSpecification = CreateRandomModifyDataSetSpecification(
                 randomDateTimeOffset,
-                dataSetSpecificationId: randomEntraUser.EntraUserId);
+                dataSetSpecificationId: randomEntraUserId);
 
             randomDataSetSpecification.UpdatedDate = randomDataSetSpecification.CreatedDate;
 
-            var dataSetSpecificationServiceMock = new Mock<DataSetSpecificationService>(
-                this.storageBrokerMock.Object,
-                this.dateTimeBrokerMock.Object,
-                this.loggingBrokerMock.Object,
-                this.securityBrokerMock.Object)
-            {
-                CallBase = true
-            };
+            this.securityAuditBrokerMock.Setup(broker =>
+                broker.ApplyModifyAuditValuesAsync(randomDataSetSpecification))
+                    .ReturnsAsync(randomDataSetSpecification);
 
-            dataSetSpecificationServiceMock.Setup(service =>
-                service.ApplyModifyAuditAsync(randomDataSetSpecification))
+            this.securityAuditBrokerMock.Setup(service =>
+                service.ApplyModifyAuditValuesAsync(randomDataSetSpecification))
                     .ReturnsAsync(randomDataSetSpecification);
 
             this.dateTimeBrokerMock.Setup(broker =>
                 broker.GetCurrentDateTimeOffsetAsync())
                     .ReturnsAsync(randomDateTimeOffset);
 
-            this.securityBrokerMock.Setup(broker =>
-                broker.GetCurrentUserAsync())
-                    .ReturnsAsync(randomEntraUser);
+            this.securityAuditBrokerMock.Setup(broker =>
+                broker.GetUserIdAsync())
+                    .ReturnsAsync(randomEntraUserId);
 
             var invalidDataSetSpecificationException =
                 new InvalidDataSetSpecificationException("Invalid dataSetSpecification. Please correct the errors and try again.");
@@ -277,7 +307,8 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.DataSetSpecifications
                 key: nameof(DataSetSpecification.UpdatedDate),
                 values: [
                     $"Date is the same as {nameof(DataSetSpecification.CreatedDate)}",
-                    $"Date is not recent. Expected a value between {startDate} and {endDate} but found {randomDataSetSpecification.UpdatedDate}",
+                    $"Date is not recent. Expected a value between {startDate} and " +
+                    $"{endDate} but found {randomDataSetSpecification.UpdatedDate}",
                 ]);
 
             var expectedDataSetSpecificationValidationException =
@@ -287,7 +318,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.DataSetSpecifications
 
             // when
             ValueTask<DataSetSpecification> modifyDataSetSpecificationTask =
-                dataSetSpecificationServiceMock.Object.ModifyDataSetSpecificationAsync(randomDataSetSpecification);
+                dataSetSpecificationService.ModifyDataSetSpecificationAsync(randomDataSetSpecification);
 
             DataSetSpecificationValidationException actualException =
                 await Assert.ThrowsAsync<DataSetSpecificationValidationException>(
@@ -296,21 +327,25 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.DataSetSpecifications
             // then
             actualException.Should().BeEquivalentTo(expectedDataSetSpecificationValidationException);
 
+            this.securityAuditBrokerMock.Verify(broker =>
+                broker.ApplyModifyAuditValuesAsync(randomDataSetSpecification),
+                    Times.Once);
+
             this.dateTimeBrokerMock.Verify(broker =>
                 broker.GetCurrentDateTimeOffsetAsync(),
                     Times.Once);
 
-            this.securityBrokerMock.Verify(broker =>
-                broker.GetCurrentUserAsync(),
+            this.securityAuditBrokerMock.Verify(broker =>
+                broker.GetUserIdAsync(),
                     Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>
                 broker.LogErrorAsync(It.Is(SameExceptionAs(expectedDataSetSpecificationValidationException))),
                     Times.Once);
 
+            this.securityAuditBrokerMock.VerifyNoOtherCalls();
             this.storageBrokerMock.VerifyNoOtherCalls();
             this.dateTimeBrokerMock.VerifyNoOtherCalls();
-            this.securityBrokerMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
         }
 
@@ -322,32 +357,23 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.DataSetSpecifications
             DateTimeOffset randomDateTimeOffset = GetRandomDateTimeOffset();
             DateTimeOffset startDate = randomDateTimeOffset.AddSeconds(-90);
             DateTimeOffset endDate = randomDateTimeOffset.AddSeconds(0);
-            EntraUser randomEntraUser = CreateRandomEntraUser();
+            string randomEntraUserId = GetRandomStringWithLengthOf(50);
 
             DataSetSpecification randomDataSetSpecification = CreateRandomDataSetSpecification(randomDateTimeOffset);
             randomDataSetSpecification.UpdatedDate = randomDateTimeOffset.AddMinutes(minutes);
-            randomDataSetSpecification.UpdatedBy = randomEntraUser.EntraUserId;
+            randomDataSetSpecification.UpdatedBy = randomEntraUserId;
 
-            var dataSetSpecificationServiceMock = new Mock<DataSetSpecificationService>(
-                this.storageBrokerMock.Object,
-                this.dateTimeBrokerMock.Object,
-                this.loggingBrokerMock.Object,
-                this.securityBrokerMock.Object)
-            {
-                CallBase = true
-            };
-
-            dataSetSpecificationServiceMock.Setup(service =>
-                service.ApplyModifyAuditAsync(randomDataSetSpecification))
+            this.securityAuditBrokerMock.Setup(service =>
+                service.ApplyModifyAuditValuesAsync(randomDataSetSpecification))
                     .ReturnsAsync(randomDataSetSpecification);
 
             this.dateTimeBrokerMock.Setup(broker =>
                 broker.GetCurrentDateTimeOffsetAsync())
                     .ReturnsAsync(randomDateTimeOffset);
 
-            this.securityBrokerMock.Setup(broker =>
-                broker.GetCurrentUserAsync())
-                    .ReturnsAsync(randomEntraUser);
+            this.securityAuditBrokerMock.Setup(broker =>
+                broker.GetUserIdAsync())
+                    .ReturnsAsync(randomEntraUserId);
 
             var invalidDataSetSpecificationException =
                 new InvalidDataSetSpecificationException(
@@ -358,7 +384,8 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.DataSetSpecifications
                 values:
                 [
                     $"Date is not recent. " +
-            $"Expected a value between {startDate} and {endDate} but found {randomDataSetSpecification.UpdatedDate}"
+                    $"Expected a value between {startDate} and {endDate} " +
+                    $"but found {randomDataSetSpecification.UpdatedDate}"
                 ]);
 
             var expectedDataSetSpecificationValidationException =
@@ -368,7 +395,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.DataSetSpecifications
 
             // when
             ValueTask<DataSetSpecification> modifyDataSetSpecificationTask =
-                dataSetSpecificationServiceMock.Object.ModifyDataSetSpecificationAsync(randomDataSetSpecification);
+                dataSetSpecificationService.ModifyDataSetSpecificationAsync(randomDataSetSpecification);
 
             DataSetSpecificationValidationException actualDataSetSpecificationValidationException =
                 await Assert.ThrowsAsync<DataSetSpecificationValidationException>(
@@ -378,12 +405,16 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.DataSetSpecifications
             actualDataSetSpecificationValidationException.Should()
                 .BeEquivalentTo(expectedDataSetSpecificationValidationException);
 
+            this.securityAuditBrokerMock.Verify(broker =>
+                broker.ApplyModifyAuditValuesAsync(randomDataSetSpecification),
+                    Times.Once);
+
             this.dateTimeBrokerMock.Verify(broker =>
                 broker.GetCurrentDateTimeOffsetAsync(),
                     Times.Once);
 
-            this.securityBrokerMock.Verify(broker =>
-                broker.GetCurrentUserAsync(),
+            this.securityAuditBrokerMock.Verify(broker =>
+                broker.GetUserIdAsync(),
                     Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>
@@ -391,8 +422,8 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.DataSetSpecifications
                     expectedDataSetSpecificationValidationException))),
                         Times.Once);
 
+            this.securityAuditBrokerMock.VerifyNoOtherCalls();
             this.dateTimeBrokerMock.VerifyNoOtherCalls();
-            this.securityBrokerMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
             this.storageBrokerMock.VerifyNoOtherCalls();
         }
@@ -402,12 +433,12 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.DataSetSpecifications
         {
             // given
             DateTimeOffset randomDateTimeOffset = GetRandomDateTimeOffset();
-            EntraUser randomEntraUser = CreateRandomEntraUser();
+            string randomEntraUserId = GetRandomStringWithLengthOf(50);
 
             DataSetSpecification randomDataSetSpecification =
                 CreateRandomModifyDataSetSpecification(
                     randomDateTimeOffset,
-                    randomEntraUser.EntraUserId);
+                    randomEntraUserId);
 
             DataSetSpecification nonExistDataSetSpecification = randomDataSetSpecification;
             DataSetSpecification nullDataSetSpecification = null;
@@ -420,6 +451,10 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.DataSetSpecifications
                     message: "DataSetSpecification validation errors occurred, please try again.",
                     innerException: notFoundDataSetSpecificationException);
 
+            this.securityAuditBrokerMock.Setup(broker =>
+                broker.ApplyModifyAuditValuesAsync(nonExistDataSetSpecification))
+                    .ReturnsAsync(nonExistDataSetSpecification);
+
             this.storageBrokerMock.Setup(broker =>
                 broker.SelectDataSetSpecificationByIdAsync(nonExistDataSetSpecification.Id))
                     .ReturnsAsync(nullDataSetSpecification);
@@ -428,9 +463,9 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.DataSetSpecifications
                 broker.GetCurrentDateTimeOffsetAsync())
                     .ReturnsAsync(randomDateTimeOffset);
 
-            this.securityBrokerMock.Setup(broker =>
-                broker.GetCurrentUserAsync())
-                    .ReturnsAsync(randomEntraUser);
+            this.securityAuditBrokerMock.Setup(broker =>
+                broker.GetUserIdAsync())
+                    .ReturnsAsync(randomEntraUserId);
 
             // when 
             ValueTask<DataSetSpecification> modifyDataSetSpecificationTask =
@@ -444,26 +479,30 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.DataSetSpecifications
             actualDataSetSpecificationValidationException.Should()
                 .BeEquivalentTo(expectedDataSetSpecificationValidationException);
 
+            this.securityAuditBrokerMock.Verify(broker =>
+                broker.ApplyModifyAuditValuesAsync(nonExistDataSetSpecification),
+                    Times.Once);
+
             this.storageBrokerMock.Verify(broker =>
                 broker.SelectDataSetSpecificationByIdAsync(nonExistDataSetSpecification.Id),
                     Times.Once);
 
             this.dateTimeBrokerMock.Verify(broker =>
                 broker.GetCurrentDateTimeOffsetAsync(),
-                    Times.Exactly(2));
+                    Times.Once);
 
-            this.securityBrokerMock.Verify(broker =>
-                broker.GetCurrentUserAsync(),
-                    Times.Exactly(2));
+            this.securityAuditBrokerMock.Verify(broker =>
+                broker.GetUserIdAsync(),
+                    Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>
                 broker.LogErrorAsync(It.Is(SameExceptionAs(
                     expectedDataSetSpecificationValidationException))),
                         Times.Once);
 
+            this.securityAuditBrokerMock.VerifyNoOtherCalls();
             this.storageBrokerMock.VerifyNoOtherCalls();
             this.dateTimeBrokerMock.VerifyNoOtherCalls();
-            this.securityBrokerMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
         }
 
@@ -474,12 +513,12 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.DataSetSpecifications
             int randomNumber = GetRandomNegativeNumber();
             int randomMinutes = randomNumber;
             DateTimeOffset randomDateTimeOffset = GetRandomDateTimeOffset();
-            EntraUser randomEntraUser = CreateRandomEntraUser();
+            string randomEntraUserId = GetRandomStringWithLengthOf(50);
 
             DataSetSpecification randomDataSetSpecification =
                 CreateRandomModifyDataSetSpecification(
                     randomDateTimeOffset,
-                    randomEntraUser.EntraUserId);
+                    randomEntraUserId);
 
             DataSetSpecification invalidDataSetSpecification = randomDataSetSpecification.DeepClone();
             DataSetSpecification storageDataSetSpecification = randomDataSetSpecification.DeepClone();
@@ -503,6 +542,10 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.DataSetSpecifications
                     message: "DataSetSpecification validation errors occurred, please try again.",
                     innerException: invalidDataSetSpecificationException);
 
+            this.securityAuditBrokerMock.Setup(broker =>
+                broker.ApplyModifyAuditValuesAsync(invalidDataSetSpecification))
+                    .ReturnsAsync(invalidDataSetSpecification);
+
             this.storageBrokerMock.Setup(broker =>
                 broker.SelectDataSetSpecificationByIdAsync(invalidDataSetSpecification.Id))
                     .ReturnsAsync(storageDataSetSpecification);
@@ -511,9 +554,9 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.DataSetSpecifications
                 broker.GetCurrentDateTimeOffsetAsync())
                     .ReturnsAsync(randomDateTimeOffset);
 
-            this.securityBrokerMock.Setup(broker =>
-                broker.GetCurrentUserAsync())
-                    .ReturnsAsync(randomEntraUser);
+            this.securityAuditBrokerMock.Setup(broker =>
+                broker.GetUserIdAsync())
+                    .ReturnsAsync(randomEntraUserId);
 
             // when
             ValueTask<DataSetSpecification> modifyDataSetSpecificationTask =
@@ -527,26 +570,30 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.DataSetSpecifications
             actualDataSetSpecificationValidationException.Should()
                 .BeEquivalentTo(expectedDataSetSpecificationValidationException);
 
+            this.securityAuditBrokerMock.Verify(broker =>
+                broker.ApplyModifyAuditValuesAsync(invalidDataSetSpecification),
+                    Times.Once);
+
             this.storageBrokerMock.Verify(broker =>
                 broker.SelectDataSetSpecificationByIdAsync(invalidDataSetSpecification.Id),
                     Times.Once);
 
             this.dateTimeBrokerMock.Verify(broker =>
                 broker.GetCurrentDateTimeOffsetAsync(),
-                    Times.Exactly(2));
+                    Times.Once);
 
-            this.securityBrokerMock.Verify(broker =>
-                broker.GetCurrentUserAsync(),
-                    Times.Exactly(2));
+            this.securityAuditBrokerMock.Verify(broker =>
+                broker.GetUserIdAsync(),
+                    Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>
                broker.LogErrorAsync(It.Is(SameExceptionAs(
                    expectedDataSetSpecificationValidationException))),
                        Times.Once);
 
+            this.securityAuditBrokerMock.VerifyNoOtherCalls();
             this.storageBrokerMock.VerifyNoOtherCalls();
             this.dateTimeBrokerMock.VerifyNoOtherCalls();
-            this.securityBrokerMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
         }
 
@@ -555,16 +602,15 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.DataSetSpecifications
         {
             // given
             DateTimeOffset randomDateTimeOffset = GetRandomDateTimeOffset();
-            EntraUser randomEntraUser = CreateRandomEntraUser();
+            string randomEntraUserId = GetRandomStringWithLengthOf(50);
 
             DataSetSpecification randomDataSetSpecification =
                 CreateRandomModifyDataSetSpecification(
                     randomDateTimeOffset,
-                    randomEntraUser.EntraUserId);
+                    randomEntraUserId);
 
             DataSetSpecification invalidDataSetSpecification = randomDataSetSpecification.DeepClone();
             DataSetSpecification storageDataSetSpecification = randomDataSetSpecification.DeepClone();
-
             invalidDataSetSpecification.CreatedBy = Guid.NewGuid().ToString();
             storageDataSetSpecification.UpdatedDate = storageDataSetSpecification.CreatedDate;
 
@@ -581,17 +627,21 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.DataSetSpecifications
                     message: "DataSetSpecification validation errors occurred, please try again.",
                     innerException: invalidDataSetSpecificationException);
 
-            this.storageBrokerMock.Setup(broker =>
-                broker.SelectDataSetSpecificationByIdAsync(invalidDataSetSpecification.Id))
-                    .ReturnsAsync(storageDataSetSpecification);
+            this.securityAuditBrokerMock.Setup(service =>
+                service.ApplyModifyAuditValuesAsync(invalidDataSetSpecification))
+                    .ReturnsAsync(invalidDataSetSpecification);
 
             this.dateTimeBrokerMock.Setup(broker =>
                 broker.GetCurrentDateTimeOffsetAsync())
                     .ReturnsAsync(randomDateTimeOffset);
 
-            this.securityBrokerMock.Setup(broker =>
-                broker.GetCurrentUserAsync())
-                    .ReturnsAsync(randomEntraUser);
+            this.storageBrokerMock.Setup(broker =>
+                broker.SelectDataSetSpecificationByIdAsync(invalidDataSetSpecification.Id))
+                    .ReturnsAsync(storageDataSetSpecification);
+
+            this.securityAuditBrokerMock.Setup(broker =>
+                broker.GetUserIdAsync())
+                    .ReturnsAsync(randomEntraUserId);
 
             // when
             ValueTask<DataSetSpecification> modifyDataSetSpecificationTask =
@@ -605,26 +655,30 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.DataSetSpecifications
             actualDataSetSpecificationValidationException.Should()
                 .BeEquivalentTo(expectedDataSetSpecificationValidationException);
 
+            this.securityAuditBrokerMock.Verify(broker =>
+                broker.ApplyModifyAuditValuesAsync(invalidDataSetSpecification),
+                    Times.Once);
+
             this.storageBrokerMock.Verify(broker =>
                 broker.SelectDataSetSpecificationByIdAsync(invalidDataSetSpecification.Id),
                     Times.Once);
 
             this.dateTimeBrokerMock.Verify(broker =>
                 broker.GetCurrentDateTimeOffsetAsync(),
-                    Times.Exactly(2));
+                    Times.Once);
 
-            this.securityBrokerMock.Verify(broker =>
-                broker.GetCurrentUserAsync(),
-                    Times.Exactly(2));
+            this.securityAuditBrokerMock.Verify(broker =>
+                broker.GetUserIdAsync(),
+                    Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>
                 broker.LogErrorAsync(It.Is(SameExceptionAs(
                     expectedDataSetSpecificationValidationException))),
                         Times.Once);
 
+            this.securityAuditBrokerMock.VerifyNoOtherCalls();
             this.storageBrokerMock.VerifyNoOtherCalls();
             this.dateTimeBrokerMock.VerifyNoOtherCalls();
-            this.securityBrokerMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
         }
 
@@ -633,12 +687,12 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.DataSetSpecifications
         {
             // given
             DateTimeOffset randomDateTimeOffset = GetRandomDateTimeOffset();
-            EntraUser randomEntraUser = CreateRandomEntraUser();
+            string randomEntraUserId = GetRandomStringWithLengthOf(50);
 
             DataSetSpecification randomDataSetSpecification =
                 CreateRandomModifyDataSetSpecification(
                     randomDateTimeOffset,
-                    randomEntraUser.EntraUserId);
+                    randomEntraUserId);
 
             DataSetSpecification invalidDataSetSpecification = randomDataSetSpecification;
             DataSetSpecification storageDataSetSpecification = randomDataSetSpecification.DeepClone();
@@ -656,6 +710,10 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.DataSetSpecifications
                     message: "DataSetSpecification validation errors occurred, please try again.",
                     innerException: invalidDataSetSpecificationException);
 
+            this.securityAuditBrokerMock.Setup(broker =>
+                broker.ApplyModifyAuditValuesAsync(invalidDataSetSpecification))
+                    .ReturnsAsync(invalidDataSetSpecification);
+
             this.storageBrokerMock.Setup(broker =>
                 broker.SelectDataSetSpecificationByIdAsync(invalidDataSetSpecification.Id))
                     .ReturnsAsync(storageDataSetSpecification);
@@ -664,9 +722,9 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.DataSetSpecifications
                 broker.GetCurrentDateTimeOffsetAsync())
                     .ReturnsAsync(randomDateTimeOffset);
 
-            this.securityBrokerMock.Setup(broker =>
-                broker.GetCurrentUserAsync())
-                    .ReturnsAsync(randomEntraUser);
+            this.securityAuditBrokerMock.Setup(broker =>
+                broker.GetUserIdAsync())
+                    .ReturnsAsync(randomEntraUserId);
 
             // when
             ValueTask<DataSetSpecification> modifyDataSetSpecificationTask =
@@ -676,26 +734,30 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.DataSetSpecifications
             await Assert.ThrowsAsync<DataSetSpecificationValidationException>(
                 modifyDataSetSpecificationTask.AsTask);
 
+            this.securityAuditBrokerMock.Verify(broker =>
+                broker.ApplyModifyAuditValuesAsync(invalidDataSetSpecification),
+                    Times.Once);
+
             this.storageBrokerMock.Verify(broker =>
                 broker.SelectDataSetSpecificationByIdAsync(invalidDataSetSpecification.Id),
                     Times.Once);
 
             this.dateTimeBrokerMock.Verify(broker =>
                 broker.GetCurrentDateTimeOffsetAsync(),
-                    Times.Exactly(2));
+                    Times.Once);
 
-            this.securityBrokerMock.Verify(broker =>
-                broker.GetCurrentUserAsync(),
-                    Times.Exactly(2));
+            this.securityAuditBrokerMock.Verify(broker =>
+                broker.GetUserIdAsync(),
+                    Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>
                 broker.LogErrorAsync(It.Is(SameExceptionAs(
                     expectedDataSetSpecificationValidationException))),
                         Times.Once);
 
+            this.securityAuditBrokerMock.VerifyNoOtherCalls();
             this.storageBrokerMock.VerifyNoOtherCalls();
             this.dateTimeBrokerMock.VerifyNoOtherCalls();
-            this.securityBrokerMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
         }
     }

@@ -15,7 +15,8 @@ namespace LHDS.Core.Services.Foundations.SpecificationObjects
     {
         private async ValueTask ValidateSpecificationObjectOnAddAsync(SpecificationObject specificationObject)
         {
-            EntraUser currentUser = await this.securityBroker.GetCurrentUserAsync();
+            ValidateSpecificationObjectIsNotNull(specificationObject);
+            string currentUserId = await this.securityAuditBroker.GetUserIdAsync();
 
             Validate(
                 createException: () => new InvalidSpecificationObjectException(
@@ -63,7 +64,7 @@ namespace LHDS.Core.Services.Foundations.SpecificationObjects
                     specificationObject.UpdatedBy, 255), Parameter: nameof(specificationObject.UpdatedBy)),
 
                 (Rule: IsNotSame(
-                    first: currentUser.EntraUserId,
+                    first: currentUserId,
                     second: specificationObject.CreatedBy),
                 Parameter: nameof(SpecificationObject.CreatedBy)),
 
@@ -85,7 +86,8 @@ namespace LHDS.Core.Services.Foundations.SpecificationObjects
 
         private async ValueTask ValidateSpecificationObjectOnModifyAsync(SpecificationObject specificationObject)
         {
-            EntraUser currentUser = await this.securityBroker.GetCurrentUserAsync();
+            ValidateSpecificationObjectIsNotNull(specificationObject);
+            string currentUserId = await this.securityAuditBroker.GetUserIdAsync();
 
             Validate(
                 createException: () => new InvalidSpecificationObjectException(
@@ -133,7 +135,7 @@ namespace LHDS.Core.Services.Foundations.SpecificationObjects
                     specificationObject.UpdatedBy, 255), Parameter: nameof(specificationObject.UpdatedBy)),
 
                 (Rule: IsNotSame(
-                    first: currentUser.EntraUserId,
+                    first: currentUserId,
                     second: specificationObject.UpdatedBy),
                 Parameter: nameof(SpecificationObject.UpdatedBy)),
 
@@ -150,7 +152,7 @@ namespace LHDS.Core.Services.Foundations.SpecificationObjects
         private async ValueTask ValidateAgainstStorageSpecificationObjectOnDeleteAsync(
             SpecificationObject dataSet, SpecificationObject maybeSpecificationObject)
         {
-            EntraUser auditUser = await this.securityBroker.GetCurrentUserAsync();
+            string auditUserId = await this.securityAuditBroker.GetUserIdAsync();
 
             Validate(
                 createException: () => new InvalidSpecificationObjectException(
@@ -175,7 +177,7 @@ namespace LHDS.Core.Services.Foundations.SpecificationObjects
                  Parameter: nameof(SpecificationObject.UpdatedDate)),
 
                 (Rule: IsNotSame(
-                    auditUser.EntraUserId.ToString(),
+                    auditUserId,
                     dataSet.UpdatedBy,
                     nameof(SpecificationObject.UpdatedBy)),
                  Parameter: nameof(SpecificationObject.UpdatedBy))

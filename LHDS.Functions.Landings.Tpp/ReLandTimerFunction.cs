@@ -29,7 +29,7 @@ namespace LHDS.Functions.Landings.Tpp
         }
 
         [Function("ReLandTimerFunction")]
-        public async Task Run([TimerTrigger("0 */15 * * * *")] MyInfo myTimer)
+        public async Task Run([TimerTrigger("%reLandTimerInterval%")] MyInfo myTimer)
         {
             await loggingBroker.LogInformationAsync($"C# Timer trigger function executed at: {DateTime.Now}");
 

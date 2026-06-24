@@ -1,0 +1,15 @@
+{
+  "skill": "the-standard-core",
+  "rules": [
+    { "id": "ts-core-001", "severity": "ERROR", "category": "Purpose & Single Responsibility", "rule": "Every component must serve a single, clearly defined purpose; split any component that serves more than one." },
+    { "id": "ts-core-002", "severity": "ERROR", "category": "Purpose & Single Responsibility", "rule": "Model every real-world concept using the tri-nature structure: Purpose (0/), Dependency (1/), Exposure (2/)." },
+    { "id": "ts-core-003", "severity": "ERROR", "category": "Purpose & Single Responsibility", "rule": "Simulate (write a failing test for) every behavior before implementing it." },
+    { "id": "ts-core-004", "severity": "ERROR", "category": "Naming", "rule": "Name every type, method, parameter, and variable using full, non-abbreviated plain English words." },
+    { "id": "ts-core-005", "severity": "ERROR", "category": "Naming", "rule": "Use domain language for business concepts; use technical language only for infrastructure concerns." },
+    { "id": "ts-core-006", "severity": "ERROR", "category": "Layering Principles", "rule": "Apply the Purity principle: broker implementations must contain zero business logic; service implementations must contain zero infrastructure code." },
+    { "id": "ts-core-007", "severity": "ERROR", "category": "Layering Principles", "rule": "Apply the Realism principle: every model must represent a real-world concept." },
+    { "id": "ts-core-008", "severity": "ERROR", "category": "Layering Principles", "rule": "Apply the Fitness principle: a component must not perform responsibilities assigned to a different layer." },
+    { "id": "ts-core-009", "severity": "ERROR", "category": "Layering Principles", "rule": "Apply the Enclosure principle: components must expose only the minimum contract necessary to fulfil their purpose." },
+    { "id": "ts-core-010", "severity": "WARN",  "category": "Layering Principles", "rule": "Apply the Continuance principle: every component must be replaceable without changing its consumers." }
+  ]
+}

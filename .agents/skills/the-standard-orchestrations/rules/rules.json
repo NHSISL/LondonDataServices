@@ -1,0 +1,11 @@
+{
+  "skill": "the-standard-orchestrations",
+  "rules": [
+    { "id": "ts-orchestrations-001", "severity": "ERROR", "category": "Design", "rule": "Orchestration services must coordinate two or more foundation or processing services to fulfil a multi-entity business requirement." },
+    { "id": "ts-orchestrations-002", "severity": "ERROR", "category": "Design", "rule": "Orchestration services must expose named business-operation methods reflecting the multi-entity workflow." },
+    { "id": "ts-orchestrations-003", "severity": "ERROR", "category": "Design", "rule": "Orchestration services must depend only on foundation services, processing services, or other orchestration services — never on brokers." },
+    { "id": "ts-orchestrations-004", "severity": "ERROR", "category": "Design", "rule": "Cross-entity validation and business rules must be handled at the orchestration layer." },
+    { "id": "ts-orchestrations-005", "severity": "ERROR", "category": "Testing", "rule": "Every behavior must have a failing test written before the implementation (TDD)." },
+    { "id": "ts-orchestrations-006", "severity": "ERROR", "category": "Testing", "rule": "All test inputs and outputs must be randomized; expected variables must use DeepClone()." }
+  ]
+}

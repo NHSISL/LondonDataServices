@@ -45,7 +45,7 @@ namespace LHDS.AdminPortal.Api.Tests.Unit.Controllers.TerminologyArtifacts
 
             this.terminologyArtifactsServiceMock.Verify(service =>
                 service.RetrieveAllTerminologyArtifactsAsync(),
-                    Times.Once());
+                    Times.Once);
 
             this.terminologyArtifactsServiceMock.VerifyNoOtherCalls();
         }

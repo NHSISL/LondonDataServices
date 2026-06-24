@@ -1,0 +1,11 @@
+{
+  "name": "the-standard-versioning",
+  "version": "0.1.0",
+  "description": "Enforces SPAL broker versioning, semantic versioning for packages, and URL path versioning for RESTful APIs.",
+  "the_standard_version": "v2.50.0",
+  "skill_version": "v0.1.0",
+  "inputs": ["C# source file", ".csproj file", "API controller file"],
+  "outputs": ["Correctly versioned code and packages", "review feedback"],
+  "dependencies": ["the-standard-core", "the-standard-brokers"],
+  "applies_to": ["*.cs", "*.csproj"]
+}

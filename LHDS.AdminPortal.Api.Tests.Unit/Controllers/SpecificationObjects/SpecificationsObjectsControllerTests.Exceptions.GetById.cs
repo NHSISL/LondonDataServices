@@ -80,7 +80,7 @@ namespace LHDS.AdminPortal.Api.Tests.Unit.Controllers.SpecificationObjects
 
             this.specificationObjectServiceMock.Verify(service =>
                 service.RetrieveSpecificationObjectByIdAsync(It.IsAny<Guid>()),
-                    Times.Once());
+                    Times.Once);
 
             this.specificationObjectServiceMock.VerifyNoOtherCalls();
         }

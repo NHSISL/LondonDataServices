@@ -37,7 +37,9 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Mesh
 
             // when
             ValueTask<bool> retrieveAknowledgeMessageByIdTask =
-                this.meshService.AcknowledgeMessageByIdAsync(messageId);
+                this.meshService.AcknowledgeMessageByIdAsync(
+                    messageId,
+                    TestContext.Current.CancellationToken);
 
             MeshValidationException actualMeshValidationException =
                 await Assert.ThrowsAsync<MeshValidationException>(

@@ -9,7 +9,6 @@ using System.Threading.Tasks;
 using Microsoft.ApplicationInsights;
 using Microsoft.ApplicationInsights.DataContracts;
 using Microsoft.ApplicationInsights.Extensibility;
-using Microsoft.ApplicationInsights.Extensibility.Implementation;
 using Microsoft.ApplicationInsights.Metrics;
 using Microsoft.Extensions.Configuration;
 
@@ -22,22 +21,8 @@ namespace LHDS.Core.Brokers.Telemetries
         public TelemetryBroker(IConfiguration configuration)
         {
             string connectionString = configuration["ApplicationInsights:ConnectionString"];
-            bool.TryParse(configuration["ApplicationInsights:EnableAdaptiveSampling"], out bool enableAdaptiveSampling);
-            bool.TryParse(configuration["ApplicationInsights:EnableDebugLogger"], out bool enableDebugLogger);
             var telemetryConfiguration = TelemetryConfiguration.CreateDefault();
             telemetryConfiguration.ConnectionString = connectionString;
-
-            if (!enableAdaptiveSampling)
-            {
-                telemetryConfiguration.DefaultTelemetrySink.TelemetryProcessorChainBuilder
-                    .Use(next => new PassThroughProcessor(next));
-            }
-
-            if (enableDebugLogger)
-            {
-                TelemetryDebugWriter.IsTracingDisabled = false;
-            }
-
             this.telemetryClient = new TelemetryClient(telemetryConfiguration);
         }
 
@@ -53,10 +38,7 @@ namespace LHDS.Core.Brokers.Telemetries
             IDictionary<string, string> properties = null,
             IDictionary<string, double> metrics = null)
         {
-            this.telemetryClient.TrackEvent(
-                eventName,
-                properties,
-                metrics);
+            this.telemetryClient.TrackEvent(eventName, properties);
         }
 
         /// <summary>
@@ -146,7 +128,7 @@ namespace LHDS.Core.Brokers.Telemetries
             Exception exception,
             IDictionary<string, string> properties = null,
             IDictionary<string, double> metrics = null) =>
-                this.telemetryClient.TrackException(exception, properties, metrics);
+                this.telemetryClient.TrackException(exception, properties);
 
         /// <summary>
         /// Tracks an exception using an ExceptionTelemetry instance.
@@ -244,30 +226,6 @@ namespace LHDS.Core.Brokers.Telemetries
             this.telemetryClient.GetMetric(metricId);
 
         /// <summary>
-        /// Gets or creates a metric container by ID with configuration.
-        /// </summary>
-        /// <param name="metricId">The ID (name) of the metric.</param>
-        /// <param name="metricConfiguration">Configuration for aggregating values.</param>
-        /// <returns>A configured Metric with the specified ID.</returns>
-        public async ValueTask<Metric> GetMetricAsync(
-            string metricId,
-            MetricConfiguration metricConfiguration) =>
-                this.telemetryClient.GetMetric(metricId, metricConfiguration);
-
-        /// <summary>
-        /// Gets or creates a metric container with ID, configuration, and aggregation scope.
-        /// </summary>
-        /// <param name="metricId">The ID of the metric.</param>
-        /// <param name="metricConfiguration">Metric configuration settings.</param>
-        /// <param name="aggregationScope">The memory aggregation scope.</param>
-        /// <returns>A Metric with the specified configuration and scope.</returns>
-        public async ValueTask<Metric> GetMetricAsync(
-            string metricId,
-            MetricConfiguration metricConfiguration,
-            MetricAggregationScope aggregationScope) =>
-                this.telemetryClient.GetMetric(metricId, metricConfiguration, aggregationScope);
-
-        /// <summary>
         /// Gets or creates a metric container by ID with a single dimension.
         /// </summary>
         /// <param name="metricId">The metric ID.</param>
@@ -277,34 +235,6 @@ namespace LHDS.Core.Brokers.Telemetries
             string metricId,
             string dimension1Name) =>
                 this.telemetryClient.GetMetric(metricId, dimension1Name);
-
-        /// <summary>
-        /// Gets or creates a metric container with one dimension and configuration.
-        /// </summary>
-        /// <param name="metricId">The metric ID.</param>
-        /// <param name="dimension1Name">The first dimension name.</param>
-        /// <param name="metricConfiguration">Metric configuration options.</param>
-        /// <returns>A Metric configured for one dimension.</returns>
-        public async ValueTask<Metric> GetMetricAsync(
-            string metricId,
-            string dimension1Name,
-            MetricConfiguration metricConfiguration) =>
-                this.telemetryClient.GetMetric(metricId, dimension1Name, metricConfiguration);
-
-        /// <summary>
-        /// Gets or creates a metric container with one dimension, configuration, and aggregation scope.
-        /// </summary>
-        /// <param name="metricId">Metric ID.</param>
-        /// <param name="dimension1Name">Dimension name.</param>
-        /// <param name="metricConfiguration">Configuration object.</param>
-        /// <param name="aggregationScope">Aggregation scope for the metric.</param>
-        /// <returns>A configured Metric object.</returns>
-        public async ValueTask<Metric> GetMetricAsync(
-            string metricId,
-            string dimension1Name,
-            MetricConfiguration metricConfiguration,
-            MetricAggregationScope aggregationScope) =>
-                this.telemetryClient.GetMetric(metricId, dimension1Name, metricConfiguration, aggregationScope);
 
         /// <summary>
         /// Gets or creates a metric container with two dimensions.
@@ -320,74 +250,11 @@ namespace LHDS.Core.Brokers.Telemetries
                 this.telemetryClient.GetMetric(metricId, dimension1Name, dimension2Name);
 
         /// <summary>
-        /// Gets or creates a metric container with two dimensions and configuration.
-        /// </summary>
-        /// <param name="metricId">Metric ID.</param>
-        /// <param name="dimension1Name">First dimension.</param>
-        /// <param name="dimension2Name">Second dimension.</param>
-        /// <param name="metricConfiguration">Metric configuration.</param>
-        /// <returns>A Metric with two dimensions.</returns>
-        public async ValueTask<Metric> GetMetricAsync(
-            string metricId,
-            string dimension1Name,
-            string dimension2Name,
-            MetricConfiguration metricConfiguration) =>
-                this.telemetryClient.GetMetric(metricId, dimension1Name, dimension2Name, metricConfiguration);
-
-        /// <summary>
-        /// Gets or creates a metric container with two dimensions, configuration, and scope.
-        /// </summary>
-        /// <param name="metricId">Metric ID.</param>
-        /// <param name="dimension1Name">Dimension 1.</param>
-        /// <param name="dimension2Name">Dimension 2.</param>
-        /// <param name="metricConfiguration">Configuration.</param>
-        /// <param name="aggregationScope">Scope for aggregation.</param>
-        /// <returns>A Metric object.</returns>
-        public async ValueTask<Metric> GetMetricAsync(
-            string metricId,
-            string dimension1Name,
-            string dimension2Name,
-            MetricConfiguration metricConfiguration,
-            MetricAggregationScope aggregationScope)
-        {
-            return this.telemetryClient.GetMetric(
-                metricId,
-                dimension1Name,
-                dimension2Name,
-                metricConfiguration,
-                aggregationScope);
-        }
-
-        /// <summary>
         /// Gets or creates a metric using a MetricIdentifier.
         /// </summary>
         /// <param name="metricIdentifier">The metric identifier object.</param>
         /// <returns>The metric object.</returns>
         public async ValueTask<Metric> GetMetricAsync(MetricIdentifier metricIdentifier) =>
             this.telemetryClient.GetMetric(metricIdentifier);
-
-        /// <summary>
-        /// Gets or creates a metric using MetricIdentifier and configuration.
-        /// </summary>
-        /// <param name="metricIdentifier">Metric identifier.</param>
-        /// <param name="metricConfiguration">Metric configuration object.</param>
-        /// <returns>The configured metric.</returns>
-        public async ValueTask<Metric> GetMetricAsync(
-            MetricIdentifier metricIdentifier,
-            MetricConfiguration metricConfiguration) =>
-                this.telemetryClient.GetMetric(metricIdentifier, metricConfiguration);
-
-        /// <summary>
-        /// Gets or creates a metric with MetricIdentifier, configuration, and aggregation scope.
-        /// </summary>
-        /// <param name="metricIdentifier">Identifier object.</param>
-        /// <param name="metricConfiguration">Configuration settings.</param>
-        /// <param name="aggregationScope">Aggregation scope type.</param>
-        /// <returns>The final metric object.</returns>
-        public async ValueTask<Metric> GetMetricAsync(
-            MetricIdentifier metricIdentifier,
-            MetricConfiguration metricConfiguration,
-            MetricAggregationScope aggregationScope) =>
-                this.telemetryClient.GetMetric(metricIdentifier, metricConfiguration, aggregationScope);
     }
 }

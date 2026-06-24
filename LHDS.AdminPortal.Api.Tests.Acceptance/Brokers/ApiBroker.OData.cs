@@ -17,5 +17,8 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Brokers
 
             return response.Items;
         }
+
+        public async ValueTask<OdataResponse<T>> GetOdataResponseAsync<T>(string relativeOdataUrl) =>
+            await this.apiFactoryClient.GetContentAsync<OdataResponse<T>>($"{relativeOdataUrl}");
     }
 }

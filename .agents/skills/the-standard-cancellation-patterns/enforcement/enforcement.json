@@ -1,0 +1,66 @@
+{
+  "skill": "the-standard-cancellation-patterns",
+  "version": "0.1.0",
+  "enforcement": [
+    {
+      "rule_id": "tsc-csharp-cp-001",
+      "check": "CancellationToken is the last parameter in all async method signatures.",
+      "action": "block"
+    },
+    {
+      "rule_id": "tsc-csharp-cp-002",
+      "check": "CancellationToken parameter has a default value of `default`.",
+      "action": "block"
+    },
+    {
+      "rule_id": "tsc-csharp-cp-003",
+      "check": "CancellationToken parameter is not declared as nullable (CancellationToken?).",
+      "action": "block"
+    },
+    {
+      "rule_id": "tsc-csharp-cp-004",
+      "check": "CancellationToken parameter is named `cancellationToken` — not `ct`, `token`, or `cancelToken`.",
+      "action": "block"
+    },
+    {
+      "rule_id": "tsc-csharp-cp-007",
+      "check": "CancellationToken is forwarded to all downstream async calls — not silently omitted.",
+      "action": "block"
+    },
+    {
+      "rule_id": "tsc-csharp-cp-017",
+      "check": "cancellationToken.ThrowIfCancellationRequested() is called before dependency or long-running operations in any method accepting CancellationToken.",
+      "action": "block"
+    },
+    {
+      "rule_id": "tsc-csharp-cp-010",
+      "check": "When a timeoutSource exists, catch (OperationCanceledException) when (timeoutSource.IsCancellationRequested) precedes plain catch (OperationCanceledException).",
+      "action": "block"
+    },
+    {
+      "rule_id": "tsc-csharp-cp-012",
+      "check": "OperationCanceledException is not wrapped in any other exception type.",
+      "action": "block"
+    },
+    {
+      "rule_id": "tsc-csharp-cp-013",
+      "check": "No catch (OperationCanceledException) { throw; } block is present when no timeoutSource exists.",
+      "action": "warn"
+    },
+    {
+      "rule_id": "tsc-csharp-cp-014",
+      "check": "All tasks in a Task.WhenAll call receive the same CancellationToken.",
+      "action": "block"
+    },
+    {
+      "rule_id": "tsc-csharp-cp-015",
+      "check": "Theory MemberData for dependency exception tests includes TimeoutException.",
+      "action": "warn"
+    },
+    {
+      "rule_id": "tsc-csharp-cp-016",
+      "check": "A test asserts that OperationCanceledException propagates as-is — not wrapped.",
+      "action": "warn"
+    }
+  ]
+}

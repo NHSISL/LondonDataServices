@@ -1,0 +1,17 @@
+{
+  "name": "the-standard-reacttypescript-brokers",
+  "version": "0.1.0",
+  "description": "Enforces broker single-responsibility, no-business-rules, no-component-shaping, and interface-replaceability for Standard-compliant React + TypeScript + Vite projects.",
+  "standard_version": "v0.1.0",
+  "skill_version": "v0.1.0",
+  "inputs": ["Broker TypeScript files in src/brokers/**/*"],
+  "outputs": [
+    "Thin, replaceable broker classes wrapping one external concern",
+    "Review feedback citing rule IDs"
+  ],
+  "dependencies": [
+    "the-standard-reacttypescript-files",
+    "the-standard-reacttypescript-models"
+  ],
+  "applies_to": ["src/brokers/**/*"]
+}

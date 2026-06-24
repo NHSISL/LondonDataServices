@@ -1,0 +1,17 @@
+{
+  "name": "the-standard-reacttypescript-async",
+  "version": "0.1.0",
+  "description": "Governs async state coverage, stale update protection, correct Promise.all usage, sequential vs. parallel execution, and rejection handling.",
+  "standard_version": "v0.1.0",
+  "skill_version": "v0.1.0",
+  "inputs": ["TypeScript and TSX files with async operations"],
+  "outputs": [
+    "Safe async code with explicit states, stale protection, and no ignored rejections",
+    "Review feedback citing rule IDs"
+  ],
+  "dependencies": [
+    "the-standard-reacttypescript-hooks",
+    "the-standard-reacttypescript-errors"
+  ],
+  "applies_to": ["*.ts", "*.tsx"]
+}

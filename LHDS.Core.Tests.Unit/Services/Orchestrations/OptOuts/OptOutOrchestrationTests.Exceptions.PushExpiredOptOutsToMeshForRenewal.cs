@@ -1,4 +1,4 @@
-﻿// ---------------------------------------------------------
+// ---------------------------------------------------------
 // Copyright (c) North East London ICB. All rights reserved.
 // ---------------------------------------------------------
 
@@ -34,7 +34,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
 
             // When
             ValueTask<MeshMessage> pushExpiredOptOutsToMeshIfExpiredTask =
-                this.optOutOrchestrationService.PushExpiredOptOutsToMeshForRenewalAsync();
+                this.optOutOrchestrationService.PushExpiredOptOutsToMeshForRenewalAsync(TestContext.Current.CancellationToken);
 
             OptOutOrchestrationDependencyValidationException actualException =
                 await Assert.ThrowsAsync<OptOutOrchestrationDependencyValidationException>(
@@ -80,7 +80,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
 
             // When
             ValueTask<MeshMessage> pushExpiredOptOutsToMeshIfExpiredTask =
-                this.optOutOrchestrationService.PushExpiredOptOutsToMeshForRenewalAsync();
+                this.optOutOrchestrationService.PushExpiredOptOutsToMeshForRenewalAsync(TestContext.Current.CancellationToken);
 
             OptOutOrchestrationDependencyException actualException =
                 await Assert.ThrowsAsync<OptOutOrchestrationDependencyException>(
@@ -130,7 +130,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
 
             // when
             ValueTask<MeshMessage> pushExpiredOptOutsToMeshIfExpiredTask =
-                this.optOutOrchestrationService.PushExpiredOptOutsToMeshForRenewalAsync();
+                this.optOutOrchestrationService.PushExpiredOptOutsToMeshForRenewalAsync(TestContext.Current.CancellationToken);
 
             OptOutOrchestrationServiceException actualException =
                 await Assert.ThrowsAsync<OptOutOrchestrationServiceException>(

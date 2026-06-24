@@ -7,14 +7,12 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using FluentAssertions;
 using LHDS.Core.Models.Foundations.Suppliers;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
-using Xunit;
 
 namespace LHDS.Core.Tests.Integration.EmisLandings
 {
     public partial class LandingTests
     {
-        [Fact]
+        [ReleaseCandidateFact]
         public async Task ShouldLandFilesAsync()
         {
             try

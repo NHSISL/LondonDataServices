@@ -1,0 +1,47 @@
+{
+  "skill": "the-standard-reacttypescript-pages",
+  "rules": [
+    {
+      "id": "tsr-pages-001",
+      "severity": "ERROR",
+      "category": "Route Responsibility",
+      "rule": "A page must represent a route or screen."
+    },
+    {
+      "id": "tsr-pages-002",
+      "severity": "ERROR",
+      "category": "View Service Access",
+      "rule": "A page may call a view service only through a dedicated page hook."
+    },
+    {
+      "id": "tsr-pages-003",
+      "severity": "ERROR",
+      "category": "No Broker Calls",
+      "rule": "A page must not call brokers or make HTTP requests directly."
+    },
+    {
+      "id": "tsr-pages-004",
+      "severity": "ERROR",
+      "category": "No Business Rules",
+      "rule": "A page must not contain business rules."
+    },
+    {
+      "id": "tsr-pages-005",
+      "severity": "ERROR",
+      "category": "State Coordination",
+      "rule": "A page must handle loading, error, and empty states explicitly."
+    },
+    {
+      "id": "tsr-pages-006",
+      "severity": "ERROR",
+      "category": "Component Composition",
+      "rule": "A page must compose named components for its content."
+    },
+    {
+      "id": "tsr-pages-007",
+      "severity": "ERROR",
+      "category": "View Service Delegation",
+      "rule": "A page must delegate all complex data preparation to a view service via its hook."
+    }
+  ]
+}

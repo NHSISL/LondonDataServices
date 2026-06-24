@@ -15,6 +15,9 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Models.OdataResponses
         [JsonProperty("@odata.count")]
         public int? TotalItemsCount { get; set; }
 
+        [JsonProperty("@odata.nextLink")]
+        public string? NextLink { get; set; }
+
         [JsonProperty("value")]
         public List<TItem> Items { get; set; } = null!;
     }

@@ -1,0 +1,12 @@
+{
+  "skill": "the-standard-reacttypescript-routing",
+  "version": "1.0.0",
+  "structure": {
+    "centralized_routes_file": "src/app/routes.tsx",
+    "route_targets": "page components only ({Domain}Page.tsx)",
+    "guards": {
+      "access_decision": "delegated to authorization service",
+      "inline_role_check": "forbidden"
+    }
+  }
+}

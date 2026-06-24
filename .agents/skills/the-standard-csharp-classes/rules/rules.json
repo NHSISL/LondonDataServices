@@ -1,0 +1,14 @@
+{
+  "skill": "the-standard-csharp-classes",
+  "rules": [
+    { "id": "tsc-csharp-classes-001", "severity": "ERROR", "category": "Class Naming", "rule": "Model classes must be named in the singular with no type suffix (Student, not StudentModel)." },
+    { "id": "tsc-csharp-classes-002", "severity": "ERROR", "category": "Class Naming", "rule": "Service classes must be named in the singular with the Service suffix (StudentService, not StudentsService or StudentBL)." },
+    { "id": "tsc-csharp-classes-003", "severity": "ERROR", "category": "Class Naming", "rule": "Broker classes must be named in the singular with the Broker suffix (StudentBroker, not StudentsBroker)." },
+    { "id": "tsc-csharp-classes-004", "severity": "ERROR", "category": "Class Naming", "rule": "Controller classes must be named in the plural with the Controller suffix (StudentsController, not StudentController)." },
+    { "id": "tsc-csharp-classes-005", "severity": "ERROR", "category": "Fields", "rule": "Class fields must be named in camelCase (studentName, not StudentName or _studentName)." },
+    { "id": "tsc-csharp-classes-006", "severity": "ERROR", "category": "Fields", "rule": "Private class fields must be referenced using the this. keyword." },
+    { "id": "tsc-csharp-classes-007", "severity": "ERROR", "category": "Instantiation", "rule": "When passing literal values to a constructor, named aliases must be used." },
+    { "id": "tsc-csharp-classes-008", "severity": "ERROR", "category": "Instantiation", "rule": "Property assignment in object initializer syntax must follow the same order as class property declarations." },
+    { "id": "tsc-csharp-classes-009", "severity": "ERROR", "category": "Instantiation", "rule": "Must not use target-typed new (Student student = new (...)). Use var student = new Student(...) when type is clear." }
+  ]
+}

@@ -1,0 +1,26 @@
+{
+  "skill": "the-standard-team-core",
+  "version": "0.1.0",
+  "purpose_document": {
+    "required_sections": ["Business Nature", "Business Goals", "Future Considerations"],
+    "language": "non-technical",
+    "audience": "all stakeholders including non-engineers"
+  },
+  "scenarios": {
+    "format": "BDD",
+    "required_clauses": ["GIVEN", "WHEN", "THEN"],
+    "clause_semantics": {
+      "GIVEN": "actor — who is performing the action",
+      "WHEN": "interaction — what the actor intends to do",
+      "THEN": "outcome — what the actor expects as a result"
+    },
+    "forbidden_content": [
+      "API endpoints",
+      "HTTP status codes",
+      "database schema terms",
+      "UI component names",
+      "implementation details"
+    ],
+    "chaining_allowed": true
+  }
+}

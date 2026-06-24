@@ -27,7 +27,7 @@ namespace LHDS.Core.Tests.Acceptance.Clients.Addresses
                 $"Resource{separator}Clients{separator}Address{separator}" +
                     "ShouldProcessZipFileWithAddressCsvFiles.zip");
 
-            byte[] inputData = await File.ReadAllBytesAsync(inputFilePath);
+            byte[] inputData = await File.ReadAllBytesAsync(inputFilePath, TestContext.Current.CancellationToken);
             Stream inputStream = new MemoryStream(inputData);
 
             string csvFolderPath = Path.Combine(

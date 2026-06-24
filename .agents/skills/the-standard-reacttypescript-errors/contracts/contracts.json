@@ -1,0 +1,21 @@
+{
+  "skill": "the-standard-reacttypescript-errors",
+  "version": "1.0.0",
+  "structure": {
+    "error_flow": [
+      "Broker throws raw or minimally wrapped error",
+      "Foundation service catches and re-throws as domain exception",
+      "View service optionally converts to view-friendly error model",
+      "Page hook catches and stores in error state",
+      "Page renders error state through ErrorSummary component",
+      "Component receives structured error field — never inspects raw error"
+    ],
+    "forbidden_patterns": [
+      "empty catch block",
+      "catch { return null; }",
+      "error.status in component",
+      "error.code in component",
+      "raw HTTP error propagated to view layer"
+    ]
+  }
+}

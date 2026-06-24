@@ -1,0 +1,15 @@
+{
+  "skill": "the-standard-brokers",
+  "rules": [
+    { "id": "ts-brokers-001", "severity": "ERROR", "category": "Design", "rule": "Brokers must be thin wrappers over external resources and must contain zero business logic." },
+    { "id": "ts-brokers-002", "severity": "ERROR", "category": "Design", "rule": "Broker interface names must be technology-agnostic (e.g., IStorageBroker, not ISqlStorageBroker)." },
+    { "id": "ts-brokers-003", "severity": "ERROR", "category": "Language", "rule": "Storage broker methods must use storage language: InsertAsync, SelectAsync, SelectAllAsync, UpdateAsync, DeleteAsync." },
+    { "id": "ts-brokers-004", "severity": "ERROR", "category": "Language", "rule": "API broker methods must use RESTful language: PostAsync, GetAsync, PutAsync, DeleteAsync." },
+    { "id": "ts-brokers-005", "severity": "ERROR", "category": "Language", "rule": "Queue broker methods must use queue language: EnqueueAsync, DequeueAsync." },
+    { "id": "ts-brokers-006", "severity": "ERROR", "category": "Contracts", "rule": "Broker input parameters must be primitive types or native models; must not accept upstream service-layer models." },
+    { "id": "ts-brokers-007", "severity": "ERROR", "category": "Contracts", "rule": "Brokers must return the raw external resource response without transformation." },
+    { "id": "ts-brokers-008", "severity": "ERROR", "category": "Contracts", "rule": "Configuration values must be retrieved via IConfiguration injected through the constructor." },
+    { "id": "ts-brokers-009", "severity": "ERROR", "category": "Design", "rule": "Brokers supporting multiple entities must be implemented as partial classes." },
+    { "id": "ts-brokers-010", "severity": "WARN",  "category": "Versioning", "rule": "Broker contracts must be versioned using the SPAL strategy when breaking changes are introduced." }
+  ]
+}

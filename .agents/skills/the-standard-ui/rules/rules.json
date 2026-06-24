@@ -1,0 +1,12 @@
+{
+  "skill": "the-standard-ui",
+  "rules": [
+    { "id": "ts-ui-001", "severity": "ERROR", "category": "Separation of Concerns", "rule": "Component C# logic must be placed in a ComponentBase class; .razor files must contain markup and minimal binding expressions only." },
+    { "id": "ts-ui-002", "severity": "ERROR", "category": "Separation of Concerns", "rule": "Component base class names must use the Base suffix (e.g., StudentComponentBase)." },
+    { "id": "ts-ui-003", "severity": "ERROR", "category": "Separation of Concerns", "rule": "Each component must govern exactly one UI concern; split components with multiple concerns." },
+    { "id": "ts-ui-004", "severity": "ERROR", "category": "Dependencies", "rule": "Component base classes must call only UI broker or service interfaces; direct broker access is forbidden." },
+    { "id": "ts-ui-005", "severity": "ERROR", "category": "Organization", "rule": "Pages must be organized under a Pages/ folder; reusable components must be organized under a Components/ folder." },
+    { "id": "ts-ui-006", "severity": "ERROR", "category": "Unobtrusiveness", "rule": "Components must not contain inline styles; all styling must be in external CSS or CSS isolation files." },
+    { "id": "ts-ui-007", "severity": "WARN",  "category": "Unobtrusiveness", "rule": "Components must not contain hard-coded string literals; extract to constants or resource files." }
+  ]
+}

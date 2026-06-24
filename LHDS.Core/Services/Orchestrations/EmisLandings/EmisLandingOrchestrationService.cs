@@ -6,6 +6,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Security.Cryptography;
 using System.Threading.Tasks;
 using LHDS.Core.Brokers.DateTimes;
 using LHDS.Core.Brokers.Files;
@@ -386,16 +387,16 @@ namespace LHDS.Core.Services.Orchestrations.Downloads
                     using (FileStream readFtpFileStream =
                         new FileStream(tempEncryptedFilePath, FileMode.Open, FileAccess.ReadWrite))
                     {
-                        string encryptedFileSha256Hash =
-                            await this.hashBroker.GenerateSha256HashAsync(readFtpFileStream);
-
-                        updatedIngestionTracking.EncryptedFileSize = readFtpFileStream.Length;
-                        updatedIngestionTracking.EncryptedFileSha256Hash = encryptedFileSha256Hash;
+                        IHashingCountingBroker hashingCountingBroker =
+                            new HashingCountingBroker(readFtpFileStream, HashAlgorithmName.SHA256);
 
                         await this.documentProcessingService.AddDocumentAsync(
-                            input: readFtpFileStream,
+                            input: hashingCountingBroker.AsStream(),
                             fileName: updatedIngestionTracking.EncryptedFileName,
                             container: blobContainers.EmisLanding);
+
+                        updatedIngestionTracking.EncryptedFileSize = hashingCountingBroker.BytesRead;
+                        updatedIngestionTracking.EncryptedFileSha256Hash = hashingCountingBroker.GetFinalHashHex();
                     }
 
                     await LogAudit(

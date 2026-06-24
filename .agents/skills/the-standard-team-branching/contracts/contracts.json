@@ -1,0 +1,55 @@
+{
+  "skill": "the-standard-team-branching",
+  "version": "0.1.0",
+  "branch_naming": {
+    "pattern": "users/[username]/[category]-[entity]-[action]",
+    "segments": {
+      "users": "literal prefix — always 'users'",
+      "username": "contributor's GitHub username",
+      "category": "approved category from category list (CAPS)",
+      "entity": "model, service, or component name (PascalCase recommended)",
+      "action": "verb describing the operation (e.g., Add, Update, Remove)"
+    }
+  },
+  "approved_categories": [
+    "INFRA", "MAJOR INFRA", "MEDIUM INFRA", "MINOR INFRA",
+    "PROVISIONS", "RELEASES",
+    "DATA", "MAJOR DATA",
+    "BROKERS", "MAJOR BROKERS", "MEDIUM BROKERS", "MINOR BROKERS",
+    "FOUNDATIONS", "MAJOR FOUNDATIONS", "MEDIUM FOUNDATIONS", "MINOR FOUNDATIONS",
+    "PROCESSINGS", "MAJOR PROCESSINGS", "MEDIUM PROCESSINGS", "MINOR PROCESSINGS",
+    "ORCHESTRATIONS", "MAJOR ORCHESTRATIONS", "MEDIUM ORCHESTRATIONS", "MINOR ORCHESTRATIONS",
+    "COORDINATIONS", "MAJOR COORDINATIONS", "MEDIUM COORDINATIONS", "MINOR COORDINATIONS",
+    "MANAGEMENTS", "MAJOR MANAGEMENTS", "MEDIUM MANAGEMENTS", "MINOR MANAGEMENTS",
+    "AGGREGATIONS", "MAJOR AGGREGATIONS", "MEDIUM AGGREGATIONS", "MINOR AGGREGATIONS",
+    "CONTROLLERS", "MAJOR CONTROLLERS", "MEDIUM CONTROLLERS", "MINOR CONTROLLERS",
+    "CLIENTS", "MAJOR CLIENTS", "MEDIUM CLIENTS", "MINOR CLIENTS",
+    "EXPOSERS", "MAJOR EXPOSERS", "MEDIUM EXPOSERS", "MINOR EXPOSERS",
+    "VIEWS", "MAJOR VIEWS", "MEDIUM VIEWS", "MINOR VIEWS",
+    "BASES", "MAJOR BASES", "MEDIUM BASES", "MINOR BASES",
+    "COMPONENTS", "MAJOR COMPONENTS", "MEDIUM COMPONENTS", "MINOR COMPONENTS",
+    "PAGES", "MAJOR PAGES", "MEDIUM PAGES", "MINOR PAGES",
+    "ACCEPTANCE", "MAJOR ACCEPTANCE", "MEDIUM ACCEPTANCE", "MINOR ACCEPTANCE",
+    "INTEGRATION", "MAJOR INTEGRATION", "MEDIUM INTEGRATION", "MINOR INTEGRATION",
+    "CODE RUB", "MAJOR CODE RUB", "MEDIUM CODE RUB", "MINOR CODE RUB",
+    "MINOR FIX", "MEDIUM FIX", "MAJOR FIX",
+    "DOCUMENTATION", "CONFIG", "REVIEW", "STANDARD",
+    "DESIGN", "MAJOR DESIGN", "MEDIUM DESIGN", "MINOR DESIGN",
+    "BUSINESS", "IMPORT", "STATUS",
+    "PLANNING", "MAJOR PLANNING", "MEDIUM PLANNING", "MINOR PLANNING",
+    "MENTORSHIP", "MAJOR MENTORSHIP", "MINOR MENTORSHIP",
+    "DISCUSSION", "MAJOR DISCUSSION", "MINOR DISCUSSION",
+    "PROVISION", "RELEASE"
+  ],
+  "forking_workflow": {
+    "steps": [
+      "Fork the official repository on GitHub",
+      "Clone the fork to local machine",
+      "Create a feature branch using the approved naming pattern",
+      "Make changes on the feature branch",
+      "Commit changes with compliant commit messages",
+      "Push the branch to the fork (not the official repo)",
+      "Open a pull request from the fork branch to the official repository"
+    ]
+  }
+}

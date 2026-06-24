@@ -7,17 +7,12 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using Attrify.Attributes;
 using LHDS.Core.Models.Coordinations.EmisLandings.Exceptions;
-using LHDS.Core.Models.Foundations.Downloads.Exceptions;
-using LHDS.Core.Models.Foundations.IngestionTrackings.Exceptions;
-using LHDS.Core.Models.Orchestrations.EmisLandings.Exceptions;
 using LHDS.Core.Services.Coordinations.EmisLandings;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.OData.Query;
+using LHDS.AdminPortal.Api.Models.Attributes;
 using RESTFulSense.Controllers;
-#if RELEASE
-using Microsoft.AspNetCore.Authorization;
-#endif
+
 
 namespace LHDS.AdminPortal.Api.Controllers
 {
@@ -32,12 +27,7 @@ namespace LHDS.AdminPortal.Api.Controllers
             this.emisLandingCoordinationService = emisLandingCoordinationService;
 
         [HttpGet("{subscriberAgreementId}")]
-#if !DEBUG
-        [EnableQuery(PageSize = 50)]
-#endif
-#if DEBUG
-        [EnableQuery(PageSize = 5000)]
-#endif
+        [EnableConfiguredQuery]
         [InvisibleApi]
         public async ValueTask<ActionResult<List<string>>> Get(Guid subscriberAgreementId)
         {
@@ -56,7 +46,7 @@ namespace LHDS.AdminPortal.Api.Controllers
             {
                 return BadRequest(emisLandingCoordinationValidationException);
             }
-            catch (EmisLandingCoordinationDependencyValidationException 
+            catch (EmisLandingCoordinationDependencyValidationException
                     emisLandingCoordinationDependencyValidationException)
             {
                 return FailedDependency(emisLandingCoordinationDependencyValidationException);
@@ -94,7 +84,7 @@ namespace LHDS.AdminPortal.Api.Controllers
             {
                 return BadRequest(emisLandingCoordinationValidationException);
             }
-            catch (EmisLandingCoordinationDependencyValidationException 
+            catch (EmisLandingCoordinationDependencyValidationException
                     emisLandingCoordinationDependencyValidationException)
             {
                 return FailedDependency(emisLandingCoordinationDependencyValidationException);

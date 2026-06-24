@@ -1,0 +1,17 @@
+{
+  "name": "the-standard-reacttypescript-styling",
+  "version": "0.1.0",
+  "description": "Enforces Bootstrap-first styling, prohibition of business rules in class selection, component-scoped styles, global style discipline, and inline style restrictions.",
+  "standard_version": "v0.1.0",
+  "skill_version": "v0.1.0",
+  "inputs": ["TSX component files and CSS/SCSS style files"],
+  "outputs": [
+    "Components with presentation-only class assignments and view-model-driven display values",
+    "Review feedback citing rule IDs"
+  ],
+  "dependencies": [
+    "the-standard-reacttypescript-components",
+    "the-standard-reacttypescript-view-services"
+  ],
+  "applies_to": ["*.tsx", "*.css", "*.scss"]
+}

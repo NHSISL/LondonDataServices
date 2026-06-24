@@ -3,6 +3,7 @@
 // ---------------------------------------------------------
 
 using System;
+using System.IO;
 using LHDS.Core.Models.Brokers.Storages.Blobs;
 using LHDS.Core.Models.Orchestrations.Pds;
 using LHDS.Core.Models.Orchestrations.Pds.Exceptions;
@@ -61,11 +62,11 @@ namespace LHDS.Core.Services.Orchestrations.Pds
             }
         }
 
-        public void ValidatePdsArgs(byte[] pdsFile, string fileName)
+        public void ValidatePdsArgs(Stream pdsStream, string fileName)
         {
             Validate<InvalidArgumentPdsException>(
                 message: "Invalid PDS argument(s), please correct the errors and try again.",
-                (Rule: IsInvalid(pdsFile), Parameter: "pdsFile"),
+                (Rule: IsInvalidInputStream(pdsStream), Parameter: "pdsStream"),
                 (Rule: IsInvalid(fileName), Parameter: "fileName"));
         }
 
@@ -75,10 +76,10 @@ namespace LHDS.Core.Services.Orchestrations.Pds
             Message = "Text is required"
         };
 
-        private static dynamic IsInvalid(byte[] data) => new
+        private static dynamic IsInvalidInputStream(Stream? stream) => new
         {
-            Condition = data == null || data.Length == 0,
-            Message = "Data is required"
+            Condition = stream is null || (stream.CanSeek && stream.Length == 0),
+            Message = "Stream is required"
         };
 
         private static void Validate<T>(string message, params (dynamic Rule, string Parameter)[] validations)

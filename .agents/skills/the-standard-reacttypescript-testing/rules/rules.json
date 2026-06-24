@@ -1,0 +1,13 @@
+{
+  "skill": "the-standard-reacttypescript-testing",
+  "rules": [
+    { "id": "tsr-testing-001", "severity": "ERROR", "category": "Broker Testing", "rule": "Brokers must be tested through replaceable interface contracts or integration tests." },
+    { "id": "tsr-testing-002", "severity": "ERROR", "category": "Foundation Service Testing", "rule": "Foundation services must have unit tests for logic, validation, and exception paths." },
+    { "id": "tsr-testing-003", "severity": "ERROR", "category": "View Service Testing", "rule": "View services must have unit tests for aggregation and view model shaping." },
+    { "id": "tsr-testing-004", "severity": "ERROR", "category": "Component Testing", "rule": "Components must be tested through visible behavior — not implementation details." },
+    { "id": "tsr-testing-005", "severity": "ERROR", "category": "Page Testing", "rule": "Pages must be tested for loading, error, empty, and successful render states." },
+    { "id": "tsr-testing-006", "severity": "ERROR", "category": "No React Internals", "rule": "Tests must not target React internals (state names, hook counts, refs)." },
+    { "id": "tsr-testing-007", "severity": "WARN", "category": "No Large Snapshots", "rule": "Large snapshot tests must not be the primary proof of correctness." },
+    { "id": "tsr-testing-008", "severity": "ERROR", "category": "Mocks at Boundaries", "rule": "Mocks must only be placed at architectural boundaries (broker or service interfaces)." }
+  ]
+}

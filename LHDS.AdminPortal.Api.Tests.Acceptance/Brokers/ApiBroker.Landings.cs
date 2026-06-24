@@ -20,6 +20,12 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Brokers
                 $"{emisLandingsRelativeUrl}/download/{emisSupplierId}");
         }
 
+        public async ValueTask<string> ReLandDocumentByFileNameAsync(string fileName)
+        {
+            return await this.apiFactoryClient.GetContentStringAsync(
+                $"{emisLandingsRelativeUrl}/filename/{HttpUtility.UrlEncode(fileName)}");
+        }
+
         public async ValueTask<List<string>> RetrieveListOfDocumentsToProcessAsync(Guid subscriberAgreementId)
         {
             return await this.apiFactoryClient.GetContentAsync<List<string>>(

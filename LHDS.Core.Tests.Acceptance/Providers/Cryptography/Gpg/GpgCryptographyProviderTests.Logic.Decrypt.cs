@@ -75,7 +75,9 @@ namespace LHDS.Core.Tests.Acceptance.Providers.Cryptography.Gpg
                 {
                     random.NextBytes(buffer);
                     double bytesToWrite = Math.Min(buffer.Length, fileSize - bytesWritten);
-                    await fileStream.WriteAsync(buffer.AsMemory(0, (int)bytesToWrite));
+                    await fileStream.WriteAsync(
+                        buffer.AsMemory(0, (int)bytesToWrite),
+                        TestContext.Current.CancellationToken);
                     bytesWritten += bytesToWrite;
                 }
             }
@@ -97,7 +99,7 @@ namespace LHDS.Core.Tests.Acceptance.Providers.Cryptography.Gpg
                 options: FileOptions.SequentialScan))
             {
                 await this.cryptographyProvider.EncryptAsync(inputStream, encryptedFileStream, subscriberCredential);
-                await encryptedFileStream.FlushAsync();  // Ensure the encryption stream is flushed and ready
+                await encryptedFileStream.FlushAsync(TestContext.Current.CancellationToken);  // Ensure the encryption stream is flushed and ready
             }
 
             if (!File.Exists(encryptedFilePath) || new FileInfo(encryptedFilePath).Length == 0)
@@ -121,7 +123,7 @@ namespace LHDS.Core.Tests.Acceptance.Providers.Cryptography.Gpg
                 options: FileOptions.SequentialScan))
             {
                 await this.cryptographyProvider.DecryptAsync(bufferedEncryptedStream, decryptedStream, subscriberCredential);
-                await decryptedStream.FlushAsync();
+                await decryptedStream.FlushAsync(TestContext.Current.CancellationToken);
             }
 
             // Then

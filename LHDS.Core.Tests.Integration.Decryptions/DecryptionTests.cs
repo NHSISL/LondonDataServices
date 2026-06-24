@@ -1,4 +1,4 @@
-﻿// ---------------------------------------------------------
+// ---------------------------------------------------------
 // Copyright (c) North East London ICB. All rights reserved.
 // ---------------------------------------------------------
 
@@ -12,10 +12,13 @@ using LHDS.Core.Providers.Downloads;
 using LHDS.Core.Providers.Downloads.MockDownloads;
 using LHDS.Core.Services.Foundations.Documents;
 using LHDS.Core.Services.Foundations.IngestionTrackings;
+using Microsoft.Data.SqlClient;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using Xunit.Abstractions;
+
+
+using Xunit;
 
 namespace LHDS.Core.Tests.Integration.Decryptions
 {
@@ -41,6 +44,14 @@ namespace LHDS.Core.Tests.Integration.Decryptions
             var windowsIdentity = WindowsIdentity.GetCurrent();
             var claimsPrincipal = new ClaimsPrincipal(windowsIdentity);
 
+            SqlAuthenticationProvider.SetProvider(
+                SqlAuthenticationMethod.ActiveDirectoryManagedIdentity,
+                new ActiveDirectoryAuthenticationProvider());
+
+            SqlAuthenticationProvider.SetProvider(
+                SqlAuthenticationMethod.ActiveDirectoryDefault,
+                new ActiveDirectoryAuthenticationProvider());
+
             //setup our DI
             var serviceProvider = new ServiceCollection()
                 .AddLogging(builder =>
@@ -60,3 +71,4 @@ namespace LHDS.Core.Tests.Integration.Decryptions
         }
     }
 }
+

@@ -3,7 +3,8 @@
 // ---------------------------------------------------------
 
 using System;
-using System.Text;
+using System.IO;
+using System.Threading;
 using System.Threading.Tasks;
 using LHDS.Core.Brokers.Loggings;
 using LHDS.Core.Clients;
@@ -26,7 +27,9 @@ namespace LHDS.Functions.Pds
 
         [Function("PickupFileAndSendToMeshFunction")]
         public async Task Run(
-            [BlobTrigger("pds/in/{name}", Connection = "BlobStorage")] string myBlob, string name)
+            [BlobTrigger("pds/in/{name}", Connection = "BlobStorage")] Stream myBlob,
+            string name,
+            CancellationToken cancellationToken)
         {
             await this.loggingBroker
                   .LogInformationAsync(
@@ -35,8 +38,10 @@ namespace LHDS.Functions.Pds
 
             try
             {
-                byte[] pdsFile = Encoding.UTF8.GetBytes(myBlob);
-                await pdsClient.PickupFileAndSendToMesh(pdsFile, fileName: name);
+                await pdsClient.PickupFileAndSendToMesh(
+                    pdsStream: myBlob,
+                    fileName: name,
+                    cancellationToken: cancellationToken);
             }
             catch (Exception ex)
             {

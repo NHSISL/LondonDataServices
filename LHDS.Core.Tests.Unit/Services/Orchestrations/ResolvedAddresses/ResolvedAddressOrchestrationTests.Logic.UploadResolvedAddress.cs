@@ -5,6 +5,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using LHDS.Core.Models.Foundations.ResolvedAddresses;
@@ -50,8 +51,8 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.ResolvedAddresses
                     .ReturnsAsync(identifier);
 
             this.csvHelperBrokerMock.Setup(service =>
-                service.MapCsvToObjectAsync<ResolvedAddress>(inputContent, true, fieldMappings, true))
-                    .ReturnsAsync(mappedResolvedAddresses);
+                service.MapCsvToObjectAsync<ResolvedAddress>(It.IsAny<Stream>(), true, fieldMappings, true))
+                    .Returns(mappedResolvedAddresses.ToAsyncEnumerable());
 
             this.resolvedAddressProcessingServiceMock.Setup(service =>
                 service.BulkAddResolvedAddressesAsync(mappedResolvedAddresses, It.IsAny<string>()))
@@ -77,7 +78,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.ResolvedAddresses
                         Times.Once);
 
             this.csvHelperBrokerMock.Verify(service =>
-                service.MapCsvToObjectAsync<ResolvedAddress>(inputContent, true, fieldMappings, true),
+                service.MapCsvToObjectAsync<ResolvedAddress>(It.IsAny<Stream>(), true, fieldMappings, true),
                     Times.Once);
 
             this.resolvedAddressProcessingServiceMock.Verify(service =>

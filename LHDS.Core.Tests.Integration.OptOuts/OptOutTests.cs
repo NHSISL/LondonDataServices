@@ -1,9 +1,10 @@
-﻿// ---------------------------------------------------------
+// ---------------------------------------------------------
 // Copyright (c) North East London ICB. All rights reserved.
 // ---------------------------------------------------------
 
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Security.Claims;
 using System.Security.Principal;
@@ -19,11 +20,12 @@ using LHDS.Core.Models.Orchestrations.OptOuts;
 using LHDS.Core.Services.Foundations.Documents;
 using LHDS.Core.Services.Foundations.Mesh;
 using LHDS.Core.Services.Foundations.OptOuts;
+using Microsoft.Data.SqlClient;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Tynamix.ObjectFiller;
-using Xunit.Abstractions;
+using Xunit;
 
 namespace LHDS.Core.Tests.Integration.OptOuts
 {
@@ -51,6 +53,14 @@ namespace LHDS.Core.Tests.Integration.OptOuts
             IConfiguration configuration = configurationBuilder.Build();
             var windowsIdentity = WindowsIdentity.GetCurrent();
             var claimsPrincipal = new ClaimsPrincipal(windowsIdentity);
+
+            SqlAuthenticationProvider.SetProvider(
+                SqlAuthenticationMethod.ActiveDirectoryManagedIdentity,
+                new ActiveDirectoryAuthenticationProvider());
+
+            SqlAuthenticationProvider.SetProvider(
+                SqlAuthenticationMethod.ActiveDirectoryDefault,
+                new ActiveDirectoryAuthenticationProvider());
 
             //setup our DI
             var serviceProvider = new ServiceCollection()
@@ -256,7 +266,7 @@ namespace LHDS.Core.Tests.Integration.OptOuts
             await this.meshService.SendMessageAsync(
                 mexTo: this.meshConfiguration.MailboxId,
                 mexWorkflowId: this.optOutConfiguration.WorkflowId,
-                fileContent: Encoding.UTF8.GetBytes(stringContent.ToString()),
+                content: new MemoryStream(Encoding.UTF8.GetBytes(stringContent.ToString())),
                 mexLocalId: batchReference,
                 mexFileName: batchReference,
                 contentType: "text/plain");
@@ -309,3 +319,4 @@ namespace LHDS.Core.Tests.Integration.OptOuts
         }
     }
 }
+

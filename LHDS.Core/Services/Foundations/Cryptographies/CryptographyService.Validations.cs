@@ -25,13 +25,13 @@ namespace LHDS.Core.Services.Foundations.Cryptographies
 
         private static dynamic IsInvalidInputStream(Stream? stream) => new
         {
-            Condition = stream is null || stream.Length == 0,
+            Condition = stream is null || (stream.CanSeek && stream.Length == 0),
             Message = "Stream is required"
         };
 
         private static dynamic IsInvalidOutputStream(Stream? stream) => new
         {
-            Condition = stream is null || stream.Length > 0,
+            Condition = stream is null || (stream.CanSeek && stream.Length > 0),
             Message = "Stream is required"
         };
 

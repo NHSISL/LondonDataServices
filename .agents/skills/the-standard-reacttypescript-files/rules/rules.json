@@ -1,0 +1,35 @@
+{
+  "skill": "the-standard-reacttypescript-files",
+  "rules": [
+    {
+      "id": "tsr-files-001",
+      "severity": "ERROR",
+      "category": "Single Responsibility",
+      "rule": "A file must contain one primary responsibility."
+    },
+    {
+      "id": "tsr-files-002",
+      "severity": "ERROR",
+      "category": "Naming by Architectural Role",
+      "rule": "File names must describe the architectural role of their primary export using the defined naming patterns."
+    },
+    {
+      "id": "tsr-files-003",
+      "severity": "ERROR",
+      "category": "Extensions",
+      "rule": "React component files must use the .tsx extension."
+    },
+    {
+      "id": "tsr-files-004",
+      "severity": "ERROR",
+      "category": "Extensions",
+      "rule": "Non-rendering TypeScript files must use the .ts extension."
+    },
+    {
+      "id": "tsr-files-005",
+      "severity": "ERROR",
+      "category": "Prohibited Patterns",
+      "rule": "Generic file names (utils, helpers, common, misc) are forbidden."
+    }
+  ]
+}

@@ -1,0 +1,23 @@
+{
+  "skill": "the-standard-reacttypescript-services",
+  "version": "1.0.0",
+  "naming": {
+    "service_class": "{Domain}Service",
+    "service_interface": "I{Domain}Service",
+    "service_file": "{domain}Service.ts",
+    "service_interface_file": "i{domain}Service.ts",
+    "validations_file": "{domain}Service.validations.ts",
+    "exceptions_file": "{domain}Service.exceptions.ts"
+  },
+  "structure": {
+    "folder": "src/services/foundations/{domain}/",
+    "files_required": [
+      "{domain}Service.ts",
+      "i{domain}Service.ts",
+      "{domain}Service.validations.ts",
+      "{domain}Service.exceptions.ts"
+    ],
+    "allowed_imports": ["brokers", "models"],
+    "forbidden_imports": ["react", "react-dom", "react-router-dom", "view services", "pages", "components", "hooks"]
+  }
+}

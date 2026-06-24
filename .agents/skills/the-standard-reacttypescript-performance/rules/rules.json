@@ -1,0 +1,41 @@
+{
+  "skill": "the-standard-reacttypescript-performance",
+  "rules": [
+    {
+      "id": "tsr-performance-001",
+      "severity": "WARNING",
+      "category": "Memoisation Policy",
+      "rule": "Do not memoize (useMemo, useCallback, React.memo) by default — only when a measured problem exists."
+    },
+    {
+      "id": "tsr-performance-002",
+      "severity": "WARNING",
+      "category": "Object/Function Creation in Render",
+      "rule": "Do not create large objects or functions inline inside hot render paths."
+    },
+    {
+      "id": "tsr-performance-003",
+      "severity": "WARNING",
+      "category": "Component Size",
+      "rule": "Avoid oversized components — split large render trees at natural responsibility boundaries."
+    },
+    {
+      "id": "tsr-performance-004",
+      "severity": "WARNING",
+      "category": "Context Updates",
+      "rule": "Avoid unnecessary context updates — split contexts by update frequency."
+    },
+    {
+      "id": "tsr-performance-005",
+      "severity": "ERROR",
+      "category": "Bundle Size",
+      "rule": "Bundle size increases must be reviewed before adding a dependency."
+    },
+    {
+      "id": "tsr-performance-006",
+      "severity": "WARNING",
+      "category": "Lazy Loading Routes",
+      "rule": "Lazy-load route-level features when bundle impact is meaningful — use React.lazy + Suspense."
+    }
+  ]
+}

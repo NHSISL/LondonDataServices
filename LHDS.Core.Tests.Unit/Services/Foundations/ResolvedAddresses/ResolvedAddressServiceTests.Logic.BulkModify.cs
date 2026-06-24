@@ -39,6 +39,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.ResolvedAddresses
             validatedResolvedAddresses.ForEach(address =>
             {
                 address.UpdatedDate = randomDateTimeOffset;
+                address.UpdatedBy = randomEntraUserId;
             });
 
             List<ResolvedAddress> updatedResolvedAddresses = new List<ResolvedAddress> { validatedResolvedAddresses.Last() };
@@ -66,7 +67,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.ResolvedAddresses
 
             this.securityAuditBrokerMock.Verify(broker =>
                 broker.GetUserIdAsync(),
-                    Times.Exactly(randomResolvedAddresses.Count));
+                    Times.Exactly(randomResolvedAddresses.Count * 2));
 
             this.storageBrokerMock.Verify(broker =>
                 broker.SelectAllResolvedAddressesAsync(),

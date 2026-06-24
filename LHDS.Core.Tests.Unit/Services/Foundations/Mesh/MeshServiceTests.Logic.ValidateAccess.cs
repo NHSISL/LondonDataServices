@@ -2,6 +2,7 @@
 // Copyright (c) North East London ICB. All rights reserved.
 // ---------------------------------------------------------
 
+using System.Threading;
 using System.Threading.Tasks;
 using FluentAssertions;
 using Moq;
@@ -19,18 +20,19 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Mesh
             bool expectedValidationResult = outputValidationResult;
 
             this.meshBrokerMock.Setup(broker =>
-                broker.HandshakeAsync())
+                broker.HandshakeAsync(It.IsAny<CancellationToken>()))
                     .ReturnsAsync(outputValidationResult);
 
             // when
             bool actualMeshValidationResult =
-                await this.meshService.ValidateMailboxAccessAsync();
+                await this.meshService.ValidateMailboxAccessAsync(
+                    TestContext.Current.CancellationToken);
 
             // then
             actualMeshValidationResult.Should().Be(expectedValidationResult);
 
             this.meshBrokerMock.Verify(broker =>
-                broker.HandshakeAsync(),
+                broker.HandshakeAsync(It.IsAny<CancellationToken>()),
                     Times.Once);
 
             this.meshBrokerMock.VerifyNoOtherCalls();

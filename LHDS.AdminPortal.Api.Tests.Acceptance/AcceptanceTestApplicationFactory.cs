@@ -2,6 +2,7 @@
 // Copyright (c) North East London ICB. All rights reserved.
 // ---------------------------------------------------------
 
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
@@ -12,12 +13,28 @@ using LHDS.Core.Providers.Downloads.FtpDownloads;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Testing;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace LHDS.AdminPortal.Api.Tests.Acceptance
 {
     public class AcceptanceTestApplicationFactory<TStartup> : WebApplicationFactory<TStartup> where TStartup : class
     {
+        static AcceptanceTestApplicationFactory()
+        {
+            // Use a large default OData page size so bulk "get all" and $expand
+            // tests return everything in a single page. Tests that specifically
+            // exercise paging request a smaller page via the "pageSize"
+            // querystring value instead.
+            Program.TestConfigurationOverrides = builder =>
+            {
+                builder.Configuration.AddInMemoryCollection(new Dictionary<string, string>
+                {
+                    ["OdataConfigurations:PageSize"] = "5000"
+                });
+            };
+        }
+
         protected override void ConfigureWebHost(IWebHostBuilder builder)
         {
             string dropfolder = "landing";

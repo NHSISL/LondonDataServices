@@ -38,7 +38,6 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Addresses
             int inputBatchSize = GetRandomNumber();
             int numberOfBatches = GetRandomNumber();
             int numberOfRecords = inputBatchSize * numberOfBatches;
-            List<string> returnedStringList = CreateRandomStringList(numberOfRecords);
             IQueryable<Address> randomAddresses = CreateRandomAddresses(numberOfRecords);
             IQueryable<Address> retrievedAddresses = randomAddresses.DeepClone();
             List<Address> streetDescriptorAddresses = randomAddresses.DeepClone().ToList();
@@ -61,13 +60,6 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Addresses
                 List<Address> batchExisitngAddresses = [
                     .. streetDescriptorAddresses.ToList().GetRange(batchStartLine, inputBatchSize)];
 
-                this.fileBrokerMock.Setup(broker =>
-                    broker.ReadLinesBatchAsync(
-                        inputStreetDescriptorFile,
-                        inputBatchSize,
-                        i * inputBatchSize))
-                            .ReturnsAsync(returnedStringList.GetRange(batchStartLine, inputBatchSize));
-
                 addressOrchestrationServiceMock.Setup(service =>
                     service.MapStreetDescriptorDataToAddressesAsync(
                         inputStreetDescriptorFile,
@@ -80,9 +72,12 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Addresses
                         .ReturnsAsync(retrievedAddresses);
             }
 
-            this.fileBrokerMock.Setup(broker =>
-                broker.ReadLinesBatchAsync(inputStreetDescriptorFile, inputBatchSize, numberOfRecords))
-                    .ReturnsAsync([]);
+            addressOrchestrationServiceMock.Setup(service =>
+                service.MapStreetDescriptorDataToAddressesAsync(
+                    inputStreetDescriptorFile,
+                    inputBatchSize,
+                    numberOfRecords))
+                        .ReturnsAsync([]);
 
             AddressOrchestrationService service = addressOrchestrationServiceMock.Object;
 
@@ -114,13 +109,6 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Addresses
                 int batchEndLine = batchStartLine + inputBatchSize;
                 List<Address> batchExisitngAddresses = [
                     .. streetDescriptorAddresses.ToList().GetRange(batchStartLine, inputBatchSize)];
-
-                this.fileBrokerMock.Verify(broker =>
-                    broker.ReadLinesBatchAsync(
-                        inputStreetDescriptorFile,
-                        inputBatchSize,
-                        i * inputBatchSize),
-                            Times.Once);
 
                 addressOrchestrationServiceMock.Verify(service =>
                     service.MapStreetDescriptorDataToAddressesAsync(
@@ -158,9 +146,12 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Addresses
                             Times.Once);
             }
 
-            this.fileBrokerMock.Verify(broker =>
-                broker.ReadLinesBatchAsync(inputStreetDescriptorFile, inputBatchSize, numberOfRecords),
-                    Times.Once);
+            addressOrchestrationServiceMock.Verify(service =>
+                service.MapStreetDescriptorDataToAddressesAsync(
+                    inputStreetDescriptorFile,
+                    inputBatchSize,
+                    numberOfRecords),
+                        Times.Once);
 
             this.addressProcessingServiceMock.Verify(service =>
                 service.RetrieveAllAddressesAsync(),

@@ -27,7 +27,7 @@ namespace LHDS.Core.Tests.Acceptance.Clients.Addresses
                 assembly,
                 $@"Resource{separator}Clients{separator}Address{separator}ShouldUploadAddressesSetup.csv");
 
-            byte[] inputData = await File.ReadAllBytesAsync(inputFilePath);
+            byte[] inputData = await File.ReadAllBytesAsync(inputFilePath, TestContext.Current.CancellationToken);
             Stream inputStream = new MemoryStream(inputData);
 
             // When

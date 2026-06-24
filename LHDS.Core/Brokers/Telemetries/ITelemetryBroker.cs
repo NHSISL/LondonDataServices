@@ -184,28 +184,6 @@ namespace LHDS.Core.Brokers.Telemetries
         ValueTask<Metric> GetMetricAsync(string metricId);
 
         /// <summary>
-        /// Gets or creates a metric container by ID with configuration.
-        /// </summary>
-        /// <param name="metricId">The ID (name) of the metric.</param>
-        /// <param name="metricConfiguration">Configuration for aggregating values.</param>
-        /// <returns>A configured Metric with the specified ID.</returns>
-        ValueTask<Metric> GetMetricAsync(
-            string metricId,
-            MetricConfiguration metricConfiguration);
-
-        /// <summary>
-        /// Gets or creates a metric container with ID, configuration, and aggregation scope.
-        /// </summary>
-        /// <param name="metricId">The ID of the metric.</param>
-        /// <param name="metricConfiguration">Metric configuration settings.</param>
-        /// <param name="aggregationScope">The memory aggregation scope.</param>
-        /// <returns>A Metric with the specified configuration and scope.</returns>
-        ValueTask<Metric> GetMetricAsync(
-            string metricId,
-            MetricConfiguration metricConfiguration,
-            MetricAggregationScope aggregationScope);
-
-        /// <summary>
         /// Gets or creates a metric container by ID with a single dimension.
         /// </summary>
         /// <param name="metricId">The metric ID.</param>
@@ -214,32 +192,6 @@ namespace LHDS.Core.Brokers.Telemetries
         ValueTask<Metric> GetMetricAsync(
             string metricId,
             string dimension1Name);
-
-        /// <summary>
-        /// Gets or creates a metric container with one dimension and configuration.
-        /// </summary>
-        /// <param name="metricId">The metric ID.</param>
-        /// <param name="dimension1Name">The first dimension name.</param>
-        /// <param name="metricConfiguration">Metric configuration options.</param>
-        /// <returns>A Metric configured for one dimension.</returns>
-        ValueTask<Metric> GetMetricAsync(
-            string metricId,
-            string dimension1Name,
-            MetricConfiguration metricConfiguration);
-
-        /// <summary>
-        /// Gets or creates a metric container with one dimension, configuration, and aggregation scope.
-        /// </summary>
-        /// <param name="metricId">Metric ID.</param>
-        /// <param name="dimension1Name">Dimension name.</param>
-        /// <param name="metricConfiguration">Configuration object.</param>
-        /// <param name="aggregationScope">Aggregation scope for the metric.</param>
-        /// <returns>A configured Metric object.</returns>
-        ValueTask<Metric> GetMetricAsync(
-            string metricId,
-            string dimension1Name,
-            MetricConfiguration metricConfiguration,
-            MetricAggregationScope aggregationScope);
 
         /// <summary>
         /// Gets or creates a metric container with two dimensions.
@@ -254,62 +206,10 @@ namespace LHDS.Core.Brokers.Telemetries
             string dimension2Name);
 
         /// <summary>
-        /// Gets or creates a metric container with two dimensions and configuration.
-        /// </summary>
-        /// <param name="metricId">Metric ID.</param>
-        /// <param name="dimension1Name">First dimension.</param>
-        /// <param name="dimension2Name">Second dimension.</param>
-        /// <param name="metricConfiguration">Metric configuration.</param>
-        /// <returns>A Metric with two dimensions.</returns>
-        ValueTask<Metric> GetMetricAsync(
-            string metricId,
-            string dimension1Name,
-            string dimension2Name,
-            MetricConfiguration metricConfiguration);
-
-        /// <summary>
-        /// Gets or creates a metric container with two dimensions, configuration, and scope.
-        /// </summary>
-        /// <param name="metricId">Metric ID.</param>
-        /// <param name="dimension1Name">Dimension 1.</param>
-        /// <param name="dimension2Name">Dimension 2.</param>
-        /// <param name="metricConfiguration">Configuration.</param>
-        /// <param name="aggregationScope">Scope for aggregation.</param>
-        /// <returns>A Metric object.</returns>
-        ValueTask<Metric> GetMetricAsync(
-            string metricId,
-            string dimension1Name,
-            string dimension2Name,
-            MetricConfiguration metricConfiguration,
-            MetricAggregationScope aggregationScope);
-
-        /// <summary>
         /// Gets or creates a metric using a MetricIdentifier.
         /// </summary>
         /// <param name="metricIdentifier">The metric identifier object.</param>
         /// <returns>The metric object.</returns>
         ValueTask<Metric> GetMetricAsync(MetricIdentifier metricIdentifier);
-
-        /// <summary>
-        /// Gets or creates a metric using MetricIdentifier and configuration.
-        /// </summary>
-        /// <param name="metricIdentifier">Metric identifier.</param>
-        /// <param name="metricConfiguration">Metric configuration object.</param>
-        /// <returns>The configured metric.</returns>
-        ValueTask<Metric> GetMetricAsync(
-            MetricIdentifier metricIdentifier,
-            MetricConfiguration metricConfiguration);
-
-        /// <summary>
-        /// Gets or creates a metric with MetricIdentifier, configuration, and aggregation scope.
-        /// </summary>
-        /// <param name="metricIdentifier">Identifier object.</param>
-        /// <param name="metricConfiguration">Configuration settings.</param>
-        /// <param name="aggregationScope">Aggregation scope type.</param>
-        /// <returns>The final metric object.</returns>
-        ValueTask<Metric> GetMetricAsync(
-            MetricIdentifier metricIdentifier,
-            MetricConfiguration metricConfiguration,
-            MetricAggregationScope aggregationScope);
     }
 }

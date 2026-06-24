@@ -3,14 +3,15 @@
 // ---------------------------------------------------------
 
 using System;
+using System.Collections;
 using Xeptions;
 
 namespace LHDS.Core.Models.Foundations.Documents.Exceptions
 {
     public class FailedDocumentRequestException : Xeption
     {
-        public FailedDocumentRequestException(string message, Exception? innerException)
-            : base(message, innerException)
+        public FailedDocumentRequestException(string message, Exception? innerException, IDictionary data)
+            : base(message, innerException, data)
         { }
     }
 }

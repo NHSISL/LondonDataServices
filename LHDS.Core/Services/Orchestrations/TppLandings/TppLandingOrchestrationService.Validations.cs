@@ -30,6 +30,14 @@ namespace LHDS.Core.Services.Orchestrations.Tpp
 
                 (Rule: IsInvalid(supplierId), Parameter: "SupplierId"));
         }
+        private static void ValidateConfigurationForReland(int relandIntervalInMinutes)
+        {
+            Validate(
+                createException: () => new InvalidArgumentTppLandingOrchestrationException(
+                    message: "Invalid TPP Reland orchestration configuration, please correct the errors and try again."),
+
+                (Rule: IsInvalid(relandIntervalInMinutes), Parameter: nameof(relandIntervalInMinutes)));
+        }
 
         private static dynamic IsInvalid(Guid id) => new
         {
@@ -41,6 +49,12 @@ namespace LHDS.Core.Services.Orchestrations.Tpp
         {
             Condition = string.IsNullOrWhiteSpace(text),
             Message = "Text is required"
+        };
+
+        private static dynamic IsInvalid(int value) => new
+        {
+            Condition = value <= 0,
+            Message = "Value must be greater than zero"
         };
 
         private static dynamic IsInvalidInputStream(Stream? stream) => new

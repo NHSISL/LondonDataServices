@@ -1,0 +1,31 @@
+{
+  "skill": "the-standard-team-projects",
+  "version": "0.1.0",
+  "solution": {
+    "required_projects": [
+      "{Product}.Core (API)",
+      "{Product}.Core.Infrastructure.Build (Console App)",
+      "{Product}.Core.Infrastructure.Provision (Console App)",
+      "{Product}.Core.Tests.Build (xUnit Test Project)",
+      "{Product}.Core.Tests.Acceptance (xUnit Test Project)"
+    ],
+    "naming_pattern": "{Product}.{Layer}"
+  },
+  "api_project_folders": {
+    "required": ["Brokers/", "Models/", "Services/", "Controllers/"],
+    "conditional": {
+      "Migrations/": "Required when EF Core is used"
+    }
+  },
+  "models_structure": {
+    "sub_folders": ["Foundations/", "Processings/", "Orchestrations/", "Coordinations/", "Managements/", "Aggregations/"],
+    "entity_folder_required_sub_folders": ["Exceptions/"]
+  },
+  "services_structure": {
+    "sub_folders": ["Foundations/", "Processings/", "Orchestrations/", "Coordinations/", "Managements/", "Aggregations/"]
+  },
+  "test_project_structure": {
+    "mirrors": "API project structure",
+    "grouping_pattern": "Services/[Service Type]/[ServiceName]"
+  }
+}

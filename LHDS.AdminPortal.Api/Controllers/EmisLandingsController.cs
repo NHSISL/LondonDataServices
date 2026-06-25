@@ -13,7 +13,6 @@ using Microsoft.AspNetCore.Mvc;
 using LHDS.AdminPortal.Api.Models.Attributes;
 using RESTFulSense.Controllers;
 
-
 namespace LHDS.AdminPortal.Api.Controllers
 {
     [Authorize(Roles = "ISL.LDS.AdminApi.EmisLanding,ISL.LDS.AdminApi.Administrators")]

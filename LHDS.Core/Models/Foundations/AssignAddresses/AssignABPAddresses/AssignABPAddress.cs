@@ -10,6 +10,6 @@ namespace LHDS.Core.Models.Foundations.AssignAddresses.AssignABPAddresses
         public string Street { get; set; }
         public string Town { get; set; }
         public string Postcode { get; set; }
-        public string Organisaton { get; set; }
+        public string Organisation { get; set; }
     }
 }

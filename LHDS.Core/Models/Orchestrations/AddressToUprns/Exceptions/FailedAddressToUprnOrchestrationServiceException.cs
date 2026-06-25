@@ -2,13 +2,14 @@
 // Copyright (c) North East London ICB. All rights reserved.
 // ---------------------------------------------------------
 
+using System;
 using Xeptions;
 
-namespace LHDS.Core.Models.Clients.AddressToUprnClient.Exceptions
+namespace LHDS.Core.Models.Orchestrations.AddressToUprns.Exceptions
 {
-    public class AddressToUprnClientDependencyException : Xeption
+    public class FailedAddressToUprnOrchestrationServiceException : Xeption
     {
-        public AddressToUprnClientDependencyException(string message, Xeption? innerException)
+        public FailedAddressToUprnOrchestrationServiceException(string message, Exception? innerException)
             : base(message, innerException)
         { }
     }

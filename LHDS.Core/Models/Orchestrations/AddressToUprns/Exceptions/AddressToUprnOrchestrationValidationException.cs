@@ -4,11 +4,11 @@
 
 using Xeptions;
 
-namespace LHDS.Core.Models.Clients.AddressToUprnClient.Exceptions
+namespace LHDS.Core.Models.Orchestrations.AddressToUprns.Exceptions
 {
-    public class AddressToUprnClientDependencyException : Xeption
+    public class AddressToUprnOrchestrationValidationException : Xeption
     {
-        public AddressToUprnClientDependencyException(string message, Xeption? innerException)
+        public AddressToUprnOrchestrationValidationException(string message, Xeption? innerException)
             : base(message, innerException)
         { }
     }

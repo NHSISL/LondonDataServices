@@ -34,6 +34,7 @@ namespace LHDS.Core.Brokers.Storages.Sql
         {
             AddAuditConfigurations(modelBuilder);
             AddAddressConfigurations(modelBuilder);
+            AddAddressToUprnFileLogConfigurations(modelBuilder);
             AddDataSetConfigurations(modelBuilder);
             AddDataSetSpecificationConfigurations(modelBuilder);
             AddDataTypeConfigurations(modelBuilder);

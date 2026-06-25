@@ -9,7 +9,7 @@
 
 	<ItemGroup>
 		<PackageReference Include="Azure.Identity" Version="1.21.0" />
-		<PackageReference Include="Azure.Storage.Blobs" Version="12.27.0" />
+		<PackageReference Include="Azure.Storage.Blobs" Version="12.28.0" />
 		<PackageReference Include="EFxceptions" Version="10.0.0" />
 		<PackageReference Include="FluentAssertions" Version="[7.2.2]" />
 		<PackageReference Include="Microsoft.Azure.Functions.Extensions" Version="1.1.0" />
@@ -20,13 +20,13 @@
 		<PackageReference Include="Microsoft.Azure.Functions.Worker.Extensions.Storage.Queues" Version="5.5.4" />
 		<PackageReference Include="Microsoft.Azure.Functions.Worker.Extensions.Timer" Version="4.3.1" />
 		<PackageReference Include="Microsoft.Azure.Functions.Worker.Sdk" Version="2.0.7" />
-		<PackageReference Include="Microsoft.EntityFrameworkCore" Version="10.0.7" />
-		<PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="10.0.7" />
+		<PackageReference Include="Microsoft.EntityFrameworkCore" Version="10.0.8" />
+		<PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="10.0.8" />
 <PackageReference Include="Microsoft.Data.SqlClient.Extensions.Azure" Version="1.0.0" />
 		<PackageReference Include="Microsoft.Extensions.Azure" Version="1.14.0" />
-		<PackageReference Include="Microsoft.Extensions.Configuration" Version="10.0.7" />
-		<PackageReference Include="Microsoft.Extensions.Configuration.UserSecrets" Version="10.0.7" />
-		<PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="10.0.7" />
+		<PackageReference Include="Microsoft.Extensions.Configuration" Version="10.0.8" />
+		<PackageReference Include="Microsoft.Extensions.Configuration.UserSecrets" Version="10.0.8" />
+		<PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="10.0.8" />
 		<PackageReference Include="Microsoft.Extensions.Logging.ApplicationInsights" Version="2.23.0" />
 		<PackageReference Include="Tynamix.ObjectFiller" Version="1.5.9" />
 	</ItemGroup>

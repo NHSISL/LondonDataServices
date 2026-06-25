@@ -8,11 +8,11 @@ using System.Net.Http;
 using System.Text.Json;
 using Attrify.Extensions;
 using Attrify.InvisibleApi.Models;
-using Azure.Core;
 using Azure.Core.Pipeline;
 using Azure.Identity;
 using Azure.Storage.Blobs;
 using ISL.Security.Client.Models.Clients;
+using LHDS.AdminPortal.Api.Models.Configurations;
 using LHDS.Core.Brokers.DateTimes;
 using LHDS.Core.Brokers.Decisions;
 using LHDS.Core.Brokers.Hashing;
@@ -100,7 +100,7 @@ using Microsoft.Identity.Web;
 using Microsoft.IdentityModel.Logging;
 using Microsoft.OData.Edm;
 using Microsoft.OData.ModelBuilder;
-using Microsoft.OpenApi.Models;
+using Microsoft.OpenApi;
 
 namespace LHDS.AdminPortal.Api
 {
@@ -122,6 +122,8 @@ namespace LHDS.AdminPortal.Api
                 .AddJsonFile(path: "local.appsettings.json", optional: true, reloadOnChange: true)
                 .AddEnvironmentVariables();
 
+            ConfigurationOverridesForTesting(builder);
+
             var invisibleApiKey = new InvisibleApiKey();
             ConfigureServices(builder, invisibleApiKey);
             var app = builder.Build();
@@ -134,6 +136,16 @@ namespace LHDS.AdminPortal.Api
 
             ConfigurePipeline(app, invisibleApiKey);
             app.Run();
+        }
+
+        // Lets the acceptance test host override configuration (e.g. the OData
+        // page size) right after the builder is created. Mirrors the approach
+        // used to override authentication for testing.
+        internal static Action<WebApplicationBuilder> TestConfigurationOverrides { get; set; } = null;
+
+        internal static void ConfigurationOverridesForTesting(WebApplicationBuilder builder)
+        {
+            TestConfigurationOverrides?.Invoke(builder);
         }
 
         private static void ConfigureServices(WebApplicationBuilder builder, InvisibleApiKey invisibleApiKey)
@@ -157,6 +169,12 @@ namespace LHDS.AdminPortal.Api
                     policy.WithExposedHeaders("Content-Disposition", "Content-Length", "Access-Control-Allow-Origin");
                 });
             });
+
+            OdataConfigurations odataConfigurations =
+                builder.Configuration.GetSection("OdataConfigurations").Get<OdataConfigurations>()
+                    ?? new OdataConfigurations { PageSize = 50 };
+
+            builder.Services.AddSingleton(odataConfigurations);
 
             JsonNamingPolicy jsonNamingPolicy = JsonNamingPolicy.CamelCase;
             builder.Services.AddODataQueryFilter();
@@ -246,7 +264,7 @@ namespace LHDS.AdminPortal.Api
             app.UseForwardedHeaders();
             app.UseAuthorization();
             app.UseInvisibleApiMiddleware(invisibleApiKey);
-            app.MapControllers().WithOpenApi();
+            app.MapControllers();
         }
 
         private static void AddHealthApi(IServiceCollection services, IConfiguration configuration)

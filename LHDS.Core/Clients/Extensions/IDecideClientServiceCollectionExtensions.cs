@@ -103,7 +103,11 @@ namespace LHDS.Core.Clients.Extensions
             if (claimsPrincipal is not null)
             {
                 services.AddTransient<ISecurityAuditBroker>(_ =>
-                    new SecurityAuditBroker(claimsPrincipal, new SecurityConfigurations()));
+                    new SecurityAuditBroker(claimsPrincipal, new SecurityConfigurations
+                {
+                    CreatedWhenPropertyName = "CreatedDate",
+                    UpdatedWhenPropertyName = "UpdatedDate"
+                }));
 
                 //TODO: [26630] - Remove internal constructor and apply config for test managed identity 
                 // in appsettings.Development and GitHub secrets [DH] and remove this

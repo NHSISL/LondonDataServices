@@ -1,4 +1,4 @@
-// ---------------------------------------------------------
+﻿// ---------------------------------------------------------
 // Copyright (c) North East London ICB. All rights reserved.
 // ---------------------------------------------------------
 
@@ -355,7 +355,11 @@ namespace LHDS.AdminPortal.Api
                 return factory.CreateDbContext();
             });
 
-            services.AddTransient(_ => new SecurityConfigurations());
+            services.AddTransient(_ => new SecurityConfigurations
+                {
+                    CreatedWhenPropertyName = "CreatedDate",
+                    UpdatedWhenPropertyName = "UpdatedDate"
+                });
             services.AddTransient<ISecurityBroker, SecurityBroker>();
             services.AddTransient<ISecurityAuditBroker, SecurityAuditBroker>();
             services.AddSingleton<IConfiguration>(_ => configuration);

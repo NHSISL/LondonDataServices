@@ -192,7 +192,11 @@ namespace LHDS.Core.Clients.Extensions
             if (claimsPrincipal != null)
             {
                 var securityBroker = new SecurityBroker(claimsPrincipal);
-                var securityAuditBroker = new SecurityAuditBroker(claimsPrincipal, new SecurityConfigurations());
+                var securityAuditBroker = new SecurityAuditBroker(claimsPrincipal, new SecurityConfigurations
+                {
+                    CreatedWhenPropertyName = "CreatedDate",
+                    UpdatedWhenPropertyName = "UpdatedDate"
+                });
                 services.AddTransient<ISecurityBroker>(_ => securityBroker);
                 services.AddTransient<ISecurityAuditBroker>(_ => securityAuditBroker);
             }

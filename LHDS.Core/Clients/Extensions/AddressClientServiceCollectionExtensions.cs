@@ -196,8 +196,6 @@ namespace LHDS.Core.Clients.Extensions
                 {
                     CreatedWhenPropertyName = "CreatedDate",
                     UpdatedWhenPropertyName = "UpdatedDate",
-                    DeletedByPropertyName = "UpdatedBy",
-                    DeletedWhenPropertyName = "UpdatedDate"
                 });
                 services.AddTransient<ISecurityBroker>(_ => securityBroker);
                 services.AddTransient<ISecurityAuditBroker>(_ => securityAuditBroker);

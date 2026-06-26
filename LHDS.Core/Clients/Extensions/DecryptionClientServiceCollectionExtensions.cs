@@ -204,8 +204,6 @@ namespace LHDS.Core.Clients.Extensions
                 {
                     CreatedWhenPropertyName = "CreatedDate",
                     UpdatedWhenPropertyName = "UpdatedDate",
-                    DeletedByPropertyName = "UpdatedBy",
-                    DeletedWhenPropertyName = "UpdatedDate"
                 }));
             }
             else

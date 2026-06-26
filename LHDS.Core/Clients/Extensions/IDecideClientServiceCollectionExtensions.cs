@@ -107,8 +107,6 @@ namespace LHDS.Core.Clients.Extensions
                 {
                     CreatedWhenPropertyName = "CreatedDate",
                     UpdatedWhenPropertyName = "UpdatedDate",
-                    DeletedByPropertyName = "UpdatedBy",
-                    DeletedWhenPropertyName = "UpdatedDate"
                 }));
 
                 //TODO: [26630] - Remove internal constructor and apply config for test managed identity 

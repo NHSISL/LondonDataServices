@@ -10,7 +10,7 @@
   },
   "extensions": {
     "blobs": {
-      "maxDegreeOfParallelism": 10
+      "maxDegreeOfParallelism": 2
     }
   },
   "functionTimeout": "03:00:00"

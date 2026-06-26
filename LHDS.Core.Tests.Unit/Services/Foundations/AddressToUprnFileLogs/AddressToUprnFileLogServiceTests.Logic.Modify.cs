@@ -26,7 +26,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.AddressToUprnFileLogs
 
             AddressToUprnFileLog inputAddressToUprnFileLog = randomAddressToUprnFileLog;
             AddressToUprnFileLog storageAddressToUprnFileLog = inputAddressToUprnFileLog.DeepClone();
-            storageAddressToUprnFileLog.UpdatedWhen = randomAddressToUprnFileLog.CreatedWhen;
+            storageAddressToUprnFileLog.UpdatedDate = randomAddressToUprnFileLog.CreatedDate;
             AddressToUprnFileLog updatedAddressToUprnFileLog = inputAddressToUprnFileLog;
             AddressToUprnFileLog expectedAddressToUprnFileLog = updatedAddressToUprnFileLog.DeepClone();
 

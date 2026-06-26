@@ -24,11 +24,11 @@ namespace LHDS.Core.Services.Foundations.AddressToUprnFileLogs
 
                 (Rule: IsInvalid(addressToUprnFileLog.Id), Parameter: nameof(AddressToUprnFileLog.Id)),
                 (Rule: IsInvalid(addressToUprnFileLog.FileName), Parameter: nameof(AddressToUprnFileLog.FileName)),
-                (Rule: IsInvalid(addressToUprnFileLog.CreatedWhen),
-                    Parameter: nameof(AddressToUprnFileLog.CreatedWhen)),
+                (Rule: IsInvalid(addressToUprnFileLog.CreatedDate),
+                    Parameter: nameof(AddressToUprnFileLog.CreatedDate)),
                 (Rule: IsInvalid(addressToUprnFileLog.CreatedBy), Parameter: nameof(AddressToUprnFileLog.CreatedBy)),
-                (Rule: IsInvalid(addressToUprnFileLog.UpdatedWhen),
-                    Parameter: nameof(AddressToUprnFileLog.UpdatedWhen)),
+                (Rule: IsInvalid(addressToUprnFileLog.UpdatedDate),
+                    Parameter: nameof(AddressToUprnFileLog.UpdatedDate)),
                 (Rule: IsInvalid(addressToUprnFileLog.UpdatedBy), Parameter: nameof(AddressToUprnFileLog.UpdatedBy)),
 
                 (Rule: IsExceedingLength(addressToUprnFileLog.FileName, 450),
@@ -40,10 +40,10 @@ namespace LHDS.Core.Services.Foundations.AddressToUprnFileLogs
                 Parameter: nameof(AddressToUprnFileLog.CreatedBy)),
 
                 (Rule: IsNotSame(
-                    firstDate: addressToUprnFileLog.UpdatedWhen,
-                    secondDate: addressToUprnFileLog.CreatedWhen,
-                    secondDateName: nameof(AddressToUprnFileLog.CreatedWhen)),
-                Parameter: nameof(AddressToUprnFileLog.UpdatedWhen)),
+                    firstDate: addressToUprnFileLog.UpdatedDate,
+                    secondDate: addressToUprnFileLog.CreatedDate,
+                    secondDateName: nameof(AddressToUprnFileLog.CreatedDate)),
+                Parameter: nameof(AddressToUprnFileLog.UpdatedDate)),
 
                 (Rule: IsNotSame(
                     first: addressToUprnFileLog.UpdatedBy,
@@ -57,8 +57,8 @@ namespace LHDS.Core.Services.Foundations.AddressToUprnFileLogs
                 (Rule: IsExceedingLength(addressToUprnFileLog.UpdatedBy, 255),
                     Parameter: nameof(AddressToUprnFileLog.UpdatedBy)),
 
-                (Rule: await IsNotRecentAsync(addressToUprnFileLog.CreatedWhen),
-                    Parameter: nameof(AddressToUprnFileLog.CreatedWhen)));
+                (Rule: await IsNotRecentAsync(addressToUprnFileLog.CreatedDate),
+                    Parameter: nameof(AddressToUprnFileLog.CreatedDate)));
         }
 
         private async ValueTask ValidateAddressToUprnFileLogOnModifyAsync(
@@ -73,11 +73,11 @@ namespace LHDS.Core.Services.Foundations.AddressToUprnFileLogs
 
                 (Rule: IsInvalid(addressToUprnFileLog.Id), Parameter: nameof(AddressToUprnFileLog.Id)),
                 (Rule: IsInvalid(addressToUprnFileLog.FileName), Parameter: nameof(AddressToUprnFileLog.FileName)),
-                (Rule: IsInvalid(addressToUprnFileLog.CreatedWhen),
-                    Parameter: nameof(AddressToUprnFileLog.CreatedWhen)),
+                (Rule: IsInvalid(addressToUprnFileLog.CreatedDate),
+                    Parameter: nameof(AddressToUprnFileLog.CreatedDate)),
                 (Rule: IsInvalid(addressToUprnFileLog.CreatedBy), Parameter: nameof(AddressToUprnFileLog.CreatedBy)),
-                (Rule: IsInvalid(addressToUprnFileLog.UpdatedWhen),
-                    Parameter: nameof(AddressToUprnFileLog.UpdatedWhen)),
+                (Rule: IsInvalid(addressToUprnFileLog.UpdatedDate),
+                    Parameter: nameof(AddressToUprnFileLog.UpdatedDate)),
                 (Rule: IsInvalid(addressToUprnFileLog.UpdatedBy), Parameter: nameof(AddressToUprnFileLog.UpdatedBy)),
 
                 (Rule: IsExceedingLength(addressToUprnFileLog.FileName, 450),
@@ -89,10 +89,10 @@ namespace LHDS.Core.Services.Foundations.AddressToUprnFileLogs
                 Parameter: nameof(AddressToUprnFileLog.UpdatedBy)),
 
                 (Rule: IsSame(
-                    firstDate: addressToUprnFileLog.UpdatedWhen,
-                    secondDate: addressToUprnFileLog.CreatedWhen,
-                    secondDateName: nameof(AddressToUprnFileLog.CreatedWhen)),
-                Parameter: nameof(AddressToUprnFileLog.UpdatedWhen)),
+                    firstDate: addressToUprnFileLog.UpdatedDate,
+                    secondDate: addressToUprnFileLog.CreatedDate,
+                    secondDateName: nameof(AddressToUprnFileLog.CreatedDate)),
+                Parameter: nameof(AddressToUprnFileLog.UpdatedDate)),
 
                 (Rule: IsExceedingLength(addressToUprnFileLog.CreatedBy, 255),
                     Parameter: nameof(AddressToUprnFileLog.CreatedBy)),
@@ -100,8 +100,8 @@ namespace LHDS.Core.Services.Foundations.AddressToUprnFileLogs
                 (Rule: IsExceedingLength(addressToUprnFileLog.UpdatedBy, 255),
                     Parameter: nameof(AddressToUprnFileLog.UpdatedBy)),
 
-                (Rule: await IsNotRecentAsync(addressToUprnFileLog.UpdatedWhen),
-                    Parameter: nameof(AddressToUprnFileLog.UpdatedWhen)));
+                (Rule: await IsNotRecentAsync(addressToUprnFileLog.UpdatedDate),
+                    Parameter: nameof(AddressToUprnFileLog.UpdatedDate)));
         }
 
         private void ValidateAddressToUprnFileLogId(Guid addressToUprnFileLogId)
@@ -140,10 +140,10 @@ namespace LHDS.Core.Services.Foundations.AddressToUprnFileLogs
                     message: "Invalid address to UPRN file log. Please correct the errors and try again."),
 
                 (Rule: IsNotSame(
-                    firstDate: inputAddressToUprnFileLog.CreatedWhen,
-                    secondDate: storageAddressToUprnFileLog.CreatedWhen,
-                    secondDateName: nameof(AddressToUprnFileLog.CreatedWhen)),
-                Parameter: nameof(AddressToUprnFileLog.CreatedWhen)),
+                    firstDate: inputAddressToUprnFileLog.CreatedDate,
+                    secondDate: storageAddressToUprnFileLog.CreatedDate,
+                    secondDateName: nameof(AddressToUprnFileLog.CreatedDate)),
+                Parameter: nameof(AddressToUprnFileLog.CreatedDate)),
 
                 (Rule: IsNotSame(
                     first: inputAddressToUprnFileLog.CreatedBy,
@@ -152,10 +152,10 @@ namespace LHDS.Core.Services.Foundations.AddressToUprnFileLogs
                 Parameter: nameof(AddressToUprnFileLog.CreatedBy)),
 
                 (Rule: IsSame(
-                    firstDate: inputAddressToUprnFileLog.UpdatedWhen,
-                    secondDate: storageAddressToUprnFileLog.UpdatedWhen,
-                    secondDateName: nameof(AddressToUprnFileLog.UpdatedWhen)),
-                Parameter: nameof(AddressToUprnFileLog.UpdatedWhen)));
+                    firstDate: inputAddressToUprnFileLog.UpdatedDate,
+                    secondDate: storageAddressToUprnFileLog.UpdatedDate,
+                    secondDateName: nameof(AddressToUprnFileLog.UpdatedDate)),
+                Parameter: nameof(AddressToUprnFileLog.UpdatedDate)));
         }
 
         private static dynamic IsInvalid(Guid id) => new

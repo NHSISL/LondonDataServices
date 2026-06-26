@@ -41,7 +41,7 @@ namespace LHDS.Core.Brokers.Storages.Sql
                 .IsRequired();
 
             modelBuilder.Entity<AddressToUprnFileLog>()
-                .Property(addressToUprnFileLog => addressToUprnFileLog.CreatedWhen)
+                .Property(addressToUprnFileLog => addressToUprnFileLog.CreatedDate)
                 .IsRequired();
 
             modelBuilder.Entity<AddressToUprnFileLog>()
@@ -50,7 +50,7 @@ namespace LHDS.Core.Brokers.Storages.Sql
                 .IsRequired();
 
             modelBuilder.Entity<AddressToUprnFileLog>()
-                .Property(addressToUprnFileLog => addressToUprnFileLog.UpdatedWhen)
+                .Property(addressToUprnFileLog => addressToUprnFileLog.UpdatedDate)
                 .IsRequired();
         }
     }

@@ -203,7 +203,9 @@ namespace LHDS.Core.Clients.Extensions
                     new SecurityAuditBroker(claimsPrincipal, new SecurityConfigurations
                 {
                     CreatedWhenPropertyName = "CreatedDate",
-                    UpdatedWhenPropertyName = "UpdatedDate"
+                    UpdatedWhenPropertyName = "UpdatedDate",
+                    DeletedByPropertyName = "UpdatedBy",
+                    DeletedWhenPropertyName = "UpdatedDate"
                 }));
             }
             else

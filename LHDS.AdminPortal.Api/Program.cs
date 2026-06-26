@@ -356,10 +356,12 @@ namespace LHDS.AdminPortal.Api
             });
 
             services.AddTransient(_ => new SecurityConfigurations
-                {
-                    CreatedWhenPropertyName = "CreatedDate",
-                    UpdatedWhenPropertyName = "UpdatedDate"
-                });
+            {
+                CreatedWhenPropertyName = "CreatedDate",
+                UpdatedWhenPropertyName = "UpdatedDate",
+                DeletedByPropertyName = "DeletedBy",
+                DeletedWhenPropertyName = "DeletedDate"
+            });
             services.AddTransient<ISecurityBroker, SecurityBroker>();
             services.AddTransient<ISecurityAuditBroker, SecurityAuditBroker>();
             services.AddSingleton<IConfiguration>(_ => configuration);

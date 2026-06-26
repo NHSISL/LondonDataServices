@@ -131,7 +131,9 @@ namespace LHDS.Core.Clients.Extensions
                 var securityAuditBroker = new SecurityAuditBroker(claimsPrincipal, new SecurityConfigurations
                 {
                     CreatedWhenPropertyName = "CreatedDate",
-                    UpdatedWhenPropertyName = "UpdatedDate"
+                    UpdatedWhenPropertyName = "UpdatedDate",
+                    DeletedByPropertyName = "UpdatedBy",
+                    DeletedWhenPropertyName = "UpdatedDate"
                 });
                 services.AddTransient<ISecurityBroker>(_ => securityBroker);
                 services.AddTransient<ISecurityAuditBroker>(_ => securityAuditBroker);

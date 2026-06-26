@@ -106,7 +106,9 @@ namespace LHDS.Core.Clients.Extensions
                     new SecurityAuditBroker(claimsPrincipal, new SecurityConfigurations
                 {
                     CreatedWhenPropertyName = "CreatedDate",
-                    UpdatedWhenPropertyName = "UpdatedDate"
+                    UpdatedWhenPropertyName = "UpdatedDate",
+                    DeletedByPropertyName = "UpdatedBy",
+                    DeletedWhenPropertyName = "UpdatedDate"
                 }));
 
                 //TODO: [26630] - Remove internal constructor and apply config for test managed identity 

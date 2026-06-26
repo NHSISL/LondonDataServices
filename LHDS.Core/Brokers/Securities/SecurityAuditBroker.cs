@@ -104,7 +104,7 @@ namespace LHDS.Core.Brokers.Securities
         /// <param name="entity">The entity to audit for removal.</param>
         /// <returns>The audited entity with remove metadata applied.</returns>
         public async ValueTask<T> ApplyRemoveAuditValuesAsync<T>(T entity) =>
-            await this.securityClient.Audits.ApplyRemoveAuditValuesAsync(entity, claimsPrincipal, securityConfigurations);
+            await this.securityClient.Audits.ApplyModifyAuditValuesAsync(entity, claimsPrincipal, securityConfigurations);
 
         /// <summary>
         /// Ensures that add audit values (e.g., created by/date) remain unchanged during modify operations.
@@ -117,7 +117,7 @@ namespace LHDS.Core.Brokers.Securities
             T entity,
             T storageEntity) =>
                 await this.securityClient.Audits
-                    .EnsureAddAuditValuesRemainsUnchangedOnModifyAsync(entity, storageEntity, securityConfigurations);
+                    .EnsureOtherAuditValuesRemainsUnchangedOnModifyAsync(entity, storageEntity, securityConfigurations);
 
         /// <summary>
         /// Retrieves the current user identifier from the given claims principal.

@@ -91,7 +91,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.AddressToUprnFileLogs
                 values: "Text is required");
 
             invalidAddressToUprnFileLogException.AddData(
-                key: nameof(AddressToUprnFileLog.CreatedWhen),
+                key: nameof(AddressToUprnFileLog.CreatedDate),
                 values:
                 [
                     "Date is required",
@@ -107,7 +107,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.AddressToUprnFileLogs
                 ]);
 
             invalidAddressToUprnFileLogException.AddData(
-                key: nameof(AddressToUprnFileLog.UpdatedWhen),
+                key: nameof(AddressToUprnFileLog.UpdatedDate),
                 values: "Date is required");
 
             invalidAddressToUprnFileLogException.AddData(
@@ -158,7 +158,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.AddressToUprnFileLogs
 
         [Theory]
         [MemberData(nameof(MinutesBeforeOrAfter))]
-        public async Task ShouldThrowValidationExceptionOnAddIfCreatedWhenIsNotRecentAndLogItAsync(int minutes)
+        public async Task ShouldThrowValidationExceptionOnAddIfCreatedDateIsNotRecentAndLogItAsync(int minutes)
         {
             // given
             DateTimeOffset randomDateTimeOffset = GetRandomDateTimeOffset();
@@ -169,8 +169,8 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.AddressToUprnFileLogs
 
             AddressToUprnFileLog invalidAddressToUprnFileLog = randomAddressToUprnFileLog;
             DateTimeOffset shiftedDateTimeOffset = randomDateTimeOffset.AddMinutes(minutes);
-            invalidAddressToUprnFileLog.CreatedWhen = shiftedDateTimeOffset;
-            invalidAddressToUprnFileLog.UpdatedWhen = shiftedDateTimeOffset;
+            invalidAddressToUprnFileLog.CreatedDate = shiftedDateTimeOffset;
+            invalidAddressToUprnFileLog.UpdatedDate = shiftedDateTimeOffset;
 
             this.securityAuditBrokerMock.Setup(broker =>
                 broker.ApplyAddAuditValuesAsync(invalidAddressToUprnFileLog))
@@ -189,7 +189,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.AddressToUprnFileLogs
                     message: "Invalid address to UPRN file log. Please correct the errors and try again.");
 
             invalidAddressToUprnFileLogException.AddData(
-                key: nameof(AddressToUprnFileLog.CreatedWhen),
+                key: nameof(AddressToUprnFileLog.CreatedDate),
                 values: "Date is not recent");
 
             var expectedAddressToUprnFileLogValidationException =

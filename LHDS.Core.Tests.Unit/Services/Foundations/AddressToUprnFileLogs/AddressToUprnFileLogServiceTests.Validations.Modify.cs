@@ -100,7 +100,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.AddressToUprnFileLogs
                 values: "Text is required");
 
             invalidAddressToUprnFileLogException.AddData(
-                key: nameof(AddressToUprnFileLog.CreatedWhen),
+                key: nameof(AddressToUprnFileLog.CreatedDate),
                 values: "Date is required");
 
             invalidAddressToUprnFileLogException.AddData(
@@ -108,11 +108,11 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.AddressToUprnFileLogs
                 values: "Text is required");
 
             invalidAddressToUprnFileLogException.AddData(
-                key: nameof(AddressToUprnFileLog.UpdatedWhen),
+                key: nameof(AddressToUprnFileLog.UpdatedDate),
                 values:
                 [
                     "Date is required",
-                    $"Date is the same as {nameof(AddressToUprnFileLog.CreatedWhen)}",
+                    $"Date is the same as {nameof(AddressToUprnFileLog.CreatedDate)}",
                     "Date is not recent"
                 ]);
 
@@ -256,16 +256,16 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.AddressToUprnFileLogs
 
             AddressToUprnFileLog inputAddressToUprnFileLog = randomAddressToUprnFileLog;
             AddressToUprnFileLog storageAddressToUprnFileLog = inputAddressToUprnFileLog.DeepClone();
-            storageAddressToUprnFileLog.CreatedWhen = GetRandomDateTimeOffset();
-            storageAddressToUprnFileLog.UpdatedWhen = inputAddressToUprnFileLog.CreatedWhen;
+            storageAddressToUprnFileLog.CreatedDate = GetRandomDateTimeOffset();
+            storageAddressToUprnFileLog.UpdatedDate = inputAddressToUprnFileLog.CreatedDate;
 
             var invalidAddressToUprnFileLogException =
                 new InvalidAddressToUprnFileLogException(
                     message: "Invalid address to UPRN file log. Please correct the errors and try again.");
 
             invalidAddressToUprnFileLogException.AddData(
-                key: nameof(AddressToUprnFileLog.CreatedWhen),
-                values: $"Date is not the same as {nameof(AddressToUprnFileLog.CreatedWhen)}");
+                key: nameof(AddressToUprnFileLog.CreatedDate),
+                values: $"Date is not the same as {nameof(AddressToUprnFileLog.CreatedDate)}");
 
             var expectedAddressToUprnFileLogValidationException =
                 new AddressToUprnFileLogValidationException(

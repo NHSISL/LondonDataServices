@@ -85,8 +85,8 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.AddressToUprnFileLogs
             int randomDaysInPast = GetRandomNegativeNumber();
             AddressToUprnFileLog randomAddressToUprnFileLog = CreateRandomAddressToUprnFileLog(dateTimeOffset);
 
-            randomAddressToUprnFileLog.CreatedWhen =
-                randomAddressToUprnFileLog.CreatedWhen.AddDays(randomDaysInPast);
+            randomAddressToUprnFileLog.CreatedDate =
+                randomAddressToUprnFileLog.CreatedDate.AddDays(randomDaysInPast);
 
             return randomAddressToUprnFileLog;
         }
@@ -98,8 +98,8 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.AddressToUprnFileLogs
             int randomDaysInPast = GetRandomNegativeNumber();
             AddressToUprnFileLog randomAddressToUprnFileLog = CreateRandomAddressToUprnFileLog(dateTimeOffset, userId);
 
-            randomAddressToUprnFileLog.CreatedWhen =
-                randomAddressToUprnFileLog.CreatedWhen.AddDays(randomDaysInPast);
+            randomAddressToUprnFileLog.CreatedDate =
+                randomAddressToUprnFileLog.CreatedDate.AddDays(randomDaysInPast);
 
             return randomAddressToUprnFileLog;
         }

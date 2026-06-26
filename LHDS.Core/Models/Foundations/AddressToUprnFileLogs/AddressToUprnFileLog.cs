@@ -3,10 +3,11 @@
 // ---------------------------------------------------------
 
 using System;
+using LHDS.Core.Models.Bases;
 
 namespace LHDS.Core.Models.Foundations.AddressToUprnFileLogs
 {
-    public class AddressToUprnFileLog
+    public class AddressToUprnFileLog : IKey, IAudit
     {
         public Guid Id { get; set; }
         public string FileName { get; set; }
@@ -20,8 +21,8 @@ namespace LHDS.Core.Models.Foundations.AddressToUprnFileLogs
         public SuccessStatus SuccessStatus { get; set; }
         public string Message { get; set; }
         public string CreatedBy { get; set; }
-        public DateTimeOffset CreatedWhen { get; set; }
+        public DateTimeOffset CreatedDate { get; set; }
         public string UpdatedBy { get; set; }
-        public DateTimeOffset UpdatedWhen { get; set; }
+        public DateTimeOffset UpdatedDate { get; set; }
     }
 }

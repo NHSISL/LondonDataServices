@@ -37,13 +37,16 @@ namespace LHDS.Core.Services.Foundations.HealthChecks
                 var eventTelemetry = new EventTelemetry(entry.Key);
                 eventTelemetry.Properties.Add("Status", entry.Value.Status.ToString());
 
-                eventTelemetry.Metrics.Add("StatusCode", entry.Value.Status switch
+                double statusCodeValue = entry.Value.Status switch
                 {
                     HealthStatus.Healthy => HealthyStatusCode,
                     HealthStatus.Degraded => DegradedStatusCode,
                     HealthStatus.Unhealthy => UnhealthyStatusCode,
                     _ => UnknownStatusCode
-                });
+                };
+
+                eventTelemetry.Properties.Add("StatusCode", statusCodeValue.ToString());
+                await telemetryBroker.TrackMetricAsync(new MetricTelemetry("StatusCode", statusCodeValue));
 
                 foreach (var reading in entry.Value.Data)
                 {
@@ -71,8 +74,8 @@ namespace LHDS.Core.Services.Foundations.HealthChecks
                 {
                     case int or long or float or double or decimal:
                         double metricValue = Convert.ToDouble(value);
-                        string metricKey = GetUniqueKey(telemetry.Metrics, key);
-                        telemetry.Metrics.Add(metricKey, metricValue);
+                        string metricKey = GetUniqueKey(telemetry.Properties, key);
+                        telemetry.Properties.Add(metricKey, metricValue.ToString());
                         await telemetryBroker.TrackMetricAsync(new MetricTelemetry(metricKey, metricValue));
                         break;
 

@@ -5,7 +5,7 @@
 using ADotNet.Clients;
 using ADotNet.Models.Pipelines.GithubPipelines.DotNets;
 using ADotNet.Models.Pipelines.GithubPipelines.DotNets.Tasks;
-using ADotNet.Models.Pipelines.GithubPipelines.DotNets.Tasks.SetupDotNetTaskV3s;
+using ADotNet.Models.Pipelines.GithubPipelines.DotNets.Tasks.SetupDotNetTaskV5s;
 
 namespace LHDS.Infrastructure.Services
 {
@@ -44,16 +44,16 @@ namespace LHDS.Infrastructure.Services
 
                             Steps = new List<GithubTask>
                             {
-                                new CheckoutTaskV3
+                                new CheckoutTaskV5
                                 {
                                     Name = "Check out"
                                 },
 
-                                new SetupDotNetTaskV3
+                                new SetupDotNetTaskV5
                                 {
                                     Name = "Setup .Net",
 
-                                    With = new TargetDotNetVersionV3
+                                    With = new TargetDotNetVersionV5
                                     {
                                         DotNetVersion = dotNetVersion
                                     }
@@ -78,7 +78,7 @@ namespace LHDS.Infrastructure.Services
                     },
                     {
                         "add_tag",
-                        new TagJob(
+                        new TagJobV2(
                             runsOn: BuildMachines.UbuntuLatest,
                             dependsOn: "build",
                             projectRelativePath: "ADotNet/ADotNet.csproj",
@@ -90,7 +90,7 @@ namespace LHDS.Infrastructure.Services
                     },
                     {
                         "publish",
-                        new PublishJobV2(
+                        new PublishJobV4(
                             runsOn: BuildMachines.UbuntuLatest,
                             dependsOn: "add_tag",
                             dotNetVersion: dotNetVersion,
@@ -134,7 +134,7 @@ namespace LHDS.Infrastructure.Services
                 {
                     {
                         "label",
-                        new LabelJobV2(runsOn: BuildMachines.UbuntuLatest)
+                        new LabelJobV3(runsOn: BuildMachines.UbuntuLatest)
                         {
                             Name = "Label",
                         }
@@ -148,7 +148,7 @@ namespace LHDS.Infrastructure.Services
                     },
                     {
                         "setAuthorAsPrAssignee",
-                        new SetAuthorAsPrAssigneeJob(runsOn: BuildMachines.UbuntuLatest)
+                        new SetAuthorAsPrAssigneeJobV2(runsOn: BuildMachines.UbuntuLatest)
                         {
                             Name = "Set Author As PR Assignee",
                         }

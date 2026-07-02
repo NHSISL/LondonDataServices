@@ -45,11 +45,8 @@ var host = new HostBuilder()
             new ActiveDirectoryAuthenticationProvider());
 
         services
-            .AddLogging(setup =>
-            {
-                setup.AddApplicationInsights();
-                setup.AddConsole();
-            })
+            .AddApplicationInsightsTelemetryWorkerService()
+            .AddLogging(setup => setup.AddConsole())
             .AddDbContextFactory<StorageBroker>()
             .AddPdsClient(configuration: context.Configuration, accessToken: accessToken.Token, acceptanceTest: false);
     })

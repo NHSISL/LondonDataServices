@@ -8,7 +8,6 @@ using Azure.Core;
 using Azure.Identity;
 using LHDS.Core.Brokers.Storages.Sql;
 using LHDS.Core.Clients.Extensions;
-using Microsoft.Azure.Functions.Worker;
 using Microsoft.Data.SqlClient;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -48,7 +47,6 @@ var host = new HostBuilder()
 
         services
             .AddApplicationInsightsTelemetryWorkerService()
-            .ConfigureFunctionsApplicationInsights()
             .AddLogging(setup => setup.AddConsole())
             .AddDbContextFactory<StorageBroker>()
             .AddAddressClient(context.Configuration, accessToken.Token)

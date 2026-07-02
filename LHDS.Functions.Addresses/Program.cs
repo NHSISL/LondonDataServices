@@ -8,6 +8,7 @@ using Azure.Core;
 using Azure.Identity;
 using LHDS.Core.Brokers.Storages.Sql;
 using LHDS.Core.Clients.Extensions;
+using Microsoft.Azure.Functions.Worker;
 using Microsoft.Data.SqlClient;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -30,6 +31,7 @@ var host = new HostBuilder()
             reloadOnChange: true)
         .AddEnvironmentVariables();
     })
+    .ConfigureFunctionsWorkerDefaults()
     .ConfigureServices((context, services) =>
     {
         var credential = new DefaultAzureCredential();
@@ -45,17 +47,14 @@ var host = new HostBuilder()
             new ActiveDirectoryAuthenticationProvider());
 
         services
-            .AddLogging(setup =>
-            {
-                setup.AddApplicationInsights();
-                setup.AddConsole();
-            })
+            .AddApplicationInsightsTelemetryWorkerService()
+            .ConfigureFunctionsApplicationInsights()
+            .AddLogging(setup => setup.AddConsole())
             .AddDbContextFactory<StorageBroker>()
             .AddAddressClient(context.Configuration, accessToken.Token)
             .AddAddressToUprnClient(context.Configuration, accessToken.Token);
     })
     .UseDefaultServiceProvider(options => options.ValidateScopes = false)
-    .ConfigureFunctionsWorkerDefaults()
     .Build();
 
 await host.RunAsync();

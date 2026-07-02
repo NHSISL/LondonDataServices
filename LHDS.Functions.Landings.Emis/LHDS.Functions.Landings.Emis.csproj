@@ -27,7 +27,7 @@
 		<PackageReference Include="Microsoft.Extensions.Configuration" Version="10.0.9" />
 		<PackageReference Include="Microsoft.Extensions.Configuration.UserSecrets" Version="10.0.9" />
 		<PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="10.0.9" />
-		<PackageReference Include="Microsoft.Extensions.Logging.ApplicationInsights" Version="2.23.0" />
+		<PackageReference Include="Microsoft.ApplicationInsights.WorkerService" Version="3.1.2" />
 		<PackageReference Include="Tynamix.ObjectFiller" Version="1.5.9" />
 	</ItemGroup>
 	

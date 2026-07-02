@@ -43,11 +43,8 @@ var host = new HostBuilder()
             new ActiveDirectoryAuthenticationProvider());
 
         services
-            .AddLogging(setup =>
-            {
-                setup.AddApplicationInsights();
-                setup.AddConsole();
-            })
+            .AddApplicationInsightsTelemetryWorkerService()
+            .AddLogging(setup => setup.AddConsole())
             .AddDbContextFactory<StorageBroker>()
             .AddEmisLandingClient(context.Configuration, accessToken.Token)
             .AddDecryptionClient(context.Configuration, accessToken.Token)

@@ -48,11 +48,8 @@ var host = new HostBuilder()
 
 
         services
-            .AddLogging(setup =>
-            {
-                setup.AddApplicationInsights();
-                setup.AddConsole();
-            })
+            .AddApplicationInsightsTelemetryWorkerService()
+            .AddLogging(setup => setup.AddConsole())
             .AddDbContextFactory<StorageBroker>()
 
             .AddIDecideClient(

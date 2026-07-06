@@ -28,9 +28,9 @@ namespace LHDS.Core.Migrations
                     SuccessStatus = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
                     Message = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     CreatedBy = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: false),
-                    CreatedWhen = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: false),
+                    CreatedDate = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: false),
                     UpdatedBy = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: false),
-                    UpdatedWhen = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: false)
+                    UpdatedDate = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: false)
                 },
                 constraints: table =>
                 {

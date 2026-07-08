@@ -6,6 +6,7 @@ using ADotNet.Clients;
 using ADotNet.Models.Pipelines.GithubPipelines.DotNets;
 using ADotNet.Models.Pipelines.GithubPipelines.DotNets.Tasks;
 using ADotNet.Models.Pipelines.GithubPipelines.DotNets.Tasks.SetupDotNetTaskV5s;
+using LHDS.Infrastructure.TestComponents;
 
 namespace LHDS.Infrastructure.Services
 {
@@ -148,7 +149,7 @@ namespace LHDS.Infrastructure.Services
                     },
                     {
                         "setAuthorAsPrAssignee",
-                        new SetAuthorAsPrAssigneeJobV2(runsOn: BuildMachines.UbuntuLatest)
+                        new SetAuthorAsPrAssigneeJobV2Test(runsOn: BuildMachines.UbuntuLatest)
                         {
                             Name = "Set Author As PR Assignee",
                         }

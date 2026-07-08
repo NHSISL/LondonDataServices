@@ -161,12 +161,16 @@ jobs:
           console.log(`Assigning PR to author: ${author}`);
 
 
-          await github.rest.issues.addAssignees({
-            owner: context.repo.owner,
-            repo: context.repo.repo,
-            issue_number: pr.number,
-            assignees: [author]
-          });
+          try {
+            await github.rest.issues.addAssignees({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: pr.number,
+              assignees: [author]
+            });
+          } catch (error) {
+            console.log(`Unable to assign ${author} as PR assignee: ${error.message}`);
+          }
     permissions:
       contents: read
       issues: write

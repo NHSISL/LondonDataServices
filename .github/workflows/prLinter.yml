@@ -165,7 +165,7 @@ jobs:
             await github.rest.issues.addAssignees({
               owner: context.repo.owner,
               repo: context.repo.repo,
-              issue_number: 999999999,
+              issue_number: pr.number,
               assignees: [author]
             });
           } catch (error) {

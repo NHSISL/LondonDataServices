@@ -56,7 +56,7 @@ namespace LHDS.Infrastructure.TestComponents
                                 "  await github.rest.issues.addAssignees({\n" +
                                 "    owner: context.repo.owner,\n" +
                                 "    repo: context.repo.repo,\n" +
-                                "    issue_number: 999999999,\n" +  // TEMP: force an error to prove the catch logs-and-continues
+                                "    issue_number: pr.number,\n" +
                                 "    assignees: [author]\n" +
                                 "  });\n" +
                                 "} catch (error) {\n" +

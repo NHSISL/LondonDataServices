@@ -21,6 +21,7 @@
 		<PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="10.0.9" />
 		<PackageReference Include="Microsoft.AspNetCore.OData" Version="9.4.1" />
 		<PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="10.0.9" />
+		<PackageReference Include="Microsoft.Data.SqlClient" Version="7.0.2" />
 		<PackageReference Include="Microsoft.Data.SqlClient.Extensions.Azure" Version="7.0.2" />
 		<PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="10.0.9" />
 		<PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="10.0.9">
@@ -28,7 +29,7 @@
 			<PrivateAssets>all</PrivateAssets>
 		</PackageReference>
 		<PackageReference Include="Microsoft.Extensions.Azure" Version="1.14.0" />
-		<PackageReference Include="Microsoft.Identity.Web" Version="4.11.0" />
+		<PackageReference Include="Microsoft.Identity.Web" Version="4.12.1" />
 		<PackageReference Include="RESTFulSense" Version="3.2.0" />
 		<PackageReference Include="SshKeyGenerator" Version="1.1.51" />
 		<PackageReference Include="Swashbuckle.AspNetCore" Version="10.2.3" />

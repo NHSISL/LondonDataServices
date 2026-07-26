@@ -16,7 +16,7 @@
     "http-proxy-middleware": "^2.0.10",
     "jquery": "^3.6.0",
     "jszip": "^3.10.1",
-    "lodash": "^4.17.23",
+    "lodash": "^4.18.1",
     "merge": "^2.1.1",
     "moment": "^2.30.1",
     "nhsuk-react-components": "^2.2.1",

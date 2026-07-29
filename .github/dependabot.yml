@@ -23,7 +23,6 @@ updates:
       interval: "weekly"
     commit-message:
       prefix: "CONFIG"
-      include: "scope"
     labels:
       - "dependencies"
       - "npm"

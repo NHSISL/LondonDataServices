@@ -56,7 +56,6 @@ namespace LHDS.Core.Tests.Integration.IDecide
                 .AddLogging(builder =>
                 {
                     builder.AddConsole();
-                    builder.AddApplicationInsights();
                 })
                 .AddDbContextFactory<StorageBroker>()
 

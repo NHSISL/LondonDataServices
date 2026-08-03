@@ -21,7 +21,7 @@
 		<PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="10.0.10" />
 		<PackageReference Include="Microsoft.Extensions.Logging" Version="10.0.10" />
 		<PackageReference Include="Microsoft.Extensions.Logging.ApplicationInsights" Version="2.23.0" />
-		<PackageReference Include="Microsoft.NET.Test.Sdk" Version="18.7.0" />
+		<PackageReference Include="Microsoft.NET.Test.Sdk" Version="18.8.1" />
 		<PackageReference Include="Microsoft.VisualStudio.TestPlatform" Version="14.0.0" />
 		<PackageReference Include="Tynamix.ObjectFiller" Version="1.5.9" />
 		<PackageReference Include="xunit.analyzers" Version="1.27.0">
